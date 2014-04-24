@@ -27,4 +27,4 @@ Whoaverse aims to make a fully functional and scalable Reddit®-like community i
 
 ### Contributing
 There is a whole lot of work to be done, code contributions are welcome. A Contributor License Agreement (CLA) is required for all code contributions, configuration changes, documentation, or any other materials that you send to us.
-CLA form will be published at whoaverse.com/cla
+CLA form can be signed and submitted at http://whoaverse.com/cla
