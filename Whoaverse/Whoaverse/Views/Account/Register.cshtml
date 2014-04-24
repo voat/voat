@@ -1,0 +1,69 @@
+﻿@model Whoaverse.Models.RegisterViewModel
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<div id="about-main" class="content about-page" role="main">
+
+    <div class="row nomargin">
+        <div class="well col-md-8">
+
+            <h1>@ViewBag.Title.</h1>
+
+            @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            { @Html.AntiForgeryToken()
+                <h2>All it takes is a username and password. We don't ask for your e-mail or anything else.</h2><br />
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Privacy philosophy</div>
+                    <div class="panel-body">
+                        <p>We limit data collected about you and your use of the platform,</p>
+                        <p>Your personal information is never for sale,</p>
+                        <p>We use and disclose information to prevent people from abusing the platform, but</p>
+                        <p>Never disclose it for any other reason unless required by law.</p>
+                        <br />
+                        <p>Our Privacy Policy can be found <a href="/help/privacy">here</a>.</p>
+                    </div>
+                </div>
+
+
+                <hr />
+                @*@Html.ValidationSummary()*@
+                <div class="form-group">
+                    @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.UserName)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Password)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ConfirmPassword)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-3">
+                        <input type="submit" class="btn btn-default" value="Register" />
+                    </div>
+                </div>
+            }
+
+            @section Scripts {
+                @Scripts.Render("~/bundles/jqueryval")
+            }
+
+
+        </div>
+    </div>
+</div>

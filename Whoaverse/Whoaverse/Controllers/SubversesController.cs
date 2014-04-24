@@ -1,0 +1,157 @@
+﻿/*
+This source file is subject to version 3 of the GPL license, 
+that is bundled with this package in the file LICENSE, and is 
+available online at http://www.gnu.org/licenses/gpl.txt; 
+you may not use this file except in compliance with the License. 
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+the specific language governing rights and limitations under the License.
+
+All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All Rights Reserved.
+ */
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Whoaverse.Utils;
+using PagedList;
+using System.Threading.Tasks;
+using System.Net;
+
+namespace Whoaverse.Models
+{
+    public class SubversesController : Controller
+    {
+        private whoaverseEntities db = new whoaverseEntities();
+
+        // GET: Messages/Details/5
+        public ActionResult comments(int? id, string subversetoshow)
+        {
+            ViewBag.SelectedSubverse = subversetoshow;
+
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Message message = db.Messages.Find(id);
+            if (message == null)
+            {
+                return View("~/Views/Shared/Error_404.cshtml");
+            }
+            return View(message);
+        }
+
+        // GET: submit
+        [Authorize]
+        public ActionResult submit()
+        {
+            return View();
+        }
+
+        // POST: submit
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent")] Message message)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Messages.Add(message);
+                await db.SaveChangesAsync();
+                
+                //get newly generated message ID and execute ranking and self upvoting                
+                Votingtracker tmpVotingTracker = new Votingtracker();
+                tmpVotingTracker.MessageId = message.Id;
+                tmpVotingTracker.UserName = message.Name;
+                tmpVotingTracker.VoteStatus = 1;
+                db.Votingtrackers.Add(tmpVotingTracker);
+                await db.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+            }
+
+            return View(message);
+        }
+
+
+        public ActionResult Index(int? page, string subversetoshow)
+        {
+            int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            ViewBag.Title = subversetoshow;
+            ViewBag.SelectedSubverse = subversetoshow;
+            
+            //check if subverse exists, if not, send to a page not found error
+            var checkResult = db.Subverses
+                                .Where(s => s.name == subversetoshow)
+                                .FirstOrDefault();
+
+            if (checkResult != null)
+            {
+                var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Rank).ToList();
+                return View(submissions.ToPagedList(pageNumber, pageSize));
+            }
+            else
+            {
+                //return RedirectToAction("Subversenotfound", "Subverses");
+                return View("~/Views/Shared/Subversenotfound.cshtml");
+            }            
+        }
+
+        public ActionResult Subversenotfound()
+        {
+            return View("~/Views/Shared/Subversenotfound.cshtml");
+        }
+
+        public ActionResult @new (int? page, string subversetoshow, string sortingmode)
+        {
+            //sortingmode: new, contraversial, hot, etc
+            ViewBag.SortingMode = sortingmode;
+            ViewBag.SelectedSubverse = subversetoshow;
+
+            int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            ViewBag.Title = subversetoshow;
+
+
+            //check if subverse exists, if not, send to a page not found error
+            var checkResult = db.Subverses
+                                .Where(s => s.name == subversetoshow)
+                                .FirstOrDefault();
+
+            if (checkResult != null)
+            {
+                var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Date).ToList();
+                return View("Index",submissions.ToPagedList(pageNumber, pageSize));
+            }
+            else
+            {
+                //return RedirectToAction("Subversenotfound", "Subverses");
+                return View("~/Views/Shared/Subversenotfound.cshtml");
+            }
+        }
+
+        public ActionResult random()
+        {
+            var qry = from row in db.Subverses
+                      select row;
+
+            int count = qry.Count(); // 1st round-trip
+            int index = new Random().Next(count);
+
+            // example subverse to show: pics
+            Subverse randomSubverse = qry.OrderBy(s => s.name).Skip(index).FirstOrDefault(); // 2nd round-trip            
+
+            return RedirectToAction("Index", "Subverses", new { subversetoshow = randomSubverse.name });
+
+        }
+
+    }
+}

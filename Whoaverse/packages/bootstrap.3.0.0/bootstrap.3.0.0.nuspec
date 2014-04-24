@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>bootstrap</id>
+    <version>3.0.0</version>
+    <authors>Mark Otto,Jacob Thornton</authors>
+    <owners>outercurve</owners>
+    <licenseUrl>https://github.com/twbs/bootstrap/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/twbs/bootstrap</projectUrl>
+    <iconUrl>https://github.com/twbs/bootstrap/blob/master/assets/ico/apple-touch-icon-72-precomposed.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Sleek, intuitive, and powerful front-end framework for faster and easier web development.</description>
+    <releaseNotes />
+    <copyright>Copyright 2012</copyright>
+    <tags>Twitter bootstrap html5 css3</tags>
+  </metadata>
+</package>

@@ -1,0 +1,87 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.Comment
+
+@{
+    DateTime submissionDate = Model.Date;
+    string postAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(submissionDate);
+    string opName = Model.Message.Name;
+    string commentAuthor = Model.Name;
+    string authorClass = "";
+    string authorSpanClass = "";
+
+    //apply class style if OP is the Comment Author
+    opName = opName.Trim();
+    commentAuthor = commentAuthor.Trim();
+
+    if (opName == commentAuthor)
+    {
+        authorClass = "submitter";
+        authorSpanClass = "[<a class=\"submitter\" title=\"submitter\" href=\"/comments/" + @Model.MessageId + "/\">S</a>]";
+    }
+}
+
+
+<!-- 1 submission comment -->
+<div class=" thing id-t1_cgkmgmm comment " onclick="click_thing(this)" data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
+    <p class="parent">
+        <a name="cgjenno"></a>
+    </p>
+
+    @Html.Partial("_votingIconsComment", Model)
+
+    <div class="entry unvoted">
+        <div class="collapsed" style='display:none'>
+            <a href="#" class="expand" onclick="return showcomment(this)">[+]</a>
+            <a href="/user/@Model.Name" class="author gray @authorClass may-blank id-t2_@Model.Id">@Model.Name</a>
+            <span class="userattrs">@Html.Raw(authorSpanClass)</span>&#32;
+            <span class="score dislikes">x points</span>
+            <span class="score unvoted">@Model.Votes point</span>
+            <span class="score likes">x points</span>
+            <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" onclick="return showcomment(this)">(0 children)</a>
+        </div>
+        <div class="noncollapsed">
+            <p class="tagline">
+                <a href="#" class="expand" onclick="return hidecomment(this)">[&ndash;]</a>
+                <a href="/user/@Model.Name" class="author @authorClass may-blank id-t2_@Model.Id">@Model.Name</a>
+                <span class="userattrs">@Html.Raw(authorSpanClass)</span>&#32;
+                <span class="score dislikes">x points</span>
+                <span class="score unvoted">@Model.Votes points</span>
+                <span class="score likes">x points</span> 
+                <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago
+            </p>
+            <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t1_cgjennopb1">
+                <input type="hidden" name="thing_id" value="t1_cgjenno" />
+                <div class="usertext-body may-blank-within">
+                    <div class="md">
+                        <p>
+                            @Html.Raw(@Whoaverse.Utils.Formatting.formatMessage(@Model.CommentContent))
+                        </p>
+                    </div>
+                </div>
+            </form>
+            <ul class="flat-list buttons">
+                <li class="first">
+                    <a href="/comments/@Model.MessageId" class="bylink" rel="nofollow">permalink</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="child"></div>
+    <div class="clearleft">
+        <!--IE6sux-->
+    </div>
+</div>
+<div class="clearleft">
+    <!--IE6sux-->
+</div>

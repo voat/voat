@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>PagedList</id>
+    <version>1.17.0.0</version>
+    <title>PagedList</title>
+    <authors>Troy Goode</authors>
+    <owners>Troy Goode</owners>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <projectUrl>http://github.com/TroyGoode/PagedList</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>PagedList makes it easier for .Net developers to write paging code. It allows you to take any IEnumerable(T) and by specifying the page size and desired page index, select only a subset of that list. PagedList also provides properties that are useful when building UI paging controls.</description>
+    <releaseNotes />
+    <copyright />
+    <language>en-US</language>
+    <tags>paging pager page infinitescroll ajax mvc</tags>
+  </metadata>
+</package>

@@ -1,0 +1,74 @@
+{
+  "images": [
+    {
+      "name": "arrow-downvote.png",
+      "width": 15,
+      "height": 14,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    {
+      "name": "arrow-downvoted.png",
+      "width": 15,
+      "height": 14,
+      "offsetX": 0,
+      "offsetY": 14
+    },
+    {
+      "name": "arrow-upvote.png",
+      "width": 15,
+      "height": 14,
+      "offsetX": 0,
+      "offsetY": 28
+    },
+    {
+      "name": "arrow-upvoted.png",
+      "width": 15,
+      "height": 14,
+      "offsetX": 0,
+      "offsetY": 42
+    },
+    {
+      "name": "expand-selfpost-hover.png",
+      "width": 23,
+      "height": 23,
+      "offsetX": 0,
+      "offsetY": 56
+    },
+    {
+      "name": "expand-selfpost.png",
+      "width": 23,
+      "height": 23,
+      "offsetX": 0,
+      "offsetY": 79
+    },
+    {
+      "name": "thumb-placeholder.png",
+      "width": 70,
+      "height": 70,
+      "offsetX": 0,
+      "offsetY": 102
+    },
+    {
+      "name": "whoaverse-mascot.png",
+      "width": 467,
+      "height": 429,
+      "offsetX": 0,
+      "offsetY": 172
+    },
+    {
+      "name": "whoaverse.png",
+      "width": 120,
+      "height": 43,
+      "offsetX": 0,
+      "offsetY": 601
+    },
+    {
+      "name": "mail-icon.png",
+      "width": 15,
+      "height": 10,
+      "offsetX": 0,
+      "offsetY": 644
+    }
+  ]
+}

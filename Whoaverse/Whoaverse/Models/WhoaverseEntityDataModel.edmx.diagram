@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="16d91f6c35a3475cb9ce6e7417581c6e" Name="Diagram" ZoomLevel="85">
+        <EntityTypeShape EntityType="whoaverseModel.Comment" Width="1.875" PointX="5.625" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="whoaverseModel.Commentvotingtracker" Width="2.125" PointX="8.125" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="whoaverseModel.Message" Width="1.5" PointX="3.375" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="whoaverseModel.Votingtracker" Width="1.5" PointX="3.375" PointY="5.375" IsExpanded="true" />
+        <AssociationConnector Association="whoaverseModel.FK_Comments_Messages" ManuallyRouted="false" />
+        <AssociationConnector Association="whoaverseModel.FK_Commentvotingtracker_Comments" ManuallyRouted="false" />
+        <AssociationConnector Association="whoaverseModel.FK_Votingtracker_Messages" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="whoaverseModel.Subverse" Width="2.125" PointX="0.5" PointY="0.75" />
+        <AssociationConnector Association="whoaverseModel.FK_Messages_Subverses" />
+        <EntityTypeShape EntityType="whoaverseModel.Defaultsubverse" Width="1.5" PointX="0.75" PointY="6.25" />
+        <AssociationConnector Association="whoaverseModel.FK_Defaultsubverses_Subverses" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

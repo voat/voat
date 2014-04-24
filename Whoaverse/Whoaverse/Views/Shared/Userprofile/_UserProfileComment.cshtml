@@ -1,0 +1,144 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.Comment
+
+<!--
+
+    1 user submission with details without comments
+
+    TODO:
+    check if user submission is a comment, a link or a self submission
+    and assign appropriate display
+
+    check if comment author is the submitter and assign proper class
+
+-->
+@{
+    string postAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(Model.Date);
+    int commentScore = (Model.Likes - Model.Dislikes);
+
+    //type 2 = urls, model.messagecontent = url, model.linkdescription = link description
+    if (Model.Message.Type == 2)
+    {
+        <div class=" thing id-t1_cgpb6dh odd comment " onclick="click_thing(this)" data-fullname="t1_cgpb6dh" data-ups="0" data-downs="1">
+            <p class="parent">
+                <a name="cgpb6dh"></a>
+                <a href="@Model.Message.MessageContent" class="title" rel="nofollow">@Model.Message.Linkdescription</a> by <a href="~/user/@Model.Name" class="author may-blank id-t2_5fggn">@Model.Name</a>
+                <span class="userattrs"></span>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+            </p>
+            <div class="midcol unvoted">
+                <div class="arrow-upvote login-required" onclick="$(this).vote(r.config.vote_hash, null, event)" role="button" aria-label="upvote" tabindex="0"></div>
+                <div class="arrow-downvote login-required" onclick="$(this).vote(r.config.vote_hash, null, event)" role="button" aria-label="downvote" tabindex="0"></div>
+            </div>
+            <div class="entry unvoted">
+                <div class="collapsed" style="display:none">
+                    <a href="#" class="expand" onclick="return showcomment(this)">[+]</a>
+                    <a href="~/user/@Model.Name" class="author gray submitter may-blank id-t2_5fggn">@Model.Name</a>
+                    <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                    <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span><span class="score likes">@Model.Likes points</span>
+                    <time title="Thu Apr 10 21:56:04 2014 UTC" datetime="2014-04-10T21:56:04+00:00">3 days</time> ago &nbsp;<a href="#" class="expand" onclick="return showcomment(this)">(0 children)</a>
+                </div>
+                <div class="noncollapsed">
+                    <p class="tagline">
+                        <a href="#" class="expand" onclick="return hidecomment(this)">[–]</a>
+                        <a href="~/user/@Model.Name" class="author submitter may-blank id-t2_5fggn">@Model.Name</a>
+                        <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                        <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span><span class="score likes">@Model.Likes points</span>
+                        <time title="Thu Apr 10 21:56:04 2014 UTC" datetime="2014-04-10T21:56:04+00:00">3 days</time> ago
+                    </p>
+                    <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t1_cgpb6dh3f5">
+                        <input name="thing_id" value="t1_cgpb6dh" type="hidden">
+                        <div class="usertext-body may-blank-within">
+                            <div class="md">
+                                <p>@Html.Raw(@Whoaverse.Utils.Formatting.formatMessage(@Model.CommentContent))</p>
+                            </div>
+                        </div>
+                    </form>
+                    <ul class="flat-list buttons">
+                        <li class="first">
+                            <a href="#" class="bylink" rel="nofollow">permalink</a>
+                        </li>
+                        <li>
+                            <a href="#" class="bylink" rel="nofollow">context</a>
+                        </li>
+                        <li class="first">
+                            <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="may-blank">full comments (@Model.Message.Comments.Count)</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="child"></div>
+            <div class="clearleft">
+                <!--IE6sux-->
+            </div>
+        </div>
+    }
+    else
+    //type 1 = message
+    {
+        <div class=" thing id-t1_cgpb6dh odd comment " onclick="click_thing(this)" data-fullname="t1_cgpb6dh" data-ups="0" data-downs="1">
+            <p class="parent">
+                <a name="cgpb6dh"></a>
+                <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Title</a> by <a href="~/user/@Model.Name" class="author may-blank id-t2_5fggn">@Model.Name</a>
+                <span class="userattrs"></span>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+            </p>
+            <div class="midcol unvoted">
+                <div class="arrow-upvote login-required" onclick="$(this).vote(r.config.vote_hash, null, event)" role="button" aria-label="upvote" tabindex="0"></div>
+                <div class="arrow-downvote login-required" onclick="$(this).vote(r.config.vote_hash, null, event)" role="button" aria-label="downvote" tabindex="0"></div>
+            </div>
+            <div class="entry unvoted">
+                <div class="collapsed" style="display:none">
+                    <a href="#" class="expand" onclick="return showcomment(this)">[+]</a><a href="~/user/@Model.Name" class="author gray submitter may-blank id-t2_5fggn">@Model.Name</a>
+                    <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                    <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span><span class="score likes">@Model.Likes points</span>
+                    <time title="Thu Apr 10 21:56:04 2014 UTC" datetime="2014-04-10T21:56:04+00:00">3 days</time> ago &nbsp;<a href="#" class="expand" onclick="return showcomment(this)">(0 children)</a>
+                </div>
+                <div class="noncollapsed">
+                    <p class="tagline">
+                        <a href="#" class="expand" onclick="return hidecomment(this)">[–]</a><a href="~/user/@Model.Name" class="author submitter may-blank id-t2_5fggn">@Model.Name</a>
+                        <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                        <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span><span class="score likes">@Model.Likes points</span>
+                        <time title="Thu Apr 10 21:56:04 2014 UTC" datetime="2014-04-10T21:56:04+00:00">3 days</time> ago
+                    </p>
+                    <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t1_cgpb6dh3f5">
+                        <input name="thing_id" value="t1_cgpb6dh" type="hidden">
+                        <div class="usertext-body may-blank-within">
+                            <div class="md">
+                                <p>@Html.Raw(@Whoaverse.Utils.Formatting.formatMessage(@Model.CommentContent))</p>
+                            </div>
+                        </div>
+                    </form>
+                    <ul class="flat-list buttons">
+                        <li class="first">
+                            <a href="#" class="bylink" rel="nofollow">permalink</a>
+                        </li>
+                        <li>
+                            <a href="#" class="bylink" rel="nofollow">context</a>
+                        </li>
+                        <li class="first">
+                            <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="may-blank">full comments (@Model.Message.Comments.Count)</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="child"></div>
+            <div class="clearleft">
+                <!--IE6sux-->
+            </div>
+        </div>
+    }
+
+}
+
+
+

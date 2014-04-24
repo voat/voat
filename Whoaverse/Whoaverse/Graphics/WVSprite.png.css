@@ -1,0 +1,63 @@
+﻿/*
+This is an example of how to use the image sprite in your own CSS files
+*/
+.arrow-downvote {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 14px;
+	background: url('WVSprite.png') 0 0;
+}
+.arrow-downvoted {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 14px;
+	background: url('WVSprite.png') 0 -14px;
+}
+.arrow-upvote {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 14px;
+	background: url('WVSprite.png') 0 -28px;
+}
+.arrow-upvoted {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 14px;
+	background: url('WVSprite.png') 0 -42px;
+}
+.expand-selfpost-hover {
+/* You may have to set 'display: block' */
+	width: 23px;
+	height: 23px;
+	background: url('WVSprite.png') 0 -56px;
+}
+.expand-selfpost {
+/* You may have to set 'display: block' */
+	width: 23px;
+	height: 23px;
+	background: url('WVSprite.png') 0 -79px;
+}
+.thumb-placeholder {
+/* You may have to set 'display: block' */
+	width: 70px;
+	height: 70px;
+	background: url('WVSprite.png') 0 -102px;
+}
+.whoaverse-mascot {
+/* You may have to set 'display: block' */
+	width: 467px;
+	height: 429px;
+	background: url('WVSprite.png') 0 -172px;
+}
+.whoaverse {
+/* You may have to set 'display: block' */
+	width: 120px;
+	height: 43px;
+	background: url('WVSprite.png') 0 -601px;
+}
+.mail-icon {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 10px;
+	background: url('WVSprite.png') 0 -644px;
+}

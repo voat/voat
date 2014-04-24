@@ -1,0 +1,60 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.Comment
+
+@{
+
+    int score = (Model.Likes - Model.Dislikes);
+
+    //default voting icons style
+    string votingStatusClassUpArrow = "arrow-upvote";
+    string votingStatusClassDownArrow = "arrow-downvote";
+    string likesOrDislikesClass = "unvoted";
+
+    if (User.Identity.IsAuthenticated)
+    //LOGGED IN USERS
+    {        
+        string loggedInUserName = User.Identity.Name;
+        //returns -1:downvoted, 1:upvoted, or 0:not voted
+        int votedOrNot = Whoaverse.Utils.Voting.CheckIfVotedComment(loggedInUserName, Model.Id);
+
+        switch (votedOrNot)
+        {
+            case 1:
+                votingStatusClassUpArrow = "arrow-upvoted";
+                votingStatusClassDownArrow = "arrow-downvote";
+                likesOrDislikesClass = "likes";
+                break;
+            case -1:
+                likesOrDislikesClass = "dislikes";
+                votingStatusClassUpArrow = "arrow-upvote";
+                votingStatusClassDownArrow = "arrow-downvoted";
+                break;
+        }
+
+        <div class="midcol @likesOrDislikesClass">
+            <div class="@votingStatusClassUpArrow login-required" onclick="voteUp(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
+            <div class="@votingStatusClassDownArrow login-required" onclick="voteDown(@Model.Id);" role="button" aria-label="downvote" tabindex="0"></div>
+        </div>
+    }
+    else
+    //GUESTS
+    {        
+        <div class="midcol @likesOrDislikesClass">
+            <div class="@votingStatusClassUpArrow login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
+            <div class="@votingStatusClassDownArrow login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
+        </div>
+    }
+
+
+}

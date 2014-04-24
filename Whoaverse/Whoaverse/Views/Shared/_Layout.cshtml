@@ -1,0 +1,192 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@{
+    string selectedSubverse = ViewBag.SelectedSubverse;
+
+    ViewBag.Title = "Alpha";
+    string sortingMode = ViewBag.SortingMode;
+    string selectedUser = ViewBag.userid;
+    string selectedSubverseNew = "";
+    string classHot = "selected";
+    string classNew = "disabled";
+    string classOverview = "disabled";
+    string classComments = "disabled";
+    string classSubmissions = "disabled";        
+    
+    
+    string whattodisplay = ViewBag.whattodisplay;
+
+    if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user")
+    {
+        selectedSubverse = "/v/" + ViewBag.SelectedSubverse;
+        selectedSubverseNew = selectedSubverse + "/new";
+    }
+    else
+    {
+        if (selectedSubverse != "user")
+        {
+            selectedSubverse = "/";
+            selectedSubverseNew = "new";
+        }        
+    }
+
+    if (whattodisplay != null)
+    {
+        if (whattodisplay == "comments")
+        {
+            classComments = "selected";
+            classOverview = "disabled";
+            classSubmissions = "disabled"; 
+        }
+
+        if (whattodisplay == "submissions")
+        {
+            classComments = "disabled";
+            classOverview = "disabled";
+            classSubmissions = "selected"; 
+        }
+        
+    }
+
+    if (sortingMode != null)
+    {
+        if (sortingMode.Equals("new"))
+        {
+            classHot = "disabled";
+            classNew = "selected";
+        }
+    }
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>@ViewBag.Title - Whoaverse</title>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/whoaverse")
+
+    <script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-49743834-1', 'whoaverse.com');
+    ga('send', 'pageview');
+    </script>
+
+    <link rel='shortcut icon' href="http://www.whoaverse.com/favicon.ico" type="image/x-icon" />
+    <link href="/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+
+    @Html.Action("listofsubverses", "Home", new { activeSubverse = selectedSubverse })
+
+    <div id="header" role="banner">
+        <div id="header-bottom-left">
+            <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
+                <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
+            </a>&nbsp;
+            @{
+                if (selectedSubverse.Equals("user"))
+                {
+                    <ul class="tabmenu ">
+                        <li class="@classOverview"><a href="~/user/@selectedUser">overview</a></li>
+                        <li class="@classComments"><a href="~/user/@selectedUser/comments">comments</a></li>
+                        <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">submitted</a></li>
+                        <li><a href="/submit">submit a message</a></li>
+                        <li><a href="/submit?linkpost=true">submit a link</a></li>
+                    </ul>
+                }
+                else
+                {
+                    <ul class="tabmenu ">
+                        <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
+                        <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
+                        <li><a href="/submit">submit a message</a></li>
+                        <li><a href="/submit?linkpost=true">submit a link</a></li>
+                    </ul>
+                }
+
+            }
+        </div>
+
+        @Html.Partial("_LoginPartial")
+
+    </div>
+
+    <!-- Must be logged in Modal -->
+    <div class="modal fade" id="mustbeloggedinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Login or register</h4>
+                </div>
+                <div class="modal-body">
+                    You can login or register by clicking the buttons below.
+                    Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-default" href="~/Account/Register" role="button">Register</a>
+                    <a class="btn btn-default" href="~/Account/Login" role="button">Log in</a>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Must be logged in Modal -->
+
+    @RenderBody()
+
+    <div class="centered">
+
+        <div class="footer rounded">
+
+            <div>
+                <a href="/blog/">blog</a>
+                <span class="separator"></span><a href="/about/">about</a>
+                <span class="separator"></span><a href="/about/team/">team</a>
+                <span class="separator"></span><a href="https://github.com/whoaverse/whoaverse">source code</a>
+                <span class="separator"></span><a href="/v/whoaversejobs/">jobs</a>
+
+            </div>
+
+            <p class="bottommenu">
+                Use of this site constitutes acceptance of our <a href="#">User Agreement</a> and <a href="~/help/privacy">Privacy Policy</a>.
+            </p>
+            <p class="bottommenu">
+                &copy; @DateTime.Now.Year Whoaverse AB. All rights reserved.
+            </p>
+        </div>
+
+
+    </div>
+
+    <br />
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+</body>
+
+</html>

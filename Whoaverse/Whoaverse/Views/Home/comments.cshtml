@@ -1,0 +1,75 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.Message
+
+@{
+    string selectedSubverse = ViewBag.SelectedSubverse;
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<!--
+    display 1 submission with details and comments
+-->
+
+<div class="content" role="main">
+
+    <br /><br />
+
+    @{
+        //type 1 = message submission
+        if (Model.Type == 1)
+        {
+            ViewBag.Title = Model.Title; 
+            @Html.Partial("_MessageSubmissionDetails", Model)
+        }
+
+        //type 2 = link submission
+        if (Model.Type == 2)
+        {
+            ViewBag.Title = Model.Linkdescription;
+            @Html.Partial("_LinkSubmissionDetails", Model)
+        }
+    }
+
+
+    @{
+        //if user logged in, show add comment form
+        if (User.Identity.IsAuthenticated)
+        {
+            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } });
+        }
+    }
+
+    <!-- show top 200 submission comments, orderby number of votes each comment has received -->
+    <div class='commentarea'>
+        <div>
+            <h2><span class="label label-default">top 200 comments</span>&nbsp;<a href="#" class="title-button ">show 500</a></h2>
+            <br /><br />
+        </div>
+        <!-- TODO: order by menu area -->
+        <div id="siteTable_t3_@Model.Id" class="sitetable nestedlisting">
+            @{foreach (var comment in Model.Comments.OrderByDescending(i => i.Votes).Take(200))
+            {
+                @Html.Partial("_SubmissionComment", comment);
+            }
+            }
+        </div>
+    </div>
+
+
+</div>

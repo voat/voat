@@ -1,0 +1,74 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model PagedList.IPagedList<Whoaverse.Models.Message>
+
+@{
+    ViewBag.Title = "Alpha";
+}
+
+@using PagedList.Mvc;
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div class="content" role="main">
+
+    <br /><br />
+
+    <div class="sitetable linklisting">
+
+        @{
+            //(current page number -1)*25
+            int currentPageNumber = Model.PageNumber;
+            int counterCont = (currentPageNumber - 1) * 25;
+
+            int counter = counterCont + 1;
+            string submissionClass = "";
+        }
+
+        @foreach (var submission in Model)
+        {
+            //type 2 = link
+            //type 1 = message
+            if (submission.Type == 1)
+            {
+                submissionClass = "self";
+            }
+            else
+            {
+                submissionClass = "";
+            }
+
+            <div class="thing id-@submission.Id even link @submissionClass" onclick="handleVoting(this);" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="0">
+                <p class="parent"></p>
+                <span class="rank">@counter</span>
+
+                @Html.Partial("_votingIconsSubmission", submission)
+                @Html.Partial("_Submission", submission)
+
+                <div class="child"></div>
+                <div class="clearleft"><!--IE6sux--></div>
+            </div>
+            counter++;
+        }
+
+    </div>
+
+    <span class="nextprev">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), PagedListRenderOptions.Minimal)
+    </span>
+
+</div>

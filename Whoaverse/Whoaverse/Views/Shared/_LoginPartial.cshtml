@@ -1,0 +1,45 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@using Microsoft.AspNet.Identity
+
+@if (Request.IsAuthenticated)
+{
+    int linkKarma = Whoaverse.Utils.Karma.linkKarma(User.Identity.GetUserName());    
+    
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+        <div id="header-bottom-right">
+            <span class="user">
+                @Html.ActionLink(User.Identity.GetUserName(), "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })
+                (<span class="userkarma" title="link karma">@linkKarma</span>)
+            </span>
+            <span class="separator">|</span><a title="no new mail" href="/message/inbox/" class="nohavemail" id="mail">messages</a>
+            <span class="separator">|</span>
+            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+        </div>
+    }
+
+}
+else
+{
+    <div id="header-bottom-right">
+        <span class="user" onclick="mustLogin();">want to join? <a href="#" class="login-required">login or register</a> in seconds</span>
+        <span class="separator">|</span>
+        <ul class="flat-list hover">
+            <li><a href="javascript:void(0)" class="pref-lang" onclick="return showlang();">English</a></li>
+        </ul>
+    </div>
+}
+
+

@@ -1,0 +1,63 @@
+﻿/*
+@import this file directly into your existing Scss files to use these mixins
+*/
+@mixin sprite-arrow-downvote() {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 14px;
+	background: url('WVSprite.png') 0 0;
+}
+@mixin sprite-arrow-downvoted() {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 14px;
+	background: url('WVSprite.png') 0 -14px;
+}
+@mixin sprite-arrow-upvote() {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 14px;
+	background: url('WVSprite.png') 0 -28px;
+}
+@mixin sprite-arrow-upvoted() {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 14px;
+	background: url('WVSprite.png') 0 -42px;
+}
+@mixin sprite-expand-selfpost-hover() {
+/* You may have to set 'display: block' */
+	width: 23px;
+	height: 23px;
+	background: url('WVSprite.png') 0 -56px;
+}
+@mixin sprite-expand-selfpost() {
+/* You may have to set 'display: block' */
+	width: 23px;
+	height: 23px;
+	background: url('WVSprite.png') 0 -79px;
+}
+@mixin sprite-thumb-placeholder() {
+/* You may have to set 'display: block' */
+	width: 70px;
+	height: 70px;
+	background: url('WVSprite.png') 0 -102px;
+}
+@mixin sprite-whoaverse-mascot() {
+/* You may have to set 'display: block' */
+	width: 467px;
+	height: 429px;
+	background: url('WVSprite.png') 0 -172px;
+}
+@mixin sprite-whoaverse() {
+/* You may have to set 'display: block' */
+	width: 120px;
+	height: 43px;
+	background: url('WVSprite.png') 0 -601px;
+}
+@mixin sprite-mail-icon() {
+/* You may have to set 'display: block' */
+	width: 15px;
+	height: 10px;
+	background: url('WVSprite.png') 0 -644px;
+}

@@ -1,0 +1,370 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PagedList.Mvc</name>
+    </assembly>
+    <members>
+        <member name="T:PagedList.Mvc.GoToFormRenderOptions">
+            <summary>
+             Options for configuring the output of <see cref="T:PagedList.Mvc.HtmlHelper"/>.
+            </summary>
+        </member>
+        <member name="M:PagedList.Mvc.GoToFormRenderOptions.#ctor(System.String)">
+            <summary>
+             The default settings, with configurable querystring key (input field name).
+            </summary>
+        </member>
+        <member name="M:PagedList.Mvc.GoToFormRenderOptions.#ctor">
+            <summary>
+             The default settings.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.GoToFormRenderOptions.LabelFormat">
+            <summary>
+             The text to show in the form's input label.
+            </summary>
+            <example>
+             "Go to page:"
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.GoToFormRenderOptions.SubmitButtonFormat">
+            <summary>
+             The text to show in the form's submit button.
+            </summary>
+            <example>
+             "Go"
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.GoToFormRenderOptions.InputFieldName">
+            <summary>
+             The querystring key this form should submit the new page number as.
+            </summary>
+            <example>
+             "page"
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.GoToFormRenderOptions.InputFieldType">
+            <summary>
+             The HTML input type for this field. Defaults to the HTML5 "number" type, but can be changed to "text" if targetting previous versions of HTML.
+            </summary>
+            <example>
+             "number"
+            </example>
+        </member>
+        <member name="T:PagedList.Mvc.HtmlHelper">
+            <summary>
+            	Extension methods for generating paging controls that can operate on instances of IPagedList.
+            </summary>
+        </member>
+        <member name="M:PagedList.Mvc.HtmlHelper.PagedListPager(System.Web.Mvc.HtmlHelper,PagedList.IPagedList,System.Func{System.Int32,System.String})">
+            <summary>
+            	Displays a configurable paging control for instances of PagedList.
+            </summary>
+            <param name = "html">This method is meant to hook off HtmlHelper as an extension method.</param>
+            <param name = "list">The PagedList to use as the data source.</param>
+            <param name = "generatePageUrl">A function that takes the page number of the desired page and returns a URL-string that will load that page.</param>
+            <returns>Outputs the paging control HTML.</returns>
+        </member>
+        <member name="M:PagedList.Mvc.HtmlHelper.PagedListPager(System.Web.Mvc.HtmlHelper,PagedList.IPagedList,System.Func{System.Int32,System.String},PagedList.Mvc.PagedListRenderOptions)">
+            <summary>
+            	Displays a configurable paging control for instances of PagedList.
+            </summary>
+            <param name = "html">This method is meant to hook off HtmlHelper as an extension method.</param>
+            <param name = "list">The PagedList to use as the data source.</param>
+            <param name = "generatePageUrl">A function that takes the page number  of the desired page and returns a URL-string that will load that page.</param>
+            <param name = "options">Formatting options.</param>
+            <returns>Outputs the paging control HTML.</returns>
+        </member>
+        <member name="M:PagedList.Mvc.HtmlHelper.PagedListGoToPageForm(System.Web.Mvc.HtmlHelper,PagedList.IPagedList,System.String)">
+            <summary>
+             Displays a configurable "Go To Page:" form for instances of PagedList.
+            </summary>
+            <param name="html">This method is meant to hook off HtmlHelper as an extension method.</param>
+            <param name="list">The PagedList to use as the data source.</param>
+            <param name="formAction">The URL this form should submit the GET request to.</param>
+            <returns>Outputs the "Go To Page:" form HTML.</returns>
+        </member>
+        <member name="M:PagedList.Mvc.HtmlHelper.PagedListGoToPageForm(System.Web.Mvc.HtmlHelper,PagedList.IPagedList,System.String,System.String)">
+            <summary>
+             Displays a configurable "Go To Page:" form for instances of PagedList.
+            </summary>
+            <param name="html">This method is meant to hook off HtmlHelper as an extension method.</param>
+            <param name="list">The PagedList to use as the data source.</param>
+            <param name="formAction">The URL this form should submit the GET request to.</param>
+            <param name="inputFieldName">The querystring key this form should submit the new page number as.</param>
+            <returns>Outputs the "Go To Page:" form HTML.</returns>
+        </member>
+        <member name="M:PagedList.Mvc.HtmlHelper.PagedListGoToPageForm(System.Web.Mvc.HtmlHelper,PagedList.IPagedList,System.String,PagedList.Mvc.GoToFormRenderOptions)">
+            <summary>
+             Displays a configurable "Go To Page:" form for instances of PagedList.
+            </summary>
+            <param name="html">This method is meant to hook off HtmlHelper as an extension method.</param>
+            <param name="list">The PagedList to use as the data source.</param>
+            <param name="formAction">The URL this form should submit the GET request to.</param>
+            <param name="options">Formatting options.</param>
+            <returns>Outputs the "Go To Page:" form HTML.</returns>
+        </member>
+        <member name="T:PagedList.Mvc.PagedListDisplayMode">
+            <summary>
+            A tri-state enum that controls the visibility of portions of the PagedList paging control.
+            </summary>
+        </member>
+        <member name="F:PagedList.Mvc.PagedListDisplayMode.Always">
+            <summary>
+            Always render.
+            </summary>
+        </member>
+        <member name="F:PagedList.Mvc.PagedListDisplayMode.Never">
+            <summary>
+            Never render.
+            </summary>
+        </member>
+        <member name="F:PagedList.Mvc.PagedListDisplayMode.IfNeeded">
+            <summary>
+            Only render when there is data that makes sense to show (context sensitive).
+            </summary>
+        </member>
+        <member name="T:PagedList.Mvc.PagedListRenderOptions">
+            <summary>
+             Options for configuring the output of <see cref="T:PagedList.Mvc.HtmlHelper"/>.
+            </summary>
+        </member>
+        <member name="M:PagedList.Mvc.PagedListRenderOptions.#ctor">
+            <summary>
+             The default settings render all navigation links and no descriptive text.
+            </summary>
+        </member>
+        <member name="M:PagedList.Mvc.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(PagedList.Mvc.PagedListRenderOptions,System.Web.Mvc.Ajax.AjaxOptions)">
+            <summary>
+            Enables ASP.NET MVC's unobtrusive AJAX feature. An XHR request will retrieve HTML from the clicked page and replace the innerHtml of the provided element ID.
+            </summary>
+            <param name="options">The preferred Html.PagedList(...) style options.</param>
+            <param name="ajaxOptions">The ajax options that will put into the link</param>
+            <returns>The PagedListRenderOptions value passed in, with unobtrusive AJAX attributes added to the page links.</returns>
+        </member>
+        <member name="M:PagedList.Mvc.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(System.String)">
+            <summary>
+            Enables ASP.NET MVC's unobtrusive AJAX feature. An XHR request will retrieve HTML from the clicked page and replace the innerHtml of the provided element ID.
+            </summary>
+            <param name="id">The element ID ("my_id") of the element whose innerHtml should be replaced, if # is included at the start this will be removed.</param>
+            <returns>A default instance of PagedListRenderOptions value passed in, with unobtrusive AJAX attributes added to the page links.</returns>
+        </member>
+        <member name="M:PagedList.Mvc.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(System.Web.Mvc.Ajax.AjaxOptions)">
+            <summary>
+            Enables ASP.NET MVC's unobtrusive AJAX feature. An XHR request will retrieve HTML from the clicked page and replace the innerHtml of the provided element ID.
+            </summary>
+            <param name="ajaxOptions">Ajax options that will be used to generate the unobstrusive tags on the link</param>
+            <returns>A default instance of PagedListRenderOptions value passed in, with unobtrusive AJAX attributes added to the page links.</returns>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.ContainerDivClasses">
+            <summary>
+             CSS Classes to append to the &lt;div&gt; element that wraps the paging control.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.UlElementClasses">
+            <summary>
+             CSSClasses to append to the &lt;ul&gt; element in the paging control.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.LiElementClasses">
+            <summary>
+             CSS Classes to append to every &lt;li&gt; element in the paging control.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.ClassToApplyToFirstListItemInPager">
+            <summary>
+             Specifies a CSS class to append to the first list item in the pager. If null or whitespace is defined, no additional class is added to first list item in list.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.ClassToApplyToLastListItemInPager">
+            <summary>
+             Specifies a CSS class to append to the last list item in the pager. If null or whitespace is defined, no additional class is added to last list item in list.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.Display">
+            <summary>
+            If set to Always, always renders the paging control. If set to IfNeeded, render the paging control when there is more than one page.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.DisplayLinkToFirstPage">
+            <summary>
+             If set to Always, render a hyperlink to the first page in the list. If set to IfNeeded, render the hyperlink only when the first page isn't visible in the paging control.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.DisplayLinkToLastPage">
+            <summary>
+             If set to Always, render a hyperlink to the last page in the list. If set to IfNeeded, render the hyperlink only when the last page isn't visible in the paging control.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.DisplayLinkToPreviousPage">
+            <summary>
+             If set to Always, render a hyperlink to the previous page of the list. If set to IfNeeded, render the hyperlink only when there is a previous page in the list.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.DisplayLinkToNextPage">
+            <summary>
+             If set to Always, render a hyperlink to the next page of the list. If set to IfNeeded, render the hyperlink only when there is a next page in the list.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.DisplayLinkToIndividualPages">
+            <summary>
+             When true, includes hyperlinks for each page in the list.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.DisplayPageCountAndCurrentLocation">
+            <summary>
+             When true, shows the current page number and the total number of pages in the list.
+            </summary>
+            <example>
+             "Page 3 of 8."
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.DisplayItemSliceAndTotal">
+            <summary>
+             When true, shows the one-based index of the first and last items on the page, and the total number of items in the list.
+            </summary>
+            <example>
+             "Showing items 75 through 100 of 183."
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.MaximumPageNumbersToDisplay">
+            <summary>
+             The maximum number of page numbers to display. Null displays all page numbers.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.DisplayEllipsesWhenNotShowingAllPageNumbers">
+            <summary>
+             If true, adds an ellipsis where not all page numbers are being displayed.
+            </summary>
+            <example>
+             "1 2 3 4 5 ...",
+             "... 6 7 8 9 10 ...",
+             "... 11 12 13 14 15"
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.EllipsesFormat">
+            <summary>
+             The pre-formatted text to display when not all page numbers are displayed at once.
+            </summary>
+            <example>
+             "..."
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.LinkToFirstPageFormat">
+            <summary>
+             The pre-formatted text to display inside the hyperlink to the first page. The one-based index of the page (always 1 in this case) is passed into the formatting function - use {0} to reference it.
+            </summary>
+            <example>
+             "&lt;&lt; First"
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.LinkToPreviousPageFormat">
+            <summary>
+             The pre-formatted text to display inside the hyperlink to the previous page. The one-based index of the page is passed into the formatting function - use {0} to reference it.
+            </summary>
+            <example>
+             "&lt; Previous"
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.LinkToIndividualPageFormat">
+            <summary>
+             The pre-formatted text to display inside the hyperlink to each individual page. The one-based index of the page is passed into the formatting function - use {0} to reference it.
+            </summary>
+            <example>
+             "{0}"
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.LinkToNextPageFormat">
+            <summary>
+             The pre-formatted text to display inside the hyperlink to the next page. The one-based index of the page is passed into the formatting function - use {0} to reference it.
+            </summary>
+            <example>
+             "Next &gt;"
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.LinkToLastPageFormat">
+            <summary>
+             The pre-formatted text to display inside the hyperlink to the last page. The one-based index of the page is passed into the formatting function - use {0} to reference it.
+            </summary>
+            <example>
+             "Last &gt;&gt;"
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.PageCountAndCurrentLocationFormat">
+            <summary>
+             The pre-formatted text to display when DisplayPageCountAndCurrentLocation is true. Use {0} to reference the current page and {1} to reference the total number of pages.
+            </summary>
+            <example>
+             "Page {0} of {1}."
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.ItemSliceAndTotalFormat">
+            <summary>
+             The pre-formatted text to display when DisplayItemSliceAndTotal is true. Use {0} to reference the first item on the page, {1} for the last item on the page, and {2} for the total number of items across all pages.
+            </summary>
+            <example>
+             "Showing items {0} through {1} of {2}."
+            </example>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.FunctionToDisplayEachPageNumber">
+            <summary>
+            A function that will render each page number when specified (and DisplayLinkToIndividualPages is true). If no function is specified, the LinkToIndividualPageFormat value will be used instead.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.DelimiterBetweenPageNumbers">
+            <summary>
+            Text that will appear between each page number. If null or whitespace is specified, no delimiter will be shown.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.FunctionToTransformEachPageLink">
+            <summary>
+            An extension point which allows you to fully customize the anchor tags used for clickable pages, as well as navigation features such as Next, Last, etc.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.Classic">
+            <summary>
+             Also includes links to First and Last pages.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.ClassicPlusFirstAndLast">
+            <summary>
+             Also includes links to First and Last pages.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.Minimal">
+            <summary>
+             Shows only the Previous and Next links.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.MinimalWithPageCountText">
+            <summary>
+             Shows Previous and Next links along with current page number and page count.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.MinimalWithItemCountText">
+            <summary>
+            	Shows Previous and Next links along with index of first and last items on page and total number of items across all pages.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.PageNumbersOnly">
+            <summary>
+            	Shows only links to each individual page.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.OnlyShowFivePagesAtATime">
+            <summary>
+            	Shows Next and Previous while limiting to a max of 5 page numbers at a time.
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.TwitterBootstrapPager">
+            <summary>
+             Twitter Bootstrap 2's basic pager format (just Previous and Next links).
+            </summary>
+        </member>
+        <member name="P:PagedList.Mvc.PagedListRenderOptions.TwitterBootstrapPagerAligned">
+            <summary>
+             Twitter Bootstrap 2's basic pager format (just Previous and Next links), with aligned links.
+            </summary>
+        </member>
+    </members>
+</doc>

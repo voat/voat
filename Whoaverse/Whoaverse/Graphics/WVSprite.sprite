@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sprite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://vswebessentials.com/schemas/v1/sprite.xsd">
+  <settings>
+    <!--Determines if the sprite image should be automatically optimized after creation/update-->
+    <optimize>true</optimize>
+    <orientation>vertical</orientation>
+    <outputType>png</outputType>
+  </settings>
+  <!--The order of the <file> elements determines the order of the images in the sprite.-->
+  <files>
+    <file>/Graphics/arrow-downvote.png</file>
+    <file>/Graphics/arrow-downvoted.png</file>
+    <file>/Graphics/arrow-upvote.png</file>
+    <file>/Graphics/arrow-upvoted.png</file>
+    <file>/Graphics/expand-selfpost-hover.png</file>
+    <file>/Graphics/expand-selfpost.png</file>
+    <file>/Graphics/thumb-placeholder.png</file>
+    <file>/Graphics/whoaverse-mascot.png</file>
+    <file>/Graphics/whoaverse.png</file>
+	<file>/Graphics/mail-icon.png</file>
+  </files>
+</sprite>

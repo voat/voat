@@ -1,0 +1,457 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="whoaverseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Comments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Votes" Type="int" />
+          <Property Name="Name" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="CommentContent" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Date" Type="smalldatetime" Nullable="false" />
+          <Property Name="MessageId" Type="int" />
+          <Property Name="Likes" Type="int" Nullable="false" />
+          <Property Name="Dislikes" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Commentvotingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CommentId" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar(max)" />
+          <Property Name="VoteStatus" Type="int" />
+        </EntityType>
+        <EntityType Name="Defaultsubverses">
+          <Key>
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="position" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Messages">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Votes" Type="int" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="MessageContent" Type="nvarchar(max)" />
+          <Property Name="Date" Type="smalldatetime" Nullable="false" />
+          <Property Name="Type" Type="int" Nullable="false" />
+          <Property Name="Linkdescription" Type="nvarchar" MaxLength="200" />
+          <Property Name="Title" Type="nvarchar" MaxLength="200" />
+          <Property Name="Rank" Type="float" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="20" />
+          <Property Name="Likes" Type="int" Nullable="false" />
+          <Property Name="Dislikes" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Subverses">
+          <Key>
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="title" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="sidebar" Type="nvarchar(max)" />
+          <Property Name="submission_text" Type="nvarchar" MaxLength="1024" />
+          <Property Name="language" Type="nchar" MaxLength="10" />
+          <Property Name="type" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="label_submit_new_link" Type="nvarchar" MaxLength="50" />
+          <Property Name="label_sumit_new_selfpost" Type="nvarchar" MaxLength="50" />
+          <Property Name="spam_filter_links" Type="nchar" MaxLength="10" />
+          <Property Name="spam_filter_selfpost" Type="nchar" MaxLength="10" />
+          <Property Name="spam_filter_comments" Type="nchar" MaxLength="10" />
+          <Property Name="rated_adult" Type="int" />
+          <Property Name="allow_default" Type="int" />
+          <Property Name="enable_thumbnails" Type="int" />
+          <Property Name="exclude_sitewide_bans" Type="int" />
+          <Property Name="traffic_stats_public" Type="int" />
+          <Property Name="minutes_to_hide_comments" Type="int" />
+          <Property Name="creation_date" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Votingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MessageId" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar(max)" />
+          <Property Name="VoteStatus" Type="int" />
+        </EntityType>
+        <Association Name="FK_Comments_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="0..1" />
+          <End Role="Comments" Type="Self.Comments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Comments">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Commentvotingtracker_Comments">
+          <End Role="Comments" Type="Self.Comments" Multiplicity="1" />
+          <End Role="Commentvotingtracker" Type="Self.Commentvotingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Comments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Commentvotingtracker">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Defaultsubverses_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Defaultsubverses" Type="Self.Defaultsubverses" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Defaultsubverses">
+              <PropertyRef Name="name" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Votingtracker_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
+          <End Role="Votingtracker" Type="Self.Votingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Votingtracker">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="whoaverseModelStoreContainer">
+          <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Votingtracker" EntityType="Self.Votingtracker" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Comments_Messages" Association="Self.FK_Comments_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Comments" EntitySet="Comments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Commentvotingtracker_Comments" Association="Self.FK_Commentvotingtracker_Comments">
+            <End Role="Comments" EntitySet="Comments" />
+            <End Role="Commentvotingtracker" EntitySet="Commentvotingtracker" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="Self.FK_Defaultsubverses_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Defaultsubverses" EntitySet="Defaultsubverses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Votingtracker_Messages" Association="Self.FK_Votingtracker_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Votingtracker" EntitySet="Votingtracker" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="whoaverseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Comment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Votes" Type="Int32" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Precision="0" Nullable="false" />
+          <Property Name="MessageId" Type="Int32" />
+          <NavigationProperty Name="Message" Relationship="Self.FK_Comments_Messages" FromRole="Comments" ToRole="Messages" />
+          <NavigationProperty Name="Commentvotingtrackers" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Comments" ToRole="Commentvotingtracker" />
+          <Property Name="CommentContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Likes" Type="Int32" Nullable="false" DefaultValue="1" />
+          <Property Name="Dislikes" Type="Int32" Nullable="false" DefaultValue="0" />
+        </EntityType>
+        <EntityType Name="Commentvotingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="VoteStatus" Type="Int32" />
+          <NavigationProperty Name="Comment" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Commentvotingtracker" ToRole="Comments" />
+        </EntityType>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Votes" Type="Int16" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Precision="0" Nullable="false" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <Property Name="Linkdescription" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Rank" Type="Double" />
+          <NavigationProperty Name="Comments" Relationship="Self.FK_Comments_Messages" FromRole="Messages" ToRole="Comments" />
+          <NavigationProperty Name="Votingtrackers" Relationship="Self.FK_Votingtracker_Messages" FromRole="Messages" ToRole="Votingtracker" />
+          <Property Name="MessageContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Subverses" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Message" ToRole="Subvers" />
+          <Property Name="Likes" Type="Int16" Nullable="false" DefaultValue="1" />
+          <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
+        </EntityType>
+        <EntityType Name="Votingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="MessageId" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="VoteStatus" Type="Int32" />
+          <NavigationProperty Name="Message" Relationship="Self.FK_Votingtracker_Messages" FromRole="Votingtracker" ToRole="Messages" />
+        </EntityType>
+        <Association Name="FK_Comments_Messages">
+          <End Role="Messages" Type="Self.Message" Multiplicity="0..1" />
+          <End Role="Comments" Type="Self.Comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Comments">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Commentvotingtracker_Comments">
+          <End Role="Comments" Type="Self.Comment" Multiplicity="1" />
+          <End Role="Commentvotingtracker" Type="Self.Commentvotingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Comments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Commentvotingtracker">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Votingtracker_Messages">
+          <End Role="Messages" Type="Self.Message" Multiplicity="1" />
+          <End Role="Votingtracker" Type="Self.Votingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Votingtracker">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="whoaverseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Comments" EntityType="Self.Comment" />
+          <EntitySet Name="Commentvotingtrackers" EntityType="Self.Commentvotingtracker" />
+          <EntitySet Name="Messages" EntityType="Self.Message" />
+          <EntitySet Name="Votingtrackers" EntityType="Self.Votingtracker" />
+          <AssociationSet Name="FK_Comments_Messages" Association="Self.FK_Comments_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Comments" EntitySet="Comments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Commentvotingtracker_Comments" Association="Self.FK_Commentvotingtracker_Comments">
+            <End Role="Comments" EntitySet="Comments" />
+            <End Role="Commentvotingtracker" EntitySet="Commentvotingtrackers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Votingtracker_Messages" Association="Self.FK_Votingtracker_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Votingtracker" EntitySet="Votingtrackers" />
+          </AssociationSet>
+          <EntitySet Name="Subverses" EntityType="whoaverseModel.Subverse" />
+          <AssociationSet Name="FK_Messages_Subverses" Association="whoaverseModel.FK_Messages_Subverses">
+            <End Role="Subvers" EntitySet="Subverses" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <EntitySet Name="Defaultsubverses" EntityType="whoaverseModel.Defaultsubverse" />
+          <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="whoaverseModel.FK_Defaultsubverses_Subverses">
+            <End Role="Subverse" EntitySet="Subverses" />
+            <End Role="Defaultsubvers" EntitySet="Defaultsubverses" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Subverse">
+          <Key>
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="title" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="sidebar" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="submission_text" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
+          <Property Name="language" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="type" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="label_submit_new_link" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="label_sumit_new_selfpost" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="spam_filter_links" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="spam_filter_selfpost" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="spam_filter_comments" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="rated_adult" Type="Int32" />
+          <Property Name="allow_default" Type="Int32" />
+          <Property Name="enable_thumbnails" Type="Int32" />
+          <Property Name="exclude_sitewide_bans" Type="Int32" />
+          <Property Name="traffic_stats_public" Type="Int32" />
+          <Property Name="minutes_to_hide_comments" Type="Int32" />
+          <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subvers" ToRole="Message" />
+          <Property Name="creation_date" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Defaultsubvers" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="Defaultsubvers" />
+        </EntityType>
+        <Association Name="FK_Messages_Subverses">
+          <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subvers">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="Subverse" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Defaultsubverse">
+          <Key>
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="position" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Defaultsubvers" ToRole="Subverse" />
+        </EntityType>
+        <Association Name="FK_Defaultsubverses_Subverses">
+          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whoaverseModel.Defaultsubverse" Role="Defaultsubvers" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Subverse">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Defaultsubvers">
+              <PropertyRef Name="name" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="whoaverseModelStoreContainer" CdmEntityContainer="whoaverseEntities">
+          <EntitySetMapping Name="Comments">
+            <EntityTypeMapping TypeName="whoaverseModel.Comment">
+              <MappingFragment StoreEntitySet="Comments">
+                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
+                <ScalarProperty Name="Likes" ColumnName="Likes" />
+                <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Votes" ColumnName="Votes" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Commentvotingtrackers">
+            <EntityTypeMapping TypeName="whoaverseModel.Commentvotingtracker">
+              <MappingFragment StoreEntitySet="Commentvotingtracker">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Messages">
+            <EntityTypeMapping TypeName="whoaverseModel.Message">
+              <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
+                <ScalarProperty Name="Likes" ColumnName="Likes" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="MessageContent" ColumnName="MessageContent" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Votes" ColumnName="Votes" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Linkdescription" ColumnName="Linkdescription" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Rank" ColumnName="Rank" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Votingtrackers">
+            <EntityTypeMapping TypeName="whoaverseModel.Votingtracker">
+              <MappingFragment StoreEntitySet="Votingtracker">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subverses">
+            <EntityTypeMapping TypeName="whoaverseModel.Subverse">
+              <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="creation_date" ColumnName="creation_date" />
+                <ScalarProperty Name="minutes_to_hide_comments" ColumnName="minutes_to_hide_comments" />
+                <ScalarProperty Name="traffic_stats_public" ColumnName="traffic_stats_public" />
+                <ScalarProperty Name="exclude_sitewide_bans" ColumnName="exclude_sitewide_bans" />
+                <ScalarProperty Name="enable_thumbnails" ColumnName="enable_thumbnails" />
+                <ScalarProperty Name="allow_default" ColumnName="allow_default" />
+                <ScalarProperty Name="rated_adult" ColumnName="rated_adult" />
+                <ScalarProperty Name="spam_filter_comments" ColumnName="spam_filter_comments" />
+                <ScalarProperty Name="spam_filter_selfpost" ColumnName="spam_filter_selfpost" />
+                <ScalarProperty Name="spam_filter_links" ColumnName="spam_filter_links" />
+                <ScalarProperty Name="label_sumit_new_selfpost" ColumnName="label_sumit_new_selfpost" />
+                <ScalarProperty Name="label_submit_new_link" ColumnName="label_submit_new_link" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="language" ColumnName="language" />
+                <ScalarProperty Name="submission_text" ColumnName="submission_text" />
+                <ScalarProperty Name="sidebar" ColumnName="sidebar" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Defaultsubverses">
+            <EntityTypeMapping TypeName="whoaverseModel.Defaultsubverse">
+              <MappingFragment StoreEntitySet="Defaultsubverses">
+                <ScalarProperty Name="position" ColumnName="position" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
