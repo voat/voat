@@ -41,14 +41,14 @@ namespace Whoaverse
             // user/someuserhere/thingtoshow
             routes.MapRoute(
                 name: "userprofilefilter",
-                url: "user/{id}/{whattodisplay}",                   
+                url: "user/{id}/{whattodisplay}",
                 defaults: new
                 {
                     controller = "Home",
                     action = "user",
                 }
             );
-            
+
             // user/someuserhere
             routes.MapRoute(
                 name: "user",
@@ -64,17 +64,24 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "Help",
                 url: "help/{*pagetoshow}",
-                defaults: new { controller = "Home", action = "help" }                
+                defaults: new { controller = "Home", action = "help" }
             );
 
-            // about
+            // about/pagetoshow
             routes.MapRoute(
-                name: "about",
-                url: "about/",
+                name: "About",
+                url: "about/{*pagetoshow}",
+                defaults: new { controller = "Home", action = "about" }
+            );
+
+            // cla
+            routes.MapRoute(
+                name: "cla",
+                url: "cla/",
                 defaults: new
                 {
                     controller = "Home",
-                    action = "about",
+                    action = "cla",
                 }
             );
 
@@ -97,28 +104,6 @@ namespace Whoaverse
                 {
                     controller = "Home",
                     action = "submitcomment",
-                }
-            );
-
-            // contact
-            routes.MapRoute(
-                name: "contact",
-                url: "contact/",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "contact",
-                }
-            );
-
-            // intro
-            routes.MapRoute(
-                name: "intro",
-                url: "intro/",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "intro",
                 }
             );
 
@@ -156,6 +141,7 @@ namespace Whoaverse
                 url: "v/{subversetoshow}/{sortingmode}",
                 defaults: new { controller = "Subverses", action = "new" }
             );
+
 
             routes.MapRoute(
                 name: "Default",

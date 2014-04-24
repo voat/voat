@@ -21,6 +21,8 @@ using Whoaverse.Utils;
 using PagedList;
 using System.Threading.Tasks;
 using System.Net;
+using System.Net.Mail;
+using System.Text;
 
 namespace Whoaverse.Models
 {
@@ -40,6 +42,59 @@ namespace Whoaverse.Models
         //    return PartialView("_userkarma", Message message = db.Messages.Find(id););
         //}
 
+
+        [HttpPost]
+        public ActionResult ClaSubmit(Cla claModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {                    
+                    SmtpClient smtp = new SmtpClient();
+                    MailAddress from = new MailAddress(claModel.Email);
+                    MailAddress to = new MailAddress("legal@whoaverse.com");
+                    StringBuilder sb = new StringBuilder();
+                    MailMessage msg = new MailMessage(from, to);                    
+                    
+                    msg.Subject = "New CLA Submission from " + claModel.FullName;
+                    msg.IsBodyHtml = false;
+                    smtp.Host = "whoaverse.com";
+                    smtp.Port = 25;
+
+                    //format CLA email
+                    sb.Append("Full name: " + claModel.FullName);
+                    sb.Append(Environment.NewLine);
+                    sb.Append("Email: " + claModel.Email);
+                    sb.Append(Environment.NewLine);
+                    sb.Append("Mailing address: " + claModel.MailingAddress);
+                    sb.Append(Environment.NewLine);
+                    sb.Append("City: " + claModel.City);
+                    sb.Append(Environment.NewLine);
+                    sb.Append("Country: " + claModel.Country);
+                    sb.Append(Environment.NewLine);
+                    sb.Append("Phone number: " + claModel.PhoneNumber);
+                    sb.Append(Environment.NewLine);
+                    sb.Append("Corporate contributor information: " + claModel.CorpContrInfo);
+                    sb.Append(Environment.NewLine);
+                    sb.Append("Electronic signature: " + claModel.ElectronicSignature);
+                    sb.Append(Environment.NewLine);
+
+                    msg.Body = sb.ToString();
+
+                    //send the email with CLA data
+                    smtp.Send(msg);
+                    msg.Dispose();
+                    return View("~/Views/Legal/ClaSent.cshtml");
+                }
+                catch (Exception)
+                {
+                    return View("~/Views/Legal/ClaFailed.cshtml");
+                }
+            }
+            return View();
+        }
+
+        
         // GET: Messages/Details/5
         public ActionResult comments(int? id, string subversetoshow)
         {
@@ -193,16 +248,30 @@ namespace Whoaverse.Models
             return View("Index", submissions.ToPagedList(pageNumber, pageSize));
         }
 
-        public ActionResult about()
+        public ActionResult about(string pagetoshow)
         {
-            ViewBag.Message = "Your application description page.";
-            return View();
+            if (pagetoshow == "team")
+            {
+                return View("~/Views/About/Team.cshtml");
+            }
+            else if (pagetoshow == "intro")
+            {
+                return View("~/Views/About/Intro.cshtml");
+            }
+            else if (pagetoshow == "contact")
+            {
+                return View("~/Views/About/Contact.cshtml");
+            }
+            else
+            {
+                return View("~/Views/About/About.cshtml");
+            }
         }
 
-        public ActionResult intro()
+        public ActionResult cla()
         {
-            ViewBag.Message = "Your application description page.";
-            return View();
+            ViewBag.Message = "Whoaverse CLA";
+            return View("~/Views/Legal/Cla.cshtml");
         }
 
         public ActionResult help(string pagetoshow)
@@ -219,12 +288,6 @@ namespace Whoaverse.Models
             {
                 return View("~/Views/Help/index.cshtml");
             }
-        }
-
-        public ActionResult contact()
-        {
-            ViewBag.Message = "Your contact page.";
-            return View();
         }
 
         public ActionResult privacy()

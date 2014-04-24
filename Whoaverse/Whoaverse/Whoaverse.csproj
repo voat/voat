@@ -193,6 +193,7 @@
     <Compile Include="Models\AddComment.cs" />
     <Compile Include="Models\AddSubmissionLinkpost.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
+    <Compile Include="Models\Cla.cs" />
     <Compile Include="Models\Comment.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -311,8 +312,8 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\About\About.cshtml" />
+    <Content Include="Views\About\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
@@ -334,7 +335,7 @@
     <Content Include="Views\Shared\_SubmissionComment.cshtml" />
     <Content Include="Views\Home\user.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
-    <Content Include="Views\Home\Intro.cshtml" />
+    <Content Include="Views\About\Intro.cshtml" />
     <Content Include="Views\Help\privacy.cshtml" />
     <Content Include="Views\Shared\_AddSubmissionLinkpost.cshtml" />
     <Content Include="Views\Shared\_AddSubmissionSelfpost.cshtml" />
@@ -348,6 +349,10 @@
     <Content Include="Views\Home\usercomments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
     <Content Include="Views\Subverses\Index.cshtml" />
+    <Content Include="Views\Legal\Cla.cshtml" />
+    <Content Include="Views\Legal\ClaSent.cshtml" />
+    <Content Include="Views\Legal\ClaFailed.cshtml" />
+    <Content Include="Views\About\Team.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
