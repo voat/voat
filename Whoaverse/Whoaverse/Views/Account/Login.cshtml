@@ -24,45 +24,50 @@ All Rights Reserved.*@
 
             <h1>@ViewBag.Title.</h1>            
 
-                    <section id="loginForm">
-                        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-                        {
-                            @Html.AntiForgeryToken()
-                            <h1>Welcome back fancy pants!</h1>
-                            <hr />
-                            @Html.ValidationSummary(true)
-                            <div class="form-group">
-                                @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
-                                <div class="col-md-3">
-                                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(m => m.UserName)
-                                </div>
+            <section id="loginForm">
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <h1>Welcome back fancy pants!</h1>
+                    <hr />
+                    <div>
+                        <h2>@Html.ValidationSummary(true)</h2>
+                        <br />
+                        <br />
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-3">
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.UserName)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-3">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Password)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-3">
+                            <div class="checkbox">
+                                @Html.CheckBoxFor(m => m.RememberMe)
+                                @Html.LabelFor(m => m.RememberMe)
                             </div>
-                            <div class="form-group">
-                                @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                                <div class="col-md-3">
-                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(m => m.Password)
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-md-offset-2 col-md-3">
-                                    <div class="checkbox">
-                                        @Html.CheckBoxFor(m => m.RememberMe)
-                                        @Html.LabelFor(m => m.RememberMe)
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-md-offset-2 col-md-3">
-                                    <input type="submit" value="Log in" class="btn btn-default" />
-                                </div>
-                            </div>
-                            <p>
-                                @Html.ActionLink("Register", "Register") if you don't have an account. You know you want to ;)
-                            </p>
-                        }
-                    </section>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-3">
+                            <input type="submit" value="Log in" class="btn btn-default" />
+                        </div>
+                    </div>
+                    <p>
+                        @Html.ActionLink("Register", "Register") if you don't have an account. You know you want to ;)
+                    </p>
+                }
+            </section>
+
                 </div>
                 @section Scripts {
                     @Scripts.Render("~/bundles/jqueryval")

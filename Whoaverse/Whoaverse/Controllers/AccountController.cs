@@ -13,9 +13,6 @@ All Rights Reserved.
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -27,16 +24,22 @@ using Whoaverse.Models;
 namespace Whoaverse.Controllers
 {
     [Authorize]
-    public class AccountController : AsyncController 
+    public class AccountController : AsyncController
     {
         public AccountController()
             : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
         {
+
         }
 
         public AccountController(UserManager<ApplicationUser> userManager)
         {
             UserManager = userManager;
+
+            // Configure user lockout defaults
+            UserManager.UserLockoutEnabledByDefault = true;
+            UserManager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            UserManager.MaxFailedAccessAttemptsBeforeLockout = 5;
         }
 
         public UserManager<ApplicationUser> UserManager { get; private set; }
@@ -60,15 +63,35 @@ namespace Whoaverse.Controllers
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindAsync(model.UserName, model.Password);
-                if (user != null)
+
+                if (user == null)
                 {
-                    await SignInAsync(user, model.RememberMe);
-                    return RedirectToLocal(returnUrl);
-                }
-                else
-                {
+
+                    // Check if correct username was entered with wrong password and increment failed attempts - lockout account
+                    var tmpuser = await UserManager.FindByNameAsync(model.UserName);
+                    if (tmpuser != null)
+                    {
+                        await UserManager.AccessFailedAsync(tmpuser.Id);
+
+                        // Check if correct username was entered and see if account was locked out, notify
+                        if (await UserManager.IsLockedOutAsync(tmpuser.Id))
+                        {                            
+                            ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
+                            return View(model);
+                        }  
+                    }
+
                     ModelState.AddModelError("", "Invalid username or password.");
-                }
+                    return View(model);
+                }                              
+
+                // When token is verified correctly, clear the access failed count used for lockout
+                await UserManager.ResetAccessFailedCountAsync(user.Id);
+
+                // Sign in and continue
+                await SignInAsync(user, model.RememberMe);
+                return RedirectToLocal(returnUrl);               
+
             }
 
             // If we got this far, something failed, redisplay form
@@ -89,7 +112,7 @@ namespace Whoaverse.Controllers
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
-        {            
+        {
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser() { UserName = model.UserName };
@@ -392,7 +415,8 @@ namespace Whoaverse.Controllers
 
         private class ChallengeResult : HttpUnauthorizedResult
         {
-            public ChallengeResult(string provider, string redirectUri) : this(provider, redirectUri, null)
+            public ChallengeResult(string provider, string redirectUri)
+                : this(provider, redirectUri, null)
             {
             }
 
