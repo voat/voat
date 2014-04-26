@@ -16,6 +16,7 @@ namespace Whoaverse.Models
     {
         public Message()
         {
+            this.Rank = 0D;
             this.Likes = 1;
             this.Dislikes = 0;
             this.Comments = new HashSet<Comment>();
@@ -29,7 +30,7 @@ namespace Whoaverse.Models
         public int Type { get; set; }
         public string Linkdescription { get; set; }
         public string Title { get; set; }
-        public Nullable<double> Rank { get; set; }
+        public double Rank { get; set; }
         public string MessageContent { get; set; }
         public string Subverse { get; set; }
         public short Likes { get; set; }

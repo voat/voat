@@ -46,7 +46,7 @@
           <Property Name="Type" Type="int" Nullable="false" />
           <Property Name="Linkdescription" Type="nvarchar" MaxLength="200" />
           <Property Name="Title" Type="nvarchar" MaxLength="200" />
-          <Property Name="Rank" Type="float" />
+          <Property Name="Rank" Type="float" Nullable="false" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" />
           <Property Name="Likes" Type="int" Nullable="false" />
           <Property Name="Dislikes" Type="int" Nullable="false" />
@@ -197,7 +197,7 @@
           <Property Name="Type" Type="Int32" Nullable="false" />
           <Property Name="Linkdescription" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Title" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="Rank" Type="Double" />
+          <Property Name="Rank" Type="Double" Nullable="false" DefaultValue="0" />
           <NavigationProperty Name="Comments" Relationship="Self.FK_Comments_Messages" FromRole="Messages" ToRole="Comments" />
           <NavigationProperty Name="Votingtrackers" Relationship="Self.FK_Votingtracker_Messages" FromRole="Messages" ToRole="Votingtracker" />
           <Property Name="MessageContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />

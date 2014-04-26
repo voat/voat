@@ -21,9 +21,9 @@
     string classNew = "disabled";
     string classOverview = "disabled";
     string classComments = "disabled";
-    string classSubmissions = "disabled";        
-    
-    
+    string classSubmissions = "disabled";
+
+
     string whattodisplay = ViewBag.whattodisplay;
 
     if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user")
@@ -37,7 +37,7 @@
         {
             selectedSubverse = "/";
             selectedSubverseNew = "new";
-        }        
+        }
     }
 
     if (whattodisplay != null)
@@ -46,16 +46,16 @@
         {
             classComments = "selected";
             classOverview = "disabled";
-            classSubmissions = "disabled"; 
+            classSubmissions = "disabled";
         }
 
         if (whattodisplay == "submissions")
         {
             classComments = "disabled";
             classOverview = "disabled";
-            classSubmissions = "selected"; 
+            classSubmissions = "selected";
         }
-        
+
     }
 
     if (sortingMode != null)
@@ -74,7 +74,24 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
+    @if (ViewBag.Description != null)
+    {
+        <meta name="description" content="@ViewBag.Description" />
+    }
+    else
+    {
+        <meta name="description" content="Whoaverse: the next front page of the internet" />
+    }
+    @if (ViewBag.Keywords != null)
+    {
+        <meta name="keywords" content="@ViewBag.Keywords" />
+    }
+    else
+    {
+        <meta name="keywords" content="whoaverse, whoaverse.com, vote, submit, comment" />
+    }
+
     <title>@ViewBag.Title - Whoaverse</title>
 
     @Styles.Render("~/Content/css")
@@ -82,15 +99,15 @@
     @Scripts.Render("~/bundles/whoaverse")
 
     <script>
-    (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date(); a = s.createElement(o),
-        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-    ga('create', 'UA-49743834-1', 'whoaverse.com');
-    ga('send', 'pageview');
+        ga('create', 'UA-49743834-1', 'whoaverse.com');
+        ga('send', 'pageview');
     </script>
 
     <link rel='shortcut icon' href="http://www.whoaverse.com/favicon.ico" type="image/x-icon" />
@@ -155,7 +172,6 @@
         </div>
     </div>
     <!-- End Must be logged in Modal -->
-
     @RenderBody()
 
     <div class="centered">

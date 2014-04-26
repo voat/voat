@@ -45,7 +45,31 @@ namespace Whoaverse.Utils
             {
                 return "No idea when this was posted...";
             }
+        }
 
+        public static double CalcSubmissionAgeDouble(DateTime inPostingDateTime)
+        {
+            DateTime currentDateTime = new DateTime(Convert.ToInt32(DateTime.Now.Year), Convert.ToInt32(DateTime.Now.Month), Convert.ToInt32(DateTime.Now.Day), Convert.ToInt32(DateTime.Now.Hour), Convert.ToInt32(DateTime.Now.Minute), 00);
+            TimeSpan duration = currentDateTime - inPostingDateTime;
+
+            double totalHours = duration.TotalHours;
+
+            if (totalHours > 24)
+            {
+                return duration.TotalDays;
+            }
+            else if (totalHours < 24 && totalHours > 1 || totalHours == 1)
+            {
+                return duration.TotalHours;
+            }
+            else if (totalHours < 1)
+            {
+                return duration.TotalMinutes;
+            }
+            else
+            {
+                return -10000;
+            }
         }
 
     }
