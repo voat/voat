@@ -27,6 +27,17 @@ body {
     
 */
 
+a:hover,
+a:focus {
+  color: #2a6496;
+  text-decoration: none;
+}
+
+a,
+a:visited {
+    text-decoration: none;
+}
+
 .arrow-downvote {
 /* You may have to set 'display: block' */
 cursor:pointer;
