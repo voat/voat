@@ -78,11 +78,14 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "cla",
                 url: "cla/",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "Cla",
-                }
+                defaults: new { controller = "Home", action = "Cla" }
+            );
+
+            // vote
+            routes.MapRoute(
+                name: "vote",
+                url: "vote/{messageId}/{typeOfVote}",
+                defaults: new { controller = "Home", action = "Vote" }
             );
 
             // submit

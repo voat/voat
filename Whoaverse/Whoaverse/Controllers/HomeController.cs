@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Web.Services;
 
 namespace Whoaverse.Models
 {
@@ -297,40 +298,24 @@ namespace Whoaverse.Models
         }
 
         [Authorize]
-        public ActionResult Vote(string userWhichVoted, int messageId, int typeOfVote)
+        public JsonResult Vote(int messageId, int typeOfVote)
         {
-
             if (User.Identity.IsAuthenticated)
             {
                 string loggedInUser = User.Identity.Name;
-                if (loggedInUser == userWhichVoted)
+
+                if (typeOfVote == 1)
                 {
-                    //perform voting
+                    //perform upvoting or resetting
+                    Voting.UpvoteSubmission(messageId, loggedInUser);
                 }
-            }
-
-            var checkResult = db.Votingtrackers
-                                .Where(b => b.MessageId == messageId && b.UserName == userWhichVoted)
-                                .FirstOrDefault();
-
-            if (checkResult != null)
-            {
-                Votingtracker votingtracker = db.Votingtrackers.Find(checkResult.Id);
-                votingtracker.UserName = userWhichVoted;
-                votingtracker.VoteStatus = typeOfVote;
-                db.SaveChangesAsync();
-                return new ContentResult { Content = "Glasanje uspjesno!" };
-            }
-            else
-            {
-                return new ContentResult { Content = "Glasanje nije uspjesno!" };
-            }
-
-        }
-
-        public PartialViewResult VoteTest(string pacient_Name = "")
-        {
-            return PartialView("_VotingIconsMessage");
+                else if (typeOfVote == -1)
+                {
+                    //perform downvoting or resetting
+                    Voting.DownvoteSubmission(messageId, loggedInUser);
+                }               
+            }                 
+            return Json("Voting Ok", JsonRequestBehavior.AllowGet);
         }
 
     }

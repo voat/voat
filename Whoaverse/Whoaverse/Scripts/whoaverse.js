@@ -22,7 +22,8 @@ function mustLogin() {
 
 function voteUpSubmission(submissionid) {
     //DEBUG alert('Received model.id in voteUpSubmission: ' + submissionid);
-    $(".id-" + submissionid).fadeIn(100).fadeOut(500).fadeIn(500);
+
+    submitUpVote(submissionid);
 
     //ADD LIKE IF UNVOTED
     if ($(".id-" + submissionid).children(".midcol").is(".unvoted")) {
@@ -53,7 +54,7 @@ function voteUpSubmission(submissionid) {
 
 function voteDownSubmission(submissionid) {
     //DEBUG alert('Received model.id in voteDownSubmission: ' + submissionid);
-    $(".id-" + submissionid).fadeIn(100).fadeOut(500).fadeIn(500);
+    submitDownVote(submissionid);
 
     //ADD DISLIKE IF UNVOTED
     if ($(".id-" + submissionid).children(".midcol").is(".unvoted"))
@@ -83,22 +84,41 @@ function voteDownSubmission(submissionid) {
 
 }
 
-//TODO
-function submitVote() {
-    // get the form data
-    // using jQuery (class, id etc)
-    var formData = {
-        'name': $('input[name=name]').val(),
-        'email': $('input[name=email]').val(),
-        'superheroAlias': $('input[name=superheroAlias]').val()
-    };
+function submitUpVote(messageid) {
+    //DEBUG
+    //alert('Now entered JS function submitUpvote');
 
-    // process the form
     $.ajax({
-        type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-        url: 'process.php', // the url where we want to POST
-        data: formData, // our data object
-        dataType: 'json' // what type of data do we expect back from the server
-    })
-
+        type: "POST",       
+        url: "/vote/" + messageid + "/1"
+        //success: function () {
+        //    alert('Voting was sucessful!');
+        //},
+        //error: function () {
+        //    alert('Something went wrong.');
+        //},
+        //complete: function () {
+        //    alert('Ajax call completed.');
+        //}
+    });
 }
+
+function submitDownVote(messageid) {
+    //DEBUG
+    //alert('Now entered JS function submitDownVote');
+
+    $.ajax({
+        type: "POST",
+        url: "/vote/" + messageid + "/-1"
+        //success: function () {
+        //    alert('Voting was sucessful!');
+        //},
+        //error: function () {
+        //    alert('Something went wrong.');
+        //},
+        //complete: function () {
+        //    alert('Ajax call completed.');
+        //}
+    });
+}
+

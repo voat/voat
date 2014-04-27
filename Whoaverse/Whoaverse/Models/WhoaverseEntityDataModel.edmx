@@ -48,8 +48,8 @@
           <Property Name="Title" Type="nvarchar" MaxLength="200" />
           <Property Name="Rank" Type="float" Nullable="false" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" />
-          <Property Name="Likes" Type="int" Nullable="false" />
-          <Property Name="Dislikes" Type="int" Nullable="false" />
+          <Property Name="Likes" Type="bigint" Nullable="false" />
+          <Property Name="Dislikes" Type="bigint" Nullable="false" />
         </EntityType>
         <EntityType Name="Subverses">
           <Key>

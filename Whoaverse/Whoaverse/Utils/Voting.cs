@@ -13,13 +13,14 @@ All Rights Reserved.
 */
 
 using System.Linq;
+using System.Threading.Tasks;
 using Whoaverse.Models;
 
 namespace Whoaverse.Utils
 {
     public class Voting
     {
-        //returns -1:downvoted, 1:upvoted, or 0:not voted
+        //returns -1:downvoted, 1:upvoted, 0:not voted
         public static int CheckIfVoted(string userToCheck, int messageId)
         {
             int intCheckResult = 0;
@@ -69,24 +70,28 @@ namespace Whoaverse.Utils
 
         }
 
-        //a user has either upvoted or downvoted this submission earlier and wishes to reset the vote
+        //a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetMessageVote(string userWhichVoted, int messageId)
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
                 var votingTracker = db.Votingtrackers
                                 .Where(b => b.MessageId == messageId && b.UserName == userWhichVoted)
-                                .FirstOrDefault();
+                                .Single();
+
+                db.Votingtrackers.Remove(votingTracker);  
 
                 if (votingTracker != null)
-                {
-                    votingTracker.VoteStatus = 0;
+                {                    
+                    //delete vote history
+                    db.Votingtrackers.Remove(votingTracker);
+                    db.SaveChanges();
                 }
             }
         }
 
         //submit submission upvote
-        public static async void UpvoteSubmission(int submissionId, string userWhichUpvoted)
+        public static void UpvoteSubmission(int submissionId, string userWhichUpvoted)
         {
             int result = Voting.CheckIfVoted(userWhichUpvoted, submissionId);
 
@@ -103,7 +108,6 @@ namespace Whoaverse.Utils
                         {
                             double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge);
-
                             submission.Likes++;
                             submission.Rank = newRank;
 
@@ -113,7 +117,7 @@ namespace Whoaverse.Utils
                             tmpVotingTracker.UserName = userWhichUpvoted;
                             tmpVotingTracker.VoteStatus = 1;
                             db.Votingtrackers.Add(tmpVotingTracker);
-                            await db.SaveChangesAsync();
+                            db.SaveChanges();
                         }
 
                         break;
@@ -139,6 +143,7 @@ namespace Whoaverse.Utils
                             {
                                 votingTracker.VoteStatus = 1;
                             }
+                            db.SaveChanges();
                         }
 
                         break;
@@ -153,8 +158,10 @@ namespace Whoaverse.Utils
 
                             submission.Likes--;
                             submission.Rank = newRank;
+                            db.SaveChanges();
 
                             ResetMessageVote(userWhichUpvoted, submissionId);
+                           
                         }
 
                         break;
@@ -165,7 +172,7 @@ namespace Whoaverse.Utils
         }
 
         //submit submission downvote
-        public static async void DownvoteSubmission(int submissionId, string userWhichDownvoted)
+        public static void DownvoteSubmission(int submissionId, string userWhichDownvoted)
         {
             int result = Voting.CheckIfVoted(userWhichDownvoted, submissionId);
 
@@ -192,13 +199,13 @@ namespace Whoaverse.Utils
                             tmpVotingTracker.UserName = userWhichDownvoted;
                             tmpVotingTracker.VoteStatus = -1;
                             db.Votingtrackers.Add(tmpVotingTracker);
-                            await db.SaveChangesAsync();
+                            db.SaveChanges();
                         }
 
                         break;
 
                     //upvoted before, turn upvote to downvote
-                    case -1:
+                    case 1:
 
                         if (submission != null)
                         {
@@ -218,12 +225,13 @@ namespace Whoaverse.Utils
                             {
                                 votingTracker.VoteStatus = -1;
                             }
+                            db.SaveChanges();
                         }
 
                         break;
 
                     //downvoted before, reset
-                    case 1:
+                    case -1:
 
                         if (submission != null)
                         {
@@ -232,6 +240,7 @@ namespace Whoaverse.Utils
 
                             submission.Dislikes--;
                             submission.Rank = newRank;
+                            db.SaveChanges();
 
                             ResetMessageVote(userWhichDownvoted, submissionId);
                         }
