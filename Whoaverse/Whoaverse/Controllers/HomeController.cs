@@ -178,7 +178,7 @@ namespace Whoaverse.Models
                 new
                 {
                     controller = "Home",
-                    action = "comments",
+                    action = "Comments",
                     id = message.Id,
                     subversetoshow = message.Subverse
                 }
@@ -236,7 +236,7 @@ namespace Whoaverse.Models
             return View(submissions.ToPagedList(pageNumber, pageSize));
         }
 
-        public ActionResult @new(int? page, string sortingmode)
+        public ActionResult @New(int? page, string sortingmode)
         {
             //sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
@@ -278,22 +278,22 @@ namespace Whoaverse.Models
         {
             if (pagetoshow == "privacy")
             {
-                return View("~/Views/Help/privacy.cshtml");
+                return View("~/Views/Help/Privacy.cshtml");
             }
             if (pagetoshow == "markdown")
             {
-                return View("~/Views/Help/markdown.cshtml");
+                return View("~/Views/Help/Markdown.cshtml");
             }
             else
             {
-                return View("~/Views/Help/index.cshtml");
+                return View("~/Views/Help/Index.cshtml");
             }
         }
 
         public ActionResult Privacy()
         {
             ViewBag.Message = "Privacy Policy";
-            return View("~/Views/Help/privacy.cshtml");
+            return View("~/Views/Help/Privacy.cshtml");
         }
 
         [Authorize]

@@ -14,7 +14,7 @@
 
 @if (Request.IsAuthenticated)
 {
-    int linkKarma = Whoaverse.Utils.Karma.linkKarma(User.Identity.GetUserName());    
+    int linkKarma = Whoaverse.Utils.Karma.LinkKarma(User.Identity.GetUserName());    
     
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {
