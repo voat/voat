@@ -77,9 +77,7 @@ namespace Whoaverse.Utils
             {
                 var votingTracker = db.Votingtrackers
                                 .Where(b => b.MessageId == messageId && b.UserName == userWhichVoted)
-                                .Single();
-
-                db.Votingtrackers.Remove(votingTracker);  
+                                .FirstOrDefault();
 
                 if (votingTracker != null)
                 {                    
@@ -106,9 +104,10 @@ namespace Whoaverse.Utils
 
                         if (submission != null)
                         {
-                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
-                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge);
                             submission.Likes++;
+                            double currentScore = submission.Likes - submission.Dislikes;
+                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
+                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
                             submission.Rank = newRank;
 
                             //register upvote
@@ -127,11 +126,12 @@ namespace Whoaverse.Utils
 
                         if (submission != null)
                         {
-                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
-                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge);
-
                             submission.Likes++;
                             submission.Dislikes--;
+
+                            double currentScore = submission.Likes - submission.Dislikes;
+                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
+                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
                             submission.Rank = newRank;
                             
                             //register Turn DownVote To UpVote
@@ -153,10 +153,12 @@ namespace Whoaverse.Utils
 
                         if (submission != null)
                         {
-                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
-                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge);
-
                             submission.Likes--;
+
+                            double currentScore = submission.Likes - submission.Dislikes;
+                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
+                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+
                             submission.Rank = newRank;
                             db.SaveChanges();
 
@@ -187,10 +189,12 @@ namespace Whoaverse.Utils
 
                         if (submission != null)
                         {
-                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
-                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge);
-
                             submission.Dislikes++;
+
+                            double currentScore = submission.Likes - submission.Dislikes;
+                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
+                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+
                             submission.Rank = newRank;
 
                             //register downvote
@@ -209,11 +213,13 @@ namespace Whoaverse.Utils
 
                         if (submission != null)
                         {
-                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
-                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge);
-
                             submission.Likes--;
                             submission.Dislikes++;
+
+                            double currentScore = submission.Likes - submission.Dislikes;
+                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
+                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+
                             submission.Rank = newRank;
 
                             //register Turn DownVote To UpVote
@@ -235,10 +241,12 @@ namespace Whoaverse.Utils
 
                         if (submission != null)
                         {
-                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
-                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge);
-
                             submission.Dislikes--;
+
+                            double currentScore = submission.Likes - submission.Dislikes;
+                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
+                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+                            
                             submission.Rank = newRank;
                             db.SaveChanges();
 
