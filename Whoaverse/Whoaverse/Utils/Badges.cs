@@ -10,7 +10,7 @@ the specific language governing rights and limitations under the License.
 
 All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
- */
+*/
 
 using System;
 using System.Collections.Generic;
@@ -24,34 +24,11 @@ namespace Whoaverse.Utils
     {
 
         //return domain from URI
-        public static string getDomainFromUri(string completeUri)
+        public static string GetDomainFromUri(string completeUri)
         {
             Uri tmpUri = new Uri(completeUri);
             return tmpUri.Host;
         }
-
-
-        #region old asp webforms code
-        //public static string CreateUserProfileTag(string submissionAuthor)
-        //{
-        //    string authorUrl = "user/" + submissionAuthor;
-        //    string authorBadge = "<a href=\"" + authorUrl + "\"" + " class=\"author may-blank id-t2_8bunp\">" + submissionAuthor + "</a>";
-        //    return authorBadge;
-        //}
-
-        //create formatted message submission
-        //public static string CreateFormattedMessageSubmission(int msgId, string messageContent, Nullable<System.DateTime> postingDateTime, string submissionAuthor, int numberOfComments)
-        //{
-        //    string lineBreak = "<br>";
-        //    string ageBadge = "submitted " + Whoaverse.Utils.Submissions.CalcSubmissionAge(postingDateTime);
-        //    string authorUrl = "User?Username=" + submissionAuthor;
-        //    string authorBadge = " by <a href=\"" + authorUrl + "\">" + submissionAuthor + "</a>";
-        //    string commentsUrl = "Comments?msgId=" + msgId;
-        //    string commentsBadge = "<a href=\"" + commentsUrl + "\">" + numberOfComments + " comments</a>";
-        //    string formattedValue = "<a href=\"" + commentsUrl + "\">" + messageContent + "</a>";
-        //    return formattedValue + lineBreak + ageBadge + authorBadge + lineBreak + commentsBadge;
-        //}
-        #endregion
 
     }
 

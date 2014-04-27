@@ -34,7 +34,7 @@ namespace Whoaverse
                 defaults: new
                 {
                     controller = "Home",
-                    action = "comments",
+                    action = "Comments",
                 }
             );
 
@@ -45,7 +45,7 @@ namespace Whoaverse
                 defaults: new
                 {
                     controller = "Home",
-                    action = "user",
+                    action = "UserProfile",
                 }
             );
 
@@ -56,7 +56,7 @@ namespace Whoaverse
                 defaults: new
                 {
                     controller = "Home",
-                    action = "user",
+                    action = "UserProfile",
                 }
             );
 
@@ -64,14 +64,14 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "Help",
                 url: "help/{*pagetoshow}",
-                defaults: new { controller = "Home", action = "help" }
+                defaults: new { controller = "Home", action = "Help" }
             );
 
             // about/pagetoshow
             routes.MapRoute(
                 name: "About",
                 url: "about/{*pagetoshow}",
-                defaults: new { controller = "Home", action = "about" }
+                defaults: new { controller = "Home", action = "About" }
             );
 
             // cla
@@ -81,7 +81,7 @@ namespace Whoaverse
                 defaults: new
                 {
                     controller = "Home",
-                    action = "cla",
+                    action = "Cla",
                 }
             );
 
@@ -92,7 +92,7 @@ namespace Whoaverse
                 defaults: new
                 {
                     controller = "Home",
-                    action = "submit",
+                    action = "Submit",
                 }
             );
 
@@ -103,7 +103,7 @@ namespace Whoaverse
                 defaults: new
                 {
                     controller = "Home",
-                    action = "submitcomment",
+                    action = "Submitcomment",
                 }
             );
 
@@ -111,14 +111,14 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "randomSubverse",
                 url: "random/",
-                defaults: new { controller = "Subverses", action = "random" }
+                defaults: new { controller = "Subverses", action = "Random" }
             );
 
             // /new
             routes.MapRoute(
                 name: "FrontpageLatestPosts",
                 url: "{sortingmode}",
-                defaults: new { controller = "Home", action = "new" }
+                defaults: new { controller = "Home", action = "New" }
             );
 
             // v/subversetoshow
@@ -132,14 +132,14 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "SubverseComments",
                 url: "v/{subversetoshow}/comments/{id}",
-                defaults: new { controller = "Home", action = "comments" }
+                defaults: new { controller = "Home", action = "Comments" }
             );
 
             // v/subversetoshow/sortingmode
             routes.MapRoute(
                 name: "SubverseLatestPosts",
                 url: "v/{subversetoshow}/{sortingmode}",
-                defaults: new { controller = "Subverses", action = "new" }
+                defaults: new { controller = "Subverses", action = "New" }
             );
 
 

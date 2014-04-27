@@ -22,7 +22,7 @@ namespace Whoaverse.Utils
 {
     public class Karma
     {
-        public static int linkKarma(string userName)
+        public static int LinkKarma(string userName)
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {

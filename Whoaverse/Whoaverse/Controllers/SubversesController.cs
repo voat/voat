@@ -10,7 +10,7 @@ the specific language governing rights and limitations under the License.
 
 All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
- */
+*/
 
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace Whoaverse.Models
         private whoaverseEntities db = new whoaverseEntities();
 
         // GET: Messages/Details/5
-        public ActionResult comments(int? id, string subversetoshow)
+        public ActionResult Comments(int? id, string subversetoshow)
         {
             ViewBag.SelectedSubverse = subversetoshow;
 
@@ -47,7 +47,7 @@ namespace Whoaverse.Models
 
         // GET: submit
         [Authorize]
-        public ActionResult submit()
+        public ActionResult Submit()
         {
             return View();
         }
@@ -57,7 +57,7 @@ namespace Whoaverse.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent")] Message message)
+        public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent")] Message message)
         {
             if (ModelState.IsValid)
             {
@@ -109,7 +109,7 @@ namespace Whoaverse.Models
             return View("~/Views/Shared/Subversenotfound.cshtml");
         }
 
-        public ActionResult @new (int? page, string subversetoshow, string sortingmode)
+        public ActionResult @New (int? page, string subversetoshow, string sortingmode)
         {
             //sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
@@ -138,7 +138,7 @@ namespace Whoaverse.Models
             }
         }
 
-        public ActionResult random()
+        public ActionResult Random()
         {
             var qry = from row in db.Subverses
                       select row;

@@ -24,7 +24,7 @@ namespace Whoaverse.Utils
     {
         private static Markdown m = new Markdown();
         
-        public static string formatMessage (String originalMessage){
+        public static string FormatMessage (String originalMessage){
             return m.Transform(originalMessage);
         }
         

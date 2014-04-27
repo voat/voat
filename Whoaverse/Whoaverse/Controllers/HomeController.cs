@@ -10,7 +10,7 @@ the specific language governing rights and limitations under the License.
 
 All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
- */
+*/
 
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace Whoaverse.Models
         private whoaverseEntities db = new whoaverseEntities();
 
         // GET: list of subverses
-        public ActionResult listofsubverses()
+        public ActionResult Listofsubverses()
         {
             return PartialView("_listofsubverses", db.Defaultsubverses.OrderBy(s => s.position).ToList().AsEnumerable());
         }
@@ -49,13 +49,13 @@ namespace Whoaverse.Models
             if (ModelState.IsValid)
             {
                 try
-                {                    
+                {
                     SmtpClient smtp = new SmtpClient();
                     MailAddress from = new MailAddress(claModel.Email);
                     MailAddress to = new MailAddress("legal@whoaverse.com");
                     StringBuilder sb = new StringBuilder();
-                    MailMessage msg = new MailMessage(from, to);                    
-                    
+                    MailMessage msg = new MailMessage(from, to);
+
                     msg.Subject = "New CLA Submission from " + claModel.FullName;
                     msg.IsBodyHtml = false;
                     smtp.Host = "whoaverse.com";
@@ -94,9 +94,9 @@ namespace Whoaverse.Models
             return View();
         }
 
-        
+
         // GET: Messages/Details/5
-        public ActionResult comments(int? id, string subversetoshow)
+        public ActionResult Comments(int? id, string subversetoshow)
         {
             ViewBag.SelectedSubverse = subversetoshow;
 
@@ -114,7 +114,7 @@ namespace Whoaverse.Models
 
         // GET: submitcomment
         [Authorize]
-        public ActionResult submitcomment()
+        public ActionResult Submitcomment()
         {
             return View();
         }
@@ -124,7 +124,7 @@ namespace Whoaverse.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> submitcomment([Bind(Include = "Id,Votes,Name,Date,CommentContent,MessageId")] Comment comment)
+        public async Task<ActionResult> Submitcomment([Bind(Include = "Id,Votes,Name,Date,CommentContent,MessageId")] Comment comment)
         {
             if (ModelState.IsValid)
             {
@@ -148,7 +148,7 @@ namespace Whoaverse.Models
 
         // GET: submit
         [Authorize]
-        public ActionResult submit()
+        public ActionResult Submit()
         {
             return View();
         }
@@ -158,7 +158,7 @@ namespace Whoaverse.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
+        public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
         {
             if (ModelState.IsValid)
             {
@@ -189,7 +189,7 @@ namespace Whoaverse.Models
             return View(message);
         }
 
-        public ActionResult user(string id, int? page, string whattodisplay)
+        public ActionResult UserProfile(string id, int? page, string whattodisplay)
         {
             ViewBag.SelectedSubverse = "user";
             ViewBag.whattodisplay = whattodisplay;
@@ -204,7 +204,7 @@ namespace Whoaverse.Models
                                    where c.Name.Equals(id)
                                    select c;
                 //return View(viewnameasstring, model)
-                return View("usercomments",userComments.ToPagedList(pageNumber, pageSize));
+                return View("usercomments", userComments.ToPagedList(pageNumber, pageSize));
             }
 
             //show submissions                        
@@ -218,8 +218,8 @@ namespace Whoaverse.Models
 
             //default, show overview
             var userDefaultSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                  where b.Name.Equals(id)
-                                  select b;
+                                         where b.Name.Equals(id)
+                                         select b;
             return View(userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
 
 
@@ -248,7 +248,7 @@ namespace Whoaverse.Models
             return View("Index", submissions.ToPagedList(pageNumber, pageSize));
         }
 
-        public ActionResult about(string pagetoshow)
+        public ActionResult About(string pagetoshow)
         {
             if (pagetoshow == "team")
             {
@@ -268,13 +268,13 @@ namespace Whoaverse.Models
             }
         }
 
-        public ActionResult cla()
+        public ActionResult Cla()
         {
             ViewBag.Message = "Whoaverse CLA";
             return View("~/Views/Legal/Cla.cshtml");
         }
 
-        public ActionResult help(string pagetoshow)
+        public ActionResult Help(string pagetoshow)
         {
             if (pagetoshow == "privacy")
             {
@@ -290,14 +290,25 @@ namespace Whoaverse.Models
             }
         }
 
-        public ActionResult privacy()
+        public ActionResult Privacy()
         {
             ViewBag.Message = "Privacy Policy";
             return View("~/Views/Help/privacy.cshtml");
         }
 
+        [Authorize]
         public ActionResult Vote(string userWhichVoted, int messageId, int typeOfVote)
         {
+
+            if (User.Identity.IsAuthenticated)
+            {
+                string loggedInUser = User.Identity.Name;
+                if (loggedInUser == userWhichVoted)
+                {
+                    //perform voting
+                }
+            }
+
             var checkResult = db.Votingtrackers
                                 .Where(b => b.MessageId == messageId && b.UserName == userWhichVoted)
                                 .FirstOrDefault();
