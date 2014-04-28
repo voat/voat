@@ -43,7 +43,6 @@ namespace Whoaverse.Models
         //    return PartialView("_userkarma", Message message = db.Messages.Find(id););
         //}
 
-
         [HttpPost]
         public ActionResult ClaSubmit(Cla claModel)
         {
@@ -94,7 +93,6 @@ namespace Whoaverse.Models
             }
             return View();
         }
-
 
         // GET: Messages/Details/5
         public ActionResult Comments(int? id, string subversetoshow)
@@ -163,30 +161,37 @@ namespace Whoaverse.Models
         {
             if (ModelState.IsValid)
             {
-                db.Messages.Add(message);
-                await db.SaveChangesAsync();
-
-                //get newly generated message ID and execute ranking and self upvoting                
-                Votingtracker tmpVotingTracker = new Votingtracker();
-                tmpVotingTracker.MessageId = message.Id;
-                tmpVotingTracker.UserName = message.Name;
-                tmpVotingTracker.VoteStatus = 1;
-                db.Votingtrackers.Add(tmpVotingTracker);
-                await db.SaveChangesAsync();
-
-                return RedirectToRoute(
-                "SubverseComments",
-                new
+                //check if subverse exists
+                if (db.Subverses.Find(message.Subverse) != null)
                 {
-                    controller = "Home",
-                    action = "Comments",
-                    id = message.Id,
-                    subversetoshow = message.Subverse
+                    db.Messages.Add(message);
+                    await db.SaveChangesAsync();
+
+                    //get newly generated message ID and execute ranking and self upvoting                
+                    Votingtracker tmpVotingTracker = new Votingtracker();
+                    tmpVotingTracker.MessageId = message.Id;
+                    tmpVotingTracker.UserName = message.Name;
+                    tmpVotingTracker.VoteStatus = 1;
+                    db.Votingtrackers.Add(tmpVotingTracker);
+                    await db.SaveChangesAsync();
+
+                    return RedirectToRoute(
+                        "SubverseComments",
+                        new
+                        {
+                            controller = "Home",
+                            action = "Comments",
+                            id = message.Id,
+                            subversetoshow = message.Subverse
+                        }
+                    );
                 }
-            );
-
+                else
+                {
+                    ModelState.AddModelError("Subverse", "Sorry, The subverse you are trying to post to does not exist.");
+                    return View();
+                }
             }
-
             return View(message);
         }
 
@@ -313,8 +318,8 @@ namespace Whoaverse.Models
                 {
                     //perform downvoting or resetting
                     Voting.DownvoteSubmission(messageId, loggedInUser);
-                }               
-            }                 
+                }
+            }
             return Json("Voting Ok", JsonRequestBehavior.AllowGet);
         }
 
