@@ -238,6 +238,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\Badges.cs" />
     <Compile Include="Utils\Formatting.cs" />
+    <Compile Include="Utils\GrowthUtility.cs" />
     <Compile Include="Utils\Karma.cs" />
     <Compile Include="Utils\Markdown.cs" />
     <Compile Include="Utils\Ranking.cs" />
