@@ -17,6 +17,7 @@
           <Property Name="MessageId" Type="int" />
           <Property Name="Likes" Type="int" Nullable="false" />
           <Property Name="Dislikes" Type="int" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -175,6 +176,7 @@
           <Property Name="CommentContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Likes" Type="Int32" Nullable="false" DefaultValue="1" />
           <Property Name="Dislikes" Type="Int32" Nullable="false" DefaultValue="0" />
+          <Property Name="ParentId" Type="Int32" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -350,6 +352,7 @@
           <EntitySetMapping Name="Comments">
             <EntityTypeMapping TypeName="whoaverseModel.Comment">
               <MappingFragment StoreEntitySet="Comments">
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
                 <ScalarProperty Name="Likes" ColumnName="Likes" />
                 <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
