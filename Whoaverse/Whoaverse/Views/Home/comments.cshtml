@@ -63,51 +63,84 @@
             <br />
         </div>
 
-        <!-- TODO: order by menu area -->
-        @{foreach (var comment in Model.Comments.OrderByDescending(i => i.Votes).Take(200))
-        {
-            <div class=" thing id-t1_cgkmgmm comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
+        <div id="siteTable_t3_24nbon" class="sitetable nestedlisting">
+<div class=" thing id-t1_cgkmgmm comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
 
-                @{
-
-            //root level comment
-            if (comment.ParentId == null)
+    <!-- TODO: order by menu area -->
+    @{foreach (var comment in Model.Comments.OrderByDescending(i => i.Votes).Take(200))
             {
-                @Html.Partial("_SubmissionComment", comment)
 
-                //look for children comments to this root comment and display them
-                var childComments = from c in Model.Comments
-                                    where c.ParentId == comment.Id
-                                    select c;
-
-                if (childComments.Count() > 0)
+                 //root level comment
+                if (comment.ParentId == null)
                 {
-                    foreach (var singleChildComment in childComments)
+                    @Html.Partial("_SubmissionComment", comment)
+
+                    //look for children comments to this root comment and display them
+                    var childComments = from c in Model.Comments
+                                        where c.ParentId == comment.Id
+                                        select c;
+
+                    if (childComments.Count() > 0)
                     {
                         <div class="child">
-                            <div id="siteTable_t1_cgpb5r6" class="sitetable listing">
+                            <div id="siteTable_t3_24nbon" class="sitetable nestedlisting">
                                 <div class=" thing id-t1_cgkmgmm comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
 
-                                    @Html.Partial("_SubmissionComment", singleChildComment)
+                                    @{
 
+                        foreach (var singleChildComment in childComments)
+                        {
+                            @*<div class="child">*@
+
+                                @Html.Partial("_SubmissionComment", singleChildComment)
+
+                            @*</div>*@
+
+                            //look for children comments to this first level child comment and display them
+                            var childCommentsLevelTwo = from c in Model.Comments
+                                                        where c.ParentId == singleChildComment.Id
+                                                        select c;
+
+                            if (childCommentsLevelTwo.Count() > 0)
+                            {
+                                <div class="child">
+                                    <div id="siteTable_t3_24nbon" class="sitetable nestedlisting">
+                                        <div class=" thing id-t1_cgkmgmm comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
+
+                                            @{
+                                foreach (var singleChildCommentLevelTwo in childCommentsLevelTwo)
+                                {
+
+                                    @Html.Partial("_SubmissionComment", singleChildCommentLevelTwo)
+
+                                }
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
+                            }
+
+
+                        }
+
+                                    }
+                                </div>
+
                             </div>
                         </div>
                     }
+
                 }
+
+
+
 
             }
 
+            }
 
-                }
+        </div>
 
-
-            </div>
-
-        }
-
-        }
-
-    </div>
-
+        </div>
 </div>
+
