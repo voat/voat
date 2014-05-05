@@ -75,7 +75,7 @@ namespace Whoaverse.Models
             }
             else
             {
-                ModelState.AddModelError("Speedy Gonzales", "Sorry, you are doing that too fast. Please try again in a few minutes.");
+                ModelState.AddModelError(string.Empty, "Sorry, you are doing that too fast. Please try again in a few minutes.");
                 return View(message);
             }
         }
