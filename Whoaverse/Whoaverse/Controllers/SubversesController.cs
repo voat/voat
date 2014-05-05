@@ -12,15 +12,13 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using PagedList;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Whoaverse.Utils;
-using PagedList;
-using System.Threading.Tasks;
-using System.Net;
 
 namespace Whoaverse.Models
 {
@@ -28,7 +26,7 @@ namespace Whoaverse.Models
     {
         private whoaverseEntities db = new whoaverseEntities();
 
-        // GET: Messages/Details/5
+        // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow)
         {
             ViewBag.SelectedSubverse = subversetoshow;
@@ -52,10 +50,11 @@ namespace Whoaverse.Models
             return View();
         }
 
-        // POST: submit
+        // POST: submit a new submission
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [PreventSpam]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent")] Message message)
         {
@@ -74,11 +73,14 @@ namespace Whoaverse.Models
 
                 return RedirectToAction("Index");
             }
-
-            return View(message);
+            else
+            {
+                ModelState.AddModelError("Speedy Gonzales", "Sorry, you are doing that too fast. Please try again in a few minutes.");
+                return View(message);
+            }
         }
 
-
+        //show a subverse index
         public ActionResult Index(int? page, string subversetoshow)
         {
             int pageSize = 25;
@@ -99,7 +101,6 @@ namespace Whoaverse.Models
             }
             else
             {
-                //return RedirectToAction("Subversenotfound", "Subverses");
                 return View("~/Views/Shared/Subversenotfound.cshtml");
             }            
         }
@@ -120,7 +121,6 @@ namespace Whoaverse.Models
 
             ViewBag.Title = subversetoshow;
 
-
             //check if subverse exists, if not, send to a page not found error
             var checkResult = db.Subverses
                                 .Where(s => s.name == subversetoshow)
@@ -133,7 +133,6 @@ namespace Whoaverse.Models
             }
             else
             {
-                //return RedirectToAction("Subversenotfound", "Subverses");
                 return View("~/Views/Shared/Subversenotfound.cshtml");
             }
         }
@@ -150,7 +149,6 @@ namespace Whoaverse.Models
             Subverse randomSubverse = qry.OrderBy(s => s.name).Skip(index).FirstOrDefault(); // 2nd round-trip            
 
             return RedirectToAction("Index", "Subverses", new { subversetoshow = randomSubverse.name });
-
         }
 
     }

@@ -12,13 +12,13 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security;
 using Whoaverse.Models;
 
 namespace Whoaverse.Controllers
@@ -132,7 +132,6 @@ namespace Whoaverse.Controllers
             return View(model);
         }
 
-        //
         // POST: /Account/Disassociate
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -151,7 +150,6 @@ namespace Whoaverse.Controllers
             return RedirectToAction("Manage", new { Message = message });
         }
 
-        //
         // GET: /Account/Manage
         public ActionResult Manage(ManageMessageId? message)
         {
@@ -166,7 +164,6 @@ namespace Whoaverse.Controllers
             return View();
         }
 
-        //
         // POST: /Account/Manage
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -217,7 +214,6 @@ namespace Whoaverse.Controllers
             return View(model);
         }
 
-        //
         // POST: /Account/ExternalLogin
         [HttpPost]
         [AllowAnonymous]
@@ -228,7 +224,6 @@ namespace Whoaverse.Controllers
             return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
         }
 
-        //
         // GET: /Account/ExternalLoginCallback
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
@@ -255,7 +250,6 @@ namespace Whoaverse.Controllers
             }
         }
 
-        //
         // POST: /Account/LinkLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -265,7 +259,6 @@ namespace Whoaverse.Controllers
             return new ChallengeResult(provider, Url.Action("LinkLoginCallback", "Account"), User.Identity.GetUserId());
         }
 
-        //
         // GET: /Account/LinkLoginCallback
         public async Task<ActionResult> LinkLoginCallback()
         {
@@ -282,7 +275,6 @@ namespace Whoaverse.Controllers
             return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
         }
 
-        //
         // POST: /Account/ExternalLoginConfirmation
         [HttpPost]
         [AllowAnonymous]
@@ -320,7 +312,6 @@ namespace Whoaverse.Controllers
             return View(model);
         }
 
-        //
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -330,7 +321,6 @@ namespace Whoaverse.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        //
         // GET: /Account/ExternalLoginFailure
         [AllowAnonymous]
         public ActionResult ExternalLoginFailure()

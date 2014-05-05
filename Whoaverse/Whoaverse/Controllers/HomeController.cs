@@ -12,18 +12,15 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Whoaverse.Utils;
 using PagedList;
-using System.Threading.Tasks;
+using System;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
-using System.Web.Services;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Whoaverse.Utils;
 
 namespace Whoaverse.Models
 {
@@ -37,13 +34,8 @@ namespace Whoaverse.Models
             return PartialView("_listofsubverses", db.Defaultsubverses.OrderBy(s => s.position).ToList().AsEnumerable());
         }
 
-        //public ActionResult userProfile()
-        //{
-        //    dbusers dbusers = new dbusers();
-        //    return PartialView("_userkarma", Message message = db.Messages.Find(id););
-        //}
-
         [HttpPost]
+        [PreventSpam]
         public ActionResult ClaSubmit(Cla claModel)
         {
             if (ModelState.IsValid)
@@ -91,10 +83,14 @@ namespace Whoaverse.Models
                     return View("~/Views/Legal/ClaFailed.cshtml");
                 }
             }
-            return View();
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Sorry, you are doing that too fast. Please try again in a few minutes.");
+                return View();
+            }
         }
 
-        // GET: Messages/Details/5
+        // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow)
         {
             ViewBag.SelectedSubverse = subversetoshow;
@@ -122,6 +118,7 @@ namespace Whoaverse.Models
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [PreventSpam]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submitcomment([Bind(Include = "Id,Votes,Name,Date,CommentContent,MessageId")] Comment comment)
         {
@@ -141,8 +138,10 @@ namespace Whoaverse.Models
                 string url = this.Request.UrlReferrer.AbsolutePath;
                 return Redirect(url);
             }
-
-            return View(comment);
+            else
+            {
+                return View("~/Views/Help/SpeedyGonzales.cshtml");
+            }
         }
 
         // GET: submit
@@ -157,6 +156,7 @@ namespace Whoaverse.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
         {
             if (ModelState.IsValid)
@@ -164,6 +164,15 @@ namespace Whoaverse.Models
                 //check if subverse exists
                 if (db.Subverses.Find(message.Subverse) != null)
                 {
+                    //check if username is admin and get random username instead
+                    if (message.Name == "system")
+                    {
+                        message.Name = GrowthUtility.GetRandomUsername();
+                        Random r = new Random();
+                        int rInt = r.Next(6, 17);
+                        message.Likes = (short)rInt;
+                    }
+
                     db.Messages.Add(message);
                     await db.SaveChangesAsync();
 
@@ -192,7 +201,11 @@ namespace Whoaverse.Models
                     return View();
                 }
             }
-            return View(message);
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Sorry, you are doing that too fast. Please try again in a few minutes.");
+                return View();
+            }
         }
 
         public ActionResult UserProfile(string id, int? page, string whattodisplay)
@@ -209,7 +222,6 @@ namespace Whoaverse.Models
                 var userComments = from c in db.Comments.OrderByDescending(c => c.Date)
                                    where c.Name.Equals(id)
                                    select c;
-                //return View(viewnameasstring, model)
                 return View("usercomments", userComments.ToPagedList(pageNumber, pageSize));
             }
 
@@ -227,8 +239,6 @@ namespace Whoaverse.Models
                                          where b.Name.Equals(id)
                                          select b;
             return View(userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
-
-
         }
 
         public ViewResult Index(int? page)

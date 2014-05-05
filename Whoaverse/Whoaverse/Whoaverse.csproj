@@ -237,6 +237,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utils\AntispamUtility.cs" />
     <Compile Include="Utils\Badges.cs" />
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\GrowthUtility.cs" />
@@ -371,6 +372,7 @@
     <Content Include="Views\Legal\ClaSent.cshtml" />
     <Content Include="Views\Legal\ClaFailed.cshtml" />
     <Content Include="Views\About\Team.cshtml" />
+    <Content Include="Views\Help\SpeedyGonzales.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
