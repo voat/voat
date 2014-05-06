@@ -1,6 +1,6 @@
 ﻿/*
  * This source file is subject to The Code Project Open License (CPOL) 1.02
- * Original code can be found at: http://www.codeproject.com/Articles/582845/PreventplusRepeatedplusRequestsplususingplusAction
+ * Original code can be found at: http://rionscode.wordpress.com/2013/02/24/prevent-repeated-requests-using-actionfilters-in-asp-net-mvc/
  * Copyright Rion Williams 2013
  */
 

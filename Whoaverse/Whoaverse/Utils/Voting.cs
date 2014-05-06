@@ -18,7 +18,7 @@ using Whoaverse.Models;
 
 namespace Whoaverse.Utils
 {
-    public class Voting
+    public static class Voting
     {
         //returns -1:downvoted, 1:upvoted, 0:not voted
         public static int CheckIfVoted(string userToCheck, int messageId)

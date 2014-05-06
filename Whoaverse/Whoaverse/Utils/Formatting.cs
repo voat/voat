@@ -20,7 +20,7 @@ using MarkdownSharp;
 
 namespace Whoaverse.Utils
 {
-    public class Formatting
+    public static class Formatting
     {
         private static Markdown m = new Markdown();
         

@@ -19,7 +19,7 @@ using System.Web;
 
 namespace Whoaverse.Utils
 {
-    public class Submissions
+    public static class Submissions
     {
 
         public static string CalcSubmissionAge(DateTime inPostingDateTime)
@@ -49,7 +49,7 @@ namespace Whoaverse.Utils
 
         public static double CalcSubmissionAgeDouble(DateTime inPostingDateTime)
         {
-            DateTime currentDateTime = new DateTime(Convert.ToInt32(DateTime.Now.Year), Convert.ToInt32(DateTime.Now.Month), Convert.ToInt32(DateTime.Now.Day), Convert.ToInt32(DateTime.Now.Hour), Convert.ToInt32(DateTime.Now.Minute), 00);
+            DateTime currentDateTime = DateTime.Now;
             TimeSpan duration = currentDateTime - inPostingDateTime;
 
             double totalHours = duration.TotalHours;

@@ -19,13 +19,12 @@ using System.Web;
 
 namespace Whoaverse.Utils
 {
-    public class Ranking
+    public static class Ranking
     {
         public static double CalculateNewRank(double currentRank, double submissionAge, double score)
         {
             double newRank = ((score - 1) * 0.8) / ((submissionAge + 2) * 1.8);
 
-            //double newRank = ((score - 1) * 1.8) / ((submissionAge + 2) * 1.8);
             return newRank;
         }
     }

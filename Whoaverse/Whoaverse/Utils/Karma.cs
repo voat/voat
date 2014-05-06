@@ -20,7 +20,7 @@ using Whoaverse.Models;
 
 namespace Whoaverse.Utils
 {
-    public class Karma
+    public static class Karma
     {
         public static int LinkKarma(string userName)
         {
