@@ -105,6 +105,16 @@ namespace Whoaverse.Models
             }            
         }
 
+        public ViewResult Subverses(int? page)
+        {
+            int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            var subverses = db.Subverses.OrderByDescending(s => s.creation_date).ToList();
+
+            return View(subverses.ToPagedList(pageNumber, pageSize));
+        }
+
         public ActionResult Subversenotfound()
         {
             return View("~/Views/Shared/Subversenotfound.cshtml");

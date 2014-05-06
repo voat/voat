@@ -372,6 +372,8 @@
     <Content Include="Views\Legal\ClaFailed.cshtml" />
     <Content Include="Views\About\Team.cshtml" />
     <Content Include="Views\Help\SpeedyGonzales.cshtml" />
+    <Content Include="Views\Subverses\Subverses.cshtml" />
+    <Content Include="Views\Shared\_SubverseDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

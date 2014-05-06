@@ -27,6 +27,13 @@ namespace Whoaverse
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            // /subverses
+            routes.MapRoute(
+                name: "Subverses",
+                url: "subverses/",
+                defaults: new { controller = "Subverses", action = "Subverses" }
+            );
+            
             // comments/4
             routes.MapRoute(
                 name: "comments",
@@ -129,7 +136,7 @@ namespace Whoaverse
                 name: "SubverseIndex",
                 url: "v/{subversetoshow}",
                 defaults: new { controller = "Subverses", action = "Index" }
-            );
+            );            
 
             // v/subversetoshow/comments/123456
             routes.MapRoute(

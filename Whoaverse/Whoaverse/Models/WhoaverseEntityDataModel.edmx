@@ -58,6 +58,7 @@
           </Key>
           <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="title" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="description" Type="nvarchar" MaxLength="500" />
           <Property Name="sidebar" Type="nvarchar(max)" />
           <Property Name="submission_text" Type="nvarchar" MaxLength="1024" />
           <Property Name="language" Type="nchar" MaxLength="10" />
@@ -306,6 +307,7 @@
           <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subvers" ToRole="Message" />
           <Property Name="creation_date" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Defaultsubvers" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="Defaultsubvers" />
+          <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
@@ -405,6 +407,7 @@
           <EntitySetMapping Name="Subverses">
             <EntityTypeMapping TypeName="whoaverseModel.Subverse">
               <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="description" ColumnName="description" />
                 <ScalarProperty Name="creation_date" ColumnName="creation_date" />
                 <ScalarProperty Name="minutes_to_hide_comments" ColumnName="minutes_to_hide_comments" />
                 <ScalarProperty Name="traffic_stats_public" ColumnName="traffic_stats_public" />

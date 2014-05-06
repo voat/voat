@@ -24,7 +24,7 @@
                 @Html.ActionLink(User.Identity.GetUserName(), "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })
                 (<span class="userkarma" title="link karma">@linkKarma</span>)
             </span>
-            <span class="separator">|</span><a title="no new mail" href="/message/inbox/" class="nohavemail" id="mail">messages</a>
+            <span class="separator">|</span><a title="no new mail" href="#" class="nohavemail" id="mail">messages</a>
             <span class="separator">|</span>
             <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
         </div>

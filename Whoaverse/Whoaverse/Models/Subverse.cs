@@ -37,6 +37,7 @@ namespace Whoaverse.Models
         public Nullable<int> traffic_stats_public { get; set; }
         public Nullable<int> minutes_to_hide_comments { get; set; }
         public Nullable<System.DateTime> creation_date { get; set; }
+        public string description { get; set; }
     
         public virtual ICollection<Message> Messages { get; set; }
         public virtual Defaultsubverse Defaultsubvers { get; set; }
