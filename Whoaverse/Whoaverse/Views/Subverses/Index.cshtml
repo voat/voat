@@ -27,7 +27,7 @@
 </style>
 
 @{
-    if (!selectedSubverse.Equals("user"))
+    if (!selectedSubverse.Equals("user") && !Request.Browser.IsMobileDevice)
     {
         @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse })
     }
