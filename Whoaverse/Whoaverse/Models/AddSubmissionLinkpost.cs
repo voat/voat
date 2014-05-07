@@ -34,6 +34,7 @@ namespace Whoaverse.Models
         public string Linkdescription { get; set; }
 
         [Required(ErrorMessage = "URL is required. Please fill this field.")]
+        [Url(ErrorMessage="Please enter a valid http, https, or ftp URL.")]
         public string MessageContent { get; set; }
 
         [Required(ErrorMessage = "You must choose a subverse to send the post to. Example: programming, videos, pics, funny.")]

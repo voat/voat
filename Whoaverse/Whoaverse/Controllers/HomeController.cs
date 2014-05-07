@@ -85,7 +85,6 @@ namespace Whoaverse.Models
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Sorry, you are doing that too fast. Please try again in a few minutes.");
                 return View();
             }
         }
@@ -155,10 +154,11 @@ namespace Whoaverse.Models
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
-        {
+        {            
             if (ModelState.IsValid)
             {
                 //check if subverse exists
@@ -203,7 +203,6 @@ namespace Whoaverse.Models
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Sorry, you are doing that too fast. Please try again in a few minutes.");
                 return View();
             }
         }

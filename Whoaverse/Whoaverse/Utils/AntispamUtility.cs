@@ -24,6 +24,8 @@ namespace Whoaverse.Utils
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            var loggedInUser = filterContext.HttpContext.User.Identity.Name;
+            
             //Store our HttpContext (for easier reference and code brevity)
             var request = filterContext.HttpContext.Request;
             //Store our HttpContext.Cache (for easier reference and code brevity)
@@ -39,13 +41,13 @@ namespace Whoaverse.Utils
             var targetInfo = request.RawUrl + request.QueryString;
 
             //Generate a hash for your strings (this appends each of the bytes of the value into a single hashed string
-            var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));
+            var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));            
 
             //Checks if the hashed value is contained in the Cache (indicating a repeat request)
-            if (cache[hashValue] != null)
+            if (cache[hashValue] != null && loggedInUser != "system")
             {
                 //Adds the Error Message to the Model and Redirect
-                filterContext.Controller.ViewData.ModelState.AddModelError("ExcessiveRequests", ErrorMessage);
+                filterContext.Controller.ViewData.ModelState.AddModelError(string.Empty, ErrorMessage);
             }
             else
             {
