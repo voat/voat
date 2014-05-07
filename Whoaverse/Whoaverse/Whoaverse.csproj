@@ -360,7 +360,7 @@
     <Content Include="Views\Help\Markdown.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Errors\Subversenotfound.cshtml" />
-    <Content Include="Views\Subverses\_Listofsubverses.cshtml" />
+    <Content Include="Views\Shared\_Listofsubverses.cshtml" />
     <Content Include="Views\Shared\_AddComment.cshtml" />
     <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
     <Content Include="Views\Errors\Error_404.cshtml" />
@@ -373,8 +373,8 @@
     <Content Include="Views\About\Team.cshtml" />
     <Content Include="Views\Help\SpeedyGonzales.cshtml" />
     <Content Include="Views\Subverses\Subverses.cshtml" />
-    <Content Include="Views\Subverses\_SubverseDetails.cshtml" />
-    <Content Include="Views\Subverses\_Sidebar.cshtml" />
+    <Content Include="Views\Shared\_SubverseDetails.cshtml" />
+    <Content Include="Views\Shared\_Sidebar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
