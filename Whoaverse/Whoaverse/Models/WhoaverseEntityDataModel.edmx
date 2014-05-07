@@ -74,7 +74,7 @@
           <Property Name="exclude_sitewide_bans" Type="int" />
           <Property Name="traffic_stats_public" Type="int" />
           <Property Name="minutes_to_hide_comments" Type="int" />
-          <Property Name="creation_date" Type="datetime" />
+          <Property Name="creation_date" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -305,7 +305,7 @@
           <Property Name="traffic_stats_public" Type="Int32" />
           <Property Name="minutes_to_hide_comments" Type="Int32" />
           <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subvers" ToRole="Message" />
-          <Property Name="creation_date" Type="DateTime" Precision="3" />
+          <Property Name="creation_date" Type="DateTime" Precision="3" Nullable="false" />
           <NavigationProperty Name="Defaultsubvers" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="Defaultsubvers" />
           <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>

@@ -12,48 +12,53 @@
 
 @model Whoaverse.Models.Subverse
 
+@{
+    string subverseAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(Model.creation_date);    
+}
+
 <div class="side">
     <div class="spacer">
         <div class="titlebox">
             <h1 class="hover whoaversename">
                 <a href="/v/@Model.name" class="hover">@Model.name</a>
-                </h1>
-                <button type="button" class="btn btn-xs btn-default">subscribe</button>
-                <span class="subscribers">
-                    <span class="number">X</span>
-                    <span class="word">readers</span>
-                </span>
-                <p class="users-online fuzzed" title="logged-in users viewing this subwhoaverse in the past 15 minutes">
-                    <span class="number">~X</span>
-                    <span class="word">users here now</span>
-                </p>
-                <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t5_317us4tp">
-                    <input name="thing_id" value="t5_317us" type="hidden">
-                    <div class="usertext-body may-blank-within">
-                        <div class="md">
-                            <p>
-                                @Html.Raw(@Whoaverse.Utils.Formatting.FormatMessage(@Model.sidebar))
-                            </p>
-                        </div>
+            </h1>
+            <button type="button" class="btn btn-xs btn-default">subscribe</button>
+            <span class="subscribers">
+                <span class="number">X</span>
+                <span class="word">readers</span>
+            </span>
+            <p class="users-online fuzzed" title="logged-in users viewing this subwhoaverse in the past 15 minutes">
+                <span class="number">~X</span>
+                <span class="word">users here now</span>
+            </p>
+            <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t5_317us4tp">
+                <input name="thing_id" value="t5_317us" type="hidden">
+                <div class="usertext-body may-blank-within">
+                    <div class="md">
+                        <p>
+                            @Html.Raw(@Whoaverse.Utils.Formatting.FormatMessage(@Model.sidebar))
+                        </p>
                     </div>
-                </form>
-                <div class="bottom">
-                    created by <a href="#" class="author may-blank id-t2_5fggn">TODO</a>
-                    <span class="userattrs"></span><span class="age">a community for <time title="Fri Apr 4 17:00:20 2014 UTC" datetime="2014-04-04T17:00:20+00:00">X month</time></span>
                 </div>
-                <div class="clear">
-                </div>
+            </form>
+            <div class="bottom">
+                created by <a href="#" class="author may-blank id-t2_5fggn">TODO</a>
+                <span class="userattrs"></span>
+                <span class="age">a community for <time title="@Model.creation_date" datetime="@Model.creation_date">@subverseAge</time></span>
             </div>
-        </div>
-        <div class="spacer">
-            <div class="sidecontentbox ">
-                <a class="helplink" href="#">message the moderators</a>
-                <div class="title">
-                    <h1>MODERATORS</h1>
-                </div>
-                <ul class="content">
-                    <li><a href="http://www.whoaverse.com/user/atko" class="author may-blank id-t2_5fggn">atko</a><span class="userattrs"></span></li>
-                </ul>
+            <div class="clear">
             </div>
         </div>
     </div>
+    <div class="spacer">
+        <div class="sidecontentbox ">
+            <a class="helplink" href="#">message the moderators</a>
+            <div class="title">
+                <h1>MODERATORS</h1>
+            </div>
+            <ul class="content">
+                <li><a href="http://www.whoaverse.com/user/atko" class="author may-blank id-t2_5fggn">atko</a><span class="userattrs"></span></li>
+            </ul>
+        </div>
+    </div>
+</div>
