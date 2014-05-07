@@ -16,8 +16,6 @@
     string selectedSubverse = ViewBag.SelectedSubverse;
     ViewBag.Title = "Alpha - " + selectedSubverse;
     string sortingMode = ViewBag.SortingMode;
-    string classHot = "disabled";
-    string classNew = "";
 }
 
 @using PagedList.Mvc;
@@ -28,22 +26,14 @@
     }
 </style>
 
-@*@Html.Action("listofsubverses", "Home", new { activeSubverse = selectedSubverse })*@
+@{
+    if (!selectedSubverse.Equals("user"))
+    {
+        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse })
+    }
+}
 
 <div class="content" role="main">
-
-    @{
-
-        if (sortingMode != null)
-        {
-            if (sortingMode.Equals("new"))
-            {
-                classHot = "";
-                classNew = "disabled";
-            }
-        }
-
-    }
 
     <br /><br />
 

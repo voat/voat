@@ -329,7 +329,7 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Errors\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\About\About.cshtml" />
     <Content Include="Views\About\Contact.cshtml" />
@@ -359,11 +359,11 @@
     <Content Include="Views\Shared\_AddSubmissionSelfpost.cshtml" />
     <Content Include="Views\Help\Markdown.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
-    <Content Include="Views\Shared\Subversenotfound.cshtml" />
-    <Content Include="Views\Home\_Listofsubverses.cshtml" />
+    <Content Include="Views\Errors\Subversenotfound.cshtml" />
+    <Content Include="Views\Subverses\_Listofsubverses.cshtml" />
     <Content Include="Views\Shared\_AddComment.cshtml" />
     <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
-    <Content Include="Views\Shared\Error_404.cshtml" />
+    <Content Include="Views\Errors\Error_404.cshtml" />
     <Content Include="Views\Home\Usercomments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
     <Content Include="Views\Subverses\Index.cshtml" />
@@ -373,7 +373,8 @@
     <Content Include="Views\About\Team.cshtml" />
     <Content Include="Views\Help\SpeedyGonzales.cshtml" />
     <Content Include="Views\Subverses\Subverses.cshtml" />
-    <Content Include="Views\Shared\_SubverseDetails.cshtml" />
+    <Content Include="Views\Subverses\_SubverseDetails.cshtml" />
+    <Content Include="Views\Subverses\_Sidebar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

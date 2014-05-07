@@ -26,6 +26,21 @@ namespace Whoaverse.Models
     {
         private whoaverseEntities db = new whoaverseEntities();
 
+        // GET: sidebar for selected subverse
+        public ActionResult SidebarForSelectedSubverse(string selectedSubverse)
+        {
+            var subverse = db.Subverses.FirstOrDefault(i => i.name == selectedSubverse);
+
+            if (subverse != null)
+            {
+                return PartialView("_Sidebar", subverse);
+            }
+            else
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }          
+        }
+        
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow)
         {
@@ -38,7 +53,7 @@ namespace Whoaverse.Models
             Message message = db.Messages.Find(id);
             if (message == null)
             {
-                return View("~/Views/Shared/Error_404.cshtml");
+                return View("~/Views/Errors/Error_404.cshtml");
             }
             return View(message);
         }
@@ -101,7 +116,7 @@ namespace Whoaverse.Models
             }
             else
             {
-                return View("~/Views/Shared/Subversenotfound.cshtml");
+                return View("~/Views/Errors/Subversenotfound.cshtml");
             }            
         }
 
@@ -117,7 +132,7 @@ namespace Whoaverse.Models
 
         public ActionResult Subversenotfound()
         {
-            return View("~/Views/Shared/Subversenotfound.cshtml");
+            return View("~/Views/Errors/Subversenotfound.cshtml");
         }
 
         public ActionResult @New (int? page, string subversetoshow, string sortingmode)
@@ -143,7 +158,7 @@ namespace Whoaverse.Models
             }
             else
             {
-                return View("~/Views/Shared/Subversenotfound.cshtml");
+                return View("~/Views/Errors/Subversenotfound.cshtml");
             }
         }
 

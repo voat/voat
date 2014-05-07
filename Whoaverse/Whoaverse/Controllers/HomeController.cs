@@ -101,7 +101,7 @@ namespace Whoaverse.Models
             Message message = db.Messages.Find(id);
             if (message == null)
             {
-                return View("~/Views/Shared/Error_404.cshtml");
+                return View("~/Views/Errors/Error_404.cshtml");
             }
             return View(message);
         }
