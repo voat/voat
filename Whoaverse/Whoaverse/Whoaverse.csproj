@@ -242,6 +242,7 @@
     <Compile Include="Utils\GrowthUtility.cs" />
     <Compile Include="Utils\Karma.cs" />
     <Compile Include="Utils\Markdown.cs" />
+    <Compile Include="Utils\PromotionUtility.cs" />
     <Compile Include="Utils\Ranking.cs" />
     <Compile Include="Utils\Submissions.cs" />
     <Compile Include="Utils\Voting.cs" />
@@ -375,6 +376,7 @@
     <Content Include="Views\Subverses\Subverses.cshtml" />
     <Content Include="Views\Shared\_SubverseDetails.cshtml" />
     <Content Include="Views\Shared\_Sidebar.cshtml" />
+    <Content Include="Views\Shared\_SidebarFrontpage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -24,6 +24,13 @@
     }
 </style>
 
+@{
+    if (!Request.Browser.IsMobileDevice)
+    {
+        @Html.Partial("_SidebarFrontpage")
+    }
+}
+
 <div class="content" role="main">
 
     <br /><br />
