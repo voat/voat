@@ -67,8 +67,14 @@
 
     </div>
 
-    <span class="nextprev">
-        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), PagedListRenderOptions.Minimal)
-    </span>
+    @{
+        if (Model.PageCount > 1)
+        {
+            <span class="nextprev">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), PagedListRenderOptions.Minimal)
+            </span>
+        }
+    }
+    
 
 </div>

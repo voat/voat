@@ -435,7 +435,7 @@ ul.flat-vert {
 #header {
     border-bottom: 1px solid #5f99cf;
     position: relative;
-    background-color: #cee3f8;
+    background-color: #f2f2f2;
     z-index: 99;
 }
 
@@ -469,7 +469,7 @@ ul.flat-vert {
     position: absolute;
     right: 0px;
     bottom: 0px;
-    background-color: #EFF7FF;
+    background-color: #adc9e6;
     padding: 4px;
     line-height: 12px;
     border-top-left-radius: 7px;
@@ -652,7 +652,7 @@ ul.flat-vert {
 
         .tabmenu li a {
             padding: 2px 6px 0 6px;
-            background-color: #eff7ff;
+            background-color: #d9d9d9;
         }
 
         .tabmenu li.selected a {

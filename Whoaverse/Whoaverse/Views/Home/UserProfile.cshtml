@@ -30,6 +30,13 @@
 
     }
 
-    @Html.PagedListPager(Model, page => Url.Action("user", "Home", new { page }), PagedListRenderOptions.Minimal)
+    @{
+        if (Model.PageCount > 0)
+        {
+            <span class="nextprev">
+                @Html.PagedListPager(Model, page => Url.Action("user", "Home", new { page }), PagedListRenderOptions.Minimal)
+            </span>
+        }
+    }
 
 </div>

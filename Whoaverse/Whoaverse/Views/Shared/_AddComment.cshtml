@@ -23,11 +23,9 @@
 
 @{
 
-    using (Html.BeginForm("submitcomment", "Home", new { @class = "form-horizontal" }))
+    using (Html.BeginForm("submitcomment", "Home"))
     {
         @Html.AntiForgeryToken()
-
-        @*<div class="usertext-edit" style="">*@
 
         <hr />
         @Html.ValidationSummary(true)
@@ -47,8 +45,6 @@
 
         <br /><br />
         <input type="submit" value="Submit" class="btn btn-xs" />
-
-        @*</div>*@
 
     }
 
