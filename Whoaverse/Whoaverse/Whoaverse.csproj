@@ -195,6 +195,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AddSubverse.cs" />
     <Compile Include="Models\AddComment.cs" />
     <Compile Include="Models\AddSubmissionLinkpost.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
@@ -214,6 +215,9 @@
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Subverse.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubverseAdmin.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Votingtracker.cs">
@@ -378,6 +382,9 @@
     <Content Include="Views\Shared\_SubverseDetails.cshtml" />
     <Content Include="Views\Shared\_Sidebar.cshtml" />
     <Content Include="Views\Shared\_SidebarFrontpage.cshtml" />
+    <Content Include="Views\Subverses\CreateSubverse.cshtml" />
+    <Content Include="Views\Subverses\_AddNewSubverse.cshtml" />
+    <Content Include="Views\Errors\SubverseExists.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

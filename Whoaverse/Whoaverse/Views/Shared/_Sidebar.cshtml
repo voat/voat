@@ -13,7 +13,13 @@
 @model Whoaverse.Models.Subverse
 
 @{
-    string subverseAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(Model.creation_date);    
+    string subverseAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(Model.creation_date);
+    string subverseOwner = "Atko";
+    var subOwner = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 1).FirstOrDefault();
+    if (subOwner == null)
+    {
+        subverseOwner = "Atko"; //temp until existing whoaverse subverses in db are setup
+    }
 }
 
 <div class="side">
@@ -42,7 +48,7 @@
                 </div>
             </form>
             <div class="bottom">
-                created by <a href="#" class="author may-blank id-t2_5fggn">TODO</a>
+                created by <a href="/user/@subverseOwner" class="author may-blank id-t2_5fggn">@subverseOwner</a>
                 <span class="userattrs"></span>
                 <span class="age">a community for <time title="@Model.creation_date" datetime="@Model.creation_date">@subverseAge</time></span>
             </div>
@@ -57,7 +63,9 @@
                 <h1>MODERATORS</h1>
             </div>
             <ul class="content">
-                <li><a href="http://www.whoaverse.com/user/atko" class="author may-blank id-t2_5fggn">atko</a><span class="userattrs"></span></li>
+                <li>
+                    <a href="/user/@subverseOwner" class="author may-blank id-t2_5fggn">@subverseOwner</a><span class="userattrs"></span>
+                </li>
             </ul>
         </div>
     </div>

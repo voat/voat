@@ -1,0 +1,93 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.AddSubverse
+
+@{
+    ViewBag.Title = "subverse: create new subverse";
+
+    string loggedinUser = User.Identity.Name;
+    DateTime currentdatetime = System.DateTime.Now;    
+    
+    using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <br />
+        <div class="alert alert-info">You are creating a new subverse. You are awesome!</div>
+
+        <div class="form-horizontal">
+            <hr />
+            @Html.ValidationSummary(true)
+
+            @*Setup default values*@
+            @Html.Hidden("Creation_date", currentdatetime)            
+            @Html.Hidden("Type", 1)
+            @Html.Hidden("Title", "default")
+            @Html.Hidden("Owner", loggedinUser)
+
+            <div class="form-group">
+                @Html.Label("Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-9">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Name)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="control-label col-md-2"></div>
+                <div class="col-md-9">
+                    please note:
+                    <b>
+                        no spaces or special characters, max 20 characters
+                    </b>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Title", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-9">
+                    @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Description)
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <div class="control-label col-md-2"></div>
+                <div class="col-md-9">
+                    example:
+                    <b>
+                        a subverse for all Star Trek fans
+                    </b>
+                </div>
+            </div>            
+
+            <div class="form-group">
+                @Html.Label("Sidebar text (optional)", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-9">
+                    @Html.TextAreaFor(m => m.Sidebar, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Sidebar)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create" class="btn-whoaverse" />
+                </div>
+            </div>           
+
+        </div>
+    }
+
+}
+

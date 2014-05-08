@@ -95,6 +95,73 @@ namespace Whoaverse.Models
             }
         }
 
+        // TODO
+        // POST: Create a new Subverse
+        // To protect from overposting attacks, enable the specific properties you want to bind to 
+        [HttpPost]
+        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CreateSubverse([Bind(Include = "Name, Title, Description, Type, Sidebar, Creation_date, Owner")] AddSubverse subverseTmpModel)
+        {
+            try
+            {
+            if (ModelState.IsValid)
+                {
+                    Subverse subverse = new Subverse();
+                    subverse.name = subverseTmpModel.Name;
+                    subverse.title = "/v/" + subverseTmpModel.Name;
+                    subverse.description = subverseTmpModel.Description;                        
+                    subverse.type = subverseTmpModel.Type;                    
+                    subverse.sidebar = subverseTmpModel.Sidebar;
+                    subverse.creation_date = subverseTmpModel.Creation_date;
+
+                    //check if subverse exists before attempting to create it
+                    if (db.Subverses.Find(subverse.name) == null)
+                    {
+                        db.Subverses.Add(subverse);
+                        await db.SaveChangesAsync();
+                        
+                        //register user as the owner of the newly created subverse
+                        SubverseAdmin tmpSubverseAdmin = new SubverseAdmin();
+
+                        //tmpSubverseAdmin.Subverse = subverse; //test
+
+                        tmpSubverseAdmin.SubverseName = subverse.name;
+                        tmpSubverseAdmin.Username = subverseTmpModel.Owner;
+                        tmpSubverseAdmin.Power = 1;
+
+                        db.SubverseAdmins.Add(tmpSubverseAdmin);
+                        await db.SaveChangesAsync();
+
+                        //go to newly created Subverse
+                        return RedirectToAction("Index", "Subverses", new { subversetoshow = subverse.name });
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists.");                        
+                        return View();
+                    }
+                }
+                else
+                {
+                    //var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    return View();
+                }
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Something bad happened.");
+                return View();
+            }
+        }
+
+        // GET: create
+        [Authorize]
+        public ActionResult CreateSubverse()
+        {
+            return View();
+        }
+
         //show a subverse index
         public ActionResult Index(int? page, string subversetoshow)
         {

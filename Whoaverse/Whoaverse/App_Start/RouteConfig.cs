@@ -33,6 +33,13 @@ namespace Whoaverse
                 url: "subverses/",
                 defaults: new { controller = "Subverses", action = "Subverses" }
             );
+
+            // /subverses/create
+            routes.MapRoute(
+                name: "CreateSubverse",
+                url: "subverses/create",
+                defaults: new { controller = "Subverses", action = "CreateSubverse" }
+            );
             
             // comments/4
             routes.MapRoute(

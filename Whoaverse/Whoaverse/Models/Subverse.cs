@@ -17,6 +17,7 @@ namespace Whoaverse.Models
         public Subverse()
         {
             this.Messages = new HashSet<Message>();
+            this.SubverseAdmins = new HashSet<SubverseAdmin>();
         }
     
         public string name { get; set; }
@@ -41,5 +42,6 @@ namespace Whoaverse.Models
     
         public virtual ICollection<Message> Messages { get; set; }
         public virtual Defaultsubverse Defaultsubvers { get; set; }
+        public virtual ICollection<SubverseAdmin> SubverseAdmins { get; set; }
     }
 }

@@ -31,5 +31,6 @@ namespace Whoaverse.Models
         public virtual DbSet<Votingtracker> Votingtrackers { get; set; }
         public virtual DbSet<Subverse> Subverses { get; set; }
         public virtual DbSet<Defaultsubverse> Defaultsubverses { get; set; }
+        public virtual DbSet<SubverseAdmin> SubverseAdmins { get; set; }
     }
 }

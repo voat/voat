@@ -16,6 +16,8 @@
         <AssociationConnector Association="whoaverseModel.FK_Messages_Subverses" />
         <EntityTypeShape EntityType="whoaverseModel.Defaultsubverse" Width="1.5" PointX="0.75" PointY="6.25" />
         <AssociationConnector Association="whoaverseModel.FK_Defaultsubverses_Subverses" />
+        <EntityTypeShape EntityType="whoaverseModel.SubverseAdmin" Width="1.5" PointX="3.375" PointY="8.375" />
+        <AssociationConnector Association="whoaverseModel.FK_SubverseAdmins_Subverses" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
