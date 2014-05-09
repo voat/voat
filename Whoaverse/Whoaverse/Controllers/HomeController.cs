@@ -245,8 +245,11 @@ namespace Whoaverse.Models
             ViewBag.SelectedSubverse = "frontpage";
             int pageSize = 25;
             int pageNumber = (page ?? 1);
-
-            var submissions = db.Messages.OrderByDescending(s => s.Rank).ToList();
+       
+            //get only submissions from default subverses, order by rank
+            var submissions = (from message in db.Messages
+                     join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name                     
+                     select message).OrderByDescending(s => s.Rank).ToList();
 
             return View(submissions.ToPagedList(pageNumber, pageSize));
         }
@@ -259,7 +262,43 @@ namespace Whoaverse.Models
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
+            //get only submissions from default subverses, sort by date
+            var submissions = (from message in db.Messages
+                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                               select message).OrderByDescending(s => s.Date).ToList();
+
+            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+        }
+
+        public ActionResult All(int? page, string sortingmode)
+        {
+            //sortingmode: new, contraversial, hot, etc
+            ViewBag.SortingMode = sortingmode;
+            ViewBag.Title = "Top submissions from all subverses";
+            ViewBag.SelectedSubverse = "all";
+
+            int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            //get all submissions from all subverses, sort by rank
+            var submissions = db.Messages.OrderByDescending(s => s.Rank).ToList();
+
+            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+        }
+
+        public ActionResult @NewAll(int? page, string sortingmode)
+        {
+            //sortingmode: new, contraversial, hot, etc
+            ViewBag.SortingMode = sortingmode;
+            ViewBag.Title = "Newest submissions from all subverses";
+            ViewBag.SelectedSubverse = "all";
+
+            int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            //get all submissions from all subverses, sort by date
             var submissions = db.Messages.OrderByDescending(s => s.Date).ToList();
+
             return View("Index", submissions.ToPagedList(pageNumber, pageSize));
         }
 

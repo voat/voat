@@ -138,6 +138,20 @@ namespace Whoaverse
                 defaults: new { controller = "Home", action = "New" }
             );
 
+            // /newall
+            routes.MapRoute(
+                name: "AllLatestPosts",
+                url: "v/all/new",
+                defaults: new { controller = "Home", action = "NewAll", sortingmode = "new", subversetoshow="all" }
+            );
+
+            // /all
+            routes.MapRoute(
+                name: "AllPosts",
+                url: "v/all",
+                defaults: new { controller = "Home", action = "All", subversetoshow="all" }
+            );
+
             // v/subversetoshow
             routes.MapRoute(
                 name: "SubverseIndex",
