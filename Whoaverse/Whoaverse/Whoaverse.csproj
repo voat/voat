@@ -257,6 +257,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\PagedList.css" />
+    <Content Include="Content\Whoaverse.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -359,7 +360,6 @@
     <Content Include="Views\Shared\_SubmissionComment.cshtml" />
     <Content Include="Views\Home\UserProfile.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
-    <Content Include="Views\About\Intro.cshtml" />
     <Content Include="Views\Help\Privacy.cshtml" />
     <Content Include="Views\Shared\_AddSubmissionLinkpost.cshtml" />
     <Content Include="Views\Shared\_AddSubmissionSelfpost.cshtml" />
@@ -385,6 +385,7 @@
     <Content Include="Views\Subverses\CreateSubverse.cshtml" />
     <Content Include="Views\Subverses\_AddNewSubverse.cshtml" />
     <Content Include="Views\Errors\SubverseExists.cshtml" />
+    <Content Include="Views\Help\UserAgreement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

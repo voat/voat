@@ -1,0 +1,135 @@
+﻿/* Styles for validation helpers
+-----------------------------------------------------------*/
+.validation-summary-errors {
+    font-weight: bold;
+    padding: 15px;
+    border-width: 0 1px 4px;    
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: #FF4136;
+    border-color: #FF1103;
+    color: #FFF;
+}
+
+/* the rest of the site 
+-----------------------------------------------------------*/
+.btn-whoaverse {
+	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background-color:#fbfbfb;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	border:1px solid #dcdcdc;
+	display:inline-block;
+	cursor:pointer;
+	color:#666666;
+	font-family:verdana,arial,helvetica,sans-serif;
+	font-size:12px;
+    font-weight:700;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #ffffff;
+    text-align:center;
+}
+.btn-whoaverse:hover {
+	background-color:#f6f6f6;
+}
+
+.btn-whoaverse:active {
+	position:relative;
+	top:1px;
+}
+
+.btn-whoaverse.disabled,
+.btn-whoaverse[disabled],
+fieldset[disabled] .btn {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+a:hover,
+a:focus {
+    color: #2a6496;
+    text-decoration: none;
+}
+
+a,
+a:visited {
+    text-decoration: none;
+}
+
+/* Whoaverse Sprites
+-----------------------------------------------------------*/
+.arrow-downvote {
+    /* You may have to set 'display: block' */
+    cursor: pointer;
+    width: 15px;
+    height: 14px;
+    background: url('../Graphics/WVSprite.png') 0 0;
+}
+
+.arrow-downvoted {
+    /* You may have to set 'display: block' */
+    cursor: pointer;
+    width: 15px;
+    height: 14px;
+    background: url('../Graphics/WVSprite.png') 0 -14px;
+}
+
+.arrow-upvote {
+    /* You may have to set 'display: block' */
+    cursor: pointer;
+    width: 15px;
+    height: 14px;
+    background: url('../Graphics/WVSprite.png') 0 -28px;
+}
+
+.arrow-upvoted {
+    /* You may have to set 'display: block' */
+    cursor: pointer;
+    width: 15px;
+    height: 14px;
+    background: url('../Graphics/WVSprite.png') 0 -42px;
+}
+
+.expand-selfpost-hover {
+    /* You may have to set 'display: block' */
+    width: 23px;
+    height: 23px;
+    background: url('../Graphics/WVSprite.png') 0 -56px;
+}
+
+.expand-selfpost {
+    /* You may have to set 'display: block' */
+    width: 23px;
+    height: 23px;
+    background: url('../Graphics/WVSprite.png') 0 -79px;
+}
+
+.thumb-placeholder {
+    /* You may have to set 'display: block' */
+    width: 70px;
+    height: 70px;
+    background: url('../Graphics/WVSprite.png') 0 -102px;
+}
+
+.whoaverse-mascot {
+    /* You may have to set 'display: block' */
+    width: 467px;
+    height: 429px;
+    background: url('../Graphics/WVSprite.png') 0 -172px;
+}
+
+.whoaverse {
+    /* You may have to set 'display: block' */
+    width: 120px;
+    height: 43px;
+    background: url('../Graphics/WVSprite.png') 0 -601px;
+}

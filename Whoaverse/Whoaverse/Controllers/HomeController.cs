@@ -334,6 +334,10 @@ namespace Whoaverse.Models
             {
                 return View("~/Views/Help/Privacy.cshtml");
             }
+            if (pagetoshow == "useragreement")
+            {
+                return View("~/Views/Help/UserAgreement.cshtml");
+            }
             if (pagetoshow == "markdown")
             {
                 return View("~/Views/Help/Markdown.cshtml");
