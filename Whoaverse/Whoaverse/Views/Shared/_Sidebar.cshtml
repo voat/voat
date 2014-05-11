@@ -15,10 +15,11 @@
 @{
     string subverseAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(Model.creation_date);
     string subverseOwner = "Atko";
+    
     var subOwner = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 1).FirstOrDefault();
-    if (subOwner == null)
+    if (subOwner != null)
     {
-        subverseOwner = "Atko"; //temp until existing whoaverse subverses in db are setup
+        subverseOwner = subOwner.Username;
     }
 }
 
