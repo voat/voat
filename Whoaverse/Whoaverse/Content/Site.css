@@ -335,8 +335,9 @@ ul.flat-vert {
 
 #header {
     border-bottom: 1px solid #5f99cf;
-    position: relative;
-    background-color: #FAFAFA;
+    position: relative;    
+    background-image: url('../Graphics/whoaverse-bg.jpg');
+    height: 150px !important;
     z-index: 99;
 }
 
@@ -364,6 +365,8 @@ ul.flat-vert {
 
 #header-bottom-left {
     font-size: larger;
+    margin-top: 89px;
+    margin-left: 20px;
 }
 
 #header-bottom-right {
@@ -5277,7 +5280,7 @@ ul#image-preview-list {
     background-color: #f0f0f0;
     position: absolute;
     right: 0;
-    top: 0;
+    top: -1px;
     padding: 0 5px 0 15px;
     font-weight: bold;
     margin: 0;

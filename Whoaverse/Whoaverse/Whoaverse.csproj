@@ -263,6 +263,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Graphics\thumb-placeholder.png" />
+    <Content Include="Graphics\whoaverse-bg.jpg" />
     <Content Include="Graphics\whoaverse-mascot.png" />
     <Content Include="Graphics\whoaverse.png" />
     <Content Include="Graphics\whoaverse_padded.png" />
@@ -370,7 +371,7 @@
     <Content Include="Views\Shared\_AddComment.cshtml" />
     <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
     <Content Include="Views\Errors\Error_404.cshtml" />
-    <Content Include="Views\Home\Usercomments.cshtml" />
+    <Content Include="Views\Home\UserComments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
     <Content Include="Views\Subverses\Index.cshtml" />
     <Content Include="Views\Legal\Cla.cshtml" />
