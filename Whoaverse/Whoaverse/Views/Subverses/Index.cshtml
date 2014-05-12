@@ -16,6 +16,16 @@
     string selectedSubverse = ViewBag.SelectedSubverse;
     ViewBag.Title = "Alpha - " + selectedSubverse;
     string sortingMode = ViewBag.SortingMode;
+    string urlaction = "";
+    
+    if (sortingMode != "new")
+    {
+        urlaction = "Index";
+    }
+    else
+    {
+        urlaction = "New";
+    } 
 }
 
 @using PagedList.Mvc;
@@ -80,7 +90,7 @@
     @{
         if (Model.PageCount > 1)
         {
-            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), new PagedListRenderOptions
            {
                Display = PagedListDisplayMode.IfNeeded,
                DisplayLinkToLastPage = PagedListDisplayMode.Never,

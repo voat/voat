@@ -268,39 +268,7 @@ namespace Whoaverse.Models
                                select message).OrderByDescending(s => s.Date).ToList();
 
             return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-        }
-
-        public ActionResult All(int? page, string sortingmode)
-        {
-            //sortingmode: new, contraversial, hot, etc
-            ViewBag.SortingMode = sortingmode;
-            ViewBag.Title = "Top submissions from all subverses";
-            ViewBag.SelectedSubverse = "all";
-
-            int pageSize = 25;
-            int pageNumber = (page ?? 1);
-
-            //get all submissions from all subverses, sort by rank
-            var submissions = db.Messages.OrderByDescending(s => s.Rank).ToList();
-
-            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-        }
-
-        public ActionResult @NewAll(int? page, string sortingmode)
-        {
-            //sortingmode: new, contraversial, hot, etc
-            ViewBag.SortingMode = sortingmode;
-            ViewBag.Title = "Newest submissions from all subverses";
-            ViewBag.SelectedSubverse = "all";
-
-            int pageSize = 25;
-            int pageNumber = (page ?? 1);
-
-            //get all submissions from all subverses, sort by date
-            var submissions = db.Messages.OrderByDescending(s => s.Date).ToList();
-
-            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-        }
+        }        
 
         public ActionResult About(string pagetoshow)
         {

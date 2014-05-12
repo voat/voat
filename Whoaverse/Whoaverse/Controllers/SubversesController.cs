@@ -169,7 +169,7 @@ namespace Whoaverse.Models
             int pageNumber = (page ?? 1);
 
             ViewBag.Title = subversetoshow;
-            ViewBag.SelectedSubverse = subversetoshow;
+            ViewBag.SelectedSubverse = subversetoshow;            
             
             //check if subverse exists, if not, send to a page not found error
             var checkResult = db.Subverses
@@ -178,8 +178,17 @@ namespace Whoaverse.Models
 
             if (checkResult != null)
             {
-                var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Rank).ToList();
-                return View(submissions.ToPagedList(pageNumber, pageSize));
+                //if selected subverse is ALL, show submissions from all subverses, soerted by rank
+                if (subversetoshow == "all")
+                {
+                    var submissions = db.Messages.OrderByDescending(s => s.Rank).ToList();
+                    return View(submissions.ToPagedList(pageNumber, pageSize));
+                }
+                else
+                {
+                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Rank).ToList();
+                    return View(submissions.ToPagedList(pageNumber, pageSize));
+                }                
             }
             else
             {
@@ -220,8 +229,17 @@ namespace Whoaverse.Models
 
             if (checkResult != null)
             {
-                var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Date).ToList();
-                return View("Index",submissions.ToPagedList(pageNumber, pageSize));
+                //if selected subverse is ALL, show submissions from all subverses, sorted by date
+                if (subversetoshow == "all")
+                {
+                    var submissions = db.Messages.OrderByDescending(s => s.Date).ToList();
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                }
+                else
+                {
+                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Date).ToList();
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                }                
             }
             else
             {
