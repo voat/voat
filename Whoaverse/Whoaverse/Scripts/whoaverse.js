@@ -122,3 +122,12 @@ function submitDownVote(messageid) {
     });
 }
 
+//append a comment reply form to calling area while preventing multiple appends
+function reply(parentcommentid, user) {
+    //DEBUG alert('Received parent comment id in function reply: ' + parentcommentid);
+
+    var replyform = $("<div id='replyform-" + parentcommentid + "'><b>This function is coming soon " + user +", we promise :)</b></div>");
+    
+    $('#replyform-' + parentcommentid).remove();
+    $("#"+parentcommentid).append(replyform);
+}
