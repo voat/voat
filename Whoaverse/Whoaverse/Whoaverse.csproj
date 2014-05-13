@@ -387,6 +387,7 @@
     <Content Include="Views\Subverses\_AddNewSubverse.cshtml" />
     <Content Include="Views\Errors\SubverseExists.cshtml" />
     <Content Include="Views\Help\UserAgreement.cshtml" />
+    <Content Include="Views\Subverses\SubverseSettings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -31,11 +31,11 @@ namespace Whoaverse.Models
         public string spam_filter_links { get; set; }
         public string spam_filter_selfpost { get; set; }
         public string spam_filter_comments { get; set; }
-        public Nullable<int> rated_adult { get; set; }
-        public Nullable<int> allow_default { get; set; }
-        public Nullable<int> enable_thumbnails { get; set; }
-        public Nullable<int> exclude_sitewide_bans { get; set; }
-        public Nullable<int> traffic_stats_public { get; set; }
+        public Nullable<bool> rated_adult { get; set; }
+        public Nullable<bool> allow_default { get; set; }
+        public Nullable<bool> enable_thumbnails { get; set; }
+        public Nullable<bool> exclude_sitewide_bans { get; set; }
+        public Nullable<bool> traffic_stats_public { get; set; }
         public Nullable<int> minutes_to_hide_comments { get; set; }
         public System.DateTime creation_date { get; set; }
         public string description { get; set; }

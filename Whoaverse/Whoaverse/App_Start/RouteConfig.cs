@@ -136,7 +136,14 @@ namespace Whoaverse
                 name: "FrontpageLatestPosts",
                 url: "{sortingmode}",
                 defaults: new { controller = "Home", action = "New" }
-            );            
+            );
+
+            // v/subversetoedit/about/edit
+            routes.MapRoute(
+                name: "subverseSettings",
+                url: "v/{subversetoshow}/about/edit",
+                defaults: new { controller = "Subverses", action = "SubverseSettings" }
+            );  
 
             // v/subversetoshow
             routes.MapRoute(

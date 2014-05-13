@@ -1,0 +1,97 @@
+﻿@model Whoaverse.Models.Subverse
+
+@{
+    ViewBag.Title = "Subverse settings";
+}
+
+<div class="content" role="main">
+
+    <div class="row nomargin">
+        <div class="well col-md-4">
+
+            <h2>Subverse settings</h2>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.name)
+
+                    <div class="form-group">
+                        @Html.Label("Sidebar text, accepts Markup formatting", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(model => model.sidebar, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.sidebar, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    @*<div class="form-group">
+                       @Html.Label("Message submissions text", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(model => model.submission_text, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.submission_text, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+
+                    @*<div class="form-group">
+                        @Html.Label("Subverse type", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.type, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.type, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+
+                    @*<div class="form-group">
+                        @Html.Label("Label for submitting new linkpost", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.label_submit_new_link, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.label_submit_new_link, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+
+                    @*<div class="form-group">
+                        @Html.Label("Label for submitting new selfpost", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.label_sumit_new_selfpost, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.label_sumit_new_selfpost, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@                                                          
+
+                    @*<div class="form-group">
+                        @Html.Label("Rated adult", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.rated_adult, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.rated_adult, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+
+                    @*<div class="form-group">
+                        @Html.Label("Allow default", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.allow_default, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.allow_default, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+                    
+                    <div class="form-group">
+                        @Html.Label("Description ", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.description, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Save" class="btn-whoaverse btn-default" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+</div>
+</div>

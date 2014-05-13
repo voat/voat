@@ -95,7 +95,6 @@ namespace Whoaverse.Models
             }
         }
 
-        // TODO
         // POST: Create a new Subverse
         // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
@@ -123,8 +122,6 @@ namespace Whoaverse.Models
                         
                         //register user as the owner of the newly created subverse
                         SubverseAdmin tmpSubverseAdmin = new SubverseAdmin();
-
-                        //tmpSubverseAdmin.Subverse = subverse; //test
 
                         tmpSubverseAdmin.SubverseName = subverse.name;
                         tmpSubverseAdmin.Username = subverseTmpModel.Owner;
@@ -160,6 +157,59 @@ namespace Whoaverse.Models
         public ActionResult CreateSubverse()
         {
             return View();
+        }
+
+        // GET: settings
+        [Authorize]
+        public ActionResult SubverseSettings(string subversetoshow)
+        {
+            Subverse subverse = db.Subverses.Find(subversetoshow);
+            if (subverse == null)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+            return View(subverse);
+        }
+
+        // POST: Eddit a Subverse
+        // To protect from overposting attacks, enable the specific properties you want to bind to 
+        [HttpPost]
+        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> SubverseSettings([Bind(Include = "Name, Description, Sidebar")] Subverse subverseToEdit)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var existingSubverse = db.Subverses.Find(subverseToEdit.name); //null!
+                    //check if subverse exists before attempting to edit it
+                    if (existingSubverse != null)
+                    {
+                        existingSubverse.description = subverseToEdit.description;
+                        existingSubverse.sidebar = subverseToEdit.sidebar;
+                        await db.SaveChangesAsync();
+
+                        //go back to this subverse
+                        return RedirectToAction("Index", "Subverses", new { subversetoshow = subverseToEdit.name });
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
+                        return View();
+                    }
+                }
+                else
+                {
+                    //var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    return View();
+                }
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Something bad happened.");
+                return View();
+            }
         }
 
         //show a subverse index

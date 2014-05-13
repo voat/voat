@@ -77,11 +77,11 @@
           <Property Name="spam_filter_links" Type="nchar" MaxLength="10" />
           <Property Name="spam_filter_selfpost" Type="nchar" MaxLength="10" />
           <Property Name="spam_filter_comments" Type="nchar" MaxLength="10" />
-          <Property Name="rated_adult" Type="int" />
-          <Property Name="allow_default" Type="int" />
-          <Property Name="enable_thumbnails" Type="int" />
-          <Property Name="exclude_sitewide_bans" Type="int" />
-          <Property Name="traffic_stats_public" Type="int" />
+          <Property Name="rated_adult" Type="bit" />
+          <Property Name="allow_default" Type="bit" />
+          <Property Name="enable_thumbnails" Type="bit" />
+          <Property Name="exclude_sitewide_bans" Type="bit" />
+          <Property Name="traffic_stats_public" Type="bit" />
           <Property Name="minutes_to_hide_comments" Type="int" />
           <Property Name="creation_date" Type="smalldatetime" Nullable="false" />
         </EntityType>
@@ -331,11 +331,11 @@
           <Property Name="spam_filter_links" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="spam_filter_selfpost" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="spam_filter_comments" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="rated_adult" Type="Int32" />
-          <Property Name="allow_default" Type="Int32" />
-          <Property Name="enable_thumbnails" Type="Int32" />
-          <Property Name="exclude_sitewide_bans" Type="Int32" />
-          <Property Name="traffic_stats_public" Type="Int32" />
+          <Property Name="rated_adult" Type="Boolean" />
+          <Property Name="allow_default" Type="Boolean" />
+          <Property Name="enable_thumbnails" Type="Boolean" />
+          <Property Name="exclude_sitewide_bans" Type="Boolean" />
+          <Property Name="traffic_stats_public" Type="Boolean" />
           <Property Name="minutes_to_hide_comments" Type="Int32" />
           <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subvers" ToRole="Message" />
           <Property Name="creation_date" Type="DateTime" Precision="0" Nullable="false" />
