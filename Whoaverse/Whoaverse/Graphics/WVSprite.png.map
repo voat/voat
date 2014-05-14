@@ -2,73 +2,73 @@
   "images": [
     {
       "name": "arrow-downvote.png",
-      "width": 15,
-      "height": 14,
+      "width": 18,
+      "height": 19,
       "offsetX": 0,
       "offsetY": 0
     },
     {
       "name": "arrow-downvoted.png",
-      "width": 15,
-      "height": 14,
+      "width": 18,
+      "height": 19,
       "offsetX": 0,
-      "offsetY": 14
+      "offsetY": 19
     },
     {
       "name": "arrow-upvote.png",
-      "width": 15,
-      "height": 14,
+      "width": 18,
+      "height": 19,
       "offsetX": 0,
-      "offsetY": 28
+      "offsetY": 38
     },
     {
       "name": "arrow-upvoted.png",
-      "width": 15,
-      "height": 14,
+      "width": 18,
+      "height": 19,
       "offsetX": 0,
-      "offsetY": 42
+      "offsetY": 57
     },
     {
       "name": "expand-selfpost-hover.png",
       "width": 23,
       "height": 23,
       "offsetX": 0,
-      "offsetY": 56
+      "offsetY": 76
     },
     {
       "name": "expand-selfpost.png",
       "width": 23,
       "height": 23,
       "offsetX": 0,
-      "offsetY": 79
+      "offsetY": 99
     },
     {
       "name": "thumb-placeholder.png",
       "width": 70,
       "height": 70,
       "offsetX": 0,
-      "offsetY": 102
+      "offsetY": 122
     },
     {
       "name": "whoaverse-mascot.png",
       "width": 467,
       "height": 429,
       "offsetX": 0,
-      "offsetY": 172
+      "offsetY": 192
     },
     {
       "name": "whoaverse.png",
       "width": 120,
       "height": 43,
       "offsetX": 0,
-      "offsetY": 601
+      "offsetY": 621
     },
     {
       "name": "mail-icon.png",
       "width": 15,
       "height": 10,
       "offsetX": 0,
-      "offsetY": 644
+      "offsetY": 664
     }
   ]
 }

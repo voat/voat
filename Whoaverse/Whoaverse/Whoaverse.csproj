@@ -262,6 +262,13 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Graphics\arrow-downvote.png" />
+    <Content Include="Graphics\arrow-downvoted.png" />
+    <Content Include="Graphics\arrow-upvote.png" />
+    <Content Include="Graphics\arrow-upvoted.png" />
+    <Content Include="Graphics\expand-selfpost-hover.png" />
+    <Content Include="Graphics\expand-selfpost.png" />
+    <Content Include="Graphics\mail-icon.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\whoaverse-bg.jpg" />
     <Content Include="Graphics\whoaverse-mascot.png" />
@@ -290,7 +297,9 @@
       <DependentUpon>WhoaverseEntityDataModel.edmx</DependentUpon>
       <LastGenOutput>WhoaverseEntityDataModel.cs</LastGenOutput>
     </Content>
-    <Content Include="Graphics\WVSprite.sprite" />
+    <Content Include="Graphics\WVSprite.sprite">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Graphics\WVSprite.png.map">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>

@@ -3,61 +3,61 @@
 */
 @mixin sprite-arrow-downvote() {
 /* You may have to set 'display: block' */
-	width: 15px;
-	height: 14px;
+	width: 18px;
+	height: 19px;
 	background: url('WVSprite.png') 0 0;
 }
 @mixin sprite-arrow-downvoted() {
 /* You may have to set 'display: block' */
-	width: 15px;
-	height: 14px;
-	background: url('WVSprite.png') 0 -14px;
+	width: 18px;
+	height: 19px;
+	background: url('WVSprite.png') 0 -19px;
 }
 @mixin sprite-arrow-upvote() {
 /* You may have to set 'display: block' */
-	width: 15px;
-	height: 14px;
-	background: url('WVSprite.png') 0 -28px;
+	width: 18px;
+	height: 19px;
+	background: url('WVSprite.png') 0 -38px;
 }
 @mixin sprite-arrow-upvoted() {
 /* You may have to set 'display: block' */
-	width: 15px;
-	height: 14px;
-	background: url('WVSprite.png') 0 -42px;
+	width: 18px;
+	height: 19px;
+	background: url('WVSprite.png') 0 -57px;
 }
 @mixin sprite-expand-selfpost-hover() {
 /* You may have to set 'display: block' */
 	width: 23px;
 	height: 23px;
-	background: url('WVSprite.png') 0 -56px;
+	background: url('WVSprite.png') 0 -76px;
 }
 @mixin sprite-expand-selfpost() {
 /* You may have to set 'display: block' */
 	width: 23px;
 	height: 23px;
-	background: url('WVSprite.png') 0 -79px;
+	background: url('WVSprite.png') 0 -99px;
 }
 @mixin sprite-thumb-placeholder() {
 /* You may have to set 'display: block' */
 	width: 70px;
 	height: 70px;
-	background: url('WVSprite.png') 0 -102px;
+	background: url('WVSprite.png') 0 -122px;
 }
 @mixin sprite-whoaverse-mascot() {
 /* You may have to set 'display: block' */
 	width: 467px;
 	height: 429px;
-	background: url('WVSprite.png') 0 -172px;
+	background: url('WVSprite.png') 0 -192px;
 }
 @mixin sprite-whoaverse() {
 /* You may have to set 'display: block' */
 	width: 120px;
 	height: 43px;
-	background: url('WVSprite.png') 0 -601px;
+	background: url('WVSprite.png') 0 -621px;
 }
 @mixin sprite-mail-icon() {
 /* You may have to set 'display: block' */
 	width: 15px;
 	height: 10px;
-	background: url('WVSprite.png') 0 -644px;
+	background: url('WVSprite.png') 0 -664px;
 }

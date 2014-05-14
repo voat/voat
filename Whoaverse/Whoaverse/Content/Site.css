@@ -390,15 +390,17 @@ ul.flat-vert {
 }
 
     #mail.havemail {
-        background-image: url(/Graphics/WVsprite.png);
-        background-position: -105px -796px;
         background-repeat: no-repeat;
+        width: 15px;
+	    height: 10px;
+	    background: url(/Graphics/WVsprite.png) 0 -664px;
     }
 
     #mail.nohavemail {
-        background-image: url(/Graphics/WVsprite.png);
-        background-position: 0 -644px;
         background-repeat: no-repeat;
+        width: 15px;
+	    height: 10px;
+	    background: url(/Graphics/WVsprite.png) 0 -664px;
     }
 
 #modmail {
@@ -673,8 +675,9 @@ ul.flat-vert {
 
     .morelink:hover, .mlh {
         border-color: #879eb4;
-        background-image: url(/Graphics/WVsprite.png);
-        background-position: 0px -243px;
+        width: 23px;
+	    height: 23px;
+	    background: url('/Graphics/WVSprite.png') 0 -99px;        
         background-repeat: repeat;
     }
 
@@ -5515,14 +5518,16 @@ ul.tabmenu.formtab {
 }
 
     .expando-button.selftext.collapsed {
-        background-image: url('../Graphics/WVSprite.png');
-        background-position: 0 -79px;
+        width: 23px;
+	    height: 23px;
+	    background: url('/Graphics/WVSprite.png') 0 -99px;
         background-repeat: no-repeat;
     }
 
         .expando-button.selftext.collapsed:hover, .eb-sch {
-            background-image: url('../Graphics/WVSprite.png');
-            background-position: 0 -56px;
+            width: 23px;
+	        height: 23px;
+	        background: url('/Graphics/WVSprite.png') 0 -76px;
             background-repeat: no-repeat;
         }
 
