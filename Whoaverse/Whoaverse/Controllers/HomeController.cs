@@ -107,20 +107,23 @@ namespace Whoaverse.Models
         }
 
         // GET: submitcomment
-        [Authorize]
         public ActionResult Submitcomment()
         {
-            return View();
+            return View("~/Views/Errors/Error_404.cshtml");
         }
 
         // POST: submitcomment
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [PreventSpam]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Submitcomment([Bind(Include = "Id,Votes,Name,Date,CommentContent,MessageId")] Comment comment)
-        {
+        public async Task<ActionResult> Submitcomment([Bind(Include = "Id,CommentContent,MessageId,ParentId")] Comment comment)
+        {            
+            comment.Date = System.DateTime.Now;
+            comment.Name = User.Identity.Name;
+            comment.Votes = 1;
             if (ModelState.IsValid)
             {
                 db.Comments.Add(comment);

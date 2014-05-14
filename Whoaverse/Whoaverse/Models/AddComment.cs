@@ -23,6 +23,7 @@ namespace Whoaverse.Models
     public class AddComment
     {
         public int Id { get; set; }
+        public Nullable<int> ParentId { get; set; }
         public Nullable<short> Votes { get; set; }
         
         [Required(ErrorMessage = "Comment author is required.")]

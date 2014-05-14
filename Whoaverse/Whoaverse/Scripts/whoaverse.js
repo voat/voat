@@ -122,12 +122,66 @@ function submitDownVote(messageid) {
     });
 }
 
-//append a comment reply form to calling area while preventing multiple appends
-function reply(parentcommentid, user) {
-    //DEBUG alert('Received parent comment id in function reply: ' + parentcommentid);
+//prepare auth tokens
+$(document).ready(function () {
+    securityToken = $('[name=__RequestVerificationToken]').val();
+    $('body').bind('ajaxSend', function (elm, xhr, s) {
+        if (s.type == 'POST' && typeof securityToken != 'undefined') {
+            if (s.data.length > 0) {
+                s.data += "&__RequestVerificationToken=" + encodeURIComponent(securityToken);
+            }
+            else {
+                s.data = "__RequestVerificationToken=" + encodeURIComponent(securityToken);
+            }
+        }
+    });
+});
 
-    var replyform = $("<div id='replyform-" + parentcommentid + "'><b>This function is coming soon " + user +", we promise :)</b></div>");
+//append a comment reply form to calling area while preventing multiple appends
+function reply(parentcommentid, messageid) {
+    var token = $("input[name='__RequestVerificationToken']").val();
+
+    var replyform = $("<div id='replyform-"
+        + parentcommentid
+        + "'>"
+        + "<form id='commentreplyform-" + parentcommentid + "' novalidate='novalidate' action='/submitcomment' method='post'>"
+        + "<input name='__RequestVerificationToken' value='" + token + "' type='hidden'>"
+        + "<input id='ParentId' name='ParentId' value='" + parentcommentid + "' type='hidden'>"
+        + "<input id='MessageId' name='MessageId' value='" + messageid + "' type='hidden'>"
+        + "<div class='row'>"
+        + "<div class='col-md-4'>"
+        + "<textarea class='form-control' cols='20' id='CommentContent' name='CommentContent' data-val-required='Comment text is required. Please fill this field.' data-val='true' rows='3'></textarea>"
+        + "<span class='field-validation-valid' data-valmsg-for='CommentContent' data-valmsg-replace='true'></span>"
+        + "</div></div><br><input value='Submit' class='btn-whoaverse' type='submit'></form>"
+        + "<div class='validation-summary-valid' data-valmsg-summary='true'><ul><li style='display:none'></li></ul></div>"
+        + "</div>");
     
     $('#replyform-' + parentcommentid).remove();
-    $("#"+parentcommentid).append(replyform);
+    $("#" + parentcommentid).append(replyform);
+
+    var form = $('#commentreplyform-' + parentcommentid)
+            .removeData("validator") /* added by the raw jquery.validate plugin */
+            .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
+
+    $.validator.unobtrusive.parse(form);    
+}
+
+//post the comment form
+var submitForm = function (parentcommentid, messageid, commentcontent) {
+    $.ajax({
+        url: '/submitcomment',
+        type: 'POST',
+        data: {
+            MessageId: messageid,
+            CommentContent: commentcontent,
+            ParentId: parentcommentid
+        },
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+            alert(data.success);
+        },
+        error: function () {
+            alert("error");
+        }
+    });
 }

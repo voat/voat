@@ -31,9 +31,6 @@
         @Html.ValidationSummary(true)
 
         @*Setup default values*@
-        @Html.Hidden("Date", currentdatetime)
-        @Html.Hidden("Name", loggedinUser)
-        @Html.Hidden("Votes", 1)
         @Html.Hidden("MessageId", messageId)
         <div class="row">
             <div class="col-md-4">
@@ -41,7 +38,6 @@
                 @Html.ValidationMessageFor(model => model.CommentContent)
             </div>
         </div>
-
 
         <br /><br />
         <input type="submit" value="Submit" class="btn-whoaverse" />

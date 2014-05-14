@@ -76,7 +76,7 @@
                         if (User.Identity.IsAuthenticated)
                         {
                             <li>
-                                <a class="" href="javascript:void(0)" onclick="return reply(@Model.Id, '@User.Identity.Name')">reply</a>
+                                <a class="" href="javascript:void(0)" onclick="return reply(@Model.Id, @Model.MessageId)">reply</a>
                             </li>
                         }
                     }
