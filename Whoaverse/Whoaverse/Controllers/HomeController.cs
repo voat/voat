@@ -148,8 +148,12 @@ namespace Whoaverse.Models
 
         // GET: submit
         [Authorize]
-        public ActionResult Submit()
+        public ActionResult Submit(string selectedsubverse)
         {
+            if (selectedsubverse != "all")
+            {
+                ViewBag.selectedSubverse = selectedsubverse;    
+            }            
             return View();
         }
 
@@ -165,7 +169,7 @@ namespace Whoaverse.Models
             if (ModelState.IsValid)
             {
                 //check if subverse exists
-                if (db.Subverses.Find(message.Subverse) != null)
+                if (db.Subverses.Find(message.Subverse) != null && message.Subverse != "all")
                 {
                     //check if username is admin and get random username instead
                     if (message.Name == "system")
@@ -200,7 +204,7 @@ namespace Whoaverse.Models
                 }
                 else
                 {
-                    ModelState.AddModelError("Subverse", "Sorry, The subverse you are trying to post to does not exist.");
+                    ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
                     return View();
                 }
             }

@@ -113,6 +113,13 @@ namespace Whoaverse
                 }
             );
 
+            // v/subversetoshow
+            routes.MapRoute(
+                name: "submitpost",
+                url: "v/{selectedsubverse}/submit",
+                defaults: new { controller = "Home", action = "Submit" }
+            );   
+
             // submitcomment
             routes.MapRoute(
                 name: "submitcomment",

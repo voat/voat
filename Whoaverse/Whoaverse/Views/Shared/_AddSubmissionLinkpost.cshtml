@@ -53,7 +53,7 @@
         <div class="form-group">
             @Html.Label("Subverse", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control", @Value = ViewBag.selectedSubverse })
                 @Html.ValidationMessageFor(model => model.Subverse)
             </div>
         </div>
