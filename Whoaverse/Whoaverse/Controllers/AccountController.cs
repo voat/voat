@@ -115,17 +115,25 @@ namespace Whoaverse.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser() { UserName = model.UserName };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                try
                 {
-                    await SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    var user = new ApplicationUser() { UserName = model.UserName };
+                    var result = await UserManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        await SignInAsync(user, isPersistent: false);
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        AddErrors(result);
+                    }
                 }
-                else
+                catch (Exception)
                 {
-                    AddErrors(result);
-                }
+
+                    ModelState.AddModelError(string.Empty, "Something bad happened. You broke Whoaverse.");
+                }                
             }
 
             // If we got this far, something failed, redisplay form
