@@ -40,6 +40,14 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        @Html.Label("Custom stylesheet", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(model => model.stylesheet, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.stylesheet, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
                     @*<div class="form-group">
                        @Html.Label("Message submissions text", htmlAttributes: new { @class = "control-label col-md-2" }) 
                         <div class="col-md-10">

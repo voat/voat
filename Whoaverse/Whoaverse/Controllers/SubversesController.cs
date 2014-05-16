@@ -40,6 +40,22 @@ namespace Whoaverse.Models
                 return View("~/Views/Errors/Error_404.cshtml");
             }          
         }
+
+        // get stylesheet for selected subverse
+        public ActionResult StylesheetForSelectedSubverse(string selectedSubverse)
+        {
+            var subverse = db.Subverses.FirstOrDefault(i => i.name == selectedSubverse);
+
+            if (subverse != null)
+            {
+                return Content(subverse.stylesheet);
+            }
+            else
+            {
+                return Content(string.Empty);
+            }
+            
+        }
         
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow)
@@ -176,7 +192,7 @@ namespace Whoaverse.Models
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SubverseSettings([Bind(Include = "Name, Description, Sidebar")] Subverse subverseToEdit)
+        public async Task<ActionResult> SubverseSettings([Bind(Include = "Name, Description, Sidebar, Stylesheet")] Subverse subverseToEdit)
         {
             try
             {
@@ -188,6 +204,7 @@ namespace Whoaverse.Models
                     {
                         existingSubverse.description = subverseToEdit.description;
                         existingSubverse.sidebar = subverseToEdit.sidebar;
+                        existingSubverse.stylesheet = subverseToEdit.stylesheet;
                         await db.SaveChangesAsync();
 
                         //go back to this subverse
@@ -202,6 +219,11 @@ namespace Whoaverse.Models
                 else
                 {
                     //var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    //foreach (var item in errors)
+                    //{
+                    //    ModelState.AddModelError(string.Empty, item.ErrorMessage);
+                    //}
+
                     return View();
                 }
             }

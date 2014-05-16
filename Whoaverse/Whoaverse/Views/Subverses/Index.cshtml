@@ -17,7 +17,7 @@
     ViewBag.Title = "Alpha - " + selectedSubverse;
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
-    
+
     if (sortingMode != "new")
     {
         urlaction = "Index";
@@ -25,7 +25,7 @@
     else
     {
         urlaction = "New";
-    } 
+    }
 }
 
 @using PagedList.Mvc;
@@ -40,6 +40,12 @@
     if (!selectedSubverse.Equals("user") && !Request.Browser.IsMobileDevice)
     {
         @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse })
+
+        <style type="text/css">
+            @{
+                Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+            }
+        </style>
     }
 }
 

@@ -53,23 +53,5 @@ namespace Whoaverse.Models
         public string Description { get; set; }
         public string Owner { get; set; }
         
-        /*
-        
-        public int Id { get; set; }
-        public Nullable<short> Votes { get; set; }
-        
-        [Required(ErrorMessage = "Comment author is required.")]
-        public string Name { get; set; }
-        
-        [Required(ErrorMessage = "Comment text is required. Please fill this field.")]
-        public string CommentContent { get; set; }
-
-        [Required(ErrorMessage = "Date is required.")]
-        public System.DateTime Date { get; set; }
-
-        [Required(ErrorMessage = "MessageId is required.")]
-        public int MessageId { get; set; }
-        
-        */
     }
 }

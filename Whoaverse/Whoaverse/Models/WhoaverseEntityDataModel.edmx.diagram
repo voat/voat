@@ -14,9 +14,9 @@
         <AssociationConnector Association="whoaverseModel.FK_Votingtracker_Messages" ManuallyRouted="false" />
         <EntityTypeShape EntityType="whoaverseModel.Subverse" Width="2.125" PointX="0.5" PointY="0.75" />
         <AssociationConnector Association="whoaverseModel.FK_Messages_Subverses" />
-        <EntityTypeShape EntityType="whoaverseModel.Defaultsubverse" Width="1.5" PointX="0.75" PointY="6.25" />
+        <EntityTypeShape EntityType="whoaverseModel.Defaultsubverse" Width="1.5" PointX="0.75" PointY="7.125" />
         <AssociationConnector Association="whoaverseModel.FK_Defaultsubverses_Subverses" />
-        <EntityTypeShape EntityType="whoaverseModel.SubverseAdmin" Width="1.5" PointX="3.375" PointY="8.375" />
+        <EntityTypeShape EntityType="whoaverseModel.SubverseAdmin" Width="1.5" PointX="3.375" PointY="7.875" />
         <AssociationConnector Association="whoaverseModel.FK_SubverseAdmins_Subverses" />
       </Diagram>
     </edmx:Diagrams>

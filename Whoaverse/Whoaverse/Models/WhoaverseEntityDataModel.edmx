@@ -84,6 +84,7 @@
           <Property Name="traffic_stats_public" Type="bit" />
           <Property Name="minutes_to_hide_comments" Type="int" />
           <Property Name="creation_date" Type="smalldatetime" Nullable="false" />
+          <Property Name="stylesheet" Type="nvarchar" MaxLength="2000" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -342,6 +343,7 @@
           <NavigationProperty Name="Defaultsubvers" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="Defaultsubvers" />
           <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="SubverseAdmins" Relationship="whoaverseModel.FK_SubverseAdmins_Subverses" FromRole="Subverse" ToRole="SubverseAdmin" />
+          <Property Name="stylesheet" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
@@ -465,6 +467,7 @@
           <EntitySetMapping Name="Subverses">
             <EntityTypeMapping TypeName="whoaverseModel.Subverse">
               <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="stylesheet" ColumnName="stylesheet" />
                 <ScalarProperty Name="description" ColumnName="description" />
                 <ScalarProperty Name="creation_date" ColumnName="creation_date" />
                 <ScalarProperty Name="minutes_to_hide_comments" ColumnName="minutes_to_hide_comments" />
