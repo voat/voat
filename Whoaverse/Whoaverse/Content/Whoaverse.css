@@ -94,6 +94,47 @@ fieldset[disabled] .btn {
   box-shadow: none;
 }
 
+.btn-whoaverse-medium {
+	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background-color:#fbfbfb;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	border:1px solid #dcdcdc;
+	display:inline-block;
+	cursor:pointer;
+	color:#666666;
+	font-family:verdana,arial,helvetica,sans-serif;
+	font-size:10px;
+    font-weight:700;
+	padding:6px 10px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #ffffff;
+    text-align:center;
+}
+.btn-whoaverse-medium:hover {
+	background-color:#f6f6f6;
+}
+
+.btn-whoaverse-medium:active {
+	position:relative;
+	top:1px;
+}
+
+.btn-whoaverse-medium.disabled,
+.btn-whoaverse-medium[disabled],
+fieldset[disabled] .btn {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+
 a:hover,
 a:focus {
     color: #2a6496;

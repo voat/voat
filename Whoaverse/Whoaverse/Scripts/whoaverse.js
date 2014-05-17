@@ -129,8 +129,7 @@ $(document).ready(function () {
         if (s.type == 'POST' && typeof securityToken != 'undefined') {
             if (s.data.length > 0) {
                 s.data += "&__RequestVerificationToken=" + encodeURIComponent(securityToken);
-            }
-            else {
+            } else {
                 s.data = "__RequestVerificationToken=" + encodeURIComponent(securityToken);
             }
         }
@@ -152,11 +151,18 @@ function reply(parentcommentid, messageid) {
         + "<div class='col-md-4'>"
         + "<textarea class='form-control' cols='20' id='CommentContent' name='CommentContent' data-val-required='Comment text is required. Please fill this field.' data-val='true' rows='3'></textarea>"
         + "<span class='field-validation-valid' data-valmsg-for='CommentContent' data-valmsg-replace='true'></span>"
-        + "</div></div><br><input value='Submit' class='btn-whoaverse' type='submit'></form>"
+        + "</div></div><br>"
+        + "<input value='Submit reply' class='btn-whoaverse-paging' type='submit'>"
+        + "<button class='btn-whoaverse-paging' onclick='removereplyform("+parentcommentid+")' type='button'>Cancel</button>"
+        + "</form>"
         + "<div class='validation-summary-valid' data-valmsg-summary='true'><ul><li style='display:none'></li></ul></div>"
-        + "</div>");
+        + "<br></div>");
     
-    $('#replyform-' + parentcommentid).remove();
+    //exit function if the form is already being shown
+    if ($("#commentreplyform-" + parentcommentid).exists()) {
+        return;
+    }
+
     $("#" + parentcommentid).append(replyform);
 
     var form = $('#commentreplyform-' + parentcommentid)
@@ -166,22 +172,68 @@ function reply(parentcommentid, messageid) {
     $.validator.unobtrusive.parse(form);    
 }
 
-//post the comment form
-var submitForm = function (parentcommentid, messageid, commentcontent) {
-    $.ajax({
-        url: '/submitcomment',
-        type: 'POST',
-        data: {
-            MessageId: messageid,
-            CommentContent: commentcontent,
-            ParentId: parentcommentid
-        },
-        contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-            alert(data.success);
-        },
-        error: function () {
-            alert("error");
-        }
-    });
+
+//append a comment edit form to calling area while preventing multiple appends
+function edit(parentcommentid, messageid) {
+    var token = $("input[name='__RequestVerificationToken']").val();
+
+    var editform = $("<div id='editform-"
+        + parentcommentid
+        + "'>"
+        + "<form id='commenteditform-" + parentcommentid + "' novalidate='novalidate' action='/editcomment' method='post'>"
+        + "<input name='__RequestVerificationToken' value='" + token + "' type='hidden'>"
+        + "<input id='ParentId' name='ParentId' value='" + parentcommentid + "' type='hidden'>"
+        + "<input id='MessageId' name='MessageId' value='" + messageid + "' type='hidden'>"
+        + "<div class='row'>"
+        + "<div class='col-md-4'>"
+        + "<textarea class='form-control' cols='20' id='CommentContent' name='CommentContent' data-val-required='Comment text is required. Please fill this field.' data-val='true' rows='3'></textarea>"
+        + "<span class='field-validation-valid' data-valmsg-for='CommentContent' data-valmsg-replace='true'></span>"
+        + "</div></div><br>"
+        + "<input value='Save' class='btn-whoaverse-paging' type='submit'>"
+        + "<button class='btn-whoaverse-paging' onclick='removeeditform(" + parentcommentid + ")' type='button'>Cancel</button>"
+        + "</form>"
+        + "<div class='validation-summary-valid' data-valmsg-summary='true'><ul><li style='display:none'></li></ul></div>"
+        + "</div>");
+
+    //exit function if the form is already being shown
+    if ($("#editform-" + parentcommentid).exists()) {        
+        return;
+    }    
+
+    //find child div with class md which contains comment text and replace it with edit form
+    //radi OK
+    //$("#" + parentcommentid).find('.md').replaceWith(editform); 
+
+    //hide original text comment
+    $("#" + parentcommentid).find('.usertext-body').toggle(1);
+
+    //show edit form
+    $("#" + parentcommentid).find('.usertext-edit').toggle(1);
+
+    var form = $('#commenteditform-' + parentcommentid)
+            .removeData("validator") /* added by the raw jquery.validate plugin */
+            .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
+
+    $.validator.unobtrusive.parse(form);
+}
+
+//remove reply form for given parent id
+function removereplyform(parentcommentid) {
+    $('#replyform-' + parentcommentid).remove();
+}
+
+//remove edit form for given parent id and replace it with original comment
+function removeeditform(parentcommentid) {
+    $("#" + parentcommentid).find('.usertext-body').toggle(1);
+    $("#" + parentcommentid).find('.usertext-edit').toggle(1);
+}
+
+function editcommentsubmit(parentcommentid) {
+    alert("Comment editing function is under development...");
+    removeeditform(parentcommentid);
+    return false;
+}
+
+$.fn.exists = function () {
+    return this.length !== 0;
 }

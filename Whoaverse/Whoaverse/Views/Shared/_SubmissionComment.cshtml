@@ -58,15 +58,25 @@
                     <span class="score likes">@Model.Likes points</span>
                     <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago
                 </p>
-                <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t1_cgjennopb1">
-                    <input type="hidden" name="thing_id" value="t1_cgjenno" />
+                <form class="usertext" onsubmit="return editcommentsubmit(@Model.Id)" id="form-t1_cgjennopb1" action="#">
+                    <input id="CommentId" name="CommentId" value="@Model.Id" type="hidden">
+
                     <div class="usertext-body may-blank-within">
                         <div class="md">
-                            <p>
-                                @Html.Raw(@Whoaverse.Utils.Formatting.FormatMessage(@Model.CommentContent))
-                            </p>
+                            @Html.Raw(@Whoaverse.Utils.Formatting.FormatMessage(@Model.CommentContent))
                         </div>
                     </div>
+
+                    <div class="usertext-edit" style="width: 775px; display: none;">
+                        <div>
+                            @Html.TextAreaFor(m => m.CommentContent, new { @class = "form-control" })
+                            <div class="usertext-buttons">
+                                <input value="Save" class="btn-whoaverse-paging" type="submit">
+                                <button class="btn-whoaverse-paging" onclick="removeeditform(@Model.Id)" type="button">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </form>
                 <ul class="flat-list buttons">
                     <li class="first">
@@ -74,13 +84,27 @@
                     </li>
                     @{
                         if (User.Identity.IsAuthenticated)
-                        {
+                        {                           
+
+                            if (User.Identity.Name == commentAuthor)
+                            {
+                                
+                                <li>
+                                    <a class="" href="javascript:void(0)" onclick="return edit(@Model.Id, @Model.MessageId)">edit</a>
+                                </li>
+                                <li>
+                                    <a class="" href="javascript:void(0)" onclick="return delete(@Model.Id, @Model.MessageId)">delete</a>
+                                </li>
+                            }
+                            
                             <li>
                                 <a class="" href="javascript:void(0)" onclick="return reply(@Model.Id, @Model.MessageId)">reply</a>
                             </li>
+
                         }
                     }
 
                 </ul>
+
             </div>
         </div>
