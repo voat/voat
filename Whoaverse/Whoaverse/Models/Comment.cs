@@ -30,6 +30,7 @@ namespace Whoaverse.Models
         public int Likes { get; set; }
         public int Dislikes { get; set; }
         public Nullable<int> ParentId { get; set; }
+        public Nullable<System.DateTime> LastEditDate { get; set; }
     
         public virtual Message Message { get; set; }
         public virtual ICollection<Commentvotingtracker> Commentvotingtrackers { get; set; }

@@ -41,7 +41,7 @@ namespace Whoaverse.Models
             }          
         }
 
-        // get stylesheet for selected subverse
+        // GET: stylesheet for selected subverse
         public ActionResult StylesheetForSelectedSubverse(string selectedSubverse)
         {
             var subverse = db.Subverses.FirstOrDefault(i => i.name == selectedSubverse);
@@ -198,7 +198,7 @@ namespace Whoaverse.Models
             {
                 if (ModelState.IsValid)
                 {
-                    var existingSubverse = db.Subverses.Find(subverseToEdit.name); //null!
+                    var existingSubverse = db.Subverses.Find(subverseToEdit.name);
                     //check if subverse exists before attempting to edit it
                     if (existingSubverse != null)
                     {

@@ -178,7 +178,7 @@
                 </div>
                 <div class="modal-footer">
                     <a class="btn btn-default" href="~/Account/Register" role="button">Register</a>
-                    <a class="btn btn-default" href="~/Account/Login" role="button">Log in</a>
+                    <a class="btn btn-default" href="~/Account/Login?ReturnUrl=@Url.RouteUrl(ViewContext.RouteData.Values)" role="button">Log in</a>
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
                 </div>
             </div>

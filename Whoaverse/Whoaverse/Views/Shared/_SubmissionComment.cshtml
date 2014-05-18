@@ -59,6 +59,7 @@
                     <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago
                 </p>
                 <form class="usertext" onsubmit="return editcommentsubmit(@Model.Id)" id="form-t1_cgjennopb1" action="#">
+                    @Html.AntiForgeryToken()
                     <input id="CommentId" name="CommentId" value="@Model.Id" type="hidden">
 
                     <div class="usertext-body may-blank-within">

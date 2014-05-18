@@ -10,7 +10,7 @@ the specific language governing rights and limitations under the License.
 
 All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
- */
+*/
 
 function click_voting() {
     $(this).toggleClass("arrow upmod login-required")
@@ -172,38 +172,9 @@ function reply(parentcommentid, messageid) {
     $.validator.unobtrusive.parse(form);    
 }
 
-
 //append a comment edit form to calling area while preventing multiple appends
 function edit(parentcommentid, messageid) {
-    var token = $("input[name='__RequestVerificationToken']").val();
-
-    var editform = $("<div id='editform-"
-        + parentcommentid
-        + "'>"
-        + "<form id='commenteditform-" + parentcommentid + "' novalidate='novalidate' action='/editcomment' method='post'>"
-        + "<input name='__RequestVerificationToken' value='" + token + "' type='hidden'>"
-        + "<input id='ParentId' name='ParentId' value='" + parentcommentid + "' type='hidden'>"
-        + "<input id='MessageId' name='MessageId' value='" + messageid + "' type='hidden'>"
-        + "<div class='row'>"
-        + "<div class='col-md-4'>"
-        + "<textarea class='form-control' cols='20' id='CommentContent' name='CommentContent' data-val-required='Comment text is required. Please fill this field.' data-val='true' rows='3'></textarea>"
-        + "<span class='field-validation-valid' data-valmsg-for='CommentContent' data-valmsg-replace='true'></span>"
-        + "</div></div><br>"
-        + "<input value='Save' class='btn-whoaverse-paging' type='submit'>"
-        + "<button class='btn-whoaverse-paging' onclick='removeeditform(" + parentcommentid + ")' type='button'>Cancel</button>"
-        + "</form>"
-        + "<div class='validation-summary-valid' data-valmsg-summary='true'><ul><li style='display:none'></li></ul></div>"
-        + "</div>");
-
-    //exit function if the form is already being shown
-    if ($("#editform-" + parentcommentid).exists()) {        
-        return;
-    }    
-
-    //find child div with class md which contains comment text and replace it with edit form
-    //radi OK
-    //$("#" + parentcommentid).find('.md').replaceWith(editform); 
-
+    
     //hide original text comment
     $("#" + parentcommentid).find('.usertext-body').toggle(1);
 
@@ -228,10 +199,37 @@ function removeeditform(parentcommentid) {
     $("#" + parentcommentid).find('.usertext-edit').toggle(1);
 }
 
-function editcommentsubmit(parentcommentid) {
-    alert("Comment editing function is under development...");
-    removeeditform(parentcommentid);
+//submit edited comment
+function editcommentsubmit(commentid) {
+    var commentcontent = $("#" + commentid).find('.form-control').val();
+
+    var encodedCommentContent = encodeURIComponent(commentcontent);
+
+    //alert("ID komentara: " + commentid);
+    //alert("Komentar tekst: " + commentcontent);
+    //alert("Enkodiran komentar: " + encodedCommentContent);
+
+    $.ajax({
+        type: "POST",
+        url: "/editcomment/" + commentid + "/" + encodedCommentContent,
+        datatype: "html"        
+    });
+
+    //temp solution
+    //TODO: call markdown parser to parse the new text or fetch the new comment via ajax replacing the old one
+    $("#" + commentid).find('.md').html('<p>' + commentcontent + '</p>');
+
+    removeeditform(commentid);
     return false;
+}
+
+//fetch comment by id
+function getcommentbyid() {
+    $.get("/getcommentbyid/" + commentid, function (data) {
+        //$(".result").html(data);
+        alert("Load was performed.");
+        alert("Data: " + data)
+    });
 }
 
 $.fn.exists = function () {

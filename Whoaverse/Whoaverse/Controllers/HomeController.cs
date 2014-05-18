@@ -146,6 +146,44 @@ namespace Whoaverse.Models
             }
         }
 
+
+        // POST: editcomment
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
+        public JsonResult Editcomment(int Id, string CommentContent)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var existingComment = db.Comments.Find(Id);
+
+                if (existingComment != null)
+                {
+                    if (existingComment.Name.Trim() == User.Identity.Name)
+                    {
+                        existingComment.CommentContent = CommentContent;
+                        existingComment.LastEditDate = System.DateTime.Now;
+                        db.SaveChanges();
+                        return Json("Comment edit ok.", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+                    }
+
+                }
+                else
+                {
+                    return Json("Unauthorized edit or comment not found.", JsonRequestBehavior.AllowGet);
+                }                
+            }
+            else
+            {
+                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
         // GET: submit
         [Authorize]
         public ActionResult Submit(string selectedsubverse)
@@ -346,8 +384,9 @@ namespace Whoaverse.Models
                     //perform downvoting or resetting
                     Voting.DownvoteSubmission(messageId, loggedInUser);
                 }
+                return Json("Voting ok", JsonRequestBehavior.AllowGet);
             }
-            return Json("Voting Ok", JsonRequestBehavior.AllowGet);
+            return Json("Voting unauthorized.", JsonRequestBehavior.AllowGet);
         }
 
     }
