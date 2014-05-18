@@ -40,7 +40,7 @@ namespace Whoaverse
                 url: "subverses/create",
                 defaults: new { controller = "Subverses", action = "CreateSubverse" }
             );
-            
+
             // comments/4
             routes.MapRoute(
                 name: "comments",
@@ -104,10 +104,10 @@ namespace Whoaverse
 
             // editcomment
             routes.MapRoute(
-                name: "editcomment",
-                url: "editcomment/{Id}/{CommentContent}",
-                defaults: new { controller = "Home", action = "Editcomment" }
-            );
+                  "editcomment",
+                  "editcomment/{id}",
+                  new { controller = "Home", action = "Editcomment", id = UrlParameter.Optional }
+             );
 
             // submit
             routes.MapRoute(
@@ -125,7 +125,7 @@ namespace Whoaverse
                 name: "submitpost",
                 url: "v/{selectedsubverse}/submit",
                 defaults: new { controller = "Home", action = "Submit" }
-            );   
+            );
 
             // submitcomment
             routes.MapRoute(
@@ -157,14 +157,14 @@ namespace Whoaverse
                 name: "subverseSettings",
                 url: "v/{subversetoshow}/about/edit",
                 defaults: new { controller = "Subverses", action = "SubverseSettings" }
-            );  
+            );
 
             // v/subversetoshow
             routes.MapRoute(
                 name: "SubverseIndex",
                 url: "v/{subversetoshow}",
                 defaults: new { controller = "Subverses", action = "Index" }
-            );            
+            );
 
             // v/subversetoshow/comments/123456
             routes.MapRoute(

@@ -210,6 +210,7 @@
     <Compile Include="Models\Defaultsubverse.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\EditComment.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Message.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>

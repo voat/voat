@@ -145,26 +145,29 @@ namespace Whoaverse.Models
                 return View("~/Views/Help/SpeedyGonzales.cshtml");
             }
         }
-
-
+        
         // POST: editcomment
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize]
-        public JsonResult Editcomment(int Id, string CommentContent)
+        [HttpPost]
+        public ActionResult Editcomment(EditComment model)
         {
             if (User.Identity.IsAuthenticated)
             {
-                var existingComment = db.Comments.Find(Id);
+                var existingComment = db.Comments.Find(model.CommentId);
 
                 if (existingComment != null)
                 {
                     if (existingComment.Name.Trim() == User.Identity.Name)
                     {
-                        existingComment.CommentContent = CommentContent;
+                        existingComment.CommentContent = model.CommentContent;
                         existingComment.LastEditDate = System.DateTime.Now;
                         db.SaveChanges();
-                        return Json("Comment edit ok.", JsonRequestBehavior.AllowGet);
+
+                        //parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
+                        string formattedComment = Utils.Formatting.FormatMessage(model.CommentContent);
+                        return Json(new { response = formattedComment });
                     }
                     else
                     {
@@ -182,8 +185,7 @@ namespace Whoaverse.Models
                 return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
             }
         }
-
-
+        
         // GET: submit
         [Authorize]
         public ActionResult Submit(string selectedsubverse)

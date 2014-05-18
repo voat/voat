@@ -199,39 +199,27 @@ function removeeditform(parentcommentid) {
     $("#" + parentcommentid).find('.usertext-edit').toggle(1);
 }
 
-//submit edited comment
+//submit edited comment and replace the old one with formatted response received by server
 function editcommentsubmit(commentid) {
     var commentcontent = $("#" + commentid).find('.form-control').val();
-
-    var encodedCommentContent = encodeURIComponent(commentcontent);
-
-    //alert("ID komentara: " + commentid);
-    //alert("Komentar tekst: " + commentcontent);
-    //alert("Enkodiran komentar: " + encodedCommentContent);
+    var commentobject = { "CommentId": commentid, "CommentContent": commentcontent };
 
     $.ajax({
         type: "POST",
-        url: "/editcomment/" + commentid + "/" + encodedCommentContent,
-        datatype: "html"        
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(commentobject),
+        url: "/editcomment",
+        datatype: "json",
+        success: function (data) {            
+            $("#" + commentid).find('.md').html(data.response);
+        }
     });
-
-    //temp solution
-    //TODO: call markdown parser to parse the new text or fetch the new comment via ajax replacing the old one
-    $("#" + commentid).find('.md').html('<p>' + commentcontent + '</p>');
 
     removeeditform(commentid);
     return false;
 }
 
-//fetch comment by id
-function getcommentbyid() {
-    $.get("/getcommentbyid/" + commentid, function (data) {
-        //$(".result").html(data);
-        alert("Load was performed.");
-        alert("Data: " + data)
-    });
-}
-
+//check if an object exists
 $.fn.exists = function () {
     return this.length !== 0;
 }
