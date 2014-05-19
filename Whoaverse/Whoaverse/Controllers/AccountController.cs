@@ -49,6 +49,7 @@ namespace Whoaverse.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            ViewBag.SelectedSubverse = "login";
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -103,6 +104,7 @@ namespace Whoaverse.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            ViewBag.SelectedSubverse = "register";
             return View();
         }
 

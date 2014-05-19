@@ -40,17 +40,17 @@
 
         <div class="entry unvoted">
             <div class="collapsed" style='display:none'>
-                <a href="#" class="expand" onclick="return showcomment(this)">[+]</a>
+                <a href="#" class="expand" onclick="return showcomment(@Model.Id)">[+]</a>
                 <a href="/user/@Model.Name" class="author gray @authorClass may-blank id-t2_@Model.Id">@Model.Name</a>
                 <span class="userattrs">@Html.Raw(authorSpanClass)</span>&#32;
                 <span class="score dislikes">@Model.Dislikes points</span>
                 <span class="score unvoted">@Model.Votes point</span>
                 <span class="score likes">@Model.Likes points</span>
-                <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" onclick="return showcomment(this)">(0 children)</a>
+                <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" onclick="return showcomment(@Model.Id)">(show children)</a>
             </div>
             <div class="noncollapsed" id="@Model.Id">
                 <p class="tagline">
-                    <a href="#" class="expand" onclick="return hidecomment(this)">[&ndash;]</a>
+                    <a href="#" class="expand" onclick="return hidecomment(@Model.Id)">[&ndash;]</a>
                     <a href="/user/@Model.Name" class="author @authorClass may-blank id-t2_@Model.Id">@Model.Name</a>
                     <span class="userattrs">@Html.Raw(authorSpanClass)</span>&#32;
                     <span class="score dislikes">@Model.Dislikes points</span>

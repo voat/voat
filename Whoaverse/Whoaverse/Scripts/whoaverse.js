@@ -199,6 +199,32 @@ function removeeditform(parentcommentid) {
     $("#" + parentcommentid).find('.usertext-edit').toggle(1);
 }
 
+function showcomment(commentid) {
+    //show actual comment
+    $("#" + commentid).closest('.noncollapsed').toggle(1);
+    //hide show hidden children button
+    $("#" + commentid).prev().toggle(1);
+    //show voting icons
+    $("#" + commentid).parent().parent().find('.midcol').filter(":first").toggle(1);
+    //show all children
+    $("#" + commentid).parent().parent().find('.child').filter(":first").toggle(1);
+
+    return (false);
+}
+
+function hidecomment(commentid) {
+    //hide actual comment
+    $("#" + commentid).closest('.noncollapsed').toggle(1);
+    //show show hidden children button
+    $("#" + commentid).prev().toggle(1);
+    //hide voting icons
+    $("#" + commentid).parent().parent().find('.midcol').filter(":first").toggle(1); 
+    //hide all children
+    $("#" + commentid).parent().parent().find('.child').filter(":first").toggle(1);
+    
+    return (false);
+}
+
 //submit edited comment and replace the old one with formatted response received by server
 function editcommentsubmit(commentid) {
     var commentcontent = $("#" + commentid).find('.form-control').val();

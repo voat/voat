@@ -180,7 +180,6 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "New" }
             );
 
-
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

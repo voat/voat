@@ -19,6 +19,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Whoaverse.Utils;
 
@@ -290,6 +291,7 @@ namespace Whoaverse.Models
         public ViewResult Index(int? page)
         {
             ViewBag.SelectedSubverse = "frontpage";
+            
             int pageSize = 25;
             int pageNumber = (page ?? 1);
        
@@ -298,6 +300,21 @@ namespace Whoaverse.Models
                      join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name                     
                      select message).OrderByDescending(s => s.Rank).ToList();
 
+            //setup a cookie to find first time visitors and display welcome banner
+            string cookieName = "NotFirstTime";
+            if (this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+            {
+                // not a first time visitor
+                ViewBag.FirstTimeVisitor = false;
+            }
+            else
+            {                
+                // add a cookie for first time visitors
+                HttpCookie cookie = new HttpCookie(cookieName);
+                cookie.Value = "whoaverse first time visitor identifier";
+                this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+                ViewBag.FirstTimeVisitor = true;
+            }
             return View(submissions.ToPagedList(pageNumber, pageSize));
         }
 
@@ -314,11 +331,29 @@ namespace Whoaverse.Models
                                join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                select message).OrderByDescending(s => s.Date).ToList();
 
+            //setup a cookie to find first time visitors and display welcome banner
+            string cookieName = "NotFirstTime";
+            if (this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+            {
+                // not a first time visitor
+                ViewBag.FirstTimeVisitor = false;
+            }
+            else
+            {
+                // add a cookie for first time visitors
+                HttpCookie cookie = new HttpCookie(cookieName);
+                cookie.Value = "whoaverse first time visitor identifier";
+                this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+                ViewBag.FirstTimeVisitor = true;
+            }
+
             return View("Index", submissions.ToPagedList(pageNumber, pageSize));
         }        
 
         public ActionResult About(string pagetoshow)
         {
+            ViewBag.SelectedSubverse = "about";
+
             if (pagetoshow == "team")
             {
                 return View("~/Views/About/Team.cshtml");

@@ -24,7 +24,8 @@
     else
     {
         urlaction = "New";
-    } 
+    }
+
 }
 
 @using PagedList.Mvc;
@@ -39,6 +40,16 @@
     if (!Request.Browser.IsMobileDevice)
     {
         @Html.Partial("_SidebarFrontpage")
+        if (ViewBag.FirstTimeVisitor)
+        {
+            <div class="infobar welcome" style="display: block;">
+                <h1>whoaverse is a website about everything</h1>
+                <div class="button-row">
+                    <h2>where you shape the content by voting</h2>
+                    <a href="/about/intro">learn more ›</a>
+                </div>
+            </div>
+        }
     }
 }
 

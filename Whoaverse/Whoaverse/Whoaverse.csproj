@@ -270,6 +270,7 @@
     <Content Include="Graphics\expand-selfpost-hover.png" />
     <Content Include="Graphics\expand-selfpost.png" />
     <Content Include="Graphics\mail-icon.png" />
+    <Content Include="Graphics\pattern-welcome.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\whoaverse-bg.jpg" />
     <Content Include="Graphics\whoaverse-mascot.png" />
@@ -350,7 +351,6 @@
     <Content Include="Views\Errors\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\About\About.cshtml" />
-    <Content Include="Views\About\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
@@ -398,6 +398,8 @@
     <Content Include="Views\Errors\SubverseExists.cshtml" />
     <Content Include="Views\Help\UserAgreement.cshtml" />
     <Content Include="Views\Subverses\SubverseSettings.cshtml" />
+    <Content Include="Views\Home\_CommentTree.cshtml" />
+    <Content Include="Views\About\Intro.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
