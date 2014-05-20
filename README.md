@@ -23,8 +23,7 @@ Default database names are whoaverse and whoaverse_users.
 You can use whoaverse.sql and whoaverse_user.sql to generate necessary tables for each respective database.
 
 #### step 2
-- Modify and place Web.config file
-After cloning this repository, you will need to modify and place Web.config file in Whoaverse folder (the same folder where the file packages.config is located). You need to modify the following 2 connection strings in this file to reflect your SQL server address, port, database names and database usernames: 
+- After cloning this repository, you will need to modify and place Web.config file in Whoaverse folder (the same folder where the file packages.config is located). You need to modify the following 2 connection strings in this file to reflect your SQL server address, port, database names and database usernames: 
 DefaultConnection and whoaverseEntities
 
 #### step 3
