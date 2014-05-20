@@ -6,14 +6,14 @@ The code that powers whoaverse.com  http://www.whoaverse.com/v/whoaversedev
 ### Description
 Whoaverse is a Reddit®-like community platform developed in C# ASP.NET MVC 5. 
 
-### Installation/Dependencies
+### Dependencies
 Needs MS SQL server and .NET framework 4.5 but other DB servers should work without much modification.
 
 Whoaverse uses Markdown (https://code.google.com/p/markdownsharp/), Bootstrap (http://getbootstrap.com/), jQuery (http://jquery.com/). 
 
 "Production" version of Whoaverse is running at whoaverse.com (early alpha) on Windows Server 2008 R2 with SQL Server Express.
 
-### How can I run/use it?
+### Installation instructions
 Follow these steps to get up and running in 5 minutes:
 
 #### step 1
@@ -38,6 +38,10 @@ Update-Package -Reinstall
 ```c#
 message.Name=GrowthUtility.GetRandomUsername();
 ```
+
+### After installation
+Start by creating your user account. The frontpage will be empty, so you should start by creating a subverse.
+After creating your subverse, you can visit it (localhost/v/yourtestsubverse) and start posting stories or links. You can now comment on the new stories and vote on them.
 
 ### Why was this made?
 This was just a hobby project to help me get a better understanding of C# and ASP.NET MVC and Entity Framework.
