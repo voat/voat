@@ -37,7 +37,8 @@ namespace Whoaverse.Models
             }
             else
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                //don't return a sidebar since subverse doesn't exist or is a system subverse
+                return new EmptyResult();
             }
         }
 
