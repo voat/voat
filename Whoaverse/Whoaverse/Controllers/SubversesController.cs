@@ -29,7 +29,7 @@ namespace Whoaverse.Models
         // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverse(string selectedSubverse)
         {
-            var subverse = db.Subverses.FirstOrDefault(i => i.name == selectedSubverse);
+            Subverse subverse = db.Subverses.Find(selectedSubverse);
 
             if (subverse != null)
             {
@@ -38,7 +38,7 @@ namespace Whoaverse.Models
             else
             {
                 return View("~/Views/Errors/Error_404.cshtml");
-            }          
+            }
         }
 
         // GET: stylesheet for selected subverse
@@ -54,9 +54,9 @@ namespace Whoaverse.Models
             {
                 return Content(string.Empty);
             }
-            
+
         }
-        
+
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow)
         {
@@ -93,7 +93,7 @@ namespace Whoaverse.Models
             {
                 db.Messages.Add(message);
                 await db.SaveChangesAsync();
-                
+
                 //get newly generated message ID and execute ranking and self upvoting                
                 Votingtracker tmpVotingTracker = new Votingtracker();
                 tmpVotingTracker.MessageId = message.Id;
@@ -120,13 +120,13 @@ namespace Whoaverse.Models
         {
             try
             {
-            if (ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
                     Subverse subverse = new Subverse();
                     subverse.name = subverseTmpModel.Name;
                     subverse.title = "/v/" + subverseTmpModel.Name;
-                    subverse.description = subverseTmpModel.Description;                        
-                    subverse.type = subverseTmpModel.Type;                    
+                    subverse.description = subverseTmpModel.Description;
+                    subverse.type = subverseTmpModel.Type;
                     subverse.sidebar = subverseTmpModel.Sidebar;
                     subverse.creation_date = subverseTmpModel.Creation_date;
 
@@ -135,7 +135,7 @@ namespace Whoaverse.Models
                     {
                         db.Subverses.Add(subverse);
                         await db.SaveChangesAsync();
-                        
+
                         //register user as the owner of the newly created subverse
                         SubverseAdmin tmpSubverseAdmin = new SubverseAdmin();
 
@@ -151,13 +151,12 @@ namespace Whoaverse.Models
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists.");                        
+                        ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists.");
                         return View();
                     }
                 }
                 else
                 {
-                    //var errors = ModelState.Values.SelectMany(v => v.Errors);
                     return View();
                 }
             }
@@ -182,7 +181,7 @@ namespace Whoaverse.Models
             Subverse subverse = db.Subverses.Find(subversetoshow);
             if (subverse == null)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Errors/Subversenotfound.cshtml");
             }
             return View(subverse);
         }
@@ -218,12 +217,6 @@ namespace Whoaverse.Models
                 }
                 else
                 {
-                    //var errors = ModelState.Values.SelectMany(v => v.Errors);
-                    //foreach (var item in errors)
-                    //{
-                    //    ModelState.AddModelError(string.Empty, item.ErrorMessage);
-                    //}
-
                     return View();
                 }
             }
@@ -241,31 +234,28 @@ namespace Whoaverse.Models
             int pageNumber = (page ?? 1);
 
             ViewBag.Title = subversetoshow;
-            ViewBag.SelectedSubverse = subversetoshow;            
-            
-            //check if subverse exists, if not, send to a page not found error
-            var checkResult = db.Subverses
-                                .Where(s => s.name == subversetoshow)
-                                .FirstOrDefault();
+            ViewBag.SelectedSubverse = subversetoshow;
 
-            if (checkResult != null)
+            if (subversetoshow != "all")
             {
-                //if selected subverse is ALL, show submissions from all subverses, soerted by rank
-                if (subversetoshow == "all")
+                //check if subverse exists, if not, send to a page not found error
+                Subverse subverse = db.Subverses.Find(subversetoshow);
+                if (subverse != null)
                 {
-                    var submissions = db.Messages.OrderByDescending(s => s.Rank).ToList();
+                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Rank).ToList();
                     return View(submissions.ToPagedList(pageNumber, pageSize));
                 }
                 else
                 {
-                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Rank).ToList();
-                    return View(submissions.ToPagedList(pageNumber, pageSize));
-                }                
+                    return View("~/Views/Errors/Subversenotfound.cshtml");
+                }
             }
             else
             {
-                return View("~/Views/Errors/Subversenotfound.cshtml");
-            }            
+                //if selected subverse is ALL, show submissions from all subverses, soerted by rank
+                var submissions = db.Messages.OrderByDescending(s => s.Rank).ToList();
+                return View(submissions.ToPagedList(pageNumber, pageSize));
+            }
         }
 
         public ViewResult Subverses(int? page)
@@ -283,7 +273,7 @@ namespace Whoaverse.Models
             return View("~/Views/Errors/Subversenotfound.cshtml");
         }
 
-        public ActionResult @New (int? page, string subversetoshow, string sortingmode)
+        public ActionResult @New(int? page, string subversetoshow, string sortingmode)
         {
             //sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
@@ -294,29 +284,27 @@ namespace Whoaverse.Models
 
             ViewBag.Title = subversetoshow;
 
-            //check if subverse exists, if not, send to a page not found error
-            var checkResult = db.Subverses
-                                .Where(s => s.name == subversetoshow)
-                                .FirstOrDefault();
-
-            if (checkResult != null)
+            if (subversetoshow != "all")
             {
-                //if selected subverse is ALL, show submissions from all subverses, sorted by date
-                if (subversetoshow == "all")
+                //check if subverse exists, if not, send to a page not found error
+                Subverse subverse = db.Subverses.Find(subversetoshow);
+                if (subverse != null)
                 {
-                    var submissions = db.Messages.OrderByDescending(s => s.Date).ToList();
+                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Date).ToList();
                     return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                 }
                 else
                 {
-                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Date).ToList();
-                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-                }                
+                    return View("~/Views/Errors/Subversenotfound.cshtml");
+                }
             }
             else
             {
-                return View("~/Views/Errors/Subversenotfound.cshtml");
+                //if selected subverse is ALL, show submissions from all subverses, sorted by date
+                var submissions = db.Messages.OrderByDescending(s => s.Date).ToList();
+                return View("Index", submissions.ToPagedList(pageNumber, pageSize));
             }
+
         }
 
         public ActionResult Random()
