@@ -247,6 +247,7 @@
     <Compile Include="Utils\GrowthUtility.cs" />
     <Compile Include="Utils\Karma.cs" />
     <Compile Include="Utils\Markdown.cs" />
+    <Compile Include="Utils\PagerOptions.cs" />
     <Compile Include="Utils\PromotionUtility.cs" />
     <Compile Include="Utils\Ranking.cs" />
     <Compile Include="Utils\Submissions.cs" />
@@ -272,6 +273,7 @@
     <Content Include="Graphics\mail-icon.png" />
     <Content Include="Graphics\pattern-welcome.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
+    <Content Include="Graphics\whoaverse-404.png" />
     <Content Include="Graphics\whoaverse-bg.jpg" />
     <Content Include="Graphics\whoaverse-mascot.png" />
     <Content Include="Graphics\whoaverse.png" />

@@ -95,23 +95,7 @@
     @{
         if (Model.PageCount > 1)
         {
-            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), new PagedListRenderOptions
-           {
-               Display = PagedListDisplayMode.IfNeeded,
-               DisplayLinkToLastPage = PagedListDisplayMode.Never,
-               DisplayLinkToFirstPage = PagedListDisplayMode.Never,
-               DisplayPageCountAndCurrentLocation = false,
-               DisplayLinkToIndividualPages = false,
-               DisplayLinkToNextPage = PagedListDisplayMode.IfNeeded,
-               DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded,
-               LinkToNextPageFormat = "next ›",
-               LinkToPreviousPageFormat = "‹ prev",
-               ContainerDivClasses = new[] { "pagination-container" },
-               LiElementClasses = new[] { "btn-whoaverse-paging" },
-               UlElementClasses = null,
-               ClassToApplyToFirstListItemInPager = null,
-               ClassToApplyToLastListItemInPager = null
-           })
+            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), Whoaverse.Utils.WhoaversePagerOptions.PagedListRenderOptions())
         }
     }
 
