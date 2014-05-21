@@ -404,6 +404,7 @@
     <Content Include="Views\Subverses\SubverseSettings.cshtml" />
     <Content Include="Views\Home\_CommentTree.cshtml" />
     <Content Include="Views\About\Intro.cshtml" />
+    <Content Include="Views\Shared\_SidebarSubmissionInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

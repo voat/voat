@@ -24,6 +24,7 @@ namespace Whoaverse.Utils
             try
             {
                 WebRequest request = WebRequest.Create(sourceUrl);
+                request.Timeout = 300;
                 WebResponse response = request.GetResponse();
                 Image originalImage = Image.FromStream(response.GetResponseStream());
 
