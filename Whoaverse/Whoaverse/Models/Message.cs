@@ -35,6 +35,7 @@ namespace Whoaverse.Models
         public string Subverse { get; set; }
         public short Likes { get; set; }
         public short Dislikes { get; set; }
+        public string Thumbnail { get; set; }
     
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Votingtracker> Votingtrackers { get; set; }

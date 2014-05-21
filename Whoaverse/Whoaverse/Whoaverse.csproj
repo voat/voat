@@ -251,6 +251,7 @@
     <Compile Include="Utils\PromotionUtility.cs" />
     <Compile Include="Utils\Ranking.cs" />
     <Compile Include="Utils\Submissions.cs" />
+    <Compile Include="Utils\ThumbGenerator.cs" />
     <Compile Include="Utils\Voting.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -341,6 +342,7 @@
     <Content Include="Scripts\whoaverse.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="sitemap.xml" />
+    <Content Include="Thumbs\Placeholder.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

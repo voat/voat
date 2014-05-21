@@ -52,6 +52,7 @@
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" />
           <Property Name="Likes" Type="bigint" Nullable="false" />
           <Property Name="Dislikes" Type="bigint" Nullable="false" />
+          <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
         </EntityType>
         <EntityType Name="SubverseAdmins">
           <Key>
@@ -239,6 +240,7 @@
           <NavigationProperty Name="Subverses" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Message" ToRole="Subvers" />
           <Property Name="Likes" Type="Int16" Nullable="false" DefaultValue="1" />
           <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
+          <Property Name="Thumbnail" Type="String" MaxLength="40" FixedLength="true" Unicode="true" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -442,6 +444,7 @@
           <EntitySetMapping Name="Messages">
             <EntityTypeMapping TypeName="whoaverseModel.Message">
               <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="Thumbnail" ColumnName="Thumbnail" />
                 <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
                 <ScalarProperty Name="Likes" ColumnName="Likes" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />

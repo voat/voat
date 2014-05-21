@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using PagedList;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -121,7 +122,7 @@ namespace Whoaverse.Models
         [PreventSpam]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submitcomment([Bind(Include = "Id,CommentContent,MessageId,ParentId")] Comment comment)
-        {            
+        {
             comment.Date = System.DateTime.Now;
             comment.Name = User.Identity.Name;
             comment.Votes = 1;
@@ -146,7 +147,7 @@ namespace Whoaverse.Models
                 return View("~/Views/Help/SpeedyGonzales.cshtml");
             }
         }
-        
+
         // POST: editcomment
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -179,22 +180,22 @@ namespace Whoaverse.Models
                 else
                 {
                     return Json("Unauthorized edit or comment not found.", JsonRequestBehavior.AllowGet);
-                }                
+                }
             }
             else
             {
                 return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
             }
         }
-        
+
         // GET: submit
         [Authorize]
         public ActionResult Submit(string selectedsubverse)
         {
             if (selectedsubverse != "all")
             {
-                ViewBag.selectedSubverse = selectedsubverse;    
-            }            
+                ViewBag.selectedSubverse = selectedsubverse;
+            }
             return View();
         }
 
@@ -206,7 +207,7 @@ namespace Whoaverse.Models
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
-        {            
+        {
             if (ModelState.IsValid)
             {
                 //check if subverse exists
@@ -219,6 +220,28 @@ namespace Whoaverse.Models
                         Random r = new Random();
                         int rInt = r.Next(6, 17);
                         message.Likes = (short)rInt;
+                    }
+
+                    //generate a thumbnail if submission is a link submission and a direct link to image
+                    if (message.Type == 2)
+                    {
+                        try
+                        {
+                            string extension = Path.GetExtension(message.MessageContent);
+
+                            if (extension != String.Empty && extension != null)
+                            {
+                                if (extension == ".jpg" || extension == ".png")
+                                {
+                                    string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
+                                    message.Thumbnail = thumbFileName;
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            //unable to generate a thumbnail, don't use any
+                        }
                     }
 
                     db.Messages.Add(message);
@@ -291,14 +314,14 @@ namespace Whoaverse.Models
         public ViewResult Index(int? page)
         {
             ViewBag.SelectedSubverse = "frontpage";
-            
+
             int pageSize = 25;
             int pageNumber = (page ?? 1);
-       
+
             //get only submissions from default subverses, order by rank
             var submissions = (from message in db.Messages
-                     join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name                     
-                     select message).OrderByDescending(s => s.Rank).ToList();
+                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                               select message).OrderByDescending(s => s.Rank).ToList();
 
             //setup a cookie to find first time visitors and display welcome banner
             string cookieName = "NotFirstTime";
@@ -308,7 +331,7 @@ namespace Whoaverse.Models
                 ViewBag.FirstTimeVisitor = false;
             }
             else
-            {                
+            {
                 // add a cookie for first time visitors
                 HttpCookie cookie = new HttpCookie(cookieName);
                 cookie.Value = "whoaverse first time visitor identifier";
@@ -348,7 +371,7 @@ namespace Whoaverse.Models
             }
 
             return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-        }        
+        }
 
         public ActionResult About(string pagetoshow)
         {
