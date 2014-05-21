@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Net;
 
@@ -20,6 +21,7 @@ namespace Whoaverse.Utils
         public static string GenerateThumbFromUrl(string sourceUrl)
         {
             string randomFileName = GenerateRandomFilename();
+            string fileExtension = Path.GetExtension(sourceUrl);
 
             try
             {
@@ -33,7 +35,13 @@ namespace Whoaverse.Utils
                     using (Graphics g = Graphics.FromImage(b))
                     {
                         g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                        g.Clear(Color.White);
+
+                        if (fileExtension == ".png" || fileExtension == ".PNG")
+                        {
+                            //only for PNGs
+                            g.Clear(Color.White);
+                        }                        
+
                         g.DrawImageUnscaled(originalImage, 0, 0);
                     }
 

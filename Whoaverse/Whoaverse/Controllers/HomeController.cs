@@ -231,7 +231,7 @@ namespace Whoaverse.Models
 
                             if (extension != String.Empty && extension != null)
                             {
-                                if (extension == ".jpg" || extension == ".png")
+                                if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
                                 {
                                     string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
                                     message.Thumbnail = thumbFileName;
