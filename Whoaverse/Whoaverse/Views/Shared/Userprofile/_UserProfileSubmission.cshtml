@@ -35,13 +35,7 @@
         
         <div class=" thing id-t3_227d01 odd link " onclick="click_thing(this)" data-fullname="t3_227d01" data-ups="1" data-downs="0">
             <p class="parent"></p>
-            <div class="midcol unvoted">
-                <div class="arrow-upvote login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
-                <div class="score dislikes">X</div>
-                <div class="score unvoted">@Model.Votes</div>
-                <div class="score likes">X</div>
-                <div class="arrow-downvote login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
-            </div>
+            
             @{
             if (Model.Thumbnail != null)
             {
@@ -82,14 +76,8 @@
     else
     {
         <div class=" thing id-t3_227cyc even link self" onclick="click_thing(this)" data-fullname="t3_227cyc" data-ups="1" data-downs="0">
-            <p class="parent"></p>
-            <div class="midcol unvoted">
-                <div class="arrow-upvote login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
-                <div class="score dislikes">X</div>
-                <div class="score unvoted">@Model.Votes</div>
-                <div class="score likes">X</div>
-                <div class="arrow-downvote login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
-            </div>
+            <p class="parent"></p>           
+
             <a class="thumbnail thumb-placeholder may-blank " href="/comments/@Model.Id" rel="nofollow"></a>
             <div class="entry unvoted">
                 <p class="title">

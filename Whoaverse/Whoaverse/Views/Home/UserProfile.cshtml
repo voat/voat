@@ -14,6 +14,14 @@
 
 @{
     ViewBag.Title = "overview for " + @ViewBag.userid;
+
+    //(current page number -1)*25
+    int currentPageNumber = Model.PageNumber;
+    int counterCont = (currentPageNumber - 1) * 25;
+
+    int counter = counterCont + 1;
+    string submissionClass = "";
+
 }
 
 @using PagedList.Mvc;
@@ -22,11 +30,30 @@
 @Html.Partial("_SidebarUserInfo")
 
 <div class="content" role="main">
-    
+
 
     @foreach (var submission in Model)
     {
-        @Html.Partial("Userprofile/_UserProfileSubmission", submission)
+        //type 2 = link
+        //type 1 = message
+        if (submission.Type == 1)
+        {
+            submissionClass = "self";
+        }
+        else
+        {
+            submissionClass = "";
+        }
+
+        <div class="thing id-@submission.Id even link @submissionClass" onclick="handleVoting(this);" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="0">
+
+            @Html.Partial("_votingIconsSubmission", submission)
+            @Html.Partial("Userprofile/_UserProfileSubmission", submission)
+
+            <div class="child"></div>
+            <div class="clearleft"><!--IE6sux--></div>
+        </div>
+
     }
 
     @{
