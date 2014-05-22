@@ -252,6 +252,7 @@
     <Compile Include="Utils\Ranking.cs" />
     <Compile Include="Utils\Submissions.cs" />
     <Compile Include="Utils\ThumbGenerator.cs" />
+    <Compile Include="Utils\User.cs" />
     <Compile Include="Utils\Voting.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -405,6 +406,7 @@
     <Content Include="Views\Home\_CommentTree.cshtml" />
     <Content Include="Views\About\Intro.cshtml" />
     <Content Include="Views\Shared\_SidebarSubmissionInfo.cshtml" />
+    <Content Include="Views\Shared\_SidebarUserInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

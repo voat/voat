@@ -11,13 +11,13 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Votes" Type="int" />
-          <Property Name="Name" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CommentContent" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Date" Type="smalldatetime" Nullable="false" />
           <Property Name="LastEditDate" Type="smalldatetime" />
           <Property Name="MessageId" Type="int" />
-          <Property Name="Likes" Type="int" Nullable="false" />
-          <Property Name="Dislikes" Type="int" Nullable="false" />
+          <Property Name="Likes" Type="bigint" Nullable="false" />
+          <Property Name="Dislikes" Type="bigint" Nullable="false" />
           <Property Name="ParentId" Type="int" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
@@ -200,14 +200,14 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Votes" Type="Int32" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Date" Type="DateTime" Precision="0" Nullable="false" />
           <Property Name="MessageId" Type="Int32" />
           <NavigationProperty Name="Message" Relationship="Self.FK_Comments_Messages" FromRole="Comments" ToRole="Messages" />
           <NavigationProperty Name="Commentvotingtrackers" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Comments" ToRole="Commentvotingtracker" />
           <Property Name="CommentContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Likes" Type="Int32" Nullable="false" DefaultValue="1" />
-          <Property Name="Dislikes" Type="Int32" Nullable="false" DefaultValue="0" />
+          <Property Name="Likes" Type="Int16" Nullable="false" />
+          <Property Name="Dislikes" Type="Int16" Nullable="false" />
           <Property Name="ParentId" Type="Int32" />
           <Property Name="LastEditDate" Type="DateTime" Precision="0" />
         </EntityType>

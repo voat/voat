@@ -16,8 +16,6 @@ namespace Whoaverse.Models
     {
         public Comment()
         {
-            this.Likes = 1;
-            this.Dislikes = 0;
             this.Commentvotingtrackers = new HashSet<Commentvotingtracker>();
         }
     
@@ -27,8 +25,8 @@ namespace Whoaverse.Models
         public System.DateTime Date { get; set; }
         public Nullable<int> MessageId { get; set; }
         public string CommentContent { get; set; }
-        public int Likes { get; set; }
-        public int Dislikes { get; set; }
+        public short Likes { get; set; }
+        public short Dislikes { get; set; }
         public Nullable<int> ParentId { get; set; }
         public Nullable<System.DateTime> LastEditDate { get; set; }
     

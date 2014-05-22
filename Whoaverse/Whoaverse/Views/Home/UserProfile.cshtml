@@ -18,16 +18,15 @@
 
 @using PagedList.Mvc;
 
-<div class="content" role="main">
 
-    <h2>overview for @ViewBag.userid</h2>
-    <br />
+@Html.Partial("_SidebarUserInfo")
+
+<div class="content" role="main">
+    
 
     @foreach (var submission in Model)
     {
-
         @Html.Partial("Userprofile/_UserProfileSubmission", submission)
-
     }
 
     @{

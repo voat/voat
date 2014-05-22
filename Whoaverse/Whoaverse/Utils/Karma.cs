@@ -10,8 +10,10 @@ the specific language governing rights and limitations under the License.
 
 All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
- */
+*/
 
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +28,6 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-
                 int likes = db.Messages.AsEnumerable()
                                     .Where(r => r.Name == userName && r.Type == 2)
                                     .Sum(r => (int)r.Likes);
@@ -36,9 +37,26 @@ namespace Whoaverse.Utils
                                     .Sum(r => (int)r.Dislikes);
 
                 return likes - dislikes;
-
             }
-
         }
+
+        public static int CommentKarma(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                int sumOfLikes = db.Comments.AsEnumerable()
+                                    .Where(r => r.Name == userName)
+                                    .Sum(r => (int)r.Likes);
+
+                int sumOfdislikes = db.Comments.AsEnumerable()
+                                    .Where(r => r.Name == userName)
+                                    .Sum(r => (int)r.Dislikes);
+
+                return sumOfLikes - sumOfdislikes;
+            }
+        }
+
     }
+
 }
+

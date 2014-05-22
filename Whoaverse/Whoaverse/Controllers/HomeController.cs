@@ -286,29 +286,37 @@ namespace Whoaverse.Models
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            //show comments
-            if (whattodisplay != null && whattodisplay == "comments")
+            if (Whoaverse.Utils.User.UserExists(id))
             {
-                var userComments = from c in db.Comments.OrderByDescending(c => c.Date)
-                                   where c.Name.Equals(id)
-                                   select c;
-                return View("usercomments", userComments.ToPagedList(pageNumber, pageSize));
-            }
+                //show comments
+                if (whattodisplay != null && whattodisplay == "comments")
+                {
+                    var userComments = from c in db.Comments.OrderByDescending(c => c.Date)
+                                       where c.Name.Equals(id)
+                                       select c;
+                    return View("usercomments", userComments.ToPagedList(pageNumber, pageSize));
+                }
 
-            //show submissions                        
-            if (whattodisplay != null && whattodisplay == "submissions")
+                //show submissions                        
+                if (whattodisplay != null && whattodisplay == "submissions")
+                {
+                    var userSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
+                                          where b.Name.Equals(id)
+                                          select b;
+                    return View(userSubmissions.ToPagedList(pageNumber, pageSize));
+                }
+
+                //default, show overview
+                var userDefaultSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
+                                             where b.Name.Equals(id)
+                                             select b;
+                return View(userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
+            }
+            else
             {
-                var userSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                      where b.Name.Equals(id)
-                                      select b;
-                return View(userSubmissions.ToPagedList(pageNumber, pageSize));
+                return View("~/Views/Errors/Error_404.cshtml");
             }
-
-            //default, show overview
-            var userDefaultSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                         where b.Name.Equals(id)
-                                         select b;
-            return View(userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
+            
         }
 
         public ViewResult Index(int? page)
