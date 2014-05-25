@@ -207,7 +207,7 @@ function showcomment(commentid) {
     //show voting icons
     $("#" + commentid).parent().parent().find('.midcol').filter(":first").toggle(1);
     //show all children
-    $("#" + commentid).parent().parent().find('.child').filter(":first").toggle(1);
+    $("#" + commentid).parent().parent().find('.child').toggle(1);
 
     return (false);
 }
@@ -220,7 +220,7 @@ function hidecomment(commentid) {
     //hide voting icons
     $("#" + commentid).parent().parent().find('.midcol').filter(":first").toggle(1); 
     //hide all children
-    $("#" + commentid).parent().parent().find('.child').filter(":first").toggle(1);
+    $("#" + commentid).parent().parent().find('.child').toggle(1);
     
     return (false);
 }

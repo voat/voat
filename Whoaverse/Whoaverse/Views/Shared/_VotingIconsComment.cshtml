@@ -10,10 +10,9 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model Whoaverse.Models.Comment
-
 @{
-
+    int commentId = Convert.ToInt32(ViewData["CommentId"]);
+    
     int score = (Model.Likes - Model.Dislikes);
 
     //default voting icons style
@@ -43,8 +42,8 @@
         }
 
         <div class="midcol @likesOrDislikesClass">
-            <div class="@votingStatusClassUpArrow login-required" onclick="voteUp(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
-            <div class="@votingStatusClassDownArrow login-required" onclick="voteDown(@Model.Id);" role="button" aria-label="downvote" tabindex="0"></div>
+            <div class="@votingStatusClassUpArrow login-required" onclick="voteUp(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
+            <div class="@votingStatusClassDownArrow login-required" onclick="voteDown(@commentId);" role="button" aria-label="downvote" tabindex="0"></div>
         </div>
     }
     else
