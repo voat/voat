@@ -226,17 +226,29 @@ namespace Whoaverse.Models
                     if (message.Type == 2)
                     {
                         try
-                        {
-                            string extension = Path.GetExtension(message.MessageContent);
-
-                            if (extension != String.Empty && extension != null)
+                        {                            
+                            string domain = Whoaverse.Utils.Badges.GetDomainFromUri(message.MessageContent);
+                            
+                            //if domain is youtube, try generating a thumbnail for the video
+                            if (domain == "youtube.com")
                             {
-                                if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
-                                {
-                                    string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
-                                    message.Thumbnail = thumbFileName;
-                                }
+                                string thumbFileName = ThumbGenerator.GenerateThumbFromYoutubeVideo(message.MessageContent);
+                                message.Thumbnail = thumbFileName;
                             }
+                            else
+                            {
+                                string extension = Path.GetExtension(message.MessageContent);
+
+                                if (extension != String.Empty && extension != null)
+                                {
+                                    if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
+                                    {
+                                        string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
+                                        message.Thumbnail = thumbFileName;
+                                    }
+                                }
+                            }                         
+                            
                         }
                         catch (Exception)
                         {

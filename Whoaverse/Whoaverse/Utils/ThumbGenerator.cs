@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Web;
 
 namespace Whoaverse.Utils
 {
@@ -42,6 +43,40 @@ namespace Whoaverse.Utils
                             g.Clear(Color.White);
                         }                        
 
+                        g.DrawImageUnscaled(originalImage, 0, 0);
+                    }
+
+                    Save(b, maxHeight, maxWidth, 100, (destinationPath + '\\' + randomFileName + ".jpg"));
+                    return randomFileName + ".jpg";
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+        // generate a thumbnail from youtube video
+        public static string GenerateThumbFromYoutubeVideo(string sourceUrl)
+        {
+            string randomFileName = GenerateRandomFilename();
+            
+            try
+            {
+                // get youtube video id from url
+                Uri tmpUri = new Uri(sourceUrl);
+                string videoId = HttpUtility.ParseQueryString(tmpUri.Query).Get("v");               
+                WebRequest request = WebRequest.Create("http://img.youtube.com/vi/" + videoId + "/hqdefault.jpg");
+                request.Timeout = 300;
+                WebResponse response = request.GetResponse();
+                Image originalImage = Image.FromStream(response.GetResponseStream());
+
+                using (Bitmap b = new Bitmap(originalImage.Width, originalImage.Height))
+                {
+                    using (Graphics g = Graphics.FromImage(b))
+                    {
+                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                         g.DrawImageUnscaled(originalImage, 0, 0);
                     }
 

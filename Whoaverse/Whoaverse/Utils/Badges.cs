@@ -26,8 +26,8 @@ namespace Whoaverse.Utils
         //return domain from URI
         public static string GetDomainFromUri(string completeUri)
         {
-            Uri tmpUri = new Uri(completeUri);
-            return tmpUri.Host;
+            Uri tmpUri = new Uri(completeUri);            
+            return tmpUri.GetLeftPart(UriPartial.Authority).Replace("/www.", "/").Replace("http://", "").Replace("https://", "");            
         }
 
     }
