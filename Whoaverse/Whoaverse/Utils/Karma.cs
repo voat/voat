@@ -12,12 +12,8 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Whoaverse.Models;
 
 namespace Whoaverse.Utils
@@ -29,11 +25,11 @@ namespace Whoaverse.Utils
             using (whoaverseEntities db = new whoaverseEntities())
             {
                 int likes = db.Messages.AsEnumerable()
-                                    .Where(r => r.Name == userName && r.Type == 2)
+                                    .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Type == 2)
                                     .Sum(r => (int)r.Likes);
 
                 int dislikes = db.Messages.AsEnumerable()
-                                    .Where(r => r.Name == userName && r.Type == 2)
+                                    .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Type == 2)
                                     .Sum(r => (int)r.Dislikes);
 
                 return likes - dislikes;
@@ -45,11 +41,11 @@ namespace Whoaverse.Utils
             using (whoaverseEntities db = new whoaverseEntities())
             {
                 int sumOfLikes = db.Comments.AsEnumerable()
-                                    .Where(r => r.Name == userName)
+                                    .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Sum(r => (int)r.Likes);
 
                 int sumOfdislikes = db.Comments.AsEnumerable()
-                                    .Where(r => r.Name == userName)
+                                    .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Sum(r => (int)r.Dislikes);
 
                 return sumOfLikes - sumOfdislikes;

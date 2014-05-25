@@ -44,7 +44,6 @@ namespace Whoaverse.Controllers
 
         public UserManager<ApplicationUser> UserManager { get; private set; }
 
-        //
         // GET: /Account/Login
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
@@ -54,7 +53,6 @@ namespace Whoaverse.Controllers
             return View();
         }
 
-        //
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
@@ -99,7 +97,6 @@ namespace Whoaverse.Controllers
             return View(model);
         }
 
-        //
         // GET: /Account/Register
         [AllowAnonymous]
         public ActionResult Register()
@@ -108,7 +105,6 @@ namespace Whoaverse.Controllers
             return View();
         }
 
-        //
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
@@ -120,6 +116,9 @@ namespace Whoaverse.Controllers
                 try
                 {
                     var user = new ApplicationUser() { UserName = model.UserName };
+                    
+                    user.RegistrationDateTime = DateTime.Now;
+
                     var result = await UserManager.CreateAsync(user, model.Password);
                     if (result.Succeeded)
                     {

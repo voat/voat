@@ -10,7 +10,7 @@ the specific language governing rights and limitations under the License.
 
 All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
- */
+*/
 
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
@@ -21,6 +21,7 @@ namespace Whoaverse.Models
     public class ApplicationUser : IdentityUser
     {
         //public virtual UserInformation UserInformation { get; set; }
+        public DateTime RegistrationDateTime { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

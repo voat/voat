@@ -42,5 +42,21 @@ namespace Whoaverse.Utils
             }
         }
 
+        // return user registration date
+        public static DateTime GetUserRegistrationDateTime(string userName)
+        {
+            using (UserManager<ApplicationUser> tmpUserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+            {
+                var tmpuser = tmpUserManager.FindByName(userName);
+                if (tmpuser != null)
+                {
+                    return tmpuser.RegistrationDateTime;
+                }
+                else
+                {
+                    return DateTime.MinValue;
+                }
+            }
+        }
     }
 }

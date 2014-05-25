@@ -10,7 +10,7 @@ the specific language governing rights and limitations under the License.
 
 All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
- */
+*/
 
 using System.ComponentModel.DataAnnotations;
 

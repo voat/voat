@@ -13,13 +13,14 @@
 
 @{
     string userName = ViewBag.userid;
+    DateTime userRegistrationDateTime = Whoaverse.Utils.User.GetUserRegistrationDateTime(userName);   
 
     if (!Request.Browser.IsMobileDevice)
-    {
-
+    {      
+        
         <style>
-            .titlebox{
-                width:251px;
+            .titlebox {
+                width: 251px;
             }
         </style>
 
@@ -31,10 +32,11 @@
                     </h2>
                     <div class="bottom">
                         <p class="h6">
-                            Member since: <b>coming soon</b>
+                            Member for: <b>@Whoaverse.Utils.Submissions.CalcSubmissionAge(userRegistrationDateTime)</b><br />
+                            <span class="bottommenu">(joined on: @Whoaverse.Utils.User.GetUserRegistrationDateTime(userName).ToShortDateString())</span>
                         </p>
                     </div>
-                    
+
                     <h2 class="hover whoaversename">
                         Imaginary points
                     </h2>
