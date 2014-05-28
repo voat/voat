@@ -14,18 +14,17 @@
 
 @if (Request.IsAuthenticated)
 {
-    int linkKarma = Whoaverse.Utils.Karma.LinkKarma(User.Identity.GetUserName());    
-    
+    int linkKarma = Whoaverse.Utils.Karma.LinkKarma(User.Identity.GetUserName());
+
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {
         @Html.AntiForgeryToken()
         <div id="header-bottom-right">
-            <span class="user">
-                @Html.ActionLink(User.Identity.GetUserName(), "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })
-                (<span class="userkarma" title="link karma">@linkKarma</span>)
-            </span>
-            <span class="separator">|</span><a title="no new mail" href="#" class="nohavemail" id="mail">messages</a>
-            <span class="separator">|</span><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+            <span class="user">@Html.ActionLink(User.Identity.GetUserName(), "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })&nbsp;(<span class="userkarma" title="link karma">@linkKarma</span>)</span>
+            <span class="separator">|</span>
+            <a title="no new mail" href="#" class="nohavemail" id="mail">messages</a>
+            <span class="separator">|</span>
+            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>      
         </div>
     }
 

@@ -182,6 +182,7 @@ namespace Whoaverse.Models
             Subverse subverse = db.Subverses.Find(subversetoshow);
             if (subverse == null)
             {
+                ViewBag.SelectedSubverse = "404";
                 return View("~/Views/Errors/Subversenotfound.cshtml");
             }
             return View(subverse);
@@ -248,6 +249,7 @@ namespace Whoaverse.Models
                 }
                 else
                 {
+                    ViewBag.SelectedSubverse = "404";
                     return View("~/Views/Errors/Subversenotfound.cshtml");
                 }
             }
@@ -271,6 +273,7 @@ namespace Whoaverse.Models
 
         public ActionResult Subversenotfound()
         {
+            ViewBag.SelectedSubverse = "404";
             return View("~/Views/Errors/Subversenotfound.cshtml");
         }
 

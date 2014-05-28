@@ -358,6 +358,7 @@ namespace Whoaverse.Models
                 this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
                 ViewBag.FirstTimeVisitor = true;
             }
+
             return View(submissions.ToPagedList(pageNumber, pageSize));
         }
 

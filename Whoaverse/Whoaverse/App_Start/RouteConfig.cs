@@ -178,7 +178,7 @@ namespace Whoaverse
                 name: "SubverseLatestPosts",
                 url: "v/{subversetoshow}/{sortingmode}",
                 defaults: new { controller = "Subverses", action = "New" }
-            );
+            );            
 
             routes.MapRoute(
                 name: "Default",
