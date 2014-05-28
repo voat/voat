@@ -4,12 +4,17 @@
     ViewBag.Title = "Manage Account";
 }
 
+@Html.Partial("_SidebarUserInfo")
+
 <div id="about-main" class="content about-page" role="main">
 
     <div class="row nomargin">
         <div class="well col-md-8">
 
-            <h1>Manage account.</h1>
+            <h1>Your public profile</h1>
+            <p class="h6"><a href="/user/@User.Identity.Name">Click here</a> to go to your public profile.</p>            
+            <hr />
+            <h1>Change your password</h1>
             <h2>You can use this form to change your password.</h2>
             <hr />
 

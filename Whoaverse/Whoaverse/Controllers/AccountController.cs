@@ -162,6 +162,7 @@ namespace Whoaverse.Controllers
         // GET: /Account/Manage
         public ActionResult Manage(ManageMessageId? message)
         {
+            ViewBag.userid = User.Identity.GetUserName();
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
