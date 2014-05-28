@@ -134,6 +134,11 @@ fieldset[disabled] .btn {
   box-shadow: none;
 }
 
+.row {
+    margin-bottom: 20px;
+    margin-right: 0px;
+}
+
 .circle-step {
     width:30px;
     height:30px;

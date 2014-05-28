@@ -41,7 +41,7 @@
         if (Model.Thumbnail != null)
         {
             <a class="thumbnail may-blank " href="@Model.MessageContent">
-                <img src="~/Thumbs/@Model.Thumbnail" width='70' height='70' alt="" />
+                <img src="~/Thumbs/@Model.Thumbnail" alt="" />
             </a>
         }
 
@@ -94,14 +94,14 @@
             <ul class="flat-list buttons">
                 <li class="first">
                     @{
-        if (Model.Comments.Count > 0)
-        {
-            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
-        }
-        else
-        {
-            <a href="@commentsUrl" class="comments may-blank">discuss</a>
-        }
+                        if (Model.Comments.Count > 0)
+                        {
+                            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
+                        }
+                        else
+                        {
+                            <a href="@commentsUrl" class="comments may-blank">discuss</a>
+                        }
                     }
                 </li>
                 <li class="share">

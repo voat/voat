@@ -949,7 +949,7 @@ ul.flat-vert {
 
 .midcol {
     float: left;
-    margin-right: 4px;
+    margin-right: 10px;
     margin-left: 7px;
     background: transparent;
     overflow: hidden;
@@ -5012,10 +5012,12 @@ form input[type=checkbox], form input[type=radio] {
 .thumbnail {
     float: left;
     font-size: 0;
-    margin: 0 5px;
     margin-bottom: 2px;
-    overflow: hidden;
-    width: 70px;
+    overflow: hidden;    
+    max-width: 70px;
+    width: 100%;
+    height: auto;
+    margin-right: 5px;
 }
 
     .thumbnail.nsfw {
