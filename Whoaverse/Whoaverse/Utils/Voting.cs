@@ -45,31 +45,6 @@ namespace Whoaverse.Utils
 
         }
 
-        //returns -1:downvoted, 1:upvoted, or 0:not voted
-        public static int CheckIfVotedComment(string userToCheck, int commentId)
-        {
-            int intCheckResult = 0;
-
-            using (whoaverseEntities db = new whoaverseEntities())
-            {
-                var checkResult = db.Commentvotingtrackers
-                                .Where(b => b.CommentId == commentId && b.UserName == userToCheck)
-                                .FirstOrDefault();
-
-                if (checkResult != null)
-                {
-                    intCheckResult = checkResult.VoteStatus.Value;
-                }
-                else
-                {
-                    intCheckResult = 0;
-                }
-
-                return intCheckResult;
-            }
-
-        }
-
         //a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetMessageVote(string userWhichVoted, int messageId)
         {

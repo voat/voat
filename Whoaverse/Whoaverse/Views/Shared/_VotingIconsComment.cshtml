@@ -25,7 +25,7 @@
     {        
         string loggedInUserName = User.Identity.Name;
         //returns -1:downvoted, 1:upvoted, or 0:not voted
-        int votedOrNot = Whoaverse.Utils.Voting.CheckIfVotedComment(loggedInUserName, Model.Id);
+        int votedOrNot = Whoaverse.Utils.VotingComments.CheckIfVotedComment(loggedInUserName, commentId);
 
         switch (votedOrNot)
         {
@@ -42,8 +42,8 @@
         }
 
         <div class="midcol @likesOrDislikesClass">
-            <div class="@votingStatusClassUpArrow login-required" onclick="voteUp(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
-            <div class="@votingStatusClassDownArrow login-required" onclick="voteDown(@commentId);" role="button" aria-label="downvote" tabindex="0"></div>
+            <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
+            <div class="@votingStatusClassDownArrow login-required" onclick="voteDownComment(@commentId);" role="button" aria-label="downvote" tabindex="0"></div>
         </div>
     }
     else

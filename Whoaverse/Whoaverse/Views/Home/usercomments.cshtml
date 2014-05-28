@@ -20,14 +20,12 @@
 
 <div class="content" role="main">
 
-    <h2>overview for @ViewBag.userid</h2>
+    <h2>Comment history for @ViewBag.userid</h2>
     <hr />
 
     @foreach (var submission in Model)
     {
-
         @Html.Partial("Userprofile/_UserProfileComment", submission)
-
     }
 
     @{

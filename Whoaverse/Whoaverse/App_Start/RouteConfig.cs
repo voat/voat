@@ -102,6 +102,13 @@ namespace Whoaverse
                 defaults: new { controller = "Home", action = "Vote" }
             );
 
+            // vote comment
+            routes.MapRoute(
+                name: "votecomment",
+                url: "votecomment/{commentId}/{typeOfVote}",
+                defaults: new { controller = "Comment", action = "VoteComment" }
+            );
+
             // editcomment
             routes.MapRoute(
                   "editcomment",

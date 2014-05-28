@@ -23,10 +23,15 @@
     <div id="siteTable_t3_24nbon" class="sitetable nestedlisting">
 
         @{
-            var firstComments = from f in Model.Comments where f.ParentId == null orderby f.Votes descending select f;
+            var firstComments = from f in Model.Comments
+                                let commentScore = f.Likes - f.Dislikes
+                                where f.ParentId == null
+                                orderby commentScore descending
+                                select f;
+                                
             foreach (var firstComment in firstComments)
             {
-                <div class=" thread id-@firstComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
+                <div class="thread id-@firstComment.Id comment " data-fullname=" t1_cgkmgmm" data-ups="1" data-downs="0">
                     @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id } })
                 </div>
             }

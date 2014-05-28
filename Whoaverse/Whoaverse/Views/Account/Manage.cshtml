@@ -6,28 +6,33 @@
 
 <div id="about-main" class="content about-page" role="main">
 
-    <h2>@ViewBag.Title.</h2>
+    <div class="row nomargin">
+        <div class="well col-md-8">
 
-    <p class="text-success">@ViewBag.StatusMessage</p>
-    <div class="row">
-        <div class="col-md-12">
-            @if (ViewBag.HasLocalPassword)
-            {
-                @Html.Partial("_ChangePasswordPartial")
-            }
-            else
-            {
-                @Html.Partial("_SetPasswordPartial")
+            <h1>Manage account.</h1>
+            <h2>You can use this form to change your password.</h2>
+            <hr />
+
+            <p class="text-success">@ViewBag.StatusMessage</p>
+            
+                    @if (ViewBag.HasLocalPassword)
+                    {
+                        @Html.Partial("_ChangePasswordPartial")
+                    }
+                    else
+                    {
+                        @Html.Partial("_SetPasswordPartial")
+                    }
+
+                    <section id="externalLogins">
+                        @Html.Action("RemoveAccountList")
+                        @*@Html.Partial("_ExternalLoginsListPartial", new { Action = "LinkLogin", ReturnUrl = ViewBag.ReturnUrl })*@
+                    </section>
+                
+            </div>
+            @section Scripts {
+                @Scripts.Render("~/bundles/jqueryval")
             }
 
-            <section id="externalLogins">
-                @Html.Action("RemoveAccountList")
-                @Html.Partial("_ExternalLoginsListPartial", new { Action = "LinkLogin", ReturnUrl = ViewBag.ReturnUrl })
-            </section>
         </div>
     </div>
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }
-
-</div>
