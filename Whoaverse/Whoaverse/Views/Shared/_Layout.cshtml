@@ -122,7 +122,7 @@
         <div id="header-bottom-left">
             <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
                 <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
-            </a>&nbsp;
+            </a>&nbsp;            
 
             @{
                 if (selectedSubverse.Equals("user"))
@@ -157,7 +157,8 @@
                 }
                 else
                 {
-                    <ul class="tabmenu ">
+                    <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
+                    <ul class="tabmenu ">                        
                         <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
                         <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
                         <li><a href="@selectedSubverse/submit">submit a message</a></li>
