@@ -263,12 +263,26 @@ namespace Whoaverse.Models
 
         public ViewResult Subverses(int? page)
         {
+            ViewBag.SelectedSubverse = "subverses";
+            int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            var subverses = db.Subverses.ToList();
+
+            return View(subverses.ToPagedList(pageNumber, pageSize));
+        }
+
+        public ViewResult NewestSubverses(int? page, string sortingmode)
+        {
+            ViewBag.SelectedSubverse = "subverses";
+            ViewBag.SortingMode = sortingmode;
+
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
             var subverses = db.Subverses.OrderByDescending(s => s.creation_date).ToList();
 
-            return View(subverses.ToPagedList(pageNumber, pageSize));
+            return View("~/Views/Subverses/Subverses.cshtml", subverses.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult Subversenotfound()

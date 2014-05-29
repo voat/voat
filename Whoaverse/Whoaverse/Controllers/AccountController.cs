@@ -48,7 +48,7 @@ namespace Whoaverse.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
-            ViewBag.SelectedSubverse = "login";
+            ViewBag.SelectedSubverse = string.Empty;
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -101,7 +101,7 @@ namespace Whoaverse.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            ViewBag.SelectedSubverse = "register";
+            ViewBag.SelectedSubverse = string.Empty;
             return View();
         }
 
@@ -162,6 +162,7 @@ namespace Whoaverse.Controllers
         // GET: /Account/Manage
         public ActionResult Manage(ManageMessageId? message)
         {
+            ViewBag.SelectedSubverse = string.Empty;
             ViewBag.userid = User.Identity.GetUserName();
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."

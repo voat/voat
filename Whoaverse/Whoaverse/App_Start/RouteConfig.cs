@@ -26,12 +26,20 @@ namespace Whoaverse
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.LowercaseUrls = true;
 
             // /subverses
             routes.MapRoute(
                 name: "Subverses",
                 url: "subverses/",
                 defaults: new { controller = "Subverses", action = "Subverses" }
+            );
+
+            // /new
+            routes.MapRoute(
+                name: "SubversesNew",
+                url: "subverses/{sortingmode}",
+                defaults: new { controller = "Subverses", action = "NewestSubverses" }
             );
 
             // /subverses/create

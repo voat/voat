@@ -396,7 +396,7 @@ namespace Whoaverse.Models
 
         public ActionResult About(string pagetoshow)
         {
-            ViewBag.SelectedSubverse = "about";
+            ViewBag.SelectedSubverse = string.Empty;
 
             if (pagetoshow == "team")
             {

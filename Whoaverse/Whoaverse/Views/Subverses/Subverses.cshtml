@@ -14,6 +14,17 @@
 
 @{
     ViewBag.Title = "Alpha";
+    string sortingMode = ViewBag.SortingMode;
+    string urlaction = "";
+
+    if (sortingMode != "new")
+    {
+        urlaction = "index";
+    }
+    else
+    {
+        urlaction = "new";
+    }
 }
 
 @using PagedList.Mvc;
@@ -40,9 +51,8 @@
     @{
         if (Model.PageCount > 1)
         {
-            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), Whoaverse.Utils.WhoaversePagerOptions.PagedListRenderOptions())
+            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), Whoaverse.Utils.WhoaversePagerOptions.PagedListRenderOptions())
         }
     }
-
 
 </div>

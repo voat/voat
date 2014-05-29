@@ -10,7 +10,7 @@ namespace Whoaverse.Controllers
     {
         public ViewResult NotFound()
         {
-            ViewBag.SelectedSubverse = "404";
+            ViewBag.SelectedSubverse = string.Empty;
             //Response.StatusCode = 404;
             return View("~/Views/Errors/Error_404.cshtml");
         }
