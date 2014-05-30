@@ -234,8 +234,7 @@ namespace Whoaverse.Models
         {
             int pageSize = 25;
             int pageNumber = (page ?? 1);
-
-            ViewBag.Title = subversetoshow;
+            
             ViewBag.SelectedSubverse = subversetoshow;
 
             if (subversetoshow != "all")
@@ -245,6 +244,7 @@ namespace Whoaverse.Models
                 if (subverse != null)
                 {
                     var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Rank).ToList();
+                    ViewBag.Title = subverse.description;
                     return View(submissions.ToPagedList(pageNumber, pageSize));
                 }
                 else
@@ -257,6 +257,7 @@ namespace Whoaverse.Models
             {
                 //if selected subverse is ALL, show submissions from all subverses, soerted by rank
                 var submissions = db.Messages.OrderByDescending(s => s.Rank).ToList();
+                ViewBag.Title = "all subverses";
                 return View(submissions.ToPagedList(pageNumber, pageSize));
             }
         }

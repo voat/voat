@@ -36,14 +36,28 @@
         //type 1 = message submission
         if (Model.Type == 1)
         {
-            ViewBag.Title = Model.Title;
+            ViewBag.Title = Model.Title + " | " + selectedSubverse;
+            ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
+            ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
+            ViewBag.Description = ViewBag.Description ?? "whoaverse: the next frontpage of the internet";
             @Html.Partial("_MessageSubmissionDetails", Model)
         }
 
         //type 2 = link submission
         if (Model.Type == 2)
         {
-            ViewBag.Title = Model.Linkdescription;
+            ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
+            ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
+            ViewBag.Description = ViewBag.Description ?? "whoaverse: the next frontpage of the internet";
+            //check if submission has a thumb, otherwise point to site logo
+            if (Model.Thumbnail != null)
+            {
+                ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Thumbs/"+@Model.Thumbnail;
+            }
+            else
+            {
+                ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
+            }            
             @Html.Partial("_LinkSubmissionDetails", Model)
         }
     }

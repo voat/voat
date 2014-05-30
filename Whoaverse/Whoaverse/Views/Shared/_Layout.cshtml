@@ -13,7 +13,6 @@
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
 
-    ViewBag.Title = "Alpha";
     string sortingMode = ViewBag.SortingMode;
     string selectedUser = ViewBag.userid;
     string selectedSubverseNew = "";
@@ -23,8 +22,12 @@
     string classComments = "disabled";
     string classSubmissions = "disabled";
 
-
     string whattodisplay = ViewBag.whattodisplay;
+
+    ViewBag.Title = ViewBag.Title ?? "whoaverse: the next frontpage of the internet";
+    ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
+    ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
+    ViewBag.Description = ViewBag.Description ?? "whoaverse: the next frontpage of the internet";
 
     if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user")
     {
@@ -71,7 +74,7 @@
 
 <!DOCTYPE html>
 <html>
-<head>
+<head prefix="og: http://ogp.me/ns#">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -92,7 +95,13 @@
         <meta name="keywords" content="whoaverse, whoaverse.com, vote, submit, comment" />
     }
 
-    <title>@ViewBag.Title - Whoaverse</title>
+    <title>@ViewBag.Title</title>
+    <meta property="og:title" content="@ViewBag.Title" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@ViewBag.Url" />
+    <meta property="og:image" content="@ViewBag.Image" />
+    <meta property="og:site_name" content="whoaverse" />
+    <meta property="og:description" content="@ViewBag.Description" />
 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
@@ -122,7 +131,7 @@
         <div id="header-bottom-left">
             <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
                 <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
-            </a>&nbsp;            
+            </a>&nbsp;
 
             @{
                 if (selectedSubverse.Equals("user"))
@@ -148,7 +157,7 @@
                 {
                     <ul class="tabmenu ">
                         <li class="@classHot"><a href="/subverses">popular</a></li>
-                        <li class="@classNew"><a href="/subverses/new">new</a></li>                        
+                        <li class="@classNew"><a href="/subverses/new">new</a></li>
                     </ul>
                 }
                 else if (ViewBag.SelectedSubverse.Equals(string.Empty))
@@ -157,13 +166,16 @@
                 }
                 else
                 {
-                    <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
-                    <ul class="tabmenu ">                        
+                    if (!Request.Browser.IsMobileDevice)
+                    {
+                        <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
+                    }                    
+                    <ul class="tabmenu ">
                         <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
                         <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
                         <li><a href="@selectedSubverse/submit">submit a message</a></li>
-                        <li><a href="@selectedSubverse/submit?linkpost=true">submit a link</a></li>                        
-                    </ul>                
+                        <li><a href="@selectedSubverse/submit?linkpost=true">submit a link</a></li>
+                    </ul>
                 }
 
             }
@@ -197,16 +209,13 @@
     @RenderBody()
 
     <div class="centered">
-
         <div class="footer rounded">
-
             <div>
                 <span class="separator"></span><a href="/about">about</a>
                 <span class="separator"></span><a href="/about/team">team</a>
                 <span class="separator"></span><a href="https://github.com/whoaverse/whoaverse">source code</a>
                 <span class="separator"></span><a href="/v/whoaversejobs/">jobs</a>
             </div>
-
             <p class="bottommenu">
                 Use of this site constitutes acceptance of our <a href="~/help/useragreement">User Agreement</a> and <a href="~/help/privacy">Privacy Policy</a>.
             </p>
@@ -214,15 +223,10 @@
                 &copy; @DateTime.Now.Year Whoaverse.com. All rights reserved.
             </p>
         </div>
-
     </div>
-
     <br />
-
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
-
 </body>
-
 
 </html>
