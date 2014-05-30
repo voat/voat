@@ -46,7 +46,7 @@ namespace Whoaverse.Models
                 {
                     SmtpClient smtp = new SmtpClient();
                     MailAddress from = new MailAddress(claModel.Email);
-                    MailAddress to = new MailAddress("legal@whoaverse.com");
+                    MailAddress to = new MailAddress("team@whoaverse.com");
                     StringBuilder sb = new StringBuilder();
                     MailMessage msg = new MailMessage(from, to);
 

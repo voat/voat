@@ -28,6 +28,13 @@ namespace Whoaverse
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.LowercaseUrls = true;
 
+            // /subverses/create
+            routes.MapRoute(
+                name: "CreateSubverse",
+                url: "subverses/create",
+                defaults: new { controller = "Subverses", action = "CreateSubverse" }
+            );
+
             // /subverses
             routes.MapRoute(
                 name: "Subverses",
@@ -40,14 +47,7 @@ namespace Whoaverse
                 name: "SubversesNew",
                 url: "subverses/{sortingmode}",
                 defaults: new { controller = "Subverses", action = "NewestSubverses" }
-            );
-
-            // /subverses/create
-            routes.MapRoute(
-                name: "CreateSubverse",
-                url: "subverses/create",
-                defaults: new { controller = "Subverses", action = "CreateSubverse" }
-            );
+            );            
 
             // comments/4
             routes.MapRoute(
