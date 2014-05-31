@@ -216,7 +216,7 @@ function reply(parentcommentid, messageid) {
         + "<div class='col-md-4'>"
         + "<textarea class='form-control' cols='20' id='CommentContent' name='CommentContent' data-val-required='Comment text is required. Please fill this field.' data-val='true' rows='3'></textarea>"
         + "<span class='field-validation-valid' data-valmsg-for='CommentContent' data-valmsg-replace='true'></span>"
-        + "</div></div><br>"
+        + "</div></div>"
         + "<input value='Submit reply' class='btn-whoaverse-paging' type='submit'>"
         + "<button class='btn-whoaverse-paging' onclick='removereplyform("+parentcommentid+")' type='button'>Cancel</button>"
         + "</form>"
