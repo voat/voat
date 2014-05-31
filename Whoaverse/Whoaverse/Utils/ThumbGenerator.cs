@@ -35,7 +35,9 @@ namespace Whoaverse.Utils
                 {
                     using (Graphics g = Graphics.FromImage(b))
                     {
+                        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
                         g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        g.CompositingMode = CompositingMode.SourceCopy;
 
                         if (fileExtension == ".png" || fileExtension == ".PNG")
                         {
@@ -55,8 +57,7 @@ namespace Whoaverse.Utils
                 throw;
             }
         }
-
-
+        
         // generate a thumbnail from youtube video
         public static string GenerateThumbFromYoutubeVideo(string sourceUrl)
         {
@@ -76,7 +77,9 @@ namespace Whoaverse.Utils
                 {
                     using (Graphics g = Graphics.FromImage(b))
                     {
+                        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
                         g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        g.CompositingMode = CompositingMode.SourceCopy;
                         g.DrawImageUnscaled(originalImage, 0, 0);
                     }
 
@@ -120,8 +123,10 @@ namespace Whoaverse.Utils
             // Draws the image in the specified size with quality mode set to HighQuality
             using (Graphics graphics = Graphics.FromImage(newImage))
             {
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 graphics.CompositingQuality = CompositingQuality.HighQuality;
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.CompositingMode = CompositingMode.SourceCopy;
                 graphics.SmoothingMode = SmoothingMode.HighQuality;
                 graphics.DrawImage(image, 0, 0, newWidth, newHeight);
             }

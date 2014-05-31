@@ -310,6 +310,60 @@ function editcommentsubmit(commentid) {
     return false;
 }
 
+//delete comment
+function deletecomment(commentid) {
+    //hide comment menu buttons
+    $("#" + commentid).find('.flat-list').html('');
+
+    //hide original comment text
+    $("#" + commentid).find('.md').html("[deleted]");
+    $("#" + commentid).find('.md').css("color", "gray");    
+
+    //hide comment author
+    $("#" + commentid).find('.author').replaceWith(function () {
+        return $("<em>" + "[deleted]" + "</em>");
+    });
+
+    //hide comment author attributes
+    $("#" + commentid).find('.userattrs').html('');    
+
+    //hide "are you sure" option
+    toggleback(commentid);
+
+    removeeditform(commentid);
+
+    //execute POST call to remove comment from database
+    deletecommentsubmit(commentid);
+}
+
+//submit comment deletion request
+function deletecommentsubmit(commentid) {
+    var commentobject = { "commentid": commentid };
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(commentobject),
+        url: "/deletecomment",
+        datatype: "json"        
+    });
+
+    removeeditform(commentid);
+    return false;
+}
+
+//toggle are you sure question
+function toggle(commentid) {
+    $("#" + commentid).find('.option, .main').toggleClass("active");
+    return false;
+}
+
+//togle back are you sure question
+function toggleback(commentid) {
+    $("#" + commentid).find('.option, .error').toggleClass("active");
+    return false;
+}
+
 //check if an object exists
 $.fn.exists = function () {
     return this.length !== 0;

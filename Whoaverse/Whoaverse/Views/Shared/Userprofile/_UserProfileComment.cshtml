@@ -26,11 +26,28 @@
 
 
 <div class="thread id-@Model.Id odd comment " onclick="click_thing(this)" data-fullname="t1_cgpb6dh" data-ups="0" data-downs="1">
-    <p class="parent">
-        <a name="cgpb6dh"></a>
-        <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Title</a> by <a href="~/user/@Model.Name" class="author may-blank id-t2_5fggn">@Model.Name</a>
-        <span class="userattrs"></span>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
-    </p>
+
+    @{
+        //type 2 = urls, model.messagecontent = url, model.linkdescription = link description
+        //type 1 = message
+        if (Model.Message.Type == 2)
+        {
+            <p class="parent">
+                <a name="cgpb6dh"></a>
+                <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Linkdescription</a> by <a href="~/user/@Model.Message.Name" class="author may-blank id-t2_5fggn">@Model.Message.Name</a>
+                <span class="userattrs"></span>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+            </p>
+        }
+        else
+        {
+            <p class="parent">
+                <a name="cgpb6dh"></a>
+                <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Title</a> by <a href="~/user/@Model.Message.Name" class="author may-blank id-t2_5fggn">@Model.Message.Name</a>
+                <span class="userattrs"></span>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+            </p>
+        }
+    }
+
 
     @{
         string postAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(Model.Date);

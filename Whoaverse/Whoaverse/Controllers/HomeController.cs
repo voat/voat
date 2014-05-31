@@ -46,7 +46,7 @@ namespace Whoaverse.Models
                 {
                     SmtpClient smtp = new SmtpClient();
                     MailAddress from = new MailAddress(claModel.Email);
-                    MailAddress to = new MailAddress("team@whoaverse.com");
+                    MailAddress to = new MailAddress("legal@whoaverse.com");
                     StringBuilder sb = new StringBuilder();
                     MailMessage msg = new MailMessage(from, to);
 
@@ -78,10 +78,12 @@ namespace Whoaverse.Models
                     //send the email with CLA data
                     smtp.Send(msg);
                     msg.Dispose();
+                    ViewBag.SelectedSubverse = string.Empty;
                     return View("~/Views/Legal/ClaSent.cshtml");
                 }
                 catch (Exception)
                 {
+                    ViewBag.SelectedSubverse = string.Empty;
                     return View("~/Views/Legal/ClaFailed.cshtml");
                 }
             }
@@ -186,6 +188,27 @@ namespace Whoaverse.Models
             {
                 return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
             }
+        }
+
+        // POST: deletecomment
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> DeleteComment(int commentId)
+        {
+            Comment commentToDelete = db.Comments.Find(commentId);
+
+            if (commentToDelete != null)
+            {
+                if (commentToDelete.Name == User.Identity.Name)
+                {
+                    commentToDelete.Name = "deleted";
+                    commentToDelete.CommentContent = "deleted";
+                    await db.SaveChangesAsync();
+                }                
+            }
+
+            string url = this.Request.UrlReferrer.AbsolutePath;
+            return Redirect(url);            
         }
 
         // GET: submit
@@ -418,6 +441,7 @@ namespace Whoaverse.Models
 
         public ActionResult Cla()
         {
+            ViewBag.SelectedSubverse = string.Empty;
             ViewBag.Message = "Whoaverse CLA";
             return View("~/Views/Legal/Cla.cshtml");
         }

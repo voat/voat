@@ -41,37 +41,79 @@
     <a name="cgjenno"></a>
 </p>
 
-@Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", commentId } })
+@{
+    if (commentModel.Name != "deleted")
+    {
+        @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", commentId } })
+    }
+}
 
 <div class="entry unvoted">
     <div class="collapsed" style='display:none'>
         <a href="#" class="expand" onclick="return showcomment(@commentId)">[+]</a>
-        <a href="/user/@commentModel.Name" class="author gray @authorClass may-blank id-t2_@commentId">@commentModel.Name</a>
-        <span class="userattrs">@Html.Raw(authorSpanClass)</span>&#32;
-        <span class="score dislikes">@commentModel.Dislikes points</span>
-        <span class="score unvoted">@commentModel.Votes point</span>
-        <span class="score likes">@commentModel.Likes points</span>
+        
+        @{
+            if (commentModel.Name != "deleted")
+            {
+                <a href="/user/@commentModel.Name" class="author gray @authorClass may-blank id-t2_@commentId">@commentModel.Name</a>
+                <span class="userattrs">@Html.Raw(authorSpanClass)</span>
+                <span class="score dislikes">@commentModel.Dislikes points</span>
+                <span class="score unvoted">@commentModel.Votes point</span>
+                <span class="score likes">@commentModel.Likes points</span>
+            }
+            else
+            {
+                <span class="userattrs">[deleted]</span>
+            }
+        }
+
         <time title="@commentModel.Date" datetime="@commentModel.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" onclick="return showcomment(@commentId)">(show children)</a>
     </div>
     <div class="noncollapsed" id="@commentId">
         <p class="tagline">
             <a href="#" class="expand" onclick="return hidecomment(@commentId)">[&ndash;]</a>
-            <a href="/user/@commentModel.Name" class="author @authorClass may-blank id-t2_@commentId">@commentModel.Name</a>
-            <span class="userattrs">@Html.Raw(authorSpanClass)</span>&#32;
-            <span class="score dislikes">@commentModel.Dislikes points</span>
-            <span class="score unvoted">@commentModel.Votes points</span>
-            <span class="score likes">@commentModel.Likes points</span>
+            
+
+            @{
+                if (commentModel.Name != "deleted")
+                {
+                    <a href="/user/@commentModel.Name" class="author @authorClass may-blank id-t2_@commentId">@commentModel.Name</a>
+                    <span class="userattrs">@Html.Raw(authorSpanClass)</span>
+                    <span class="score dislikes">@commentModel.Dislikes points</span>
+                    <span class="score unvoted">@commentModel.Votes points</span>
+                    <span class="score likes">@commentModel.Likes points</span>
+                }
+                else
+                {
+                    <span class="userattrs">[deleted]</span>
+                }
+            }
+
             <time title="@commentModel.Date" datetime="@commentModel.Date">@postAge</time>&#32;ago
         </p>
-        <form class="usertext" onsubmit="return editcommentsubmit(@commentId)" id="form-t1_cgjennopb1" action="#">
+
+        <form class="usertext" onsubmit="return editcommentsubmit(@commentId)" id="commenteditform-@commentId" action="#">
             @Html.AntiForgeryToken()
             <input id="CommentId" name="CommentId" value="@commentId" type="hidden">
 
-            <div class="usertext-body may-blank-within">
-                <div class="md">
-                    @Html.Raw(@Whoaverse.Utils.Formatting.FormatMessage(@commentModel.CommentContent))
-                </div>
-            </div>
+            @{
+                if (commentModel.Name != "deleted")
+                {
+                    <div class="usertext-body may-blank-within">
+                        <div class="md">
+                            @Html.Raw(@Whoaverse.Utils.Formatting.FormatMessage(@commentModel.CommentContent))
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="usertext gray">
+                        <div class="md">
+                            [deleted]
+                        </div>
+                    </div>
+                }
+            }
 
             <div class="usertext-edit" style="width: 775px; display: none;">
                 <div>
@@ -86,27 +128,44 @@
 
         </form>
         <ul class="flat-list buttons">
-            <li class="first">
-                <a href="/comments/@commentModel.MessageId" class="bylink" rel="nofollow">permalink</a>
-            </li>
+            @{
+                if (commentModel.Name != "deleted")
+                {
+                    <li class="first">
+                        <a href="/comments/@commentModel.MessageId" class="bylink" rel="nofollow">permalink</a>
+                    </li>
+                }
+            }
+
             @{
                 if (User.Identity.IsAuthenticated)
                 {
-
                     if (User.Identity.Name == commentAuthor)
                     {
-
                         <li>
                             <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @commentModel.MessageId)">edit</a>
                         </li>
                         <li>
-                            <a class="" href="javascript:void(0)" onclick="return delete(@commentId, @commentModel.MessageId)">delete</a>
+                            <form class="toggle del-button " action="#" method="get">
+                                <input class="active" name="executed" value="deleted" type="hidden">
+                                <span class="option main active">
+                                    <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(@commentId)">delete</a>
+                                </span>
+                                <span class="option error">
+                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@commentId)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(@commentId)">no</a>
+                                </span>
+                            </form>
                         </li>
                     }
 
-                    <li>
-                        <a class="" href="javascript:void(0)" onclick="return reply(@commentId, @commentModel.MessageId)">reply</a>
-                    </li>
+
+                    if (commentModel.Name != "deleted")
+                    {
+                        <li>
+                            <a class="" href="javascript:void(0)" onclick="return reply(@commentId, @commentModel.MessageId)">reply</a>
+                        </li>
+                    }
+
 
                 }
             }
@@ -121,7 +180,7 @@
     var childComments = from c in Model.Comments where c.ParentId == commentId select c;
     foreach (var childComment in childComments)
     {
-        <div class=" child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
+        <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
             @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id } })
         </div>
     }

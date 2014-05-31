@@ -5602,12 +5602,12 @@ ul.tabmenu.formtab {
         height: 100px;
     }
 
-.usertext.border .usertext-body {
+.usertext .border .usertext-body {
     background-color: #ffc;
     padding-left: 5px;
 }
 
-.usertext.grayed .usertext-body {
+.usertext .grayed .usertext-body {
     color: gray;
     background-color: #f0f0f0;
     padding-left: 5px;

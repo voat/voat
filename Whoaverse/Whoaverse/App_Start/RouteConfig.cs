@@ -124,6 +124,13 @@ namespace Whoaverse
                   new { controller = "Home", action = "Editcomment", id = UrlParameter.Optional }
              );
 
+            // deletecomment
+            routes.MapRoute(
+                  "deletecomment",
+                  "deletecomment/{id}",
+                  new { controller = "Home", action = "DeleteComment", id = UrlParameter.Optional }
+             );
+
             // submit
             routes.MapRoute(
                 name: "submit",

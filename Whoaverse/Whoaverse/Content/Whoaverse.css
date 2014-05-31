@@ -153,6 +153,10 @@ fieldset[disabled] .btn {
     display: inline-block;
 }
 
+.gray {
+    color: #dcdcdc
+}
+
 .intro-text {
     font-size:12px;
 }
