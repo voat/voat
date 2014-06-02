@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Whoaverse.Models;
+using Whoaverse.Utils;
 
 namespace Whoaverse.Controllers
 {
@@ -360,6 +361,7 @@ namespace Whoaverse.Controllers
         // POST: /Account/DeleteAccount
         [Authorize]
         [HttpPost]
+        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteAccount(DeleteAccountViewModel model)
         {

@@ -60,6 +60,8 @@
 
     <div class="sitetable linklisting">
 
+        @Html.Action("PromotedSubmission", "Home")
+
         @{
             //(current page number -1)*25
             int currentPageNumber = Model.PageNumber;
@@ -104,8 +106,5 @@
         }
 
     </div>
-
-
-
 
 </div>

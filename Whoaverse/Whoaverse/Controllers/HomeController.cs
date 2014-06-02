@@ -309,7 +309,7 @@ namespace Whoaverse.Models
             }
             else
             {
-                return View();
+                return View(message);
             }
         }
 
@@ -321,7 +321,7 @@ namespace Whoaverse.Models
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            if (Whoaverse.Utils.User.UserExists(id))
+            if (Whoaverse.Utils.User.UserExists(id) && id != "deleted")
             {
                 //show comments
                 if (whattodisplay != null && whattodisplay == "comments")
@@ -494,5 +494,20 @@ namespace Whoaverse.Models
             return Json("Voting unauthorized.", JsonRequestBehavior.AllowGet);
         }
 
+        // GET: promoted submission
+        public ActionResult PromotedSubmission()
+        {
+            Message promotedSubmission = db.Messages.Find(3948);
+
+            if (promotedSubmission != null)
+            {
+                return PartialView("_Promoted", promotedSubmission);
+            }
+            else
+            {
+                //don't return a sidebar since subverse doesn't exist or is a system subverse
+                return new EmptyResult();
+            }
+        }
     }
 }

@@ -152,6 +152,23 @@ fieldset[disabled] .btn {
     border-radius: 4px;
 }
 
+.promoted {
+    background-color: #66c4e0;
+    color: #FFF;
+    border-radius: 2px;
+    padding: 2px 5px;
+    min-width: 50px;
+    border: medium none;
+    text-align: center;
+    font-family: Verdana,Geneva,sans-serif;
+    font-size: x-small;
+    max-width: 10em;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
 .circle-step {
     width:30px;
     height:30px;

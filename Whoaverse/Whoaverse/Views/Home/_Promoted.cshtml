@@ -1,0 +1,12 @@
+﻿@model Whoaverse.Models.Message
+
+<div class="thing id-@Model.Id even link self" onclick="handleVoting(this);" data-fullname="@Model.Id" data-ups="@Model.Votes" data-downs="0">
+    <p class="parent"></p>
+    <span class="rank"></span>
+
+    @Html.Partial("_votingIconsSubmission", Model)
+    @Html.Partial("_PromotedSubmission", Model)
+
+    <div class="child"></div>
+    <div class="clearleft"><!--IE6sux--></div>
+</div>

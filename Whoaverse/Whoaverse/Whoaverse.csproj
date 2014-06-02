@@ -411,6 +411,8 @@
     <Content Include="Views\Shared\_SidebarUserInfo.cshtml" />
     <Content Include="Views\Account\_DeleteAccount.cshtml" />
     <Content Include="Views\Help\AccountDeleted.cshtml" />
+    <Content Include="Views\Home\_Promoted.cshtml" />
+    <Content Include="Views\Shared\_PromotedSubmission.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
