@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNet.Identity
+@model Whoaverse.Models.DeleteAccountViewModel
+
+@using (Html.BeginForm("DeleteAccount", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()    
+    @Html.ValidationSummary()
+    <div class="form-group">
+        @Html.LabelFor(m => m.FirstWord, new { @class = "col-md-2 control-label" })
+        <div class="col-md-2">
+            @Html.TextBoxFor(m => m.FirstWord, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.FirstWord)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.SecondWord, new { @class = "col-md-2 control-label" })
+        <div class="col-md-2">
+            @Html.TextBoxFor(m => m.SecondWord, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.SecondWord)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-3">
+            <input type="submit" value="Delete" class="btn-whoaverse" />
+        </div>
+    </div>
+}

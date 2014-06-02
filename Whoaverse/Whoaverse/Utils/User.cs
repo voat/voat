@@ -38,7 +38,6 @@ namespace Whoaverse.Utils
                 {
                     return false;
                 }
-
             }
         }
 
@@ -58,5 +57,62 @@ namespace Whoaverse.Utils
                 }
             }
         }
+
+        // delete a user account and all history: comments, posts and votes
+        public static bool DeleteUser(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                using (UserManager<ApplicationUser> tmpUserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+                {
+                    var tmpuser = tmpUserManager.FindByName(userName);
+                    if (tmpuser != null)
+                    {
+                        //remove voting history for submisions
+                        db.Votingtrackers.RemoveRange(db.Votingtrackers.Where(x => x.UserName == userName));
+                        
+                        //remove voting history for comments
+                        db.Commentvotingtrackers.RemoveRange(db.Commentvotingtrackers.Where(x => x.UserName == userName));
+
+                        //remove all comments
+                        var comments = db.Comments.Where(c => c.Name == userName);
+                        foreach (Comment c in comments)
+                        {
+                            c.Name = "deleted";
+                            c.CommentContent = "deleted";
+                            db.SaveChangesAsync();
+                        }
+
+                        //remove all submissions
+                        var submissions = db.Messages.Where(c => c.Name == userName);
+                        foreach (Message s in submissions)
+                        {
+                            if (s.Type == 1)
+                            {
+                                s.Name = "deleted";
+                                s.MessageContent = "deleted";
+                                s.Title = "deleted";
+                            }
+                            else
+                            {
+                                s.Name = "deleted";
+                                s.Linkdescription = "deleted";
+                                s.MessageContent = "http://whoaverse.com";
+                            }                            
+                        }
+                        db.SaveChangesAsync();
+
+                        var result = tmpUserManager.DeleteAsync(tmpuser);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+            }
+        }
+
     }
 }

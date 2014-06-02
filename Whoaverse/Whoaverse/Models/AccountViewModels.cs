@@ -43,6 +43,20 @@ namespace Whoaverse.Models
         public string ConfirmPassword { get; set; }
     }
 
+    public class DeleteAccountViewModel
+    {
+        [Required]        
+        [RegularExpression("DELETE", ErrorMessage = "Please type the word DELETE in this field.")]
+        [Display(Name = "Type DELETE to confirm")]
+        public string FirstWord { get; set; }
+
+        [Required]
+        [RegularExpression("DELETE", ErrorMessage = "Please type the word DELETE in this field.")]
+        [Display(Name = "Re-type DELETE to confirm")]
+        [Compare("FirstWord", ErrorMessage = "Please re-type the word DELETE in this field.")]
+        public string SecondWord { get; set; }
+    }
+
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Username is required. Please fill this field.")]

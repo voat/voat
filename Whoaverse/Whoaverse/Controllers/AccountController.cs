@@ -357,6 +357,40 @@ namespace Whoaverse.Controllers
             base.Dispose(disposing);
         }
 
+        // POST: /Account/DeleteAccount
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteAccount(DeleteAccountViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    AuthenticationManager.SignOut();
+
+                    // execute delete action
+                    if (Whoaverse.Utils.User.DeleteUser(User.Identity.Name))
+                    {
+                        // deletion executed without errors 
+                        return View("~/Views/Help/AccountDeleted.cshtml");
+                    }
+                    else
+                    {
+                        return View("~/Views/Errors/Error.cshtml");
+                    }
+                }
+                else
+                {
+                    return View("~/Views/Errors/Error.cshtml");
+                }
+            }
+            else
+            {
+                return View("~/Views/Errors/Error.cshtml");
+            }                     
+        }
+
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
