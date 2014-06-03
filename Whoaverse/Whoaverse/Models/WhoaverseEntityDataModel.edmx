@@ -53,6 +53,7 @@
           <Property Name="Likes" Type="bigint" Nullable="false" />
           <Property Name="Dislikes" Type="bigint" Nullable="false" />
           <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
+          <Property Name="LastEditDate" Type="smalldatetime" />
         </EntityType>
         <EntityType Name="SubverseAdmins">
           <Key>
@@ -241,6 +242,7 @@
           <Property Name="Likes" Type="Int16" Nullable="false" DefaultValue="1" />
           <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
           <Property Name="Thumbnail" Type="String" MaxLength="40" FixedLength="true" Unicode="true" />
+          <Property Name="LastEditDate" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -444,6 +446,7 @@
           <EntitySetMapping Name="Messages">
             <EntityTypeMapping TypeName="whoaverseModel.Message">
               <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
                 <ScalarProperty Name="Thumbnail" ColumnName="Thumbnail" />
                 <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
                 <ScalarProperty Name="Likes" ColumnName="Likes" />

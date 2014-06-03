@@ -131,6 +131,20 @@ namespace Whoaverse
                   new { controller = "Home", action = "DeleteComment", id = UrlParameter.Optional }
              );
 
+            // editsubmission
+            routes.MapRoute(
+                  "editsubmission",
+                  "editsubmission/{id}",
+                  new { controller = "Home", action = "EditSubmission", id = UrlParameter.Optional }
+             );
+
+            // deletesubmission
+            routes.MapRoute(
+                  "deletesubmission",
+                  "deletesubmission/{id}",
+                  new { controller = "Home", action = "DeleteSubmission", id = UrlParameter.Optional }
+             );
+
             // submit
             routes.MapRoute(
                 name: "submit",

@@ -50,21 +50,35 @@
                 <a class="title may-blank " href="@Model.MessageContent" tabindex="1">@Model.Linkdescription</a>
                 <span class="domain">(<a href="#">@submissionDomain</a>)</span>
             </p>
-            <p class="tagline">
-                submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank id-t2_8bunp">@Model.Name</a>
-                <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
-            </p>
+            
+                @{
+                    if (Model.Name == "deleted")
+                    {
+                        <p class="tagline">
+                            submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by 
+                            <span class="userattrs">[deleted]</span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="tagline">
+                            submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank id-t2_8bunp">@Model.Name</a>
+                            <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                        </p>
+                    }
+                }
+                
             <ul class="flat-list buttons">
                 <li class="first">
                     @{
-                        if (Model.Comments.Count > 0)
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
-                        }
-                        else
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">discuss</a>
-                        }
+        if (Model.Comments.Count > 0)
+        {
+            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
+        }
+        else
+        {
+            <a href="@commentsUrl" class="comments may-blank">discuss</a>
+        }
                     }
                 </li>
                 <li class="share">
@@ -87,21 +101,35 @@
                 <a class="title may-blank " href="@commentsUrl" tabindex="1">@Model.Title</a>
                 <span class="domain">(<a href="http://whoaverse.com/user/@Model.Name">self.@Model.Name</a>)</span>
             </p>
+
+            @{
+        if (Model.Name == "deleted")
+        {
+            <p class="tagline">
+                submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by
+                <span class="userattrs">[deleted]</span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+            </p>
+        }
+        else
+        {
             <p class="tagline">
                 submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank id-t2_8bunp">@Model.Name</a>
                 <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
             </p>
+        }
+            }
+
             <ul class="flat-list buttons">
                 <li class="first">
                     @{
-                        if (Model.Comments.Count > 0)
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
-                        }
-                        else
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">discuss</a>
-                        }
+        if (Model.Comments.Count > 0)
+        {
+            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
+        }
+        else
+        {
+            <a href="@commentsUrl" class="comments may-blank">discuss</a>
+        }
                     }
                 </li>
                 <li class="share">

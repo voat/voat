@@ -211,6 +211,65 @@ namespace Whoaverse.Models
             return Redirect(url);            
         }
 
+        // POST: editsubmission
+        [Authorize]
+        [HttpPost]
+        public ActionResult EditSubmission(EditSubmission model)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var existingSubmission = db.Messages.Find(model.SubmissionId);
+
+                if (existingSubmission != null)
+                {
+                    if (existingSubmission.Name.Trim() == User.Identity.Name)
+                    {
+                        existingSubmission.MessageContent = model.SubmissionContent;
+                        existingSubmission.LastEditDate = System.DateTime.Now;
+                        db.SaveChanges();
+
+                        //parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
+                        string formattedSubmission = Utils.Formatting.FormatMessage(model.SubmissionContent);
+                        return Json(new { response = formattedSubmission });
+                    }
+                    else
+                    {
+                        return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+                    }
+
+                }
+                else
+                {
+                    return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // POST: deletesubmission
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> DeleteSubmission(int submissionId)
+        {
+            Message submissionToDelete = db.Messages.Find(submissionId);
+
+            if (submissionToDelete != null)
+            {
+                if (submissionToDelete.Name == User.Identity.Name)
+                {
+                    submissionToDelete.Name = "deleted";
+                    submissionToDelete.MessageContent = "deleted";
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            string url = this.Request.UrlReferrer.AbsolutePath;
+            return Redirect(url);
+        }
+
         // GET: submit
         [Authorize]
         public ActionResult Submit(string selectedsubverse)

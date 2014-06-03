@@ -253,6 +253,48 @@ function edit(parentcommentid, messageid) {
     $.validator.unobtrusive.parse(form);
 }
 
+//append a submission edit form to calling area while preventing multiple appends
+function editsubmission(submissionid) {
+
+    //hide original text comment
+    $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
+
+    //show edit form
+    $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);
+
+    var form = $('#submissioneditform-' + submissionid)
+            .removeData("validator") /* added by the raw jquery.validate plugin */
+            .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
+
+    $.validator.unobtrusive.parse(form);
+}
+
+//remove submission edit form for given submission id and replace it with original content
+function removesubmissioneditform(submissionid) {
+    $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
+    $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);
+}
+
+//submit edited submission and replace the old one with formatted response received by server
+function editmessagesubmit(submissionid) {
+    var submissioncontent = $("#submissionid-" + submissionid).find('.form-control').val();
+    var submissionobject = { "SubmissionId": submissionid, "SubmissionContent": submissioncontent };
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(submissionobject),
+        url: "/editsubmission",
+        datatype: "json",
+        success: function (data) {
+            $("#submissionid-" + submissionid).find('.md').html(data.response);
+        }
+    });
+
+    removesubmissioneditform(submissionid);
+    return false;
+}
+
 //remove reply form for given parent id
 function removereplyform(parentcommentid) {
     $('#replyform-' + parentcommentid).remove();
@@ -352,6 +394,28 @@ function deletecommentsubmit(commentid) {
     return false;
 }
 
+//submit submission deletion request
+function deletesubmission(submissionid) {
+    var submissionobject = { "submissionid": submissionid };
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(submissionobject),
+        url: "/deletesubmission",
+        datatype: "json"
+    });
+
+    //reload body content with background page refresh
+    $.ajax({
+        url: "",
+        context: document.body,
+        success: function (s, x) {
+            $(this).html(s);
+        }
+    });
+}
+
 //toggle are you sure question
 function toggle(commentid) {
     $("#" + commentid).find('.option, .main').toggleClass("active");
@@ -361,6 +425,18 @@ function toggle(commentid) {
 //togle back are you sure question
 function toggleback(commentid) {
     $("#" + commentid).find('.option, .error').toggleClass("active");
+    return false;
+}
+
+//toggle are you sure question for submission deletion
+function togglesubmission(submissionid) {
+    $("#submissionid-" + submissionid).find('.option, .main').toggleClass("active");
+    return false;
+}
+
+//togle back are you sure question for submission deletion
+function togglesubmissionback(submissionid) {
+    $("#submissionid-" + submissionid).find('.option, .error').toggleClass("active");
     return false;
 }
 

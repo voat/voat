@@ -17,8 +17,8 @@
     double totalVotes = Model.Dislikes + Model.Likes;
     double difference = Model.Likes - Model.Dislikes;
 
-    percentageOfLove = Math.Round((Model.Likes / totalVotes) * 100,2);
-        
+    percentageOfLove = Math.Round((Model.Likes / totalVotes) * 100, 2);
+
     if (!Request.Browser.IsMobileDevice)
     {
         <div class="side">
@@ -28,12 +28,41 @@
                         Submission Info
                     </h2>
                     <div class="bottom">
-                        <p class="h6">
-                            Posted by: <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
-                        </p>
+
+                        @{
+        if (Model.Name == "deleted")
+        {
+            <p class="h6">
+                Posted by: [deleted]
+            </p>
+        }
+        else
+        {
+            <p class="h6">
+                Posted by: <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
+            </p>
+        }
+                        }
+
                         <p class="h6">
                             Posting time: <time title="@Model.Date" datetime="@Model.Date">@Model.Date</time>
                         </p>
+
+                        @{
+        if (@Model.LastEditDate != null)
+        {
+            <p class="h6">
+                Last edit time: <time title="@Model.LastEditDate" datetime="@Model.LastEditDate">@Model.LastEditDate</time>
+            </p>
+        }
+        else
+        {
+            <p class="h6">
+                Last edit time: never edited.
+            </p>
+        }
+                        }
+
                     </div>
                     <h2 class="hover whoaversename">
                         Score

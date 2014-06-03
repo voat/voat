@@ -20,9 +20,9 @@ using System.Web;
 namespace Whoaverse.Models
 {
     [Serializable]
-    public class EditComment
+    public class EditSubmission
     {
-        public int CommentId { get; set; }
-        public string CommentContent { get; set; }
+        public int SubmissionId { get; set; }
+        public string SubmissionContent { get; set; }
     }
 }
