@@ -187,6 +187,14 @@ fieldset[disabled] .btn {
     color: #dcdcdc
 }
 
+.eppnotice {
+    background-color: #F2F2F2;
+    color: #777;
+    padding-right: 35px;
+    padding: 4px;
+    font: x-small verdana,arial,helvetica,sans-serif;        
+}
+
 .intro-text {
     font-size:12px;
 }

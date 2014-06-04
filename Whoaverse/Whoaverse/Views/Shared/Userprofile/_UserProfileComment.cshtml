@@ -24,7 +24,6 @@
 
 -->
 
-
 <div class="thread id-@Model.Id odd comment " onclick="click_thing(this)" data-fullname="t1_cgpb6dh" data-ups="0" data-downs="1">
 
     @{
@@ -32,19 +31,39 @@
         //type 1 = message
         if (Model.Message.Type == 2)
         {
-            <p class="parent">
-                <a name="cgpb6dh"></a>
-                <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Linkdescription</a> by <a href="~/user/@Model.Message.Name" class="author may-blank id-t2_5fggn">@Model.Message.Name</a>
-                <span class="userattrs"></span>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
-            </p>
+            if (Model.Message.Name != "deleted")
+            {
+                <p class="parent">
+                    <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Linkdescription</a> by
+                    <a href="~/user/@Model.Message.Name" class="author may-blank id-t2_5fggn">@Model.Message.Name</a>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+                </p>
+            }
+            else
+            {
+                <p class="parent">
+                    <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Linkdescription</a> by
+                    <span class="userattrs">[deleted]</span>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+                </p>
+            }
         }
         else
         {
-            <p class="parent">
-                <a name="cgpb6dh"></a>
-                <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Title</a> by <a href="~/user/@Model.Message.Name" class="author may-blank id-t2_5fggn">@Model.Message.Name</a>
-                <span class="userattrs"></span>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
-            </p>
+            if (Model.Message.Name != "deleted")
+            {
+                <p class="parent">
+                    <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Title</a> by
+                    <a href="~/user/@Model.Message.Name" class="author may-blank id-t2_5fggn">@Model.Message.Name</a>
+                    in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+                </p>
+            }
+            else
+            {
+                <p class="parent">
+                    <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Title</a> by
+                    <span class="userattrs">[deleted]</span>
+                    in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+                </p>
+            }
         }
     }
 
@@ -97,14 +116,16 @@
             <div class="collapsed" style="display:none">
                 <a href="#" class="expand" onclick="return showcomment(this)">[+]</a><a href="~/user/@Model.Name" class="author gray submitter may-blank id-t2_5fggn">@Model.Name</a>
                 <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
-                <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span><span class="score likes">@Model.Likes points</span>
+                <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span>
+                <span class="score likes">@Model.Likes points</span>
                 <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago &nbsp;<a href="#" class="expand" onclick="return showcomment(this)">(0 children)</a>
             </div>
             <div class="noncollapsed">
                 <p class="tagline">
                     <a href="#" class="expand" onclick="return hidecomment(this)">[–]</a><a href="~/user/@Model.Name" class="author submitter may-blank id-t2_5fggn">@Model.Name</a>
                     <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
-                    <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span><span class="score likes">@Model.Likes points</span>
+                    <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span>
+                    <span class="score likes">@Model.Likes points</span>
                     <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago
                 </p>
                 <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t1_cgpb6dh3f5">

@@ -425,22 +425,6 @@ namespace Whoaverse.Models
                                join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                select message).OrderByDescending(s => s.Rank).ToList();
 
-            //setup a cookie to find first time visitors and display welcome banner
-            string cookieName = "NotFirstTime";
-            if (this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-            {
-                // not a first time visitor
-                ViewBag.FirstTimeVisitor = false;
-            }
-            else
-            {
-                // add a cookie for first time visitors
-                HttpCookie cookie = new HttpCookie(cookieName);
-                cookie.Value = "whoaverse first time visitor identifier";
-                this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
-                ViewBag.FirstTimeVisitor = true;
-            }
-
             return View(submissions.ToPagedList(pageNumber, pageSize));
         }
 

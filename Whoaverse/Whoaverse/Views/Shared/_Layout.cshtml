@@ -169,7 +169,7 @@
                     if (!Request.Browser.IsMobileDevice)
                     {
                         <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
-                    }                    
+                    }
                     <ul class="tabmenu ">
                         <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
                         <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
@@ -224,7 +224,23 @@
             </p>
         </div>
     </div>
+
     <br />
+
+    @{
+        if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
+        {
+            HttpCookie cookie = new HttpCookie("NotFirstTime");
+            cookie.Value = "whoaverse first time visitor identifier";
+            HttpContext.Current.Response.Cookies.Add(cookie);
+            
+            <div class="eppnotice">
+                <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
+                Cookies help us deliver our services. By using our services, you agree to our use of cookies.
+            </div>
+        }
+    }
+
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

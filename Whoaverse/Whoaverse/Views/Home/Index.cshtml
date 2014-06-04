@@ -41,8 +41,8 @@
     if (!Request.Browser.IsMobileDevice)
     {
         @Html.Partial("_SidebarFrontpage")
-        if (ViewBag.FirstTimeVisitor)
-        {
+        if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
+        {           
             <div class="infobar welcome" style="display: block;">
                 <h1>whoaverse is a website about everything</h1>
                 <div class="button-row">
