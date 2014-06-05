@@ -31,13 +31,18 @@
 }
 else
 {
-    <div id="header-bottom-right">
-        <span class="user" onclick="mustLogin();">want to join? <a href="#" class="login-required">login or register</a> in seconds</span>
-        <span class="separator">|</span>
-        <ul class="flat-list hover">
-            <li><a href="javascript:void(0)" class="pref-lang" onclick="return showlang();">English</a></li>
-        </ul>
-    </div>
+    if (!Request.Browser.IsMobileDevice)
+    {
+        <div id="header-bottom-right">
+            <span class="user" onclick="mustLogin();">want to join? <a href="#" class="login-required">login or register</a> in seconds</span>
+        </div>
+    }
+    else
+    {
+        <div id="header-bottom-right">
+            <span class="user" onclick="mustLogin();"><a href="#" class="login-required">login or register</a></span>
+        </div>
+    }
 }
 
 
