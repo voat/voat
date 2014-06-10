@@ -1,7 +1,9 @@
-whoaverse
-=========
+# whoaverse
 
-The code that powers whoaverse.com  http://www.whoaverse.com/v/whoaversedev
+<img height="200" width="200" src="http://whoaverse.com/Graphics/whoaverse-mascot.png"
+ alt="Whoaverse mascot" title="Whoaverse" align="right" />
+
+The code that powers http://www.whoaverse.com
 
 ### Description
 Whoaverse is a Reddit®-like community platform developed in C# ASP.NET MVC 5. 
@@ -11,7 +13,7 @@ Needs MS SQL server and .NET framework 4.5 but other DB servers should work with
 
 Whoaverse uses Markdown (https://code.google.com/p/markdownsharp/), Bootstrap (http://getbootstrap.com/), jQuery (http://jquery.com/). 
 
-"Production" version of Whoaverse is running at whoaverse.com (early alpha) on Windows Server 2008 R2 with SQL Server Express.
+Early alpha version of Whoaverse is running at whoaverse.com on Windows Server 2008 R2 with SQL Server Express.
 
 ### Installation instructions
 Follow these steps to get up and running in 5 minutes:
@@ -47,10 +49,10 @@ After creating your subverse, you can visit it (localhost/v/yourtestsubverse) an
 This was just a hobby project to help me get a better understanding of C# and ASP.NET MVC and Entity Framework.
 
 ### How does it differ from related projects?
-This is the only C# implementation of a Reddit®-like community as far as I know.
+Whoaverse has increased focus on users privacy. It enables users to delete their account by automatically overwriting every comment and every submission the user has made with a string "deleted", before proceeding to remove the user account from user credentials database. Furthermore, whoaverse is the only active C# implementation of a Reddit®-like community as far as I know.
 
 ### What does the future hold?
-Whoaverse aims to make a fully functional and scalable Reddit®-like community including all the kinks and features which today exist on reddit.com. 
+Whoaverse aims to make a fully functional and scalable Reddit®-like community including all the kinks and features which exist on reddit.com today. 
 
 ### Contributing
 There is a whole lot of work to be done, code contributions are welcome. A Contributor License Agreement (CLA) is required for all code contributions, configuration changes, documentation, or any other materials that you send to us.
