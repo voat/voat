@@ -29,7 +29,7 @@
     //type 1 = message
     if (Model.Type == 2)
     {
-        string submissionDomain = Whoaverse.Utils.Badges.GetDomainFromUri(Model.MessageContent);
+        string submissionDomain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(Model.MessageContent);
 
         <div class=" thing id-t3_227d01 odd link " onclick="click_thing(this)" data-fullname="t3_227d01" data-ups="1" data-downs="0">
             <p class="parent"></p>

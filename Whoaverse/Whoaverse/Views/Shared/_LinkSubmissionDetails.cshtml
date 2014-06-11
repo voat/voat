@@ -23,7 +23,7 @@
     if (Model.Type == 2)
     {
 
-        string submissionDomain = Whoaverse.Utils.Badges.GetDomainFromUri(Model.MessageContent);
+        string submissionDomain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(Model.MessageContent);
 
         <!-- 1 link submission details without comments -->
         <div id="siteTable" class="sitetable linklisting">

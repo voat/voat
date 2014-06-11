@@ -12,25 +12,31 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using System.Web.Http;
+using Whoaverse.Models;
 
 namespace Whoaverse.Controllers
 {
-    public class ErrorController : Controller
+    public class WebApiController : ApiController
     {
-        public ViewResult NotFound()
+        private whoaverseEntities db = new whoaverseEntities();
+        
+        // GET api/defaultsubverses
+        [System.Web.Http.HttpGet]
+        public IEnumerable<string> DefaultSubverses()
         {
-            ViewBag.SelectedSubverse = string.Empty;
-            //Response.StatusCode = 404;
-            return View("~/Views/Errors/Error_404.cshtml");
+            var listOfDefaultSubverses = db.Defaultsubverses.OrderBy(s => s.position).ToList();
+
+            List<string> tmpList = new List<string>();
+            foreach (var item in listOfDefaultSubverses)
+            {
+                tmpList.Add(item.name);
+            }
+
+            return tmpList;
         }
-        public ActionResult Index()
-        {
-            return View("~/Views/Errors/Error.cshtml");
-        }
+
     }
 }

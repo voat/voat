@@ -20,7 +20,7 @@ using System.Web.Mvc;
 
 namespace Whoaverse.Utils
 {
-    public static class Badges
+    public static class UrlUtility
     {
 
         //return domain from URI

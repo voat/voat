@@ -42,7 +42,7 @@ namespace UnitTests
         {
             Uri testUri = new Uri("http://www.youtube.com");
 
-            string result = Badges.GetDomainFromUri(testUri.ToString());
+            string result = UrlUtility.GetDomainFromUri(testUri.ToString());
             Assert.AreEqual("youtube.com", result, "Unable to extract domain from given Uri.");
         }
 

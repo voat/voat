@@ -157,36 +157,29 @@ namespace Whoaverse.Models
         [HttpPost]
         public ActionResult Editcomment(EditComment model)
         {
-            if (User.Identity.IsAuthenticated)
+            var existingComment = db.Comments.Find(model.CommentId);
+
+            if (existingComment != null)
             {
-                var existingComment = db.Comments.Find(model.CommentId);
-
-                if (existingComment != null)
+                if (existingComment.Name.Trim() == User.Identity.Name)
                 {
-                    if (existingComment.Name.Trim() == User.Identity.Name)
-                    {
-                        existingComment.CommentContent = model.CommentContent;
-                        existingComment.LastEditDate = System.DateTime.Now;
-                        db.SaveChanges();
+                    existingComment.CommentContent = model.CommentContent;
+                    existingComment.LastEditDate = System.DateTime.Now;
+                    db.SaveChanges();
 
-                        //parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
-                        string formattedComment = Utils.Formatting.FormatMessage(model.CommentContent);
-                        return Json(new { response = formattedComment });
-                    }
-                    else
-                    {
-                        return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
-                    }
-
+                    //parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
+                    string formattedComment = Utils.Formatting.FormatMessage(model.CommentContent);
+                    return Json(new { response = formattedComment });
                 }
                 else
                 {
-                    return Json("Unauthorized edit or comment not found.", JsonRequestBehavior.AllowGet);
+                    return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
                 }
+
             }
             else
             {
-                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+                return Json("Unauthorized edit or comment not found.", JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -204,11 +197,11 @@ namespace Whoaverse.Models
                     commentToDelete.Name = "deleted";
                     commentToDelete.CommentContent = "deleted";
                     await db.SaveChangesAsync();
-                }                
+                }
             }
 
             string url = this.Request.UrlReferrer.AbsolutePath;
-            return Redirect(url);            
+            return Redirect(url);
         }
 
         // POST: editsubmission
@@ -216,37 +209,31 @@ namespace Whoaverse.Models
         [HttpPost]
         public ActionResult EditSubmission(EditSubmission model)
         {
-            if (User.Identity.IsAuthenticated)
+            var existingSubmission = db.Messages.Find(model.SubmissionId);
+
+            if (existingSubmission != null)
             {
-                var existingSubmission = db.Messages.Find(model.SubmissionId);
-
-                if (existingSubmission != null)
+                if (existingSubmission.Name.Trim() == User.Identity.Name)
                 {
-                    if (existingSubmission.Name.Trim() == User.Identity.Name)
-                    {
-                        existingSubmission.MessageContent = model.SubmissionContent;
-                        existingSubmission.LastEditDate = System.DateTime.Now;
-                        db.SaveChanges();
+                    existingSubmission.MessageContent = model.SubmissionContent;
+                    existingSubmission.LastEditDate = System.DateTime.Now;
+                    db.SaveChanges();
 
-                        //parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
-                        string formattedSubmission = Utils.Formatting.FormatMessage(model.SubmissionContent);
-                        return Json(new { response = formattedSubmission });
-                    }
-                    else
-                    {
-                        return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
-                    }
-
+                    //parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
+                    string formattedSubmission = Utils.Formatting.FormatMessage(model.SubmissionContent);
+                    return Json(new { response = formattedSubmission });
                 }
                 else
                 {
-                    return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+                    return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
                 }
+
             }
             else
             {
-                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+                return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
             }
+
         }
 
         // POST: deletesubmission
@@ -308,9 +295,9 @@ namespace Whoaverse.Models
                     if (message.Type == 2)
                     {
                         try
-                        {                            
-                            string domain = Whoaverse.Utils.Badges.GetDomainFromUri(message.MessageContent);
-                            
+                        {
+                            string domain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(message.MessageContent);
+
                             //if domain is youtube, try generating a thumbnail for the video
                             if (domain == "youtube.com")
                             {
@@ -329,8 +316,8 @@ namespace Whoaverse.Models
                                         message.Thumbnail = thumbFileName;
                                     }
                                 }
-                            }                         
-                            
+                            }
+
                         }
                         catch (Exception)
                         {
@@ -410,7 +397,7 @@ namespace Whoaverse.Models
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
-            
+
         }
 
         public ViewResult Index(int? page)
@@ -518,23 +505,19 @@ namespace Whoaverse.Models
         [Authorize]
         public JsonResult Vote(int messageId, int typeOfVote)
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                string loggedInUser = User.Identity.Name;
+            string loggedInUser = User.Identity.Name;
 
-                if (typeOfVote == 1)
-                {
-                    //perform upvoting or resetting
-                    Voting.UpvoteSubmission(messageId, loggedInUser);
-                }
-                else if (typeOfVote == -1)
-                {
-                    //perform downvoting or resetting
-                    Voting.DownvoteSubmission(messageId, loggedInUser);
-                }
-                return Json("Voting ok", JsonRequestBehavior.AllowGet);
+            if (typeOfVote == 1)
+            {
+                //perform upvoting or resetting
+                Voting.UpvoteSubmission(messageId, loggedInUser);
             }
-            return Json("Voting unauthorized.", JsonRequestBehavior.AllowGet);
+            else if (typeOfVote == -1)
+            {
+                //perform downvoting or resetting
+                Voting.DownvoteSubmission(messageId, loggedInUser);
+            }
+            return Json("Voting ok", JsonRequestBehavior.AllowGet);
         }
 
         // GET: promoted submission

@@ -12,23 +12,20 @@ namespace Whoaverse.Controllers
         [Authorize]
         public JsonResult VoteComment(int commentId, int typeOfVote)
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                string loggedInUser = User.Identity.Name;
+            string loggedInUser = User.Identity.Name;
 
-                if (typeOfVote == 1)
-                {
-                    //perform upvoting or resetting
-                    VotingComments.UpvoteComment(commentId, loggedInUser);
-                }
-                else if (typeOfVote == -1)
-                {
-                    //perform downvoting or resetting
-                    VotingComments.DownvoteComment(commentId, loggedInUser);
-                }
-                return Json("Voting ok", JsonRequestBehavior.AllowGet);
+            if (typeOfVote == 1)
+            {
+                //perform upvoting or resetting
+                VotingComments.UpvoteComment(commentId, loggedInUser);
             }
-            return Json("Voting unauthorized.", JsonRequestBehavior.AllowGet);
+            else if (typeOfVote == -1)
+            {
+                //perform downvoting or resetting
+                VotingComments.DownvoteComment(commentId, loggedInUser);
+            }
+            Response.StatusCode = 200;
+            return Json("Voting ok", JsonRequestBehavior.AllowGet);
         }
 
     }

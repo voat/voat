@@ -36,7 +36,7 @@
     //type 2 = urls
     if (Model.Type == 2)
     {
-        string submissionDomain = Whoaverse.Utils.Badges.GetDomainFromUri(Model.MessageContent);
+        string submissionDomain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(Model.MessageContent);
 
         if (Model.Thumbnail != null)
         {
