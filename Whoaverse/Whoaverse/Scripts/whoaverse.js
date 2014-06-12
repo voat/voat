@@ -256,8 +256,8 @@ function edit(parentcommentid, messageid) {
 //append a submission edit form to calling area while preventing multiple appends
 function editsubmission(submissionid) {
 
-    //hide original text comment
-    $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
+    //hide original text    
+    $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);    
 
     //show edit form
     $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);

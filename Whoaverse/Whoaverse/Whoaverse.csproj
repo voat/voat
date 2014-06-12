@@ -51,6 +51,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="MarkdownDeep">
+      <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -109,9 +112,6 @@
     </Reference>
     <Reference Include="PagedList.Mvc">
       <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="SimpleHoneypot.MVC4">
-      <HintPath>..\packages\SimpleHoneypot.MVC4.2.0.4686.23906\lib\Net45\SimpleHoneypot.MVC4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -262,7 +262,6 @@
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\GrowthUtility.cs" />
     <Compile Include="Utils\Karma.cs" />
-    <Compile Include="Utils\Markdown.cs" />
     <Compile Include="Utils\PagerOptions.cs" />
     <Compile Include="Utils\PromotionUtility.cs" />
     <Compile Include="Utils\Ranking.cs" />

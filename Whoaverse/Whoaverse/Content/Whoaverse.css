@@ -183,6 +183,15 @@ fieldset[disabled] .btn {
     display: inline-block;
 }
 
+.md td, .md th {
+    border: 1px solid #666666;
+    padding: 1px 3px;
+}
+
+.md blockquote {    
+    font-size: small;
+}
+
 .gray {
     color: #dcdcdc
 }

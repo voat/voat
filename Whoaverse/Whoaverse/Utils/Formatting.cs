@@ -16,15 +16,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using MarkdownSharp;
 
 namespace Whoaverse.Utils
 {
     public static class Formatting
     {
-        private static Markdown m = new Markdown();
+        private static MarkdownDeep.Markdown m = new MarkdownDeep.Markdown();        
         
         public static string FormatMessage (String originalMessage){
+            m.ExtraMode = true;
+            m.SafeMode = true;
+
             return m.Transform(originalMessage);
         }
         
