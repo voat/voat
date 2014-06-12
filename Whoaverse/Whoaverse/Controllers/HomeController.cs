@@ -410,6 +410,7 @@ namespace Whoaverse.Models
             //get only submissions from default subverses, order by rank
             var submissions = (from message in db.Messages
                                join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                               where message.Name != "deleted"
                                select message).OrderByDescending(s => s.Rank).ToList();
 
             return View(submissions.ToPagedList(pageNumber, pageSize));
@@ -426,6 +427,7 @@ namespace Whoaverse.Models
             //get only submissions from default subverses, sort by date
             var submissions = (from message in db.Messages
                                join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                               where message.Name != "deleted"
                                select message).OrderByDescending(s => s.Date).ToList();
 
             //setup a cookie to find first time visitors and display welcome banner

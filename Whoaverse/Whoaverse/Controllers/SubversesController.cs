@@ -243,7 +243,7 @@ namespace Whoaverse.Models
                 Subverse subverse = db.Subverses.Find(subversetoshow);
                 if (subverse != null)
                 {
-                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Rank).ToList();
+                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow && x.Name != "deleted").OrderByDescending(s => s.Rank).ToList();
                     ViewBag.Title = subverse.description;
                     return View(submissions.ToPagedList(pageNumber, pageSize));
                 }
@@ -255,8 +255,11 @@ namespace Whoaverse.Models
             }
             else
             {
-                //if selected subverse is ALL, show submissions from all subverses, soerted by rank
-                var submissions = db.Messages.OrderByDescending(s => s.Rank).ToList();
+                //if selected subverse is ALL, show submissions from all subverses, sorted by rank
+                var submissions = db.Messages
+                    .Where(x => x.Name != "deleted")
+                    .OrderByDescending(s => s.Rank).ToList();
+
                 ViewBag.Title = "all subverses";
                 return View(submissions.ToPagedList(pageNumber, pageSize));
             }
@@ -309,7 +312,7 @@ namespace Whoaverse.Models
                 Subverse subverse = db.Subverses.Find(subversetoshow);
                 if (subverse != null)
                 {
-                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow).OrderByDescending(s => s.Date).ToList();
+                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow && x.Name != "deleted").OrderByDescending(s => s.Date).ToList();
                     return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                 }
                 else
@@ -320,7 +323,10 @@ namespace Whoaverse.Models
             else
             {
                 //if selected subverse is ALL, show submissions from all subverses, sorted by date
-                var submissions = db.Messages.OrderByDescending(s => s.Date).ToList();
+                var submissions = db.Messages
+                    .Where(x => x.Name != "deleted")
+                    .OrderByDescending(s => s.Date).ToList();
+
                 return View("Index", submissions.ToPagedList(pageNumber, pageSize));
             }
 
