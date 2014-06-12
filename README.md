@@ -7,13 +7,16 @@ The code that powers http://www.whoaverse.com
 
 ### Description
 Whoaverse is a Reddit®-like community platform developed in C# ASP.NET MVC 5. 
+Early alpha version of Whoaverse is running at http://whoaverse.com on Windows Server 2008 R2 with SQL Server Express.
 
-### Dependencies
-Needs MS SQL server and .NET framework 4.5 but other DB servers should work without much modification.
+### Dependencies and attributions
+Whoaverse uses MS SQL server and .NET framework 4.5 but other DB servers should work without much modification.
 
-Whoaverse uses Markdown (https://code.google.com/p/markdownsharp/), Bootstrap (http://getbootstrap.com/), jQuery (http://jquery.com/). 
+The following 3rd party libraries/extensions are used:
 
-Early alpha version of Whoaverse is running at whoaverse.com on Windows Server 2008 R2 with SQL Server Express.
+Markdowndeep (http://www.toptensoftware.com/markdowndeep/)
+Bootstrap (http://getbootstrap.com/)
+jQuery (http://jquery.com/)
 
 ### Installation instructions
 Follow these steps to get up and running in 5 minutes:
@@ -32,10 +35,10 @@ DefaultConnection and whoaverseEntities
 - Reinstall dependencies (binaries for NuGet packages) by issuing the following command in Package Manager Console (when asked to overwrite existing files, choose no for all:
 Update-Package -Reinstall
 
-#### step 4
+#### step 4, will be removed in future release
 - Remove file GrowthUtility.cs from the project by right-clicking on it (it can be found in Utilities folder) and selecting delete.
 
-#### step 5
+#### step 5, will be removed in future release
 - Comment out the following line of code in the method "public async Task<ActionResult> Submit" in file HomeController.cs:
 ```c#
 message.Name=GrowthUtility.GetRandomUsername();
