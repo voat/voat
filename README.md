@@ -14,9 +14,9 @@ Whoaverse uses MS SQL server and .NET framework 4.5 but other DB servers should 
 
 The following 3rd party libraries/extensions are used:
 
-Markdowndeep (http://www.toptensoftware.com/markdowndeep/)
-Bootstrap (http://getbootstrap.com/)
-jQuery (http://jquery.com/)
+- Markdowndeep (http://www.toptensoftware.com/markdowndeep/)
+- Bootstrap (http://getbootstrap.com/)
+- jQuery (http://jquery.com/)
 
 ### Installation instructions
 Follow these steps to get up and running in 5 minutes:
