@@ -12,6 +12,8 @@
 
 @model Whoaverse.Models.Message
 
+@using Whoaverse.Utils;
+
 @{
     //find the comment based on the received comment id via ViewData
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
@@ -19,7 +21,7 @@
     var commentModel = singleComment.FirstOrDefault();
 
     DateTime submissionDate = commentModel.Date;
-    string postAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Submissions.CalcSubmissionAge(submissionDate);
     string opName = Model.Name;
     string commentAuthor = commentModel.Name;
     string authorClass = "";
@@ -100,7 +102,7 @@
                 {
                     <div class="usertext-body may-blank-within">
                         <div class="md">
-                            @Html.Raw(@Whoaverse.Utils.Formatting.FormatMessage(@commentModel.CommentContent))
+                            @Html.Raw(@Formatting.FormatMessage(@commentModel.CommentContent))
                         </div>
                     </div>
                 }

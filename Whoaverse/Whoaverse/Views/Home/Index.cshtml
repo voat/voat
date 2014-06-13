@@ -26,10 +26,10 @@
     {
         urlaction = "New";
     }
-
 }
 
 @using PagedList.Mvc;
+@using Whoaverse.Utils;
 
 <style type="text/css">
     body > .content .link .rank {
@@ -100,7 +100,7 @@
         @{
             if (Model.PageCount > 1)
             {
-                @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), Whoaverse.Utils.WhoaversePagerOptions.PagedListRenderOptions())
+                @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
                 <a href="/random">or try a random subverse</a>
             }
         }

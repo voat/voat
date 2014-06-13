@@ -10,6 +10,8 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
+@using Whoaverse.Utils;
+
 @{
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
     
@@ -25,7 +27,7 @@
     {        
         string loggedInUserName = User.Identity.Name;
         //returns -1:downvoted, 1:upvoted, or 0:not voted
-        int votedOrNot = Whoaverse.Utils.VotingComments.CheckIfVotedComment(loggedInUserName, commentId);
+        int votedOrNot = VotingComments.CheckIfVotedComment(loggedInUserName, commentId);
 
         switch (votedOrNot)
         {

@@ -10,11 +10,12 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity;
+@using Whoaverse.Utils;
 
 @if (Request.IsAuthenticated)
 {
-    int linkKarma = Whoaverse.Utils.Karma.LinkKarma(User.Identity.GetUserName());
+    int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
 
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {

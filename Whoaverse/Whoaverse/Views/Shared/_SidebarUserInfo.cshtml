@@ -10,6 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
+@using Whoaverse.Utils;
 
 @{
     string userName = ViewBag.userid;
@@ -32,7 +33,7 @@
                     </h2>
                     <div class="bottom">
                         <p class="h6">
-                            Member for: <b>@Whoaverse.Utils.Submissions.CalcSubmissionAge(userRegistrationDateTime)</b><br />
+                            Member for: <b>@Submissions.CalcSubmissionAge(userRegistrationDateTime)</b><br />
                             <span class="bottommenu">(joined on: @Whoaverse.Utils.User.GetUserRegistrationDateTime(userName).ToShortDateString())</span>
                         </p>
                     </div>
@@ -42,10 +43,10 @@
                     </h2>
                     <div class="bottom">
                         <p class="h6">
-                            Link karma: <b>@Whoaverse.Utils.Karma.LinkKarma(userName)</b>
+                            Link karma: <b>@Karma.LinkKarma(userName)</b>
                         </p>
                         <p class="h6">
-                            Comment karma: <b>@Whoaverse.Utils.Karma.CommentKarma(userName)</b>
+                            Comment karma: <b>@Karma.CommentKarma(userName)</b>
                         </p>
                     </div>
                     <div class="clear">

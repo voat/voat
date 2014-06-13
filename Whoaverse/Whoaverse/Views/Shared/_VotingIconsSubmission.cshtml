@@ -12,6 +12,8 @@
 
 @model Whoaverse.Models.Message
 
+@using Whoaverse.Utils;
+
 @{
     int score = (Model.Likes - Model.Dislikes);
     //default voting icons style
@@ -25,7 +27,7 @@
         string loggedInUserName = User.Identity.Name;
 
         //returns -1:downvoted, 1:upvoted, or 0:not voted
-        int votedOrNot = Whoaverse.Utils.Voting.CheckIfVoted(loggedInUserName, Model.Id);
+        int votedOrNot = Voting.CheckIfVoted(loggedInUserName, Model.Id);
 
         switch (votedOrNot)
         {

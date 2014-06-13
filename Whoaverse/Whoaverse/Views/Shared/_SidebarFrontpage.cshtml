@@ -10,6 +10,8 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
+@using Whoaverse.Utils;
+
 <div class="side">
 
     <div class="spacer">
@@ -33,8 +35,8 @@
                 <a title="Create your own subverse" href="/subverses/create" id="header-img-a">
                     <img id="header-img" src="/Graphics/thumb-placeholder.png" alt=" whoaverse.com" height="40" width="40">
                 </a>                
-                <div class="subtitle">@Whoaverse.Utils.PromotionUtility.TwoRandomSubtitles()[0]</div>
-                <div class="subtitle">@Whoaverse.Utils.PromotionUtility.TwoRandomSubtitles()[1]</div>
+                <div class="subtitle">@PromotionUtility.TwoRandomSubtitles()[0]</div>
+                <div class="subtitle">@PromotionUtility.TwoRandomSubtitles()[1]</div>
             </div>
         </div>
     </div>

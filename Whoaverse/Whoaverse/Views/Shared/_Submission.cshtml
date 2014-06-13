@@ -12,13 +12,15 @@
 
 @model Whoaverse.Models.Message
 
+@using Whoaverse.Utils;
+
 @{
     Nullable<short> voteCount = Model.Votes;
 
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
     DateTime submissionDate = Model.Date;
-    string postAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Submissions.CalcSubmissionAge(submissionDate);
 
     string sortingMode = ViewBag.SortingMode;
     string classHot = "disabled";
@@ -36,7 +38,7 @@
     //type 2 = urls
     if (Model.Type == 2)
     {
-        string submissionDomain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(Model.MessageContent);
+        string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
 
         if (Model.Thumbnail != null)
         {

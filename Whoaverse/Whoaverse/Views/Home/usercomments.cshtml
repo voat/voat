@@ -17,6 +17,7 @@
 }
 
 @using PagedList.Mvc;
+@using Whoaverse.Utils;
 
 <div class="content" role="main">
 
@@ -31,7 +32,7 @@
     @{
         if (Model.PageCount > 1)
         {
-            @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), Whoaverse.Utils.WhoaversePagerOptions.PagedListRenderOptions())
+            @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
         }
     }
 

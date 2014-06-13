@@ -12,6 +12,8 @@
 
 @model Whoaverse.Models.Comment
 
+@using Whoaverse.Utils;
+
 <!--
 
     1 user submission with details without comments
@@ -69,7 +71,7 @@
 
 
     @{
-        string postAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(Model.Date);
+        string postAge = Submissions.CalcSubmissionAge(Model.Date);
         int commentScore = (Model.Likes - Model.Dislikes);
 
         //default voting icons style
@@ -82,7 +84,7 @@
         {
             string loggedInUserName = User.Identity.Name;
             //returns -1:downvoted, 1:upvoted, or 0:not voted
-            int votedOrNot = Whoaverse.Utils.VotingComments.CheckIfVotedComment(loggedInUserName, Model.Id);
+            int votedOrNot = VotingComments.CheckIfVotedComment(loggedInUserName, Model.Id);
 
             switch (votedOrNot)
             {
@@ -132,7 +134,7 @@
                     <input name="thing_id" value="t1_cgpb6dh" type="hidden">
                     <div class="usertext-body may-blank-within">
                         <div class="md">
-                            <p>@Html.Raw(@Whoaverse.Utils.Formatting.FormatMessage(@Model.CommentContent))</p>
+                            <p>@Html.Raw(@Formatting.FormatMessage(@Model.CommentContent))</p>
                         </div>
                     </div>
                 </form>

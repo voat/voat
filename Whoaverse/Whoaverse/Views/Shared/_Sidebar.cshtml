@@ -12,8 +12,10 @@
 
 @model Whoaverse.Models.Subverse
 
+@using Whoaverse.Utils;
+
 @{
-    string subverseAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(Model.creation_date);
+    string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
     string subverseOwner = "Atko";
 
     var subOwner = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 1).FirstOrDefault();
@@ -43,7 +45,7 @@
                 <div class="usertext-body may-blank-within">
                     <div class="md">
                         <p>
-                            @Html.Raw(@Whoaverse.Utils.Formatting.FormatMessage(@Model.sidebar))
+                            @Html.Raw(@Formatting.FormatMessage(@Model.sidebar))
                         </p>
                     </div>
                 </div>

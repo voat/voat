@@ -12,6 +12,8 @@
 
 @model Whoaverse.Models.Message
 
+@using Whoaverse.Utils;
+
 <!--
 
     1 user submission with details without comments
@@ -22,14 +24,14 @@
 
 -->
 @{
-    string postAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(Model.Date);
+    string postAge = Submissions.CalcSubmissionAge(Model.Date);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
     //type 2 = urls, model.messagecontent = url, model.linkdescription = link description
     //type 1 = message
     if (Model.Type == 2)
     {
-        string submissionDomain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(Model.MessageContent);
+        string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
 
         <div class=" thing id-t3_227d01 odd link " onclick="click_thing(this)" data-fullname="t3_227d01" data-ups="1" data-downs="0">
             <p class="parent"></p>

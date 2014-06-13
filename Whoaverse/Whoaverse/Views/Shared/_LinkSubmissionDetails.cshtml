@@ -12,9 +12,11 @@
 
 @model Whoaverse.Models.Message
 
+@using Whoaverse.Utils;
+
 @{
     DateTime submissionDate = Model.Date;
-    string postAge = Whoaverse.Utils.Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Submissions.CalcSubmissionAge(submissionDate);
 }
 
 @{
@@ -23,7 +25,7 @@
     if (Model.Type == 2)
     {
 
-        string submissionDomain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(Model.MessageContent);
+        string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
 
         <!-- 1 link submission details without comments -->
         <div id="siteTable" class="sitetable linklisting">
