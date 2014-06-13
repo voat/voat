@@ -13,6 +13,7 @@
 @model Whoaverse.Models.Subverse
 
 @using Whoaverse.Utils;
+@using Whoaverse.Models.ViewModels;
 
 @{
     string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
@@ -26,6 +27,9 @@
 }
 
 <div class="side">
+
+    @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel())
+
     <div class="spacer">
         <div class="titlebox">
             <h1 class="hover whoaversename">
@@ -34,10 +38,10 @@
             <button type="button" class="btn-whoaverse-paging disabled btn-xs btn-default">subscribe</button>
             <span class="subscribers">
                 <span class="number">X</span>
-                <span class="word">readers</span>
+                <span class="word">subscribers</span>
             </span>
-            <p class="users-online fuzzed" title="logged-in users viewing this subwhoaverse in the past 15 minutes">
-                <span class="number">~X</span>
+            <p class="users-online fuzzed" title="logged-in users viewing this subverse in the past 15 minutes">
+                <span class="number">~@HttpContext.Current.Application["onlineVisitors"]</span>
                 <span class="word">users here now</span>
             </p>
             <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t5_317us4tp">

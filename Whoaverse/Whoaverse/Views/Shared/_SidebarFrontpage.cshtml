@@ -11,8 +11,11 @@
     All Rights Reserved.*@
 
 @using Whoaverse.Utils;
+@using Whoaverse.Models.ViewModels
 
 <div class="side">
+
+    @Html.Partial("_SearchMinimal", new SearchViewModel ())
 
     <div class="spacer">
         <a href="/submit?linkpost=true" class="btn-whoaverse btn-block">
@@ -34,7 +37,7 @@
             <div class="spacer">
                 <a title="Create your own subverse" href="/subverses/create" id="header-img-a">
                     <img id="header-img" src="/Graphics/thumb-placeholder.png" alt=" whoaverse.com" height="40" width="40">
-                </a>                
+                </a>
                 <div class="subtitle">@PromotionUtility.TwoRandomSubtitles()[0]</div>
                 <div class="subtitle">@PromotionUtility.TwoRandomSubtitles()[1]</div>
             </div>

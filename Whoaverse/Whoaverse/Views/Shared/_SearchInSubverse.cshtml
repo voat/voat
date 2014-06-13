@@ -1,0 +1,13 @@
+﻿@model Whoaverse.Models.ViewModels.SearchInSubverseViewModel
+
+<div class="spacer">
+    @*@using (Html.BeginForm("Search", "SearchController", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {*@
+
+    @Html.AntiForgeryToken()
+    @Html.TextBoxFor(m => m.SearchTerm, new { @class = "form-control", @placeholder = "Search whoaverse (coming soon)" })
+    @Html.CheckBoxFor(m => m.LimitToCurrentSubverse)
+    @Html.Label("Limit the search to current subverse")
+
+    @*}*@
+</div>

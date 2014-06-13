@@ -18,6 +18,8 @@ namespace Whoaverse
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            
+            Application["onlineVisitors"] = 3;
         }
 
         protected void Application_Error(object sender, EventArgs e)
@@ -27,6 +29,22 @@ namespace Whoaverse
             {
                 Response.Redirect("/error/notfound");
             }
+        }
+
+        // fire each time a new session is created     
+        protected void Session_Start(object sender, EventArgs e)
+        {
+            Application.Lock();
+            Application["onlineVisitors"] = (int)Application["onlineVisitors"] + 1;
+            Application.UnLock();
+        }
+
+        // fire when a session is abandoned or expires
+        protected void Session_End(object sender, EventArgs e)
+        {
+            Application.Lock();
+            Application["onlineVisitors"] = (int)Application["onlineVisitors"] - 1;
+            Application.UnLock();
         }
     }
 }
