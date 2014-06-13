@@ -183,6 +183,20 @@ fieldset[disabled] .btn {
     display: inline-block;
 }
 
+.subversedescriptionbox {    
+    border-radius:4px;
+    font-size:12px;
+    color:#666666;
+    text-align:left;
+    background:#e0f1f8;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.subversedescriptionboxcontent {
+    margin: 0px 0px !important;
+}
+
 .md td, .md th {
     border: 1px solid #666666;
     padding: 1px 3px;

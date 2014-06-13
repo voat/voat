@@ -12,46 +12,58 @@
 
 @model Whoaverse.Models.Subverse
 
-<div class=" thing id-xxxx odd subverse " onclick="click_thing(this)" data-fullname="xxxx">
-    <p class="parent"></p>
-    <div class="midcol">
-        <button type="button" class="btn-whoaverse-paging disabled btn-xs btn-default">subscribe</button>
-    </div>
-    <div class="entry unvoted">
-        <p class="titlerow">
-            <a href="/v/@Model.name" class="h4">@Model.title: @Model.name</a>
-        </p>
-        <div class="well well-sm">
-            <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxx9ma">
-                <input name="thing_id" value="xxxx" type="hidden">
-                <div class="usertext-body may-blank-within">
-                    <div class="md">
-                        <p>@Model.description</p>
-                    </div>
+@using Whoaverse.Utils;
+
+@{
+    string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
+}
+
+<div class="row">
+    <div class="thing id-xxxx odd subverse" onclick="click_thing(this)" data-fullname="xxxx">
+        <div class="col-md-6">
+            <p class="parent"></p>
+            <div class="midcol">
+                <button type="button" class="btn-whoaverse-paging disabled btn-xs btn-default">subscribe</button>
+            </div>
+
+            <div class="entry unvoted">
+                <p class="titlerow">
+                    <a href="/v/@Model.name" class="h4">@Model.title: @Model.name</a>
+                </p>
+                <div class="well well-sm subversedescriptionbox">
+                    <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxx9ma">
+                        <input name="thing_id" value="xxxx" type="hidden">
+                        <div class="usertext-body may-blank-within">
+                            <div class="md">
+                                <p class="subversedescriptionboxcontent">@Model.description</p>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </div>
-        <p class="tagline">
-            <span class="score likes">
-                <span class="number">X</span>
-                <span class="word">subscribers, a community for X years</span>
-            </span>
-        </p>
-        <ul class="flat-list buttons">
-            <li>
-                <form class="toggle report-button " action="#" method="get">
-                    <input name="executed" value="reported" type="hidden">
-                    <span class="option main active"><a href="#" class="togglebutton" onclick="return toggle(this)">report</a></span>
-                    <span class="option error">
-                        are you sure?
-                        <a href="javascript:void(0)" class="yes" onclick="change_state(this, 'report', hide_thing, undefined, null)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggle(this)">no</a>
+                <p class="">
+                    <span class="">
+                        <span class="number">X</span>
+                        <span class="word">subscribers, a community for @subverseAge</span>
                     </span>
-                </form>
-            </li>
-        </ul>
-    </div>
-    <div class="child"></div>
-    <div class="clearleft">
-        <!--IE6sux-->
+                </p>
+                <ul class="flat-list buttons">
+                    <li>
+                        <form class="toggle report-button " action="#" method="get">
+                            <input name="executed" value="reported" type="hidden">
+                            <span class="option main active"><a href="#" class="togglebutton" onclick="return toggle(this)">report</a></span>
+                            <span class="option error">
+                                are you sure?
+                                <a href="javascript:void(0)" class="yes" onclick="change_state(this, 'report', hide_thing, undefined, null)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggle(this)">no</a>
+                            </span>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="child"></div>
+        <div class="clearleft">
+            <!--IE6sux-->
+        </div>
     </div>
 </div>

@@ -1,0 +1,59 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.Message
+
+@using Whoaverse.Utils;
+
+<!-- 1 user self submission with details without comments -->
+@{
+    string postAge = Submissions.CalcSubmissionAge(Model.Date);
+    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
+
+    //type 1 = message
+    if (Model.Type == 1)
+    {
+        <div class=" thing id-t3_227cyc even link self" onclick="click_thing(this)" data-fullname="t3_227cyc" data-ups="1" data-downs="0">
+            <p class="parent"></p>
+
+            <a class="thumbnail thumb-placeholder may-blank " href="/comments/@Model.Id" rel="nofollow"></a>
+            <div class="entry unvoted">
+                <p class="title">
+                    <a class="title may-blank " href="@commentsUrl" tabindex="1" rel="nofollow">@Model.Title</a>
+                    <span class="domain">(<a href="/user/@Model.Name">self.@Model.Name</a>)</span>
+                </p>
+                <div class="expando-button collapsed selftext" onclick="expando_child(this)"></div>
+                <p class="tagline">
+                    submitted
+                    <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="~/user/@Model.Name" class="author may-blank id-t2_5fggn">@Model.Name</a>
+                    <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                </p>
+                <ul class="flat-list buttons">
+                    <li class="first">
+                        <a href="@commentsUrl" class="comments empty may-blank">@Model.Comments.Count comments</a>
+                    </li>
+                    <li class="share">
+                        <span class="share-button toggle" style=""><a class="option active login-required" href="#" tabindex="100">share</a><a class="option " href="#">cancel</a></span>
+                    </li>
+                </ul>
+                <div class="expando" style="display: none">
+                    <span class="error">loading...</span>
+                </div>
+            </div>
+            <div class="child"></div>
+            <div class="clearleft">
+                <!--IE6sux-->
+            </div>
+        </div>
+    }
+
+}
