@@ -35,6 +35,17 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "CreateSubverse" }
             );
 
+            // search
+            routes.MapRoute(
+                name: "Search",
+                url: "search",
+                defaults: new
+                {
+                    controller = "Search",
+                    action = "SearchResults",
+                }
+            );
+
             // /subverses
             routes.MapRoute(
                 name: "Subverses",

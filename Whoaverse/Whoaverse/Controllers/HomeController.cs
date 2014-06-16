@@ -525,7 +525,7 @@ namespace Whoaverse.Models
         // GET: promoted submission
         public ActionResult PromotedSubmission()
         {
-            Message promotedSubmission = db.Messages.Find(3948);
+            Message promotedSubmission = db.Messages.Find(4051);
 
             if (promotedSubmission != null)
             {

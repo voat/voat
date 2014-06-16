@@ -12,18 +12,14 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace Whoaverse.Models.ViewModels
 {
     public class SearchViewModel
     {
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
-        public string SearchTerm { get; set; }
+        [Required(ErrorMessage = "Please enter a term to search for.")]
+        [StringLength(100, ErrorMessage = "The search term must be at least {2} characters long.", MinimumLength = 3)]
+        public string Q { get; set; }
     }
 }

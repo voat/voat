@@ -28,7 +28,7 @@
 
 <div class="side">
 
-    @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel())
+    @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel(), new ViewDataDictionary { { "SelectedSubverse", ViewBag.SelectedSubverse } })
 
     <div class="spacer">
         <div class="titlebox">

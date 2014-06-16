@@ -33,6 +33,7 @@ namespace Whoaverse.Models
 
             if (subverse != null)
             {
+                ViewBag.SelectedSubverse = selectedSubverse;
                 return PartialView("_Sidebar", subverse);
             }
             else
