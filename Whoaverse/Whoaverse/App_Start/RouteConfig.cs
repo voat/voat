@@ -10,7 +10,7 @@ the specific language governing rights and limitations under the License.
 
 All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
- */
+*/
 
 using System;
 using System.Collections.Generic;
@@ -39,11 +39,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "Search",
                 url: "search",
-                defaults: new
-                {
-                    controller = "Search",
-                    action = "SearchResults",
-                }
+                defaults: new { controller = "Search", action = "SearchResults" }
             );
 
             // /subverses
@@ -64,33 +60,21 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "comments",
                 url: "comments/{id}",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "Comments",
-                }
+                defaults: new { controller = "Home", action = "Comments" }
             );
 
             // user/someuserhere/thingtoshow
             routes.MapRoute(
                 name: "userprofilefilter",
                 url: "user/{id}/{whattodisplay}",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "UserProfile",
-                }
+                defaults: new { controller = "Home", action = "UserProfile" }
             );
 
             // user/someuserhere
             routes.MapRoute(
                 name: "user",
                 url: "user/{id}",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "UserProfile",
-                }
+                defaults: new { controller = "Home", action = "UserProfile" }
             );
 
             // help/pagetoshow
@@ -160,14 +144,10 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "submit",
                 url: "submit",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "Submit",
-                }
+                defaults: new { controller = "Home", action = "Submit" }
             );
 
-            // v/subversetoshow
+            // v/selectedsubverse/submit
             routes.MapRoute(
                 name: "submitpost",
                 url: "v/{selectedsubverse}/submit",
@@ -178,11 +158,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "submitcomment",
                 url: "submitcomment",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "Submitcomment",
-                }
+                defaults: new { controller = "Home", action = "Submitcomment" }
             );
 
             // /random
@@ -213,6 +189,20 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "Index" }
             );
 
+            // domains/domainname.com
+            routes.MapRoute(
+                name: "DomainIndex",
+                url: "domains/{domainname}.{ext}",
+                defaults: new { controller = "Domains", action = "Index" }
+            );
+
+            // domains/domainname.com/new
+            routes.MapRoute(
+                name: "DomainIndexSorted",
+                url: "domains/{domainname}.{ext}/{sortingmode}",
+                defaults: new { controller = "Domains", action = "New", sortingmode = UrlParameter.Optional }
+            );
+
             // v/subversetoshow/comments/123456
             routes.MapRoute(
                 name: "SubverseComments",
@@ -237,7 +227,6 @@ namespace Whoaverse
                     id = UrlParameter.Optional
                 }
             );
-
 
         }
     }

@@ -18,9 +18,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Whoaverse.Models;
 using Whoaverse.Utils;
 
-namespace Whoaverse.Models
+namespace Whoaverse.Controllers
 {
     public class SubversesController : Controller
     {

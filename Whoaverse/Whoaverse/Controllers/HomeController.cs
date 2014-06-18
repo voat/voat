@@ -22,9 +22,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Whoaverse.Models;
 using Whoaverse.Utils;
 
-namespace Whoaverse.Models
+namespace Whoaverse.Controllers
 {
     public class HomeController : Controller
     {
@@ -412,8 +413,8 @@ namespace Whoaverse.Models
                                join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                where message.Name != "deleted"
                                select message).OrderByDescending(s => s.Rank).ToList();
-            
-            return View(submissions.ToPagedList(pageNumber, pageSize));        
+
+            return View(submissions.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult @New(int? page, string sortingmode)
@@ -543,5 +544,6 @@ namespace Whoaverse.Models
                 return new EmptyResult();
             }
         }
+        
     }
 }

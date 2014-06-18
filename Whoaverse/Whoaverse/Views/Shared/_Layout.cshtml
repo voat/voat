@@ -29,17 +29,22 @@
     ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
     ViewBag.Description = ViewBag.Description ?? "whoaverse: the next frontpage of the internet";
 
-    if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user")
+    if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains")
     {
         selectedSubverse = "/v/" + ViewBag.SelectedSubverse;
         selectedSubverseNew = selectedSubverse + "/new";
     }
     else
     {
-        if (selectedSubverse != "user")
+        if (selectedSubverse != "user" && selectedSubverse != "domains")
         {
             selectedSubverse = "/";
             selectedSubverseNew = "new";
+        }
+        if (selectedSubverse == "domains")
+        {
+            selectedSubverse = "/domains/" + ViewBag.SelectedDomain + "/";
+            selectedSubverseNew = "/domains/" + ViewBag.SelectedDomain + "/new";
         }
     }
 
@@ -51,14 +56,12 @@
             classOverview = "disabled";
             classSubmissions = "disabled";
         }
-
         if (whattodisplay == "submissions")
         {
             classComments = "disabled";
             classOverview = "disabled";
             classSubmissions = "selected";
         }
-
     }
 
     if (sortingMode != null)
@@ -120,7 +123,7 @@
         ga('send', 'pageview');
     </script>
 
-    <link rel='shortcut icon' href="http://www.whoaverse.com/favicon.ico" type="image/x-icon" />    
+    <link rel='shortcut icon' href="http://www.whoaverse.com/favicon.ico" type="image/x-icon" />
 
 </head>
 <body>
@@ -145,6 +148,19 @@
                 }
                 else if (selectedSubverse.Equals("/"))
                 {
+                    <ul class="tabmenu ">
+                        <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
+                        <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
+                        <li><a href="/submit">submit a message</a></li>
+                        <li><a href="/submit?linkpost=true">submit a link</a></li>
+                    </ul>
+                }
+                else if (ViewBag.SelectedSubverse.Equals("domains"))
+                {
+                    if (!Request.Browser.IsMobileDevice)
+                    {
+                        <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedDomain</a></span>
+                    }
                     <ul class="tabmenu ">
                         <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
                         <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
@@ -205,7 +221,6 @@
         </div>
     </div>
     <!-- End Must be logged in Modal -->
-
     @RenderBody()
 
     @Html.Partial("_Footer");
@@ -218,7 +233,7 @@
             HttpCookie cookie = new HttpCookie("NotFirstTime");
             cookie.Value = "whoaverse first time visitor identifier";
             HttpContext.Current.Response.Cookies.Add(cookie);
-            
+
             <div class="eppnotice">
                 <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
                 Cookies help us deliver our services. By using our services, you agree to our use of cookies.

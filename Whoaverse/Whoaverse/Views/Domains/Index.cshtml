@@ -1,4 +1,4 @@
-@*This source file is subject to version 3 of the GPL license,
+﻿@*This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
     available online at http://www.gnu.org/licenses/gpl.txt;
     you may not use this file except in compliance with the License.
@@ -12,11 +12,9 @@
 
 @model PagedList.IPagedList<Whoaverse.Models.Message>
 
-@using Whoaverse.Utils;
-
 @{
-    string selectedSubverse = ViewBag.SelectedSubverse;   
-    
+    ViewBag.Title = "whoaverse: the next frontpage of the internet";
+
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
 
@@ -31,6 +29,7 @@
 }
 
 @using PagedList.Mvc;
+@using Whoaverse.Utils;
 
 <style type="text/css">
     body > .content .link .rank {
@@ -39,15 +38,20 @@
 </style>
 
 @{
-    if (!selectedSubverse.Equals("user") && !Request.Browser.IsMobileDevice)
+    if (!Request.Browser.IsMobileDevice)
     {
-        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse } )
+        @Html.Partial("_SidebarFrontpage")
+        if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
+        {           
+            <div class="infobar welcome" style="display: block;">
+                <h1>whoaverse is a website about everything</h1>
+                <div class="button-row">
+                    <h2>where you shape the content by voting</h2>
+                    <a href="/about/intro">learn more ›</a>
+                </div>
+            </div>
+        }
     }
-    <style type="text/css">
-            @{
-                Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-            }
-    </style>
 }
 
 <div class="content" role="main">
@@ -55,6 +59,8 @@
     <br /><br />
 
     <div class="sitetable linklisting">
+
+        @Html.Action("PromotedSubmission", "Home")
 
         @{
             //(current page number -1)*25
@@ -91,13 +97,14 @@
             counter++;
         }
 
-    </div>
-
-    @{
-        if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
+        @{
+            if (Model.PageCount > 1)
+            {
+                @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())                
+                <a href="/random">or try a random subverse</a>
+            }
         }
-    }
+
+    </div>
 
 </div>
