@@ -375,7 +375,7 @@ namespace Whoaverse.Controllers
                     if (Whoaverse.Utils.User.DeleteUser(User.Identity.Name))
                     {
                         // deletion executed without errors 
-                        return View("~/Views/Help/AccountDeleted.cshtml");
+                        return View("~/Views/Account/AccountDeleted.cshtml");
                     }
                     else
                     {

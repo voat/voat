@@ -412,8 +412,8 @@ namespace Whoaverse.Models
                                join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                where message.Name != "deleted"
                                select message).OrderByDescending(s => s.Rank).ToList();
-
-            return View(submissions.ToPagedList(pageNumber, pageSize));
+            
+            return View(submissions.ToPagedList(pageNumber, pageSize));        
         }
 
         public ActionResult @New(int? page, string sortingmode)
@@ -480,6 +480,8 @@ namespace Whoaverse.Models
 
         public ActionResult Help(string pagetoshow)
         {
+            ViewBag.SelectedSubverse = string.Empty;
+
             if (pagetoshow == "privacy")
             {
                 return View("~/Views/Help/Privacy.cshtml");
@@ -491,6 +493,10 @@ namespace Whoaverse.Models
             if (pagetoshow == "markdown")
             {
                 return View("~/Views/Help/Markdown.cshtml");
+            }
+            if (pagetoshow == "faq")
+            {
+                return View("~/Views/Help/Faq.cshtml");
             }
             else
             {

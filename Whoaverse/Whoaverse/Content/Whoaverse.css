@@ -182,7 +182,7 @@
     overflow: hidden;
     margin-right: 0px;
     white-space: nowrap;
-	box-shadow: 0 4px 6px -6px black;
+    box-shadow: 0 4px 6px -6px black;
 }
 
 .circle-step {
@@ -262,6 +262,11 @@ a:visited {
     text-decoration: none;
 }
 
+.form-control {
+    font-family: verdana,arial,helvetica,sans-serif;
+    font-size: 12px;
+}
+
 /* Whoaverse Sprites
 -----------------------------------------------------------*/
 .arrow-downvote {
@@ -336,4 +341,50 @@ a:visited {
     width: 15px;
     height: 10px;
     background: url('WVSprite.png') 0 -664px;
+}
+
+.heading-2 {
+    color: #000;
+    font-family: verdana,arial,helvetica,sans-serif;
+    font-size: 14px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 700;
+    line-height: 29px;
+    margin-bottom: 5.85px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 17.55px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    word-wrap: break-word;
+    -moz-font-feature-settings: normal;
+    -moz-font-language-override: normal;
+}
+
+.heading-3 {
+    color: #000;
+    font-family: verdana,arial,helvetica,sans-serif;
+    font-size: 12px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 700;
+    line-height: 26px;
+    margin-bottom: 5.2px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 10.4px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    word-wrap: break-word;
+    -moz-font-feature-settings: normal;
+    -moz-font-language-override: normal;
 }

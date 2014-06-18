@@ -427,7 +427,7 @@
     <Content Include="Views\Shared\_SidebarSubmissionInfo.cshtml" />
     <Content Include="Views\Shared\_SidebarUserInfo.cshtml" />
     <Content Include="Views\Account\_DeleteAccount.cshtml" />
-    <Content Include="Views\Help\AccountDeleted.cshtml" />
+    <Content Include="Views\Account\AccountDeleted.cshtml" />
     <Content Include="Views\Home\_Promoted.cshtml" />
     <Content Include="Views\Shared\_PromotedSubmission.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionLink.cshtml" />
@@ -437,6 +437,8 @@
     <Content Include="Views\Shared\_SearchMinimal.cshtml" />
     <Content Include="Views\Shared\_SearchInSubverse.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
+    <Content Include="Views\Help\Faq.cshtml" />
+    <Content Include="Views\Shared\_Footer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
