@@ -25,7 +25,7 @@
     if (Model.Type == 2)
     {
 
-        string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
+       string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
 
         <!-- 1 link submission details without comments -->
         <div id="siteTable" class="sitetable linklisting">
@@ -49,18 +49,50 @@
                     <p class="title">
                         <a class="title may-blank " href="@Model.MessageContent" tabindex="1">@Model.Linkdescription</a>&#32;<span class="domain">(<a href="#">@submissionDomain</a>)</span>
                     </p>
-                    <p class="tagline">
-                        submitted&#32;
-                        <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago&#32;by&#32;<a href="/user/@Model.Name" class="author may-blank id-t2_efy08">@Model.Name</a>
-                        <span class="userattrs"></span>
+
+                    <p class="tagline">submitted&#32;<time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago&#32;by&#32;
+                        @{
+                            if (Model.Name == "deleted")
+                            {
+                                <span class="userattrs">[deleted]</span>
+                            }
+                            else
+                            {
+                                <span class="userattrs">
+                                    <a href="/user/@Model.Name" class="author may-blank id-t2_@Model.Id">@Model.Name</a>
+                                </span>
+                            }
+                        }
                     </p>
+
                     <ul class="flat-list buttons">
                         <li class="first">
                             <a href="/v/@Model.Subverse/comments/@Model.Id" class="comments may-blank">@Model.Comments.Count comments</a>
                         </li>
-                        <li class="share">
-                            <span class="share-button toggle" style=""><a class="option active login-required" href="#" tabindex="100">share</a><a class="option " href="#">cancel</a></span>
-                        </li>
+
+                        @{
+        if (User.Identity.IsAuthenticated)
+        {
+            if (User.Identity.Name == Model.Name)
+            {
+                            <li>
+                                <form class="toggle del-button " action="#" method="get">
+                                    <input class="active" name="executed" value="deleted" type="hidden">
+                                    <span class="option main active">
+                                        <a href="javascript:void(0)" class="togglebutton" onclick="return togglesubmission(@Model.Id)">delete</a>
+                                    </span>
+                                    <span class="option error">
+                                        are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletesubmission(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglesubmissionback(@Model.Id)">no</a>
+                                    </span>
+                                </form>
+                            </li>
+            }
+
+        }
+                        }
+
+
+
                     </ul>
                     <div class="expando" style='display: none'>
                         <span class="error">loading...</span>

@@ -407,13 +407,7 @@ function deletesubmission(submissionid) {
     });
 
     //reload body content with background page refresh
-    $.ajax({
-        url: "",
-        context: document.body,
-        success: function (s, x) {
-            $(this).html(s);
-        }
-    });
+    $('body').load($(location).attr('href'));
 }
 
 //toggle are you sure question

@@ -249,7 +249,16 @@ namespace Whoaverse.Controllers
                 if (submissionToDelete.Name == User.Identity.Name)
                 {
                     submissionToDelete.Name = "deleted";
-                    submissionToDelete.MessageContent = "deleted";
+
+                    if (submissionToDelete.Type == 1)
+                    {
+                        submissionToDelete.MessageContent = "deleted";
+                    }
+                    else
+                    {
+                        submissionToDelete.MessageContent = "http://whoaverse.com";
+                    }                       
+
                     await db.SaveChangesAsync();
                 }
             }
@@ -356,7 +365,7 @@ namespace Whoaverse.Controllers
             }
             else
             {
-                return View(message);
+                return View();
             }
         }
 
