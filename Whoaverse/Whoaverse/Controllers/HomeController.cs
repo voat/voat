@@ -193,10 +193,21 @@ namespace Whoaverse.Controllers
 
             if (commentToDelete != null)
             {
+                string commentSubverse = commentToDelete.Message.Subverse;
+                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == commentToDelete.Message.Subverse && n.Power == 1).FirstOrDefault();
+
+                // delete comment if the comment author is currently logged in user
                 if (commentToDelete.Name == User.Identity.Name)
                 {
                     commentToDelete.Name = "deleted";
                     commentToDelete.CommentContent = "deleted";
+                    await db.SaveChangesAsync();
+                }
+                // delete comment if delete request is issued by subverse moderator
+                else if (subverseOwner != null && subverseOwner.Username == User.Identity.Name)
+                {
+                    commentToDelete.Name = "deleted";
+                    commentToDelete.CommentContent = "deleted by a moderator";
                     await db.SaveChangesAsync();
                 }
             }
@@ -242,10 +253,12 @@ namespace Whoaverse.Controllers
         [Authorize]
         public async Task<ActionResult> DeleteSubmission(int submissionId)
         {
-            Message submissionToDelete = db.Messages.Find(submissionId);
+            Message submissionToDelete = db.Messages.Find(submissionId);            
 
             if (submissionToDelete != null)
             {
+                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == submissionToDelete.Subverse && n.Power == 1).FirstOrDefault();
+
                 if (submissionToDelete.Name == User.Identity.Name)
                 {
                     submissionToDelete.Name = "deleted";
@@ -261,6 +274,23 @@ namespace Whoaverse.Controllers
 
                     await db.SaveChangesAsync();
                 }
+                // delete comment if delete request is issued by subverse moderator
+                else if (submissionToDelete != null && subverseOwner.Username == User.Identity.Name)
+                {
+                    submissionToDelete.Name = "deleted";
+
+                    if (submissionToDelete.Type == 1)
+                    {
+                        submissionToDelete.MessageContent = "deleted by a moderator";
+                    }
+                    else
+                    {
+                        submissionToDelete.MessageContent = "http://whoaverse.com";
+                    }
+
+                    await db.SaveChangesAsync();
+                }
+
             }
 
             string url = this.Request.UrlReferrer.AbsolutePath;
@@ -541,7 +571,7 @@ namespace Whoaverse.Controllers
         // GET: promoted submission
         public ActionResult PromotedSubmission()
         {
-            Message promotedSubmission = db.Messages.Find(4051);
+            Message promotedSubmission = db.Messages.Find(6181);
 
             if (promotedSubmission != null)
             {

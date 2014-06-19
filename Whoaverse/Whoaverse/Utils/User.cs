@@ -15,9 +15,7 @@ All Rights Reserved.
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Whoaverse.Models;
 
 namespace Whoaverse.Utils
@@ -114,5 +112,18 @@ namespace Whoaverse.Utils
             }
         }
 
+        // check if given user is moderator for a given subverse
+        public static bool IsUserSubverseAdmin(string userName, string subverse)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == subverse && n.Power == 1).FirstOrDefault();
+                if (subverseOwner != null && subverseOwner.Username == userName) {
+                    return true;
+                } else {
+                    return false;
+                };
+            }
+        }
     }
 }

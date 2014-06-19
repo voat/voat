@@ -133,7 +133,6 @@ namespace Whoaverse.Controllers
                 }
                 catch (Exception)
                 {
-
                     ModelState.AddModelError(string.Empty, "Something bad happened. You broke Whoaverse.");
                 }                
             }
