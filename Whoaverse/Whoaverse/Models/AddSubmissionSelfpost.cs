@@ -36,8 +36,6 @@ namespace Whoaverse.Models
         [Required(ErrorMessage = "You must choose a subverse to send the post to. Example: programming, videos, pics, funny.")]
         public string Subverse { get; set; }
 
-        //[Required(ErrorMessage = "A message is required. Please fill this field.")]
         public string MessageContent { get; set; }
-
     }
 }

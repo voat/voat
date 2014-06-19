@@ -60,7 +60,7 @@
                 <a href="/user/@commentModel.Name" class="author gray @authorClass may-blank id-t2_@commentId">@commentModel.Name</a>
                 <span class="userattrs">@Html.Raw(authorSpanClass)</span>
                 <span class="score dislikes">@commentModel.Dislikes points</span>
-                <span class="score unvoted">@commentModel.Votes point</span>
+                <span class="score unvoted">@commentModel.Likes point</span>
                 <span class="score likes">@commentModel.Likes points</span>
             }
             else
@@ -81,7 +81,7 @@
                     <a href="/user/@commentModel.Name" class="author @authorClass may-blank id-t2_@commentId">@commentModel.Name</a>
                     <span class="userattrs">@Html.Raw(authorSpanClass)</span>
                     <span class="score dislikes">@commentModel.Dislikes points</span>
-                    <span class="score unvoted">@commentModel.Votes points</span>
+                    <span class="score unvoted">@commentModel.Likes points</span>
                     <span class="score likes">@commentModel.Likes points</span>
                 }
                 else

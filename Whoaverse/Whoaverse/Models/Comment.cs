@@ -16,6 +16,8 @@ namespace Whoaverse.Models
     {
         public Comment()
         {
+            this.Likes = 1;
+            this.Dislikes = 0;
             this.Commentvotingtrackers = new HashSet<Commentvotingtracker>();
         }
     

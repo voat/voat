@@ -207,8 +207,8 @@
           <NavigationProperty Name="Message" Relationship="Self.FK_Comments_Messages" FromRole="Comments" ToRole="Messages" />
           <NavigationProperty Name="Commentvotingtrackers" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Comments" ToRole="Commentvotingtracker" />
           <Property Name="CommentContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Likes" Type="Int16" Nullable="false" />
-          <Property Name="Dislikes" Type="Int16" Nullable="false" />
+          <Property Name="Likes" Type="Int16" Nullable="false" DefaultValue="1" />
+          <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
           <Property Name="ParentId" Type="Int32" />
           <Property Name="LastEditDate" Type="DateTime" Precision="0" />
         </EntityType>
