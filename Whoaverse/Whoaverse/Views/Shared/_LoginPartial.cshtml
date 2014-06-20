@@ -21,11 +21,13 @@
     {
         @Html.AntiForgeryToken()
         <div id="header-bottom-right">
-            <span class="user">@Html.ActionLink(User.Identity.GetUserName(), "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })&nbsp;(<span class="userkarma" title="link karma">@linkKarma</span>)</span>
+            <span class="user">@Html.ActionLink(User.Identity.GetUserName(), "UserProfile", "Home", routeValues: new { Id = User.Identity.GetUserName() }, htmlAttributes: new { title = "Profile" })&nbsp;(<span class="userkarma" title="link karma">@linkKarma</span>)</span>
+            <span class="separator">|</span>
+            <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</span>
             <span class="separator">|</span>
             <a title="no new mail" href="#" class="nohavemail" id="mail">messages</a>
             <span class="separator">|</span>
-            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>      
+            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
         </div>
     }
 

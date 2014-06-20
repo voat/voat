@@ -131,10 +131,10 @@
     <div id="header" role="banner">
         @Html.Action("listofsubverses", "Home", new { activeSubverse = selectedSubverse })
         <div id="header-bottom-left">
-            <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
-                <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
-            </a>&nbsp;
 
+                <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
+                <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
+                </a>
             @{
                 if (selectedSubverse.Equals("user"))
                 {
@@ -244,5 +244,7 @@
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
+
+
 
 </html>
