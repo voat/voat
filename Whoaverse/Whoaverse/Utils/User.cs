@@ -112,7 +112,7 @@ namespace Whoaverse.Utils
             }
         }
 
-        // check if given user is moderator for a given subverse
+        // check if given user is the owner for a given subverse
         public static bool IsUserSubverseAdmin(string userName, string subverse)
         {
             using (whoaverseEntities db = new whoaverseEntities())
@@ -121,6 +121,23 @@ namespace Whoaverse.Utils
                 if (subverseOwner != null && subverseOwner.Username == userName) {
                     return true;
                 } else {
+                    return false;
+                };
+            }
+        }
+
+        // check if given user is moderator for a given subverse
+        public static bool IsUserSubverseModerator(string userName, string subverse)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var subverseModerator = db.SubverseAdmins.Where(n => n.SubverseName == subverse && n.Power == 2).FirstOrDefault();
+                if (subverseModerator != null && subverseModerator.Username == userName)
+                {
+                    return true;
+                }
+                else
+                {
                     return false;
                 };
             }

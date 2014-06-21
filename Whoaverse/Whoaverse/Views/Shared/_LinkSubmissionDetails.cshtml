@@ -88,7 +88,7 @@
                     </form>
                 </li>
             }
-            else if (Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse))
+            else if (Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
             {
                 <li>
                     <form class="toggle del-button " action="#" method="get">
