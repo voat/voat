@@ -1053,6 +1053,14 @@ body > .content .link.compressed .midcol {
         background-repeat: no-repeat;
         vertical-align: middle;
     }
+    
+    .tagline .post_upvotes{
+    	color: #ff4500;
+    }
+    
+    .tagline .post_downvotes{
+    	color: #5f99cf;
+    }
 
 a.author {
     margin-right: 0.5em;
@@ -1486,6 +1494,8 @@ body.with-listing-chooser.explore-page #header .pagename {
         font-weight: bold;
         padding: 0 0 8px 5px;
     }
+    
+    
 
 .explore-page.res-nightmode .comment-fade {
     display: none;
