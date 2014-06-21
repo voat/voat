@@ -22,6 +22,12 @@
     }
 </style>
 
+<style type="text/css">
+            @{
+                Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+            }
+</style>
+
 <!--
     display 1 submission with details and comments
 -->
