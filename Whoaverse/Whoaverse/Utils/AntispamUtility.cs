@@ -22,12 +22,15 @@ namespace Whoaverse.Utils
         //This will store the URL to Redirect errors to
         public string RedirectURL;
 
+        private bool trustedUser = false;
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var loggedInUser = filterContext.HttpContext.User.Identity.Name;
-            
+
             //Store our HttpContext (for easier reference and code brevity)
             var request = filterContext.HttpContext.Request;
+
             //Store our HttpContext.Cache (for easier reference and code brevity)
             var cache = filterContext.HttpContext.Cache;
 
@@ -41,10 +44,16 @@ namespace Whoaverse.Utils
             var targetInfo = request.RawUrl + request.QueryString;
 
             //Generate a hash for your strings (this appends each of the bytes of the value into a single hashed string
-            var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));            
+            var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));
+
+            //Override spam filter if user has a certain karma treshold
+            if (Whoaverse.Utils.Karma.LinkKarma(loggedInUser) >= 100)
+            {
+                trustedUser = true;
+            }
 
             //Checks if the hashed value is contained in the Cache (indicating a repeat request)
-            if (cache[hashValue] != null && loggedInUser != "system")
+            if (cache[hashValue] != null && loggedInUser != "system" && trustedUser != true)
             {
                 //Adds the Error Message to the Model and Redirect
                 filterContext.Controller.ViewData.ModelState.AddModelError(string.Empty, ErrorMessage);

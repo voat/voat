@@ -316,7 +316,7 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
-        {
+        {           
             if (ModelState.IsValid)
             {
                 //check if subverse exists
