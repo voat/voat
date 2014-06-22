@@ -199,7 +199,7 @@ namespace Whoaverse.Controllers
         // POST: Eddit a Subverse
         // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
-        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseSettings([Bind(Include = "Name, Description, Sidebar, Stylesheet")] Subverse subverseToEdit)
         {

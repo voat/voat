@@ -274,8 +274,8 @@ namespace Whoaverse.Controllers
 
                     await db.SaveChangesAsync();
                 }
-                // delete comment if delete request is issued by subverse moderator
-                else if (submissionToDelete != null && subverseOwner.Username == User.Identity.Name)
+                // delete submission if delete request is issued by subverse moderator
+                else if (submissionToDelete != null && subverseOwner.Username == User.Identity.Name || submissionToDelete != null && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
                 {
                     submissionToDelete.Name = "deleted";
 
