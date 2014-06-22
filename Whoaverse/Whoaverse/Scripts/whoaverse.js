@@ -12,6 +12,12 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+/*
+ * This code is bad. Bad code is bad. Bad code! Okay...
+ * I am a beginner when it comes to JavaScript and jQuery, so please, feel free to refactor this as much as you can!
+ * - Atko
+ */
+
 function click_voting() {
     $(this).toggleClass("arrow upmod login-required")
 }
@@ -437,4 +443,22 @@ function togglesubmissionback(submissionid) {
 //check if an object exists
 $.fn.exists = function () {
     return this.length !== 0;
+}
+
+//subscribe button
+function subscribe(obj) {
+    alert("subscribe function executing now");    
+    $(obj).attr("onclick", "unsubscribe(this)");
+    $(obj).html("unsubscribe");
+
+    // call the actual subscribe API
+}
+
+//unsubscribe button
+function unsubscribe(obj) {
+    alert("unsubscribe function executing now");
+    $(obj).attr("onclick", "subscribe(this)");
+    $(obj).html("subscribe");
+
+    // call the actual unsubscribe API
 }

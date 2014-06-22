@@ -34,7 +34,7 @@ namespace UnitTests
         {
             DateTime testDate = DateTime.Now.AddDays(-143);
             double result = Submissions.CalcSubmissionAgeDouble(testDate);
-            Assert.AreEqual(143, result, 0.1, "Submission double age was not calculated.");
+            Assert.AreEqual(3432, result, 0.1, "Submission double age was not calculated.");
         }
 
         [TestMethod]

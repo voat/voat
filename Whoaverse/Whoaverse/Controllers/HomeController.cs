@@ -570,8 +570,10 @@ namespace Whoaverse.Controllers
 
         // GET: promoted submission
         public ActionResult PromotedSubmission()
-        {
-            Message promotedSubmission = db.Messages.Find(6181);
+        {            
+            var submissionId = db.Promotedsubmissions.FirstOrDefault();
+
+            Message promotedSubmission = db.Messages.Find(submissionId.promoted_submission_id);
 
             if (promotedSubmission != null)
             {

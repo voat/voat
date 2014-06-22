@@ -100,7 +100,7 @@
         @{
             if (Model.PageCount > 1)
             {                    
-                @Html.PagedListPager(Model, page => Url.Action(urlaction, "Domains", new { page }), WhoaversePagerOptions.PagedListRenderOptions())                
+                @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())                
                 <a href="/random">or try a random subverse</a>
             }
         }

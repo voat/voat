@@ -25,7 +25,7 @@ namespace Whoaverse.Utils
         {
             double newRank = ((score - 1) * 0.8) / ((submissionAge + 2) * 1.8);
 
-            return newRank;
+            return Math.Round(newRank, 7);
         }
     }
 }

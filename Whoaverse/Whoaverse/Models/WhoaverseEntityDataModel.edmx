@@ -55,6 +55,29 @@
           <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
           <Property Name="LastEditDate" Type="smalldatetime" />
         </EntityType>
+        <EntityType Name="Promotedsubmissions">
+          <Key>
+            <PropertyRef Name="promoted_submission_id" />
+          </Key>
+          <Property Name="promoted_submission_id" Type="int" Nullable="false" />
+          <Property Name="promoted_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Savedsubmissions">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SubmissionId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Subscriptions">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="SubverseAdmins">
           <Key>
             <PropertyRef Name="Id" />
@@ -167,6 +190,9 @@
           <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Promotedsubmissions" EntityType="Self.Promotedsubmissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Savedsubmissions" EntityType="Self.Savedsubmissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Votingtracker" EntityType="Self.Votingtracker" Schema="dbo" store:Type="Tables" />
@@ -322,6 +348,9 @@
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="SubverseAdmin" EntitySet="SubverseAdmins" />
           </AssociationSet>
+          <EntitySet Name="Promotedsubmissions" EntityType="whoaverseModel.Promotedsubmission" />
+          <EntitySet Name="Savedsubmissions" EntityType="whoaverseModel.Savedsubmission" />
+          <EntitySet Name="Subscriptions" EntityType="whoaverseModel.Subscription" />
         </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -411,6 +440,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Promotedsubmission">
+          <Key>
+            <PropertyRef Name="promoted_submission_id" />
+          </Key>
+          <Property Name="promoted_submission_id" Type="Int32" Nullable="false" />
+          <Property Name="promoted_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Savedsubmission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SubmissionId" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Subscription">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -511,6 +563,32 @@
             <EntityTypeMapping TypeName="whoaverseModel.SubverseAdmin">
               <MappingFragment StoreEntitySet="SubverseAdmins">
                 <ScalarProperty Name="Power" ColumnName="Power" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Promotedsubmissions">
+            <EntityTypeMapping TypeName="whoaverseModel.Promotedsubmission">
+              <MappingFragment StoreEntitySet="Promotedsubmissions">
+                <ScalarProperty Name="promoted_by" ColumnName="promoted_by" />
+                <ScalarProperty Name="promoted_submission_id" ColumnName="promoted_submission_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Savedsubmissions">
+            <EntityTypeMapping TypeName="whoaverseModel.Savedsubmission">
+              <MappingFragment StoreEntitySet="Savedsubmissions">
+                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subscriptions">
+            <EntityTypeMapping TypeName="whoaverseModel.Subscription">
+              <MappingFragment StoreEntitySet="Subscriptions">
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />

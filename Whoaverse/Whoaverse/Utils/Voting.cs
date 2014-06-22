@@ -137,12 +137,10 @@ namespace Whoaverse.Utils
                             submission.Rank = newRank;
                             db.SaveChanges();
 
-                            ResetMessageVote(userWhichUpvoted, submissionId);
-                           
+                            ResetMessageVote(userWhichUpvoted, submissionId);                           
                         }
 
                         break;
-
                 }
             }
 

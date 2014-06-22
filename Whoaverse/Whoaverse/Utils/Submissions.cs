@@ -21,7 +21,7 @@ namespace Whoaverse.Utils
 {
     public static class Submissions
     {
-
+        // calculate submission age in days, hours or minutes for use in views
         public static string CalcSubmissionAge(DateTime inPostingDateTime)
         {
             DateTime currentDateTime = DateTime.Now;
@@ -47,29 +47,13 @@ namespace Whoaverse.Utils
             }
         }
 
+        // calculate submission age in hours from posting date for ranking purposes
         public static double CalcSubmissionAgeDouble(DateTime inPostingDateTime)
         {
             DateTime currentDateTime = DateTime.Now;
             TimeSpan duration = currentDateTime - inPostingDateTime;
 
-            double totalHours = duration.TotalHours;
-
-            if (totalHours > 24)
-            {
-                return duration.TotalDays;
-            }
-            else if (totalHours < 24 && totalHours > 1 || totalHours == 1)
-            {
-                return duration.TotalHours;
-            }
-            else if (totalHours < 1)
-            {
-                return duration.TotalMinutes;
-            }
-            else
-            {
-                return -10000;
-            }
+            return duration.TotalHours;            
         }
 
     }

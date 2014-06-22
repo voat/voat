@@ -25,7 +25,7 @@
         subverseOwner = subOwner.Username;
     }
 
-    var subModerators = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 2);
+    var subModerators = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 2).ToList();
 }
 
 <div class="side">
@@ -37,9 +37,27 @@
             <h1 class="hover whoaversename">
                 <a href="/v/@Model.name" class="hover">@Model.name</a>
             </h1>
-            <button type="button" class="btn-whoaverse-paging disabled btn-xs btn-default">subscribe</button>
+
+            @{
+                if (User.Identity.IsAuthenticated)
+                {
+                    if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
+                    {
+                        <button type="button" onclick="return unsubscribe(this)" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this)">subscribe</button>
+                    }
+                }
+                else
+                {
+                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
+                }
+            }
+
             <span class="subscribers">
-                <span class="number">X</span>
+                <span class="number">@ViewBag.SubscriberCount</span>
                 <span class="word">subscribers</span>
             </span>
             <p class="users-online fuzzed" title="logged-in users viewing this subverse in the past 15 minutes">
@@ -71,7 +89,7 @@
             <div class="title">
                 <h1>MODERATORS</h1>
             </div>
-            <ul class="content">                                
+            <ul class="content">
                 @{foreach (var moderator in subModerators)
                 {
                     <li>

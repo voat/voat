@@ -68,7 +68,7 @@ namespace Whoaverse.Utils
                     {
                         //remove voting history for submisions
                         db.Votingtrackers.RemoveRange(db.Votingtrackers.Where(x => x.UserName == userName));
-                        
+
                         //remove voting history for comments
                         db.Commentvotingtrackers.RemoveRange(db.Commentvotingtrackers.Where(x => x.UserName == userName));
 
@@ -96,7 +96,7 @@ namespace Whoaverse.Utils
                                 s.Name = "deleted";
                                 s.Linkdescription = "deleted";
                                 s.MessageContent = "http://whoaverse.com";
-                            }                            
+                            }
                         }
                         db.SaveChangesAsync();
 
@@ -117,10 +117,13 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == subverse && n.Power == 1).FirstOrDefault();
-                if (subverseOwner != null && subverseOwner.Username == userName) {
+                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Power == 1).FirstOrDefault();
+                if (subverseOwner != null && subverseOwner.Username.ToLower() == userName.ToLower())
+                {
                     return true;
-                } else {
+                }
+                else
+                {
                     return false;
                 };
             }
@@ -131,8 +134,25 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                var subverseModerator = db.SubverseAdmins.Where(n => n.SubverseName == subverse && n.Power == 2).FirstOrDefault();
-                if (subverseModerator != null && subverseModerator.Username == userName)
+                var subverseModerator = db.SubverseAdmins.Where(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Power == 2).FirstOrDefault();
+                if (subverseModerator != null && subverseModerator.Username.ToLower() == userName.ToLower())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                };
+            }
+        }
+
+        // check if given user is subscribed to a given subverse
+        public static bool IsUserSubverseSubscriber(string userName, string subverse)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var subverseSubscriber = db.Subscriptions.Where(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username == userName).FirstOrDefault();
+                if (subverseSubscriber != null)
                 {
                     return true;
                 }

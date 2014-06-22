@@ -32,5 +32,8 @@ namespace Whoaverse.Models
         public virtual DbSet<Subverse> Subverses { get; set; }
         public virtual DbSet<Defaultsubverse> Defaultsubverses { get; set; }
         public virtual DbSet<SubverseAdmin> SubverseAdmins { get; set; }
+        public virtual DbSet<Promotedsubmission> Promotedsubmissions { get; set; }
+        public virtual DbSet<Savedsubmission> Savedsubmissions { get; set; }
+        public virtual DbSet<Subscription> Subscriptions { get; set; }
     }
 }

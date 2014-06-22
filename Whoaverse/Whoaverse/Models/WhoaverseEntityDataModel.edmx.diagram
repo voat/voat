@@ -18,6 +18,9 @@
         <AssociationConnector Association="whoaverseModel.FK_Defaultsubverses_Subverses" />
         <EntityTypeShape EntityType="whoaverseModel.SubverseAdmin" Width="1.5" PointX="3.375" PointY="7.875" />
         <AssociationConnector Association="whoaverseModel.FK_SubverseAdmins_Subverses" />
+        <EntityTypeShape EntityType="whoaverseModel.Promotedsubmission" Width="1.5" PointX="5.375" PointY="5.75" />
+        <EntityTypeShape EntityType="whoaverseModel.Savedsubmission" Width="2.125" PointX="7.375" PointY="5.75" />
+        <EntityTypeShape EntityType="whoaverseModel.Subscription" Width="1.5" PointX="10.125" PointY="5.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
