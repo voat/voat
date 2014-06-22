@@ -279,9 +279,33 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            var subverses = db.Subverses.ToList();
+            //order by subscriber count (popularity)
+            var subverses = db.Subverses.OrderByDescending(s => s.subscribers).ToList();
 
             return View(subverses.ToPagedList(pageNumber, pageSize));
+        }
+
+        // GET: sidebar for selected subverse
+        public ActionResult DetailsForSelectedSubverse(string selectedSubverse)
+        {
+            Subverse subverse = db.Subverses.Find(selectedSubverse);
+
+            if (subverse != null)
+            {
+                // get subscriber count for selected subverse
+                int subscriberCount = db.Subscriptions.AsEnumerable()
+                                    .Where(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase))
+                                    .Count();
+
+                ViewBag.SubscriberCount = subscriberCount;
+                ViewBag.SelectedSubverse = selectedSubverse;
+                return PartialView("_SubverseDetails", subverse);
+            }
+            else
+            {
+                //don't return a sidebar since subverse doesn't exist or is a system subverse
+                return new EmptyResult();
+            }
         }
 
         public ViewResult NewestSubverses(int? page, string sortingmode)

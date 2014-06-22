@@ -15,7 +15,7 @@
 @using Whoaverse.Utils;
 
 @{
-    string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
+    string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);   
 }
 
 <div class="row">
@@ -42,7 +42,7 @@
                 </div>
                 <p class="">
                     <span class="">
-                        <span class="number">X</span>
+                        <span class="number">@ViewBag.SubscriberCount</span>
                         <span class="word">subscribers, a community for @subverseAge</span>
                     </span>
                 </p>

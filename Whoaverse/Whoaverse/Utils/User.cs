@@ -174,7 +174,16 @@ namespace Whoaverse.Utils
                     Subscription newSubscription = new Subscription();
                     newSubscription.Username = userName;
                     newSubscription.SubverseName = subverse;
-                    db.Subscriptions.Add(newSubscription);
+                    db.Subscriptions.Add(newSubscription);                    
+
+                    // record new subscription in subverse table subscribers field
+                    Subverse tmpSubverse = db.Subverses.Find(subverse);
+
+                    if (tmpSubverse != null)
+                    {
+                        tmpSubverse.subscribers++;
+                    }
+
                     db.SaveChanges();
                 }
             }
@@ -190,10 +199,20 @@ namespace Whoaverse.Utils
                     var subscription = db.Subscriptions
                                 .Where(b => b.Username == userName && b.SubverseName == subverse)
                                 .FirstOrDefault();
+                    
                     if (subverse != null)
                     {
                         // remove subscription record
                         db.Subscriptions.Remove(subscription);
+
+                        // record new unsubscription in subverse table subscribers field
+                        Subverse tmpSubverse = db.Subverses.Find(subverse);
+
+                        if (tmpSubverse != null)
+                        {
+                            tmpSubverse.subscribers--;
+                        }
+
                         db.SaveChanges();
                     }
 
@@ -202,5 +221,6 @@ namespace Whoaverse.Utils
         }
 
         // save a submission
+        // TODO
     }
 }

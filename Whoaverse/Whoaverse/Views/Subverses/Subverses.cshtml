@@ -45,7 +45,7 @@
 
         @foreach (var subverse in Model)
         {
-            @Html.Partial("_SubverseDetails", subverse)
+            @Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = subverse.name })
         }
 
     </div>
