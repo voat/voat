@@ -98,6 +98,20 @@ namespace Whoaverse
                 defaults: new { controller = "Home", action = "Cla" }
             );
 
+            // subscribe
+            routes.MapRoute(
+                name: "subscribe",
+                url: "subscribe/{subverseName}",
+                defaults: new { controller = "Home", action = "Subscribe" }
+            );
+
+            // unsubscribe
+            routes.MapRoute(
+                name: "unsubscribe",
+                url: "unsubscribe/{subverseName}",
+                defaults: new { controller = "Home", action = "UnSubscribe" }
+            );
+
             // vote
             routes.MapRoute(
                 name: "vote",

@@ -162,5 +162,45 @@ namespace Whoaverse.Utils
                 };
             }
         }
+
+        // subscribe to a subverse
+        public static void SubscribeToSubverse(string userName, string subverse)
+        {
+            if (!IsUserSubverseSubscriber(userName, subverse))
+            {
+                using (whoaverseEntities db = new whoaverseEntities())
+                {
+                    // add a new subscription
+                    Subscription newSubscription = new Subscription();
+                    newSubscription.Username = userName;
+                    newSubscription.SubverseName = subverse;
+                    db.Subscriptions.Add(newSubscription);
+                    db.SaveChanges();
+                }
+            }
+        }
+
+        // unsubscribe from a subverse
+        public static void UnSubscribeFromSubverse(string userName, string subverse)
+        {
+            if (IsUserSubverseSubscriber(userName, subverse))
+            {
+                using (whoaverseEntities db = new whoaverseEntities())
+                {
+                    var subscription = db.Subscriptions
+                                .Where(b => b.Username == userName && b.SubverseName == subverse)
+                                .FirstOrDefault();
+                    if (subverse != null)
+                    {
+                        // remove subscription record
+                        db.Subscriptions.Remove(subscription);
+                        db.SaveChanges();
+                    }
+
+                }
+            }
+        }
+
+        // save a submission
     }
 }

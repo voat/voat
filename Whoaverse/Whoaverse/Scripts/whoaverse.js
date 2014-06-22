@@ -446,19 +446,49 @@ $.fn.exists = function () {
 }
 
 //subscribe button
-function subscribe(obj) {
-    alert("subscribe function executing now");    
+function subscribe(obj, subverseName) {
     $(obj).attr("onclick", "unsubscribe(this)");
     $(obj).html("unsubscribe");
 
     // call the actual subscribe API
+    submitSubscribeRequest(subverseName);
 }
 
 //unsubscribe button
-function unsubscribe(obj) {
-    alert("unsubscribe function executing now");
+function unsubscribe(obj, subverseName) {
     $(obj).attr("onclick", "subscribe(this)");
     $(obj).html("subscribe");
 
     // call the actual unsubscribe API
+    submitUnSubscribeRequest(subverseName);
+}
+
+function submitSubscribeRequest(subverseName) {
+    $.ajax({
+        type: "POST",
+        url: "/subscribe/" + subverseName,
+        success: function () {
+            var numberOfSubscribers = +($('#subscriberCount').html());
+            numberOfSubscribers++;
+            $('#subscriberCount').html(numberOfSubscribers);
+        },
+        error: function () {
+            alert('Something went wrong while sending a subscription request.');
+        }
+    });
+}
+
+function submitUnSubscribeRequest(subverseName) {
+    $.ajax({
+        type: "POST",
+        url: "/unsubscribe/" + subverseName,
+        success: function () {
+            var numberOfSubscribers = +($('#subscriberCount').html());
+            numberOfSubscribers--;
+            $('#subscriberCount').html(numberOfSubscribers);
+        },
+        error: function () {
+            alert('Something went wrong while sending unsubscription request.');
+        }
+    });
 }

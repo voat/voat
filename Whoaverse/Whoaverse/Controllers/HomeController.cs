@@ -568,6 +568,24 @@ namespace Whoaverse.Controllers
             return Json("Voting ok", JsonRequestBehavior.AllowGet);
         }
 
+        [Authorize]
+        public JsonResult Subscribe(string subverseName)
+        {
+            string loggedInUser = User.Identity.Name;
+
+            Whoaverse.Utils.User.SubscribeToSubverse(loggedInUser, subverseName);
+            return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize]
+        public JsonResult UnSubscribe(string subverseName)
+        {
+            string loggedInUser = User.Identity.Name;
+
+            Whoaverse.Utils.User.UnSubscribeFromSubverse(loggedInUser, subverseName);
+            return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
+        }
+
         // GET: promoted submission
         public ActionResult PromotedSubmission()
         {            

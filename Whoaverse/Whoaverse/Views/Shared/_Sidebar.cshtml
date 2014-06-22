@@ -43,11 +43,11 @@
                 {
                     if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
                     {
-                        <button type="button" onclick="return unsubscribe(this)" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
+                        <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
                     }
                     else
                     {
-                        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this)">subscribe</button>
+                        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
                     }
                 }
                 else
@@ -57,7 +57,7 @@
             }
 
             <span class="subscribers">
-                <span class="number">@ViewBag.SubscriberCount</span>
+                <span id="subscriberCount" class="number">@ViewBag.SubscriberCount</span>
                 <span class="word">subscribers</span>
             </span>
             <p class="users-online fuzzed" title="logged-in users viewing this subverse in the past 15 minutes">
