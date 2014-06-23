@@ -74,52 +74,17 @@
         string postAge = Submissions.CalcSubmissionAge(Model.Date);
         int commentScore = (Model.Likes - Model.Dislikes);
 
-        //default voting icons style
-        string votingStatusClassUpArrow = "arrow-upvote";
-        string votingStatusClassDownArrow = "arrow-downvote";
-        string likesOrDislikesClass = "unvoted";
-
-        if (User.Identity.IsAuthenticated)
-        //LOGGED IN USERS
-        {
-            string loggedInUserName = User.Identity.Name;
-            //returns -1:downvoted, 1:upvoted, or 0:not voted
-            int votedOrNot = VotingComments.CheckIfVotedComment(loggedInUserName, Model.Id);
-
-            switch (votedOrNot)
-            {
-                case 1:
-                    votingStatusClassUpArrow = "arrow-upvoted";
-                    votingStatusClassDownArrow = "arrow-downvote";
-                    likesOrDislikesClass = "likes";
-                    break;
-                case -1:
-                    likesOrDislikesClass = "dislikes";
-                    votingStatusClassUpArrow = "arrow-upvote";
-                    votingStatusClassDownArrow = "arrow-downvoted";
-                    break;
-            }
-
-            <div class="midcol @likesOrDislikesClass">
-                <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
-                <div class="@votingStatusClassDownArrow login-required" onclick="voteDownComment(@Model.Id);" role="button" aria-label="downvote" tabindex="0"></div>
-            </div>
-        }
-        else
-        //GUESTS
-        {
-            <div class="midcol @likesOrDislikesClass">
-                <div class="@votingStatusClassUpArrow login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
-                <div class="@votingStatusClassDownArrow login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
-            </div>
-        }
+        <!--
+            area for voting icons
+            icons removed due to community request http://whoaverse.com/v/ideasforwhoaverse/comments/8212
+        -->
 
         <div class="entry unvoted">
             <div class="collapsed" style="display:none">
                 <a href="#" class="expand" onclick="return showcomment(this)">[+]</a><a href="~/user/@Model.Name" class="author gray submitter may-blank id-t2_5fggn">@Model.Name</a>
                 <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
                 <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span>
-                <span class="score likes">@Model.Likes points</span>                
+                <span class="score likes">@Model.Likes points</span>
                 <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago &nbsp;<a href="#" class="expand" onclick="return showcomment(this)">(0 children)</a>
             </div>
             <div class="noncollapsed">

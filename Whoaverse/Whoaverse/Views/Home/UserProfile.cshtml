@@ -49,7 +49,6 @@
 
         <div class="thing id-@submission.Id even link @submissionClass" onclick="handleVoting(this);" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="0">
 
-            @Html.Partial("_votingIconsSubmission", submission)
             @Html.Partial("Userprofile/_UserProfileSubmission", submission)
 
             <div class="child"></div>
