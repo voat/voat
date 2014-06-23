@@ -14,11 +14,13 @@ All Rights Reserved.
 
 using PagedList;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Whoaverse.Models;
+using Whoaverse.Models.ViewModels;
 using Whoaverse.Utils;
 
 namespace Whoaverse.Controllers
@@ -38,7 +40,7 @@ namespace Whoaverse.Controllers
                 int subscriberCount = db.Subscriptions.AsEnumerable()
                                     .Where(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase))
                                     .Count();
-                
+
                 ViewBag.SubscriberCount = subscriberCount;
                 ViewBag.SelectedSubverse = selectedSubverse;
                 return PartialView("_Sidebar", subverse);
@@ -94,7 +96,7 @@ namespace Whoaverse.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [PreventSpam]
+        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent")] Message message)
         {
@@ -242,7 +244,7 @@ namespace Whoaverse.Controllers
         {
             int pageSize = 25;
             int pageNumber = (page ?? 1);
-            
+
             ViewBag.SelectedSubverse = subversetoshow;
 
             if (subversetoshow != "all")
@@ -283,6 +285,32 @@ namespace Whoaverse.Controllers
             var subverses = db.Subverses.OrderByDescending(s => s.subscribers).ToList();
 
             return View(subverses.ToPagedList(pageNumber, pageSize));
+        }
+
+        [Authorize]
+        public ViewResult SubversesSubscribed(int? page)
+        {
+            ViewBag.SelectedSubverse = "subverses";
+            ViewBag.whattodisplay = "subscribed";
+            int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            // get a list of subcribed subverses with details and order by subverse names, ascending
+            var subscribedSubverses = from c in db.Subverses
+                                      join a in db.Subscriptions
+                                      on c.name equals a.SubverseName
+                                      where a.Username.Equals(User.Identity.Name)
+                                      orderby a.SubverseName ascending
+                                      select new SubverseDetailsViewModel
+                                      {
+                                          Name = c.name,
+                                          Title = c.title,
+                                          Description = c.description,
+                                          Creation_date = c.creation_date,
+                                          Subscribers = c.subscribers
+                                      };
+
+            return View("SubscribedSubverses", subscribedSubverses.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: sidebar for selected subverse

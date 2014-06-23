@@ -249,6 +249,7 @@
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubverseDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchViewModel.cs" />
     <Compile Include="Models\Votingtracker.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
@@ -450,6 +451,8 @@
     <Content Include="Views\Help\Faq.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
     <Content Include="Views\Domains\Index.cshtml" />
+    <Content Include="Views\Subverses\SubscribedSubverses.cshtml" />
+    <Content Include="Views\Subverses\_SubscribedSubverseDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

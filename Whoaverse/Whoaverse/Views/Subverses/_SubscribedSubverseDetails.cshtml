@@ -10,12 +10,12 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model Whoaverse.Models.Subverse
+@model Whoaverse.Models.ViewModels.SubverseDetailsViewModel
 
 @using Whoaverse.Utils;
 
 @{
-    string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);   
+    string subverseAge = Submissions.CalcSubmissionAge(Model.Creation_date);   
 }
 
 <div class="row">
@@ -26,13 +26,13 @@
                 @{
                     if (User.Identity.IsAuthenticated)
                     {
-                        if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
+                        if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, Model.Name))
                         {
-                            <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
+                            <button type="button" onclick="return unsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
                         }
                         else
                         {
-                            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
+                            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.Name')">subscribe</button>
                         }
                     }
                     else
@@ -44,21 +44,21 @@
 
             <div class="entry unvoted">
                 <p class="titlerow">
-                    <a href="/v/@Model.name" class="h4">@Model.title: @Model.name</a>
+                    <a href="/v/@Model.Name" class="h4">@Model.Title: @Model.Name</a>
                 </p>
                 <div class="well well-sm subversedescriptionbox">
                     <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxx9ma">
                         <input name="thing_id" value="xxxx" type="hidden">
                         <div class="usertext-body may-blank-within">
                             <div class="md">
-                                <p class="subversedescriptionboxcontent">@Model.description</p>
+                                <p class="subversedescriptionboxcontent">@Model.Description</p>
                             </div>
                         </div>
                     </form>
                 </div>
                 <p class="">
                     <span class="">
-                        <span id="subscribercount" class="number">@ViewBag.SubscriberCount</span>
+                        <span id="subscribercount" class="number">@Model.Subscribers</span>
                         <span class="word">subscribers, a community for @subverseAge</span>
                     </span>
                 </p>

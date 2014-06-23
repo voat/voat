@@ -79,10 +79,12 @@
             @{
                 if (commentModel.Name != "deleted")
                 {
+                    int commentScore = commentModel.Likes - commentModel.Dislikes;
+                        
                     <a href="/user/@commentModel.Name" class="author @authorClass may-blank id-t2_@commentId">@commentModel.Name</a>
                     <span class="userattrs">@Html.Raw(authorSpanClass)</span>
                     <span class="score dislikes">@commentModel.Dislikes points</span>
-                    <span class="score unvoted">@commentModel.Likes points</span>
+                    <span class="score unvoted">@commentScore points</span>
                     <span class="score likes">@commentModel.Likes points</span>
                     <span class="commentvotesratio">&lt;<span class="post_upvotes">+@commentModel.Likes</span>|<span class="post_downvotes">&minus;@commentModel.Dislikes</span>&gt;</span>
                 }

@@ -134,7 +134,7 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                var subverseModerator = db.SubverseAdmins.Where(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Power == 2).FirstOrDefault();
+                var subverseModerator = db.SubverseAdmins.Where(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username.ToLower() == userName && n.Power == 2).FirstOrDefault();
                 if (subverseModerator != null && subverseModerator.Username.ToLower() == userName.ToLower())
                 {
                     return true;

@@ -49,6 +49,13 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "Subverses" }
             );
 
+            // /subverses
+            routes.MapRoute(
+                name: "SubscribedSubverses",
+                url: "subverses/subscribed",
+                defaults: new { controller = "Subverses", action = "SubversesSubscribed" }
+            );
+
             // /new
             routes.MapRoute(
                 name: "SubversesNew",

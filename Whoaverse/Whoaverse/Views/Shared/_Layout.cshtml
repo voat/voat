@@ -21,6 +21,7 @@
     string classOverview = "disabled";
     string classComments = "disabled";
     string classSubmissions = "disabled";
+    string classSubscribed = "disabled";
 
     string whattodisplay = ViewBag.whattodisplay;
 
@@ -61,6 +62,11 @@
             classComments = "disabled";
             classOverview = "disabled";
             classSubmissions = "selected";
+        }
+        if (whattodisplay == "subscribed")
+        {
+            classHot = "disabled";
+            classSubscribed = "selected";
         }
     }
 
@@ -173,6 +179,7 @@
                     <ul class="tabmenu ">
                         <li class="@classHot"><a href="/subverses">popular</a></li>
                         <li class="@classNew"><a href="/subverses/new">new</a></li>
+                        <li class="@classSubscribed"><a href="/subverses/subscribed">subscribed</a></li>
                     </ul>
                 }
                 else if (ViewBag.SelectedSubverse.Equals(string.Empty))
@@ -223,7 +230,7 @@
     <!-- End Must be logged in Modal -->
     @RenderBody()
 
-    @Html.Partial("_Footer");
+    @Html.Partial("_Footer")
 
     <br />
 
@@ -244,7 +251,5 @@
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
-
-
 
 </html>

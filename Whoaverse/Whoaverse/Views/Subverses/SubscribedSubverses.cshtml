@@ -1,0 +1,64 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model PagedList.IPagedList<Whoaverse.Models.ViewModels.SubverseDetailsViewModel>
+
+@using Whoaverse.Utils;
+
+@{
+    ViewBag.Title = "subverses";
+    string sortingMode = ViewBag.SortingMode;
+    string urlaction = "";
+
+    if (sortingMode != "new")
+    {
+        urlaction = "index";
+    }
+    if (ViewBag.whattodisplay == "subscribed")
+    {
+        urlaction = "Subscribed";
+    }
+    else
+    {
+        urlaction = "new";
+    }
+}
+
+@using PagedList.Mvc;
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div class="content" role="main">
+
+    <br /><br />
+
+    <div class="sitetable linklisting">
+
+        @foreach (var subverse in Model)
+        {
+            @Html.Partial("_SubscribedSubverseDetails",subverse);
+        }
+
+    </div>
+
+    @{
+        if (Model.PageCount > 1)
+        {
+            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
+        }
+    }
+
+</div>
