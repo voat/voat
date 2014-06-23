@@ -456,6 +456,7 @@
     <Content Include="Views\Domains\Index.cshtml" />
     <Content Include="Views\Subverses\SubscribedSubverses.cshtml" />
     <Content Include="Views\Subverses\_SubscribedSubverseDetails.cshtml" />
+    <Content Include="Views\Shared\Userprofile\_SidebarSubsUserModerates.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -37,6 +37,22 @@ namespace Whoaverse.Controllers
             return PartialView("_listofsubverses", db.Defaultsubverses.OrderBy(s => s.position).ToList().AsEnumerable());
         }
 
+        // GET: list of subverses user moderates
+        public ActionResult SubversesUserModerates(string userName)
+        {
+            if (userName != null)
+            {
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", db.SubverseAdmins
+                .Where(x => x.Username == userName)                
+                .Select(s => new SelectListItem { Value = s.SubverseName })
+                .OrderBy(s => s.Value).ToList().AsEnumerable());
+            }
+            else
+            {
+                return new EmptyResult();
+            }            
+        }
+
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public ActionResult ClaSubmit(Cla claModel)
@@ -122,7 +138,7 @@ namespace Whoaverse.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
-        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submitcomment([Bind(Include = "Id,CommentContent,MessageId,ParentId")] Comment comment)
         {
@@ -560,13 +576,17 @@ namespace Whoaverse.Controllers
 
             if (typeOfVote == 1)
             {
-                //perform upvoting or resetting
+                // perform upvoting or resetting
                 Voting.UpvoteSubmission(messageId, loggedInUser);
             }
             else if (typeOfVote == -1)
             {
-                //perform downvoting or resetting
-                Voting.DownvoteSubmission(messageId, loggedInUser);
+                // ignore downvote if user link karma is below certain treshold
+                if (Karma.CommentKarma(loggedInUser) > 100)
+                {
+                    // perform downvoting or resetting
+                    Voting.DownvoteSubmission(messageId, loggedInUser);
+                }                
             }
             return Json("Voting ok", JsonRequestBehavior.AllowGet);
         }

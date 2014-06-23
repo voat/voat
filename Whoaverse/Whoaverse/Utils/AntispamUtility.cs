@@ -46,8 +46,14 @@ namespace Whoaverse.Utils
             //Generate a hash for your strings (this appends each of the bytes of the value into a single hashed string
             var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));
 
-            //Override spam filter if user has a certain karma treshold
+            //Override spam filter if user has a certain link karma treshold
             if (Whoaverse.Utils.Karma.LinkKarma(loggedInUser) >= 100)
+            {
+                trustedUser = true;
+            }
+
+            //Override spam filter if user has a certain comment karma treshold
+            if (Whoaverse.Utils.Karma.CommentKarma(loggedInUser) >= 100)
             {
                 trustedUser = true;
             }

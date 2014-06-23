@@ -53,6 +53,9 @@
                     </div>
                 </div>
             </div>
+
+            @Html.Action("SubversesUserModerates", "Home", new { userName = userName })
+            
         </div>
     }
 }

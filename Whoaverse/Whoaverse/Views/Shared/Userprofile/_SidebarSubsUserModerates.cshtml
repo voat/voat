@@ -1,0 +1,53 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model IEnumerable<SelectListItem>
+
+@{
+    if (Model.Count() > 0)
+    {
+        <div class="spacer">
+            <div class="titlebox footer rounded">
+                <h2 class="hover whoaversename">
+                    This user is moderating:
+                </h2>
+                <div class="bottom">
+
+                    @{
+        foreach (var item in Model)
+        {
+            <p>
+                <a href="/v/@item.Value">@item.Value</a>
+            </p>
+        }
+                    }
+
+                </div>
+
+                <div class="clear">
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="spacer">
+            <div class="titlebox footer rounded">
+                <h2 class="hover whoaversename">
+                    This user is not a moderator.
+                </h2>
+            </div>
+        </div>
+    }
+}
+
+

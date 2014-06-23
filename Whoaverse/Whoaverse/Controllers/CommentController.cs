@@ -30,13 +30,18 @@ namespace Whoaverse.Controllers
 
             if (typeOfVote == 1)
             {
-                //perform upvoting or resetting
+                // perform upvoting or resetting
                 VotingComments.UpvoteComment(commentId, loggedInUser);
             }
             else if (typeOfVote == -1)
             {
-                //perform downvoting or resetting
-                VotingComments.DownvoteComment(commentId, loggedInUser);
+                // ignore downvote if user comment karma is below certain treshold
+                if (Karma.CommentKarma(loggedInUser) > 100)
+                {
+                    // perform downvoting or resetting
+                    VotingComments.DownvoteComment(commentId, loggedInUser);
+                }   
+                
             }
             Response.StatusCode = 200;
             return Json("Voting ok", JsonRequestBehavior.AllowGet);
