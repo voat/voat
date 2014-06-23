@@ -30,6 +30,7 @@ namespace Whoaverse.Models
         public string Name { get; set; }
         
         [Required(ErrorMessage = "Comment text is required. Please fill this field.")]
+        [StringLength(10000, ErrorMessage = "Comment text is limited to 10.000 characters.")]
         public string CommentContent { get; set; }
 
         [Required(ErrorMessage = "Date is required.")]

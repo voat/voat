@@ -38,7 +38,7 @@ namespace Whoaverse.Controllers
         }
 
         [HttpPost]
-        [PreventSpam]
+        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public ActionResult ClaSubmit(Cla claModel)
         {
             if (ModelState.IsValid)
@@ -122,7 +122,7 @@ namespace Whoaverse.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
-        [PreventSpam]
+        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submitcomment([Bind(Include = "Id,CommentContent,MessageId,ParentId")] Comment comment)
         {

@@ -36,6 +36,7 @@ namespace Whoaverse.Models
         [Required(ErrorMessage = "You must choose a subverse to send the post to. Example: programming, videos, pics, funny.")]
         public string Subverse { get; set; }
 
+        [StringLength(10000, ErrorMessage = "Submission text is limited to 10.000 characters.")]
         public string MessageContent { get; set; }
     }
 }
