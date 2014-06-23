@@ -28,9 +28,14 @@
                                 where f.ParentId == null
                                 orderby commentScore descending
                                 select f;
-                                
+
             foreach (var firstComment in firstComments)
             {
+                if (firstComment.Name == "deleted" && Model.Comments.Where(A => A.ParentId == firstComment.Id).Count() == 0)
+                {
+                    continue;
+                }
+
                 <div class="thread id-@firstComment.Id comment " data-fullname=" t1_cgkmgmm" data-ups="1" data-downs="0">
                     @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id } })
                 </div>

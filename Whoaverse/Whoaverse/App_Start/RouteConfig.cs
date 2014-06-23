@@ -84,6 +84,13 @@ namespace Whoaverse
                 defaults: new { controller = "Home", action = "UserProfile" }
             );
 
+            // u/someuserhere
+            routes.MapRoute(
+                name: "usershortroute",
+                url: "u/{id}",
+                defaults: new { controller = "Home", action = "UserProfile" }
+            );
+
             // help/pagetoshow
             routes.MapRoute(
                 name: "Help",

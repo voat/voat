@@ -219,7 +219,7 @@ function reply(parentcommentid, messageid) {
         + "<input id='ParentId' name='ParentId' value='" + parentcommentid + "' type='hidden'>"
         + "<input id='MessageId' name='MessageId' value='" + messageid + "' type='hidden'>"
         + "<div class='row'>"
-        + "<div class='col-md-4'>"
+        + "<div class='col-md-5'>"
         + "<textarea class='form-control' cols='20' id='CommentContent' name='CommentContent' data-val-required='Comment text is required. Please fill this field.' data-val='true' rows='3'></textarea>"
         + "<span class='field-validation-valid' data-valmsg-for='CommentContent' data-valmsg-replace='true'></span>"
         + "</div></div>"

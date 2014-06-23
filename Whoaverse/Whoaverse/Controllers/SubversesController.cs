@@ -245,9 +245,14 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            ViewBag.SelectedSubverse = subversetoshow;
+            if (subversetoshow == null)
+            {
+                return View("~/Views/Errors/Subversenotfound.cshtml");
+            }
 
-            if (subversetoshow != "all")
+            ViewBag.SelectedSubverse = subversetoshow;         
+
+            if  (subversetoshow != "all")
             {
                 //check if subverse exists, if not, send to a page not found error
                 Subverse subverse = db.Subverses.Find(subversetoshow);

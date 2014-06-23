@@ -365,6 +365,9 @@ namespace Whoaverse.Controllers
                         }
                     }
 
+                    //trim trailing blanks from subverse name if a user mistakenly types them
+                    message.Subverse = message.Subverse.Trim();                        
+
                     db.Messages.Add(message);
                     await db.SaveChangesAsync();
 
