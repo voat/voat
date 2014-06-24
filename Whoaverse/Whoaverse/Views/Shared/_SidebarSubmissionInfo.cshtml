@@ -17,7 +17,14 @@
     double totalVotes = Model.Dislikes + Model.Likes;
     double difference = Model.Likes - Model.Dislikes;
 
-    percentageOfLove = Math.Round((Model.Likes / totalVotes) * 100, 2);
+    if (totalVotes > 0)
+    {
+        percentageOfLove = Math.Round((Model.Likes / totalVotes) * 100, 2);
+    }
+    else
+    {
+        percentageOfLove = 0;
+    }
 
     if (!Request.Browser.IsMobileDevice)
     {

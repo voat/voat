@@ -138,7 +138,7 @@ namespace Whoaverse.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
-        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(DelayRequest = 120, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submitcomment([Bind(Include = "Id,CommentContent,MessageId,ParentId")] Comment comment)
         {
@@ -146,6 +146,7 @@ namespace Whoaverse.Controllers
             comment.Name = User.Identity.Name;
             comment.Votes = 0;
             comment.Likes = 0;
+
             if (ModelState.IsValid)
             {
                 db.Comments.Add(comment);
@@ -156,6 +157,7 @@ namespace Whoaverse.Controllers
             }
             else
             {
+                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
                 return View("~/Views/Help/SpeedyGonzales.cshtml");
             }
         }

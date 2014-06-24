@@ -25,11 +25,11 @@ namespace Whoaverse.Utils
             using (whoaverseEntities db = new whoaverseEntities())
             {
                 int likes = db.Messages.AsEnumerable()
-                                    .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Type == 2)
+                                    .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Sum(r => (int)r.Likes);
 
                 int dislikes = db.Messages.AsEnumerable()
-                                    .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Type == 2)
+                                    .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Sum(r => (int)r.Dislikes);
 
                 return likes - dislikes;
