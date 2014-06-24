@@ -17,6 +17,8 @@ The following 3rd party libraries/extensions are used:
 - Markdowndeep (http://www.toptensoftware.com/markdowndeep/)
 - Bootstrap (http://getbootstrap.com/)
 - jQuery (http://jquery.com/)
+- Recaptcha for .NET library (http://recaptchanet.codeplex.com/)
+- Entity Framework (https://entityframework.codeplex.com/)
 
 ### Installation instructions
 Follow these steps to get up and running in 5 minutes:
