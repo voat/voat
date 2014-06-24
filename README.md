@@ -17,6 +17,8 @@ The following 3rd party libraries/extensions are used:
 - Markdowndeep (http://www.toptensoftware.com/markdowndeep/)
 - Bootstrap (http://getbootstrap.com/)
 - jQuery (http://jquery.com/)
+- Recaptcha for .NET library (http://recaptchanet.codeplex.com/)
+- Entity Framework (https://entityframework.codeplex.com/)
 
 ### Installation instructions
 Follow these steps to get up and running in 5 minutes:
@@ -34,15 +36,6 @@ DefaultConnection and whoaverseEntities
 #### step 3
 - Reinstall dependencies (binaries for NuGet packages) by issuing the following command in Package Manager Console (when asked to overwrite existing files, choose no for all:
 Update-Package -Reinstall
-
-#### step 4, will be removed in future release
-- Remove file GrowthUtility.cs from the project by right-clicking on it (it can be found in Utilities folder) and selecting delete.
-
-#### step 5, will be removed in future release
-- Comment out the following line of code in the method "public async Task<ActionResult> Submit" in file HomeController.cs:
-```c#
-message.Name=GrowthUtility.GetRandomUsername();
-```
 
 ### After installation
 Start by creating your user account. The frontpage will be empty, so you should start by creating a subverse.
