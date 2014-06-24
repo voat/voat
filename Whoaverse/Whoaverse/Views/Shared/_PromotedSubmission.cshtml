@@ -93,6 +93,7 @@
             <p class="tagline">
                 submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank id-t2_8bunp">@Model.Name</a>
                 <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">&minus;@Model.Dislikes</span>)</span>
             </p>
             <ul class="flat-list buttons">
                 <li class="first">
