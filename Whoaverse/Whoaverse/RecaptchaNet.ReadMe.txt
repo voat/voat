@@ -27,8 +27,8 @@ http://recaptchanet.codeplex.com/documentation
 
 following appSettings keys:
 
-<add name="recaptchaPublicKey" value="" />
-<add name="recaptchaPrivateKey" value="" />
+<add key="recaptchaPublicKey" value="" />
+<add key="recaptchaPrivateKey" value="" />
 
 4.3. How to Use Recaptcha in ASP.NET Web Forms
 ----------------------------------------------
