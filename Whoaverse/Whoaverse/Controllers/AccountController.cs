@@ -21,12 +21,15 @@ using System.Web;
 using System.Web.Mvc;
 using Whoaverse.Models;
 using Whoaverse.Utils;
+using Recaptcha.Web;
+using Recaptcha.Web.Mvc;
 
 namespace Whoaverse.Controllers
 {
     [Authorize]
     public class AccountController : AsyncController
     {
+
         public AccountController()
             : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
         {
@@ -114,10 +117,28 @@ namespace Whoaverse.Controllers
         {
             if (ModelState.IsValid)
             {
+                // begin recaptcha helper setup
+                var recaptchaHelper = this.GetRecaptchaVerificationHelper();
+
+                if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                {
+                    ModelState.AddModelError("", "Captcha answer cannot be empty");
+                    return View(model);
+                }
+
+                var recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
+
+                if (recaptchaResult != RecaptchaVerificationResult.Success)
+                {
+                    ModelState.AddModelError("", "Incorrect captcha answer");
+                    return View(model);
+                }
+                // end recaptcha helper setup
+
                 try
                 {
                     var user = new ApplicationUser() { UserName = model.UserName };
-                    
+
                     user.RegistrationDateTime = DateTime.Now;
 
                     var result = await UserManager.CreateAsync(user, model.Password);

@@ -77,7 +77,7 @@ namespace Whoaverse.Utils
                     //never voted before
                     case 0:
 
-                        if (submission != null)
+                        if (submission != null && submission.Name != userWhichUpvoted)
                         {
                             submission.Likes++;
                             double currentScore = submission.Likes - submission.Dislikes;
@@ -99,7 +99,7 @@ namespace Whoaverse.Utils
                     //downvoted before, turn downvote to upvote
                     case -1:
 
-                        if (submission != null)
+                        if (submission != null && submission.Name != userWhichUpvoted)
                         {
                             submission.Likes++;
                             submission.Dislikes--;

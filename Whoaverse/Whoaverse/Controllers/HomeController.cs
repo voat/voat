@@ -43,14 +43,14 @@ namespace Whoaverse.Controllers
             if (userName != null)
             {
                 return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", db.SubverseAdmins
-                .Where(x => x.Username == userName)                
+                .Where(x => x.Username == userName)
                 .Select(s => new SelectListItem { Value = s.SubverseName })
                 .OrderBy(s => s.Value).ToList().AsEnumerable());
             }
             else
             {
                 return new EmptyResult();
-            }            
+            }
         }
 
         [HttpPost]
@@ -144,18 +144,11 @@ namespace Whoaverse.Controllers
         {
             comment.Date = System.DateTime.Now;
             comment.Name = User.Identity.Name;
-            comment.Votes = 1;
+            comment.Votes = 0;
+            comment.Likes = 0;
             if (ModelState.IsValid)
             {
                 db.Comments.Add(comment);
-                await db.SaveChangesAsync();
-
-                //get newly generated Comment ID and execute ranking and self upvoting                
-                Commentvotingtracker tmpVotingTracker = new Commentvotingtracker();
-                tmpVotingTracker.CommentId = comment.Id;
-                tmpVotingTracker.UserName = comment.Name;
-                tmpVotingTracker.VoteStatus = 1;
-                db.Commentvotingtrackers.Add(tmpVotingTracker);
                 await db.SaveChangesAsync();
 
                 string url = this.Request.UrlReferrer.AbsolutePath;
@@ -269,7 +262,7 @@ namespace Whoaverse.Controllers
         [Authorize]
         public async Task<ActionResult> DeleteSubmission(int submissionId)
         {
-            Message submissionToDelete = db.Messages.Find(submissionId);            
+            Message submissionToDelete = db.Messages.Find(submissionId);
 
             if (submissionToDelete != null)
             {
@@ -286,7 +279,7 @@ namespace Whoaverse.Controllers
                     else
                     {
                         submissionToDelete.MessageContent = "http://whoaverse.com";
-                    }                       
+                    }
 
                     await db.SaveChangesAsync();
                 }
@@ -332,7 +325,7 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
-        {           
+        {
             if (ModelState.IsValid)
             {
                 //check if subverse exists
@@ -382,17 +375,11 @@ namespace Whoaverse.Controllers
                     }
 
                     //trim trailing blanks from subverse name if a user mistakenly types them
-                    message.Subverse = message.Subverse.Trim();                        
+                    message.Subverse = message.Subverse.Trim();
+
+                    message.Likes = 0;
 
                     db.Messages.Add(message);
-                    await db.SaveChangesAsync();
-
-                    //get newly generated message ID and execute ranking and self upvoting                
-                    Votingtracker tmpVotingTracker = new Votingtracker();
-                    tmpVotingTracker.MessageId = message.Id;
-                    tmpVotingTracker.UserName = message.Name;
-                    tmpVotingTracker.VoteStatus = 1;
-                    db.Votingtrackers.Add(tmpVotingTracker);
                     await db.SaveChangesAsync();
 
                     return RedirectToRoute(
@@ -416,6 +403,7 @@ namespace Whoaverse.Controllers
             {
                 return View();
             }
+
         }
 
         public ActionResult UserProfile(string id, int? page, string whattodisplay)
@@ -576,8 +564,11 @@ namespace Whoaverse.Controllers
 
             if (typeOfVote == 1)
             {
-                // perform upvoting or resetting
-                Voting.UpvoteSubmission(messageId, loggedInUser);
+                if (Karma.CommentKarma(loggedInUser) > 25)
+                {
+                    // perform upvoting or resetting
+                    Voting.UpvoteSubmission(messageId, loggedInUser);
+                }
             }
             else if (typeOfVote == -1)
             {
@@ -586,7 +577,7 @@ namespace Whoaverse.Controllers
                 {
                     // perform downvoting or resetting
                     Voting.DownvoteSubmission(messageId, loggedInUser);
-                }                
+                }
             }
             return Json("Voting ok", JsonRequestBehavior.AllowGet);
         }
@@ -611,7 +602,7 @@ namespace Whoaverse.Controllers
 
         // GET: promoted submission
         public ActionResult PromotedSubmission()
-        {            
+        {
             var submissionId = db.Promotedsubmissions.FirstOrDefault();
 
             Message promotedSubmission = db.Messages.Find(submissionId.promoted_submission_id);
@@ -626,6 +617,6 @@ namespace Whoaverse.Controllers
                 return new EmptyResult();
             }
         }
-        
+
     }
 }

@@ -22,7 +22,7 @@ namespace Whoaverse.Utils
                     //never voted before
                     case 0:
 
-                        if (comment != null)
+                        if (comment != null && comment.Name != userWhichUpvoted)
                         {
                             comment.Likes++;
 
@@ -40,7 +40,7 @@ namespace Whoaverse.Utils
                     //downvoted before, turn downvote to upvote
                     case -1:
 
-                        if (comment != null)
+                        if (comment != null && comment.Name != userWhichUpvoted)
                         {
                             comment.Likes++;
                             comment.Dislikes--;

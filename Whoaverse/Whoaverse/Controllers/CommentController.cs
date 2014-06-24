@@ -30,8 +30,11 @@ namespace Whoaverse.Controllers
 
             if (typeOfVote == 1)
             {
-                // perform upvoting or resetting
-                VotingComments.UpvoteComment(commentId, loggedInUser);
+                if (Karma.CommentKarma(loggedInUser) > 25)
+                {
+                    // perform upvoting or resetting
+                    VotingComments.UpvoteComment(commentId, loggedInUser);
+                }                
             }
             else if (typeOfVote == -1)
             {
@@ -43,6 +46,7 @@ namespace Whoaverse.Controllers
                 }   
                 
             }
+
             Response.StatusCode = 200;
             return Json("Voting ok", JsonRequestBehavior.AllowGet);
         }

@@ -10,6 +10,8 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
+@using Recaptcha.Web.Mvc;
+
 @model Whoaverse.Models.Cla
 
 @{
@@ -145,6 +147,11 @@
                     @Html.TextBoxFor(m => m.ElectronicSignature, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.ElectronicSignature)
                 </div>
+            </div>
+            
+            <div class="panel panel-default">
+                @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
+                @Html.Recaptcha()
             </div>
 
             <div class="form-group">
