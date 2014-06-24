@@ -607,6 +607,8 @@ namespace Whoaverse.Controllers
         {
             var submissionId = db.Promotedsubmissions.FirstOrDefault();
 
+            if (submissionId == null) return new EmptyResult();
+
             Message promotedSubmission = db.Messages.Find(submissionId.promoted_submission_id);
 
             if (promotedSubmission != null)
