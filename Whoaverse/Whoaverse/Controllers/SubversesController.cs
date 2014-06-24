@@ -195,7 +195,18 @@ namespace Whoaverse.Controllers
                 ViewBag.SelectedSubverse = "404";
                 return View("~/Views/Errors/Subversenotfound.cshtml");
             }
-            return View(subverse);
+
+            SubverseAdmin subAdmin = db.SubverseAdmins
+                        .Where(x => x.SubverseName == subversetoshow && x.Username == User.Identity.Name && x.Power == 1).FirstOrDefault();
+
+            if (subAdmin != null)
+            {
+                return View(subverse);
+            }
+            else
+            {
+                return new EmptyResult();
+            }
         }
 
         // POST: Eddit a Subverse
@@ -250,9 +261,9 @@ namespace Whoaverse.Controllers
                 return View("~/Views/Errors/Subversenotfound.cshtml");
             }
 
-            ViewBag.SelectedSubverse = subversetoshow;         
+            ViewBag.SelectedSubverse = subversetoshow;
 
-            if  (subversetoshow != "all")
+            if (subversetoshow != "all")
             {
                 //check if subverse exists, if not, send to a page not found error
                 Subverse subverse = db.Subverses.Find(subversetoshow);

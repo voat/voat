@@ -28,6 +28,12 @@
         <div class=" thing id-t3_227d01 odd link " onclick="click_thing(this)" data-fullname="t3_227d01" data-ups="1" data-downs="0">
             <p class="parent"></p>
 
+            <div class="midcol unvoted">
+                <div class="score dislikes">@Model.Dislikes</div>
+                <div class="submissionscore">@submissionScore</div>
+                <div class="score likes">@Model.Likes</div>
+            </div>
+
             @{
         if (Model.Thumbnail != null)
         {

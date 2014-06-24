@@ -155,6 +155,18 @@
     border-radius: 4px;
 }
 
+.submissionscore {
+    margin-top: 23px;
+    color: #FF8B60;
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #F0F0F0;
+    display: inline-block;
+    border-radius: 4px;
+    resize:horizontal;
+    min-width:40px;
+}
+
 .promoted {
     background-color: #66c4e0;
     color: #FFF;
