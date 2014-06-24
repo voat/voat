@@ -336,7 +336,7 @@ namespace Whoaverse.Controllers
                     //check if username is admin and get random username instead
                     if (message.Name == "system")
                     {
-                        message.Name = GrowthUtility.GetRandomUsername();
+                        message.Name = string.Empty;
                         Random r = new Random();
                         int rInt = r.Next(6, 17);
                         message.Likes = (short)rInt;

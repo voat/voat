@@ -21,6 +21,8 @@ namespace Whoaverse.Models
     public class ApplicationUser : IdentityUser
     {
         public DateTime RegistrationDateTime { get; set; }
+        public string RecoveryQuestion { get; set; }
+        public string Answer { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

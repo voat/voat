@@ -30,7 +30,7 @@ namespace Whoaverse.Models
         [Display(Name = "Current password")]
         public string OldPassword { get; set; }
 
-        [Required]
+        //[Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
         [DataType(DataType.Password)]
@@ -41,6 +41,16 @@ namespace Whoaverse.Models
         [Display(Name = "Confirm new password")]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [DataType(DataType.Text)]
+        [Display(Name = "New Recovery Question")]
+        [StringLength(500, ErrorMessage = "The recovery question must not exceed 500 characters long.")]
+        public string NewRecoveryQuestion { get; set; }
+
+        [DataType(DataType.Text)]
+        [Display(Name = "New Answer")]
+        [StringLength(50, ErrorMessage = "Answer must not exceed 50 characters.")]
+        public string NewAnswer { get; set; }
     }
 
     public class DeleteAccountViewModel
@@ -90,5 +100,22 @@ namespace Whoaverse.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [DataType(DataType.Text)]
+        [Display(Name = "Recovery Question")]
+        [StringLength(500, ErrorMessage="The recovery question must not exceed 500 characters long.")]
+        public string RecoveryQuestion { get; set; }
+
+        [DataType(DataType.Text)]
+        [Display(Name = "Answer")]
+        [StringLength(50, ErrorMessage = "Answer must not exceed 50 characters.")]
+        public string Answer { get; set; }
+    }
+
+    public class PasswordRecoveryFindUsername
+    {
+        [Required(ErrorMessage = "Username is required. Please fill this field.")]
+        [Display(Name = "User name")]
+        public string UserName { get; set; }
     }
 }
