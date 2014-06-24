@@ -5240,6 +5240,7 @@ ul#image-preview-list {
 
     #sr-header-area .sr-list {
         overflow: hidden;
+        margin-left: 5px;
     }
 
     #sr-header-area .dropdown.srdrop {
