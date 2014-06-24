@@ -18,6 +18,7 @@
 @{
     string postAge = Submissions.CalcSubmissionAge(Model.Date);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
+    int submissionScore = (Model.Likes - Model.Dislikes);
 
     //type 1 = message
     if (Model.Type == 1)
@@ -35,6 +36,8 @@
                 <p class="tagline">
                     submitted
                     <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="~/user/@Model.Name" class="author may-blank id-t2_5fggn">@Model.Name</a>
+                    <span class="score unvoted">@submissionScore points</span>
+                    <span class="commentvotesratio">&lt;<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">&minus;@Model.Dislikes</span>&gt;</span>
                     <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
                 </p>
                 <ul class="flat-list buttons">

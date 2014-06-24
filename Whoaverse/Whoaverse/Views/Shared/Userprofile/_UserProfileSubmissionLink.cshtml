@@ -23,6 +23,7 @@
     if (Model.Type == 2)
     {
         string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
+        int submissionScore = (Model.Likes - Model.Dislikes);
 
         <div class=" thing id-t3_227d01 odd link " onclick="click_thing(this)" data-fullname="t3_227d01" data-ups="1" data-downs="0">
             <p class="parent"></p>
@@ -43,6 +44,8 @@
                 <p class="tagline">
                     submitted
                     <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="~/user/@Model.Name" class="author may-blank id-t2_5fggn">@Model.Name</a>
+                    <span class="score unvoted">@submissionScore points</span>
+                    <span class="commentvotesratio">&lt;<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">&minus;@Model.Dislikes</span>&gt;</span>
                     <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
                 </p>
                 <ul class="flat-list buttons">
