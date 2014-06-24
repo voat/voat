@@ -442,6 +442,7 @@ ul.flat-vert {
     font-variant: small-caps;
     font-size: 1.2em;
     vertical-align: bottom;
+    display: -webkit-inline-box; 
 }
 
     .pagename a {
