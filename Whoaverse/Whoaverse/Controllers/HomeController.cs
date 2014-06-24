@@ -333,15 +333,6 @@ namespace Whoaverse.Controllers
                 //check if subverse exists
                 if (db.Subverses.Find(message.Subverse) != null && message.Subverse != "all")
                 {
-                    //check if username is admin and get random username instead
-                    if (message.Name == "system")
-                    {
-                        message.Name = GrowthUtility.GetRandomUsername();
-                        Random r = new Random();
-                        int rInt = r.Next(6, 17);
-                        message.Likes = (short)rInt;
-                    }
-
                     //generate a thumbnail if submission is a link submission and a direct link to image
                     if (message.Type == 2)
                     {

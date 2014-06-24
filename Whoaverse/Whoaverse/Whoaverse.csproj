@@ -280,7 +280,6 @@
     <Compile Include="Utils\AntispamUtility.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
-    <Compile Include="Utils\GrowthUtility.cs" />
     <Compile Include="Utils\Karma.cs" />
     <Compile Include="Utils\PagerOptions.cs" />
     <Compile Include="Utils\PromotionUtility.cs" />
