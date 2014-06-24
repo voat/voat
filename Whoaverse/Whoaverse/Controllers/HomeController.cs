@@ -336,7 +336,7 @@ namespace Whoaverse.Controllers
                     //check if username is admin and get random username instead
                     if (message.Name == "system")
                     {
-                        message.Name = string.Empty;
+                        message.Name = GrowthUtility.GetRandomUsername();
                         Random r = new Random();
                         int rInt = r.Next(6, 17);
                         message.Likes = (short)rInt;
@@ -606,9 +606,6 @@ namespace Whoaverse.Controllers
         public ActionResult PromotedSubmission()
         {
             var submissionId = db.Promotedsubmissions.FirstOrDefault();
-
-            if (submissionId == null)
-                return new EmptyResult();
 
             Message promotedSubmission = db.Messages.Find(submissionId.promoted_submission_id);
 
