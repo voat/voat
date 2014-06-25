@@ -200,7 +200,6 @@ namespace Whoaverse.Controllers
                     // end recaptcha helper setup
 
                     // Find username and pass it along
-                    var user = await UserManager.FindByNameAsync(model.UserName);
                     if (user == null)
                         return View(model);
                     if (string.IsNullOrEmpty(user.RecoveryQuestion))
@@ -226,7 +225,6 @@ namespace Whoaverse.Controllers
                         ModelState.AddModelError("", "Something went wrong!");
                         return View(model);
                     }
-                    var user = await UserManager.FindByNameAsync(username);
 
                     if (user == null)
                     {
