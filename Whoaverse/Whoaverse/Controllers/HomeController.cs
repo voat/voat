@@ -380,8 +380,23 @@ namespace Whoaverse.Controllers
 
                             message.Likes = 0;
 
-                            db.Messages.Add(message);
-                            await db.SaveChangesAsync();
+                            // restrict incoming submissions to announcements subverse (temporary hard-code solution
+                            // TODO: add global administrators table with different access levels
+                            if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
+                            {
+                                db.Messages.Add(message);
+                                await db.SaveChangesAsync();
+                            }
+                            else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
+                            {
+                                db.Messages.Add(message);
+                                await db.SaveChangesAsync();
+                            }
+                            else
+                            {
+                                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
+                                return View();
+                            }
 
                         }
                         catch (Exception)
@@ -397,8 +412,23 @@ namespace Whoaverse.Controllers
 
                         message.Likes = 0;
 
-                        db.Messages.Add(message);
-                        await db.SaveChangesAsync();
+                        // restrict incoming submissions to announcements subverse (temporary hard-code solution
+                        // TODO: add global administrators table with different access levels
+                        if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
+                        {
+                            db.Messages.Add(message);
+                            await db.SaveChangesAsync();
+                        }
+                        else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
+                        {
+                            db.Messages.Add(message);
+                            await db.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
+                            return View();
+                        }
                     }                    
 
                     return RedirectToRoute(
