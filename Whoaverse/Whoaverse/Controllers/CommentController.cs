@@ -30,7 +30,7 @@ namespace Whoaverse.Controllers
 
             if (typeOfVote == 1)
             {
-                if (Karma.CommentKarma(loggedInUser) > 25)
+                if (Karma.CommentKarma(loggedInUser) > 1)
                 {
                     // perform upvoting or resetting
                     VotingComments.UpvoteComment(commentId, loggedInUser);

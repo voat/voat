@@ -210,18 +210,22 @@ namespace Whoaverse.Controllers
                     }
                     ViewBag.HasUsername = true;
                     model.UserName = user.UserName;
+                    ViewBag.Username = user.UserName;
                     model.Question = user.RecoveryQuestion;
                 }
                 else
                 {
+                    var username = model.UserName;
+                    if (username == null)
+                        username = ViewBag.Username;
                     if (string.IsNullOrEmpty(model.InputAnswer) ||
-                        string.IsNullOrEmpty(model.UserName) ||
+                        string.IsNullOrEmpty(username) ||
                         string.IsNullOrEmpty(model.Question))
                     {
                         ModelState.AddModelError("", "Something went wrong!");
                         return View(model);
                     }
-                    var user = await UserManager.FindByNameAsync(model.UserName);
+                    var user = await UserManager.FindByNameAsync(username);
 
                     if (user == null)
                     {
@@ -230,7 +234,7 @@ namespace Whoaverse.Controllers
                     }
 
                     if (user.RecoveryQuestion != model.Question ||
-                        user.Answer != model.InputAnswer)
+                        user.Answer.ToLower() != model.InputAnswer.ToLower())
                     {
                         ModelState.AddModelError("", "Invalid answer.");
                         return View(model);

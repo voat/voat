@@ -333,6 +333,7 @@ namespace Whoaverse.Controllers
                 //check if subverse exists
                 if (db.Subverses.Find(message.Subverse) != null && message.Subverse != "all")
                 {
+<<<<<<< HEAD
                     //check if username is admin and get random username instead
                     if (message.Name == "system")
                     {
@@ -342,6 +343,8 @@ namespace Whoaverse.Controllers
                         message.Likes = (short)rInt;
                     }
 
+=======
+>>>>>>> upstream/master
                     //generate a thumbnail if submission is a link submission and a direct link to image
                     if (message.Type == 2)
                     {
@@ -566,7 +569,7 @@ namespace Whoaverse.Controllers
 
             if (typeOfVote == 1)
             {
-                if (Karma.CommentKarma(loggedInUser) > 25)
+                if (Karma.CommentKarma(loggedInUser) > 1)
                 {
                     // perform upvoting or resetting
                     Voting.UpvoteSubmission(messageId, loggedInUser);
