@@ -196,12 +196,28 @@ namespace Whoaverse.Controllers
                 return View("~/Views/Errors/Subversenotfound.cshtml");
             }
 
+            // check that the user requesting to edit subverse settings is subverse owner!
             SubverseAdmin subAdmin = db.SubverseAdmins
                         .Where(x => x.SubverseName == subversetoshow && x.Username == User.Identity.Name && x.Power == 1).FirstOrDefault();
 
             if (subAdmin != null)
             {
-                return View(subverse);
+                // map existing data to view model for editing and pass it to frontend
+                // NOTE: we should look into a mapper which automatically maps these properties to corresponding fields to avoid tedious manual mapping
+                SubverseSettingsViewModel viewModel = new SubverseSettingsViewModel();
+
+                viewModel.Name = subverse.name;
+                viewModel.Type = subverse.type;
+                viewModel.Submission_text = subverse.submission_text;
+                viewModel.Description = subverse.description;
+                viewModel.Sidebar = subverse.sidebar;
+                viewModel.Stylesheet = subverse.stylesheet;
+                viewModel.Allow_default = subverse.allow_default;
+                viewModel.Label_submit_new_link = subverse.label_submit_new_link;
+                viewModel.Label_sumit_new_selfpost = subverse.label_sumit_new_selfpost;
+                viewModel.Rated_adult = subverse.rated_adult;
+
+                return View(viewModel);
             }
             else
             {
@@ -214,23 +230,52 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SubverseSettings([Bind(Include = "Name, Description, Sidebar, Stylesheet")] Subverse subverseToEdit)
+        public async Task<ActionResult> SubverseSettings(Subverse updatedModel)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var existingSubverse = db.Subverses.Find(subverseToEdit.name);
-                    //check if subverse exists before attempting to edit it
+                    var existingSubverse = db.Subverses.Find(updatedModel.name);
+
+                    // check if subverse exists before attempting to edit it
                     if (existingSubverse != null)
                     {
-                        existingSubverse.description = subverseToEdit.description;
-                        existingSubverse.sidebar = subverseToEdit.sidebar;
-                        existingSubverse.stylesheet = subverseToEdit.stylesheet;
-                        await db.SaveChangesAsync();
 
-                        //go back to this subverse
-                        return RedirectToAction("Index", "Subverses", new { subversetoshow = subverseToEdit.name });
+                        // check if user requesting edit is authorized to do so for current subverse
+                        // check that the user requesting to edit subverse settings is subverse owner!
+                        SubverseAdmin subAdmin = db.SubverseAdmins
+                                    .Where(x => x.SubverseName == updatedModel.name && x.Username == User.Identity.Name && x.Power == 1).FirstOrDefault();
+
+                        if (subAdmin != null)
+                        {
+                            existingSubverse.description = updatedModel.description;
+                            existingSubverse.sidebar = updatedModel.sidebar;
+                            existingSubverse.stylesheet = updatedModel.stylesheet;
+
+                            // these properties are currently not implemented but they can be saved and edited for future use
+                            existingSubverse.type = updatedModel.type;
+                            existingSubverse.label_submit_new_link = updatedModel.label_submit_new_link;
+                            existingSubverse.label_sumit_new_selfpost = updatedModel.label_sumit_new_selfpost;
+
+                            existingSubverse.submission_text = updatedModel.submission_text;
+                            existingSubverse.allow_default = updatedModel.allow_default;
+                            existingSubverse.rated_adult = updatedModel.rated_adult;
+
+
+
+                            await db.SaveChangesAsync();
+
+                            // go back to this subverse
+                            return RedirectToAction("Index", "Subverses", new { subversetoshow = updatedModel.name });
+                        }
+                        else
+                        {
+                            // user was not authorized to commit the changes, drop attempt
+                            return new EmptyResult();
+                        }
+
+
                     }
                     else
                     {
@@ -263,44 +308,59 @@ namespace Whoaverse.Controllers
 
             ViewBag.SelectedSubverse = subversetoshow;
 
-            if (subversetoshow != "all")
+            try
             {
-                //check if subverse exists, if not, send to a page not found error
-                Subverse subverse = db.Subverses.Find(subversetoshow);
-                if (subverse != null)
+                if (subversetoshow != "all")
                 {
-                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow && x.Name != "deleted").OrderByDescending(s => s.Rank).ToList();
-                    ViewBag.Title = subverse.description;
-                    return View(submissions.ToPagedList(pageNumber, pageSize));
+                    //check if subverse exists, if not, send to a page not found error
+                    Subverse subverse = db.Subverses.Find(subversetoshow);
+                    if (subverse != null)
+                    {
+                        var submissions = db.Messages.Where(x => x.Subverse == subversetoshow && x.Name != "deleted").OrderByDescending(s => s.Rank).ToList();
+                        ViewBag.Title = subverse.description;
+                        return View(submissions.ToPagedList(pageNumber, pageSize));
+                    }
+                    else
+                    {
+                        ViewBag.SelectedSubverse = "404";
+                        return View("~/Views/Errors/Subversenotfound.cshtml");
+                    }
                 }
                 else
                 {
-                    ViewBag.SelectedSubverse = "404";
-                    return View("~/Views/Errors/Subversenotfound.cshtml");
+                    //if selected subverse is ALL, show submissions from all subverses, sorted by rank
+                    var submissions = db.Messages
+                        .Where(x => x.Name != "deleted")
+                        .OrderByDescending(s => s.Rank).ToList();
+
+                    ViewBag.Title = "all subverses";
+                    return View(submissions.ToPagedList(pageNumber, pageSize));
                 }
             }
-            else
+            catch (Exception)
             {
-                //if selected subverse is ALL, show submissions from all subverses, sorted by rank
-                var submissions = db.Messages
-                    .Where(x => x.Name != "deleted")
-                    .OrderByDescending(s => s.Rank).ToList();
-
-                ViewBag.Title = "all subverses";
-                return View(submissions.ToPagedList(pageNumber, pageSize));
+                return RedirectToAction("HeavyLoad", "Home");
             }
         }
 
-        public ViewResult Subverses(int? page)
+        public ActionResult Subverses(int? page)
         {
             ViewBag.SelectedSubverse = "subverses";
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            //order by subscriber count (popularity)
-            var subverses = db.Subverses.OrderByDescending(s => s.subscribers).ToList();
+            try
+            {
+                //order by subscriber count (popularity)
+                var subverses = db.Subverses.OrderByDescending(s => s.subscribers).ToList();
 
-            return View(subverses.ToPagedList(pageNumber, pageSize));
+                return View(subverses.ToPagedList(pageNumber, pageSize));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Home");
+
+            }
         }
 
         [Authorize]
@@ -410,16 +470,23 @@ namespace Whoaverse.Controllers
 
         public ActionResult Random()
         {
-            var qry = from row in db.Subverses
-                      select row;
+            try
+            {
+                var qry = from row in db.Subverses
+                          select row;
 
-            int count = qry.Count(); // 1st round-trip
-            int index = new Random().Next(count);
+                int count = qry.Count(); // 1st round-trip
+                int index = new Random().Next(count);
 
-            // example subverse to show: pics
-            Subverse randomSubverse = qry.OrderBy(s => s.name).Skip(index).FirstOrDefault(); // 2nd round-trip            
+                // example subverse to show: pics
+                Subverse randomSubverse = qry.OrderBy(s => s.name).Skip(index).FirstOrDefault(); // 2nd round-trip            
 
-            return RedirectToAction("Index", "Subverses", new { subversetoshow = randomSubverse.name });
+                return RedirectToAction("Index", "Subverses", new { subversetoshow = randomSubverse.name });
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Home");
+            }
         }
 
     }

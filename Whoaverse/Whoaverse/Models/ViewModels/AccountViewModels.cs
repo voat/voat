@@ -103,7 +103,7 @@ namespace Whoaverse.Models
 
         [DataType(DataType.Text)]
         [Display(Name = "Recovery Question")]
-        [StringLength(500, ErrorMessage="The recovery question must not exceed 500 characters long.")]
+        [StringLength(500, ErrorMessage="The recovery question must not exceed 500 characters.")]
         public string RecoveryQuestion { get; set; }
 
         [DataType(DataType.Text)]
