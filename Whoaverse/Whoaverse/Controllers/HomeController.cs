@@ -343,18 +343,19 @@ namespace Whoaverse.Controllers
         {
             if (ModelState.IsValid)
             {
-                //check if subverse exists
+                // check if subverse exists
                 if (db.Subverses.Find(message.Subverse) != null && message.Subverse != "all")
                 {
 
-                    //generate a thumbnail if submission is a link submission and a direct link to image
-                    if (message.Type == 2)
+                    // submission is a link post
+                    // generate a thumbnail if submission is a direct link to image or video
+                    if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
                     {
                         try
                         {
                             string domain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(message.MessageContent);
 
-                            //if domain is youtube, try generating a thumbnail for the video
+                            // if domain is youtube, try generating a thumbnail for the video
                             if (domain == "youtube.com")
                             {
                                 string thumbFileName = ThumbGenerator.GenerateThumbFromYoutubeVideo(message.MessageContent);
@@ -374,20 +375,31 @@ namespace Whoaverse.Controllers
                                 }
                             }
 
+                            // trim trailing blanks from subverse name if a user mistakenly types them
+                            message.Subverse = message.Subverse.Trim();
+
+                            message.Likes = 0;
+
+                            db.Messages.Add(message);
+                            await db.SaveChangesAsync();
+
                         }
                         catch (Exception)
                         {
                             //unable to generate a thumbnail, don't use any
                         }
                     }
+                    else if (message.Type == 1 && message.Title != null)
+                    {                    
+                        // submission is a self post
+                        // trim trailing blanks from subverse name if a user mistakenly types them
+                        message.Subverse = message.Subverse.Trim();
 
-                    //trim trailing blanks from subverse name if a user mistakenly types them
-                    message.Subverse = message.Subverse.Trim();
+                        message.Likes = 0;
 
-                    message.Likes = 0;
-
-                    db.Messages.Add(message);
-                    await db.SaveChangesAsync();
+                        db.Messages.Add(message);
+                        await db.SaveChangesAsync();
+                    }                    
 
                     return RedirectToRoute(
                         "SubverseComments",

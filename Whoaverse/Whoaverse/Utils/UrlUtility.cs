@@ -26,8 +26,16 @@ namespace Whoaverse.Utils
         //return domain from URI
         public static string GetDomainFromUri(string completeUri)
         {
-            Uri tmpUri = new Uri(completeUri);            
-            return tmpUri.GetLeftPart(UriPartial.Authority).Replace("/www.", "/").Replace("http://", "").Replace("https://", "");            
+            try
+            {
+                Uri tmpUri = new Uri(completeUri);
+                return tmpUri.GetLeftPart(UriPartial.Authority).Replace("/www.", "/").Replace("http://", "").Replace("https://", "");      
+            }
+            catch (Exception)
+            {
+                return "http://whoaverse.com";
+            }
+                  
         }
 
     }
