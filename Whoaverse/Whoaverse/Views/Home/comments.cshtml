@@ -31,8 +31,27 @@
 <!--
     display 1 submission with details and comments
 -->
-
-@Html.Partial("_SidebarSubmissionInfo", Model)
+@{
+    if (!selectedSubverse.Equals("user") && !Request.Browser.IsMobileDevice)
+    {
+        @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new { 
+       selectedSubverse = selectedSubverse,
+       showingComments = true,
+       name = Model.Name,
+       date = Model.Date,
+       lastEditDate = Model.LastEditDate,
+       submissionId = Model.Id,
+       likes = Model.Likes,
+       dislikes = Model.Dislikes
+   })
+    
+    }
+    <style type="text/css">
+            @{
+                Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+            }
+    </style>
+}
 
 <div class="content" role="main">
 
@@ -58,12 +77,12 @@
             //check if submission has a thumb, otherwise point to site logo
             if (Model.Thumbnail != null)
             {
-                ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Thumbs/"+@Model.Thumbnail;
+                ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Thumbs/" + @Model.Thumbnail;
             }
             else
             {
                 ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
-            }            
+            }
             @Html.Partial("_LinkSubmissionDetails", Model)
         }
     }
@@ -79,5 +98,5 @@
 
     @Html.Partial("_CommentTree", Model)
 
-    
+
 </div>

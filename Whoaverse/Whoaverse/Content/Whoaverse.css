@@ -142,6 +142,15 @@
     margin-right: 0px;
 }
 
+.ikp {
+    cursor: help;
+    border-bottom: 1px dotted gray;
+}
+
+.submissioninfo {
+    border-bottom: 1px solid #66c4e0;
+}
+
 .well {
     padding: 8px;
     border-radius: 2px;

@@ -30,6 +30,44 @@ namespace Whoaverse.Controllers
         private whoaverseEntities db = new whoaverseEntities();
 
         // GET: sidebar for selected subverse
+        public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments, string name, DateTime? date, DateTime? lastEditDate, int? likes, int? dislikes)
+        {
+            Subverse subverse = db.Subverses.Find(selectedSubverse);
+
+            if (subverse != null)
+            {
+                // get subscriber count for selected subverse
+                int subscriberCount = db.Subscriptions.AsEnumerable()
+                                    .Where(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase))
+                                    .Count();
+
+                ViewBag.SubscriberCount = subscriberCount;
+                ViewBag.SelectedSubverse = selectedSubverse;
+
+                if (showingComments)
+                {
+                    ViewBag.name = name;
+                    ViewBag.date = date;
+                    ViewBag.lastEditDate = lastEditDate;
+                    ViewBag.likes = likes;
+                    ViewBag.dislikes = dislikes;
+
+                    return PartialView("_SidebarComments", subverse);
+                }
+                else
+                {
+                    return new EmptyResult();
+                }
+
+            }
+            else
+            {
+                //don't return a sidebar since subverse doesn't exist or is a system subverse
+                return new EmptyResult();
+            }
+        }
+
+        // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverse(string selectedSubverse)
         {
             Subverse subverse = db.Subverses.Find(selectedSubverse);
@@ -43,7 +81,10 @@ namespace Whoaverse.Controllers
 
                 ViewBag.SubscriberCount = subscriberCount;
                 ViewBag.SelectedSubverse = selectedSubverse;
+
                 return PartialView("_Sidebar", subverse);
+
+
             }
             else
             {
