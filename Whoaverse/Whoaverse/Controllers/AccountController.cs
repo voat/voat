@@ -174,7 +174,6 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [PreventSpam(DelayRequest = 5, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> RecoverPassword(PasswordRecoveryModel model)
         {
             var user = await UserManager.FindByNameAsync(model.UserName);
