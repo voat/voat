@@ -137,7 +137,7 @@ namespace Whoaverse.Controllers
 
                 try
                 {
-                    var user = new ApplicationUser() { UserName = model.UserName };
+                    var user = new ApplicationUser() { UserName = model.UserName, RecoveryQuestion = model.RecoveryQuestion, Answer = model.Answer };
 
                     user.RegistrationDateTime = DateTime.Now;
 
@@ -152,10 +152,99 @@ namespace Whoaverse.Controllers
                         AddErrors(result);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     ModelState.AddModelError(string.Empty, "Something bad happened. You broke Whoaverse.");
                 }                
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult RecoverPassword()
+        {
+            ViewBag.SelectedSubverse = string.Empty;
+            return View();
+        }
+
+        // POST: /Account/RecoverPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        [PreventSpam(DelayRequest = 5, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        public async Task<ActionResult> RecoverPassword(PasswordRecoveryModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (string.IsNullOrEmpty(model.InputAnswer))
+                {
+                    // begin recaptcha helper setup
+                    var recaptchaHelper = this.GetRecaptchaVerificationHelper();
+
+                    if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                    {
+                        ModelState.AddModelError("", "Captcha answer cannot be empty");
+                        return View(model);
+                    }
+
+                    var recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
+
+                    if (recaptchaResult != RecaptchaVerificationResult.Success)
+                    {
+                        ModelState.AddModelError("", "Incorrect captcha answer");
+                        return View(model);
+                    }
+                    // end recaptcha helper setup
+
+                    // Find username and pass it along
+                    var user = await UserManager.FindByNameAsync(model.UserName);
+                    if (user == null)
+                        return View(model);
+                    if (string.IsNullOrEmpty(user.RecoveryQuestion))
+                    {
+                        ModelState.AddModelError("", string.Format("{0} does not have a question to answer therefore no password recovery can be attempted.", model.UserName));
+                        return View(model);
+                    }
+                    ViewBag.HasUsername = true;
+                    model.UserName = user.UserName;
+                    ViewBag.Username = user.UserName;
+                    model.Question = user.RecoveryQuestion;
+                }
+                else
+                {
+                    var username = model.UserName;
+                    if (username == null)
+                        username = ViewBag.Username;
+                    if (string.IsNullOrEmpty(model.InputAnswer) ||
+                        string.IsNullOrEmpty(username) ||
+                        string.IsNullOrEmpty(model.Question))
+                    {
+                        ModelState.AddModelError("", "Something went wrong!");
+                        return View(model);
+                    }
+                    var user = await UserManager.FindByNameAsync(username);
+
+                    if (user == null)
+                    {
+                        ModelState.AddModelError("", "Something went wrong!");
+                        return View(model);
+                    }
+
+                    if (user.RecoveryQuestion != model.Question ||
+                        user.Answer.ToLower() != model.InputAnswer.ToLower())
+                    {
+                        ModelState.AddModelError("", "Invalid answer.");
+                        return View(model);
+                    }
+                    var newPassHash = UserManager.PasswordHasher.HashPassword(model.Password);
+                    ApplicationUser cUser = UserManager.FindById(user.Id);
+                    UserStore<ApplicationUser> store = new UserStore<ApplicationUser>();
+                    await store.SetPasswordHashAsync(cUser, newPassHash);
+                    await store.UpdateAsync(cUser);
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -189,6 +278,9 @@ namespace Whoaverse.Controllers
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
                 : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
+                : message == ManageMessageId.ChangePasswordAndRecoveryInfoSuccess ? "Your password and recovery question and answer have been changed."
+                : message == ManageMessageId.SetPasswordAndRecoveryInfoSuccess ? "Your password has been set and your recovery question and answer have been changed."
+                : message == ManageMessageId.ChangeRecoveryInfoSuccess ? "Your recovery question and answer have been changed."
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
@@ -202,8 +294,21 @@ namespace Whoaverse.Controllers
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
             bool hasPassword = HasPassword();
+            bool hasNewQuestion = !string.IsNullOrWhiteSpace(model.NewRecoveryQuestion);
+            bool hasNewAnswer = !string.IsNullOrWhiteSpace(model.NewAnswer);
+            bool hasChangedRecoveryInfo = false;
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
+
+            if (hasNewQuestion && hasNewAnswer)
+            {
+                var updateUser = UserManager.FindById(User.Identity.GetUserId());
+                updateUser.RecoveryQuestion = model.NewRecoveryQuestion;
+                updateUser.Answer = model.NewAnswer;
+                IdentityResult result = await UserManager.UpdateAsync(updateUser);
+                hasChangedRecoveryInfo = result.Succeeded;
+            }
+
             if (hasPassword)
             {
                 if (ModelState.IsValid)
@@ -211,7 +316,10 @@ namespace Whoaverse.Controllers
                     IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+                        if (hasChangedRecoveryInfo)
+                            return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordAndRecoveryInfoSuccess});
+                        else
+                            return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
                     }
                     else
                     {
@@ -233,7 +341,10 @@ namespace Whoaverse.Controllers
                     IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
+                        if (hasChangedRecoveryInfo)
+                            return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordAndRecoveryInfoSuccess });
+                        else
+                            return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
                     }
                     else
                     {
@@ -242,8 +353,31 @@ namespace Whoaverse.Controllers
                 }
             }
 
+            if (hasChangedRecoveryInfo)
+                return RedirectToAction("Manage", new { Message = ManageMessageId.ChangeRecoveryInfoSuccess });
+
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> GetUsernameForPasswordRecovery(PasswordRecoveryModel model)
+        {
+            var requestedUser = await UserManager.FindByNameAsync(model.UserName);
+            if (requestedUser == null)
+                return new EmptyResult();
+            ViewBag.HasUsername = true;
+            return RedirectToAction("Manage", new { Username = model.UserName, Question = requestedUser.RecoveryQuestion });
+        }
+
+        public async Task<ActionResult> GetAnswerForRecoveryQuestion(PasswordRecoveryModel model)
+        {
+            var requestedUser = await UserManager.FindByNameAsync(model.UserName);
+            if (requestedUser == null)
+                return new EmptyResult();
+            return RedirectToAction("Manage", new { Username = model.UserName, Question = requestedUser.RecoveryQuestion });
         }
 
         // POST: /Account/ExternalLogin
@@ -363,9 +497,16 @@ namespace Whoaverse.Controllers
         [ChildActionOnly]
         public ActionResult RemoveAccountList()
         {
-            var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
-            ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
-            return (ActionResult)PartialView("_RemoveAccountPartial", linkedAccounts);
+            try
+            {
+                var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
+                ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
+                return (ActionResult)PartialView("_RemoveAccountPartial", linkedAccounts);
+            }
+            catch (Exception)
+            {
+                return new EmptyResult();
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -455,6 +596,9 @@ namespace Whoaverse.Controllers
             ChangePasswordSuccess,
             SetPasswordSuccess,
             RemoveLoginSuccess,
+            ChangePasswordAndRecoveryInfoSuccess,
+            SetPasswordAndRecoveryInfoSuccess,
+            ChangeRecoveryInfoSuccess,
             Error
         }
 

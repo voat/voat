@@ -67,6 +67,26 @@
                         @Html.ValidationMessageFor(model => model.ConfirmPassword)
                     </div>
                 </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">About Question and Answer</div>
+                    <div class="panel-body">
+                        <p>These Question and Answer feature are only optional, if you don't want this, leave these blanks.</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.RecoveryQuestion, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.TextAreaFor(m => m.RecoveryQuestion, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.RecoveryQuestion)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Answer, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(m => m.Answer, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Answer)
+                    </div>
+                </div>
 
     <div class="panel panel-default">        
         @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
