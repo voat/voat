@@ -124,7 +124,7 @@ namespace Whoaverse.Models
 
         [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "New Password")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]

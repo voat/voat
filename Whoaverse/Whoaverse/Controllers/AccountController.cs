@@ -177,6 +177,7 @@ namespace Whoaverse.Controllers
         [PreventSpam(DelayRequest = 5, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> RecoverPassword(PasswordRecoveryModel model)
         {
+            var user = await UserManager.FindByNameAsync(model.UserName);
             if (ModelState.IsValid)
             {
                 if (string.IsNullOrEmpty(model.InputAnswer))
@@ -218,6 +219,7 @@ namespace Whoaverse.Controllers
                     var username = model.UserName;
                     if (username == null)
                         username = ViewBag.Username;
+                    Session.Add("", "");
                     if (string.IsNullOrEmpty(model.InputAnswer) ||
                         string.IsNullOrEmpty(username) ||
                         string.IsNullOrEmpty(model.Question))
