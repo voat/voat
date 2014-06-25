@@ -112,10 +112,24 @@ namespace Whoaverse.Models
         public string Answer { get; set; }
     }
 
-    public class PasswordRecoveryFindUsername
+    public class PasswordRecoveryModel
     {
-        [Required(ErrorMessage = "Username is required. Please fill this field.")]
         [Display(Name = "User name")]
         public string UserName { get; set; }
+
+        public string Question { get; set; }
+
+        [Display(Name = "Answer")]
+        public string InputAnswer { get; set; }
+
+        [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
     }
 }

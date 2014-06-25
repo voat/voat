@@ -460,6 +460,7 @@
     <Content Include="Views\Subverses\SubscribedSubverses.cshtml" />
     <Content Include="Views\Subverses\_SubscribedSubverseDetails.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserModerates.cshtml" />
+    <Content Include="Views\Account\RecoverPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

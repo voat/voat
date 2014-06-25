@@ -162,52 +162,84 @@ namespace Whoaverse.Controllers
             return View(model);
         }
 
-        // POST: /Account/Register
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult RecoverPassword()
+        {
+            ViewBag.SelectedSubverse = string.Empty;
+            return View();
+        }
+
+        // POST: /Account/RecoverPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RecoverPassword(RegisterViewModel model)
+        [PreventSpam(DelayRequest = 5, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        public async Task<ActionResult> RecoverPassword(PasswordRecoveryModel model)
         {
             if (ModelState.IsValid)
             {
-                // begin recaptcha helper setup
-                var recaptchaHelper = this.GetRecaptchaVerificationHelper();
-
-                if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                if (string.IsNullOrEmpty(model.InputAnswer))
                 {
-                    ModelState.AddModelError("", "Captcha answer cannot be empty");
-                    return View(model);
-                }
+                    // begin recaptcha helper setup
+                    var recaptchaHelper = this.GetRecaptchaVerificationHelper();
 
-                var recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
-
-                if (recaptchaResult != RecaptchaVerificationResult.Success)
-                {
-                    ModelState.AddModelError("", "Incorrect captcha answer");
-                    return View(model);
-                }
-                // end recaptcha helper setup
-
-                try
-                {
-                    var user = new ApplicationUser() { UserName = model.UserName, RecoveryQuestion = model.RecoveryQuestion, Answer = model.Answer };
-
-                    user.RegistrationDateTime = DateTime.Now;
-
-                    var result = await UserManager.CreateAsync(user, model.Password);
-                    if (result.Succeeded)
+                    if (String.IsNullOrEmpty(recaptchaHelper.Response))
                     {
-                        await SignInAsync(user, isPersistent: false);
-                        return RedirectToAction("Index", "Home");
+                        ModelState.AddModelError("", "Captcha answer cannot be empty");
+                        return View(model);
                     }
-                    else
+
+                    var recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
+
+                    if (recaptchaResult != RecaptchaVerificationResult.Success)
                     {
-                        AddErrors(result);
+                        ModelState.AddModelError("", "Incorrect captcha answer");
+                        return View(model);
                     }
+                    // end recaptcha helper setup
+
+                    // Find username and pass it along
+                    var user = await UserManager.FindByNameAsync(model.UserName);
+                    if (user == null)
+                        return View(model);
+                    if (string.IsNullOrEmpty(user.RecoveryQuestion))
+                    {
+                        ModelState.AddModelError("", string.Format("{0} does not have a question to answer therefore no password recovery can be attempted.", model.UserName));
+                        return View(model);
+                    }
+                    ViewBag.HasUsername = true;
+                    model.UserName = user.UserName;
+                    model.Question = user.RecoveryQuestion;
                 }
-                catch (Exception)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, "Something bad happened. You broke Whoaverse.");
+                    if (string.IsNullOrEmpty(model.InputAnswer) ||
+                        string.IsNullOrEmpty(model.UserName) ||
+                        string.IsNullOrEmpty(model.Question))
+                    {
+                        ModelState.AddModelError("", "Something went wrong!");
+                        return View(model);
+                    }
+                    var user = await UserManager.FindByNameAsync(model.UserName);
+
+                    if (user == null)
+                    {
+                        ModelState.AddModelError("", "Something went wrong!");
+                        return View(model);
+                    }
+
+                    if (user.RecoveryQuestion != model.Question ||
+                        user.Answer != model.InputAnswer)
+                    {
+                        ModelState.AddModelError("", "Invalid answer.");
+                        return View(model);
+                    }
+                    var newPassHash = UserManager.PasswordHasher.HashPassword(model.Password);
+                    ApplicationUser cUser = UserManager.FindById(user.Id);
+                    UserStore<ApplicationUser> store = new UserStore<ApplicationUser>();
+                    await store.SetPasswordHashAsync(cUser, newPassHash);
+                    await store.UpdateAsync(cUser);
                 }
             }
 
@@ -324,15 +356,23 @@ namespace Whoaverse.Controllers
             return View(model);
         }
 
-        public async Task<ActionResult> GetUsernameForPasswordRecovery(PasswordRecoveryFindUsername model)
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> GetUsernameForPasswordRecovery(PasswordRecoveryModel model)
         {
-            var requestedUser = UserManager.FindByName(model.UserName);
+            var requestedUser = await UserManager.FindByNameAsync(model.UserName);
+            if (requestedUser == null)
+                return new EmptyResult();
+            ViewBag.HasUsername = true;
             return RedirectToAction("Manage", new { Username = model.UserName, Question = requestedUser.RecoveryQuestion });
         }
 
-        public async Task<ActionResult> GetAnswerForRecoveryQuestion(PasswordRecoveryFindUsername model)
+        public async Task<ActionResult> GetAnswerForRecoveryQuestion(PasswordRecoveryModel model)
         {
-            var requestedUser = UserManager.FindByName(model.UserName);
+            var requestedUser = await UserManager.FindByNameAsync(model.UserName);
+            if (requestedUser == null)
+                return new EmptyResult();
             return RedirectToAction("Manage", new { Username = model.UserName, Question = requestedUser.RecoveryQuestion });
         }
 
