@@ -34,7 +34,20 @@ namespace Whoaverse.Controllers
         // GET: list of subverses
         public ActionResult Listofsubverses()
         {
-            return PartialView("_listofsubverses", db.Defaultsubverses.OrderBy(s => s.position).ToList().AsEnumerable());
+            try
+            {
+                var listOfSubverses = db.Defaultsubverses.OrderBy(s => s.position).ToList().AsEnumerable();
+                return PartialView("_listofsubverses", listOfSubverses);
+            }
+            catch (Exception)
+            {
+                return PartialView("_ListofsubversesHeavyLoad");
+            }
+        }
+
+        public ActionResult HeavyLoad()
+        {
+            return View("~/Views/Errors/DbNotResponding.cshtml");
         }
 
         // GET: list of subverses user moderates
@@ -441,7 +454,7 @@ namespace Whoaverse.Controllers
 
         }
 
-        public ViewResult Index(int? page)
+        public ActionResult Index(int? page)
         {
             ViewBag.SelectedSubverse = "frontpage";
 
@@ -449,12 +462,18 @@ namespace Whoaverse.Controllers
             int pageNumber = (page ?? 1);
 
             //get only submissions from default subverses, order by rank
-            var submissions = (from message in db.Messages
-                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                               where message.Name != "deleted"
-                               select message).OrderByDescending(s => s.Rank).ToList();
-
-            return View(submissions.ToPagedList(pageNumber, pageSize));
+            try
+            {
+                var submissions = (from message in db.Messages
+                                   join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                   where message.Name != "deleted"
+                                   select message).OrderByDescending(s => s.Rank).ToList();
+                return View(submissions.ToPagedList(pageNumber, pageSize));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Home");
+            }
         }
 
         public ActionResult @New(int? page, string sortingmode)

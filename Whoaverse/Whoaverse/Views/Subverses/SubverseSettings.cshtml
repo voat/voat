@@ -10,7 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model Whoaverse.Models.Subverse
+@model Whoaverse.Models.ViewModels.SubverseSettingsViewModel
 
 @{
     ViewBag.Title = "Subverse settings";
@@ -30,79 +30,88 @@
                 <div class="form-horizontal">
                     <hr />
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                    @Html.HiddenFor(model => model.name)
+                    @Html.HiddenFor(model => model.Name)
 
                     <div class="form-group">
                         @Html.Label("Sidebar text, accepts Markup formatting", htmlAttributes: new { @class = "control-label col-md-2" }) 
                         <div class="col-md-10">
-                            @Html.TextAreaFor(model => model.sidebar, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.sidebar, "", new { @class = "text-danger" })
+                            @Html.TextAreaFor(model => model.Sidebar, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Sidebar, "", new { @class = "text-danger" })
                         </div>
                     </div>
 
                     <div class="form-group">
-                        @Html.Label("Custom stylesheet", htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.Label("Custom stylesheet, max 4000 characters", htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
-                            @Html.TextAreaFor(model => model.stylesheet, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.stylesheet, "", new { @class = "text-danger" })
+                            @Html.TextAreaFor(model => model.Stylesheet, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Stylesheet, "", new { @class = "text-danger" })
                         </div>
                     </div>
 
-                    @*<div class="form-group">
+                    <div class="form-group">
+                        @Html.Label("Description ", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="alert alert-warning">
+                        <p>All settings beyond this point can be edited and saved. However, these properties are not yet implemented and changes made here
+                        will not have any real effect.</p>                        
+                    </div>                    
+                    <hr />
+
+                    <div class="form-group">
                        @Html.Label("Message submissions text", htmlAttributes: new { @class = "control-label col-md-2" }) 
                         <div class="col-md-10">
-                            @Html.TextAreaFor(model => model.submission_text, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.submission_text, "", new { @class = "text-danger" })
-                        </div>
-                    </div>*@
-
-                    @*<div class="form-group">
-                        @Html.Label("Subverse type", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(model => model.type, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.type, "", new { @class = "text-danger" })
-                        </div>
-                    </div>*@
-
-                    @*<div class="form-group">
-                        @Html.Label("Label for submitting new linkpost", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(model => model.label_submit_new_link, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.label_submit_new_link, "", new { @class = "text-danger" })
-                        </div>
-                    </div>*@
-
-                    @*<div class="form-group">
-                        @Html.Label("Label for submitting new selfpost", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(model => model.label_sumit_new_selfpost, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.label_sumit_new_selfpost, "", new { @class = "text-danger" })
-                        </div>
-                    </div>*@                                                          
-
-                    @*<div class="form-group">
-                        @Html.Label("Rated adult", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.rated_adult, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.rated_adult, "", new { @class = "text-danger" })
-                        </div>
-                    </div>*@
-
-                    @*<div class="form-group">
-                        @Html.Label("Allow default", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.allow_default, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.allow_default, "", new { @class = "text-danger" })
-                        </div>
-                    </div>*@
-                    
-                    <div class="form-group">
-                        @Html.Label("Description ", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(model => model.description, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.description, "", new { @class = "text-danger" })
+                            @Html.TextAreaFor(model => model.Submission_text, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Submission_text, "", new { @class = "text-danger" })
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        @Html.Label("Subverse type", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.Type, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Label for submitting new linkpost", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.Label_submit_new_link, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Label_submit_new_link, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Label for submitting new selfpost", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.Label_sumit_new_selfpost, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Label_sumit_new_selfpost, "", new { @class = "text-danger" })
+                        </div>
+                    </div>                                                          
+
+                    <div class="form-group">
+                        @Html.Label("Rated adult", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Rated_adult, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Rated_adult, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Allow default", htmlAttributes: new { @class = "control-label col-md-2" }) 
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Allow_default, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Allow_default, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    
+
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
