@@ -45,56 +45,62 @@
                 <hr />
                 @Html.ValidationSummary()
 
-                   
+
                 <div class="form-group">
                     @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.UserName)
                     </div>
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.Password)
                     </div>
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.ConfirmPassword)
                     </div>
                 </div>
                 <div class="panel panel-default">
-                    <div class="panel-heading">About Question and Answer</div>
+                    <div class="panel-heading">Password recovery question</div>
                     <div class="panel-body">
-                        <p>These Question and Answer feature are only optional, if you don't want this, leave these blanks.</p>
+                        <p>The password recovery question and answer is optional, if you don't want to use this, leave it blank.</p>
                     </div>
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.RecoveryQuestion, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         @Html.TextAreaFor(m => m.RecoveryQuestion, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.RecoveryQuestion)
                     </div>
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.Answer, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         @Html.TextBoxFor(m => m.Answer, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.Answer)
                     </div>
                 </div>
 
-    <div class="panel panel-default">        
-        @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
-        @Html.Recaptcha()
-    </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Are you a human?</div>
+                    <div class="panel-body">
+                        <p>Please re-type the text you see in the photo:</p>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    @Html.Recaptcha()
+                </div>
 
                 <div class="form-group">
-                    <div class="col-md-offset-2 col-md-3">
+                    <div class="col-md-1 col-md-4">
                         <input type="submit" class="btn-whoaverse" value="Register" />
                     </div>
                 </div>
@@ -106,8 +112,6 @@
 
 
         </div>
-
-
 
     </div>
 </div>

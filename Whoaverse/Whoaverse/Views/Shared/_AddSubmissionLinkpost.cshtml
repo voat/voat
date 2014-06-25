@@ -87,10 +87,17 @@
             @{
         if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
         {
+
             <div class="panel panel-default">
-                @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
-                @Html.Recaptcha()
+                <div class="panel-heading">Are you a human?</div>
+                <div class="panel-body">
+                    <p>Please re-type the text you see in the photo:</p>
+                </div>
             </div>
+
+                <div class="panel panel-default">
+                    @Html.Recaptcha()
+                </div>
         }
             }
 
