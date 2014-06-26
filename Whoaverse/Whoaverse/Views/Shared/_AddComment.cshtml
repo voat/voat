@@ -33,14 +33,12 @@
 
         @Html.Hidden("MessageId", messageId)
 
-        <div class="row nomargin">
-            <div class="col-md-5">
-                @Html.TextAreaFor(m => m.CommentContent, new { @class = "form-control", rows = "3" })
-                @Html.ValidationMessageFor(model => model.CommentContent)
-                <br />
-                <input type="submit" value="Submit" class="btn-whoaverse-medium" />
-            </div>
-        </div>
+
+        @Html.TextAreaFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
+        @Html.ValidationMessageFor(model => model.CommentContent)
+        <br />
+        <input type="submit" value="Submit" class="btn-whoaverse-medium" />
+
     }
 
 }

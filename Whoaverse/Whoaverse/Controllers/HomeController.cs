@@ -378,7 +378,7 @@ namespace Whoaverse.Controllers
                             // trim trailing blanks from subverse name if a user mistakenly types them
                             message.Subverse = message.Subverse.Trim();
 
-                            message.Likes = 0;
+                            message.Likes = 1;
 
                             // restrict incoming submissions to announcements subverse (temporary hard-code solution
                             // TODO: add global administrators table with different access levels
@@ -405,12 +405,12 @@ namespace Whoaverse.Controllers
                         }
                     }
                     else if (message.Type == 1 && message.Title != null)
-                    {                    
+                    {
                         // submission is a self post
                         // trim trailing blanks from subverse name if a user mistakenly types them
                         message.Subverse = message.Subverse.Trim();
 
-                        message.Likes = 0;
+                        message.Likes = 1;
 
                         // restrict incoming submissions to announcements subverse (temporary hard-code solution
                         // TODO: add global administrators table with different access levels
@@ -429,7 +429,7 @@ namespace Whoaverse.Controllers
                             ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
                             return View();
                         }
-                    }                    
+                    }
 
                     return RedirectToRoute(
                         "SubverseComments",

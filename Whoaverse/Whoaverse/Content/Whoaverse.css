@@ -142,6 +142,21 @@
     margin-right: 0px;
 }
 
+.commenttextarea {
+    box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.075) inset;
+    line-height: 1.42857;
+    color: #555;
+    background-color: #FFF;
+    background-image: none;
+    border: 1px solid #E7E7E7;
+    border-radius: 4px;    
+    font-family: verdana,arial,helvetica,sans-serif;
+    font-size: 12px;
+    display: block;
+    padding: 6px 12px;
+    width:40%;
+}
+
 .ikp {
     cursor: help;
     border-bottom: 1px dotted gray;
