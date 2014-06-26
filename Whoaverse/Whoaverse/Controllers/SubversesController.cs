@@ -393,7 +393,7 @@ namespace Whoaverse.Controllers
             try
             {
                 //order by subscriber count (popularity)
-                var subverses = db.Subverses.OrderByDescending(s => s.subscribers).ToList();
+                var subverses = db.Subverses.OrderByDescending(s => s.subscribers).ToList().Take(200);
 
                 return View(subverses.ToPagedList(pageNumber, pageSize));
             }
@@ -461,7 +461,7 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            var subverses = db.Subverses.OrderByDescending(s => s.creation_date).ToList();
+            var subverses = db.Subverses.OrderByDescending(s => s.creation_date).ToList().Take(200);
 
             return View("~/Views/Subverses/Subverses.cshtml", subverses.ToPagedList(pageNumber, pageSize));
         }
