@@ -126,17 +126,33 @@ namespace Whoaverse.Controllers
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow)
         {
-            ViewBag.SelectedSubverse = subversetoshow;
+            string queryString = Request.QueryString["subversetoshow"];
+
+            if (queryString != null)
+            {
+                ViewBag.SelectedSubverse = queryString;
+            }
+            else if (subversetoshow != null)
+            {
+                ViewBag.SelectedSubverse = subversetoshow;
+            }
+            else 
+            {
+                return View("~/Views/Errors/Error.cshtml");
+            }
 
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("~/Views/Errors/Error.cshtml");
             }
+
             Message message = db.Messages.Find(id);
+
             if (message == null)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
+
             return View(message);
         }
 

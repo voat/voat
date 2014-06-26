@@ -16,12 +16,13 @@
 @if (Request.IsAuthenticated)
 {
     int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
+    int commentKarma = Karma.CommentKarma(User.Identity.GetUserName());
 
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {
         @Html.AntiForgeryToken()
         <div id="header-bottom-right">
-            <span class="user">@Html.ActionLink(User.Identity.GetUserName(), "UserProfile", "Home", routeValues: new { Id = User.Identity.GetUserName() }, htmlAttributes: new { title = "Profile" })&nbsp;(<span class="userkarma" title="link karma">@linkKarma</span>)</span>
+            <span class="user">@Html.ActionLink(User.Identity.GetUserName(), "UserProfile", "Home", routeValues: new { Id = User.Identity.GetUserName() }, htmlAttributes: new { title = "Profile" })&nbsp;(<span class="userkarma" title="link contribution points">@linkKarma</span>|<span class="userkarma" title="comment contribution points">@commentKarma</span>)</span>
             <span class="separator">|</span>
             <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</span>
             <span class="separator">|</span>

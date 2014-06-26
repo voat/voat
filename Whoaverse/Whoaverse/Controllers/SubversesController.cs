@@ -513,7 +513,9 @@ namespace Whoaverse.Controllers
         {
             try
             {
+                // fetch a random subverse with minimum number of subscribers
                 var qry = from row in db.Subverses
+                          .Where (s => s.subscribers > 10)
                           select row;
 
                 int count = qry.Count(); // 1st round-trip

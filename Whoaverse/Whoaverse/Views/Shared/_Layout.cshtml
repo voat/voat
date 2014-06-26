@@ -13,6 +13,10 @@
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
 
+    string routeController = (string)ViewContext.RouteData.Values["controller"];
+    string routeAction = (string)ViewContext.RouteData.Values["action"];
+    string routeId = (string)ViewContext.RouteData.Values["id"];
+
     string sortingMode = ViewBag.SortingMode;
     string selectedUser = ViewBag.userid;
     string selectedSubverseNew = "";
@@ -221,7 +225,18 @@
                 </div>
                 <div class="modal-footer">
                     <a class="btn btn-default" href="~/account/register" role="button">Register</a>
-                    <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl(ViewContext.RouteData.Values)" role="button">Log in</a>
+
+                    @{
+                        if (routeController == "Home" && routeAction == "Comments" && routeId != null)
+                        {
+                            <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId} })" role="button">Log in</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl(ViewContext.RouteData.Values)" role="button">Log in</a>
+                        }
+                    }                    
+
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
