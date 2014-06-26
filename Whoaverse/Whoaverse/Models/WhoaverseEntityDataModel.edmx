@@ -95,7 +95,7 @@
           <Property Name="title" Type="nvarchar" MaxLength="500" Nullable="false" />
           <Property Name="description" Type="nvarchar" MaxLength="500" />
           <Property Name="sidebar" Type="nvarchar" MaxLength="4000" />
-          <Property Name="submission_text" Type="nvarchar" MaxLength="1024" />
+          <Property Name="submission_text" Type="nvarchar" MaxLength="500" />
           <Property Name="language" Type="nvarchar" MaxLength="10" />
           <Property Name="type" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="label_submit_new_link" Type="nvarchar" MaxLength="50" />
@@ -112,6 +112,7 @@
           <Property Name="creation_date" Type="smalldatetime" Nullable="false" />
           <Property Name="stylesheet" Type="nvarchar" MaxLength="4000" />
           <Property Name="subscribers" Type="int" />
+          <Property Name="private_subverse" Type="bit" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -360,19 +361,19 @@
           <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="title" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="sidebar" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Name="submission_text" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
+          <Property Name="submission_text" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="language" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="type" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="type" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" DefaultValue="link" />
           <Property Name="label_submit_new_link" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="label_sumit_new_selfpost" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="spam_filter_links" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="spam_filter_selfpost" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="spam_filter_comments" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="rated_adult" Type="Boolean" />
-          <Property Name="allow_default" Type="Boolean" />
-          <Property Name="enable_thumbnails" Type="Boolean" />
-          <Property Name="exclude_sitewide_bans" Type="Boolean" />
-          <Property Name="traffic_stats_public" Type="Boolean" />
+          <Property Name="rated_adult" Type="Boolean" DefaultValue="false" />
+          <Property Name="allow_default" Type="Boolean" DefaultValue="false" />
+          <Property Name="enable_thumbnails" Type="Boolean" DefaultValue="true" />
+          <Property Name="exclude_sitewide_bans" Type="Boolean" DefaultValue="false" />
+          <Property Name="traffic_stats_public" Type="Boolean" DefaultValue="false" />
           <Property Name="minutes_to_hide_comments" Type="Int32" />
           <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subvers" ToRole="Message" />
           <Property Name="creation_date" Type="DateTime" Precision="0" Nullable="false" />
@@ -381,6 +382,7 @@
           <NavigationProperty Name="SubverseAdmins" Relationship="whoaverseModel.FK_SubverseAdmins_Subverses" FromRole="Subverse" ToRole="SubverseAdmin" />
           <Property Name="stylesheet" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
           <Property Name="subscribers" Type="Int32" DefaultValue="1" />
+          <Property Name="private_subverse" Type="Boolean" DefaultValue="false" />
         </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
@@ -530,6 +532,7 @@
           <EntitySetMapping Name="Subverses">
             <EntityTypeMapping TypeName="whoaverseModel.Subverse">
               <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="private_subverse" ColumnName="private_subverse" />
                 <ScalarProperty Name="subscribers" ColumnName="subscribers" />
                 <ScalarProperty Name="stylesheet" ColumnName="stylesheet" />
                 <ScalarProperty Name="description" ColumnName="description" />

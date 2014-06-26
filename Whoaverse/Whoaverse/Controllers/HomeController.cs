@@ -136,7 +136,7 @@ namespace Whoaverse.Controllers
             {
                 ViewBag.SelectedSubverse = subversetoshow;
             }
-            else 
+            else
             {
                 return View("~/Views/Errors/Error.cshtml");
             }
@@ -519,14 +519,34 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            //get only submissions from default subverses, order by rank
             try
             {
-                var submissions = (from message in db.Messages
-                                   join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                   where message.Name != "deleted"
-                                   select message).OrderByDescending(s => s.Rank).ToList();
-                return View(submissions.ToPagedList(pageNumber, pageSize));
+                // show only submissions from subverses that user is subscribed to if user is logged in
+                // also do a check so that user actually has subscriptions
+                if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                {                    
+                    var submissions = (from message in db.Messages
+                                           join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
+                                           join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
+                                           where message.Name != "deleted"
+                                           select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Rank).Take(1000).ToList();
+
+                        return View(submissions.ToPagedList(pageNumber, pageSize));
+                }
+                else
+                {
+                    //get only submissions from default subverses, order by rank
+                    var submissions = (from message in db.Messages
+                                       join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                       where message.Name != "deleted"
+                                       select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Rank).Take(1000).ToList();
+
+                    return View(submissions.ToPagedList(pageNumber, pageSize));
+                }
             }
             catch (Exception)
             {
@@ -541,12 +561,6 @@ namespace Whoaverse.Controllers
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
-
-            //get only submissions from default subverses, sort by date
-            var submissions = (from message in db.Messages
-                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                               where message.Name != "deleted"
-                               select message).OrderByDescending(s => s.Date).ToList();
 
             //setup a cookie to find first time visitors and display welcome banner
             string cookieName = "NotFirstTime";
@@ -564,7 +578,41 @@ namespace Whoaverse.Controllers
                 ViewBag.FirstTimeVisitor = true;
             }
 
-            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+            try
+            {
+                // show only submissions from subverses that user is subscribed to if user is logged in
+                // also do a check so that user actually has subscriptions
+                if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                {
+                    var submissions = (from message in db.Messages
+                                       join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
+                                       join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
+                                       where message.Name != "deleted"
+                                       select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Date).Take(1000).ToList();
+
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                }
+                else
+                {
+                    //get only submissions from default subverses, sort by date
+                    var submissions = (from message in db.Messages
+                                       join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                       where message.Name != "deleted"
+                                       select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Date).Take(1000).ToList();
+
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                }
+
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Home");
+            }
+
         }
 
         public ActionResult About(string pagetoshow)

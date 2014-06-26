@@ -19,6 +19,7 @@ namespace Whoaverse.Models
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
+        [RegularExpression("^[a-zA-Z0-9-_]+$")]
         [Display(Name = "User name")]
         public string UserName { get; set; }
     }
@@ -84,8 +85,10 @@ namespace Whoaverse.Models
 
     public class RegisterViewModel
     {
+        [RegularExpression("^[a-zA-Z0-9-_]+$")]
         [Required(ErrorMessage = "Username is required. Please fill this field.")]
         [Display(Name = "User name")]
+
         public string UserName { get; set; }
 
         [Required(ErrorMessage = "A password is required. Please fill this field.")]

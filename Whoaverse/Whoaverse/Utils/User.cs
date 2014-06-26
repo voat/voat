@@ -220,6 +220,18 @@ namespace Whoaverse.Utils
             }
         }
 
+        // return subscription count for a given user
+        public static int SubscriptionCount(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                return db.Subscriptions.AsEnumerable()
+                                    .Where(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                                    .Count();
+                
+            }            
+        }
+
         // save a submission
         // TODO
     }

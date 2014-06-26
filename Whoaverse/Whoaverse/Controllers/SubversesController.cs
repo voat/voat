@@ -257,6 +257,7 @@ namespace Whoaverse.Controllers
                 viewModel.Label_submit_new_link = subverse.label_submit_new_link;
                 viewModel.Label_sumit_new_selfpost = subverse.label_sumit_new_selfpost;
                 viewModel.Rated_adult = subverse.rated_adult;
+                viewModel.Private_subverse = subverse.private_subverse;
 
                 return View(viewModel);
             }
@@ -303,6 +304,7 @@ namespace Whoaverse.Controllers
                             existingSubverse.allow_default = updatedModel.allow_default;
                             existingSubverse.rated_adult = updatedModel.rated_adult;
 
+                            existingSubverse.private_subverse = updatedModel.private_subverse;
 
 
                             await db.SaveChangesAsync();
@@ -489,7 +491,9 @@ namespace Whoaverse.Controllers
                 Subverse subverse = db.Subverses.Find(subversetoshow);
                 if (subverse != null)
                 {
-                    var submissions = db.Messages.Where(x => x.Subverse == subversetoshow && x.Name != "deleted").OrderByDescending(s => s.Date).ToList();
+                    var submissions = db.Messages
+                        .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
+                        .OrderByDescending(s => s.Date).ToList();
                     return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                 }
                 else
@@ -501,7 +505,7 @@ namespace Whoaverse.Controllers
             {
                 //if selected subverse is ALL, show submissions from all subverses, sorted by date
                 var submissions = db.Messages
-                    .Where(x => x.Name != "deleted")
+                    .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true)
                     .OrderByDescending(s => s.Date).ToList();
 
                 return View("Index", submissions.ToPagedList(pageNumber, pageSize));

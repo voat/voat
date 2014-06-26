@@ -35,7 +35,7 @@
                     <div class="form-group">
                         @Html.Label("Sidebar text, accepts Markup formatting", htmlAttributes: new { @class = "control-label col-md-2" }) 
                         <div class="col-md-10">
-                            @Html.TextAreaFor(model => model.Sidebar, new { @class = "form-control" })
+                            @Html.TextAreaFor(model => model.Sidebar, new { @class = "form-control", rows = "5"})
                             @Html.ValidationMessageFor(model => model.Sidebar, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -53,6 +53,14 @@
                         <div class="col-md-10">
                             @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Set private (exclude the subverse from showing in /v/all)", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Private_subverse, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Private_subverse, "", new { @class = "text-danger" })
                         </div>
                     </div>
 
@@ -78,6 +86,16 @@
                             @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <div class="control-label col-md-2"></div>
+                        <div class="col-md-9">
+                            Confused?
+                            <b>
+                                Enter 'link' (without the quotes) if you want to accept link and self type submissions. Enter 'self' if you only want to accept self type submissions.
+                            </b>
+                        </div>
+                    </div>    
 
                     <div class="form-group">
                         @Html.Label("Label for submitting new linkpost", htmlAttributes: new { @class = "control-label col-md-2" }) 
