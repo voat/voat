@@ -29,10 +29,10 @@
 
     string whattodisplay = ViewBag.whattodisplay;
 
-    ViewBag.Title = ViewBag.Title ?? "whoaverse: the next frontpage of the internet";
+    ViewBag.Title = ViewBag.Title ?? "whoaverse: the frontpage of the universe";
     ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
     ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
-    ViewBag.Description = ViewBag.Description ?? "whoaverse: the next frontpage of the internet";
+    ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
 
     if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains")
     {

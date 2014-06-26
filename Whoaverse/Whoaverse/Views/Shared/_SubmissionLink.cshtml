@@ -16,10 +16,12 @@
 
 @{
 
+    string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
+    
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
     DateTime submissionDate = Model.Date;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);    
+    string postAge = Submissions.CalcSubmissionAge(submissionDate);
 
     //type 2 = urls
     if (Model.Type == 2)
@@ -28,9 +30,16 @@
 
         if (Model.Thumbnail != null)
         {
-            <a class="thumbnail may-blank " href="@Model.MessageContent">
-                <img src="~/Thumbs/@Model.Thumbnail" alt="" />
-            </a>
+            if (Model.Linkdescription.ToLower().Contains("nsfw") && Model.Subverse != routeActiveSubverse)
+            {
+                <a class="thumbnail thumb-placeholder may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+            }
+            else
+            {                
+                <a class="thumbnail may-blank " href="@Model.MessageContent">
+                    <img src="~/Thumbs/@Model.Thumbnail" alt="" />
+                </a>                
+            }
         }
 
         <div class="entry unvoted">
