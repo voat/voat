@@ -26,15 +26,23 @@ namespace Whoaverse.Utils
             using (whoaverseEntities db = new whoaverseEntities())
             {
 
-                int likes = db.Messages
-                                    .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                                    .Sum(r => (int)r.Likes);
+                try
+                {
+                    int likes = db.Messages
+                                                .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                                                .Sum(r => (int)r.Likes);
 
-                int dislikes = db.Messages
-                                    .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                                    .Sum(r => (int)r.Dislikes);
+                    int dislikes = db.Messages
+                                        .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                                        .Sum(r => (int)r.Dislikes);
 
-                return likes - dislikes;
+                    return likes - dislikes;
+                }
+                catch (Exception)
+                {
+
+                    return 0;
+                }
 
             }
         }
@@ -43,15 +51,23 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                int sumOfLikes = db.Comments
-                                    .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
-                                    .Sum(r => (int)r.Likes);
+                try
+                {
+                    int sumOfLikes = db.Comments
+                                               .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
+                                               .Sum(r => (int)r.Likes);
 
-                int sumOfdislikes = db.Comments
-                                    .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
-                                    .Sum(r => (int)r.Dislikes);
+                    int sumOfdislikes = db.Comments
+                                        .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
+                                        .Sum(r => (int)r.Dislikes);
 
-                return sumOfLikes - sumOfdislikes;
+                    return sumOfLikes - sumOfdislikes;
+                }
+                catch (Exception)
+                {
+
+                    return 0;
+                }
 
             }
         }

@@ -362,6 +362,13 @@ a:visited {
     background: url('/Graphics/WVSprite.png') 0 -122px;
 }
 
+.thumb-nsfw {
+    /* You may have to set 'display: block' */
+    width: 70px;
+    height: 70px;
+    background: url('/Graphics/WVSprite.png') 0 -674px;
+}
+
 .whoaverse-mascot {
     /* You may have to set 'display: block' */
     width: 467px;

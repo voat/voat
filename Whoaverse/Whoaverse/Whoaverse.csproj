@@ -213,7 +213,6 @@
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SubversesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\TESTSubverseAdminsController.cs" />
     <Compile Include="Controllers\WebApiController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -311,6 +310,7 @@
     <Content Include="Graphics\expand-selfpost-hover.png" />
     <Content Include="Graphics\expand-selfpost.png" />
     <Content Include="Graphics\mail-icon.png" />
+    <Content Include="Graphics\nsfw-thumb.png" />
     <Content Include="Graphics\pattern-welcome.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\whoaverse-404.png" />

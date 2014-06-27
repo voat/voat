@@ -19,6 +19,15 @@
     string postAge = Submissions.CalcSubmissionAge(Model.Date);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
+    bool ratedAdult = false;
+    if (Model.Subverses != null)
+    {
+        if (Model.Subverses.rated_adult.HasValue)
+        {
+            ratedAdult = Model.Subverses.rated_adult.Value;
+        }
+    }
+
     //type 2 = urls, model.messagecontent = url, model.linkdescription = link description
     if (Model.Type == 2)
     {
@@ -39,7 +48,11 @@
         {
             if (Model.Linkdescription.ToLower().Contains("nsfw"))
             {
-                <a class="thumbnail thumb-placeholder may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                <a class="thumbnail thumb-nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+            }
+            if (ratedAdult)
+            {
+                <a class="thumbnail thumb-nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
             }
             else
             {
