@@ -210,6 +210,27 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "SubverseSettings" }
             );
 
+            // v/subversetoedit/about/moderators
+            routes.MapRoute(
+                name: "subverseModerators",
+                url: "v/{subversetoshow}/about/moderators",
+                defaults: new { controller = "Subverses", action = "SubverseModerators" }
+            );
+
+            // v/subversetoedit/about/moderators/add
+            routes.MapRoute(
+                name: "addSubverseModerator",
+                url: "v/{subversetoshow}/about/moderators/add",
+                defaults: new { controller = "Subverses", action = "AddModerator" }
+            );
+
+            // v/subversetoedit/about/moderators/delete
+            routes.MapRoute(
+                name: "removeSubverseModerator",
+                url: "v/{subversetoshow}/about/moderators/delete/{id}",
+                defaults: new { controller = "Subverses", action = "RemoveModerator" }
+            );
+
             // v/subversetoshow
             routes.MapRoute(
                 name: "SubverseIndex",

@@ -15,6 +15,7 @@ All Rights Reserved.
 using PagedList;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -83,8 +84,6 @@ namespace Whoaverse.Controllers
                 ViewBag.SelectedSubverse = selectedSubverse;
 
                 return PartialView("_Sidebar", subverse);
-
-
             }
             else
             {
@@ -143,8 +142,24 @@ namespace Whoaverse.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Messages.Add(message);
-                await db.SaveChangesAsync();
+
+                // restrict incoming submissions to announcements subverse (temporary hard-code solution
+                // TODO: add global administrators table with different access levels
+                if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
+                {
+                    db.Messages.Add(message);
+                    await db.SaveChangesAsync();
+                }
+                else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
+                {
+                    db.Messages.Add(message);
+                    await db.SaveChangesAsync();
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
+                    return View();
+                }
 
                 //get newly generated message ID and execute ranking and self upvoting                
                 Votingtracker tmpVotingTracker = new Votingtracker();
@@ -258,8 +273,10 @@ namespace Whoaverse.Controllers
                 viewModel.Label_sumit_new_selfpost = subverse.label_sumit_new_selfpost;
                 viewModel.Rated_adult = subverse.rated_adult;
                 viewModel.Private_subverse = subverse.private_subverse;
-
-                return View(viewModel);
+                
+                ViewBag.SelectedSubverse = string.Empty;
+                ViewBag.SubverseName = subverse.name;
+                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", viewModel);
             }
             else
             {
@@ -291,6 +308,9 @@ namespace Whoaverse.Controllers
 
                         if (subAdmin != null)
                         {
+                            // TODO investigate if EntityState is applicable here and use that instead
+                            // db.Entry(updatedModel).State = EntityState.Modified;
+
                             existingSubverse.description = updatedModel.description;
                             existingSubverse.sidebar = updatedModel.sidebar;
                             existingSubverse.stylesheet = updatedModel.stylesheet;
@@ -338,7 +358,7 @@ namespace Whoaverse.Controllers
             }
         }
 
-        //show a subverse index
+        // GET: show a subverse index
         public ActionResult Index(int? page, string subversetoshow)
         {
             int pageSize = 25;
@@ -395,7 +415,7 @@ namespace Whoaverse.Controllers
             try
             {
                 //order by subscriber count (popularity)
-                var subverses = db.Subverses.OrderByDescending(s => s.subscribers).ToList().Take(200);
+                var subverses = db.Subverses.OrderByDescending(s => s.subscribers).Take(200).ToList();
 
                 return View(subverses.ToPagedList(pageNumber, pageSize));
             }
@@ -463,7 +483,7 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            var subverses = db.Subverses.OrderByDescending(s => s.creation_date).ToList().Take(200);
+            var subverses = db.Subverses.OrderByDescending(s => s.creation_date).Take(200).ToList();
 
             return View("~/Views/Subverses/Subverses.cshtml", subverses.ToPagedList(pageNumber, pageSize));
         }
@@ -519,7 +539,7 @@ namespace Whoaverse.Controllers
             {
                 // fetch a random subverse with minimum number of subscribers
                 var qry = from row in db.Subverses
-                          .Where (s => s.subscribers > 10)
+                          .Where(s => s.subscribers > 10)
                           select row;
 
                 int count = qry.Count(); // 1st round-trip
@@ -533,6 +553,173 @@ namespace Whoaverse.Controllers
             catch (Exception)
             {
                 return RedirectToAction("HeavyLoad", "Home");
+            }
+        }
+
+        // GET: subverse moderators for selected subverse
+        [Authorize]
+        public ActionResult SubverseModerators(string subversetoshow)
+        {
+            // get model for selected subverse
+            var subverseModel = db.Subverses.Find(subversetoshow);
+
+            if (subverseModel != null)
+            {
+                // check if caller is subverse owner, if not, deny listing
+                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                {
+                    var subverseModerators = db.SubverseAdmins.OrderBy(s => s.Power)
+                    .Where(n => n.SubverseName == subversetoshow)
+                    .Take(200)
+                    .ToList();
+
+                    ViewBag.SubverseModel = subverseModel;
+                    ViewBag.SubverseName = subversetoshow;
+
+                    ViewBag.SelectedSubverse = string.Empty;
+                    return View("~/Views/Subverses/Admin/SubverseModerators.cshtml", subverseModerators);
+                }
+                else
+                {
+                    return new HttpUnauthorizedResult();
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+        }
+
+        // GET: show add moderators view for selected subverse
+        [Authorize]
+        public ActionResult AddModerator(string subversetoshow)
+        {
+            // get model for selected subverse
+            var subverseModel = db.Subverses.Find(subversetoshow);
+
+            if (subverseModel != null)
+            {
+                // check if caller is subverse owner, if not, deny listing
+                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                {
+                    var subverseModerators = db.SubverseAdmins.OrderBy(s => s.Power)
+                    .Where(n => n.SubverseName == subversetoshow)
+                    .Take(200)
+                    .ToList();
+
+                    ViewBag.SubverseModel = subverseModel;
+                    ViewBag.SubverseName = subversetoshow;
+                    ViewBag.SelectedSubverse = string.Empty;
+                    return View("~/Views/Subverses/Admin/AddModerator.cshtml");
+                }
+                else
+                {
+                    return new HttpUnauthorizedResult();
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
+
+        // POST: add a moderator to given subverse
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddModerator([Bind(Include = "Id,SubverseName,Username,Power")] SubverseAdmin subverseAdmin)
+        {
+            if (ModelState.IsValid)
+            {
+                // get model for selected subverse
+                var subverseModel = db.Subverses.Find(subverseAdmin.SubverseName);
+
+                if (subverseModel != null)
+                {
+                    // check if caller is subverse owner, if not, deny posting
+                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
+                    {
+                        var subverseModerators = db.SubverseAdmins.OrderBy(s => s.Power)
+                        .Where(n => n.SubverseName == subverseAdmin.SubverseName)
+                        .Take(200)
+                        .ToList();
+
+                        db.SubverseAdmins.Add(subverseAdmin);
+                        db.SaveChanges();
+                        return RedirectToAction("SubverseModerators");
+                    }
+                    else
+                    {
+                        return new HttpUnauthorizedResult();
+                    }
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+            else
+            {
+                return View(subverseAdmin);
+            }
+        }
+
+        // GET: show add moderators view for selected subverse
+        [Authorize]
+        public ActionResult RemoveModerator(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            SubverseAdmin subverseAdmin = db.SubverseAdmins.Find(id);
+
+            if (subverseAdmin == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.SelectedSubverse = string.Empty; 
+            return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subverseAdmin);
+        }
+
+        // POST: remove a moderator from given subverse
+        [Authorize]
+        [HttpPost, ActionName("RemoveModerator")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RemoveModerator(int id)
+        {
+            // get moderator name for selected subverse
+            var moderatorToBeRemoved = await db.SubverseAdmins.FindAsync(id);
+            if (moderatorToBeRemoved != null)
+            {
+                var subverse = db.Subverses.Find(moderatorToBeRemoved.SubverseName);
+                if (subverse != null)
+                {
+                    // check if caller has clearance to remove a moderator
+                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) && moderatorToBeRemoved.Username != User.Identity.Name)
+                    {
+                        // execute removal
+                        SubverseAdmin subverseAdmin = await db.SubverseAdmins.FindAsync(id);
+                        db.SubverseAdmins.Remove(subverseAdmin);
+                        await db.SaveChangesAsync();
+                        return RedirectToAction("SubverseModerators");
+                    }
+                    else
+                    {
+                        return new HttpUnauthorizedResult();
+                    }
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 

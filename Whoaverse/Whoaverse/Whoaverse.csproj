@@ -213,6 +213,7 @@
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SubversesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TESTSubverseAdminsController.cs" />
     <Compile Include="Controllers\WebApiController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -255,6 +256,7 @@
     <Compile Include="Models\EditComment.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubverseModeratorViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseSettingsViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchViewModel.cs" />
@@ -438,7 +440,7 @@
     <Content Include="Views\Subverses\_AddNewSubverse.cshtml" />
     <Content Include="Views\Errors\SubverseExists.cshtml" />
     <Content Include="Views\Help\UserAgreement.cshtml" />
-    <Content Include="Views\Subverses\SubverseSettings.cshtml" />
+    <Content Include="Views\Subverses\Admin\SubverseSettings.cshtml" />
     <Content Include="Views\Home\_CommentTree.cshtml" />
     <Content Include="Views\About\Intro.cshtml" />
     <Content Include="Views\Shared\_SidebarSubmissionInfo.cshtml" />
@@ -464,6 +466,9 @@
     <Content Include="Views\Errors\DbNotResponding.cshtml" />
     <Content Include="Views\Shared\_ListofsubversesHeavyLoad.cshtml" />
     <Content Include="Views\Shared\_SidebarComments.cshtml" />
+    <Content Include="Views\Subverses\Admin\AddModerator.cshtml" />
+    <Content Include="Views\Subverses\Admin\RemoveModerator.cshtml" />
+    <Content Include="Views\Subverses\Admin\SubverseModerators.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

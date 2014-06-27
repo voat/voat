@@ -87,6 +87,7 @@ namespace Whoaverse.Models
     {
         [RegularExpression("^[a-zA-Z0-9-_]+$")]
         [Required(ErrorMessage = "Username is required. Please fill this field.")]
+        [StringLength(50, ErrorMessage = "The username should not exceed 50 characters.")]
         [Display(Name = "User name")]
 
         public string UserName { get; set; }

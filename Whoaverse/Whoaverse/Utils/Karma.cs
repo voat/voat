@@ -20,19 +20,22 @@ namespace Whoaverse.Utils
 {
     public static class Karma
     {
+
         public static int LinkKarma(string userName)
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                int likes = db.Messages.AsEnumerable()
+
+                int likes = db.Messages
                                     .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Sum(r => (int)r.Likes);
 
-                int dislikes = db.Messages.AsEnumerable()
+                int dislikes = db.Messages
                                     .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Sum(r => (int)r.Dislikes);
 
                 return likes - dislikes;
+
             }
         }
 
@@ -40,15 +43,16 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                int sumOfLikes = db.Comments.AsEnumerable()
+                int sumOfLikes = db.Comments
                                     .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Sum(r => (int)r.Likes);
 
-                int sumOfdislikes = db.Comments.AsEnumerable()
+                int sumOfdislikes = db.Comments
                                     .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Sum(r => (int)r.Dislikes);
 
                 return sumOfLikes - sumOfdislikes;
+
             }
         }
 
