@@ -37,21 +37,25 @@
         string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
 
         if (Model.Thumbnail != null)
-        {            
-            if (Model.Linkdescription.ToLower().Contains("nsfw") && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
+        {
+            if (routeActiveSubverse != null)
             {
-                <a class="thumbnail thumb-nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                if (Model.Linkdescription.ToLower().Contains("nsfw") && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
+                {
+                    <a class="thumbnail thumb-nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                }
+                if (ratedAdult && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
+                {
+                    <a class="thumbnail thumb-nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                }
+                else
+                {
+                    <a class="thumbnail may-blank " href="@Model.MessageContent">
+                        <img src="~/Thumbs/@Model.Thumbnail" alt="" />
+                    </a>
+                }
             }
-            if (ratedAdult && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
-            {
-                <a class="thumbnail thumb-nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
-            }
-            else
-            {
-                <a class="thumbnail may-blank " href="@Model.MessageContent">
-                    <img src="~/Thumbs/@Model.Thumbnail" alt="" />
-                </a>
-            }
+
         }
 
         <div class="entry unvoted">

@@ -133,8 +133,6 @@ namespace Whoaverse.Controllers
         }
 
         // POST: submit a new submission
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
@@ -280,7 +278,7 @@ namespace Whoaverse.Controllers
             }
             else
             {
-                return new EmptyResult();
+                return new HttpUnauthorizedResult();
             }
         }
 

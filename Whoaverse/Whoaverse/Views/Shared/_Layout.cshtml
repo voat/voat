@@ -152,8 +152,8 @@
                         <li class="@classOverview"><a href="~/user/@selectedUser">overview</a></li>
                         <li class="@classComments"><a href="~/user/@selectedUser/comments">comments</a></li>
                         <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">submitted</a></li>
-                        <li><a href="/submit">submit a message</a></li>
-                        <li><a href="/submit?linkpost=true">submit a link</a></li>
+                        <li><a href="/submit">start a discussion</a></li>
+                        <li><a href="/submit?linkpost=true">share a link</a></li>
                     </ul>
                 }
                 else if (selectedSubverse.Equals("/"))
@@ -162,7 +162,7 @@
                         <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
                         <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
                         <li><a href="/submit">start a discussion</a></li>
-                        <li><a href="/submit?linkpost=true">submit a link</a></li>
+                        <li><a href="/submit?linkpost=true">share a link</a></li>
                     </ul>
                 }
                 else if (ViewBag.SelectedSubverse.Equals("domains"))
@@ -174,8 +174,8 @@
                     <ul class="tabmenu ">
                         <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
                         <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                        <li><a href="/submit">submit a message</a></li>
-                        <li><a href="/submit?linkpost=true">submit a link</a></li>
+                        <li><a href="/submit">start a discussion</a></li>
+                        <li><a href="/submit?linkpost=true">share a link</a></li>
                     </ul>
                 }
                 else if (ViewBag.SelectedSubverse.Equals("subverses"))
@@ -199,8 +199,8 @@
                     <ul class="tabmenu ">
                         <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
                         <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                        <li><a href="@selectedSubverse/submit">submit a message</a></li>
-                        <li><a href="@selectedSubverse/submit?linkpost=true">submit a link</a></li>
+                        <li><a href="@selectedSubverse/submit">start a discussion</a></li>
+                        <li><a href="@selectedSubverse/submit?linkpost=true">share a link</a></li>
                     </ul>
                 }
 

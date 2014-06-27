@@ -379,29 +379,7 @@ ul.flat-vert {
     border-top-left-radius: 7px;
 }
 
-#mail {
-    position: relative;
-    top: 2px;
-    display: inline-block;
-    text-indent: -9999px;
-    overflow: hidden;
-    width: 15px;
-    height: 10px;
-}
 
-    #mail.havemail {
-        background-repeat: no-repeat;
-        width: 15px;
-	    height: 10px;
-	    background: url(/Graphics/WVSprite.png) 0 -664px;
-    }
-
-    #mail.nohavemail {
-        background-repeat: no-repeat;
-        width: 15px;
-	    height: 10px;
-	    background: url(/Graphics/WVSprite.png) 0 -664px;
-    }
 
 #modmail {
     position: relative;

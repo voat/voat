@@ -318,16 +318,16 @@
     <Content Include="Graphics\whoaverse-mascot.png" />
     <Content Include="Graphics\whoaverse.png" />
     <Content Include="Graphics\whoaverse_padded.png" />
+    <EntityDeploy Include="Models\WhoaverseEntityDataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>WhoaverseEntityDataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
     <Content Include="Graphics\WVSprite.png">
       <DependentUpon>WVSprite.sprite</DependentUpon>
     </Content>
     <Content Include="Graphics\WVSprite.png.css">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
-    <EntityDeploy Include="Models\WhoaverseEntityDataModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>WhoaverseEntityDataModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
     <Content Include="Models\WhoaverseEntityDataModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>WhoaverseEntityDataModel.edmx</DependentUpon>
@@ -341,9 +341,12 @@
       <DependentUpon>WhoaverseEntityDataModel.edmx</DependentUpon>
       <LastGenOutput>WhoaverseEntityDataModel.cs</LastGenOutput>
     </Content>
-    <Content Include="Graphics\WVSprite.sprite">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Graphics\WVSprite.sprite" />
     <Content Include="Graphics\WVSprite.png.map">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
@@ -353,11 +356,6 @@
     <Content Include="Graphics\WVSprite.png.scss">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
     <None Include="Properties\PublishProfiles\whoaverse.com - Web Deploy.pubxml" />
     <Content Include="RecaptchaNet.ReadMe.txt" />
     <Content Include="robots.txt" />
