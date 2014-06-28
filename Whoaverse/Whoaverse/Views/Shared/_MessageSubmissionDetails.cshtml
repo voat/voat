@@ -37,94 +37,89 @@
                 submitted&#32;
                 <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago&#32;by&#32;
 
-                @{
-                    if (Model.Name == "deleted")
-                    {
-                        <span class="userattrs">[deleted]</span>
-                    }
-                    else
-                    {
-                        <span class="userattrs">
-                            <a href="/user/@Model.Name" class="author may-blank id-t2_@Model.Id">@Model.Name</a>
-                        </span>
-                    }
+                @if (Model.Name == "deleted")
+                {
+                    <span class="userattrs">[deleted]</span>
+                }
+                else
+                {
+                    <span class="userattrs">
+                        <a href="/user/@Model.Name" class="author may-blank id-t2_@Model.Id">@Model.Name</a>
+                    </span>
                 }
 
             </p>
 
-            @{
-                if (!Model.MessageContent.IsEmpty())
-                {
-                    <div class="expando">
+            @if (!Model.MessageContent.IsEmpty())
+            {
+                <div class="expando">
 
-                        <form class="usertext" onsubmit="return editmessagesubmit(@Model.Id)" id="messageeditform-@Model.Id" action="#">
-                            @Html.AntiForgeryToken()
-                            <input id="MessageId" name="MessageId" value="@Model.Id" type="hidden">
+                    <form class="usertext" onsubmit="return editmessagesubmit(@Model.Id)" id="messageeditform-@Model.Id" action="#">
+                        @Html.AntiForgeryToken()
+                        <input id="MessageId" name="MessageId" value="@Model.Id" type="hidden">
 
-                            <div class="usertext-body may-blank-within">
-                                <div class="md">
-                                    @Html.Raw(@Formatting.FormatMessage(@Model.MessageContent))
+                        <div class="usertext-body may-blank-within">
+                            <div class="md">
+                                @Html.Raw(@Formatting.FormatMessage(@Model.MessageContent))
+                            </div>
+                        </div>
+
+                        <div class="usertext-edit" style="width: 775px; display: none;">
+                            <div>
+                                <textarea aria-invalid="false" class="form-control valid" cols="20" id="MessageContent" name="MessageContent" rows="2" data-rule-required="true" data-msg-required="The text can not be empty.">@Model.MessageContent</textarea>
+                                <span data-valmsg-replace="false" data-valmsg-for="CommentContent" class="field-validation-error"></span>
+                                <div class="usertext-buttons">
+                                    <input value="Save" class="btn-whoaverse-paging" type="submit">
+                                    <button class="btn-whoaverse-paging" onclick="removesubmissioneditform(@Model.Id)" type="button">Cancel</button>
                                 </div>
                             </div>
+                        </div>
+                    </form>
 
-                            <div class="usertext-edit" style="width: 775px; display: none;">
-                                <div>
-                                    <textarea aria-invalid="false" class="form-control valid" cols="20" id="MessageContent" name="MessageContent" rows="2" data-rule-required="true" data-msg-required="The text can not be empty.">@Model.MessageContent</textarea>
-                                    <span data-valmsg-replace="false" data-valmsg-for="CommentContent" class="field-validation-error"></span>
-                                    <div class="usertext-buttons">
-                                        <input value="Save" class="btn-whoaverse-paging" type="submit">
-                                        <button class="btn-whoaverse-paging" onclick="removesubmissioneditform(@Model.Id)" type="button">Cancel</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-
-                    </div>
-                }
+                </div>
             }
+
 
             <ul class="flat-list buttons">
                 <li class="first">
                     <a href="/v/@Model.Subverse/comments/@Model.Id" class="comments may-blank">@Model.Comments.Count comments</a>
                 </li>
 
-                @{
-                    if (User.Identity.IsAuthenticated)
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (User.Identity.Name == Model.Name)
                     {
-                        if (User.Identity.Name == Model.Name)
-                        {
-                            <li>
-                                <a class="" href="javascript:void(0)" onclick="return editsubmission(@Model.Id)">edit</a>
-                            </li>
-                            <li>
-                                <form class="toggle del-button " action="#" method="get">
-                                    <input class="active" name="executed" value="deleted" type="hidden">
-                                    <span class="option main active">
-                                        <a href="javascript:void(0)" class="togglebutton" onclick="return togglesubmission(@Model.Id)">delete</a>
-                                    </span>
-                                    <span class="option error">
-                                        are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletesubmission(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglesubmissionback(@Model.Id)">no</a>
-                                    </span>
-                                </form>
-                            </li>
-                        }
-                        else if (Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
-                        {
-                            <li>
-                                <form class="toggle del-button " action="#" method="get">
-                                    <input class="active" name="executed" value="deleted" type="hidden">
-                                    <span class="option main active">
-                                        <a href="javascript:void(0)" class="togglebutton" onclick="return togglesubmission(@Model.Id)">delete</a>
-                                    </span>
-                                    <span class="option error">
-                                        are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletesubmission(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglesubmissionback(@Model.Id)">no</a>
-                                    </span>
-                                </form>
-                            </li>
-                        }
-
+                        <li>
+                            <a class="" href="javascript:void(0)" onclick="return editsubmission(@Model.Id)">edit</a>
+                        </li>
+                        <li>
+                            <form class="toggle del-button " action="#" method="get">
+                                <input class="active" name="executed" value="deleted" type="hidden">
+                                <span class="option main active">
+                                    <a href="javascript:void(0)" class="togglebutton" onclick="return togglesubmission(@Model.Id)">delete</a>
+                                </span>
+                                <span class="option error">
+                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletesubmission(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglesubmissionback(@Model.Id)">no</a>
+                                </span>
+                            </form>
+                        </li>
                     }
-}
+                    else if (Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
+                    {
+                        <li>
+                            <form class="toggle del-button " action="#" method="get">
+                                <input class="active" name="executed" value="deleted" type="hidden">
+                                <span class="option main active">
+                                    <a href="javascript:void(0)" class="togglebutton" onclick="return togglesubmission(@Model.Id)">delete</a>
+                                </span>
+                                <span class="option error">
+                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletesubmission(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglesubmissionback(@Model.Id)">no</a>
+                                </span>
+                            </form>
+                        </li>
+                    }
+
+                }
 
             </ul>
 

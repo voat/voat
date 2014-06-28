@@ -24,62 +24,58 @@
         percentageOfLove = 0;
     }
 
-            <div class="spacer">
-                <div class="titlebox submissioninfo">
-                    <h2 class="hover whoaversename">
-                        Submission Info
-                    </h2>
-                    <div class="bottom">
+    <div class="spacer">
+        <div class="titlebox submissioninfo">
+            <h2 class="hover whoaversename">
+                Submission Info
+            </h2>
+            <div class="bottom">
 
-                        @{
-        if (ViewBag.name == "deleted")
-        {
-            <p class="h6">
-                Posted by: [deleted]
-            </p>
-        }
-        else
-        {
-            <p class="h6">
-                Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
-            </p>
-        }
-                        }
+                @if (ViewBag.name == "deleted")
+                {
+                    <p class="h6">
+                        Posted by: [deleted]
+                    </p>
+                }
+                else
+                {
+                    <p class="h6">
+                        Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
+                    </p>
+                }
 
-                        <p class="h6">
-                            Posting time: <time title="@ViewBag.date" datetime="@ViewBag.date">@ViewBag.date</time>
-                        </p>
+                <p class="h6">
+                    Posting time: <time title="@ViewBag.date" datetime="@ViewBag.date">@ViewBag.date</time>
+                </p>
 
-                        @{
-        if (@ViewBag.lastEditDate != null)
-        {
-            <p class="h6">
-                Last edit time: <time title="@ViewBag.lastEditDate" datetime="@ViewBag.lastEditDate">@ViewBag.lastEditDate</time>
-            </p>
-        }
-        else
-        {
-            <p class="h6">
-                Last edit time: never edited.
-            </p>
-        }
-                        }
+                @if (@ViewBag.lastEditDate != null)
+                {
+                    <p class="h6">
+                        Last edit time: <time title="@ViewBag.lastEditDate" datetime="@ViewBag.lastEditDate">@ViewBag.lastEditDate</time>
+                    </p>
+                }
+                else
+                {
+                    <p class="h6">
+                        Last edit time: never edited.
+                    </p>
+                }
 
-                    </div>
-                    <h2 class="hover whoaversename">
-                        Score
-                    </h2>
-                    <div class="bottom">
-                        <p class="h6">
-                            <span class="ikp" title="Imaginary Karma Points"><span class="user">IKP</span></span>: <b>@difference</b> points
-                        </p>
-                        <p class="h6">
-                            <b>@ViewBag.Likes</b> likes, <b>@ViewBag.Dislikes</b> dislikes (<b>@percentageOfLove%</b> like it)
-                        </p>
-                    </div>
-                    <div class="clear">
-                    </div>
-                </div>
             </div>
+            <h2 class="hover whoaversename">
+                Score
+            </h2>
+            <div class="bottom">
+                <p class="h6">
+                    <span class="ikp" title="Imaginary Karma Points"><span class="user">IKP</span></span>: <b>@difference</b> points
+                </p>
+                <p class="h6">
+                    <b>@ViewBag.Likes</b> likes, <b>@ViewBag.Dislikes</b> dislikes (<b>@percentageOfLove%</b> like it)
+                </p>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+    </div>
 
 }

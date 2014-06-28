@@ -21,26 +21,21 @@
     int messageId = ViewBag.messageId;
 }
 
-@{
-
-    using (Html.BeginForm("submitcomment", "Home"))
-    {
-        @Html.AntiForgeryToken()
-        <hr />
-        @Html.ValidationSummary(true)
+@using (Html.BeginForm("submitcomment", "Home"))
+{
+    @Html.AntiForgeryToken()
+    <hr />
+    @Html.ValidationSummary(true)
 
     <!-- Setup default values -->
 
-        @Html.Hidden("MessageId", messageId)
+    @Html.Hidden("MessageId", messageId)
 
 
-        @Html.TextAreaFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
-        @Html.ValidationMessageFor(model => model.CommentContent)
-        <br />
-        <input type="submit" value="Submit" class="btn-whoaverse-medium" />
-
-    }
-
+    @Html.TextAreaFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
+    @Html.ValidationMessageFor(model => model.CommentContent)
+    <br />
+    <input type="submit" value="Submit" class="btn-whoaverse-medium" />
 }
 
 <hr />

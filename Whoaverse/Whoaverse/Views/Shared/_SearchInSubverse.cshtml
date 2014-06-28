@@ -23,8 +23,7 @@
         <h2>@Html.ValidationSummary(true)</h2>
         @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search whoaverse" })
         @Html.ValidationMessage("q")
-        
-        
+
         @Html.Hidden("sub", selectedSubverse)
 
         <input type="checkbox" name="l" value="true" id="l"

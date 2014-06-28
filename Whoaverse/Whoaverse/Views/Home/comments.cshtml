@@ -31,10 +31,10 @@
 <!--
     display 1 submission with details and comments
 -->
-@{
-    if (!selectedSubverse.Equals("user"))
-    {
-        @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new { 
+@if (!selectedSubverse.Equals("user"))
+{
+    @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new
+   {
        selectedSubverse = selectedSubverse,
        showingComments = true,
        name = Model.Name,
@@ -44,14 +44,13 @@
        likes = Model.Likes,
        dislikes = Model.Dislikes
    })
-    
-    }
-    <style type="text/css">
+
+}
+<style type="text/css">
             @{
                 Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
             }
-    </style>
-}
+</style>
 
 <div class="content" role="main">
 
@@ -87,16 +86,12 @@
         }
     }
 
-
-    @{
-        //if user logged in, show add comment form
-        if (User.Identity.IsAuthenticated)
-        {
-            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
-        }
+    @if (User.Identity.IsAuthenticated)
+    //if user logged in, show add comment form
+    {
+        @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
     }
 
     @Html.Partial("_CommentTree", Model)
-
 
 </div>

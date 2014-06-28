@@ -22,70 +22,67 @@
     DateTime currentdatetime = System.DateTime.Now;
 }
 
-@{
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
 
-    using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
+    <br />
+    <div class="alert alert-info">You are submitting a message.</div>
 
-        <br />
-        <div class="alert alert-info">You are submitting a message.</div>
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true)
 
-        <div class="form-horizontal">
-            <hr />
-            @Html.ValidationSummary(true)
+        @*Setup default values*@
+        @Html.Hidden("Date", currentdatetime)
+        @Html.Hidden("Name", loggedinUser)
+        @Html.Hidden("Type", 1)
+        @Html.Hidden("Votes", 1)
+        @Html.Hidden("Rank", 0)
 
-            @*Setup default values*@
-            @Html.Hidden("Date", currentdatetime)
-            @Html.Hidden("Name", loggedinUser)
-            @Html.Hidden("Type", 1)
-            @Html.Hidden("Votes", 1)
-            @Html.Hidden("Rank", 0)
+        <div class="form-group">
+            @Html.Label("Title", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-9">
+                @Html.TextAreaFor(m => m.Title, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Title)
+            </div>
+        </div>
 
-            <div class="form-group">
-                @Html.Label("Title", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-9">
-                    @Html.TextAreaFor(m => m.Title, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.Title)
-                </div>
+        <div class="form-group">
+            @Html.Label("Subverse", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control", @Value = ViewBag.selectedSubverse })
+                @Html.ValidationMessageFor(model => model.Subverse)
             </div>
 
-            <div class="form-group">
-                @Html.Label("Subverse", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control", @Value = ViewBag.selectedSubverse })
-                    @Html.ValidationMessageFor(model => model.Subverse)
-                </div>
+        </div>
 
+        <div class="form-group">
+            <div class="control-label col-md-2"></div>
+            <div class="col-md-9">
+                popular choices:
+                <b>
+                    videos,
+                    pics,
+                    programming,
+                    funny,
+                    science,
+                    technology,
+                    news,
+                    music
+                </b>
             </div>
+        </div>
 
-            <div class="form-group">
-                <div class="control-label col-md-2"></div>
-                <div class="col-md-9">
-                    popular choices:
-                    <b>
-                        videos,
-                        pics,
-                        programming,
-                        funny,
-                        science,
-                        technology,
-                        news,
-                        music
-                    </b>
-                </div>
+        <div class="form-group">
+            @Html.Label("Message (optional)", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-9">
+                @Html.TextAreaFor(m => m.MessageContent, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.MessageContent)
             </div>
+        </div>
 
-            <div class="form-group">
-                @Html.Label("Message (optional)", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-9">
-                    @Html.TextAreaFor(m => m.MessageContent, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.MessageContent)
-                </div>
-            </div>
-
-            @{
-        if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
+        @if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
         {
             <div class="panel panel-default">
                 <div class="panel-heading">Are you a human?</div>
@@ -94,64 +91,60 @@
                 </div>
             </div>
 
-                <div class="panel panel-default">
-                    @Html.Recaptcha()
-                </div>
-        }
-            }
-
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Submit" class="btn-whoaverse" />
-                </div>
+            <div class="panel panel-default">
+                @Html.Recaptcha()
             </div>
+        }
 
-            <div class="panel-group" id="accordion">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                Formatting help
-                            </a>
-                        </h4>
-                    </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Submit" class="btn-whoaverse" />
+            </div>
+        </div>
 
-                    <div id="collapseOne" class="panel-collapse collapse in">
-                        <div class="panel-body">
-                            Whoaverse uses a slightly-customized version (we disabled embedding of images etc) of <a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a> for formatting. See below for some basics, or check <a href="~/help/markdown">here</a> for more detailed help.<br /><br />
-                            <div class="well">
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                        <tr class="info">
-                                            <th>You type</th>
-                                            <th>You see</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>*italics*</td>
-                                            <td><i>italics</i></td>
-                                        </tr>
-                                        <tr>
-                                            <td>**bold**</td>
-                                            <td><b>bold</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td>[Yay, a Google!](http://google.com)</td>
-                                            <td><a href="http://google.com">Yay, a Google!</a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <a href="/help/markdown" target="_blank">Click here to see more samples.</a>
-                            </div>
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                            Formatting help
+                        </a>
+                    </h4>
+                </div>
+
+                <div id="collapseOne" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        Whoaverse uses a slightly-customized version (we disabled embedding of images etc) of <a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a> for formatting. See below for some basics, or check <a href="~/help/markdown">here</a> for more detailed help.<br /><br />
+                        <div class="well">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr class="info">
+                                        <th>You type</th>
+                                        <th>You see</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>*italics*</td>
+                                        <td><i>italics</i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>**bold**</td>
+                                        <td><b>bold</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>[Yay, a Google!](http://google.com)</td>
+                                        <td><a href="http://google.com">Yay, a Google!</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <a href="/help/markdown" target="_blank">Click here to see more samples.</a>
                         </div>
                     </div>
                 </div>
             </div>
-
-
         </div>
-    }
 
+    </div>
 }
 

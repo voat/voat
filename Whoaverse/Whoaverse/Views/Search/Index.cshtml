@@ -27,12 +27,10 @@
     }
 </style>
 
-
-
 <div class="content" role="main">
 
     <div class="searchresults" style="display: block;">
-        Here are your search results:        
+        Here are your search results:
     </div>
 
     <br />
@@ -77,11 +75,9 @@
 
     </div>
 
-    @{
-        if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action("", new { page, q = searchTerm, sub = selectedSubverse }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+    @if (Model.PageCount > 1)
+    {
+        @Html.PagedListPager(Model, page => Url.Action("", new { page, q = searchTerm, sub = selectedSubverse }), WhoaversePagerOptions.PagedListRenderOptions())
     }
 
 </div>

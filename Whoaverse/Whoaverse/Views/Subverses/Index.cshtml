@@ -15,8 +15,8 @@
 @using Whoaverse.Utils;
 
 @{
-    string selectedSubverse = ViewBag.SelectedSubverse;   
-    
+    string selectedSubverse = ViewBag.SelectedSubverse;
+
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
 
@@ -38,17 +38,16 @@
     }
 </style>
 
-@{
-    if (!selectedSubverse.Equals("user"))
-    {
-        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse } )
-    }
-    <style type="text/css">
+@if (!selectedSubverse.Equals("user"))
+{
+    @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse })
+}
+
+<style type="text/css">
             @{
                 Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
             }
-    </style>
-}
+</style>
 
 <div class="content" role="main">
 
@@ -93,11 +92,9 @@
 
     </div>
 
-    @{
-        if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+    @if (Model.PageCount > 1)
+    {
+        @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
     }
 
 </div>

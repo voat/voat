@@ -59,15 +59,13 @@
             </p>
             <ul class="flat-list buttons">
                 <li class="first">
-                    @{
-                        if (Model.Comments.Count > 0)
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
-                        }
-                        else
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">discuss</a>
-                        }
+                    @if (Model.Comments.Count > 0)
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
+                    }
+                    else
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">discuss</a>
                     }
                 </li>
                 <li class="share">
@@ -98,15 +96,13 @@
             </p>
             <ul class="flat-list buttons">
                 <li class="first">
-                    @{
-                        if (Model.Comments.Count > 0)
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
-                        }
-                        else
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">discuss</a>
-                        }
+                    @if (Model.Comments.Count > 0)
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
+                    }
+                    else
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">discuss</a>
                     }
                 </li>
                 <li class="share">

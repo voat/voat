@@ -43,7 +43,8 @@
                 if (Model.Linkdescription.ToLower().Contains("nsfw") && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
                 {
                     <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
-                } else if (ratedAdult && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
+                }
+                else if (ratedAdult && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
                 {
                     <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
                 }
@@ -59,7 +60,8 @@
                 if (Model.Linkdescription.ToLower().Contains("nsfw"))
                 {
                     <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
-                } else if (ratedAdult)
+                }
+                else if (ratedAdult)
                 {
                     <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
                 }
@@ -79,36 +81,34 @@
                 <span class="domain">(<a href="/domains/@submissionDomain/">@submissionDomain</a>)</span>
             </p>
 
-            @{
-        if (Model.Name == "deleted")
-        {
-            <p class="tagline">
-                submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by
-                <span class="userattrs">[deleted]</span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
-            </p>
-        }
-        else
-        {
-            <p class="tagline">
-                submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank id-t2_8bunp">@Model.Name</a>
-                <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
-                <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">&minus;@Model.Dislikes</span>)</span>
-            </p>
-        }
+            @if (Model.Name == "deleted")
+            {
+                <p class="tagline">
+                    submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by
+                    <span class="userattrs">[deleted]</span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                </p>
             }
+            else
+            {
+                <p class="tagline">
+                    submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank id-t2_8bunp">@Model.Name</a>
+                    <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">&minus;@Model.Dislikes</span>)</span>
+                </p>
+            }
+
 
             <ul class="flat-list buttons">
                 <li class="first">
-                    @{
-        if (Model.Comments.Count > 0)
-        {
-            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
-        }
-        else
-        {
-            <a href="@commentsUrl" class="comments may-blank">discuss</a>
-        }
+                    @if (Model.Comments.Count > 0)
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
                     }
+                    else
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">discuss</a>
+                    }
+
                 </li>
                 <li class="share">
                     <span class="share-button toggle" style="">

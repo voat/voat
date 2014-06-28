@@ -15,7 +15,7 @@
 @using Whoaverse.Utils;
 
 @{
-    string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);   
+    string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
 }
 
 <div class="row">
@@ -23,23 +23,22 @@
         <div class="col-md-6">
             <p class="parent"></p>
             <div class="midcol">
-                @{
-                    if (User.Identity.IsAuthenticated)
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
                     {
-                        if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
-                        {
-                            <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
-                        }
-                        else
-                        {
-                            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
-                        }
+                        <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
                     }
                     else
                     {
-                        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
+                        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
                     }
-                }                
+                }
+                else
+                {
+                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
+                }
+
             </div>
 
             <div class="entry unvoted">

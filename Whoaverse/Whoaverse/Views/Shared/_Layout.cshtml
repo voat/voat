@@ -142,64 +142,62 @@
         @Html.Action("listofsubverses", "Home", new { activeSubverse = selectedSubverse })
         <div id="header-bottom-left">
 
-                <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
+            <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
                 <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
-                </a>
-            @{
-                if (selectedSubverse.Equals("user"))
-                {
-                    <ul class="tabmenu ">
-                        <li class="@classOverview"><a href="~/user/@selectedUser">overview</a></li>
-                        <li class="@classComments"><a href="~/user/@selectedUser/comments">comments</a></li>
-                        <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">submitted</a></li>
-                        <li><a href="/submit">start a discussion</a></li>
-                        <li><a href="/submit?linkpost=true">share a link</a></li>
-                    </ul>
-                }
-                else if (selectedSubverse.Equals("/"))
-                {
-                    <ul class="tabmenu ">
-                        <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
-                        <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                        <li><a href="/submit">start a discussion</a></li>
-                        <li><a href="/submit?linkpost=true">share a link</a></li>
-                    </ul>
-                }
-                else if (ViewBag.SelectedSubverse.Equals("domains"))
-                {
-                    <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedDomain</a></span>
-                    <ul class="tabmenu ">
-                        <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
-                        <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                        <li><a href="/submit">start a discussion</a></li>
-                        <li><a href="/submit?linkpost=true">share a link</a></li>
-                    </ul>
-                }
-                else if (ViewBag.SelectedSubverse.Equals("subverses"))
-                {
-                    <ul class="tabmenu ">
-                        <li class="@classHot"><a href="/subverses">popular</a></li>
-                        <li class="@classNew"><a href="/subverses/new">new</a></li>
-                        <li class="@classSubscribed"><a href="/subverses/subscribed">subscribed</a></li>
-                    </ul>
-                }
-                else if (ViewBag.SelectedSubverse.Equals(string.Empty))
-                {
-                    // don't show tab menu
-                }
-                else
-                {
-                    <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
-
-                    <ul class="tabmenu ">
-                        <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
-                        <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                        <li><a href="@selectedSubverse/submit">start a discussion</a></li>
-                        <li><a href="@selectedSubverse/submit?linkpost=true">share a link</a></li>
-                    </ul>
-                }
-
+            </a>
+            @if (selectedSubverse.Equals("user"))
+            {
+                <ul class="tabmenu ">
+                    <li class="@classOverview"><a href="~/user/@selectedUser">overview</a></li>
+                    <li class="@classComments"><a href="~/user/@selectedUser/comments">comments</a></li>
+                    <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">submitted</a></li>
+                    <li><a href="/submit">start a discussion</a></li>
+                    <li><a href="/submit?linkpost=true">share a link</a></li>
+                </ul>
             }
+            else if (selectedSubverse.Equals("/"))
+            {
+                <ul class="tabmenu ">
+                    <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
+                    <li><a href="/submit">start a discussion</a></li>
+                    <li><a href="/submit?linkpost=true">share a link</a></li>
+                </ul>
+            }
+            else if (ViewBag.SelectedSubverse.Equals("domains"))
+            {
+                <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedDomain</a></span>
+                <ul class="tabmenu ">
+                    <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
+                    <li><a href="/submit">start a discussion</a></li>
+                    <li><a href="/submit?linkpost=true">share a link</a></li>
+                </ul>
+            }
+            else if (ViewBag.SelectedSubverse.Equals("subverses"))
+            {
+                <ul class="tabmenu ">
+                    <li class="@classHot"><a href="/subverses">popular</a></li>
+                    <li class="@classNew"><a href="/subverses/new">new</a></li>
+                    <li class="@classSubscribed"><a href="/subverses/subscribed">subscribed</a></li>
+                </ul>
+            }
+            else if (ViewBag.SelectedSubverse.Equals(string.Empty))
+            {
+                // don't show tab menu
+            }
+            else
+            {
+                <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
+
+                <ul class="tabmenu ">
+                    <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
+                    <li><a href="@selectedSubverse/submit">start a discussion</a></li>
+                    <li><a href="@selectedSubverse/submit?linkpost=true">share a link</a></li>
+                </ul>
+            }
+
         </div>
 
         @Html.Partial("_LoginPartial")
@@ -221,16 +219,14 @@
                 <div class="modal-footer">
                     <a class="btn btn-default" href="~/account/register" role="button">Register</a>
 
-                    @{
-                        if (routeController == "Home" && routeAction == "Comments" && routeId != null)
-                        {
-                            <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId} })" role="button">Log in</a>
-                        }
-                        else
-                        {
-                            <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl(ViewContext.RouteData.Values)" role="button">Log in</a>
-                        }
-                    }                    
+                    @if (routeController == "Home" && routeAction == "Comments" && routeId != null)
+                    {
+                        <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId} })" role="button">Log in</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl(ViewContext.RouteData.Values)" role="button">Log in</a>
+                    }
 
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
                 </div>
@@ -244,22 +240,21 @@
 
     <br />
 
-    @{
-        if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
-        {
-            HttpCookie cookie = new HttpCookie("NotFirstTime");
-            cookie.Value = "whoaverse first time visitor identifier";
-            HttpContext.Current.Response.Cookies.Add(cookie);
+    @if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
+    {
+        HttpCookie cookie = new HttpCookie("NotFirstTime");
+        cookie.Value = "whoaverse first time visitor identifier";
+        HttpContext.Current.Response.Cookies.Add(cookie);
 
-            <div class="eppnotice">
-                <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
-                Cookies help us deliver our services. By using our services, you agree to our use of cookies.
-            </div>
-        }
+        <div class="eppnotice">
+            <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
+            Cookies help us deliver our services. By using our services, you agree to our use of cookies.
+        </div>
     }
 
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+
 </body>
 
 </html>

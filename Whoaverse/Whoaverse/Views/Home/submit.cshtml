@@ -18,22 +18,28 @@
     string loggedinUser = User.Identity.Name;
     DateTime today = System.DateTime.Now;
     string linkPost = Request.Params["linkpost"];
+
+    string selectedSubverse = ViewBag.selectedSubverse;
 }
+
+<style type="text/css">
+            @{
+                Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+            }
+</style>
 
 <div class="content" role="main">
 
     <div class="row nomargin">
         <div class="well col-md-8">
 
-            @{
-                if (linkPost == "true")
-                {
-                    @Html.Partial("_AddSubmissionLinkpost")
-                }
-                else
-                {
-                    @Html.Partial("_AddSubmissionSelfpost")
-                }
+            @if (linkPost == "true")
+            {
+                @Html.Partial("_AddSubmissionLinkpost")
+            }
+            else
+            {
+                @Html.Partial("_AddSubmissionSelfpost")
             }
 
         </div>
