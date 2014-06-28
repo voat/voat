@@ -209,38 +209,60 @@ $(document).ready(function () {
 
 //append a comment reply form to calling area while preventing multiple appends
 function reply(parentcommentid, messageid) {
-    var token = $("input[name='__RequestVerificationToken']").val();
-
-    var replyform = $("<div id='replyform-"
-        + parentcommentid
-        + "'>"
-        + "<form id='commentreplyform-" + parentcommentid + "' novalidate='novalidate' action='/submitcomment' method='post'>"
-        + "<input name='__RequestVerificationToken' value='" + token + "' type='hidden'>"
-        + "<input id='ParentId' name='ParentId' value='" + parentcommentid + "' type='hidden'>"
-        + "<input id='MessageId' name='MessageId' value='" + messageid + "' type='hidden'>"
-        + "<div class='row'>"
-        + "<div class='col-md-5'>"
-        + "<textarea class='form-control' cols='20' id='CommentContent' name='CommentContent' data-val-required='Comment text is required. Please fill this field.' data-val='true' rows='3'></textarea>"
-        + "<span class='field-validation-valid' data-valmsg-for='CommentContent' data-valmsg-replace='true'></span>"
-        + "</div></div>"
-        + "<input value='Submit reply' class='btn-whoaverse-paging' type='submit'>"
-        + "<button class='btn-whoaverse-paging' onclick='removereplyform("+parentcommentid+")' type='button'>Cancel</button>"
-        + "</form>"
-        + "<div class='validation-summary-valid' data-valmsg-summary='true'><ul><li style='display:none'></li></ul></div>"
-        + "<br></div>");
-    
     //exit function if the form is already being shown
     if ($("#commentreplyform-" + parentcommentid).exists()) {
         return;
     }
 
-    $("#" + parentcommentid).append(replyform);
+    var token = $("input[name='__RequestVerificationToken']").val();
+
+    var replyform = $.get(
+        "/ajaxhelpers/commentreplyform/" + parentcommentid + "/" + messageid,
+        null,
+        function (data) {
+            $("#" + parentcommentid).append(data)
+        }
+     );   
 
     var form = $('#commentreplyform-' + parentcommentid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
             .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
 
     $.validator.unobtrusive.parse(form);    
+}
+
+//post comment reply form through ajax
+function postCommentReplyAjax(senderButton) {
+    var $form = $(senderButton).parents('form');
+
+    $form.find("#submitbutton").val("Please wait...");
+    $form.find("#submitbutton").prop('disabled', true);
+
+    $.ajax({
+        type: "POST",
+        url: $form.attr('action'),
+        data: $form.serialize(),
+        error: function (xhr, status, error) {
+            //do something about the error
+        },
+
+        success: function (response) {
+
+            //reload page while keeping scroll position?            
+            var parentId = $form.find("#ParentId").val(); 
+
+            //remove reply form
+            //removereplyform(parentId);
+
+            //TODO: load newly posted comment or just append it without page reload (best solution)           
+
+            //temporary replacement: reload entire page
+            $('body').load($(location).attr('href')+"#"+parentId);           
+
+        }
+    });
+
+    return false;
 }
 
 //append a comment edit form to calling area while preventing multiple appends

@@ -264,7 +264,14 @@ namespace Whoaverse
                 name: "SubverseLatestPosts",
                 url: "v/{subversetoshow}/{sortingmode}",
                 defaults: new { controller = "Subverses", action = "New" }
-            );            
+            );
+
+            // ajaxhelpers/commentreplyform
+            routes.MapRoute(
+                name: "CommentReplyForm",
+                url: "ajaxhelpers/commentreplyform/{parentCommentId}/{messageId}",
+                defaults: new { controller = "HtmlElements", action = "CommentReplyForm" }
+            );   
 
             routes.MapRoute(
                 name: "Default",

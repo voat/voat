@@ -210,6 +210,7 @@
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\HtmlElementsController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SubversesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -476,9 +477,11 @@
     <Content Include="Views\Subverses\Admin\AddModerator.cshtml" />
     <Content Include="Views\Subverses\Admin\RemoveModerator.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseModerators.cshtml" />
+    <Content Include="Views\AjaxViews\_CommentReplyForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\HtmlElements\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
