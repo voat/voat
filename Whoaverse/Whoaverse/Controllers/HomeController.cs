@@ -240,7 +240,7 @@ namespace Whoaverse.Controllers
                 if (commentToDelete.Name == User.Identity.Name)
                 {
                     commentToDelete.Name = "deleted";
-                    commentToDelete.CommentContent = "deleted";
+                    commentToDelete.CommentContent = "deleted by author";
                     await db.SaveChangesAsync();
                 }
                 // delete comment if delete request is issued by subverse moderator
@@ -305,7 +305,7 @@ namespace Whoaverse.Controllers
 
                     if (submissionToDelete.Type == 1)
                     {
-                        submissionToDelete.MessageContent = "deleted";
+                        submissionToDelete.MessageContent = "deleted by author";
                     }
                     else
                     {

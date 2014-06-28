@@ -48,11 +48,11 @@
         {
             if (Model.Linkdescription.ToLower().Contains("nsfw"))
             {
-                <a class="thumbnail thumb-nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
             }
             if (ratedAdult)
             {
-                <a class="thumbnail thumb-nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
             }
             else
             {

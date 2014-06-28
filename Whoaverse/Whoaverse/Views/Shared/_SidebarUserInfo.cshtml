@@ -14,11 +14,11 @@
 
 @{
     string userName = ViewBag.userid;
-    DateTime userRegistrationDateTime = Whoaverse.Utils.User.GetUserRegistrationDateTime(userName);   
+    DateTime userRegistrationDateTime = Whoaverse.Utils.User.GetUserRegistrationDateTime(userName);
 
     if (!Request.Browser.IsMobileDevice)
-    {      
-        
+    {
+
         <style>
             .titlebox {
                 width: 251px;
@@ -54,8 +54,34 @@
                 </div>
             </div>
 
+            <div class="spacer">
+                <div class="titlebox footer rounded">
+                    <h2 class="hover whoaversename">
+                        Badges and trophies
+                    </h2>
+                    <div class="bottom">
+
+                        @if (Whoaverse.Utils.User.UserBadges(userName).Count > 0)
+                        {
+                            foreach (var badge in @Whoaverse.Utils.User.UserBadges(userName))
+                            {
+                                <p class="sidebar-badge" title="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()">@badge.Badge.BadgeName</p>
+                            }
+                        }
+                        else
+                        {
+                            <p>This user currently has no badges.</p>
+                        }
+
+                    </div>
+                    <div class="clear">
+                    </div>
+                </div>
+            </div>
+
             @Html.Action("SubversesUserModerates", "Home", new { userName = userName })
-            
+
         </div>
+
     }
 }

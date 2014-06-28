@@ -5,6 +5,24 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="whoaverseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Badges">
+          <Key>
+            <PropertyRef Name="BadgeId" />
+          </Key>
+          <Property Name="BadgeId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BadgeGraphics" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BadgeTitle" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BadgeName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Banneddomains">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Hostname" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Added_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Added_on" Type="smalldatetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Comments">
           <Key>
             <PropertyRef Name="Id" />
@@ -114,6 +132,15 @@
           <Property Name="subscribers" Type="int" />
           <Property Name="private_subverse" Type="bit" />
         </EntityType>
+        <EntityType Name="Userbadges">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BadgeId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Awarded" Type="smalldatetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
             <PropertyRef Name="Id" />
@@ -175,6 +202,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Userbadges_Badges">
+          <End Role="Badges" Type="Self.Badges" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Userbadges" Type="Self.Userbadges" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Badges">
+              <PropertyRef Name="BadgeId" />
+            </Principal>
+            <Dependent Role="Userbadges">
+              <PropertyRef Name="BadgeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Votingtracker_Messages">
           <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
           <End Role="Votingtracker" Type="Self.Votingtracker" Multiplicity="*" />
@@ -188,6 +229,8 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="whoaverseModelStoreContainer">
+          <EntitySet Name="Badges" EntityType="Self.Badges" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Banneddomains" EntityType="Self.Banneddomains" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
@@ -197,6 +240,7 @@
           <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Userbadges" EntityType="Self.Userbadges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Votingtracker" EntityType="Self.Votingtracker" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Comments_Messages" Association="Self.FK_Comments_Messages">
             <End Role="Messages" EntitySet="Messages" />
@@ -213,6 +257,10 @@
           <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="Self.FK_SubverseAdmins_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
             <End Role="SubverseAdmins" EntitySet="SubverseAdmins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Userbadges_Badges" Association="Self.FK_Userbadges_Badges">
+            <End Role="Badges" EntitySet="Badges" />
+            <End Role="Userbadges" EntitySet="Userbadges" />
           </AssociationSet>
           <AssociationSet Name="FK_Votingtracker_Messages" Association="Self.FK_Votingtracker_Messages">
             <End Role="Messages" EntitySet="Messages" />
@@ -353,7 +401,14 @@
           <EntitySet Name="Promotedsubmissions" EntityType="whoaverseModel.Promotedsubmission" />
           <EntitySet Name="Savedsubmissions" EntityType="whoaverseModel.Savedsubmission" />
           <EntitySet Name="Subscriptions" EntityType="whoaverseModel.Subscription" />
-        </EntityContainer>
+          <EntitySet Name="Badges" EntityType="whoaverseModel.Badge" />
+          <EntitySet Name="Userbadges" EntityType="whoaverseModel.Userbadge" />
+          <AssociationSet Name="FK_Userbadges_Badges" Association="whoaverseModel.FK_Userbadges_Badges">
+            <End Role="Badge" EntitySet="Badges" />
+            <End Role="Userbadge" EntitySet="Userbadges" />
+          </AssociationSet>
+          <EntitySet Name="Banneddomains" EntityType="whoaverseModel.Banneddomain" />
+          </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
             <PropertyRef Name="name" />
@@ -467,7 +522,50 @@
           <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
-      </Schema>
+        <EntityType Name="Badge">
+          <Key>
+            <PropertyRef Name="BadgeId" />
+          </Key>
+          <Property Name="BadgeId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BadgeGraphics" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BadgeTitle" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BadgeName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Userbadges" Relationship="whoaverseModel.FK_Userbadges_Badges" FromRole="Badge" ToRole="Userbadge" />
+        </EntityType>
+        <EntityType Name="Userbadge">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BadgeId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Awarded" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="Badge" Relationship="whoaverseModel.FK_Userbadges_Badges" FromRole="Userbadge" ToRole="Badge" />
+        </EntityType>
+        <Association Name="FK_Userbadges_Badges">
+          <End Type="whoaverseModel.Badge" Role="Badge" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whoaverseModel.Userbadge" Role="Userbadge" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Badge">
+              <PropertyRef Name="BadgeId" />
+            </Principal>
+            <Dependent Role="Userbadge">
+              <PropertyRef Name="BadgeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Banneddomain">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Hostname" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Added_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Added_on" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -597,6 +695,36 @@
               <MappingFragment StoreEntitySet="Subscriptions">
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Badges">
+            <EntityTypeMapping TypeName="whoaverseModel.Badge">
+              <MappingFragment StoreEntitySet="Badges">
+                <ScalarProperty Name="BadgeName" ColumnName="BadgeName" />
+                <ScalarProperty Name="BadgeTitle" ColumnName="BadgeTitle" />
+                <ScalarProperty Name="BadgeGraphics" ColumnName="BadgeGraphics" />
+                <ScalarProperty Name="BadgeId" ColumnName="BadgeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Userbadges">
+            <EntityTypeMapping TypeName="whoaverseModel.Userbadge">
+              <MappingFragment StoreEntitySet="Userbadges">
+                <ScalarProperty Name="Awarded" ColumnName="Awarded" />
+                <ScalarProperty Name="BadgeId" ColumnName="BadgeId" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Banneddomains">
+            <EntityTypeMapping TypeName="whoaverseModel.Banneddomain">
+              <MappingFragment StoreEntitySet="Banneddomains">
+                <ScalarProperty Name="Added_on" ColumnName="Added_on" />
+                <ScalarProperty Name="Added_by" ColumnName="Added_by" />
+                <ScalarProperty Name="Hostname" ColumnName="Hostname" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

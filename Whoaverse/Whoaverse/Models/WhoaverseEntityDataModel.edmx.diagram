@@ -21,7 +21,11 @@
         <EntityTypeShape EntityType="whoaverseModel.Promotedsubmission" Width="1.5" PointX="5.375" PointY="5.75" />
         <EntityTypeShape EntityType="whoaverseModel.Savedsubmission" Width="2.125" PointX="7.375" PointY="5.75" />
         <EntityTypeShape EntityType="whoaverseModel.Subscription" Width="1.5" PointX="10.125" PointY="5.75" />
-      </Diagram>
+        <EntityTypeShape EntityType="whoaverseModel.Badge" Width="1.5" PointX="5.375" PointY="8.875" />
+        <EntityTypeShape EntityType="whoaverseModel.Userbadge" Width="1.5" PointX="7.625" PointY="8.875" />
+        <AssociationConnector Association="whoaverseModel.FK_Userbadges_Badges" />
+        <EntityTypeShape EntityType="whoaverseModel.Banneddomain" Width="1.5" PointX="0.75" PointY="9.75" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

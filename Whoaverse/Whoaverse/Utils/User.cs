@@ -15,6 +15,7 @@ All Rights Reserved.
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Whoaverse.Models;
 
@@ -77,7 +78,7 @@ namespace Whoaverse.Utils
                         foreach (Comment c in comments)
                         {
                             c.Name = "deleted";
-                            c.CommentContent = "deleted";
+                            c.CommentContent = "deleted by user";
                             db.SaveChangesAsync();
                         }
 
@@ -88,13 +89,13 @@ namespace Whoaverse.Utils
                             if (s.Type == 1)
                             {
                                 s.Name = "deleted";
-                                s.MessageContent = "deleted";
-                                s.Title = "deleted";
+                                s.MessageContent = "deleted by user";
+                                s.Title = "deleted by user";
                             }
                             else
                             {
                                 s.Name = "deleted";
-                                s.Linkdescription = "deleted";
+                                s.Linkdescription = "deleted by user";
                                 s.MessageContent = "http://whoaverse.com";
                             }
                         }
@@ -230,6 +231,17 @@ namespace Whoaverse.Utils
                                     .Count();
                 
             }            
+        }
+
+        // return a list of user badges
+        public static List<Userbadge> UserBadges(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                return db.Userbadges.Include("Badge")
+                    .Where(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))                    
+                    .ToList();
+            }
         }
 
         // save a submission
