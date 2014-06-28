@@ -587,3 +587,18 @@ a:visited {
     -moz-font-feature-settings: normal;
     -moz-font-language-override: normal;
 }
+
+/* Responsive optimisation for mobile phones */
+@media (max-width: 480px) { 
+    
+    /* make comment text area full width */
+    .commenttextarea {
+        width: 100%;
+    }
+
+    /* disable sidebar */
+    .side {
+        display:none;
+    }
+}
+

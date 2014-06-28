@@ -167,10 +167,7 @@
                 }
                 else if (ViewBag.SelectedSubverse.Equals("domains"))
                 {
-                    if (!Request.Browser.IsMobileDevice)
-                    {
-                        <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedDomain</a></span>
-                    }
+                    <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedDomain</a></span>
                     <ul class="tabmenu ">
                         <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
                         <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
@@ -192,10 +189,8 @@
                 }
                 else
                 {
-                    if (!Request.Browser.IsMobileDevice)
-                    {
-                        <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
-                    }
+                    <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
+
                     <ul class="tabmenu ">
                         <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
                         <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>

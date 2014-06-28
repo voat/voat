@@ -38,8 +38,7 @@
 </style>
 
 @{
-    if (!Request.Browser.IsMobileDevice)
-    {
+
         @Html.Partial("_SidebarFrontpage")
         if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
         {           
@@ -51,7 +50,7 @@
                 </div>
             </div>
         }
-    }
+
 }
 
 <div class="content" role="main">

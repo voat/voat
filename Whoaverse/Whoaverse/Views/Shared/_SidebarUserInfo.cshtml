@@ -16,8 +16,6 @@
     string userName = ViewBag.userid;
     DateTime userRegistrationDateTime = Whoaverse.Utils.User.GetUserRegistrationDateTime(userName);
 
-    if (!Request.Browser.IsMobileDevice)
-    {
 
         <style>
             .titlebox {
@@ -83,5 +81,5 @@
 
         </div>
 
-    }
+
 }

@@ -43,8 +43,7 @@
                 if (Model.Linkdescription.ToLower().Contains("nsfw") && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
                 {
                     <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
-                }
-                if (ratedAdult && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
+                } else if (ratedAdult && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
                 {
                     <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
                 }
@@ -60,8 +59,7 @@
                 if (Model.Linkdescription.ToLower().Contains("nsfw"))
                 {
                     <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
-                }
-                if (ratedAdult)
+                } else if (ratedAdult)
                 {
                     <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
                 }
