@@ -84,7 +84,7 @@
 
             <div class="panel panel-default">
                 @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
-                @Html.Recaptcha()
+                @Html.Recaptcha(theme: Recaptcha.Web.RecaptchaTheme.Clean, language: "en")
             </div>
 
             <div class="form-group">
