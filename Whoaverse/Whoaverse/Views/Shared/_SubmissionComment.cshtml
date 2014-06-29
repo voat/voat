@@ -16,6 +16,8 @@
 @using Whoaverse.Models;
 
 @{
+    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
+    
     //find the comment based on the received comment id via ViewData
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
     var singleComment = from c in Model.Comments where c.Id == commentId select c;
@@ -46,7 +48,7 @@
 
 @if (commentModel.Name != "deleted")
 {
-    @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", commentId } })
+    @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", commentId }, { "CCP", commentContributionPoints } })
 }
 
 <div class="entry unvoted">
@@ -191,7 +193,7 @@
     foreach (var childComment in childComments)
     {
         <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
-            @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id } })
+            @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints } })
         </div>
     }
 }

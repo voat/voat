@@ -14,6 +14,12 @@
 
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
+
+    int commentContributionPoints = 0;
+    if (User.Identity.IsAuthenticated)
+    {
+        commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
+    }  
 }
 
 <style type="text/css">
@@ -92,6 +98,6 @@
         @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
     }
 
-    @Html.Partial("_CommentTree", Model)
+    @Html.Partial("_CommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
 
 </div>

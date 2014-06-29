@@ -176,6 +176,10 @@
     border-bottom: 1px dotted gray;
 }
 
+.disabled-downvote {
+    cursor: help;    
+}
+
 .submissioninfo {
     border-bottom: 1px solid #66c4e0;
 }

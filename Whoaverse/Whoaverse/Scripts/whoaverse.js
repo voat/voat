@@ -26,6 +26,10 @@ function mustLogin() {
     $('#mustbeloggedinModal').modal();        
 }
 
+function notEnoughCCP() {
+    $('#notenoughccp').modal();
+}
+
 function voteUpSubmission(submissionid) {
     //DEBUG alert('Received model.id in voteUpSubmission: ' + submissionid);
 

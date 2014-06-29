@@ -12,6 +12,10 @@
 
 @model Whoaverse.Models.Message
 
+@{
+    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
+}
+
 <!-- show top 200 submission comments, orderby number of votes each comment has received -->
 <div class='commentarea'>
     <div>
@@ -37,7 +41,7 @@
                 }
 
                 <div class="thread id-@firstComment.Id comment " data-fullname=" t1_cgkmgmm" data-ups="1" data-downs="0">
-                    @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id } })
+                    @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints } })
                 </div>
             }
         }

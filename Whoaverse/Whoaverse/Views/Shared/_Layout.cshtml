@@ -235,6 +235,30 @@
         </div>
     </div>
     <!-- End Must be logged in Modal -->
+    <!-- Not enough comment contribution points Modal -->
+    <div class="modal fade" id="notenoughccp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Hi! It looks like you are new around here. Welcome to WhoaVerse!</h4>
+                </div>
+                <div class="modal-body">
+                    In order to be able to downvote comments, you need to have at least 100 comment contribution points.<br /><br />
+                    Every time someone upvotes a comment that you wrote, you gain 1 comment contribution point.<br /><br />
+                    Your comment contribution points are shown in the upper right corner like so: (14|2).<br />
+                    The first number (in this case 14), represents submission contribution points (links that you have submitted or discussions that you started).<br />
+                    The second number, in this case 2, represents your comment contribution points.<br /><br />
+                    Tip: a good way to earn more contribution points is to take part in discussions or say hi in /v/introductions.<br /><br />
+                    This requirement was established as a measure to encourage new members to get involved and participate in discussions.<br />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Ok, got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Not enough comment contribution points Modal -->
     @RenderBody()
 
     @Html.Partial("_Footer")
