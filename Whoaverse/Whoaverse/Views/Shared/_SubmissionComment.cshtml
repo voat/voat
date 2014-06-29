@@ -50,24 +50,26 @@
 }
 
 <div class="entry unvoted">
+
     <div class="collapsed" style='display:none'>
         <a href="#" class="expand" onclick="return showcomment(@commentId)">[+]</a>
-
         @if (commentModel.Name != "deleted")
         {
+            int commentScore = commentModel.Likes - commentModel.Dislikes;
+            
             <a href="/user/@commentModel.Name" class="author gray @authorClass may-blank id-t2_@commentId">@commentModel.Name</a>
             <span class="userattrs">@Html.Raw(authorSpanClass)</span>
             <span class="score dislikes">@commentModel.Dislikes points</span>
-            <span class="score unvoted">@commentModel.Likes point</span>
+            <span class="score unvoted">@commentScore point</span>
             <span class="score likes">@commentModel.Likes points</span>
         }
         else
         {
             <span class="userattrs">[deleted]</span>
         }
-
         <time title="@commentModel.Date" datetime="@commentModel.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" onclick="return showcomment(@commentId)">(show children)</a>
     </div>
+
     <div class="noncollapsed" id="@commentId">
         <p class="tagline">
             <a href="#" class="expand" onclick="return hidecomment(@commentId)">[&ndash;]</a>

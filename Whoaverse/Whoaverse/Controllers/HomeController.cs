@@ -360,7 +360,8 @@ namespace Whoaverse.Controllers
             if (ModelState.IsValid)
             {
                 // check if subverse exists
-                if (db.Subverses.Find(message.Subverse) != null && message.Subverse != "all")
+                var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
+                if (targetSubverse != null && message.Subverse != "all")
                 {
 
                     // submission is a link post
@@ -392,7 +393,7 @@ namespace Whoaverse.Controllers
                             }
 
                             // trim trailing blanks from subverse name if a user mistakenly types them
-                            message.Subverse = message.Subverse.Trim();
+                            message.Subverse = targetSubverse.name;
 
                             message.Likes = 1;
 
@@ -424,7 +425,7 @@ namespace Whoaverse.Controllers
                     {
                         // submission is a self post
                         // trim trailing blanks from subverse name if a user mistakenly types them
-                        message.Subverse = message.Subverse.Trim();
+                        message.Subverse = targetSubverse.name;
 
                         message.Likes = 1;
 

@@ -140,34 +140,44 @@ namespace Whoaverse.Controllers
         {
             if (ModelState.IsValid)
             {
+                var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
+                if (targetSubverse != null)
+                {
 
-                // restrict incoming submissions to announcements subverse (temporary hard-code solution
-                // TODO: add global administrators table with different access levels
-                if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
-                {
-                    db.Messages.Add(message);
+                    // restrict incoming submissions to announcements subverse (temporary hard-code solution
+                    // TODO: add global administrators table with different access levels
+                    if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
+                    {
+                        message.Subverse = targetSubverse.name;
+                        db.Messages.Add(message);
+                        await db.SaveChangesAsync();
+                    }
+                    else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
+                    {
+                        message.Subverse = targetSubverse.name;
+                        db.Messages.Add(message);
+                        await db.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
+                        return View();
+                    }
+
+                    //get newly generated message ID and execute ranking and self upvoting                
+                    Votingtracker tmpVotingTracker = new Votingtracker();
+                    tmpVotingTracker.MessageId = message.Id;
+                    tmpVotingTracker.UserName = message.Name;
+                    tmpVotingTracker.VoteStatus = 1;
+                    db.Votingtrackers.Add(tmpVotingTracker);
                     await db.SaveChangesAsync();
-                }
-                else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
-                {
-                    db.Messages.Add(message);
-                    await db.SaveChangesAsync();
+
+                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
-                    return View();
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-
-                //get newly generated message ID and execute ranking and self upvoting                
-                Votingtracker tmpVotingTracker = new Votingtracker();
-                tmpVotingTracker.MessageId = message.Id;
-                tmpVotingTracker.UserName = message.Name;
-                tmpVotingTracker.VoteStatus = 1;
-                db.Votingtrackers.Add(tmpVotingTracker);
-                await db.SaveChangesAsync();
-
-                return RedirectToAction("Index");
             }
             else
             {
@@ -202,14 +212,15 @@ namespace Whoaverse.Controllers
                         await db.SaveChangesAsync();
 
                         //register user as the owner of the newly created subverse
-                        SubverseAdmin tmpSubverseAdmin = new SubverseAdmin();
-
+                        SubverseAdmin tmpSubverseAdmin = new SubverseAdmin();                       
                         tmpSubverseAdmin.SubverseName = subverse.name;
                         tmpSubverseAdmin.Username = subverseTmpModel.Owner;
                         tmpSubverseAdmin.Power = 1;
-
                         db.SubverseAdmins.Add(tmpSubverseAdmin);
                         await db.SaveChangesAsync();
+
+                        //subscribe user to the newly created subverse
+                        Whoaverse.Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
 
                         //go to newly created Subverse
                         return RedirectToAction("Index", "Subverses", new { subversetoshow = subverse.name });
