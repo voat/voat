@@ -149,12 +149,16 @@ namespace Whoaverse.Controllers
                     if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
                     {
                         message.Subverse = targetSubverse.name;
+                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                        message.Date = System.DateTime.Now;
                         db.Messages.Add(message);
                         await db.SaveChangesAsync();
                     }
                     else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
                     {
                         message.Subverse = targetSubverse.name;
+                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                        message.Date = System.DateTime.Now;
                         db.Messages.Add(message);
                         await db.SaveChangesAsync();
                     }
@@ -203,7 +207,7 @@ namespace Whoaverse.Controllers
                     subverse.description = subverseTmpModel.Description;
                     subverse.type = subverseTmpModel.Type;
                     subverse.sidebar = subverseTmpModel.Sidebar;
-                    subverse.creation_date = subverseTmpModel.Creation_date;
+                    subverse.creation_date = System.DateTime.Now;
 
                     //check if subverse exists before attempting to create it
                     if (db.Subverses.Find(subverse.name) == null)

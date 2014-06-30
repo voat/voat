@@ -39,6 +39,11 @@
             }
             else
             {
+                <!-- EXPERIMENTAL EXPANDO BUTTON START -->
+                <div class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
+                <div class="expando" style="display: none;" id="@Model.Id"></div>
+                <!-- EXPERIMENTAL EXPANDO BUTTON END -->
+
                 <p class="tagline">
                     submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank id-t2_8bunp">@Model.Name</a>
                     <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
@@ -66,7 +71,13 @@
                 </li>
             </ul>
             <div class="expando" style="display: none">
-                <span class="error">loading...</span>
+                <form style="" novalidate="novalidate" class="usertext" action="#">
+                    <div class="usertext-body may-blank-within">
+                        <div class="md">
+                            Please wait...                            
+                        </div>
+                    </div>                    
+                </form>
             </div>
         </div>
     }

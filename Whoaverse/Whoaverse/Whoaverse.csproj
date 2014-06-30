@@ -207,6 +207,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AjaxGatewayController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -478,6 +479,7 @@
     <Content Include="Views\Subverses\Admin\RemoveModerator.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseModerators.cshtml" />
     <Content Include="Views\AjaxViews\_CommentReplyForm.cshtml" />
+    <Content Include="Views\AjaxViews\_MessageContent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

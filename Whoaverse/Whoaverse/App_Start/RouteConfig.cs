@@ -271,7 +271,15 @@ namespace Whoaverse
                 name: "CommentReplyForm",
                 url: "ajaxhelpers/commentreplyform/{parentCommentId}/{messageId}",
                 defaults: new { controller = "HtmlElements", action = "CommentReplyForm" }
-            );   
+            ); 
+
+            // ajaxhelpers/commentreplyform
+            routes.MapRoute(
+                name: "MessageContent",
+                url: "ajaxhelpers/messagecontent/{messageId}",
+                defaults: new { controller = "AjaxGateway", action = "MessageContent" }
+            ); 
+            
 
             routes.MapRoute(
                 name: "Default",

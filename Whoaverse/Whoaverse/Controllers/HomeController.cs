@@ -396,6 +396,9 @@ namespace Whoaverse.Controllers
                             // trim trailing blanks from subverse name if a user mistakenly types them
                             message.Subverse = targetSubverse.name;
 
+                            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                            message.Date = System.DateTime.Now;
+
                             message.Likes = 1;
 
                             // restrict incoming submissions to announcements subverse (temporary hard-code solution
@@ -427,6 +430,9 @@ namespace Whoaverse.Controllers
                         // submission is a self post
                         // trim trailing blanks from subverse name if a user mistakenly types them
                         message.Subverse = targetSubverse.name;
+
+                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                        message.Date = System.DateTime.Now;
 
                         message.Likes = 1;
 
