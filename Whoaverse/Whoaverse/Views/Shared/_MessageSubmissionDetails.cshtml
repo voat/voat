@@ -17,6 +17,7 @@
 @{
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 }
 
 <!-- 1 message submission details without comments -->
@@ -26,7 +27,7 @@
         <p class="parent"></p>
         <span class="rank">1</span>
 
-        @Html.Partial("_votingIconsSubmission", Model)
+        @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
 
         <div class="entry unvoted">
             <p class="title">

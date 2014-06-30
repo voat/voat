@@ -70,7 +70,7 @@
             ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
             ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
             ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
-            @Html.Partial("_MessageSubmissionDetails", Model)
+            @Html.Partial("_MessageSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
         }
 
         //type 2 = link submission
@@ -88,7 +88,7 @@
             {
                 ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
             }
-            @Html.Partial("_LinkSubmissionDetails", Model)
+            @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
         }
     }
 

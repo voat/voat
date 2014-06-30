@@ -47,7 +47,17 @@
         }
 
         <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
-            <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
+            @if (commentContributionPoints < 1)
+            {
+                //notenoughccpupvote
+                <div class="@votingStatusClassUpArrow login-required" onclick="notEnoughCCPUpVote();" role="button" aria-label="upvote" tabindex="0"></div>
+            }
+            else
+            {
+                <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
+            }
+
+            
 
             @if (commentContributionPoints < 100)
             {
