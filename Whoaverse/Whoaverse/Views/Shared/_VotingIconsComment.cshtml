@@ -16,6 +16,8 @@
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
+    string collapsedStyle = Convert.ToString(ViewData["collapsedStyle"]);
+
     int score = (Model.Likes - Model.Dislikes);
 
     //default voting icons style
@@ -44,7 +46,7 @@
                 break;
         }
 
-        <div class="midcol @likesOrDislikesClass">
+        <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
             <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
 
             @if (commentContributionPoints < 100)
@@ -62,7 +64,7 @@
     else
     //GUESTS
     {
-        <div class="midcol @likesOrDislikesClass">
+        <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
             <div class="@votingStatusClassUpArrow login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
             <div class="@votingStatusClassDownArrow login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
         </div>

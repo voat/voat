@@ -178,6 +178,7 @@ namespace Whoaverse.Controllers
 
             if (ModelState.IsValid)
             {
+                //TODO: check if user is shadowbanned and flag the comment
                 db.Comments.Add(comment);
                 await db.SaveChangesAsync();
 

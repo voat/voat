@@ -66,6 +66,14 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        @Html.Label("Rated adult", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Rated_adult, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Rated_adult, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
                     <hr />
                     <div class="alert alert-warning">
                         <p>All settings beyond this point can be edited and saved. However, these properties are not yet implemented and changes made here
@@ -113,15 +121,7 @@
                             @Html.TextBoxFor(model => model.Label_sumit_new_selfpost, new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.Label_sumit_new_selfpost, "", new { @class = "text-danger" })
                         </div>
-                    </div>                                                          
-
-                    <div class="form-group">
-                        @Html.Label("Rated adult", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.Rated_adult, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Rated_adult, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
+                    </div> 
 
                     <div class="form-group">
                         @Html.Label("Allow default", htmlAttributes: new { @class = "control-label col-md-2" }) 
@@ -130,8 +130,6 @@
                             @Html.ValidationMessageFor(model => model.Allow_default, "", new { @class = "text-danger" })
                         </div>
                     </div>
-                    
-
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">

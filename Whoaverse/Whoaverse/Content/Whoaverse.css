@@ -198,6 +198,10 @@
     cursor: help;
 }
 
+.message-moderators-temporary-class {
+    cursor: help;
+}
+
 .submissioninfo {
     border-bottom: 1px solid #66c4e0;
 }

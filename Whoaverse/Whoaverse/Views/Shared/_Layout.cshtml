@@ -159,8 +159,9 @@
             else if (selectedSubverse.Equals("/"))
             {
                 <ul class="tabmenu ">
-                    <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
-                    <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
+                    <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses.">hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew" title="Show latest submissions from default subverses.">new</a></li>
+                    <li class="disabled"><a href="~/v/all/new" title="Show latest submissions from all subverses.">discover</a></li>
                     <li><a href="/submit">start a discussion</a></li>
                     <li><a href="/submit?linkpost=true">share a link</a></li>
                 </ul>

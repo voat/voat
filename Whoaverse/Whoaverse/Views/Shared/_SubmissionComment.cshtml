@@ -23,10 +23,18 @@
     var singleComment = from c in Model.Comments where c.Id == commentId select c;
     var commentModel = singleComment.FirstOrDefault();
 
+    //check if thread should be hidden
+    bool parentIsHidden = Convert.ToBoolean(ViewData["parentIsHidden"]);
+    bool childTohiddenParent = Convert.ToBoolean(ViewData["childTohiddenParent"]);
+
     DateTime submissionDate = commentModel.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
     string opName = Model.Name;
     string commentAuthor = commentModel.Name;
+
+    string collapsedComment = "";
+    string uncollapsedComment = "";
+    string showIfParent = "";
 
     //apply class style if OP is the Comment Author
     opName = opName.Trim();
@@ -35,6 +43,24 @@
     bool isOpSubverseAdmin = Whoaverse.Utils.User.IsUserSubverseAdmin(opName, Model.Subverse);
     bool isCommentAuthorModerator = Whoaverse.Utils.User.IsUserSubverseModerator(commentAuthor, Model.Subverse);
     bool isCommehtAuthorSubverseAdmin = Whoaverse.Utils.User.IsUserSubverseAdmin(commentAuthor, Model.Subverse);
+
+    //collapse comments with score of -5 or less
+    if (parentIsHidden)
+    {
+        collapsedComment = ""; //show collapsed comment
+        uncollapsedComment = "display:none"; //hide uncollapsed comment
+        if (childTohiddenParent)
+        {
+            showIfParent = "display: none";
+            uncollapsedComment = "";
+            collapsedComment = "display: none";
+        }
+    }
+    else
+    {
+        collapsedComment = "display:none"; //hide collapsed comment
+        uncollapsedComment = ""; //show uncollapsed comment
+    }
 }
 
 <!-- 1 submission comment -->
@@ -44,12 +70,12 @@
 
 @if (commentModel.Name != "deleted")
 {
-    @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", commentId }, { "CCP", commentContributionPoints } })
+    @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", commentId }, { "CCP", commentContributionPoints }, { "collapsedStyle", uncollapsedComment } })
 }
 
 <div class="entry unvoted">
 
-    <div class="collapsed" style='display:none'>
+    <div class="collapsed" style='@collapsedComment'>
         <a href="#" class="expand" onclick="return showcomment(@commentId)">[+]</a>
         @if (commentModel.Name != "deleted")
         {
@@ -58,17 +84,17 @@
             <a href="/user/@commentModel.Name" class="author gray may-blank id-t2_@commentId">@commentModel.Name</a>
             <span class="userattrs"></span>
             <span class="score dislikes">@commentModel.Dislikes points</span>
-            <span class="score unvoted">@commentScore point</span>
+            <span class="score unvoted">@commentScore points</span>
             <span class="score likes">@commentModel.Likes points</span>
         }
         else
         {
             <span class="userattrs">[deleted]</span>
         }
-        <time title="@commentModel.Date" datetime="@commentModel.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" onclick="return showcomment(@commentId)">(show children)</a>
+        <time title="@commentModel.Date" datetime="@commentModel.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return showcomment(@commentId)">(show children)</a>
     </div>
 
-    <div class="noncollapsed" id="@commentId">
+    <div class="noncollapsed" id="@commentId" style="@uncollapsedComment">
         <p class="tagline">
             <a href="#" class="expand" onclick="return hidecomment(@commentId)">[&ndash;]</a>
 
@@ -203,6 +229,7 @@
         </ul>
 
     </div>
+
 </div>
 
 @{
@@ -210,8 +237,18 @@
     var childComments = from c in Model.Comments where c.ParentId == commentId select c;
     foreach (var childComment in childComments)
     {
-        <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0">
-            @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints } })
-        </div>
+        //recalculate parent id score and hide hear instead of passing values around?
+        if (parentIsHidden)
+        {
+            <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0" style="display:none">
+                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true } })
+            </div>
+        }
+        else
+        {
+            <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0" style="">
+                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints } })
+            </div>
+        }
     }
 }
