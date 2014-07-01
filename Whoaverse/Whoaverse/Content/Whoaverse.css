@@ -435,3 +435,45 @@ a:visited {
     -moz-font-feature-settings: normal;
     -moz-font-language-override: normal;
 }
+
+  .modal-content {
+    -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    height: 200px;
+    width: 400px;
+    border-radius: 0px;
+  }
+
+.modal-header {
+  padding: 10px;
+  border-bottom: 1px solid #e5e5e5;
+  min-height: 16.42857143px;
+}
+.modal-header .close {
+  margin-top: -10px;
+  margin-right: -10px;
+  padding-left: 9px;
+  padding-right: 9px;
+  padding-bottom: 8px;
+  padding-top: 6px;
+  border-left: 1px solid black;
+}
+.modal-header .close:hover {
+    background: #142B4A;
+    color: white;
+}
+.modal-title {
+  margin: 0;
+  line-height: 1.42857143;
+  font-weight: 900;
+}
+.modal-body {
+  position: relative;
+  padding: 20px;
+}
+.modal-footer {
+  padding: 19px 20px 20px;
+  text-align: right;
+  border-top: 1px solid #e5e5e5;
+  margin-top: 0px;
+}
