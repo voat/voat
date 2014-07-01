@@ -25,7 +25,7 @@ namespace Whoaverse.Models.ViewModels
 
         public string SubverseName { get; set; }
 
-        [RegularExpression(@"^[1-3]$", ErrorMessage = "Please enter a clearance level between 1 and 3.")]
+        [RegularExpression(@"^[2]$", ErrorMessage = "Please enter a clearance level of 2.")]
         public int Power { get; set; }
     }
 }

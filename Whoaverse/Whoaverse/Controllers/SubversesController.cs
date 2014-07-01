@@ -267,7 +267,7 @@ namespace Whoaverse.Controllers
 
             // check that the user requesting to edit subverse settings is subverse owner!
             SubverseAdmin subAdmin = db.SubverseAdmins
-                        .Where(x => x.SubverseName == subversetoshow && x.Username == User.Identity.Name && x.Power == 1).FirstOrDefault();
+                        .Where(x => x.SubverseName == subversetoshow && x.Username == User.Identity.Name && x.Power <= 2).FirstOrDefault();
 
             if (subAdmin != null)
             {
@@ -317,7 +317,7 @@ namespace Whoaverse.Controllers
                         // check if user requesting edit is authorized to do so for current subverse
                         // check that the user requesting to edit subverse settings is subverse owner!
                         SubverseAdmin subAdmin = db.SubverseAdmins
-                                    .Where(x => x.SubverseName == updatedModel.name && x.Username == User.Identity.Name && x.Power == 1).FirstOrDefault();
+                                    .Where(x => x.SubverseName == updatedModel.name && x.Username == User.Identity.Name && x.Power <= 2).FirstOrDefault();
 
                         if (subAdmin != null)
                         {

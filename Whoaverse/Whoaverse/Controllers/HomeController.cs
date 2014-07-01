@@ -235,7 +235,7 @@ namespace Whoaverse.Controllers
             if (commentToDelete != null)
             {
                 string commentSubverse = commentToDelete.Message.Subverse;
-                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == commentToDelete.Message.Subverse && n.Power == 1).FirstOrDefault();
+                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == commentToDelete.Message.Subverse && n.Power <= 2).FirstOrDefault();
 
                 // delete comment if the comment author is currently logged in user
                 if (commentToDelete.Name == User.Identity.Name)
@@ -298,7 +298,7 @@ namespace Whoaverse.Controllers
 
             if (submissionToDelete != null)
             {
-                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == submissionToDelete.Subverse && n.Power == 1).FirstOrDefault();
+                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == submissionToDelete.Subverse && n.Power <= 2).FirstOrDefault();
 
                 if (submissionToDelete.Name == User.Identity.Name)
                 {
@@ -627,11 +627,7 @@ namespace Whoaverse.Controllers
         {
             ViewBag.SelectedSubverse = string.Empty;
 
-            if (pagetoshow == "team")
-            {
-                return View("~/Views/About/Team.cshtml");
-            }
-            else if (pagetoshow == "intro")
+            if (pagetoshow == "intro")
             {
                 return View("~/Views/About/Intro.cshtml");
             }

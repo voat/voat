@@ -43,25 +43,24 @@
                 <div class="score likes">@Model.Likes</div>
             </div>
 
-            @{
-        if (Model.Thumbnail != null)
-        {
-            if (Model.Linkdescription.ToLower().Contains("nsfw"))
+            @if (Model.Thumbnail != null)
             {
-                <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                if (Model.Linkdescription.ToLower().Contains("nsfw"))
+                {
+                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                }
+                if (ratedAdult)
+                {
+                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                }
+                else
+                {
+                    <a class="thumbnail may-blank " href="@Model.MessageContent">
+                        <img src="~/Thumbs/@Model.Thumbnail" alt="" />
+                    </a>
+                }
             }
-            if (ratedAdult)
-            {
-                <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
-            }
-            else
-            {
-                <a class="thumbnail may-blank " href="@Model.MessageContent">
-                    <img src="~/Thumbs/@Model.Thumbnail" width='70' height='70' alt="" />
-                </a>
-            }
-        }
-}
+
             <div class="entry unvoted">
                 <p class="title">
                     <a class="title may-blank " href="@Model.MessageContent" tabindex="1" rel="nofollow">@Model.Linkdescription</a>
@@ -91,7 +90,6 @@
                 <!--IE6sux-->
             </div>
         </div>
-
     }
 
 }
