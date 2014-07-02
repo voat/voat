@@ -20,35 +20,63 @@ All Rights Reserved.*@
 <div id="about-main" class="content about-page" role="main">
 
     <div class="row nomargin">
-        <div class="well col-md-8">
+        <div class="well col-md-8" 
+             style="
+                border-radius: 0px; 
+                background: white;
+                box-shadow:none;
+                margin-top: -7px;
+                margin-left: -7px;
+                border: 0px solid gray;
+                width: 100%;
+                ">
 
-            <h1>@ViewBag.Title.</h1>            
+            <h1 style="float: right; margin-right: 250px;">Useful links</h1>   
+            <div style="position: absolute; right: 200px; top: 50px;">
+                <ul style="list-style:square; margin-top: -5px;">
+                    <li><a href="http://webchat.freenode.net/?channels=whoaverse">Whoaverse Chatroom</a></li>
+                    <li><a href="mailto: team@whoaverse.com">Send us an e-mail</a></li>
+                    <li><a href="https://github.com/whoaverse/whoaverse">Browse our source code</a></li>
+                    <li><a href="http://localhost:54113/help/privacy">View our Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <h1 style="margin-left: 50px">Welcome back!</h1>         
 
             <section id="loginForm">
                 @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                 {
                     @Html.AntiForgeryToken()
-                    <h1>Welcome back fancy pants!</h1>
+                    <div style="margin-left: 70px;">
+                        <p>Welcome back to Whoaverse! We're glad to see you're still with us</p>
+                        <p>And we honestly hope you're having a great time! Remember, Whoaverse</p>
+                        <p>Is still at an early stage, so it helps to contribute by upvoting or</p>
+                        <p>downvoting posts you like or don't like, as well as contributing to posts</p>
+                        <p>by engaging in quality discussions, submitting your own posts, etc.</p>
+                    </div>
+                    
                     <hr />
                     <div>
                         <h2>@Html.ValidationSummary(true)</h2>
                         <br />
                         <br />
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="width: 100%; font-size: 13px; margin: 0 auto;">
                         @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
-                        <div class="col-md-4">
+                        <div class="col-md-4" style="width: 250px;">
                             @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
                             @Html.ValidationMessageFor(m => m.UserName)
                         </div>
                     </div>
-                    <div class="form-group">
+                    
+                    <div class="form-group" style="width: 100%; font-size: 13px; margin: 0 auto; margin-top: 5px;">
                         @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                        <div class="col-md-4">
+                        <div class="col-md-4" style="width: 250px;">
                             @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
                             @Html.ValidationMessageFor(m => m.Password)
                         </div>
                     </div>
+                    <br /> <br />
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-4">
                             <div class="checkbox">
@@ -60,12 +88,14 @@ All Rights Reserved.*@
                             </div>
                         </div>
                     </div>
+                    <br />
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-4">
-                            <input type="submit" value="Log in" class="btn-whoaverse" />
+                            <input type="submit" value="Log in" class="btn-whoaverse" style="border-radius: 0px; width: 130px;"/>
                         </div>
                     </div>
-                    <p>
+                    
+                    <p style="margin-left: 100px">
                         @Html.ActionLink("Register", "Register") if you don't have an account. You know you want to ;)
                     </p>
                 }
