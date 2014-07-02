@@ -18,6 +18,8 @@
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
+
+    var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
 }
 
 @{
@@ -65,7 +67,7 @@
 
                     <ul class="flat-list buttons">
                         <li class="first">
-                            <a href="/v/@Model.Subverse/comments/@Model.Id" class="comments may-blank">@Model.Comments.Count comments</a>
+                            <a href="/v/@Model.Subverse/comments/@Model.Id" class="comments may-blank">@commentCount comments</a>
                         </li>
 
                         @if (User.Identity.IsAuthenticated)

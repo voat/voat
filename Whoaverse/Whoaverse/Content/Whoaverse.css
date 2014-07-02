@@ -183,6 +183,22 @@
     -moz-border-left-colors: none;
     border-image: none;
     border-width: 0px 1px 1px;
+    margin-bottom: 2px;
+}
+
+.panel-heading-messagetitle {
+  padding: 3px 15px;
+  border-bottom: 1px solid transparent;
+  border-left: 0px;
+  border-right: 0px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.panel-message-body {
+    padding: 3px 15px;
 }
 
 .form-control {
@@ -578,7 +594,7 @@ a:visited {
         background-repeat: no-repeat;
         width: 15px;
         height: 10px;
-        background: url(/Graphics/WVSprite.png) 0 -664px;
+        background: url(/Graphics/mail-icon-hasmail.png) repeat scroll transparent;
     }
 
     #mail.nohavemail {

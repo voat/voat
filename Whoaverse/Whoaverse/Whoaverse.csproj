@@ -238,6 +238,9 @@
     <Compile Include="Models\Message.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Privatemessage.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Promotedsubmission.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -266,6 +269,7 @@
     <Compile Include="Models\EditSubmission.cs" />
     <Compile Include="Models\EditComment.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseModeratorViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseSettingsViewModel.cs" />
@@ -321,6 +325,7 @@
     <Content Include="Graphics\arrow-upvoted.png" />
     <Content Include="Graphics\expand-selfpost-hover.png" />
     <Content Include="Graphics\expand-selfpost.png" />
+    <Content Include="Graphics\mail-icon-hasmail.png" />
     <Content Include="Graphics\mail-icon.png" />
     <Content Include="Graphics\nsfw-thumb.png" />
     <Content Include="Graphics\pattern-welcome.png" />
@@ -482,6 +487,8 @@
     <Content Include="Views\AjaxViews\_CommentReplyForm.cshtml" />
     <Content Include="Views\AjaxViews\_MessageContent.cshtml" />
     <Content Include="Views\Messaging\Inbox.cshtml" />
+    <Content Include="Views\Messaging\Compose.cshtml" />
+    <Content Include="Views\Messaging\Sent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -392,7 +392,12 @@ namespace Whoaverse.Controllers
                     Subverse subverse = db.Subverses.Find(subversetoshow);
                     if (subverse != null)
                     {
-                        var submissions = db.Messages.Where(x => x.Subverse == subversetoshow && x.Name != "deleted").OrderByDescending(s => s.Rank).ToList();
+                        var submissions = db.Messages
+                            .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
+                            .OrderByDescending(s => s.Rank)
+                            .Take(1000)
+                            .ToList();
+
                         ViewBag.Title = subverse.description;
                         return View(submissions.ToPagedList(pageNumber, pageSize));
                     }
@@ -428,7 +433,10 @@ namespace Whoaverse.Controllers
             try
             {
                 //order by subscriber count (popularity)
-                var subverses = db.Subverses.OrderByDescending(s => s.subscribers).Take(200).ToList();
+                var subverses = db.Subverses
+                    .OrderByDescending(s => s.subscribers)
+                    .Take(200)
+                    .ToList();
 
                 return View(subverses.ToPagedList(pageNumber, pageSize));
             }
@@ -496,7 +504,10 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            var subverses = db.Subverses.OrderByDescending(s => s.creation_date).Take(200).ToList();
+            var subverses = db.Subverses
+                .OrderByDescending(s => s.creation_date)
+                .Take(200)
+                .ToList();
 
             return View("~/Views/Subverses/Subverses.cshtml", subverses.ToPagedList(pageNumber, pageSize));
         }

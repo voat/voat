@@ -11,7 +11,7 @@
           </Key>
           <Property Name="BadgeId" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="BadgeGraphics" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="BadgeTitle" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BadgeTitle" Type="nvarchar" MaxLength="300" Nullable="false" />
           <Property Name="BadgeName" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Banneddomains">
@@ -72,6 +72,19 @@
           <Property Name="Dislikes" Type="bigint" Nullable="false" />
           <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
           <Property Name="LastEditDate" Type="smalldatetime" />
+        </EntityType>
+        <EntityType Name="Privatemessages">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Timestamp" Type="smalldatetime" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="Status" Type="bit" Nullable="false" />
+          <Property Name="Markedasunread" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Promotedsubmissions">
           <Key>
@@ -235,6 +248,7 @@
           <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Privatemessages" EntityType="Self.Privatemessages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Promotedsubmissions" EntityType="Self.Promotedsubmissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Savedsubmissions" EntityType="Self.Savedsubmissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
@@ -408,6 +422,7 @@
             <End Role="Userbadge" EntitySet="Userbadges" />
           </AssociationSet>
           <EntitySet Name="Banneddomains" EntityType="whoaverseModel.Banneddomain" />
+          <EntitySet Name="Privatemessages" EntityType="whoaverseModel.Privatemessage" />
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -528,7 +543,7 @@
           </Key>
           <Property Name="BadgeId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="BadgeGraphics" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="BadgeTitle" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BadgeTitle" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="true" />
           <Property Name="BadgeName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Userbadges" Relationship="whoaverseModel.FK_Userbadges_Badges" FromRole="Badge" ToRole="Userbadge" />
         </EntityType>
@@ -564,6 +579,19 @@
           <Property Name="Hostname" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Added_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Added_on" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
+        <EntityType Name="Privatemessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Sender" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Recipient" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Body" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Boolean" Nullable="false" />
+          <Property Name="Markedasunread" Type="Boolean" Nullable="false" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -725,6 +753,20 @@
                 <ScalarProperty Name="Added_on" ColumnName="Added_on" />
                 <ScalarProperty Name="Added_by" ColumnName="Added_by" />
                 <ScalarProperty Name="Hostname" ColumnName="Hostname" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Privatemessages">
+            <EntityTypeMapping TypeName="whoaverseModel.Privatemessage">
+              <MappingFragment StoreEntitySet="Privatemessages">
+                <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
+                <ScalarProperty Name="Sender" ColumnName="Sender" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

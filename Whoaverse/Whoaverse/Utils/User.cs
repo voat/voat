@@ -244,6 +244,38 @@ namespace Whoaverse.Utils
             }
         }
 
+        // check if given user has unread private messages, not including messages manually marked as unread
+        public static bool UserHasNewMessages(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var privateMessages = db.Privatemessages
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                if (privateMessages.Count() > 0)
+                {
+                    var unreadPrivateMessages = privateMessages
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    if (unreadPrivateMessages.Count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         // save a submission
         // TODO
     }

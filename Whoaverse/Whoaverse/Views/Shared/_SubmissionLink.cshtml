@@ -15,6 +15,8 @@
 @using Whoaverse.Utils;
 
 @{
+    var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
+    
     bool ratedAdult = false;
     if (Model.Subverses != null)
     {
@@ -100,9 +102,9 @@
 
             <ul class="flat-list buttons">
                 <li class="first">
-                    @if (Model.Comments.Count > 0)
+                    @if (commentCount > 0)
                     {
-                        <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
+                        <a href="@commentsUrl" class="comments may-blank">@commentCount comments</a>
                     }
                     else
                     {

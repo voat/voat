@@ -34,14 +34,14 @@
     ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
     ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
 
-    if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && selectedSubverse != "inbox")
+    if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && selectedSubverse != "inbox" && selectedSubverse != "compose" && selectedSubverse != "sent")
     {
         selectedSubverse = "/v/" + ViewBag.SelectedSubverse;
         selectedSubverseNew = selectedSubverse + "/new";
     }
     else
     {
-        if (selectedSubverse != "user" && selectedSubverse != "domains" && selectedSubverse != "inbox")
+        if (selectedSubverse != "user" && selectedSubverse != "domains" && selectedSubverse != "inbox" && selectedSubverse != "compose" && selectedSubverse != "sent")
         {
             selectedSubverse = "/";
             selectedSubverseNew = "new";
@@ -149,47 +149,63 @@
             @if (selectedSubverse.Equals("inbox"))
             {
                 <ul class="tabmenu ">
-                    <li class="selected"><a href="~/messaging/inbox">inbox</a></li>
-                    <li class="disabled"><a href="~/messaging/sent">sent</a></li>
-                    <li class="disabled"><a href="~/messaging/compose">compose</a></li>                    
+                    <li class="selected"><a href="~/messaging/inbox">Inbox</a></li>
+                    <li class="disabled"><a href="~/messaging/sent">Sent</a></li>
+                    <li class="disabled"><a href="~/messaging/compose">Compose</a></li>
+                </ul>
+            }
+            else if (selectedSubverse.Equals("sent"))
+            {
+                <ul class="tabmenu ">
+                    <li class="disabled"><a href="~/messaging/inbox">Inbox</a></li>
+                    <li class="selected"><a href="~/messaging/sent">Sent</a></li>
+                    <li class="disabled"><a href="~/messaging/compose">Compose</a></li>
+                </ul>
+            }
+            else if (selectedSubverse.Equals("compose"))
+            {
+                <ul class="tabmenu ">
+                    <li class="disabled"><a href="~/messaging/inbox">Inbox</a></li>
+                    <li class="disabled"><a href="~/messaging/sent">Sent</a></li>
+                    <li class="selected"><a href="~/messaging/compose">Compose</a></li>
                 </ul>
             }
             else if (selectedSubverse.Equals("user"))
             {
                 <ul class="tabmenu ">
-                    <li class="@classOverview"><a href="~/user/@selectedUser">overview</a></li>
-                    <li class="@classComments"><a href="~/user/@selectedUser/comments">comments</a></li>
-                    <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">submitted</a></li>
-                    <li><a href="/submit">start a discussion</a></li>
-                    <li><a href="/submit?linkpost=true">share a link</a></li>
+                    <li class="@classOverview"><a href="~/user/@selectedUser">Overview</a></li>
+                    <li class="@classComments"><a href="~/user/@selectedUser/comments">Comments</a></li>
+                    <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">Submitted</a></li>
+                    <li><a href="/submit">Start a discussion</a></li>
+                    <li><a href="/submit?linkpost=true">Share a link</a></li>
                 </ul>
             }
             else if (selectedSubverse.Equals("/"))
             {
                 <ul class="tabmenu ">
-                    <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses.">hot</a></li>
-                    <li class="@classNew"><a href="@selectedSubverseNew" title="Show latest submissions from default subverses.">new</a></li>
-                    <li class="disabled"><a href="~/v/all/new" title="Show latest submissions from all subverses.">discover</a></li>
-                    <li><a href="/submit">start a discussion</a></li>
-                    <li><a href="/submit?linkpost=true">share a link</a></li>
+                    <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses.">Hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew" title="Show latest submissions from default subverses.">New</a></li>
+                    <li class="disabled"><a href="~/v/all/new" title="Show latest submissions from all subverses.">Discover</a></li>
+                    <li><a href="/submit">Start a discussion</a></li>
+                    <li><a href="/submit?linkpost=true">Share a link</a></li>
                 </ul>
             }
             else if (ViewBag.SelectedSubverse.Equals("domains"))
             {
                 <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedDomain</a></span>
                 <ul class="tabmenu ">
-                    <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
-                    <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                    <li><a href="/submit">start a discussion</a></li>
-                    <li><a href="/submit?linkpost=true">share a link</a></li>
+                    <li class="@classHot"><a href="@selectedSubverse">Hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew">New</a></li>
+                    <li><a href="/submit">Start a discussion</a></li>
+                    <li><a href="/submit?linkpost=true">Share a link</a></li>
                 </ul>
             }
             else if (ViewBag.SelectedSubverse.Equals("subverses"))
             {
                 <ul class="tabmenu ">
-                    <li class="@classHot"><a href="/subverses">popular</a></li>
-                    <li class="@classNew"><a href="/subverses/new">new</a></li>
-                    <li class="@classSubscribed"><a href="/subverses/subscribed">subscribed</a></li>
+                    <li class="@classHot"><a href="/subverses">Popular</a></li>
+                    <li class="@classNew"><a href="/subverses/new">New</a></li>
+                    <li class="@classSubscribed"><a href="/subverses/subscribed">Subscribed</a></li>
                 </ul>
             }
             else if (ViewBag.SelectedSubverse.Equals(string.Empty))
@@ -201,10 +217,10 @@
                 <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
 
                 <ul class="tabmenu ">
-                    <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
-                    <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                    <li><a href="@selectedSubverse/submit">start a discussion</a></li>
-                    <li><a href="@selectedSubverse/submit?linkpost=true">share a link</a></li>
+                    <li class="@classHot"><a href="@selectedSubverse">Hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew">New</a></li>
+                    <li><a href="@selectedSubverse/submit">Start a discussion</a></li>
+                    <li><a href="@selectedSubverse/submit?linkpost=true">Share a link</a></li>
                 </ul>
             }
 
@@ -243,7 +259,6 @@
         </div>
     </div>
     <!-- End Must be logged in Modal -->
-
     <!-- Not enough comment contribution points Modal -->
     <div class="modal fade" id="notenoughccp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -268,7 +283,6 @@
         </div>
     </div>
     <!-- End Not enough comment contribution points Modal -->
-
     <!-- Not enough comment contribution points for upvoting Modal -->
     <div class="modal fade" id="notenoughccpupvote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -293,7 +307,6 @@
         </div>
     </div>
     <!-- End Not enough comment contribution points for upvoting Modal -->
-
     @RenderBody()
 
     @Html.Partial("_Footer")

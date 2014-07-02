@@ -87,7 +87,7 @@ namespace Whoaverse.Models
     {
         [RegularExpression("^[a-zA-Z0-9-_]+$")]
         [Required(ErrorMessage = "Username is required. Please fill this field.")]
-        [StringLength(50, ErrorMessage = "The username should not exceed 50 characters.")]
+        [StringLength(20, ErrorMessage = "The username should not exceed 20 characters.")]
         [Display(Name = "User name")]
 
         public string UserName { get; set; }
@@ -107,12 +107,12 @@ namespace Whoaverse.Models
 
         [DataType(DataType.Text)]
         [Display(Name = "Recovery Question")]
-        [StringLength(500, ErrorMessage="The recovery question must not exceed 500 characters.")]
+        [StringLength(500, ErrorMessage="Recovery question must not exceed 500 characters.")]
         public string RecoveryQuestion { get; set; }
 
         [DataType(DataType.Text)]
         [Display(Name = "Answer")]
-        [StringLength(50, ErrorMessage = "Answer must not exceed 50 characters.")]
+        [StringLength(50, ErrorMessage = "Recovery answer must not exceed 50 characters.")]
         public string Answer { get; set; }
     }
 

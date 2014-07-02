@@ -86,9 +86,23 @@ namespace Whoaverse
 
             // inbox
             routes.MapRoute(
-                name: "inbox",
+                name: "Inbox",
                 url: "messaging/inbox",
                 defaults: new { controller = "Messaging", action = "Inbox" }
+            );
+
+            // compose
+            routes.MapRoute(
+                name: "Compose",
+                url: "messaging/compose",
+                defaults: new { controller = "Messaging", action = "Compose" }
+            );
+
+            // compose
+            routes.MapRoute(
+                name: "Sent",
+                url: "messaging/sent",
+                defaults: new { controller = "Messaging", action = "Sent" }
             );
 
             // u/someuserhere
