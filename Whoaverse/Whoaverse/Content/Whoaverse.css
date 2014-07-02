@@ -164,9 +164,29 @@
     color: black;
 }
 
+.alert{
+    border-width: 0px 0px 0px;
+    color: white;
+}
+
 .paragraph-text-left {
     text-align: left;
     font-size: 12px;
+}
+
+.panel {
+    border-style: solid;
+    border-color: #E7E7E7;
+    -moz-border-top-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    border-image: none;
+    border-width: 0px 1px 1px;
+}
+
+.form-control {
+    box-shadow: 0px 0px 0px;
 }
 
 .commenttextarea {
@@ -627,4 +647,3 @@ a:visited {
         display: none;
     }
 }
-

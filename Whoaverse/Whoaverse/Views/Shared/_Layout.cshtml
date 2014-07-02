@@ -219,18 +219,17 @@
                     Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
                 </div>
                 <div class="modal-footer">
-                    <a class="btn btn-default" href="~/account/register" role="button">Register</a>
+                    <a class="btn-whoaverse-medium" href="~/account/register" role="button">Register</a>
 
                     @if (routeController == "Home" && routeAction == "Comments" && routeId != null)
                     {
-                        <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId} })" role="button">Log in</a>
+                        <a class="btn-whoaverse-medium" href="~/account/login?returnurl=@Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId} })" role="button">Log in</a>
                     }
                     else
                     {
-                        <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl(ViewContext.RouteData.Values)" role="button">Log in</a>
+                        <a class="btn-whoaverse-medium" href="~/account/login?returnurl=@Url.RouteUrl(ViewContext.RouteData.Values)" role="button">Log in</a>
                     }
 
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -255,7 +254,7 @@
                     This requirement was established as a measure to encourage new members to get involved and participate in discussions.<br />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Ok, got it!</button>
+                    <button type="button" class="btn-whoaverse-medium" data-dismiss="modal">Ok, got it!</button>
                 </div>
             </div>
         </div>
@@ -280,7 +279,7 @@
                     This requirement was established as a measure to encourage new members to get involved and participate in discussions.<br />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Ok, got it!</button>
+                    <button type="button" class="btn-whoaverse-medium" data-dismiss="modal">Ok, got it!</button>
                 </div>
             </div>
         </div>
