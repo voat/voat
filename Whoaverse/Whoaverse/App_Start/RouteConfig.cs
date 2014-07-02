@@ -84,6 +84,13 @@ namespace Whoaverse
                 defaults: new { controller = "Home", action = "UserProfile" }
             );
 
+            // inbox
+            routes.MapRoute(
+                name: "inbox",
+                url: "messaging/inbox",
+                defaults: new { controller = "Messaging", action = "Inbox" }
+            );
+
             // u/someuserhere
             routes.MapRoute(
                 name: "usershortroute",

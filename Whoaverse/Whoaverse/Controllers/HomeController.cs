@@ -479,6 +479,7 @@ namespace Whoaverse.Controllers
 
         }
 
+        // GET: user/id
         public ActionResult UserProfile(string id, int? page, string whattodisplay)
         {
             ViewBag.SelectedSubverse = "user";

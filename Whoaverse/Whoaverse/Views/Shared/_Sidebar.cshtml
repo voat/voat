@@ -121,5 +121,22 @@
             </div>
         </div>
     }
+    else if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
+    {
+    <div class="spacer">
+        <div class="sidecontentbox collapsible" id="moderation_tools">
+            <div class="title"><h1>ADMINISTRATION TOOLS</h1><span class="collapse-button">-</span></div>
+            <ul style="display: block;" class="content">
+                <li>
+                    <ul class="flat-vert icon-menu hover">
+                        <li>
+                            <a href="/v/@Model.name/about/edit/">subverse settings</a>
+                        </li>                        
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div> 
+    }
 
 </div>

@@ -34,14 +34,14 @@
     ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
     ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
 
-    if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains")
+    if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && selectedSubverse != "inbox")
     {
         selectedSubverse = "/v/" + ViewBag.SelectedSubverse;
         selectedSubverseNew = selectedSubverse + "/new";
     }
     else
     {
-        if (selectedSubverse != "user" && selectedSubverse != "domains")
+        if (selectedSubverse != "user" && selectedSubverse != "domains" && selectedSubverse != "inbox")
         {
             selectedSubverse = "/";
             selectedSubverseNew = "new";
@@ -146,7 +146,15 @@
             <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
                 <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
             </a>
-            @if (selectedSubverse.Equals("user"))
+            @if (selectedSubverse.Equals("inbox"))
+            {
+                <ul class="tabmenu ">
+                    <li class="selected"><a href="~/messaging/inbox">inbox</a></li>
+                    <li class="disabled"><a href="~/messaging/sent">sent</a></li>
+                    <li class="disabled"><a href="~/messaging/compose">compose</a></li>                    
+                </ul>
+            }
+            else if (selectedSubverse.Equals("user"))
             {
                 <ul class="tabmenu ">
                     <li class="@classOverview"><a href="~/user/@selectedUser">overview</a></li>
