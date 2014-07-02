@@ -62,7 +62,7 @@ namespace Whoaverse.Controllers
                             foreach (var singleMessage in privateMessages)
                             {
                                 singleMessage.Status = false;
-                                db.SaveChangesAsync();
+                                db.SaveChanges();
                             }
                         }
 
