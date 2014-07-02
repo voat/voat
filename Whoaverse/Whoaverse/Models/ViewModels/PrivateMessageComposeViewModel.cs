@@ -28,7 +28,7 @@ namespace Whoaverse.Models.ViewModels
         public string Subject { get; set; }
 
         [Required(ErrorMessage = "Please enter the body text for this message.")]
-        [StringLength(50, ErrorMessage = "Body text is limited to 4000 characters.")]
+        [StringLength(4000, ErrorMessage = "Body text is limited to 4000 characters.")]
         public string Body { get; set; }
     }
 }
