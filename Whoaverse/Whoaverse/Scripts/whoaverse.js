@@ -23,7 +23,7 @@ function click_voting() {
 }
 
 function mustLogin() {
-    $('#mustbeloggedinModal').modal();        
+    $('#mustbeloggedinModal').modal();
 }
 
 function notEnoughCCP() {
@@ -71,8 +71,7 @@ function voteDownSubmission(submissionid) {
     submitDownVote(submissionid);
 
     //ADD DISLIKE IF UNVOTED
-    if ($(".id-" + submissionid).children(".midcol").is(".unvoted"))
-    {
+    if ($(".id-" + submissionid).children(".midcol").is(".unvoted")) {
         $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", true) //add class dislikes
         $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
         //add downvoted arrow
@@ -103,7 +102,7 @@ function submitUpVote(messageid) {
     //alert('Now entered JS function submitUpvote');
 
     $.ajax({
-        type: "POST",       
+        type: "POST",
         url: "/vote/" + messageid + "/1"
         //success: function () {
         //    alert('Voting was sucessful!');
@@ -230,13 +229,13 @@ function reply(parentcommentid, messageid) {
         function (data) {
             $("#" + parentcommentid).append(data)
         }
-     );   
+     );
 
     var form = $('#commentreplyform-' + parentcommentid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
             .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
 
-    $.validator.unobtrusive.parse(form);    
+    $.validator.unobtrusive.parse(form);
 }
 
 //post comment reply form through ajax
@@ -257,7 +256,7 @@ function postCommentReplyAjax(senderButton) {
         success: function (response) {
 
             //reload page while keeping scroll position?            
-            var parentId = $form.find("#ParentId").val(); 
+            var parentId = $form.find("#ParentId").val();
 
             //remove reply form
             //removereplyform(parentId);
@@ -265,7 +264,7 @@ function postCommentReplyAjax(senderButton) {
             //TODO: load newly posted comment or just append it without page reload (best solution)           
 
             //temporary replacement: reload entire page
-            $('body').load($(location).attr('href')+"#"+parentId);           
+            $('body').load($(location).attr('href') + "#" + parentId);
 
         }
     });
@@ -275,7 +274,7 @@ function postCommentReplyAjax(senderButton) {
 
 //append a comment edit form to calling area while preventing multiple appends
 function edit(parentcommentid, messageid) {
-    
+
     //hide original text comment
     $("#" + parentcommentid).find('.usertext-body').toggle(1);
 
@@ -293,7 +292,7 @@ function edit(parentcommentid, messageid) {
 function editsubmission(submissionid) {
 
     //hide original text    
-    $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);    
+    $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
 
     //show edit form
     $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);
@@ -361,10 +360,10 @@ function hidecomment(commentid) {
     //show show hidden children button
     $("#" + commentid).prev().toggle(1);
     //hide voting icons
-    $("#" + commentid).parent().parent().find('.midcol').filter(":first").toggle(1); 
+    $("#" + commentid).parent().parent().find('.midcol').filter(":first").toggle(1);
     //hide all children
     $("#" + commentid).parent().parent().find('.child').toggle(1);
-    
+
     return (false);
 }
 
@@ -379,7 +378,7 @@ function editcommentsubmit(commentid) {
         data: JSON.stringify(commentobject),
         url: "/editcomment",
         datatype: "json",
-        success: function (data) {            
+        success: function (data) {
             $("#" + commentid).find('.md').html(data.response);
         }
     });
@@ -395,7 +394,7 @@ function deletecomment(commentid) {
 
     //hide original comment text
     $("#" + commentid).find('.md').html("[deleted]");
-    $("#" + commentid).find('.md').css("color", "gray");    
+    $("#" + commentid).find('.md').css("color", "gray");
 
     //hide comment author
     $("#" + commentid).find('.author').replaceWith(function () {
@@ -403,7 +402,7 @@ function deletecomment(commentid) {
     });
 
     //hide comment author attributes
-    $("#" + commentid).find('.userattrs').html('');    
+    $("#" + commentid).find('.userattrs').html('');
 
     //hide "are you sure" option
     toggleback(commentid);
@@ -423,7 +422,7 @@ function deletecommentsubmit(commentid) {
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify(commentobject),
         url: "/deletecomment",
-        datatype: "json"        
+        datatype: "json"
     });
 
     removeeditform(commentid);
@@ -537,9 +536,31 @@ function loadSelfText(obj, messageId) {
         function (data) {
             $(obj).parent().find(".expando").nextAll().find(".md").html(data)
         }
-     );    
+     );
 
     //toggle message content display
     //note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
     $(obj).parent().find(".expando").next().next().next().toggle();
 }
+
+//function to post delete private message request to messaging controller and remove deleted message DOM
+function deletePrivateMessage(obj, privateMessageId) {
+    var privateMessageObject = { "privateMessageId": privateMessageId };
+
+    $(obj).html("please wait...");
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(privateMessageObject),
+        success: function () {
+            //remove message DOM
+            $("#messageContainer-" + privateMessageId).remove();
+        },
+        url: "/messaging/delete",
+        datatype: "json"
+    });
+
+    return false;
+}
+

@@ -118,8 +118,8 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Power == 1).FirstOrDefault();
-                if (subverseOwner != null && subverseOwner.Username.ToLower() == userName.ToLower())
+                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Power == 1).FirstOrDefault();
+                if (subverseOwner != null && subverseOwner.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -135,8 +135,8 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                var subverseModerator = db.SubverseAdmins.Where(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username.ToLower() == userName && n.Power == 2).FirstOrDefault();
-                if (subverseModerator != null && subverseModerator.Username.ToLower() == userName.ToLower())
+                var subverseModerator = db.SubverseAdmins.Where(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 2).FirstOrDefault();
+                if (subverseModerator != null && subverseModerator.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -175,7 +175,7 @@ namespace Whoaverse.Utils
                     Subscription newSubscription = new Subscription();
                     newSubscription.Username = userName;
                     newSubscription.SubverseName = subverse;
-                    db.Subscriptions.Add(newSubscription);                    
+                    db.Subscriptions.Add(newSubscription);
 
                     // record new subscription in subverse table subscribers field
                     Subverse tmpSubverse = db.Subverses.Find(subverse);
@@ -200,7 +200,7 @@ namespace Whoaverse.Utils
                     var subscription = db.Subscriptions
                                 .Where(b => b.Username == userName && b.SubverseName == subverse)
                                 .FirstOrDefault();
-                    
+
                     if (subverse != null)
                     {
                         // remove subscription record
@@ -226,11 +226,10 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                return db.Subscriptions.AsEnumerable()
+                return db.Subscriptions
                                     .Where(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Count();
-                
-            }            
+            }
         }
 
         // return a list of user badges
@@ -239,7 +238,7 @@ namespace Whoaverse.Utils
             using (whoaverseEntities db = new whoaverseEntities())
             {
                 return db.Userbadges.Include("Badge")
-                    .Where(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))                    
+                    .Where(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
         }

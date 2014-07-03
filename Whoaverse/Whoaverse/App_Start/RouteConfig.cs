@@ -105,6 +105,13 @@ namespace Whoaverse
                 defaults: new { controller = "Messaging", action = "Sent" }
             );
 
+            // deleteprivatemessage
+            routes.MapRoute(
+                name: "DeletePrivateMessage",
+                url: "messaging/delete",
+                defaults: new { controller = "Messaging", action = "DeletePrivateMessage" }
+            );
+
             // u/someuserhere
             routes.MapRoute(
                 name: "usershortroute",

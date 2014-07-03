@@ -202,5 +202,33 @@ namespace Whoaverse.Controllers
                 return View();
             }
         }
+
+        [Authorize]
+        [HttpPost]        
+        [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        public JsonResult DeletePrivateMessage(int privateMessageId)
+        {
+            // check that the message is owned by logged in user executing delete action
+            string loggedInUser = User.Identity.Name;
+
+            var privateMessageToDelete = db.Privatemessages
+                        .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId).FirstOrDefault();
+
+            if (privateMessageToDelete != null)
+            {
+                // delete the message
+                Privatemessage privateMessage = db.Privatemessages.Find(privateMessageId);
+                db.Privatemessages.Remove(privateMessage);
+                db.SaveChangesAsync();
+                Response.StatusCode = 200;
+                return Json("Message deleted.", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Bad request.", JsonRequestBehavior.AllowGet);
+            }
+        }
+
     }
 }

@@ -481,7 +481,7 @@ namespace Whoaverse.Controllers
             if (subverse != null)
             {
                 // get subscriber count for selected subverse
-                int subscriberCount = db.Subscriptions.AsEnumerable()
+                int subscriberCount = db.Subscriptions
                                     .Where(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase))
                                     .Count();
 

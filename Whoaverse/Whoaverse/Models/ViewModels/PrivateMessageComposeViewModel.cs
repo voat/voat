@@ -18,7 +18,7 @@ namespace Whoaverse.Models.ViewModels
 {
     public class PrivateMessageComposeViewModel
     {
-        [RegularExpression("^[a-zA-Z0-9-_]+$")]
+        [RegularExpression("^[a-zA-Z0-9-_]+$", ErrorMessage="Please use only alphanumeric characters.")]
         [Required(ErrorMessage = "Please enter a username to send this message to.")]
         [StringLength(20, ErrorMessage = "Username is limited to 20 characters.")]
         public string Recipient { get; set; }

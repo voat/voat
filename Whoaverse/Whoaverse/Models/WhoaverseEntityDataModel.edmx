@@ -115,7 +115,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Power" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Subverses">
@@ -496,7 +496,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Username" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Power" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_SubverseAdmins_Subverses" FromRole="SubverseAdmin" ToRole="Subverse" />
         </EntityType>
