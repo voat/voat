@@ -626,12 +626,7 @@ namespace Whoaverse.Controllers
             {
                 // check if caller is subverse owner, if not, deny listing
                 if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
-                {
-                    var subverseModerators = db.SubverseAdmins.OrderBy(s => s.Power)
-                    .Where(n => n.SubverseName == subversetoshow)
-                    .Take(200)
-                    .ToList();
-
+                {                   
                     ViewBag.SubverseModel = subverseModel;
                     ViewBag.SubverseName = subversetoshow;
                     ViewBag.SelectedSubverse = string.Empty;
@@ -663,12 +658,7 @@ namespace Whoaverse.Controllers
                 {
                     // check if caller is subverse owner, if not, deny posting
                     if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
-                    {
-                        var subverseModerators = db.SubverseAdmins.OrderBy(s => s.Power)
-                        .Where(n => n.SubverseName == subverseAdmin.SubverseName)
-                        .Take(200)
-                        .ToList();
-
+                    {                        
                         db.SubverseAdmins.Add(subverseAdmin);
                         db.SaveChanges();
                         return RedirectToAction("SubverseModerators");

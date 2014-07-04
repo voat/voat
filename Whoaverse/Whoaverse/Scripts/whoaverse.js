@@ -564,3 +564,24 @@ function deletePrivateMessage(obj, privateMessageId) {
     return false;
 }
 
+//function to post delete sent private message request to messaging controller and remove deleted message DOM
+function deletePrivateMessageFromSent(obj, privateMessageId) {
+    var privateMessageObject = { "privateMessageId": privateMessageId };
+
+    $(obj).html("please wait...");
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(privateMessageObject),
+        success: function () {
+            //remove message DOM
+            $("#messageContainer-" + privateMessageId).remove();
+        },
+        url: "/messaging/deletesent",
+        datatype: "json"
+    });
+
+    return false;
+}
+
