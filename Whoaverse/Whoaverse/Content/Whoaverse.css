@@ -164,7 +164,7 @@
     color: black;
 }
 
-.alert{
+.alert {
     border-width: 0px 0px 0px;
     color: white;
 }
@@ -187,14 +187,14 @@
 }
 
 .panel-heading-messagetitle {
-  padding: 3px 15px;
-  border-bottom: 1px solid transparent;
-  border-left: 0px;
-  border-right: 0px;
-  border-top-right-radius: 0px;
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
+    padding: 3px 15px;
+    border-bottom: 1px solid transparent;
+    border-left: 0px;
+    border-right: 0px;
+    border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
 }
 
 .panel-message-body {
@@ -662,3 +662,42 @@ a:visited {
         display: none;
     }
 }
+
+/*main menu*/ .whoaSubscriptionMenu {
+    margin: 0;
+    padding: 0;
+}
+
+    .whoaSubscriptionMenu li {
+        list-style: none;
+        float: left;
+    }
+
+        .whoaSubscriptionMenu li a:link, .whoaSubscriptionMenu li a:visited {
+            display: block;
+            text-decoration: none;        
+            padding: 0 2px;    
+        }
+
+        /*sub menu*/
+        .whoaSubscriptionMenu li ul {
+            position: absolute;
+            visibility: hidden;
+            border-top: 1px solid #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+            .whoaSubscriptionMenu li ul li {
+                display: inline;
+                float: none;
+            }
+
+                .whoaSubscriptionMenu li ul li a:link, .whoaSubscriptionMenu li ul li a:visited {
+                    background-color: #F0F0F0;
+                    width: auto;
+                }
+
+                .whoaSubscriptionMenu li ul li a:hover {
+                    background-color: #e0f1f8;
+                }

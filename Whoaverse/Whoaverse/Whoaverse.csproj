@@ -489,6 +489,7 @@
     <Content Include="Views\Messaging\Inbox.cshtml" />
     <Content Include="Views\Messaging\Compose.cshtml" />
     <Content Include="Views\Messaging\Sent.cshtml" />
+    <Content Include="Views\Shared\_SubscriptionsHoverMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

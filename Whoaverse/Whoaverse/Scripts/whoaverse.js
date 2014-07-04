@@ -212,6 +212,11 @@ $(document).ready(function () {
             }
         }
     });
+
+    $('.whoaSubscriptionMenu > li').bind('mouseover', openSubMenu);
+    $('.whoaSubscriptionMenu > li').bind('mouseout', closeSubMenu);
+    function openSubMenu() { $(this).find('ul').css('visibility', 'visible'); };
+    function closeSubMenu() { $(this).find('ul').css('visibility', 'hidden'); };
 });
 
 //append a comment reply form to calling area while preventing multiple appends
@@ -584,4 +589,3 @@ function deletePrivateMessageFromSent(obj, privateMessageId) {
 
     return false;
 }
-
