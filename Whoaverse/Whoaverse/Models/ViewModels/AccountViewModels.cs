@@ -85,7 +85,7 @@ namespace Whoaverse.Models
 
     public class RegisterViewModel
     {
-        [RegularExpression("^[a-zA-Z0-9-_]+$")]
+        [RegularExpression(@"^[a-zA-Z0-9][A-Za-z0-9-_]*$")]
         [Required(ErrorMessage = "Username is required. Please fill this field.")]
         [StringLength(20, ErrorMessage = "The username should not exceed 20 characters.")]
         [Display(Name = "User name")]

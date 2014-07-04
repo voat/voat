@@ -33,7 +33,7 @@ namespace Whoaverse.Controllers
         public AccountController()
             : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
         {
-
+            UserManager.UserValidator = new UserValidator<ApplicationUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
         }
 
         public AccountController(UserManager<ApplicationUser> userManager)
