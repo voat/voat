@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Whoaverse.Models;
+using Whoaverse.Models.ViewModels;
 
 namespace Whoaverse.Utils
 {
@@ -229,6 +230,26 @@ namespace Whoaverse.Utils
                 return db.Subscriptions
                                     .Where(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
                                     .Count();
+            }
+        }
+
+        // return a list of subverses user is subscribed to
+        public static List<SubverseDetailsViewModel> UserSubscriptions(string userName)
+        {
+            // get a list of subcribed subverses with details and order by subverse names, ascending
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var subscribedSubverses = from c in db.Subverses
+                                          join a in db.Subscriptions
+                                          on c.name equals a.SubverseName
+                                          where a.Username.Equals(userName)
+                                          orderby a.SubverseName ascending
+                                          select new SubverseDetailsViewModel
+                                          {
+                                              Name = c.name
+                                          };
+
+                return subscribedSubverses.ToList();
             }
         }
 

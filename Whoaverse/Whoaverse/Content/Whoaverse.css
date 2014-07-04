@@ -684,6 +684,8 @@ a:visited {
             position: absolute;
             visibility: hidden;
             border-top: 1px solid #fff;
+            border-left: 1px solid rgba(0, 0, 0, 0.4);
+            border-right: 1px solid rgba(0, 0, 0, 0.4);
             margin: 0;
             padding: 0;
         }
@@ -696,6 +698,7 @@ a:visited {
                 .whoaSubscriptionMenu li ul li a:link, .whoaSubscriptionMenu li ul li a:visited {
                     background-color: #F0F0F0;
                     width: auto;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
                 }
 
                 .whoaSubscriptionMenu li ul li a:hover {
