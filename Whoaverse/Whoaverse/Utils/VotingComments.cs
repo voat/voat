@@ -8,7 +8,7 @@ namespace Whoaverse.Utils
 {
     public class VotingComments
     {
-        //submit comment upvote
+        // submit comment upvote
         public static void UpvoteComment(int commentId, string userWhichUpvoted)
         {
             int result = VotingComments.CheckIfVotedComment(userWhichUpvoted, commentId);
@@ -19,14 +19,14 @@ namespace Whoaverse.Utils
 
                 switch (result)
                 {
-                    //never voted before
+                    // never voted before
                     case 0:
 
                         if (comment != null && comment.Name != userWhichUpvoted)
                         {
                             comment.Likes++;
 
-                            //register upvote
+                            // register upvote
                             Commentvotingtracker tmpVotingTracker = new Commentvotingtracker();
                             tmpVotingTracker.CommentId = commentId;
                             tmpVotingTracker.UserName = userWhichUpvoted;
@@ -37,7 +37,7 @@ namespace Whoaverse.Utils
 
                         break;
 
-                    //downvoted before, turn downvote to upvote
+                    // downvoted before, turn downvote to upvote
                     case -1:
 
                         if (comment != null && comment.Name != userWhichUpvoted)
@@ -45,7 +45,7 @@ namespace Whoaverse.Utils
                             comment.Likes++;
                             comment.Dislikes--;
 
-                            //register Turn DownVote To UpVote
+                            // register Turn DownVote To UpVote
                             var votingTracker = db.Commentvotingtrackers
                                 .Where(b => b.CommentId == commentId && b.UserName == userWhichUpvoted)
                                 .FirstOrDefault();
@@ -59,7 +59,7 @@ namespace Whoaverse.Utils
 
                         break;
 
-                    //upvoted before, reset
+                    // upvoted before, reset
                     case 1:
 
                         if (comment != null)
@@ -76,7 +76,7 @@ namespace Whoaverse.Utils
 
         }
 
-        //submit submission downvote
+        // submit submission downvote
         public static void DownvoteComment(int commentId, string userWhichDownvoted)
         {
             int result = VotingComments.CheckIfVotedComment(userWhichDownvoted, commentId);
@@ -87,14 +87,14 @@ namespace Whoaverse.Utils
 
                 switch (result)
                 {
-                    //never voted before
+                    // never voted before
                     case 0:
 
                         if (comment != null)
                         {
                             comment.Dislikes++;
 
-                            //register downvote
+                            // register downvote
                             Commentvotingtracker tmpVotingTracker = new Commentvotingtracker();
                             tmpVotingTracker.CommentId = commentId;
                             tmpVotingTracker.UserName = userWhichDownvoted;
@@ -105,7 +105,7 @@ namespace Whoaverse.Utils
 
                         break;
 
-                    //upvoted before, turn upvote to downvote
+                    // upvoted before, turn upvote to downvote
                     case 1:
 
                         if (comment != null)
@@ -127,7 +127,7 @@ namespace Whoaverse.Utils
 
                         break;
 
-                    //downvoted before, reset
+                    // downvoted before, reset
                     case -1:
 
                         if (comment != null)
@@ -143,7 +143,7 @@ namespace Whoaverse.Utils
 
         }
 
-        //returns -1:downvoted, 1:upvoted, or 0:not voted
+        // returns -1:downvoted, 1:upvoted, or 0:not voted
         public static int CheckIfVotedComment(string userToCheck, int commentId)
         {
             int intCheckResult = 0;
@@ -168,7 +168,7 @@ namespace Whoaverse.Utils
 
         }
 
-        //a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
+        // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetCommentVote(string userWhichVoted, int commentId)
         {
             using (whoaverseEntities db = new whoaverseEntities())
@@ -179,7 +179,7 @@ namespace Whoaverse.Utils
 
                 if (votingTracker != null)
                 {
-                    //delete vote history
+                    // delete vote history
                     db.Commentvotingtrackers.Remove(votingTracker);
                     db.SaveChanges();
                 }

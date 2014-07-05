@@ -20,7 +20,7 @@ namespace Whoaverse.Utils
 {
     public static class Karma
     {
-
+        // get link contribution points for a user
         public static int LinkKarma(string userName)
         {
             using (whoaverseEntities db = new whoaverseEntities())
@@ -47,6 +47,7 @@ namespace Whoaverse.Utils
             }
         }
 
+        // get comment contribution points for a user
         public static int CommentKarma(string userName)
         {
             using (whoaverseEntities db = new whoaverseEntities())

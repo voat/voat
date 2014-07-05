@@ -21,6 +21,7 @@ namespace Whoaverse.Utils
 {
     public static class Ranking
     {
+        // re-rank a submission
         public static double CalculateNewRank(double currentRank, double submissionAge, double score)
         {
             double newRank = ((score - 1) * 0.8) / ((submissionAge + 2) * 1.8);
