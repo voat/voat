@@ -43,7 +43,7 @@
                     </div>
 
                     <div class="form-group">
-                        @Html.Label("Custom stylesheet, max 4000 characters", htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.Label("Custom stylesheet, max 15000 characters", htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
                             @Html.TextAreaFor(model => model.Stylesheet, new { @class = "form-control", @rows="20"})
                             @Html.ValidationMessageFor(model => model.Stylesheet, "", new { @class = "text-danger" })
