@@ -25,7 +25,7 @@ namespace Whoaverse.Models.ViewModels
         [StringLength(500, ErrorMessage = "The description is limited to 500 characters.")]
         public string Description { get; set; }
 
-        [StringLength(4000, ErrorMessage = "The stylesheet is limited to 4000 characters.")]
+        [StringLength(15000, ErrorMessage = "The stylesheet is limited to 15000 characters.")]
         public string Stylesheet { get; set; }
 
         [Required(ErrorMessage = "Please enter a sidebar text.")]

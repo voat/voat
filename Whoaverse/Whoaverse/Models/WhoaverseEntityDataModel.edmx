@@ -141,7 +141,7 @@
           <Property Name="traffic_stats_public" Type="bit" />
           <Property Name="minutes_to_hide_comments" Type="int" />
           <Property Name="creation_date" Type="smalldatetime" Nullable="false" />
-          <Property Name="stylesheet" Type="nvarchar" MaxLength="4000" />
+          <Property Name="stylesheet" Type="nvarchar(max)" />
           <Property Name="subscribers" Type="int" />
           <Property Name="private_subverse" Type="bit" />
         </EntityType>
@@ -450,7 +450,7 @@
           <NavigationProperty Name="Defaultsubvers" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="Defaultsubvers" />
           <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="SubverseAdmins" Relationship="whoaverseModel.FK_SubverseAdmins_Subverses" FromRole="Subverse" ToRole="SubverseAdmin" />
-          <Property Name="stylesheet" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="stylesheet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="subscribers" Type="Int32" DefaultValue="1" />
           <Property Name="private_subverse" Type="Boolean" DefaultValue="false" />
         </EntityType>
