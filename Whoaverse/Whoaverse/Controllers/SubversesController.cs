@@ -337,8 +337,12 @@ namespace Whoaverse.Controllers
                                 {
                                     ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 15000 characters.");
                                     return View();
-                                } 
-                            }                                                       
+                                }
+                            }
+                            else
+                            {
+                                existingSubverse.stylesheet = updatedModel.stylesheet;
+                            }
 
                             // these properties are currently not implemented but they can be saved and edited for future use
                             existingSubverse.type = updatedModel.type;
