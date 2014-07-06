@@ -88,11 +88,17 @@
     font-family: verdana,arial,helvetica,sans-serif;
     font-size: 10px;
     font-weight: 700;
-    padding: 2px 6px;
     text-decoration: none;
     text-shadow: 0px 1px 0px #ffffff;
     text-align: center;
 }
+
+    .btn-whoaverse-paging a {
+        display: inline-block;
+        height: 16px;
+        width: 46px;
+        line-height: 16px;
+    }
 
     .btn-whoaverse-paging:hover {
         background-color: #f6f6f6;
