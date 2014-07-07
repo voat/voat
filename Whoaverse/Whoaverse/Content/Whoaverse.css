@@ -91,10 +91,14 @@
     text-decoration: none;
     text-shadow: 0px 1px 0px #ffffff;
     text-align: center;
-    padding: 2px;
+    padding: 2px 6px;
 }
 
-    .btn-whoaverse-paging a {
+    .pagination-container .btn-whoaverse-paging {
+        padding: 0px;
+    }
+
+    .pagination-container .btn-whoaverse-paging a {
         display: inline-block;
         height: 16px;
         width: 46px;
