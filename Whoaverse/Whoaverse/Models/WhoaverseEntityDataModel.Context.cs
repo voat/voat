@@ -39,5 +39,7 @@ namespace Whoaverse.Models
         public virtual DbSet<Userbadge> Userbadges { get; set; }
         public virtual DbSet<Banneddomain> Banneddomains { get; set; }
         public virtual DbSet<Privatemessage> Privatemessages { get; set; }
+        public virtual DbSet<Commentreplynotification> Commentreplynotifications { get; set; }
+        public virtual DbSet<Postreplynotification> Postreplynotifications { get; set; }
     }
 }

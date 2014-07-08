@@ -36,6 +36,8 @@ namespace Whoaverse.Controllers
         public ActionResult Inbox(int? page)
         {
             ViewBag.SelectedSubverse = "inbox";
+            ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
@@ -43,52 +45,121 @@ namespace Whoaverse.Controllers
             // get logged in username and fetch received messages
             try
             {
-                if (User.Identity.IsAuthenticated)
+                var privateMessages = db.Privatemessages
+                    .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(s => s.Timestamp)
+                    .ThenBy(s => s.Sender)
+                    .ToList().AsEnumerable();
+
+                if (privateMessages.Count() > 0)
                 {
-                    var privateMessages = db.Privatemessages
-                        .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
-                        .OrderByDescending(s => s.Timestamp)
-                        .ThenBy(s => s.Sender)
-                        .ToList().AsEnumerable();
+                    var unreadPrivateMessages = privateMessages
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
 
-                    if (privateMessages.Count() > 0)
+                    if (unreadPrivateMessages.Count > 0)
                     {
-                        var unreadPrivateMessages = privateMessages
-                            .Where(s => s.Status == true && s.Markedasunread == false).ToList();
-
-                        if (unreadPrivateMessages.Count > 0)
+                        // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
+                        foreach (var singleMessage in privateMessages)
                         {
-                            // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                            foreach (var singleMessage in privateMessages)
-                            {
-                                singleMessage.Status = false;
-                                db.SaveChanges();
-                            }
+                            singleMessage.Status = false;
+                            db.SaveChanges();
                         }
-
                     }
 
-                    return View(privateMessages.ToPagedList(pageNumber, pageSize));
                 }
+
+                return View(privateMessages.ToPagedList(pageNumber, pageSize));
             }
             catch (Exception)
             {
                 return RedirectToAction("HeavyLoad", "Home");
             }
-
-            // return inbox view
-            return View();
         }
 
         // GET: InboxCommentReplies
         [Authorize]
-        public ActionResult InboxCommentReplies()
+        public ActionResult InboxCommentReplies(int? page)
         {
-            ViewBag.SelectedSubverse = "inboxcommentreplies";
-            // get logged in username and fetch received comment replies
+            ViewBag.SelectedSubverse = "inbox";
 
-            // return comment replies inbox view
-            return View();
+            int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            // get logged in username and fetch received comment replies
+            try
+            {
+                var commentReplies = db.Commentreplynotifications
+                    .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(s => s.Timestamp)
+                    .ThenBy(s => s.Sender)
+                    .ToList().AsEnumerable();
+
+                if (commentReplies.Count() > 0)
+                {
+                    var unreadCommentReplies = commentReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    if (unreadCommentReplies.Count > 0)
+                    {
+                        // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
+                        foreach (var singleCommentReply in commentReplies)
+                        {
+                            singleCommentReply.Status = false;
+                            db.SaveChanges();
+                        }
+                    }
+                }
+
+                return View(commentReplies.ToPagedList(pageNumber, pageSize));
+
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Home");
+            }
+        }
+
+        // GET: InboxPostReplies
+        [Authorize]
+        public ActionResult InboxPostReplies(int? page)
+        {
+            ViewBag.SelectedSubverse = "inbox";
+
+            int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            // get logged in username and fetch received comment replies
+            try
+            {
+                var postReplies = db.Postreplynotifications
+                    .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(s => s.Timestamp)
+                    .ThenBy(s => s.Sender)
+                    .ToList().AsEnumerable();
+
+                if (postReplies.Count() > 0)
+                {
+                    var unreadPostReplies = postReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    if (unreadPostReplies.Count > 0)
+                    {
+                        // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
+                        foreach (var singlePostReply in postReplies)
+                        {
+                            singlePostReply.Status = false;
+                            db.SaveChanges();
+                        }
+                    }
+                }
+
+                return View(postReplies.ToPagedList(pageNumber, pageSize));
+
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Home");
+            }
         }
 
         // GET: InboxSubmissionReplies
@@ -204,7 +275,7 @@ namespace Whoaverse.Controllers
         }
 
         [Authorize]
-        [HttpPost]        
+        [HttpPost]
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessage(int privateMessageId)
         {

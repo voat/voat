@@ -162,7 +162,7 @@ namespace Whoaverse.Controllers
             return View("~/Views/Errors/Error_404.cshtml");
         }
 
-        // POST: submitcomment
+        // POST: submitcomment, adds a new root comment
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -181,6 +181,92 @@ namespace Whoaverse.Controllers
                 //TODO: check if user is shadowbanned and flag the comment
                 db.Comments.Add(comment);
                 await db.SaveChangesAsync();
+
+                // send comment reply notification to parent comment author if the comment is not a new root comment
+                if (comment.ParentId != null && comment.CommentContent != null)
+                {
+                    // find the parent comment and its author
+                    var parentComment = db.Comments.Find(comment.ParentId);
+                    if (parentComment != null)
+                    {
+                        // check if recipient exists
+                        if (Whoaverse.Utils.User.UserExists(parentComment.Name))
+                        {
+                            // send the message
+                            var commentReplyNotification = new Commentreplynotification();
+                            var commentMessage = db.Messages.Find(comment.MessageId);
+                            if (commentMessage != null)
+                            {
+                                commentReplyNotification.CommentId = comment.Id;
+                                commentReplyNotification.SubmissionId = commentMessage.Id;
+                                commentReplyNotification.Recipient = parentComment.Name;
+                                commentReplyNotification.Sender = User.Identity.Name;
+                                commentReplyNotification.Body = comment.CommentContent;
+                                commentReplyNotification.Subverse = commentMessage.Subverse;
+                                commentReplyNotification.Status = true;
+                                commentReplyNotification.Timestamp = System.DateTime.Now;
+
+                                // self = type 1, url = type 2
+                                if (parentComment.Message.Type == 1)
+                                {
+                                    commentReplyNotification.Subject = parentComment.Message.Title;
+                                }
+                                else
+                                {
+                                    commentReplyNotification.Subject = parentComment.Message.Linkdescription;
+                                }
+
+                                db.Commentreplynotifications.Add(commentReplyNotification);
+
+                                await db.SaveChangesAsync();
+                            }
+                            else
+                            {
+                                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                            }                            
+                        }
+                    }
+                }
+                else
+                {
+                    // comment reply is sent to a root comment which has no parent id, trigger post reply notification
+                    // check if recipient exists
+                    if (Whoaverse.Utils.User.UserExists(comment.Name))
+                    {
+                        // send the message
+                        var postReplyNotification = new Postreplynotification();
+                        var commentMessage = db.Messages.Find(comment.MessageId);
+                        if (commentMessage != null)
+                        {
+                            postReplyNotification.CommentId = comment.Id;
+                            postReplyNotification.SubmissionId = commentMessage.Id;
+                            postReplyNotification.Recipient = commentMessage.Name;
+                            postReplyNotification.Sender = User.Identity.Name;
+                            postReplyNotification.Body = comment.CommentContent;
+                            postReplyNotification.Subverse = commentMessage.Subverse;
+                            postReplyNotification.Status = true;
+                            postReplyNotification.Timestamp = System.DateTime.Now;
+
+                            // self = type 1, url = type 2
+                            if (commentMessage.Type == 1)
+                            {
+                                postReplyNotification.Subject = commentMessage.Title;
+                            }
+                            else
+                            {
+                                postReplyNotification.Subject = commentMessage.Linkdescription;
+                            }
+
+                            db.Postreplynotifications.Add(postReplyNotification);
+
+                            await db.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                        }                        
+                    }
+                }
 
                 string url = this.Request.UrlReferrer.AbsolutePath;
                 return Redirect(url);
@@ -533,16 +619,16 @@ namespace Whoaverse.Controllers
                 // show only submissions from subverses that user is subscribed to if user is logged in
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
-                {                    
+                {
                     var submissions = (from message in db.Messages
-                                           join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
-                                           join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
-                                           where message.Name != "deleted"
-                                           select message)
+                                       join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
+                                       join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
+                                       where message.Name != "deleted"
+                                       select message)
                                        .Distinct()
                                        .OrderByDescending(s => s.Rank).Take(1000).ToList();
 
-                        return View(submissions.ToPagedList(pageNumber, pageSize));
+                    return View(submissions.ToPagedList(pageNumber, pageSize));
                 }
                 else
                 {

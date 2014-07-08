@@ -329,7 +329,7 @@ namespace Whoaverse.Controllers
 
                             if (updatedModel.stylesheet != null)
                             {
-                                if (updatedModel.stylesheet.Length < 15000)
+                                if (updatedModel.stylesheet.Length < 15001)
                                 {
                                     existingSubverse.stylesheet = updatedModel.stylesheet;
                                 }

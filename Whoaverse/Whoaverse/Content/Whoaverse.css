@@ -94,6 +94,10 @@
     padding: 2px 6px;
 }
 
+.unreadNotification {
+    background-color: #ff9da4 !important;
+}
+
     .pagination-container .btn-whoaverse-paging {
         padding: 0px;
     }

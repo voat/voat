@@ -105,6 +105,20 @@ namespace Whoaverse
                 defaults: new { controller = "Messaging", action = "Sent" }
             );
 
+            // commentreplies
+            routes.MapRoute(
+                name: "CommentReplies",
+                url: "messaging/commentreplies",
+                defaults: new { controller = "Messaging", action = "InboxCommentReplies" }
+            );
+
+            // postreplies
+            routes.MapRoute(
+                name: "PostReplies",
+                url: "messaging/postreplies",
+                defaults: new { controller = "Messaging", action = "InboxPostReplies" }
+            );
+
             // deleteprivatemessage
             routes.MapRoute(
                 name: "DeletePrivateMessage",

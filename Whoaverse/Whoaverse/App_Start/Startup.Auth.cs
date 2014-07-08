@@ -14,8 +14,8 @@ namespace Whoaverse
             // Enable the application to use a cookie to store information for the signed in user
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                SlidingExpiration = true,
-                ExpireTimeSpan = System.TimeSpan.FromDays(30),
+                SlidingExpiration = true,                
+                ExpireTimeSpan = TimeSpan.FromDays(30.0),
                 CookieName = "WhoaverseLogin",
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login")                

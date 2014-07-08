@@ -275,12 +275,30 @@ namespace Whoaverse.Utils
                         .ThenBy(s => s.Sender)
                         .ToList();
 
-                if (privateMessages.Count() > 0)
+                var commentReplies = db.Commentreplynotifications
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                var postReplies = db.Postreplynotifications
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                if (privateMessages.Count() > 0 || commentReplies.Count() > 0 || postReplies.Count() > 0)
                 {
                     var unreadPrivateMessages = privateMessages
                         .Where(s => s.Status == true && s.Markedasunread == false).ToList();
 
-                    if (unreadPrivateMessages.Count > 0)
+                    var unreadCommentReplies = commentReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    var unreadPostReplies = postReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    if (unreadPrivateMessages.Count > 0 || unreadCommentReplies.Count > 0 || unreadPostReplies.Count > 0)
                     {
                         return true;
                     }
@@ -292,6 +310,71 @@ namespace Whoaverse.Utils
                 else
                 {
                     return false;
+                }
+            }
+        }
+
+        // check if given user has unread comment replies and return the count
+        public static int UnreadCommentRepliesCount(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var commentReplies = db.Commentreplynotifications
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                if (commentReplies.Count() > 0)
+                {
+
+                    var unreadCommentReplies = commentReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    if (unreadCommentReplies.Count > 0)
+                    {
+                        return unreadCommentReplies.Count;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        // check if given user has unread post replies and return the count
+        public static int UnreadPostRepliesCount(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var postReplies = db.Postreplynotifications
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                if (postReplies.Count() > 0)
+                {                   
+                    var unreadPostReplies = postReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    if (unreadPostReplies.Count > 0)
+                    {
+                        return unreadPostReplies.Count;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return 0;
                 }
             }
         }

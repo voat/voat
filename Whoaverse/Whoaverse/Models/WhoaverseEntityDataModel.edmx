@@ -23,6 +23,22 @@
           <Property Name="Added_by" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Added_on" Type="smalldatetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Commentreplynotifications">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CommentId" Type="int" Nullable="false" />
+          <Property Name="SubmissionId" Type="int" Nullable="false" />
+          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="Status" Type="bit" Nullable="false" />
+          <Property Name="Timestamp" Type="smalldatetime" Nullable="false" />
+          <Property Name="Markedasunread" Type="bit" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
+        </EntityType>
         <EntityType Name="Comments">
           <Key>
             <PropertyRef Name="Id" />
@@ -72,6 +88,22 @@
           <Property Name="Dislikes" Type="bigint" Nullable="false" />
           <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
           <Property Name="LastEditDate" Type="smalldatetime" />
+        </EntityType>
+        <EntityType Name="Postreplynotifications">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CommentId" Type="int" Nullable="false" />
+          <Property Name="SubmissionId" Type="int" Nullable="false" />
+          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="Status" Type="bit" Nullable="false" />
+          <Property Name="Timestamp" Type="smalldatetime" Nullable="false" />
+          <Property Name="Markedasunread" Type="bit" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="Privatemessages">
           <Key>
@@ -244,10 +276,12 @@
         <EntityContainer Name="whoaverseModelStoreContainer">
           <EntitySet Name="Badges" EntityType="Self.Badges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Banneddomains" EntityType="Self.Banneddomains" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Commentreplynotifications" EntityType="Self.Commentreplynotifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Postreplynotifications" EntityType="Self.Postreplynotifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Privatemessages" EntityType="Self.Privatemessages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Promotedsubmissions" EntityType="Self.Promotedsubmissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Savedsubmissions" EntityType="Self.Savedsubmissions" Schema="dbo" store:Type="Tables" />
@@ -423,6 +457,8 @@
           </AssociationSet>
           <EntitySet Name="Banneddomains" EntityType="whoaverseModel.Banneddomain" />
           <EntitySet Name="Privatemessages" EntityType="whoaverseModel.Privatemessage" />
+          <EntitySet Name="Commentreplynotifications" EntityType="whoaverseModel.Commentreplynotification" />
+          <EntitySet Name="Postreplynotifications" EntityType="whoaverseModel.Postreplynotification" />
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -592,6 +628,38 @@
           <Property Name="Body" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
           <Property Name="Status" Type="Boolean" Nullable="false" />
           <Property Name="Markedasunread" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Commentreplynotification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="SubmissionId" Type="Int32" Nullable="false" />
+          <Property Name="Recipient" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Sender" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Body" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Boolean" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Markedasunread" Type="Boolean" Nullable="false" />
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Subverse" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Postreplynotification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="SubmissionId" Type="Int32" Nullable="false" />
+          <Property Name="Recipient" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Sender" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Body" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Boolean" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Markedasunread" Type="Boolean" Nullable="false" />
+          <Property Name="Subverse" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -767,6 +835,40 @@
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="Recipient" ColumnName="Recipient" />
                 <ScalarProperty Name="Sender" ColumnName="Sender" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Commentreplynotifications">
+            <EntityTypeMapping TypeName="whoaverseModel.Commentreplynotification">
+              <MappingFragment StoreEntitySet="Commentreplynotifications">
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="Sender" ColumnName="Sender" />
+                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
+                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Postreplynotifications">
+            <EntityTypeMapping TypeName="whoaverseModel.Postreplynotification">
+              <MappingFragment StoreEntitySet="Postreplynotifications">
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Sender" ColumnName="Sender" />
+                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
+                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

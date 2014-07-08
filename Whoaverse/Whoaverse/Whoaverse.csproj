@@ -229,6 +229,9 @@
     <Compile Include="Models\Comment.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Commentreplynotification.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Commentvotingtracker.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -236,6 +239,9 @@
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Message.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Postreplynotification.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Privatemessage.cs">
@@ -490,6 +496,8 @@
     <Content Include="Views\Messaging\Compose.cshtml" />
     <Content Include="Views\Messaging\Sent.cshtml" />
     <Content Include="Views\Shared\_SubscriptionsHoverMenu.cshtml" />
+    <Content Include="Views\Messaging\InboxCommentReplies.cshtml" />
+    <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
