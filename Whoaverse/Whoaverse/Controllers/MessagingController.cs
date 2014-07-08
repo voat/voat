@@ -38,6 +38,7 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedSubverse = "inbox";
             ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
             ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPrivateMessages = Whoaverse.Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
@@ -56,6 +57,7 @@ namespace Whoaverse.Controllers
                     var unreadPrivateMessages = privateMessages
                         .Where(s => s.Status == true && s.Markedasunread == false).ToList();
 
+                    // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPrivateMessages.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
@@ -65,7 +67,6 @@ namespace Whoaverse.Controllers
                             db.SaveChanges();
                         }
                     }
-
                 }
 
                 return View(privateMessages.ToPagedList(pageNumber, pageSize));
@@ -81,6 +82,10 @@ namespace Whoaverse.Controllers
         public ActionResult InboxCommentReplies(int? page)
         {
             ViewBag.SelectedSubverse = "inbox";
+
+            ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPrivateMessages = Whoaverse.Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
@@ -99,6 +104,7 @@ namespace Whoaverse.Controllers
                     var unreadCommentReplies = commentReplies
                         .Where(s => s.Status == true && s.Markedasunread == false).ToList();
 
+                    // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadCommentReplies.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
@@ -125,6 +131,10 @@ namespace Whoaverse.Controllers
         {
             ViewBag.SelectedSubverse = "inbox";
 
+            ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPrivateMessages = Whoaverse.Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
@@ -142,6 +152,7 @@ namespace Whoaverse.Controllers
                     var unreadPostReplies = postReplies
                         .Where(s => s.Status == true && s.Markedasunread == false).ToList();
 
+                    // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPostReplies.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
@@ -160,18 +171,7 @@ namespace Whoaverse.Controllers
             {
                 return RedirectToAction("HeavyLoad", "Home");
             }
-        }
-
-        // GET: InboxSubmissionReplies
-        [Authorize]
-        public ActionResult InboxSubmissionReplies()
-        {
-            ViewBag.SelectedSubverse = "inboxsubmissionreplies";
-            // get logged in username and fetch received submission replies
-
-            // return submission replies inbox view
-            return View();
-        }
+        }        
 
         // GET: InboxUserMentions
         [Authorize]
