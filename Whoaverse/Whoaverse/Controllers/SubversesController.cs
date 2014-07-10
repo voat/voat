@@ -278,7 +278,7 @@ namespace Whoaverse.Controllers
                         }
                         else
                         {
-                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists.");
+                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
                             return View();
                         }
                     }
@@ -756,9 +756,27 @@ namespace Whoaverse.Controllers
                             // check if caller is subverse owner, if not, deny posting
                             if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
                             {
-                                db.SubverseAdmins.Add(subverseAdmin);
-                                db.SaveChanges();
-                                return RedirectToAction("SubverseModerators");
+                                // check that user is not already moderating given subverse
+                                var isAlreadyModerator = db.SubverseAdmins
+                                    .Where(a => a.Username == subverseAdmin.Username && a.SubverseName == subverseAdmin.SubverseName).FirstOrDefault();
+
+                                if (isAlreadyModerator == null)
+                                {
+                                    db.SubverseAdmins.Add(subverseAdmin);
+                                    db.SaveChanges();
+                                    return RedirectToAction("SubverseModerators");
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating this subverse.");
+                                    SubverseModeratorViewModel tmpModel = new SubverseModeratorViewModel();
+                                    tmpModel.Username = subverseAdmin.Username;
+                                    tmpModel.Power = subverseAdmin.Power;
+                                    ViewBag.SubverseModel = subverseModel;
+                                    ViewBag.SubverseName = subverseAdmin.SubverseName;
+                                    ViewBag.SelectedSubverse = string.Empty;
+                                    return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
+                                }                                
                             }
                             else
                             {
