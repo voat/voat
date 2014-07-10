@@ -321,7 +321,6 @@ namespace Whoaverse.Controllers
             if (commentToDelete != null)
             {
                 string commentSubverse = commentToDelete.Message.Subverse;
-                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == commentToDelete.Message.Subverse && n.Power <= 2).FirstOrDefault();
 
                 // delete comment if the comment author is currently logged in user
                 if (commentToDelete.Name == User.Identity.Name)
@@ -331,7 +330,7 @@ namespace Whoaverse.Controllers
                     await db.SaveChangesAsync();
                 }
                 // delete comment if delete request is issued by subverse moderator
-                else if (subverseOwner != null && subverseOwner.Username == User.Identity.Name)
+                else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
                 {
                     commentToDelete.Name = "deleted";
                     commentToDelete.CommentContent = "deleted by a moderator";
@@ -383,9 +382,7 @@ namespace Whoaverse.Controllers
             Message submissionToDelete = db.Messages.Find(submissionId);
 
             if (submissionToDelete != null)
-            {
-                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == submissionToDelete.Subverse && n.Power <= 2).FirstOrDefault();
-
+            {           
                 if (submissionToDelete.Name == User.Identity.Name)
                 {
                     submissionToDelete.Name = "deleted";
@@ -402,7 +399,7 @@ namespace Whoaverse.Controllers
                     await db.SaveChangesAsync();
                 }
                 // delete submission if delete request is issued by subverse moderator
-                else if (submissionToDelete != null && subverseOwner.Username == User.Identity.Name || submissionToDelete != null && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
+                else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
                 {
                     submissionToDelete.Name = "deleted";
 
@@ -417,7 +414,6 @@ namespace Whoaverse.Controllers
 
                     await db.SaveChangesAsync();
                 }
-
             }
 
             string url = this.Request.UrlReferrer.AbsolutePath;
