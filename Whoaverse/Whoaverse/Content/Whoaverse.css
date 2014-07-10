@@ -234,6 +234,10 @@
     width: 40%;
 }
 
+.commenttextarea:focus{
+    border: 1px solid gray;
+}
+
 .ikp {
     cursor: help;
     border-bottom: 1px dotted gray;
@@ -279,6 +283,52 @@
     border-radius: 4px;
     resize: horizontal;
     min-width: 40px;
+}
+
+#header {
+    border-bottom: 1px solid #5f99cf;
+    position: relative;    
+    background-image: url('../Graphics/whoaverse-bg.jpg');
+    height: 150px !important;
+    z-index: 99;
+}
+
+#header-img {
+    margin-top: 2px;
+    margin-right: 5px;
+}
+
+    #header-img.default-header {
+        text-indent: -9999px;
+        background-image: url(/Graphics/WVSprite.png);
+        background-position: 0px -313px;
+        background-repeat: no-repeat;
+        height: 40px;
+        width: 120px;
+        display: inline-block;
+        vertical-align: bottom;
+        margin-bottom: 3px;
+    }
+
+#header-top {
+    position: absolute;
+    right: 5px;
+}
+
+#header-bottom-left {
+    font-size: larger;
+    margin-top: 89px;
+    margin-left: 20px;
+}
+
+#header-bottom-right {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(155, 204, 255, 1);
+    padding: 4px;
+    line-height: 12px;
+    border-top-left-radius: 7px;
 }
 
 .promoted {

@@ -13,6 +13,8 @@
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
 
+    Whoaverse.Models.LoginViewModel loginViewModel = new Whoaverse.Models.LoginViewModel();
+
     string routeController = (string)ViewContext.RouteData.Values["controller"];
     string routeAction = (string)ViewContext.RouteData.Values["action"];
     string routeId = (string)ViewContext.RouteData.Values["id"];
@@ -151,7 +153,7 @@
                 <ul class="tabmenu ">
                     <li class="selected"><a href="~/messaging/inbox">Inbox</a></li>
                     <li class="disabled"><a href="~/messaging/sent">Sent</a></li>
-                    <li class="disabled"><a href="~/messaging/compose">Compose</a></li>                    
+                    <li class="disabled"><a href="~/messaging/compose">Compose</a></li>
                 </ul>
             }
             else if (selectedSubverse.Equals("sent"))
@@ -225,9 +227,7 @@
             }
 
         </div>
-
         @Html.Partial("_LoginPartial")
-
     </div>
 
     <!-- Must be logged in Modal -->
@@ -239,21 +239,21 @@
                     <h4 class="modal-title" id="myModalLabel">Login or register</h4>
                 </div>
                 <div class="modal-body">
-                    You can login or register by clicking the buttons below.
+                    You can login if you already have an account or register by clicking the button below.
                     Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
+                    <div>
+                        @if (routeController == "Home" && routeAction == "Comments" && routeId != null)
+                        {
+                            @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId } }) } })
+                        }
+                        else
+                        {
+                            @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl(ViewContext.RouteData.Values) } })                            
+                        }
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <a class="btn-whoaverse-medium" href="~/account/register" role="button">Register</a>
-
-                    @if (routeController == "Home" && routeAction == "Comments" && routeId != null)
-                    {
-                        <a class="btn-whoaverse-medium" href="~/account/login?returnurl=@Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId} })" role="button">Log in</a>
-                    }
-                    else
-                    {
-                        <a class="btn-whoaverse-medium" href="~/account/login?returnurl=@Url.RouteUrl(ViewContext.RouteData.Values)" role="button">Log in</a>
-                    }
-
+                    <b>@Html.ActionLink("Register", "Register")</b> if you don't have an account. You know you want to ;)
                 </div>
             </div>
         </div>
