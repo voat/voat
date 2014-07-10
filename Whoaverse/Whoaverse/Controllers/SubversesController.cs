@@ -625,20 +625,41 @@ namespace Whoaverse.Controllers
 
         }
 
+        // fetch a random subbverse with x subscribers and x submissions
         public ActionResult Random()
         {
             try
             {
                 // fetch a random subverse with minimum number of subscribers
-                var qry = from row in db.Subverses
-                          .Where(s => s.subscribers > 30)
-                          select row;
+                var subverse = from subverses in db.Subverses
+                          .Where(s => s.subscribers > 10 && s.name != "all")
+                               select subverses;
 
-                int count = qry.Count(); // 1st round-trip
-                int index = new Random().Next(count);
+                int submissionCount = 0;
+                Subverse randomSubverse;
 
-                // example subverse to show: pics
-                Subverse randomSubverse = qry.OrderBy(s => s.name).Skip(index).FirstOrDefault(); // 2nd round-trip            
+                do
+                {                    
+                    int count = subverse.Count(); // 1st round-trip
+                    int index = new Random().Next(count);
+
+                    randomSubverse = subverse.OrderBy(s => s.name).Skip(index).FirstOrDefault(); // 2nd round-trip
+
+                    var submissions = db.Messages
+                            .Where(x => x.Subverse == randomSubverse.name && x.Name != "deleted")
+                            .OrderByDescending(s => s.Rank)
+                            .Take(50)
+                            .ToList();                    
+
+                    if (submissions != null)
+                    {
+                        if (submissions.Count > 9)
+                        {
+                            submissionCount = submissions.Count;
+                        }
+                    }
+  
+                } while (submissionCount == 0);              
 
                 return RedirectToAction("Index", "Subverses", new { subversetoshow = randomSubverse.name });
             }
