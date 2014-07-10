@@ -18,5 +18,6 @@ namespace Whoaverse.Models
         public string Hostname { get; set; }
         public string Added_by { get; set; }
         public System.DateTime Added_on { get; set; }
+        public string Reason { get; set; }
     }
 }

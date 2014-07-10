@@ -22,6 +22,7 @@
           <Property Name="Hostname" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Added_by" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Added_on" Type="smalldatetime" Nullable="false" />
+          <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
         </EntityType>
         <EntityType Name="Commentreplynotifications">
           <Key>
@@ -615,6 +616,7 @@
           <Property Name="Hostname" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Added_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Added_on" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Reason" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Privatemessage">
           <Key>
@@ -818,6 +820,7 @@
           <EntitySetMapping Name="Banneddomains">
             <EntityTypeMapping TypeName="whoaverseModel.Banneddomain">
               <MappingFragment StoreEntitySet="Banneddomains">
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
                 <ScalarProperty Name="Added_on" ColumnName="Added_on" />
                 <ScalarProperty Name="Added_by" ColumnName="Added_by" />
                 <ScalarProperty Name="Hostname" ColumnName="Hostname" />

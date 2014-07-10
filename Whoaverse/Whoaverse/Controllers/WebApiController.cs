@@ -22,7 +22,7 @@ namespace Whoaverse.Controllers
     public class WebApiController : ApiController
     {
         private whoaverseEntities db = new whoaverseEntities();
-        
+
         // GET api/defaultsubverses
         [System.Web.Http.HttpGet]
         public IEnumerable<string> DefaultSubverses()
@@ -33,6 +33,21 @@ namespace Whoaverse.Controllers
             foreach (var item in listOfDefaultSubverses)
             {
                 tmpList.Add(item.name);
+            }
+
+            return tmpList;
+        }
+
+        // GET api/bannedhostnames
+        [System.Web.Http.HttpGet]
+        public IEnumerable<string> BannedHostnames()
+        {
+            var bannedHostnames = db.Banneddomains.OrderBy(s => s.Added_on).ToList();
+
+            List<string> tmpList = new List<string>();
+            foreach (var item in bannedHostnames)
+            {
+                tmpList.Add("Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by);
             }
 
             return tmpList;

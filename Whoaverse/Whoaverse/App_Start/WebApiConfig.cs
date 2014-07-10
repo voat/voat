@@ -12,6 +12,9 @@ namespace Whoaverse
         {
             configuration.Routes.MapHttpRoute("API list default subverses", "api/defaultsubverses",
                 new { controller = "WebApi", action = "DefaultSubverses" });
+
+            configuration.Routes.MapHttpRoute("API list banned hostnames", "api/bannedhostnames",
+                new { controller = "WebApi", action = "BannedHostnames" });
         }
     }
 }

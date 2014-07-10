@@ -455,6 +455,13 @@ namespace Whoaverse.Controllers
                         {
                             string domain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(message.MessageContent);
 
+                            // check if hostname is banned before accepting submission
+                            if (Utils.BanningUtility.IsHostnameBanned(domain))
+                            {
+                                ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
+                                return View();
+                            }
+
                             // if domain is youtube, try generating a thumbnail for the video
                             if (domain == "youtube.com")
                             {
