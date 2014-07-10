@@ -94,6 +94,10 @@
     padding: 2px 6px;
 }
 
+.text-danger:hover{
+    color:white;
+}
+
 .unreadNotification {
     background-color: #ff9da4 !important;
 }

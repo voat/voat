@@ -745,16 +745,51 @@ namespace Whoaverse.Controllers
 
                 if (subverseModel != null)
                 {
-                    // check if caller is subverse owner, if not, deny posting
-                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
+                    // check if the user being added is not already a moderator of 10 subverses
+                    var currentlyModerating = db.SubverseAdmins
+                        .Where(a => a.Username == subverseAdmin.Username).ToList();
+
+                    if (currentlyModerating != null)
                     {
-                        db.SubverseAdmins.Add(subverseAdmin);
-                        db.SaveChanges();
-                        return RedirectToAction("SubverseModerators");
+                        if (currentlyModerating.Count < 11)
+                        {
+                            // check if caller is subverse owner, if not, deny posting
+                            if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
+                            {
+                                db.SubverseAdmins.Add(subverseAdmin);
+                                db.SaveChanges();
+                                return RedirectToAction("SubverseModerators");
+                            }
+                            else
+                            {
+                                return new HttpUnauthorizedResult();
+                            }
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating a maximum of 10 subverses.");
+                            SubverseModeratorViewModel tmpModel = new SubverseModeratorViewModel();
+                            tmpModel.Username = subverseAdmin.Username;
+                            tmpModel.Power = subverseAdmin.Power;
+                            ViewBag.SubverseModel = subverseModel;
+                            ViewBag.SubverseName = subverseAdmin.SubverseName;
+                            ViewBag.SelectedSubverse = string.Empty;
+                            return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
+                        }
                     }
                     else
                     {
-                        return new HttpUnauthorizedResult();
+                        // check if caller is subverse owner, if not, deny posting
+                        if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
+                        {
+                            db.SubverseAdmins.Add(subverseAdmin);
+                            db.SaveChanges();
+                            return RedirectToAction("SubverseModerators");
+                        }
+                        else
+                        {
+                            return new HttpUnauthorizedResult();
+                        }
                     }
                 }
                 else

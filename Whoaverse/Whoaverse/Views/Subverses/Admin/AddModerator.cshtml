@@ -20,7 +20,7 @@
 
                 <div class="form-horizontal">
                     <hr />
-
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                     @Html.Hidden("SubverseName", subverseName)
 
                     <div class="form-group">
