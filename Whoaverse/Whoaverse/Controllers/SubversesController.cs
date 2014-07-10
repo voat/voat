@@ -138,55 +138,64 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent")] Message message)
         {
-            if (ModelState.IsValid)
+            if (User.Identity.IsAuthenticated)
             {
-                var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
-                if (targetSubverse != null)
+                if (ModelState.IsValid)
                 {
+                    var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
+                    if (targetSubverse != null)
+                    {
 
-                    // restrict incoming submissions to announcements subverse (temporary hard-code solution
-                    // TODO: add global administrators table with different access levels
-                    if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
-                    {
-                        message.Subverse = targetSubverse.name;
-                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                        message.Date = System.DateTime.Now;
-                        db.Messages.Add(message);
+                        // restrict incoming submissions to announcements subverse (temporary hard-code solution
+                        // TODO: add global administrators table with different access levels
+                        if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
+                        {
+                            message.Subverse = targetSubverse.name;
+                            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                            message.Date = System.DateTime.Now;
+                            message.Name = User.Identity.Name;
+                            db.Messages.Add(message);
+                            await db.SaveChangesAsync();
+                        }
+                        else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
+                        {
+                            message.Subverse = targetSubverse.name;
+                            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                            message.Date = System.DateTime.Now;
+                            message.Name = User.Identity.Name;
+                            db.Messages.Add(message);
+                            await db.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
+                            return View();
+                        }
+
+                        //get newly generated message ID and execute ranking and self upvoting                
+                        Votingtracker tmpVotingTracker = new Votingtracker();
+                        tmpVotingTracker.MessageId = message.Id;
+                        tmpVotingTracker.UserName = message.Name;
+                        tmpVotingTracker.VoteStatus = 1;
+                        db.Votingtrackers.Add(tmpVotingTracker);
                         await db.SaveChangesAsync();
-                    }
-                    else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
-                    {
-                        message.Subverse = targetSubverse.name;
-                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                        message.Date = System.DateTime.Now;
-                        db.Messages.Add(message);
-                        await db.SaveChangesAsync();
+
+                        return RedirectToAction("Index");
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
-                        return View();
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                     }
-
-                    //get newly generated message ID and execute ranking and self upvoting                
-                    Votingtracker tmpVotingTracker = new Votingtracker();
-                    tmpVotingTracker.MessageId = message.Id;
-                    tmpVotingTracker.UserName = message.Name;
-                    tmpVotingTracker.VoteStatus = 1;
-                    db.Votingtrackers.Add(tmpVotingTracker);
-                    await db.SaveChangesAsync();
-
-                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    ModelState.AddModelError(string.Empty, "Sorry, you are doing that too fast. Please try again in a few minutes.");
+                    return View(message);
                 }
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Sorry, you are doing that too fast. Please try again in a few minutes.");
-                return View(message);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
@@ -197,53 +206,96 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateSubverse([Bind(Include = "Name, Title, Description, Type, Sidebar, Creation_date, Owner")] AddSubverse subverseTmpModel)
         {
-            try
+            if (User.Identity.IsAuthenticated)
             {
-                if (ModelState.IsValid)
+                try
                 {
-                    Subverse subverse = new Subverse();
-                    subverse.name = subverseTmpModel.Name;
-                    subverse.title = "/v/" + subverseTmpModel.Name;
-                    subverse.description = subverseTmpModel.Description;
-                    subverse.type = subverseTmpModel.Type;
-                    subverse.sidebar = subverseTmpModel.Sidebar;
-                    subverse.creation_date = System.DateTime.Now;
-
-                    //check if subverse exists before attempting to create it
-                    if (db.Subverses.Find(subverse.name) == null)
+                    if (ModelState.IsValid)
                     {
-                        db.Subverses.Add(subverse);
-                        await db.SaveChangesAsync();
+                        Subverse subverse = new Subverse();
+                        subverse.name = subverseTmpModel.Name;
+                        subverse.title = "/v/" + subverseTmpModel.Name;
+                        subverse.description = subverseTmpModel.Description;
+                        subverse.type = subverseTmpModel.Type;
+                        subverse.sidebar = subverseTmpModel.Sidebar;
+                        subverse.creation_date = System.DateTime.Now;
 
-                        //register user as the owner of the newly created subverse
-                        SubverseAdmin tmpSubverseAdmin = new SubverseAdmin();                       
-                        tmpSubverseAdmin.SubverseName = subverse.name;
-                        tmpSubverseAdmin.Username = subverseTmpModel.Owner;
-                        tmpSubverseAdmin.Power = 1;
-                        db.SubverseAdmins.Add(tmpSubverseAdmin);
-                        await db.SaveChangesAsync();
+                        // check if subverse exists before attempting to create it
+                        if (db.Subverses.Find(subverse.name) == null)
+                        {
+                            // only allow users with less than 10 subverses to create a subverse
+                            var amountOfOwnedSubverses = db.SubverseAdmins
+                                .Where(s => s.Username == User.Identity.Name && s.Power == 1)
+                                .ToList();
 
-                        //subscribe user to the newly created subverse
-                        Whoaverse.Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
+                            if (amountOfOwnedSubverses != null)
+                            {
+                                if (amountOfOwnedSubverses.Count < 11)
+                                {
+                                    db.Subverses.Add(subverse);
+                                    await db.SaveChangesAsync();
 
-                        //go to newly created Subverse
-                        return RedirectToAction("Index", "Subverses", new { subversetoshow = subverse.name });
+                                    //register user as the owner of the newly created subverse
+                                    SubverseAdmin tmpSubverseAdmin = new SubverseAdmin();
+                                    tmpSubverseAdmin.SubverseName = subverse.name;
+                                    tmpSubverseAdmin.Username = User.Identity.Name;
+                                    tmpSubverseAdmin.Power = 1;
+                                    db.SubverseAdmins.Add(tmpSubverseAdmin);
+                                    await db.SaveChangesAsync();
+
+                                    //subscribe user to the newly created subverse
+                                    Whoaverse.Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
+
+                                    //go to newly created Subverse
+                                    return RedirectToAction("Index", "Subverses", new { subversetoshow = subverse.name });
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError(string.Empty, "Sorry, you can not own more than 10 subverses.");
+                                    return View();
+                                }
+                            }
+                            else
+                            {
+                                db.Subverses.Add(subverse);
+                                await db.SaveChangesAsync();
+
+                                //register user as the owner of the newly created subverse
+                                SubverseAdmin tmpSubverseAdmin = new SubverseAdmin();
+                                tmpSubverseAdmin.SubverseName = subverse.name;
+                                tmpSubverseAdmin.Username = User.Identity.Name;
+                                tmpSubverseAdmin.Power = 1;
+                                db.SubverseAdmins.Add(tmpSubverseAdmin);
+                                await db.SaveChangesAsync();
+
+                                //subscribe user to the newly created subverse
+                                Whoaverse.Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
+
+                                //go to newly created Subverse
+                                return RedirectToAction("Index", "Subverses", new { subversetoshow = subverse.name });
+                            }
+
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists.");
+                            return View();
+                        }
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists.");
                         return View();
                     }
                 }
-                else
+                catch (Exception)
                 {
+                    ModelState.AddModelError(string.Empty, "Something bad happened.");
                     return View();
                 }
             }
-            catch (Exception)
+            else
             {
-                ModelState.AddModelError(string.Empty, "Something bad happened.");
-                return View();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
@@ -286,7 +338,7 @@ namespace Whoaverse.Controllers
                 viewModel.Label_sumit_new_selfpost = subverse.label_sumit_new_selfpost;
                 viewModel.Rated_adult = subverse.rated_adult;
                 viewModel.Private_subverse = subverse.private_subverse;
-                
+
                 ViewBag.SelectedSubverse = string.Empty;
                 ViewBag.SubverseName = subverse.name;
                 return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", viewModel);
@@ -579,7 +631,7 @@ namespace Whoaverse.Controllers
             {
                 // fetch a random subverse with minimum number of subscribers
                 var qry = from row in db.Subverses
-                          .Where(s => s.subscribers > 10)
+                          .Where(s => s.subscribers > 30)
                           select row;
 
                 int count = qry.Count(); // 1st round-trip
@@ -642,7 +694,7 @@ namespace Whoaverse.Controllers
             {
                 // check if caller is subverse owner, if not, deny listing
                 if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
-                {                   
+                {
                     ViewBag.SubverseModel = subverseModel;
                     ViewBag.SubverseName = subversetoshow;
                     ViewBag.SelectedSubverse = string.Empty;
@@ -674,7 +726,7 @@ namespace Whoaverse.Controllers
                 {
                     // check if caller is subverse owner, if not, deny posting
                     if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
-                    {                        
+                    {
                         db.SubverseAdmins.Add(subverseAdmin);
                         db.SaveChanges();
                         return RedirectToAction("SubverseModerators");
@@ -711,7 +763,7 @@ namespace Whoaverse.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.SelectedSubverse = string.Empty; 
+            ViewBag.SelectedSubverse = string.Empty;
             return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subverseAdmin);
         }
 
