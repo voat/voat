@@ -145,7 +145,8 @@ namespace Whoaverse.Controllers
                     if (result.Succeeded)
                     {
                         await SignInAsync(user, isPersistent: false);
-                        return RedirectToAction("Index", "Home");
+                        // redirect new users to Welcome actionresult
+                        return RedirectToAction("Welcome", "Home");
                     }
                     else
                     {

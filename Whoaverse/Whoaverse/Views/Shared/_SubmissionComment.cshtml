@@ -202,9 +202,6 @@
                 else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentModel.Message.Subverse))
                 {
                     <li>
-                        <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @commentModel.MessageId)">edit</a>
-                    </li>
-                    <li>
                         <form class="toggle del-button " action="#" method="get">
                             <input class="active" name="executed" value="deleted" type="hidden">
                             <span class="option main active">
@@ -218,9 +215,6 @@
                 }
                 else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, commentModel.Message.Subverse))
                 {
-                    <li>
-                        <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @commentModel.MessageId)">edit</a>
-                    </li>
                     <li>
                         <form class="toggle del-button " action="#" method="get">
                             <input class="active" name="executed" value="deleted" type="hidden">

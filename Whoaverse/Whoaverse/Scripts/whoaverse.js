@@ -246,35 +246,40 @@ function reply(parentcommentid, messageid) {
 //post comment reply form through ajax
 function postCommentReplyAjax(senderButton) {
     var $form = $(senderButton).parents('form');
+    $form.find("#errorMessage").toggle(false);
 
-    $form.find("#submitbutton").val("Please wait...");
-    $form.find("#submitbutton").prop('disabled', true);
+    if ($form.find("#CommentContent").val().length > 0) {
+        $form.find("#submitbutton").val("Please wait...");
+        $form.find("#submitbutton").prop('disabled', true);
 
-    $.ajax({
-        type: "POST",
-        url: $form.attr('action'),
-        data: $form.serialize(),
-        error: function (xhr, status, error) {
-            //do something about the error
-        },
+        $.ajax({
+            type: "POST",
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            error: function (xhr, status, error) {
+                //do something about the error
+            },
 
-        success: function (response) {
+            success: function (response) {
 
-            //reload page while keeping scroll position?            
-            var parentId = $form.find("#ParentId").val();
+                //reload page while keeping scroll position?            
+                var parentId = $form.find("#ParentId").val();
 
-            //remove reply form
-            //removereplyform(parentId);
+                //remove reply form
+                //removereplyform(parentId);
 
-            //TODO: load newly posted comment or just append it without page reload (best solution)           
+                //TODO: load newly posted comment or just append it without page reload (best solution)           
 
-            //temporary replacement: reload entire page
-            $('body').load($(location).attr('href') + "#" + parentId);
+                //temporary replacement: reload entire page
+                $('body').load($(location).attr('href') + "#" + parentId);
 
-        }
-    });
+            }
+        });
 
-    return false;
+        return false;
+    } else {
+        $form.find("#errorMessage").toggle(true);
+    }    
 }
 
 //append a comment edit form to calling area while preventing multiple appends

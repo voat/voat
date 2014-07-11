@@ -654,13 +654,13 @@ namespace Whoaverse.Controllers
 
         public ActionResult @New(int? page, string sortingmode)
         {
-            //sortingmode: new, contraversial, hot, etc
+            // sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            //setup a cookie to find first time visitors and display welcome banner
+            // setup a cookie to find first time visitors and display welcome banner
             string cookieName = "NotFirstTime";
             if (this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
             {
@@ -672,6 +672,7 @@ namespace Whoaverse.Controllers
                 // add a cookie for first time visitors
                 HttpCookie cookie = new HttpCookie(cookieName);
                 cookie.Value = "whoaverse first time visitor identifier";
+                cookie.Expires = DateTime.Now.AddMonths(6);
                 this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
                 ViewBag.FirstTimeVisitor = true;
             }
@@ -694,7 +695,7 @@ namespace Whoaverse.Controllers
                 }
                 else
                 {
-                    //get only submissions from default subverses, sort by date
+                    // get only submissions from default subverses, sort by date
                     var submissions = (from message in db.Messages
                                        join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                        where message.Name != "deleted"
@@ -736,6 +737,12 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.Message = "Whoaverse CLA";
             return View("~/Views/Legal/Cla.cshtml");
+        }
+
+        public ActionResult Welcome()
+        {
+            ViewBag.SelectedSubverse = string.Empty;
+            return View("~/Views/Welcome/Welcome.cshtml");
         }
 
         public ActionResult Help(string pagetoshow)
