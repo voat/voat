@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 
@@ -10,6 +11,9 @@ namespace Whoaverse
     {
         public static void Register(HttpConfiguration configuration)
         {
+            // set default API response to JSON
+            configuration.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
+
             configuration.Routes.MapHttpRoute("API list default subverses", "api/defaultsubverses",
                 new { controller = "WebApi", action = "DefaultSubverses" });
 
