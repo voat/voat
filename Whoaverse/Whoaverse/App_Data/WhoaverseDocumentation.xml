@@ -507,6 +507,18 @@
             </summary>
             <param name="subverse">The name of the subverse for which to fetch submissions.</param>
         </member>
+        <member name="M:Whoaverse.Controllers.WebApiController.SingleSubmission(System.Int32)">
+            <summary>
+             This API returns a single submission for a given submission ID.
+            </summary>
+            <param name="id">The ID of submission to fetch.</param>
+        </member>
+        <member name="M:Whoaverse.Controllers.WebApiController.SingleComment(System.Int32)">
+            <summary>
+             This API returns a single comment for a given comment ID.
+            </summary>
+            <param name="id">The ID of comment to fetch.</param>
+        </member>
         <member name="M:Whoaverse.Utils.ThumbGenerator.Save(System.Drawing.Bitmap,System.Int32,System.Int32,System.Int32,System.String)">
             <summary>
             Method to resize, convert and save the image.

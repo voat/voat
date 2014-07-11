@@ -10,6 +10,8 @@ namespace Whoaverse
             // set default API response to JSON
             configuration.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 
+            configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Error;
+
             // configure routes
             configuration.Routes.MapHttpRoute("API list default subverses", "api/defaultsubverses",
                 new { controller = "WebApi", action = "DefaultSubverses" });
@@ -25,6 +27,12 @@ namespace Whoaverse
 
             configuration.Routes.MapHttpRoute("API frontpage for given subverse", "api/subversefrontpage",
                 new { controller = "WebApi", action = "SubverseFrontpage" });
+
+            configuration.Routes.MapHttpRoute("API details for single submission", "api/singlesubmission",
+                new { controller = "WebApi", action = "SingleSubmission" });
+
+            configuration.Routes.MapHttpRoute("API details for single comment", "api/singlecomment",
+                new { controller = "WebApi", action = "SingleComment" });
         }
     }
 }

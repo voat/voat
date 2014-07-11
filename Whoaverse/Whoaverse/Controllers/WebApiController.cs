@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web.Http;
 using Whoaverse.Models;
 
@@ -129,6 +130,11 @@ namespace Whoaverse.Controllers
                                .Distinct()
                                .OrderByDescending(s => s.Rank).Take(100).ToList();
 
+            if (frontpageSubmissions == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
             List<string> resultList = new List<string>();
             foreach (var item in frontpageSubmissions)
             {
@@ -144,5 +150,64 @@ namespace Whoaverse.Controllers
 
             return resultList;
         }
+
+        // GET api/singlesubmission
+        /// <summary>
+        ///  This API returns a single submission for a given submission ID.
+        /// </summary>
+        /// <param name="id">The ID of submission to fetch.</param>
+        [System.Web.Http.HttpGet]
+        public Message SingleSubmission(int id)
+        {            
+            Message submission = db.Messages.Find(id);
+            if (submission == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            Message tmpResult = new Message();
+            tmpResult.Id = submission.Id;
+            tmpResult.Date = submission.Date;
+            tmpResult.LastEditDate = submission.LastEditDate;
+            tmpResult.Likes = submission.Likes;
+            tmpResult.Dislikes = submission.Dislikes;
+            tmpResult.Rank = submission.Rank;
+            tmpResult.Thumbnail = submission.Thumbnail;
+            tmpResult.Subverse = submission.Subverse;
+            tmpResult.Type = submission.Type;
+            tmpResult.Title = submission.Title;
+            tmpResult.Linkdescription = submission.Linkdescription;
+            tmpResult.MessageContent = submission.MessageContent;
+            return tmpResult;           
+        }
+
+        // GET api/singlecomment
+        /// <summary>
+        ///  This API returns a single comment for a given comment ID.
+        /// </summary>
+        /// <param name="id">The ID of comment to fetch.</param>
+        [System.Web.Http.HttpGet]
+        public Comment SingleComment(int id)
+        {
+            Comment comment = db.Comments.Find(id);
+            if (comment == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            Comment tmpResult = new Comment();
+            tmpResult.Id = comment.Id;
+            tmpResult.Date = comment.Date;
+            tmpResult.LastEditDate = comment.LastEditDate;
+            tmpResult.Likes = comment.Likes;
+            tmpResult.Dislikes = comment.Dislikes;
+            tmpResult.CommentContent = comment.CommentContent;
+            tmpResult.ParentId = comment.ParentId;
+            tmpResult.MessageId = comment.MessageId;
+            tmpResult.Name = comment.Name;
+
+            return tmpResult;
+        }
+        
     }
 }
