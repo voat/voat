@@ -184,6 +184,10 @@
     background-color: rgba(134, 134, 134, 1);
 }
 
+.alert-warning {    
+	background-color: rgba(255, 56, 56, 1);
+}
+
 .alert {
     border-width: 0px 0px 0px;
     color: white;
