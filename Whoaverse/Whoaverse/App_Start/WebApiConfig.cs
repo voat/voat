@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Web;
+﻿using System.Net.Http.Headers;
 using System.Web.Http;
 
 namespace Whoaverse
@@ -25,7 +21,10 @@ namespace Whoaverse
                 new { controller = "WebApi", action = "Top200Subverses" });
 
             configuration.Routes.MapHttpRoute("API frontpage", "api/frontpage",
-                new { controller = "WebApi", action = "Frontpage" });  
+                new { controller = "WebApi", action = "Frontpage" });
+
+            configuration.Routes.MapHttpRoute("API frontpage for given subverse", "api/subversefrontpage",
+                new { controller = "WebApi", action = "SubverseFrontpage" });
         }
     }
 }

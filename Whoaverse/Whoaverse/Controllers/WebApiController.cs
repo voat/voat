@@ -24,6 +24,9 @@ namespace Whoaverse.Controllers
         private whoaverseEntities db = new whoaverseEntities();
 
         // GET api/defaultsubverses
+        /// <summary>
+        ///  This API returns a list of default subverses shown to guests.
+        /// </summary>
         [System.Web.Http.HttpGet]
         public IEnumerable<string> DefaultSubverses()
         {
@@ -39,6 +42,9 @@ namespace Whoaverse.Controllers
         }
 
         // GET api/bannedhostnames
+        /// <summary>
+        ///  This API returns a list of banned hostnames for link type submissions.
+        /// </summary>
         [System.Web.Http.HttpGet]
         public IEnumerable<string> BannedHostnames()
         {
@@ -54,6 +60,9 @@ namespace Whoaverse.Controllers
         }
 
         // GET api/top200subverses
+        /// <summary>
+        ///  This API returns top 200 subverses ordered by subscriber count.
+        /// </summary>
         [System.Web.Http.HttpGet]
         public IEnumerable<string> Top200Subverses()
         {
@@ -74,14 +83,49 @@ namespace Whoaverse.Controllers
         }
 
         // GET api/frontpage
+        /// <summary>
+        ///  This API returns 100 submissions which are currently shown on WhoaVerse frontpage.
+        /// </summary>
         [System.Web.Http.HttpGet]
         public IEnumerable<string> Frontpage()
         {
             //get only submissions from default subverses, order by rank
             var frontpageSubmissions = (from message in db.Messages
-                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                               where message.Name != "deleted"
-                               select message)
+                                        join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                        where message.Name != "deleted"
+                                        select message)
+                               .Distinct()
+                               .OrderByDescending(s => s.Rank).Take(100).ToList();
+
+            List<string> resultList = new List<string>();
+            foreach (var item in frontpageSubmissions)
+            {
+                resultList.Add(
+                    "Type: " + item.Type + "," +
+                    "Title: " + item.Title + "," +
+                    "Link description: " + item.Linkdescription + "," +
+                    "Subverse: " + item.Subverse + "," +
+                    "Date: " + item.Date + "," +
+                    "Comments: " + item.Comments.Count() + "," +
+                    "Author: " + item.Name
+                    );
+            }
+
+            return resultList;
+        }
+
+        // GET api/subversefrontpage
+        /// <summary>
+        ///  This API returns 100 submissions which are currently shown on frontpage of a given subverse.
+        /// </summary>
+        /// <param name="subverse">The name of the subverse for which to fetch submissions.</param>
+        [System.Web.Http.HttpGet]
+        public IEnumerable<string> SubverseFrontpage(string subverse)
+        {
+            //get only submissions from given subverses, order by rank
+            var frontpageSubmissions = (from message in db.Messages
+                                        where message.Name != "deleted" && message.Subverse == subverse
+                                        select message)
                                .Distinct()
                                .OrderByDescending(s => s.Rank).Take(100).ToList();
 

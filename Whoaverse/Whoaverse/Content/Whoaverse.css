@@ -181,6 +181,7 @@
 
 .alert-info {
     color: black;
+    background-color: rgba(134, 134, 134, 1);
 }
 
 .alert {
@@ -626,6 +627,7 @@ a:visited {
     margin-right: 5px;
     border: none;
     padding: 0 0 0;
+    border-radius: 0 0 0;
 }
 
     .thumbnail.nsfw {
