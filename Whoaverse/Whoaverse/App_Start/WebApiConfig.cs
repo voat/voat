@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Web.Http;
+using WebApiThrottle;
 
 namespace Whoaverse
 {
@@ -7,6 +8,17 @@ namespace Whoaverse
     {
         public static void Register(HttpConfiguration configuration)
         {
+            // configure throttling handler
+            configuration.MessageHandlers.Add(new ThrottlingHandler()
+            {
+                Policy = new ThrottlePolicy(perSecond: 1, perMinute: 20, perHour: 200, perDay: 1500, perWeek: 3000)
+                {
+                    IpThrottling = true,
+                    EndpointThrottling = true
+                },
+                Repository = new CacheRepository()
+            });
+
             // set default API response to JSON
             configuration.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 
