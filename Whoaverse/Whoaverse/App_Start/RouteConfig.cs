@@ -49,14 +49,21 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "Subverses" }
             );
 
-            // /subverses
+            // /subverses/subscribed
             routes.MapRoute(
                 name: "SubscribedSubverses",
                 url: "subverses/subscribed",
                 defaults: new { controller = "Subverses", action = "SubversesSubscribed" }
             );
 
-            // /new
+            // /subverses/adultcontent
+            routes.MapRoute(
+                name: "AdultContentWarning",
+                url: "subverses/adultcontent",
+                defaults: new { controller = "Subverses", action = "AdultContentWarning" }
+            );
+
+            // /subverses/new
             routes.MapRoute(
                 name: "SubversesNew",
                 url: "subverses/{sortingmode}",

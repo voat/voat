@@ -501,6 +501,7 @@
     <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
     <Content Include="Views\Account\_LoginModal.cshtml" />
     <Content Include="Views\Welcome\Welcome.cshtml" />
+    <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

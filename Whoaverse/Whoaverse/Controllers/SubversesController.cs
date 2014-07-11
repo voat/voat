@@ -19,6 +19,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Whoaverse.Models;
 using Whoaverse.Models.ViewModels;
@@ -459,7 +460,18 @@ namespace Whoaverse.Controllers
                     //check if subverse exists, if not, send to a page not found error
                     Subverse subverse = db.Subverses.Find(subversetoshow);
                     if (subverse != null)
-                    {
+                    {                        
+                        // check if subverse is rated adult, show a NSFW warning page before entering
+                        if (subverse.rated_adult == true)
+                        {
+                            // check if user wants to see NSFW content by reading NSFW cookie
+                            string cookieName = "NSFWEnabled";
+                            if (!this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                            {
+                                return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
+                            }
+                        }
+
                         var submissions = db.Messages
                             .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
                             .OrderByDescending(s => s.Rank)
@@ -584,6 +596,35 @@ namespace Whoaverse.Controllers
         {
             ViewBag.SelectedSubverse = "404";
             return View("~/Views/Errors/Subversenotfound.cshtml");
+        }
+
+        public ActionResult AdultContentWarning(string destination, bool? nsfwok)
+        {
+            ViewBag.SelectedSubverse = String.Empty;
+            
+            if (destination != null)
+            {
+                if (nsfwok != null && nsfwok == true)
+                {
+                    // setup nswf cookie
+                    HttpCookie cookie = new HttpCookie("NSFWEnabled");
+                    cookie.Value = "whoaverse nsfw warning cookie";
+                    cookie.Expires = DateTime.Now.AddDays(1);
+                    this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+
+                    // redirect to destination subverse
+                    return RedirectToAction("Index", "Subverses", new { subversetoshow = destination });
+                }
+                else
+                {
+                    ViewBag.Destination = destination;
+                    return View("~/Views/Subverses/AdultContentWarning.cshtml");
+                }                
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }            
         }
 
         public ActionResult @New(int? page, string subversetoshow, string sortingmode)
