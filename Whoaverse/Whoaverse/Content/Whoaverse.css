@@ -94,17 +94,17 @@
     padding: 2px 6px;
 }
 
-.text-danger:hover{
-    color:white;
+.text-danger:hover {
+    color: white;
 }
 
 .unreadNotification {
     background-color: #ff9da4 !important;
 }
 
-    .pagination-container .btn-whoaverse-paging {
-        padding: 0px;
-    }
+.pagination-container .btn-whoaverse-paging {
+    padding: 0px;
+}
 
     .pagination-container .btn-whoaverse-paging a {
         display: inline-block;
@@ -113,25 +113,25 @@
         line-height: 16px;
     }
 
-    .btn-whoaverse-paging:hover {
-        background-color: #f6f6f6;
-    }
+.btn-whoaverse-paging:hover {
+    background-color: #f6f6f6;
+}
 
-    .btn-whoaverse-paging:active {
-        position: relative;
-        top: 1px;
-    }
+.btn-whoaverse-paging:active {
+    position: relative;
+    top: 1px;
+}
 
-    .btn-whoaverse-paging.disabled,
-    .btn-whoaverse-paging[disabled],
-    fieldset[disabled] .btn {
-        cursor: not-allowed;
-        pointer-events: none;
-        opacity: 0.65;
-        filter: alpha(opacity=65);
-        -webkit-box-shadow: none;
-        box-shadow: none;
-    }
+.btn-whoaverse-paging.disabled,
+.btn-whoaverse-paging[disabled],
+fieldset[disabled] .btn {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
 
 .btn-whoaverse-medium {
     -moz-box-shadow: inset 0px 1px 0px 0px #ffffff;
@@ -184,8 +184,8 @@
     background-color: rgba(134, 134, 134, 1);
 }
 
-.alert-warning {    
-	background-color: rgba(255, 56, 56, 1);
+.alert-warning {
+    background-color: rgba(255, 56, 56, 1);
 }
 
 .alert {
@@ -243,9 +243,9 @@
     width: 40%;
 }
 
-.commenttextarea:focus{
-    border: 1px solid gray;
-}
+    .commenttextarea:focus {
+        border: 1px solid gray;
+    }
 
 .ikp {
     cursor: help;
@@ -296,7 +296,7 @@
 
 #header {
     border-bottom: 1px solid #5f99cf;
-    position: relative;    
+    position: relative;
     background-image: url('../Graphics/whoaverse-bg.jpg');
     height: 150px !important;
     z-index: 99;
@@ -752,8 +752,8 @@ a:visited {
 
         .whoaSubscriptionMenu li a:link, .whoaSubscriptionMenu li a:visited {
             display: block;
-            text-decoration: none;        
-            padding: 0 2px;    
+            text-decoration: none;
+            padding: 0 2px;
         }
 
         /*sub menu*/
@@ -781,3 +781,11 @@ a:visited {
                 .whoaSubscriptionMenu li ul li a:hover {
                     background-color: #e0f1f8;
                 }
+
+.radio input[type="radio"],
+.radio-inline input[type="radio"], 
+.checkbox input[type="checkbox"], 
+.checkbox-inline input[type="checkbox"] {
+    position: absolute;
+    margin-left: 0;
+}
