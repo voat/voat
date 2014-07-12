@@ -473,34 +473,6 @@ ul.flat-vert {
     display: none;
 }
 
-.tabmenu {
-    list-style-type: none;
-    white-space: nowrap;
-    display: inline-block;
-    margin-top: 5px;
-    vertical-align: bottom;
-}
-
-    .tabmenu li {
-        display: inline;
-        font-weight: bold;
-        margin: 0px 3px;
-    }
-
-        .tabmenu li a {
-            padding: 2px 6px 0 6px;
-            background-color: rgba(206, 230, 255, 1);
-            color: black;
-        }
-
-        .tabmenu li.selected a {
-            color: orangered;
-            background-color: white;
-            border: 1px solid #5f99cf;
-            border-bottom: 1px solid white;
-            z-index: 100;
-        }
-
 .tabpane-content {
     border: 1px solid #5f99cf;
     padding: 4px 4px 4px 4px;

@@ -519,6 +519,12 @@
             </summary>
             <param name="id">The ID of comment to fetch.</param>
         </member>
+        <member name="M:Whoaverse.Controllers.WebApiController.SubverseInfo(System.String)">
+            <summary>
+             This API returns the sidebar for a subverse.
+            </summary>
+            <param name="subverseName">The name of the subverse for which to fetch the sidebar.</param>
+        </member>
         <member name="M:Whoaverse.Utils.ThumbGenerator.Save(System.Drawing.Bitmap,System.Int32,System.Int32,System.Int32,System.String)">
             <summary>
             Method to resize, convert and save the image.

@@ -24,6 +24,9 @@ namespace Whoaverse
 
             configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Error;
 
+            //configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
+            //configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects; 
+
             // configure routes
             configuration.Routes.MapHttpRoute("API list default subverses", "api/defaultsubverses",
                 new { controller = "WebApi", action = "DefaultSubverses" });
@@ -45,6 +48,9 @@ namespace Whoaverse
 
             configuration.Routes.MapHttpRoute("API details for single comment", "api/singlecomment",
                 new { controller = "WebApi", action = "SingleComment" });
+
+            configuration.Routes.MapHttpRoute("API details for a subverse", "api/subverseinfo",
+                new { controller = "WebApi", action = "SubverseInfo" });
         }
     }
 }

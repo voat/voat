@@ -12,11 +12,13 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
 using Whoaverse.Models;
+using Whoaverse.Models.ApiModels;
 
 namespace Whoaverse.Controllers
 {
@@ -88,7 +90,7 @@ namespace Whoaverse.Controllers
         ///  This API returns 100 submissions which are currently shown on WhoaVerse frontpage.
         /// </summary>
         [System.Web.Http.HttpGet]
-        public IEnumerable<string> Frontpage()
+        public IEnumerable<ApiMessage> Frontpage()
         {
             //get only submissions from default subverses, order by rank
             var frontpageSubmissions = (from message in db.Messages
@@ -98,18 +100,28 @@ namespace Whoaverse.Controllers
                                .Distinct()
                                .OrderByDescending(s => s.Rank).Take(100).ToList();
 
-            List<string> resultList = new List<string>();
+            List<ApiMessage> resultList = new List<ApiMessage>();
+
             foreach (var item in frontpageSubmissions)
             {
-                resultList.Add(
-                    "Type: " + item.Type + "," +
-                    "Title: " + item.Title + "," +
-                    "Link description: " + item.Linkdescription + "," +
-                    "Subverse: " + item.Subverse + "," +
-                    "Date: " + item.Date + "," +
-                    "Comments: " + item.Comments.Count() + "," +
-                    "Author: " + item.Name
-                    );
+                ApiMessage resultModel = new ApiMessage();
+
+                resultModel.CommentCount = item.Comments.Count;
+                resultModel.Date = item.Date;
+                resultModel.Dislikes = item.Dislikes;
+                resultModel.Id = item.Id;
+                resultModel.LastEditDate = item.LastEditDate;
+                resultModel.Likes = item.Likes;
+                resultModel.Linkdescription = item.Linkdescription;
+                resultModel.MessageContent = item.MessageContent;
+                resultModel.Name = item.Name;
+                resultModel.Rank = item.Rank;
+                resultModel.Subverse = item.Subverse;
+                resultModel.Thumbnail = item.Thumbnail;
+                resultModel.Title = item.Title;
+                resultModel.Type = item.Type;
+
+                resultList.Add(resultModel);
             }
 
             return resultList;
@@ -121,7 +133,7 @@ namespace Whoaverse.Controllers
         /// </summary>
         /// <param name="subverse">The name of the subverse for which to fetch submissions.</param>
         [System.Web.Http.HttpGet]
-        public IEnumerable<string> SubverseFrontpage(string subverse)
+        public IEnumerable<ApiMessage> SubverseFrontpage(string subverse)
         {
             //get only submissions from given subverses, order by rank
             var frontpageSubmissions = (from message in db.Messages
@@ -135,17 +147,28 @@ namespace Whoaverse.Controllers
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            List<string> resultList = new List<string>();
+            List<ApiMessage> resultList = new List<ApiMessage>();
+
             foreach (var item in frontpageSubmissions)
             {
-                resultList.Add(
-                    "Type: " + item.Type + "," +
-                    "Title: " + item.Title + "," +
-                    "Link description: " + item.Linkdescription + "," +
-                    "Date: " + item.Date + "," +
-                    "Comments: " + item.Comments.Count() + "," +
-                    "Author: " + item.Name
-                    );
+                ApiMessage resultModel = new ApiMessage();
+
+                resultModel.CommentCount = item.Comments.Count;
+                resultModel.Date = item.Date;
+                resultModel.Dislikes = item.Dislikes;
+                resultModel.Id = item.Id;
+                resultModel.LastEditDate = item.LastEditDate;
+                resultModel.Likes = item.Likes;
+                resultModel.Linkdescription = item.Linkdescription;
+                resultModel.MessageContent = item.MessageContent;
+                resultModel.Name = item.Name;
+                resultModel.Rank = item.Rank;
+                resultModel.Subverse = item.Subverse;
+                resultModel.Thumbnail = item.Thumbnail;
+                resultModel.Title = item.Title;
+                resultModel.Type = item.Type;
+
+                resultList.Add(resultModel);
             }
 
             return resultList;
@@ -157,28 +180,32 @@ namespace Whoaverse.Controllers
         /// </summary>
         /// <param name="id">The ID of submission to fetch.</param>
         [System.Web.Http.HttpGet]
-        public Message SingleSubmission(int id)
-        {            
+        public ApiMessage SingleSubmission(int id)
+        {
             Message submission = db.Messages.Find(id);
+
             if (submission == null)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            Message tmpResult = new Message();
-            tmpResult.Id = submission.Id;
-            tmpResult.Date = submission.Date;
-            tmpResult.LastEditDate = submission.LastEditDate;
-            tmpResult.Likes = submission.Likes;
-            tmpResult.Dislikes = submission.Dislikes;
-            tmpResult.Rank = submission.Rank;
-            tmpResult.Thumbnail = submission.Thumbnail;
-            tmpResult.Subverse = submission.Subverse;
-            tmpResult.Type = submission.Type;
-            tmpResult.Title = submission.Title;
-            tmpResult.Linkdescription = submission.Linkdescription;
-            tmpResult.MessageContent = submission.MessageContent;
-            return tmpResult;           
+            ApiMessage resultModel = new ApiMessage();
+            
+            resultModel.CommentCount = submission.Comments.Count;
+            resultModel.Id = submission.Id;
+            resultModel.Date = submission.Date;
+            resultModel.LastEditDate = submission.LastEditDate;
+            resultModel.Likes = submission.Likes;
+            resultModel.Dislikes = submission.Dislikes;
+            resultModel.Rank = submission.Rank;
+            resultModel.Thumbnail = submission.Thumbnail;
+            resultModel.Subverse = submission.Subverse;
+            resultModel.Type = submission.Type;
+            resultModel.Title = submission.Title;
+            resultModel.Linkdescription = submission.Linkdescription;
+            resultModel.MessageContent = submission.MessageContent;
+
+            return resultModel;
         }
 
         // GET api/singlecomment
@@ -187,27 +214,63 @@ namespace Whoaverse.Controllers
         /// </summary>
         /// <param name="id">The ID of comment to fetch.</param>
         [System.Web.Http.HttpGet]
-        public Comment SingleComment(int id)
+        public ApiComment SingleComment(int id)
         {
             Comment comment = db.Comments.Find(id);
+
             if (comment == null)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            Comment tmpResult = new Comment();
-            tmpResult.Id = comment.Id;
-            tmpResult.Date = comment.Date;
-            tmpResult.LastEditDate = comment.LastEditDate;
-            tmpResult.Likes = comment.Likes;
-            tmpResult.Dislikes = comment.Dislikes;
-            tmpResult.CommentContent = comment.CommentContent;
-            tmpResult.ParentId = comment.ParentId;
-            tmpResult.MessageId = comment.MessageId;
-            tmpResult.Name = comment.Name;
+            ApiComment resultModel = new ApiComment();
 
-            return tmpResult;
+            resultModel.Id = comment.Id;
+            resultModel.Date = comment.Date;
+            resultModel.LastEditDate = comment.LastEditDate;
+            resultModel.Likes = comment.Likes;
+            resultModel.Dislikes = comment.Dislikes;
+            resultModel.CommentContent = comment.CommentContent;
+            resultModel.ParentId = comment.ParentId;
+            resultModel.MessageId = comment.MessageId;
+            resultModel.Name = comment.Name;
+
+            return resultModel;
         }
-        
+
+
+        // GET api/sidebarforsubverse
+        /// <summary>
+        ///  This API returns the sidebar for a subverse.
+        /// </summary>
+        /// <param name="subverseName">The name of the subverse for which to fetch the sidebar.</param>
+        [System.Web.Http.HttpGet]
+        public SubverseInfo SubverseInfo(string subverseName)
+        {
+            Subverse subverse = db.Subverses.Find(subverseName);
+
+            if (subverse == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            // get subscriber count for selected subverse
+            int subscriberCount = db.Subscriptions.AsEnumerable()
+                                .Where(r => r.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
+                                .Count();
+
+            SubverseInfo resultModel = new SubverseInfo();
+
+            resultModel.Name = subverse.name;
+            resultModel.CreationDate = subverse.creation_date;
+            resultModel.Description = subverse.description;
+            resultModel.RatedAdult = subverse.rated_adult;
+            resultModel.Sidebar = subverse.sidebar;
+            resultModel.SubscriberCount = subscriberCount;
+            resultModel.Title = subverse.title;
+            resultModel.Type = subverse.type;
+
+            return resultModel;
+        }
     }
 }

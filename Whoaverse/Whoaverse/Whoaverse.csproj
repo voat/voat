@@ -253,6 +253,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ApiModels\ApiComment.cs" />
+    <Compile Include="Models\ApiModels\ApiMessage.cs" />
+    <Compile Include="Models\ApiModels\SubverseInfo.cs" />
     <Compile Include="Models\Badge.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
