@@ -397,17 +397,15 @@ namespace Whoaverse.Controllers
                                 existingSubverse.stylesheet = updatedModel.stylesheet;
                             }
 
+                            existingSubverse.rated_adult = updatedModel.rated_adult;
+
                             // these properties are currently not implemented but they can be saved and edited for future use
                             existingSubverse.type = updatedModel.type;
                             existingSubverse.label_submit_new_link = updatedModel.label_submit_new_link;
                             existingSubverse.label_sumit_new_selfpost = updatedModel.label_sumit_new_selfpost;
-
                             existingSubverse.submission_text = updatedModel.submission_text;
-                            existingSubverse.allow_default = updatedModel.allow_default;
-                            existingSubverse.rated_adult = updatedModel.rated_adult;
-
+                            existingSubverse.allow_default = updatedModel.allow_default;                          
                             existingSubverse.private_subverse = updatedModel.private_subverse;
-
 
                             await db.SaveChangesAsync();
 
@@ -419,8 +417,6 @@ namespace Whoaverse.Controllers
                             // user was not authorized to commit the changes, drop attempt
                             return new EmptyResult();
                         }
-
-
                     }
                     else
                     {

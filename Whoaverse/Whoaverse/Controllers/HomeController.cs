@@ -192,82 +192,91 @@ namespace Whoaverse.Controllers
                         // check if recipient exists
                         if (Whoaverse.Utils.User.UserExists(parentComment.Name))
                         {
-                            // send the message
-                            var commentReplyNotification = new Commentreplynotification();
-                            var commentMessage = db.Messages.Find(comment.MessageId);
-                            if (commentMessage != null)
+                            // do not send notification if author is the same as comment author
+                            if (parentComment.Name != User.Identity.Name)
                             {
-                                commentReplyNotification.CommentId = comment.Id;
-                                commentReplyNotification.SubmissionId = commentMessage.Id;
-                                commentReplyNotification.Recipient = parentComment.Name;
-                                commentReplyNotification.Sender = User.Identity.Name;
-                                commentReplyNotification.Body = comment.CommentContent;
-                                commentReplyNotification.Subverse = commentMessage.Subverse;
-                                commentReplyNotification.Status = true;
-                                commentReplyNotification.Timestamp = System.DateTime.Now;
-
-                                // self = type 1, url = type 2
-                                if (parentComment.Message.Type == 1)
+                                // send the message
+                                var commentReplyNotification = new Commentreplynotification();
+                                var commentMessage = db.Messages.Find(comment.MessageId);
+                                if (commentMessage != null)
                                 {
-                                    commentReplyNotification.Subject = parentComment.Message.Title;
+                                    commentReplyNotification.CommentId = comment.Id;
+                                    commentReplyNotification.SubmissionId = commentMessage.Id;
+                                    commentReplyNotification.Recipient = parentComment.Name;
+                                    commentReplyNotification.Sender = User.Identity.Name;
+                                    commentReplyNotification.Body = comment.CommentContent;
+                                    commentReplyNotification.Subverse = commentMessage.Subverse;
+                                    commentReplyNotification.Status = true;
+                                    commentReplyNotification.Timestamp = System.DateTime.Now;
+
+                                    // self = type 1, url = type 2
+                                    if (parentComment.Message.Type == 1)
+                                    {
+                                        commentReplyNotification.Subject = parentComment.Message.Title;
+                                    }
+                                    else
+                                    {
+                                        commentReplyNotification.Subject = parentComment.Message.Linkdescription;
+                                    }
+
+                                    db.Commentreplynotifications.Add(commentReplyNotification);
+
+                                    await db.SaveChangesAsync();
                                 }
                                 else
                                 {
-                                    commentReplyNotification.Subject = parentComment.Message.Linkdescription;
+                                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                                 }
-
-                                db.Commentreplynotifications.Add(commentReplyNotification);
-
-                                await db.SaveChangesAsync();
                             }
-                            else
-                            {
-                                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                            }                            
                         }
                     }
                 }
                 else
                 {
                     // comment reply is sent to a root comment which has no parent id, trigger post reply notification
-                    // check if recipient exists
-                    if (Whoaverse.Utils.User.UserExists(comment.Name))
-                    {
-                        // send the message
-                        var postReplyNotification = new Postreplynotification();
-                        var commentMessage = db.Messages.Find(comment.MessageId);
-                        if (commentMessage != null)
+                    var commentMessage = db.Messages.Find(comment.MessageId);
+                    if (commentMessage != null)
+                    {                        
+                        // check if recipient exists
+                        if (Whoaverse.Utils.User.UserExists(commentMessage.Name))
                         {
-                            postReplyNotification.CommentId = comment.Id;
-                            postReplyNotification.SubmissionId = commentMessage.Id;
-                            postReplyNotification.Recipient = commentMessage.Name;
-                            postReplyNotification.Sender = User.Identity.Name;
-                            postReplyNotification.Body = comment.CommentContent;
-                            postReplyNotification.Subverse = commentMessage.Subverse;
-                            postReplyNotification.Status = true;
-                            postReplyNotification.Timestamp = System.DateTime.Now;
-
-                            // self = type 1, url = type 2
-                            if (commentMessage.Type == 1)
+                            // do not send notification if author is the same as comment author
+                            if (commentMessage.Name != User.Identity.Name)
                             {
-                                postReplyNotification.Subject = commentMessage.Title;
-                            }
-                            else
-                            {
-                                postReplyNotification.Subject = commentMessage.Linkdescription;
-                            }
+                                // send the message
+                                var postReplyNotification = new Postreplynotification();
 
-                            db.Postreplynotifications.Add(postReplyNotification);
+                                postReplyNotification.CommentId = comment.Id;
+                                postReplyNotification.SubmissionId = commentMessage.Id;
+                                postReplyNotification.Recipient = commentMessage.Name;
+                                postReplyNotification.Sender = User.Identity.Name;
+                                postReplyNotification.Body = comment.CommentContent;
+                                postReplyNotification.Subverse = commentMessage.Subverse;
+                                postReplyNotification.Status = true;
+                                postReplyNotification.Timestamp = System.DateTime.Now;
 
-                            await db.SaveChangesAsync();
+                                // self = type 1, url = type 2
+                                if (commentMessage.Type == 1)
+                                {
+                                    postReplyNotification.Subject = commentMessage.Title;
+                                }
+                                else
+                                {
+                                    postReplyNotification.Subject = commentMessage.Linkdescription;
+                                }
+
+                                db.Postreplynotifications.Add(postReplyNotification);
+
+                                await db.SaveChangesAsync();
+                            }
                         }
-                        else
-                        {
-                            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                        }                        
                     }
-                }
+                    else
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    }
 
+                }
                 string url = this.Request.UrlReferrer.AbsolutePath;
                 return Redirect(url);
             }
@@ -382,7 +391,7 @@ namespace Whoaverse.Controllers
             Message submissionToDelete = db.Messages.Find(submissionId);
 
             if (submissionToDelete != null)
-            {           
+            {
                 if (submissionToDelete.Name == User.Identity.Name)
                 {
                     submissionToDelete.Name = "deleted";
