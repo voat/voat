@@ -190,7 +190,7 @@ namespace Whoaverse.Controllers
             }
 
             ApiMessage resultModel = new ApiMessage();
-            
+
             resultModel.CommentCount = submission.Comments.Count;
             resultModel.Id = submission.Id;
             resultModel.Date = submission.Date;
@@ -238,14 +238,13 @@ namespace Whoaverse.Controllers
             return resultModel;
         }
 
-
         // GET api/sidebarforsubverse
         /// <summary>
         ///  This API returns the sidebar for a subverse.
         /// </summary>
         /// <param name="subverseName">The name of the subverse for which to fetch the sidebar.</param>
         [System.Web.Http.HttpGet]
-        public SubverseInfo SubverseInfo(string subverseName)
+        public ApiSubverseInfo SubverseInfo(string subverseName)
         {
             Subverse subverse = db.Subverses.Find(subverseName);
 
@@ -259,7 +258,7 @@ namespace Whoaverse.Controllers
                                 .Where(r => r.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
                                 .Count();
 
-            SubverseInfo resultModel = new SubverseInfo();
+            ApiSubverseInfo resultModel = new ApiSubverseInfo();
 
             resultModel.Name = subverse.name;
             resultModel.CreationDate = subverse.creation_date;
@@ -272,5 +271,73 @@ namespace Whoaverse.Controllers
 
             return resultModel;
         }
+
+
+        // GET api/userinfo
+        /// <summary>
+        ///  This API returns basic information about a user.
+        /// </summary>
+        /// <param name="userName">The username for which to fetch basic information.</param>
+        [System.Web.Http.HttpGet]
+        public ApiUserInfo UserInfo(string userName)
+        {
+            if (userName != "deleted" && !Whoaverse.Utils.User.UserExists(userName))
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            if (userName == "deleted")
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            ApiUserInfo resultModel = new ApiUserInfo();
+
+            List<Userbadge> userBadgesList = Utils.User.UserBadges(userName);
+            List<ApiUserBadge> resultBadgesList = new List<ApiUserBadge>();
+
+            foreach (var item in userBadgesList)
+            {
+                ApiUserBadge tmpBadge = new ApiUserBadge();
+                tmpBadge.Awarded = item.Awarded;
+                tmpBadge.BadgeName = item.Badge.BadgeName;
+
+                resultBadgesList.Add(tmpBadge);
+            }
+
+            resultModel.Name = userName;
+            resultModel.CCP = Utils.Karma.CommentKarma(userName);
+            resultModel.LCP = Utils.Karma.LinkKarma(userName);
+            resultModel.RegistrationDate = Utils.User.GetUserRegistrationDateTime(userName);
+            resultModel.Badges = resultBadgesList;
+
+            return resultModel;
+        }
+
+        // GET api/badgeinfo
+        /// <summary>
+        ///  This API returns information about a badge.
+        /// </summary>
+        /// <param name="badgeId">The badge Id for which to fetch information.</param>
+        [System.Web.Http.HttpGet]
+        public ApiBadge BadgeInfo(string badgeId)
+        {
+            Badge badge = db.Badges.Find(badgeId);
+
+            if (badge == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            ApiBadge resultModel = new ApiBadge();
+
+            resultModel.BadgeId = badge.BadgeId;
+            resultModel.BadgeGraphics = badge.BadgeGraphics;
+            resultModel.Name = badge.BadgeName;
+            resultModel.Title = badge.BadgeTitle;
+
+            return resultModel;
+        }
+
     }
 }

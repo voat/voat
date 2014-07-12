@@ -51,6 +51,12 @@ namespace Whoaverse
 
             configuration.Routes.MapHttpRoute("API details for a subverse", "api/subverseinfo",
                 new { controller = "WebApi", action = "SubverseInfo" });
+
+            configuration.Routes.MapHttpRoute("API details for a user", "api/userinfo",
+                new { controller = "WebApi", action = "UserInfo" });
+
+            configuration.Routes.MapHttpRoute("API details for a badge", "api/badgeinfo",
+                new { controller = "WebApi", action = "BadgeInfo" });
         }
     }
 }

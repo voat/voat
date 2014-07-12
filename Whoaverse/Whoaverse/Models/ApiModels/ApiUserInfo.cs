@@ -13,17 +13,16 @@ All Rights Reserved.
 */
 
 using System;
+using System.Collections.Generic;
+
 namespace Whoaverse.Models.ApiModels
 {
-    public class SubverseInfo
+    public class ApiUserInfo
     {
         public string Name { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public DateTime CreationDate { get; set; }
-        public int SubscriberCount { get; set; }
-        public bool? RatedAdult { get; set; }
-        public string Sidebar { get; set; }
-        public string Type { get; set; }
+        public DateTime RegistrationDate { get; set; }
+        public int CCP { get; set; }
+        public int LCP { get; set; }
+        public List<ApiUserBadge> Badges { get; set; }
     }
 }

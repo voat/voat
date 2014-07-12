@@ -253,9 +253,12 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ApiModels\ApiUserBadge.cs" />
     <Compile Include="Models\ApiModels\ApiComment.cs" />
     <Compile Include="Models\ApiModels\ApiMessage.cs" />
-    <Compile Include="Models\ApiModels\SubverseInfo.cs" />
+    <Compile Include="Models\ApiModels\ApiBadge.cs" />
+    <Compile Include="Models\ApiModels\ApiUserInfo.cs" />
+    <Compile Include="Models\ApiModels\ApiSubverseInfo.cs" />
     <Compile Include="Models\Badge.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>

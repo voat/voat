@@ -525,6 +525,18 @@
             </summary>
             <param name="subverseName">The name of the subverse for which to fetch the sidebar.</param>
         </member>
+        <member name="M:Whoaverse.Controllers.WebApiController.UserInfo(System.String)">
+            <summary>
+             This API returns basic information about a user.
+            </summary>
+            <param name="userName">The username for which to fetch basic information.</param>
+        </member>
+        <member name="M:Whoaverse.Controllers.WebApiController.BadgeInfo(System.String)">
+            <summary>
+             This API returns information about a badge.
+            </summary>
+            <param name="badgeId">The badge Id for which to fetch information.</param>
+        </member>
         <member name="M:Whoaverse.Utils.ThumbGenerator.Save(System.Drawing.Bitmap,System.Int32,System.Int32,System.Int32,System.String)">
             <summary>
             Method to resize, convert and save the image.

@@ -15,21 +15,15 @@ All Rights Reserved.
 using System;
 namespace Whoaverse.Models.ApiModels
 {
-    public class ApiMessage
+    public class ApiSubverseInfo
     {
-        public int CommentCount { get; set; }
-        public DateTime Date { get; set; }
-        public int Dislikes { get; set; }
-        public int Likes { get; set; }
-        public int Id { get; set; }
-        public Nullable<DateTime> LastEditDate { get; set; }
-        public string Linkdescription { get; set; }
-        public string MessageContent { get; set; }
         public string Name { get; set; }
-        public double Rank { get; set; }
-        public string Subverse { get; set; }
-        public string Thumbnail { get; set; }
         public string Title { get; set; }
-        public int Type { get; set; }
+        public string Description { get; set; }
+        public DateTime CreationDate { get; set; }
+        public int SubscriberCount { get; set; }
+        public Nullable<bool> RatedAdult { get; set; }
+        public string Sidebar { get; set; }
+        public string Type { get; set; }
     }
 }
