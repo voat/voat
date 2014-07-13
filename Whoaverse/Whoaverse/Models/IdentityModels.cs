@@ -23,6 +23,7 @@ namespace Whoaverse.Models
         public DateTime RegistrationDateTime { get; set; }
         public string RecoveryQuestion { get; set; }
         public string Answer { get; set; }
+        public int PasswordRecoveryToken { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

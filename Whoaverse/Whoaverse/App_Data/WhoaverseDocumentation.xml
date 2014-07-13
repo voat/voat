@@ -537,6 +537,31 @@
             </summary>
             <param name="badgeId">The badge Id for which to fetch information.</param>
         </member>
+        <member name="F:Whoaverse.Utils.ConstantUtility.EmailRegex">
+            <summary>
+            Simple email validation
+            </summary>
+        </member>
+        <member name="F:Whoaverse.Utils.ConstantUtility.ServerEmailAddress">
+            <summary>
+            Server Email Address to use when sending an email to a recipient.
+            </summary>
+        </member>
+        <member name="F:Whoaverse.Utils.ConstantUtility.EmailPassword">
+            <summary>
+            Password for Email Credential
+            </summary>
+        </member>
+        <member name="F:Whoaverse.Utils.ConstantUtility.SMTPGateWay">
+            <summary>
+            Gateway for forwarding email to recipient.
+            </summary>
+        </member>
+        <member name="F:Whoaverse.Utils.ConstantUtility.HostName">
+            <summary>
+            Server's current DNS Address
+            </summary>
+        </member>
         <member name="M:Whoaverse.Utils.ThumbGenerator.Save(System.Drawing.Bitmap,System.Int32,System.Int32,System.Int32,System.String)">
             <summary>
             Method to resize, convert and save the image.

@@ -343,6 +343,7 @@
     <Compile Include="Utils\AntispamUtility.cs" />
     <Compile Include="Utils\BanningUtility.cs" />
     <Compile Include="Utils\ConstantUtility.cs" />
+    <Compile Include="Utils\EmailUtility.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\Karma.cs" />
@@ -538,7 +539,7 @@
     <Content Include="Views\Subverses\SubscribedSubverses.cshtml" />
     <Content Include="Views\Subverses\_SubscribedSubverseDetails.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserModerates.cshtml" />
-    <Content Include="Views\Account\RecoverPassword.cshtml" />
+    <Content Include="Views\Account\CheckUsernameForPasswordRecovery.cshtml" />
     <Content Include="Views\Errors\DbNotResponding.cshtml" />
     <Content Include="Views\Shared\_ListofsubversesHeavyLoad.cshtml" />
     <Content Include="Views\Shared\_SidebarComments.cshtml" />
@@ -557,6 +558,7 @@
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
     <Content Include="Web.config" />
+    <Content Include="Views\Account\AnswerQuestionForPasswordRecovery.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

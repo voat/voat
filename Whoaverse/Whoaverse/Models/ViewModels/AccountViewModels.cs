@@ -129,24 +129,39 @@ namespace Whoaverse.Models
         public string Email { get; set; }
     }
 
-    public class PasswordRecoveryModel
+    public class UsernameEntryForPasswordRecoveryModel
     {
         [Display(Name = "User name")]
+        [Required(ErrorMessage = "Username is required. Please fill this field.")]
         public string UserName { get; set; }
+    }
 
-        public string Question { get; set; }
+    public class AnswerQuestionForPasswordRecoveryModel
+    {
+        [Display(Name = "Recovery Question")]
+        [StringLength(500, ErrorMessage = "Recovery question must not exceed 500 characters.")]
+        public string RecoveryQuestion { get; set; }
 
         [Display(Name = "Answer")]
-        public string InputAnswer { get; set; }
+        [Required(ErrorMessage = "An answer is required. Please fill this field.")]
+        [StringLength(50, ErrorMessage = "Recovery answer must not exceed 50 characters.")]
+        public string Answer { get; set; }
 
-        [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
-        [DataType(DataType.Password)]
-        [Display(Name = "New Password")]
-        public string Password { get; set; }
+        public AnswerQuestionForPasswordRecoveryModel()
+        {
+            RecoveryQuestion = null;
+            Answer = null;
+        }
 
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        public AnswerQuestionForPasswordRecoveryModel(string question)
+        {
+            RecoveryQuestion = question;
+        }
+
+        public AnswerQuestionForPasswordRecoveryModel(string question, string answer)
+        {
+            RecoveryQuestion = question;
+            Answer = answer;
+        }
     }
 }
