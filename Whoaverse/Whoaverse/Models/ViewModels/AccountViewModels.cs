@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System.ComponentModel.DataAnnotations;
+using Whoaverse.Utils;
 
 namespace Whoaverse.Models
 {
@@ -114,26 +115,53 @@ namespace Whoaverse.Models
         [Display(Name = "Answer")]
         [StringLength(50, ErrorMessage = "Recovery answer must not exceed 50 characters.")]
         public string Answer { get; set; }
+
+        // IS NOT REQUIRED.
+        // References on reasoning for 254 characters length and
+        // Regex for email validation
+        // http://stackoverflow.com/questions/7717573/what-is-the-longest-possible-email-address
+        // http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
+        [DataType(DataType.Text)]
+        [Display(Name = "Email")]
+        [StringLength(254, ErrorMessage = "Email must not exceed 254 characters.")]
+        [RegularExpression(ConstantUtility.EmailRegex,
+            ErrorMessage = "The email you typed is not a valid email address.")]
+        public string Email { get; set; }
     }
 
-    public class PasswordRecoveryModel
+    public class UsernameEntryForPasswordRecoveryModel
     {
         [Display(Name = "User name")]
+        [Required(ErrorMessage = "Username is required. Please fill this field.")]
         public string UserName { get; set; }
+    }
 
-        public string Question { get; set; }
+    public class AnswerQuestionForPasswordRecoveryModel
+    {
+        [Display(Name = "Recovery Question")]
+        [StringLength(500, ErrorMessage = "Recovery question must not exceed 500 characters.")]
+        public string RecoveryQuestion { get; set; }
 
         [Display(Name = "Answer")]
-        public string InputAnswer { get; set; }
+        [Required(ErrorMessage = "An answer is required. Please fill this field.")]
+        [StringLength(50, ErrorMessage = "Recovery answer must not exceed 50 characters.")]
+        public string Answer { get; set; }
 
-        [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; }
+        public AnswerQuestionForPasswordRecoveryModel()
+        {
+            RecoveryQuestion = null;
+            Answer = null;
+        }
 
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        public AnswerQuestionForPasswordRecoveryModel(string question)
+        {
+            RecoveryQuestion = question;
+        }
+
+        public AnswerQuestionForPasswordRecoveryModel(string question, string answer)
+        {
+            RecoveryQuestion = question;
+            Answer = answer;
+        }
     }
 }

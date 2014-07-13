@@ -334,9 +334,16 @@ namespace Whoaverse
                 name: "MessageContent",
                 url: "ajaxhelpers/messagecontent/{messageId}",
                 defaults: new { controller = "AjaxGateway", action = "MessageContent" }
-            ); 
-            
+            );
 
+            // account/answerquestionforpasswordrecovery
+            routes.MapRoute(
+                name: "PasswordRecovery",
+                url: "account/AnswerQuestionForPasswordRecovery/{username}",
+                defaults: new { controller = "Account", action = "AnswerQuestionForPasswordRecovery" }
+            );
+
+            // Defaults
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
