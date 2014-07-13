@@ -342,6 +342,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\AntispamUtility.cs" />
     <Compile Include="Utils\BanningUtility.cs" />
+    <Compile Include="Utils\ConstantUtility.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\Karma.cs" />
@@ -464,15 +465,7 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\whoaverse.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="sitemap.xml" />
     <Content Include="Thumbs\Placeholder.txt" />
-    <Content Include="Web.config" />
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Errors\Error.cshtml" />
@@ -563,6 +556,13 @@
     <Content Include="Views\Account\_LoginModal.cshtml" />
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
+    <Content Include="Web.config" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />

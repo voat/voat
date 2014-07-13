@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System.ComponentModel.DataAnnotations;
+using Whoaverse.Utils;
 
 namespace Whoaverse.Models
 {
@@ -114,6 +115,18 @@ namespace Whoaverse.Models
         [Display(Name = "Answer")]
         [StringLength(50, ErrorMessage = "Recovery answer must not exceed 50 characters.")]
         public string Answer { get; set; }
+
+        // IS NOT REQUIRED.
+        // References on reasoning for 254 characters length and
+        // Regex for email validation
+        // http://stackoverflow.com/questions/7717573/what-is-the-longest-possible-email-address
+        // http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
+        [DataType(DataType.Text)]
+        [Display(Name = "Email")]
+        [StringLength(254, ErrorMessage = "Email must not exceed 254 characters.")]
+        [RegularExpression(ConstantUtility.EmailRegex,
+            ErrorMessage = "The email you typed is not a valid email address.")]
+        public string Email { get; set; }
     }
 
     public class PasswordRecoveryModel

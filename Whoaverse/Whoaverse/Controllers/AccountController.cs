@@ -137,7 +137,7 @@ namespace Whoaverse.Controllers
 
                 try
                 {
-                    var user = new ApplicationUser() { UserName = model.UserName, RecoveryQuestion = model.RecoveryQuestion, Answer = model.Answer };
+                    var user = new ApplicationUser() { UserName = model.UserName, RecoveryQuestion = model.RecoveryQuestion, Answer = model.Answer, Email = model.Email };
 
                     user.RegistrationDateTime = DateTime.Now;
 
