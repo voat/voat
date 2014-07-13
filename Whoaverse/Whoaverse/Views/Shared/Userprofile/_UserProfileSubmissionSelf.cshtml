@@ -16,6 +16,8 @@
 
 <!-- 1 user self submission with details without comments -->
 @{
+    var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
+    
     string postAge = Submissions.CalcSubmissionAge(Model.Date);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
     int submissionScore = (Model.Likes - Model.Dislikes);
@@ -32,13 +34,18 @@
                 <div class="score likes">@Model.Likes</div>
             </div>
 
-            <a class="thumbnail thumb-placeholder may-blank " href="/comments/@Model.Id" rel="nofollow"></a>
+            <a class="thumbnail self may-blank " href="/v/@Model.Subverse/comments/@Model.Id" rel="nofollow"></a>
             <div class="entry unvoted">
                 <p class="title">
                     <a class="title may-blank " href="@commentsUrl" tabindex="1" rel="nofollow">@Model.Title</a>
-                    <span class="domain">(<a href="/user/@Model.Name">self.@Model.Name</a>)</span>
+                    <span class="domain">(<a href="/v/@Model.Subverse">self.@Model.Subverse</a>)</span>
                 </p>
-                <div class="expando-button collapsed selftext" onclick="expando_child(this)"></div>
+
+                <!-- EXPERIMENTAL EXPANDO BUTTON START -->
+                <div class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
+                <div class="expando" style="display: none;" id="@Model.Id"></div>
+                <!-- EXPERIMENTAL EXPANDO BUTTON END -->
+
                 <p class="tagline">
                     submitted
                     <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="~/user/@Model.Name" class="author may-blank id-t2_5fggn">@Model.Name</a>
@@ -48,14 +55,20 @@
                 </p>
                 <ul class="flat-list buttons">
                     <li class="first">
-                        <a href="@commentsUrl" class="comments empty may-blank">@Model.Comments.Count comments</a>
+                        <a href="@commentsUrl" class="comments empty may-blank">@commentCount comments</a>
                     </li>
                     <li class="share">
                         <span class="share-button toggle" style=""><a class="option active login-required" href="#" tabindex="100">share</a><a class="option " href="#">cancel</a></span>
                     </li>
                 </ul>
                 <div class="expando" style="display: none">
-                    <span class="error">loading...</span>
+                    <form style="" novalidate="novalidate" class="usertext" action="#">
+                        <div class="usertext-body may-blank-within">
+                            <div class="md">
+                                Please wait...
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="child"></div>

@@ -21,6 +21,7 @@
     string votingStatusClassDownArrow = "arrow-downvote";
     string likesOrDislikesClass = "unvoted";
 
+    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
     if (User.Identity.IsAuthenticated)
     {
@@ -44,19 +45,35 @@
         }
 
         <div class="midcol @likesOrDislikesClass">
-            <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
+
+            @if (commentContributionPoints < 1)
+            {
+                <div class="@votingStatusClassUpArrow login-required" onclick="notEnoughCCPUpVote();" role="button" aria-label="upvote" tabindex="0"></div>
+            }
+            else
+            {
+                <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
+            }
+
             <div class="score dislikes">@Model.Dislikes</div>
             <div class="score unvoted">@score</div>
             <div class="score likes">@Model.Likes</div>
-            <div class="@votingStatusClassDownArrow login-required" onclick="voteDownSubmission(@Model.Id);" role="button" aria-label="downvote" tabindex="0"></div>
+
+            @if (commentContributionPoints < 1)
+            {
+                <div class="@votingStatusClassDownArrow login-required" onclick="notEnoughCCP();" role="button" aria-label="downvote" tabindex="0"></div>
+            }
+            else
+            {
+                <div class="@votingStatusClassDownArrow login-required" onclick="voteDownSubmission(@Model.Id);" role="button" aria-label="downvote" tabindex="0"></div>
+            }
+
         </div>
-    
+
     }
-    
+
     else
-    
     {
-        
         <div class="midcol unvoted">
             <div class="arrow-upvote login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0" id="upvotebutton"></div>
             <div class="score dislikes">@Model.Dislikes</div>
@@ -64,7 +81,5 @@
             <div class="score likes">@Model.Likes</div>
             <div class="arrow-downvote login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
         </div>
-
     }
-
 }

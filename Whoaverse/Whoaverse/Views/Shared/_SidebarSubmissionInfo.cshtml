@@ -10,88 +10,72 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model Whoaverse.Models.Message
-
 @{
     double percentageOfLove;
-    double totalVotes = Model.Dislikes + Model.Likes;
-    double difference = Model.Likes - Model.Dislikes;
+    double totalVotes = ViewBag.dislikes + ViewBag.likes;
+    double difference = ViewBag.Likes - ViewBag.dislikes;
 
     if (totalVotes > 0)
     {
-        percentageOfLove = Math.Round((Model.Likes / totalVotes) * 100, 2);
+        percentageOfLove = Math.Round((ViewBag.likes / totalVotes) * 100, 2);
     }
     else
     {
         percentageOfLove = 0;
     }
 
-    if (!Request.Browser.IsMobileDevice)
-    {
-        <div class="side">
-            <div class="spacer">
-                <div class="titlebox footer rounded">
-                    <h2 class="hover whoaversename">
-                        Submission Info
-                    </h2>
-                    <div class="bottom">
+    <div class="spacer">
+        <div class="titlebox submissioninfo">
+            <h2 class="hover whoaversename">
+                Submission Info
+            </h2>
+            <div class="bottom">
 
-                        @{
-        if (Model.Name == "deleted")
-        {
-            <p class="h6">
-                Posted by: [deleted]
-            </p>
-        }
-        else
-        {
-            <p class="h6">
-                Posted by: <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
-            </p>
-        }
-                        }
+                @if (ViewBag.name == "deleted")
+                {
+                    <p class="h6">
+                        Posted by: [deleted]
+                    </p>
+                }
+                else
+                {
+                    <p class="h6">
+                        Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
+                    </p>
+                }
 
-                        <p class="h6">
-                            Posting time: <time title="@Model.Date" datetime="@Model.Date">@Model.Date</time>
-                        </p>
+                <p class="h6">
+                    Posting time: <time title="@ViewBag.date" datetime="@ViewBag.date">@ViewBag.date</time>
+                </p>
 
-                        @{
-        if (@Model.LastEditDate != null)
-        {
-            <p class="h6">
-                Last edit time: <time title="@Model.LastEditDate" datetime="@Model.LastEditDate">@Model.LastEditDate</time>
-            </p>
-        }
-        else
-        {
-            <p class="h6">
-                Last edit time: never edited.
-            </p>
-        }
-                        }
+                @if (@ViewBag.lastEditDate != null)
+                {
+                    <p class="h6">
+                        Last edit time: <time title="@ViewBag.lastEditDate" datetime="@ViewBag.lastEditDate">@ViewBag.lastEditDate</time>
+                    </p>
+                }
+                else
+                {
+                    <p class="h6">
+                        Last edit time: never edited.
+                    </p>
+                }
 
-                    </div>
-                    <h2 class="hover whoaversename">
-                        Score
-                    </h2>
-                    <div class="bottom">
-                        <p class="h6">
-                            Imaginary score points: <b>@difference</b>
-                        </p>
-                        <p class="h6">
-                            Liked by: <b>@Model.Likes</b> people.
-                        </p>
-                        <p class="h6">
-                            Disliked by: <b>@Model.Dislikes</b> people.
-                        </p>
-                        <p class="h6">
-                            (That would mean that <b>@percentageOfLove%</b> liked it.)
-                        </p>
-                    </div>
-                    <div class="clear">
-                    </div>
-                </div>
+            </div>
+            <h2 class="hover whoaversename">
+                Score
+            </h2>
+            <div class="bottom">
+                <p class="h6">
+                    <span class="ikp" title="Imaginary Karma Points"><span class="user">IKP</span></span>: <b>@difference</b> points
+                </p>
+                <p class="h6">
+                    <b>@ViewBag.Likes</b> likes, <b>@ViewBag.Dislikes</b> dislikes (<b>@percentageOfLove%</b> like it)
+                </p>
+            </div>
+            <div class="clear">
             </div>
         </div>
-    }
+    </div>
+
 }

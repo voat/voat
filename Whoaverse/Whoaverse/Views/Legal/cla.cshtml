@@ -133,7 +133,7 @@
             <div class="form-group">
                 @Html.LabelFor(m => m.CorpContrInfo, "Corporate Contributor Information", new { @class = "col-md-2 control-label" })
                 <div class="col-md-9">
-                    @Html.TextAreaFor(m => m.CorpContrInfo, new { @class = "form-control", rows=2, cols=20 })
+                    @Html.TextAreaFor(m => m.CorpContrInfo, new { @class = "form-control", rows = 2, cols = 20 })
                     @Html.ValidationMessageFor(model => model.CorpContrInfo)
                 </div>
             </div>
@@ -143,15 +143,15 @@
 
             <div class="form-group">
                 @Html.LabelFor(m => m.ElectronicSignature, "Electronic signature*", new { @class = "col-md-2 control-label" })
-                <div class="col-md-3">                    
+                <div class="col-md-3">
                     @Html.TextBoxFor(m => m.ElectronicSignature, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.ElectronicSignature)
                 </div>
             </div>
-            
+
             <div class="panel panel-default">
                 @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
-                @Html.Recaptcha()
+                @Html.Recaptcha(theme: Recaptcha.Web.RecaptchaTheme.Clean, language: "en")
             </div>
 
             <div class="form-group">

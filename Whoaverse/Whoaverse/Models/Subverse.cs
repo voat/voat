@@ -16,7 +16,14 @@ namespace Whoaverse.Models
     {
         public Subverse()
         {
+            this.type = "link";
+            this.rated_adult = false;
+            this.allow_default = false;
+            this.enable_thumbnails = true;
+            this.exclude_sitewide_bans = false;
+            this.traffic_stats_public = false;
             this.subscribers = 1;
+            this.private_subverse = false;
             this.Messages = new HashSet<Message>();
             this.SubverseAdmins = new HashSet<SubverseAdmin>();
         }
@@ -42,6 +49,7 @@ namespace Whoaverse.Models
         public string description { get; set; }
         public string stylesheet { get; set; }
         public Nullable<int> subscribers { get; set; }
+        public Nullable<bool> private_subverse { get; set; }
     
         public virtual ICollection<Message> Messages { get; set; }
         public virtual Defaultsubverse Defaultsubvers { get; set; }

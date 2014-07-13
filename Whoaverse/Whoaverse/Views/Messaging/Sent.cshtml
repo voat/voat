@@ -1,0 +1,68 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model PagedList.IPagedList<Whoaverse.Models.Privatemessage>
+
+@{
+    ViewBag.Title = "Sent";
+}
+
+<style>
+    .p {
+        font-size: 35px;
+    }
+</style>
+
+<div id="about-main" class="content about-page" role="main">
+    <div class="row nomargin">
+        <div class="md">
+            <p class="heading-2">Hi there @User.Identity.Name!</p>
+
+            @if (Model.Count > 0)
+            {
+                <p>You sent a total of @Model.Count message(s).</p>
+                <p>Here they are, sorted by the order in which you sent them.</p>
+                <hr />
+
+                foreach (var message in Model)
+                {
+                    <div id="messageContainer-@message.Id">
+                        <div class="panel panel-default">
+                            <div class="panel panel-heading">
+                                Recipient: <a href="/u/@message.Recipient">@message.Recipient</a> | Sent: @message.Timestamp
+                            </div>
+                            <div class="panel panel-heading-messagetitle">
+                                <b>@message.Subject</b>
+                            </div>
+
+                            <div class="panel-message-body">
+                                @Html.Raw(Whoaverse.Utils.Formatting.FormatMessage(message.Body))
+                            </div>
+                        </div>
+
+                        <ul class="flat-list buttons">
+                            <li>
+                                <a class="btn-whoaverse-paging" href="javascript:void(0)" onclick="return deletePrivateMessageFromSent(this, @message.Id)">Delete</a>
+                            </li>
+                        </ul>
+                        <br /><br />
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Your inbox is empty. I may be just a server with limited intelligence, but I am not quite sure how to feel about this.</p>
+            }
+
+        </div>
+    </div>
+</div>

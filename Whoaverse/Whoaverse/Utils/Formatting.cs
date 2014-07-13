@@ -21,9 +21,10 @@ namespace Whoaverse.Utils
 {
     public static class Formatting
     {
-        private static MarkdownDeep.Markdown m = new MarkdownDeep.Markdown();        
         
         public static string FormatMessage (String originalMessage){
+            MarkdownDeep.Markdown m = new MarkdownDeep.Markdown(); 
+  
             m.ExtraMode = true;
             m.SafeMode = true;
 

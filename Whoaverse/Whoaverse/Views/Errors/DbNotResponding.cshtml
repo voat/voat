@@ -92,9 +92,9 @@
                     </ul>
                     <ul class="flat-list sr-bar hover" id="sr-bar">
 
-                        
 
-                            @*<li class="">
+
+                        @*<li class="">
                                 <span class="separator">-</span>
                                 <a href="/v/@item.name/">@item.name</a>
                             </li>*@
@@ -168,22 +168,20 @@
 
     <br />
 
-    @{
-        if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
-        {
-            HttpCookie cookie = new HttpCookie("NotFirstTime");
-            cookie.Value = "whoaverse first time visitor identifier";
-            HttpContext.Current.Response.Cookies.Add(cookie);
+    @if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
+    {
+        HttpCookie cookie = new HttpCookie("NotFirstTime");
+        cookie.Value = "whoaverse first time visitor identifier";
+        HttpContext.Current.Response.Cookies.Add(cookie);
 
-            <div class="eppnotice">
-                <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
-                Cookies help us deliver our services. By using our services, you agree to our use of cookies.
-            </div>
-        }
+        <div class="eppnotice">
+            <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
+            Cookies help us deliver our services. By using our services, you agree to our use of cookies.
+        </div>
     }
 
     @Scripts.Render("~/bundles/bootstrap")
-    
+
 </body>
 
 </html>

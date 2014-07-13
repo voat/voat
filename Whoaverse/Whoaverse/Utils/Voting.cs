@@ -20,7 +20,7 @@ namespace Whoaverse.Utils
 {
     public static class Voting
     {
-        //returns -1:downvoted, 1:upvoted, 0:not voted
+        // returns -1:downvoted, 1:upvoted, 0:not voted
         public static int CheckIfVoted(string userToCheck, int messageId)
         {
             int intCheckResult = 0;
@@ -45,7 +45,7 @@ namespace Whoaverse.Utils
 
         }
 
-        //a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
+        // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetMessageVote(string userWhichVoted, int messageId)
         {
             using (whoaverseEntities db = new whoaverseEntities())
@@ -63,7 +63,7 @@ namespace Whoaverse.Utils
             }
         }
 
-        //submit submission upvote
+        // submit submission upvote
         public static void UpvoteSubmission(int submissionId, string userWhichUpvoted)
         {
             int result = Voting.CheckIfVoted(userWhichUpvoted, submissionId);
@@ -96,7 +96,7 @@ namespace Whoaverse.Utils
 
                         break;
 
-                    //downvoted before, turn downvote to upvote
+                    // downvoted before, turn downvote to upvote
                     case -1:
 
                         if (submission != null && submission.Name != userWhichUpvoted)
@@ -123,7 +123,7 @@ namespace Whoaverse.Utils
 
                         break;
 
-                    //upvoted before, reset
+                    // upvoted before, reset
                     case 1:
 
                         if (submission != null)
@@ -146,7 +146,7 @@ namespace Whoaverse.Utils
 
         }
 
-        //submit submission downvote
+        // submit submission downvote
         public static void DownvoteSubmission(int submissionId, string userWhichDownvoted)
         {
             int result = Voting.CheckIfVoted(userWhichDownvoted, submissionId);
@@ -157,7 +157,7 @@ namespace Whoaverse.Utils
 
                 switch (result)
                 {
-                    //never voted before
+                    // never voted before
                     case 0:
 
                         if (submission != null)
@@ -170,7 +170,7 @@ namespace Whoaverse.Utils
 
                             submission.Rank = newRank;
 
-                            //register downvote
+                            // register downvote
                             Votingtracker tmpVotingTracker = new Votingtracker();
                             tmpVotingTracker.MessageId = submissionId;
                             tmpVotingTracker.UserName = userWhichDownvoted;
@@ -181,7 +181,7 @@ namespace Whoaverse.Utils
 
                         break;
 
-                    //upvoted before, turn upvote to downvote
+                    // upvoted before, turn upvote to downvote
                     case 1:
 
                         if (submission != null)
@@ -195,7 +195,7 @@ namespace Whoaverse.Utils
 
                             submission.Rank = newRank;
 
-                            //register Turn DownVote To UpVote
+                            // register Turn DownVote To UpVote
                             var votingTracker = db.Votingtrackers
                                 .Where(b => b.MessageId == submissionId && b.UserName == userWhichDownvoted)
                                 .FirstOrDefault();
@@ -209,7 +209,7 @@ namespace Whoaverse.Utils
 
                         break;
 
-                    //downvoted before, reset
+                    // downvoted before, reset
                     case -1:
 
                         if (submission != null)

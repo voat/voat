@@ -49,16 +49,14 @@
 
         @foreach (var subverse in Model)
         {
-            @Html.Partial("_SubscribedSubverseDetails",subverse);
+            @Html.Partial("_SubscribedSubverseDetails", subverse);
         }
 
     </div>
 
-    @{
-        if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+    @if (Model.PageCount > 1)
+    {
+        @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
     }
 
 </div>

@@ -126,17 +126,33 @@ namespace Whoaverse.Controllers
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow)
         {
-            ViewBag.SelectedSubverse = subversetoshow;
+            string queryString = Request.QueryString["subversetoshow"];
+
+            if (queryString != null)
+            {
+                ViewBag.SelectedSubverse = queryString;
+            }
+            else if (subversetoshow != null)
+            {
+                ViewBag.SelectedSubverse = subversetoshow;
+            }
+            else
+            {
+                return View("~/Views/Errors/Error.cshtml");
+            }
 
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("~/Views/Errors/Error.cshtml");
             }
+
             Message message = db.Messages.Find(id);
+
             if (message == null)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
+
             return View(message);
         }
 
@@ -146,7 +162,7 @@ namespace Whoaverse.Controllers
             return View("~/Views/Errors/Error_404.cshtml");
         }
 
-        // POST: submitcomment
+        // POST: submitcomment, adds a new root comment
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -162,9 +178,105 @@ namespace Whoaverse.Controllers
 
             if (ModelState.IsValid)
             {
+                //TODO: check if user is shadowbanned and flag the comment
                 db.Comments.Add(comment);
                 await db.SaveChangesAsync();
 
+                // send comment reply notification to parent comment author if the comment is not a new root comment
+                if (comment.ParentId != null && comment.CommentContent != null)
+                {
+                    // find the parent comment and its author
+                    var parentComment = db.Comments.Find(comment.ParentId);
+                    if (parentComment != null)
+                    {
+                        // check if recipient exists
+                        if (Whoaverse.Utils.User.UserExists(parentComment.Name))
+                        {
+                            // do not send notification if author is the same as comment author
+                            if (parentComment.Name != User.Identity.Name)
+                            {
+                                // send the message
+                                var commentReplyNotification = new Commentreplynotification();
+                                var commentMessage = db.Messages.Find(comment.MessageId);
+                                if (commentMessage != null)
+                                {
+                                    commentReplyNotification.CommentId = comment.Id;
+                                    commentReplyNotification.SubmissionId = commentMessage.Id;
+                                    commentReplyNotification.Recipient = parentComment.Name;
+                                    commentReplyNotification.Sender = User.Identity.Name;
+                                    commentReplyNotification.Body = comment.CommentContent;
+                                    commentReplyNotification.Subverse = commentMessage.Subverse;
+                                    commentReplyNotification.Status = true;
+                                    commentReplyNotification.Timestamp = System.DateTime.Now;
+
+                                    // self = type 1, url = type 2
+                                    if (parentComment.Message.Type == 1)
+                                    {
+                                        commentReplyNotification.Subject = parentComment.Message.Title;
+                                    }
+                                    else
+                                    {
+                                        commentReplyNotification.Subject = parentComment.Message.Linkdescription;
+                                    }
+
+                                    db.Commentreplynotifications.Add(commentReplyNotification);
+
+                                    await db.SaveChangesAsync();
+                                }
+                                else
+                                {
+                                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // comment reply is sent to a root comment which has no parent id, trigger post reply notification
+                    var commentMessage = db.Messages.Find(comment.MessageId);
+                    if (commentMessage != null)
+                    {                        
+                        // check if recipient exists
+                        if (Whoaverse.Utils.User.UserExists(commentMessage.Name))
+                        {
+                            // do not send notification if author is the same as comment author
+                            if (commentMessage.Name != User.Identity.Name)
+                            {
+                                // send the message
+                                var postReplyNotification = new Postreplynotification();
+
+                                postReplyNotification.CommentId = comment.Id;
+                                postReplyNotification.SubmissionId = commentMessage.Id;
+                                postReplyNotification.Recipient = commentMessage.Name;
+                                postReplyNotification.Sender = User.Identity.Name;
+                                postReplyNotification.Body = comment.CommentContent;
+                                postReplyNotification.Subverse = commentMessage.Subverse;
+                                postReplyNotification.Status = true;
+                                postReplyNotification.Timestamp = System.DateTime.Now;
+
+                                // self = type 1, url = type 2
+                                if (commentMessage.Type == 1)
+                                {
+                                    postReplyNotification.Subject = commentMessage.Title;
+                                }
+                                else
+                                {
+                                    postReplyNotification.Subject = commentMessage.Linkdescription;
+                                }
+
+                                db.Postreplynotifications.Add(postReplyNotification);
+
+                                await db.SaveChangesAsync();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    }
+
+                }
                 string url = this.Request.UrlReferrer.AbsolutePath;
                 return Redirect(url);
             }
@@ -218,17 +330,16 @@ namespace Whoaverse.Controllers
             if (commentToDelete != null)
             {
                 string commentSubverse = commentToDelete.Message.Subverse;
-                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == commentToDelete.Message.Subverse && n.Power == 1).FirstOrDefault();
 
                 // delete comment if the comment author is currently logged in user
                 if (commentToDelete.Name == User.Identity.Name)
                 {
                     commentToDelete.Name = "deleted";
-                    commentToDelete.CommentContent = "deleted";
+                    commentToDelete.CommentContent = "deleted by author";
                     await db.SaveChangesAsync();
                 }
                 // delete comment if delete request is issued by subverse moderator
-                else if (subverseOwner != null && subverseOwner.Username == User.Identity.Name)
+                else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
                 {
                     commentToDelete.Name = "deleted";
                     commentToDelete.CommentContent = "deleted by a moderator";
@@ -281,15 +392,13 @@ namespace Whoaverse.Controllers
 
             if (submissionToDelete != null)
             {
-                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName == submissionToDelete.Subverse && n.Power == 1).FirstOrDefault();
-
                 if (submissionToDelete.Name == User.Identity.Name)
                 {
                     submissionToDelete.Name = "deleted";
 
                     if (submissionToDelete.Type == 1)
                     {
-                        submissionToDelete.MessageContent = "deleted";
+                        submissionToDelete.MessageContent = "deleted by author";
                     }
                     else
                     {
@@ -299,7 +408,7 @@ namespace Whoaverse.Controllers
                     await db.SaveChangesAsync();
                 }
                 // delete submission if delete request is issued by subverse moderator
-                else if (submissionToDelete != null && subverseOwner.Username == User.Identity.Name || submissionToDelete != null && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
+                else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
                 {
                     submissionToDelete.Name = "deleted";
 
@@ -314,7 +423,6 @@ namespace Whoaverse.Controllers
 
                     await db.SaveChangesAsync();
                 }
-
             }
 
             string url = this.Request.UrlReferrer.AbsolutePath;
@@ -344,7 +452,8 @@ namespace Whoaverse.Controllers
             if (ModelState.IsValid)
             {
                 // check if subverse exists
-                if (db.Subverses.Find(message.Subverse) != null && message.Subverse != "all")
+                var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
+                if (targetSubverse != null && message.Subverse != "all")
                 {
 
                     // submission is a link post
@@ -354,6 +463,13 @@ namespace Whoaverse.Controllers
                         try
                         {
                             string domain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(message.MessageContent);
+
+                            // check if hostname is banned before accepting submission
+                            if (Utils.BanningUtility.IsHostnameBanned(domain))
+                            {
+                                ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
+                                return View();
+                            }
 
                             // if domain is youtube, try generating a thumbnail for the video
                             if (domain == "youtube.com")
@@ -376,9 +492,12 @@ namespace Whoaverse.Controllers
                             }
 
                             // trim trailing blanks from subverse name if a user mistakenly types them
-                            message.Subverse = message.Subverse.Trim();
+                            message.Subverse = targetSubverse.name;
 
-                            message.Likes = 0;
+                            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                            message.Date = System.DateTime.Now;
+
+                            message.Likes = 1;
 
                             // restrict incoming submissions to announcements subverse (temporary hard-code solution
                             // TODO: add global administrators table with different access levels
@@ -405,12 +524,15 @@ namespace Whoaverse.Controllers
                         }
                     }
                     else if (message.Type == 1 && message.Title != null)
-                    {                    
+                    {
                         // submission is a self post
                         // trim trailing blanks from subverse name if a user mistakenly types them
-                        message.Subverse = message.Subverse.Trim();
+                        message.Subverse = targetSubverse.name;
 
-                        message.Likes = 0;
+                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                        message.Date = System.DateTime.Now;
+
+                        message.Likes = 1;
 
                         // restrict incoming submissions to announcements subverse (temporary hard-code solution
                         // TODO: add global administrators table with different access levels
@@ -429,7 +551,7 @@ namespace Whoaverse.Controllers
                             ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
                             return View();
                         }
-                    }                    
+                    }
 
                     return RedirectToRoute(
                         "SubverseComments",
@@ -455,6 +577,7 @@ namespace Whoaverse.Controllers
 
         }
 
+        // GET: user/id
         public ActionResult UserProfile(string id, int? page, string whattodisplay)
         {
             ViewBag.SelectedSubverse = "user";
@@ -503,14 +626,34 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            //get only submissions from default subverses, order by rank
             try
             {
-                var submissions = (from message in db.Messages
-                                   join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                   where message.Name != "deleted"
-                                   select message).OrderByDescending(s => s.Rank).ToList();
-                return View(submissions.ToPagedList(pageNumber, pageSize));
+                // show only submissions from subverses that user is subscribed to if user is logged in
+                // also do a check so that user actually has subscriptions
+                if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                {
+                    var submissions = (from message in db.Messages
+                                       join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
+                                       join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
+                                       where message.Name != "deleted"
+                                       select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Rank).Take(1000).ToList();
+
+                    return View(submissions.ToPagedList(pageNumber, pageSize));
+                }
+                else
+                {
+                    //get only submissions from default subverses, order by rank
+                    var submissions = (from message in db.Messages
+                                       join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                       where message.Name != "deleted"
+                                       select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Rank).Take(1000).ToList();
+
+                    return View(submissions.ToPagedList(pageNumber, pageSize));
+                }
             }
             catch (Exception)
             {
@@ -520,19 +663,13 @@ namespace Whoaverse.Controllers
 
         public ActionResult @New(int? page, string sortingmode)
         {
-            //sortingmode: new, contraversial, hot, etc
+            // sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            //get only submissions from default subverses, sort by date
-            var submissions = (from message in db.Messages
-                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                               where message.Name != "deleted"
-                               select message).OrderByDescending(s => s.Date).ToList();
-
-            //setup a cookie to find first time visitors and display welcome banner
+            // setup a cookie to find first time visitors and display welcome banner
             string cookieName = "NotFirstTime";
             if (this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
             {
@@ -544,22 +681,53 @@ namespace Whoaverse.Controllers
                 // add a cookie for first time visitors
                 HttpCookie cookie = new HttpCookie(cookieName);
                 cookie.Value = "whoaverse first time visitor identifier";
+                cookie.Expires = DateTime.Now.AddMonths(6);
                 this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
                 ViewBag.FirstTimeVisitor = true;
             }
 
-            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+            try
+            {
+                // show only submissions from subverses that user is subscribed to if user is logged in
+                // also do a check so that user actually has subscriptions
+                if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                {
+                    var submissions = (from message in db.Messages
+                                       join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
+                                       join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
+                                       where message.Name != "deleted"
+                                       select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Date).Take(1000).ToList();
+
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                }
+                else
+                {
+                    // get only submissions from default subverses, sort by date
+                    var submissions = (from message in db.Messages
+                                       join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                       where message.Name != "deleted"
+                                       select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Date).Take(1000).ToList();
+
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                }
+
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Home");
+            }
+
         }
 
         public ActionResult About(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
 
-            if (pagetoshow == "team")
-            {
-                return View("~/Views/About/Team.cshtml");
-            }
-            else if (pagetoshow == "intro")
+            if (pagetoshow == "intro")
             {
                 return View("~/Views/About/Intro.cshtml");
             }
@@ -578,6 +746,12 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.Message = "Whoaverse CLA";
             return View("~/Views/Legal/Cla.cshtml");
+        }
+
+        public ActionResult Welcome()
+        {
+            ViewBag.SelectedSubverse = string.Empty;
+            return View("~/Views/Welcome/Welcome.cshtml");
         }
 
         public ActionResult Help(string pagetoshow)

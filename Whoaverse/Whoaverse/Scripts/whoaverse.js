@@ -23,7 +23,15 @@ function click_voting() {
 }
 
 function mustLogin() {
-    $('#mustbeloggedinModal').modal();        
+    $('#mustbeloggedinModal').modal();
+}
+
+function notEnoughCCP() {
+    $('#notenoughccp').modal();
+}
+
+function notEnoughCCPUpVote() {
+    $('#notenoughccpupvote').modal();
 }
 
 function voteUpSubmission(submissionid) {
@@ -63,8 +71,7 @@ function voteDownSubmission(submissionid) {
     submitDownVote(submissionid);
 
     //ADD DISLIKE IF UNVOTED
-    if ($(".id-" + submissionid).children(".midcol").is(".unvoted"))
-    {
+    if ($(".id-" + submissionid).children(".midcol").is(".unvoted")) {
         $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", true) //add class dislikes
         $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
         //add downvoted arrow
@@ -95,7 +102,7 @@ function submitUpVote(messageid) {
     //alert('Now entered JS function submitUpvote');
 
     $.ajax({
-        type: "POST",       
+        type: "POST",
         url: "/vote/" + messageid + "/1"
         //success: function () {
         //    alert('Voting was sucessful!');
@@ -205,47 +212,79 @@ $(document).ready(function () {
             }
         }
     });
+
+    $('.whoaSubscriptionMenu > li').bind('mouseover', openSubMenu);
+    $('.whoaSubscriptionMenu > li').bind('mouseout', closeSubMenu);
+    function openSubMenu() { $(this).find('ul').css('visibility', 'visible'); };
+    function closeSubMenu() { $(this).find('ul').css('visibility', 'hidden'); };
 });
 
 //append a comment reply form to calling area while preventing multiple appends
 function reply(parentcommentid, messageid) {
-    var token = $("input[name='__RequestVerificationToken']").val();
-
-    var replyform = $("<div id='replyform-"
-        + parentcommentid
-        + "'>"
-        + "<form id='commentreplyform-" + parentcommentid + "' novalidate='novalidate' action='/submitcomment' method='post'>"
-        + "<input name='__RequestVerificationToken' value='" + token + "' type='hidden'>"
-        + "<input id='ParentId' name='ParentId' value='" + parentcommentid + "' type='hidden'>"
-        + "<input id='MessageId' name='MessageId' value='" + messageid + "' type='hidden'>"
-        + "<div class='row'>"
-        + "<div class='col-md-5'>"
-        + "<textarea class='form-control' cols='20' id='CommentContent' name='CommentContent' data-val-required='Comment text is required. Please fill this field.' data-val='true' rows='3'></textarea>"
-        + "<span class='field-validation-valid' data-valmsg-for='CommentContent' data-valmsg-replace='true'></span>"
-        + "</div></div>"
-        + "<input value='Submit reply' class='btn-whoaverse-paging' type='submit'>"
-        + "<button class='btn-whoaverse-paging' onclick='removereplyform("+parentcommentid+")' type='button'>Cancel</button>"
-        + "</form>"
-        + "<div class='validation-summary-valid' data-valmsg-summary='true'><ul><li style='display:none'></li></ul></div>"
-        + "<br></div>");
-    
     //exit function if the form is already being shown
     if ($("#commentreplyform-" + parentcommentid).exists()) {
         return;
     }
 
-    $("#" + parentcommentid).append(replyform);
+    var token = $("input[name='__RequestVerificationToken']").val();
+
+    var replyform = $.get(
+        "/ajaxhelpers/commentreplyform/" + parentcommentid + "/" + messageid,
+        null,
+        function (data) {
+            $("#" + parentcommentid).append(data)
+        }
+     );
 
     var form = $('#commentreplyform-' + parentcommentid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
             .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
 
-    $.validator.unobtrusive.parse(form);    
+    $.validator.unobtrusive.parse(form);
+}
+
+//post comment reply form through ajax
+function postCommentReplyAjax(senderButton) {
+    var $form = $(senderButton).parents('form');
+    $form.find("#errorMessage").toggle(false);
+
+    if ($form.find("#CommentContent").val().length > 0) {
+        $form.find("#submitbutton").val("Please wait...");
+        $form.find("#submitbutton").prop('disabled', true);
+
+        $.ajax({
+            type: "POST",
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            error: function (xhr, status, error) {
+                //do something about the error
+            },
+
+            success: function (response) {
+
+                //reload page while keeping scroll position?            
+                var parentId = $form.find("#ParentId").val();
+
+                //remove reply form
+                //removereplyform(parentId);
+
+                //TODO: load newly posted comment or just append it without page reload (best solution)           
+
+                //temporary replacement: reload entire page
+                $('body').load($(location).attr('href') + "#" + parentId);
+
+            }
+        });
+
+        return false;
+    } else {
+        $form.find("#errorMessage").toggle(true);
+    }    
 }
 
 //append a comment edit form to calling area while preventing multiple appends
 function edit(parentcommentid, messageid) {
-    
+
     //hide original text comment
     $("#" + parentcommentid).find('.usertext-body').toggle(1);
 
@@ -263,7 +302,7 @@ function edit(parentcommentid, messageid) {
 function editsubmission(submissionid) {
 
     //hide original text    
-    $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);    
+    $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
 
     //show edit form
     $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);
@@ -331,10 +370,10 @@ function hidecomment(commentid) {
     //show show hidden children button
     $("#" + commentid).prev().toggle(1);
     //hide voting icons
-    $("#" + commentid).parent().parent().find('.midcol').filter(":first").toggle(1); 
+    $("#" + commentid).parent().parent().find('.midcol').filter(":first").toggle(1);
     //hide all children
     $("#" + commentid).parent().parent().find('.child').toggle(1);
-    
+
     return (false);
 }
 
@@ -349,7 +388,7 @@ function editcommentsubmit(commentid) {
         data: JSON.stringify(commentobject),
         url: "/editcomment",
         datatype: "json",
-        success: function (data) {            
+        success: function (data) {
             $("#" + commentid).find('.md').html(data.response);
         }
     });
@@ -365,7 +404,7 @@ function deletecomment(commentid) {
 
     //hide original comment text
     $("#" + commentid).find('.md').html("[deleted]");
-    $("#" + commentid).find('.md').css("color", "gray");    
+    $("#" + commentid).find('.md').css("color", "gray");
 
     //hide comment author
     $("#" + commentid).find('.author').replaceWith(function () {
@@ -373,7 +412,7 @@ function deletecomment(commentid) {
     });
 
     //hide comment author attributes
-    $("#" + commentid).find('.userattrs').html('');    
+    $("#" + commentid).find('.userattrs').html('');
 
     //hide "are you sure" option
     toggleback(commentid);
@@ -393,7 +432,7 @@ function deletecommentsubmit(commentid) {
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify(commentobject),
         url: "/deletecomment",
-        datatype: "json"        
+        datatype: "json"
     });
 
     removeeditform(commentid);
@@ -491,4 +530,67 @@ function submitUnSubscribeRequest(subverseName) {
             alert('Something went wrong while sending unsubscription request.');
         }
     });
+}
+
+//a function to load content of a self post and append it to calling object
+function loadSelfText(obj, messageId) {
+    //classes should be added later when icons are re-designed
+
+    //$(obj).toggleClass("collapsed");
+    //$(obj).toggleClass("expanded");
+
+    //fetch message content and append under class md
+    var messageContent = $.get(
+        "/ajaxhelpers/messagecontent/" + messageId,
+        null,
+        function (data) {
+            $(obj).parent().find(".expando").nextAll().find(".md").html(data)
+        }
+     );
+
+    //toggle message content display
+    //note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
+    $(obj).parent().find(".expando").next().next().next().toggle();
+}
+
+//function to post delete private message request to messaging controller and remove deleted message DOM
+function deletePrivateMessage(obj, privateMessageId) {
+    var privateMessageObject = { "privateMessageId": privateMessageId };
+
+    $(obj).html("please wait...");
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(privateMessageObject),
+        success: function () {
+            //remove message DOM
+            $("#messageContainer-" + privateMessageId).remove();
+        },
+        url: "/messaging/delete",
+        datatype: "json"
+    });
+
+    return false;
+}
+
+//function to post delete sent private message request to messaging controller and remove deleted message DOM
+function deletePrivateMessageFromSent(obj, privateMessageId) {
+    var privateMessageObject = { "privateMessageId": privateMessageId };
+
+    $(obj).html("please wait...");
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(privateMessageObject),
+        success: function () {
+            //remove message DOM
+            $("#messageContainer-" + privateMessageId).remove();
+        },
+        url: "/messaging/deletesent",
+        datatype: "json"
+    });
+
+    return false;
 }

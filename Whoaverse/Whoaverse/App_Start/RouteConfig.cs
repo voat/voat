@@ -49,14 +49,21 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "Subverses" }
             );
 
-            // /subverses
+            // /subverses/subscribed
             routes.MapRoute(
                 name: "SubscribedSubverses",
                 url: "subverses/subscribed",
                 defaults: new { controller = "Subverses", action = "SubversesSubscribed" }
             );
 
-            // /new
+            // /subverses/adultcontent
+            routes.MapRoute(
+                name: "AdultContentWarning",
+                url: "subverses/adultcontent",
+                defaults: new { controller = "Subverses", action = "AdultContentWarning" }
+            );
+
+            // /subverses/new
             routes.MapRoute(
                 name: "SubversesNew",
                 url: "subverses/{sortingmode}",
@@ -82,6 +89,55 @@ namespace Whoaverse
                 name: "user",
                 url: "user/{id}",
                 defaults: new { controller = "Home", action = "UserProfile" }
+            );
+
+            // inbox
+            routes.MapRoute(
+                name: "Inbox",
+                url: "messaging/inbox",
+                defaults: new { controller = "Messaging", action = "Inbox" }
+            );
+
+            // compose
+            routes.MapRoute(
+                name: "Compose",
+                url: "messaging/compose",
+                defaults: new { controller = "Messaging", action = "Compose" }
+            );
+
+            // compose
+            routes.MapRoute(
+                name: "Sent",
+                url: "messaging/sent",
+                defaults: new { controller = "Messaging", action = "Sent" }
+            );
+
+            // commentreplies
+            routes.MapRoute(
+                name: "CommentReplies",
+                url: "messaging/commentreplies",
+                defaults: new { controller = "Messaging", action = "InboxCommentReplies" }
+            );
+
+            // postreplies
+            routes.MapRoute(
+                name: "PostReplies",
+                url: "messaging/postreplies",
+                defaults: new { controller = "Messaging", action = "InboxPostReplies" }
+            );
+
+            // deleteprivatemessage
+            routes.MapRoute(
+                name: "DeletePrivateMessage",
+                url: "messaging/delete",
+                defaults: new { controller = "Messaging", action = "DeletePrivateMessage" }
+            );
+
+            // deleteprivatemessagefromsent
+            routes.MapRoute(
+                name: "DeletePrivateMessageFromSent",
+                url: "messaging/deletesent",
+                defaults: new { controller = "Messaging", action = "DeletePrivateMessageFromSent" }
             );
 
             // u/someuserhere
@@ -210,6 +266,27 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "SubverseSettings" }
             );
 
+            // v/subversetoedit/about/moderators
+            routes.MapRoute(
+                name: "subverseModerators",
+                url: "v/{subversetoshow}/about/moderators",
+                defaults: new { controller = "Subverses", action = "SubverseModerators" }
+            );
+
+            // v/subversetoedit/about/moderators/add
+            routes.MapRoute(
+                name: "addSubverseModerator",
+                url: "v/{subversetoshow}/about/moderators/add",
+                defaults: new { controller = "Subverses", action = "AddModerator" }
+            );
+
+            // v/subversetoedit/about/moderators/delete
+            routes.MapRoute(
+                name: "removeSubverseModerator",
+                url: "v/{subversetoshow}/about/moderators/delete/{id}",
+                defaults: new { controller = "Subverses", action = "RemoveModerator" }
+            );
+
             // v/subversetoshow
             routes.MapRoute(
                 name: "SubverseIndex",
@@ -243,7 +320,22 @@ namespace Whoaverse
                 name: "SubverseLatestPosts",
                 url: "v/{subversetoshow}/{sortingmode}",
                 defaults: new { controller = "Subverses", action = "New" }
-            );            
+            );
+
+            // ajaxhelpers/commentreplyform
+            routes.MapRoute(
+                name: "CommentReplyForm",
+                url: "ajaxhelpers/commentreplyform/{parentCommentId}/{messageId}",
+                defaults: new { controller = "HtmlElements", action = "CommentReplyForm" }
+            ); 
+
+            // ajaxhelpers/commentreplyform
+            routes.MapRoute(
+                name: "MessageContent",
+                url: "ajaxhelpers/messagecontent/{messageId}",
+                defaults: new { controller = "AjaxGateway", action = "MessageContent" }
+            ); 
+            
 
             routes.MapRoute(
                 name: "Default",

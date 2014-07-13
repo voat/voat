@@ -17,6 +17,12 @@
 @{
     string searchTerm = ViewBag.SearchTerm;
     string selectedSubverse = ViewBag.SelectedSubverse;
+
+    int commentContributionPoints = 0;
+    if (User.Identity.IsAuthenticated)
+    {
+        commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
+    } 
 }
 
 @using PagedList.Mvc;
@@ -27,12 +33,10 @@
     }
 </style>
 
-
-
 <div class="content" role="main">
 
     <div class="searchresults" style="display: block;">
-        Here are your search results:        
+        Here are your search results:
     </div>
 
     <br />
@@ -66,7 +70,7 @@
                 <p class="parent"></p>
                 <span class="rank">@counter</span>
 
-                @Html.Partial("_votingIconsSubmission", submission)
+                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
                 @Html.Partial("_Submission", submission)
 
                 <div class="child"></div>
@@ -77,11 +81,9 @@
 
     </div>
 
-    @{
-        if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action("", new { page, q = searchTerm, sub = selectedSubverse }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+    @if (Model.PageCount > 1)
+    {
+        @Html.PagedListPager(Model, page => Url.Action("", new { page, q = searchTerm, sub = selectedSubverse }), WhoaversePagerOptions.PagedListRenderOptions())
     }
 
 </div>

@@ -19,6 +19,7 @@ The following 3rd party libraries/extensions are used:
 - jQuery (http://jquery.com/)
 - Recaptcha for .NET library (http://recaptchanet.codeplex.com/)
 - Entity Framework (https://entityframework.codeplex.com/)
+- WebApiThrottle (https://github.com/stefanprodan/WebApiThrottle)
 
 ### Installation instructions
 Follow these steps to get up and running in 5 minutes:

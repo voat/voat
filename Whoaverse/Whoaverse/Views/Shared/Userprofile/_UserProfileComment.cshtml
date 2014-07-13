@@ -82,7 +82,10 @@
         <div class="entry unvoted">
             <div class="collapsed" style="display:none">
                 <a href="#" class="expand" onclick="return showcomment(this)">[+]</a><a href="~/user/@Model.Name" class="author gray submitter may-blank id-t2_5fggn">@Model.Name</a>
-                <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                @if (Model.Message.Name == Model.Name)
+                {
+                    <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                }
                 <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span>
                 <span class="score likes">@Model.Likes points</span>
                 <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago &nbsp;<a href="#" class="expand" onclick="return showcomment(this)">(0 children)</a>
@@ -90,7 +93,10 @@
             <div class="noncollapsed">
                 <p class="tagline">
                     <a href="#" class="expand" onclick="return hidecomment(this)">[–]</a><a href="~/user/@Model.Name" class="author submitter may-blank id-t2_5fggn">@Model.Name</a>
-                    <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                    @if (Model.Message.Name == Model.Name)
+                    {
+                        <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                    }
                     <span class="score dislikes">@Model.Dislikes points</span>
                     <span class="score unvoted">@commentScore points</span>
                     <span class="score likes">@Model.Likes points</span>
@@ -107,7 +113,7 @@
                 </form>
                 <ul class="flat-list buttons">
                     <li class="first">
-                        <a href="#" class="bylink" rel="nofollow">permalink</a>
+                        <a href="/v/@Model.Message.Subverse/comments/@Model.MessageId#@Model.Id" class="bylink" rel="nofollow">permalink</a>
                     </li>
                     <li>
                         <a href="#" class="bylink" rel="nofollow">context</a>

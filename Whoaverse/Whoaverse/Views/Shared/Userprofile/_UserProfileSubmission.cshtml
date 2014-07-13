@@ -22,18 +22,18 @@
     check if user submission is a comment, a link or a self submission
     and assign appropriate display
 
+    
+
 -->
-@{
 
+@if (Model.Type == 2)
+{
     //type 2 = urls, model.messagecontent = url, model.linkdescription = link description
-    //type 1 = message
-    if (Model.Type == 2)
-    {
-        @Html.Partial("Userprofile/_UserProfileSubmissionLink", Model);
-    }
-    else
-    {
-        @Html.Partial("Userprofile/_UserProfileSubmissionSelf", Model);
-    }
-
+    @Html.Partial("Userprofile/_UserProfileSubmissionLink", Model);
 }
+else
+{
+    //type 1 = message
+    @Html.Partial("Userprofile/_UserProfileSubmissionSelf", Model);
+}
+

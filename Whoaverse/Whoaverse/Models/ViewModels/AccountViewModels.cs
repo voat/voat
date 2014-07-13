@@ -18,14 +18,15 @@ namespace Whoaverse.Models
 {
     public class ExternalLoginConfirmationViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Username is required.")]
+        [RegularExpression("^[a-zA-Z0-9-_]+$")]
         [Display(Name = "User name")]
         public string UserName { get; set; }
     }
 
     public class ManageUserViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Current password is required.")]
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
         public string OldPassword { get; set; }
@@ -55,12 +56,12 @@ namespace Whoaverse.Models
 
     public class DeleteAccountViewModel
     {
-        [Required]        
+        [Required(ErrorMessage = "Please type the word DELETE in this field.")]        
         [RegularExpression("DELETE", ErrorMessage = "Please type the word DELETE in this field.")]
         [Display(Name = "Type DELETE to confirm")]
         public string FirstWord { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please type the word DELETE in this field.")]
         [RegularExpression("DELETE", ErrorMessage = "Please type the word DELETE in this field.")]
         [Display(Name = "Re-type DELETE to confirm")]
         [Compare("FirstWord", ErrorMessage = "Please re-type the word DELETE in this field.")]
@@ -84,8 +85,11 @@ namespace Whoaverse.Models
 
     public class RegisterViewModel
     {
+        [RegularExpression(@"^[a-zA-Z0-9][A-Za-z0-9-_]*$", ErrorMessage="The username must be alphanumeric and start with a letter or number. It may contain hyphens and underscores.")]
         [Required(ErrorMessage = "Username is required. Please fill this field.")]
+        [StringLength(20, ErrorMessage = "The username should not exceed 20 characters.")]
         [Display(Name = "User name")]
+
         public string UserName { get; set; }
 
         [Required(ErrorMessage = "A password is required. Please fill this field.")]
@@ -103,12 +107,12 @@ namespace Whoaverse.Models
 
         [DataType(DataType.Text)]
         [Display(Name = "Recovery Question")]
-        [StringLength(500, ErrorMessage="The recovery question must not exceed 500 characters.")]
+        [StringLength(500, ErrorMessage="Recovery question must not exceed 500 characters.")]
         public string RecoveryQuestion { get; set; }
 
         [DataType(DataType.Text)]
         [Display(Name = "Answer")]
-        [StringLength(50, ErrorMessage = "Answer must not exceed 50 characters.")]
+        [StringLength(50, ErrorMessage = "Recovery answer must not exceed 50 characters.")]
         public string Answer { get; set; }
     }
 

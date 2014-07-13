@@ -14,6 +14,12 @@
 
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
+
+    int commentContributionPoints = 0;
+    if (User.Identity.IsAuthenticated)
+    {
+        commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
+    }  
 }
 
 <style type="text/css">
@@ -31,8 +37,26 @@
 <!--
     display 1 submission with details and comments
 -->
+@if (!selectedSubverse.Equals("user"))
+{
+    @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new
+   {
+       selectedSubverse = selectedSubverse,
+       showingComments = true,
+       name = Model.Name,
+       date = Model.Date,
+       lastEditDate = Model.LastEditDate,
+       submissionId = Model.Id,
+       likes = Model.Likes,
+       dislikes = Model.Dislikes
+   })
 
-@Html.Partial("_SidebarSubmissionInfo", Model)
+}
+<style type="text/css">
+            @{
+                Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+            }
+</style>
 
 <div class="content" role="main">
 
@@ -45,8 +69,8 @@
             ViewBag.Title = Model.Title + " | " + selectedSubverse;
             ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
             ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
-            ViewBag.Description = ViewBag.Description ?? "whoaverse: the next frontpage of the internet";
-            @Html.Partial("_MessageSubmissionDetails", Model)
+            ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
+            @Html.Partial("_MessageSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
         }
 
         //type 2 = link submission
@@ -54,30 +78,26 @@
         {
             ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
             ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-            ViewBag.Description = ViewBag.Description ?? "whoaverse: the next frontpage of the internet";
+            ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
             //check if submission has a thumb, otherwise point to site logo
             if (Model.Thumbnail != null)
             {
-                ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Thumbs/"+@Model.Thumbnail;
+                ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Thumbs/" + @Model.Thumbnail;
             }
             else
             {
                 ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
-            }            
-            @Html.Partial("_LinkSubmissionDetails", Model)
+            }
+            @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
         }
     }
 
-
-    @{
-        //if user logged in, show add comment form
-        if (User.Identity.IsAuthenticated)
-        {
-            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
-        }
+    @if (User.Identity.IsAuthenticated)
+    //if user logged in, show add comment form
+    {
+        @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
     }
 
-    @Html.Partial("_CommentTree", Model)
+    @Html.Partial("_CommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
 
-    
 </div>

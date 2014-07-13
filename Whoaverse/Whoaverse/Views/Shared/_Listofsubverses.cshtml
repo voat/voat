@@ -31,49 +31,51 @@
         showingSubverse = null;
         selectedClass = "";
     }
-    
+
 }
 
-    <div id="sr-header-area">
-        <div class="width-clip">
-            <div class="sr-list">
-                <ul class="flat-list sr-bar hover">
-                    <li>
-                        <a href="/subverses/subscribed">my subverses</a>
-                    </li>
-                    <li class="@selectedFrontpageClass">
-                        <span class="separator">-</span><a href="/">front</a>
-                    </li>
-                    <li>
-                        <span class="separator">-</span><a href="/v/all">all</a>
-                    </li>
-                    <li>
-                        <span class="separator">-</span><a href="/random" class="random">random</a>
-                    </li>
-                </ul>
-                <ul class="flat-list sr-bar hover" id="sr-bar">
+<div id="sr-header-area">
+    <div class="width-clip">
+        <div class="sr-list">
+            <ul class="whoaSubscriptionMenu flat-list sr-bar hover">
+                @Html.Partial("_SubscriptionsHoverMenu")
+            </ul>
+            <ul class="flat-list sr-bar hover">
+                <li class="@selectedFrontpageClass">
+                    <span class="separator">-</span><a href="/">front</a>
+                </li>
+                <li>
+                    <span class="separator">-</span><a href="/v/all">all</a>
+                </li>
+                <li>
+                    <span class="separator">-</span><a href="/random" class="random">random</a>
+                </li>
+            </ul>
+            <ul class="flat-list sr-bar hover" id="sr-bar">
 
-                    @foreach (var item in Model)
+                @foreach (var item in Model)
+                {
+                    string tmpItem = "/v/" + item.name;
+
+                    if (tmpItem == showingSubverse)
                     {
-                        string tmpItem = "/v/" + item.name;
-                        
-                        if (tmpItem == showingSubverse)
-                        {
-                            selectedClass = "selected";
-                        }
-                        else
-                        {
-                            selectedClass = "";
-                        }
-
-                        <li class="@selectedClass">
-                            <span class="separator">-</span>
-                            <a href="/v/@item.name/">@item.name</a>
-                        </li>
+                        selectedClass = "selected";
+                    }
+                    else
+                    {
+                        selectedClass = "";
                     }
 
-                </ul>
+                    <li class="@selectedClass">
+                        <span class="separator">-</span>
+                        <a href="/v/@item.name/">@item.name</a>
+                    </li>
+                }
 
-            </div><a href="/subverses" id="sr-more-link">more »</a>
-        </div>
+            </ul>
+
+        </div><a href="/subverses" id="sr-more-link">more »</a>
     </div>
+</div>
+
+

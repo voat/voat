@@ -333,76 +333,6 @@ ul.flat-vert {
         margin-left: 0 !important;
     }
 
-#header {
-    border-bottom: 1px solid #5f99cf;
-    position: relative;    
-    background-image: url('../Graphics/whoaverse-bg.jpg');
-    height: 150px !important;
-    z-index: 99;
-}
-
-#header-img {
-    margin-top: 2px;
-    margin-right: 5px;
-}
-
-    #header-img.default-header {
-        text-indent: -9999px;
-        background-image: url(/Graphics/WVSprite.png);
-        background-position: 0px -313px;
-        background-repeat: no-repeat;
-        height: 40px;
-        width: 120px;
-        display: inline-block;
-        vertical-align: bottom;
-        margin-bottom: 3px;
-    }
-
-#header-top {
-    position: absolute;
-    right: 5px;
-}
-
-#header-bottom-left {
-    font-size: larger;
-    margin-top: 89px;
-    margin-left: 20px;
-}
-
-#header-bottom-right {
-    position: absolute;
-    right: 0px;
-    bottom: 0px;
-    background-color: rgba(206, 230, 255, 1);
-    padding: 4px;
-    line-height: 12px;
-    border-top-left-radius: 7px;
-}
-
-#mail {
-    position: relative;
-    top: 2px;
-    display: inline-block;
-    text-indent: -9999px;
-    overflow: hidden;
-    width: 15px;
-    height: 10px;
-}
-
-    #mail.havemail {
-        background-repeat: no-repeat;
-        width: 15px;
-	    height: 10px;
-	    background: url(/Graphics/WVSprite.png) 0 -664px;
-    }
-
-    #mail.nohavemail {
-        background-repeat: no-repeat;
-        width: 15px;
-	    height: 10px;
-	    background: url(/Graphics/WVSprite.png) 0 -664px;
-    }
-
 #modmail {
     position: relative;
     top: -2px;
@@ -542,34 +472,6 @@ ul.flat-vert {
 .drop-choices .choice.hidden {
     display: none;
 }
-
-.tabmenu {
-    list-style-type: none;
-    white-space: nowrap;
-    display: inline-block;
-    margin-top: 5px;
-    vertical-align: bottom;
-}
-
-    .tabmenu li {
-        display: inline;
-        font-weight: bold;
-        margin: 0px 3px;
-    }
-
-        .tabmenu li a {
-            padding: 2px 6px 0 6px;
-            background-color: rgba(206, 230, 255, 1);
-            color: black;
-        }
-
-        .tabmenu li.selected a {
-            color: orangered;
-            background-color: white;
-            border: 1px solid #5f99cf;
-            border-bottom: 1px solid white;
-            z-index: 100;
-        }
 
 .tabpane-content {
     border: 1px solid #5f99cf;
@@ -5016,38 +4918,6 @@ form input[type=checkbox], form input[type=radio] {
         text-align: right;
     }
 
-.thumbnail {
-    float: left;
-    font-size: 0;
-    margin-bottom: 2px;
-    overflow: hidden;    
-    max-width: 70px;
-    width: 100%;
-    height: auto;
-    margin-right: 5px;
-}
-
-    .thumbnail.nsfw {
-        height: 70px;
-        background-image: url(/Graphics/WVSprite.png);
-        background-position: 0px -359px;
-        background-repeat: no-repeat;
-    }
-
-    .thumbnail.self {
-        height: 50px;
-        background-image: url(/Graphics/WVSprite.png);
-        background-position: 0px -491px;
-        background-repeat: no-repeat;
-    }
-
-    .thumbnail.default {
-        height: 50px;
-        background-image: url(/Graphics/WVSprite.png);
-        background-position: 0px -435px;
-        background-repeat: no-repeat;
-    }
-
 .stylesheet-customize-container textarea {
     font-family: "Bitstream Vera Sans Mono",Consolas,monospace;
     margin: 0;
@@ -5525,65 +5395,6 @@ ul.tabmenu.formtab {
 .expando-content {
     display: none;
 }
-
-.expando-button {
-    float: left;
-    height: 23px;
-    width: 23px;
-    margin: 2px 5px 2px 0;
-    background: #ffffff none no-repeat scroll center center;
-}
-
-    .expando-button.selftext.collapsed {
-        width: 23px;
-	    height: 23px;
-	    background: url('/Graphics/WVSprite.png') 0 -99px;
-        background-repeat: no-repeat;
-    }
-
-        .expando-button.selftext.collapsed:hover, .eb-sch {
-            width: 23px;
-	        height: 23px;
-	        background: url('/Graphics/WVSprite.png') 0 -76px;
-            background-repeat: no-repeat;
-        }
-
-    .expando-button.selftext.expanded, .eb-se {
-        margin-bottom: 5px;
-        background-image: url(/Graphics/WVSprite.png);
-        background-position: -29px -584px;
-        background-repeat: no-repeat;
-    }
-
-        .expando-button.selftext.expanded:hover, .eb-seh {
-            background-image: url(/Graphics/WVSprite.png);
-            background-position: 0px -584px;
-            background-repeat: no-repeat;
-        }
-
-    .expando-button.video.collapsed {
-        background-image: url(/Graphics/WVSprite.png);
-        background-position: -87px -584px;
-        background-repeat: no-repeat;
-    }
-
-        .expando-button.video.collapsed:hover, .eb-vch {
-            background-image: url(/Graphics/WVSprite.png);
-            background-position: -58px -584px;
-            background-repeat: no-repeat;
-        }
-
-    .expando-button.video.expanded, .eb-ve {
-        background-image: url(/Graphics/WVSprite.png);
-        background-position: -29px -613px;
-        background-repeat: no-repeat;
-    }
-
-        .expando-button.video.expanded:hover, .eb-veh {
-            background-image: url(/Graphics/WVSprite.png);
-            background-position: 0px -613px;
-            background-repeat: no-repeat;
-        }
 
 .subreddit .usertext .md {
     padding: 2px 5px;

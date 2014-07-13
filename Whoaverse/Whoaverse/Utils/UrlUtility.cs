@@ -23,7 +23,7 @@ namespace Whoaverse.Utils
     public static class UrlUtility
     {
 
-        //return domain from URI
+        // return domain from URI
         public static string GetDomainFromUri(string completeUri)
         {
             try

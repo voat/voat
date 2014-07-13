@@ -18,21 +18,22 @@
     ViewBag.Title = "subverse: create new subverse";
 
     string loggedinUser = User.Identity.Name;
-    DateTime currentdatetime = System.DateTime.Now;    
-    
+    DateTime currentdatetime = System.DateTime.Now;
+
     using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
         <br />
         <div class="alert alert-info">You are creating a new subverse. You are awesome!</div>
+        <div class="alert alert-info">If the subverse you are trying to register is already taken and not actively used, you can try to claim it by submitting a takeover request to <a href="/v/subverserequest">/v/subverserequest</a></div>
 
         <div class="form-horizontal">
             <hr />
             @Html.ValidationSummary(true)
 
             @*Setup default values*@
-            @Html.Hidden("Creation_date", currentdatetime)            
+            @Html.Hidden("Creation_date", currentdatetime)
             @Html.Hidden("Type", 1)
             @Html.Hidden("Title", "default")
             @Html.Hidden("Owner", loggedinUser)
@@ -72,7 +73,7 @@
                         a subverse for all Star Trek fans
                     </b>
                 </div>
-            </div>            
+            </div>
 
             <div class="form-group">
                 @Html.Label("Sidebar text (optional)", htmlAttributes: new { @class = "control-label col-md-2" })
@@ -84,14 +85,14 @@
 
             <div class="panel panel-default">
                 @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
-                @Html.Recaptcha()
+                @Html.Recaptcha(theme: Recaptcha.Web.RecaptchaTheme.Clean, language: "en")
             </div>
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Create" class="btn-whoaverse" />
                 </div>
-            </div>           
+            </div>
 
         </div>
     }

@@ -21,18 +21,13 @@
                     This user is moderating:
                 </h2>
                 <div class="bottom">
-
-                    @{
-        foreach (var item in Model)
-        {
-            <p>
-                <a href="/v/@item.Value">@item.Value</a>
-            </p>
-        }
+                    @foreach (var item in Model)
+                    {
+                        <p>
+                            <a href="/v/@item.Value">@item.Value</a>
+                        </p>
                     }
-
                 </div>
-
                 <div class="clear">
                 </div>
             </div>
@@ -49,5 +44,4 @@
         </div>
     }
 }
-
 

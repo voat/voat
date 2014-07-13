@@ -1,74 +1,109 @@
 {
   "images": [
     {
-      "name": "arrow-downvote.png",
-      "width": 18,
-      "height": 19,
+      "name": "/Graphics/whoaverse_padded.png",
+      "width": 125,
+      "height": 44,
       "offsetX": 0,
       "offsetY": 0
     },
     {
-      "name": "arrow-downvoted.png",
+      "name": "/Graphics/arrow-downvote.png",
       "width": 18,
       "height": 19,
       "offsetX": 0,
-      "offsetY": 19
+      "offsetY": 44
     },
     {
-      "name": "arrow-upvote.png",
+      "name": "/Graphics/arrow-downvoted.png",
       "width": 18,
       "height": 19,
       "offsetX": 0,
-      "offsetY": 38
+      "offsetY": 63
     },
     {
-      "name": "arrow-upvoted.png",
+      "name": "/Graphics/arrow-upvote.png",
       "width": 18,
       "height": 19,
       "offsetX": 0,
-      "offsetY": 57
+      "offsetY": 82
     },
     {
-      "name": "expand-selfpost-hover.png",
+      "name": "/Graphics/arrow-upvoted.png",
+      "width": 18,
+      "height": 19,
+      "offsetX": 0,
+      "offsetY": 101
+    },
+    {
+      "name": "/Graphics/expand-selfpost-hover.png",
       "width": 23,
       "height": 23,
       "offsetX": 0,
-      "offsetY": 76
+      "offsetY": 120
     },
     {
-      "name": "expand-selfpost.png",
+      "name": "/Graphics/expand-selfpost.png",
       "width": 23,
       "height": 23,
       "offsetX": 0,
-      "offsetY": 99
+      "offsetY": 143
     },
     {
-      "name": "thumb-placeholder.png",
-      "width": 70,
-      "height": 70,
-      "offsetX": 0,
-      "offsetY": 122
-    },
-    {
-      "name": "whoaverse-mascot.png",
-      "width": 467,
-      "height": 429,
-      "offsetX": 0,
-      "offsetY": 192
-    },
-    {
-      "name": "whoaverse.png",
-      "width": 120,
-      "height": 43,
-      "offsetX": 0,
-      "offsetY": 621
-    },
-    {
-      "name": "mail-icon.png",
+      "name": "/Graphics/mail-icon.png",
       "width": 15,
       "height": 10,
       "offsetX": 0,
-      "offsetY": 664
+      "offsetY": 166
+    },
+    {
+      "name": "/Graphics/nsfw-thumb.png",
+      "width": 70,
+      "height": 70,
+      "offsetX": 0,
+      "offsetY": 176
+    },
+    {
+      "name": "/Graphics/pattern-welcome.png",
+      "width": 128,
+      "height": 128,
+      "offsetX": 0,
+      "offsetY": 246
+    },
+    {
+      "name": "/Graphics/thumb-placeholder.png",
+      "width": 70,
+      "height": 70,
+      "offsetX": 0,
+      "offsetY": 374
+    },
+    {
+      "name": "/Graphics/whoaverse-404.png",
+      "width": 450,
+      "height": 405,
+      "offsetX": 0,
+      "offsetY": 444
+    },
+    {
+      "name": "/Graphics/whoaverse-bg.jpg",
+      "width": 1920,
+      "height": 250,
+      "offsetX": 0,
+      "offsetY": 849
+    },
+    {
+      "name": "/Graphics/whoaverse-mascot.png",
+      "width": 400,
+      "height": 404,
+      "offsetX": 0,
+      "offsetY": 1099
+    },
+    {
+      "name": "/Graphics/whoaverse.png",
+      "width": 120,
+      "height": 43,
+      "offsetX": 0,
+      "offsetY": 1503
     }
   ]
 }

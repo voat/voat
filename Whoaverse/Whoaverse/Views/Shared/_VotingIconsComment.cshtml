@@ -14,7 +14,10 @@
 
 @{
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
-    
+    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
+
+    string collapsedStyle = Convert.ToString(ViewData["collapsedStyle"]);
+
     int score = (Model.Likes - Model.Dislikes);
 
     //default voting icons style
@@ -24,7 +27,7 @@
 
     if (User.Identity.IsAuthenticated)
     //LOGGED IN USERS
-    {        
+    {
         string loggedInUserName = User.Identity.Name;
         //returns -1:downvoted, 1:upvoted, or 0:not voted
         int votedOrNot = VotingComments.CheckIfVotedComment(loggedInUserName, commentId);
@@ -43,15 +46,35 @@
                 break;
         }
 
-        <div class="midcol @likesOrDislikesClass">
-            <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
-            <div class="@votingStatusClassDownArrow login-required" onclick="voteDownComment(@commentId);" role="button" aria-label="downvote" tabindex="0"></div>
+        <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
+            @if (commentContributionPoints < 1)
+            {
+                //notenoughccpupvote
+                <div class="@votingStatusClassUpArrow login-required" onclick="notEnoughCCPUpVote();" role="button" aria-label="upvote" tabindex="0"></div>
+            }
+            else
+            {
+                <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
+            }
+
+            
+
+            @if (commentContributionPoints < 100)
+            {
+                // show tooltip that downvoting is restricted
+                <div class="@votingStatusClassDownArrow login-required" onclick="notEnoughCCP();" role="button" aria-label="downvote" tabindex="0"></div>
+            }
+            else
+            {
+                <div class="@votingStatusClassDownArrow login-required" onclick="voteDownComment(@commentId);" role="button" aria-label="downvote" tabindex="0"></div>
+            }
+
         </div>
     }
     else
     //GUESTS
-    {        
-        <div class="midcol @likesOrDislikesClass">
+    {
+        <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
             <div class="@votingStatusClassUpArrow login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
             <div class="@votingStatusClassDownArrow login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
         </div>

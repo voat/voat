@@ -1,0 +1,31 @@
+﻿@using Whoaverse.Models.ViewModels
+
+@{
+    List<SubverseDetailsViewModel> subscriptionList = null;
+
+    // get user subscriptions
+    if (User.Identity.IsAuthenticated)
+    {
+        subscriptionList = Whoaverse.Utils.User.UserSubscriptions(User.Identity.Name);
+    }
+}
+
+<li>
+    <a href="#">My subverses</a>
+    <ul>
+        <li><a href="/subverses/subscribed"><b>Edit your subscriptions</b></a></li>
+
+        @if (subscriptionList != null)
+        {
+            foreach (var subverse in subscriptionList)
+            {
+                <li><a href="/v/@subverse.Name">@subverse.Name</a></li>
+            }
+        }
+        else
+        {
+            <li><a href="#">You are not subscribed to any subverses.</a></li>
+        }
+
+    </ul>
+</li>

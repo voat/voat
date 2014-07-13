@@ -1,10 +1,18 @@
 ﻿@model Whoaverse.Models.Message
 
+@{
+    int commentContributionPoints = 0;
+    if (User.Identity.IsAuthenticated)
+    {
+        commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
+    }  
+}
+
 <div class="thing id-@Model.Id even link self" onclick="handleVoting(this);" data-fullname="@Model.Id" data-ups="@Model.Votes" data-downs="0">
     <p class="parent"></p>
     <span class="rank"></span>
 
-    @Html.Partial("_votingIconsSubmission", Model)
+    @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
     @Html.Partial("_PromotedSubmission", Model)
 
     <div class="child"></div>

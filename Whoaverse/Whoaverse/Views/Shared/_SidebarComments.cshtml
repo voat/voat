@@ -1,0 +1,139 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.Subverse
+
+@using Whoaverse.Utils;
+@using Whoaverse.Models.ViewModels;
+
+@{
+    string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
+    string subverseOwner = "Atko";
+
+    var subOwner = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 1).FirstOrDefault();
+    if (subOwner != null)
+    {
+        subverseOwner = subOwner.Username;
+    }
+
+    var subModerators = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 2).ToList();
+}
+
+<div class="side">
+
+    @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel(), new ViewDataDictionary { { "SelectedSubverse", ViewBag.SelectedSubverse } })
+
+    @Html.Partial("_SideBarSubmissionInfo")
+
+    <div class="spacer">
+        <a href="/v/@Model.name/submit?linkpost=true" class="btn-whoaverse btn-block">
+            Share a link
+        </a>
+    </div>
+
+    <div class="spacer">
+        <a href="/v/@Model.name/submit" class="btn-whoaverse btn-block">
+            Start a discussion
+        </a>
+    </div>
+
+    <div class="spacer">
+        <div class="titlebox">
+            <h1 class="hover whoaversename">
+                <a href="/v/@Model.name" class="hover">@Model.name</a>
+            </h1>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
+                {
+                    <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
+                }
+                else
+                {
+                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
+                }
+            }
+            else
+            {
+                <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
+            }
+
+            <span class="subscribers">
+                <span id="subscriberCount" class="number">@ViewBag.SubscriberCount</span>
+                <span class="word">subscribers</span>
+            </span>
+            <p class="users-online fuzzed" title="logged-in users viewing this subverse in the past 15 minutes">
+                <span class="number">~@HttpContext.Current.Application["onlineVisitors"]</span>
+                <span class="word">users here now</span>
+            </p>
+            <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t5_317us4tp">
+                <input name="thing_id" value="t5_317us" type="hidden">
+                <div class="usertext-body may-blank-within">
+                    <div class="md">
+                        <p>
+                            @Html.Raw(@Formatting.FormatMessage(@Model.sidebar))
+                        </p>
+                    </div>
+                </div>
+            </form>
+            <div class="bottom">
+                created by <a href="/user/@subverseOwner" class="author may-blank id-t2_5fggn">@subverseOwner</a>
+                <span class="userattrs"></span>
+                <span class="age">a community for <time title="@Model.creation_date" datetime="@Model.creation_date">@subverseAge</time></span>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+    </div>
+    <div class="spacer">
+        <div class="sidecontentbox ">
+            <a class="helplink message-moderators-temporary-class" title="This feature is currently under development. We apologize for any inconvenience." href="#">message the moderators</a>
+            <div class="title">
+                <h1>MODERATORS</h1>
+            </div>
+            <ul class="content">
+                @foreach (var moderator in subModerators)
+                {
+                    <li>
+                        <a href="/user/@moderator.Username" class="author may-blank id-t2_5fggn">@moderator.Username</a><span class="userattrs"></span>
+                    </li>
+                }
+                <li>
+                    <a href="/user/@subverseOwner" class="author may-blank id-t2_5fggn">@subverseOwner</a>
+                    <span class="userattrs"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    @if (User.Identity.IsAuthenticated && subverseOwner == User.Identity.Name)
+    {
+        <div class="spacer">
+            <div class="sidecontentbox collapsible" id="moderation_tools">
+                <div class="title"><h1>ADMINISTRATION TOOLS</h1><span class="collapse-button">-</span></div>
+                <ul style="display: block;" class="content">
+                    <li>
+                        <ul class="flat-vert icon-menu hover">
+                            <li>
+                                <a href="/v/@Model.name/about/edit/">subverse settings</a>
+                            </li>
+                            <li>
+                                <a href="/v/@Model.name/about/moderators/">subverse moderators</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    }
+
+</div>

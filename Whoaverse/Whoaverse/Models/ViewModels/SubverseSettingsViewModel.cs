@@ -25,7 +25,7 @@ namespace Whoaverse.Models.ViewModels
         [StringLength(500, ErrorMessage = "The description is limited to 500 characters.")]
         public string Description { get; set; }
 
-        [StringLength(4000, ErrorMessage = "The stylesheet is limited to 4000 characters.")]
+        [StringLength(15000, ErrorMessage = "The stylesheet is limited to 15000 characters.")]
         public string Stylesheet { get; set; }
 
         [Required(ErrorMessage = "Please enter a sidebar text.")]
@@ -36,7 +36,7 @@ namespace Whoaverse.Models.ViewModels
         public string Submission_text { get; set; }
 
         [StringLength(10, ErrorMessage = "The subverse type limited to 10 characters.")]
-        [RegularExpression("link|self", ErrorMessage = "Please type link for link posts only and self for self posts only.")]
+        [RegularExpression("link|self", ErrorMessage = "Please type link for link and self posts only or, type self for self posts only.")]
         public string Type { get; set; }
 
         [StringLength(50, ErrorMessage = "The label for new link submissions is limited to 50 characters.")]
@@ -47,6 +47,7 @@ namespace Whoaverse.Models.ViewModels
 
         public bool? Rated_adult { get; set; }
         public bool? Allow_default { get; set; }
+        public bool? Private_subverse { get; set; }
 
     }
 }

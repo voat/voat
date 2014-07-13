@@ -33,7 +33,7 @@ namespace Whoaverse.Controllers
         public AccountController()
             : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
         {
-
+            UserManager.UserValidator = new UserValidator<ApplicationUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
         }
 
         public AccountController(UserManager<ApplicationUser> userManager)
@@ -145,7 +145,8 @@ namespace Whoaverse.Controllers
                     if (result.Succeeded)
                     {
                         await SignInAsync(user, isPersistent: false);
-                        return RedirectToAction("Index", "Home");
+                        // redirect new users to Welcome actionresult
+                        return RedirectToAction("Welcome", "Home");
                     }
                     else
                     {

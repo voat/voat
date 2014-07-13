@@ -15,10 +15,16 @@
 @using Whoaverse.Utils;
 
 @{
-    string selectedSubverse = ViewBag.SelectedSubverse;   
-    
+    string selectedSubverse = ViewBag.SelectedSubverse;
+
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
+
+    int commentContributionPoints = 0;
+    if (User.Identity.IsAuthenticated)
+    {
+        commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
+    }  
 
     if (sortingMode != "new")
     {
@@ -38,17 +44,16 @@
     }
 </style>
 
-@{
-    if (!selectedSubverse.Equals("user") && !Request.Browser.IsMobileDevice)
-    {
-        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse } )
-    }
-    <style type="text/css">
+@if (!selectedSubverse.Equals("user"))
+{
+    @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse })
+}
+
+<style type="text/css">
             @{
                 Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
             }
-    </style>
-}
+</style>
 
 <div class="content" role="main">
 
@@ -82,7 +87,7 @@
                 <p class="parent"></p>
                 <span class="rank">@counter</span>
 
-                @Html.Partial("_votingIconsSubmission", submission)
+                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
                 @Html.Partial("_Submission", submission)
 
                 <div class="child"></div>
@@ -93,11 +98,9 @@
 
     </div>
 
-    @{
-        if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+    @if (Model.PageCount > 1)
+    {
+        @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
     }
 
 </div>

@@ -43,8 +43,7 @@ namespace Whoaverse.Controllers
                 {
                     // perform downvoting or resetting
                     VotingComments.DownvoteComment(commentId, loggedInUser);
-                }   
-                
+                }                
             }
 
             Response.StatusCode = 200;

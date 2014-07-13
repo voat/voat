@@ -19,6 +19,8 @@
 
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
+    var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
+
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
 
@@ -49,6 +51,7 @@
 
         <div class="entry unvoted">
             <p class="title">
+                <span class="promoted">sticky</span>
                 <a class="title may-blank " href="@Model.MessageContent" tabindex="1" title="@Model.Linkdescription">@Model.Linkdescription</a>
                 <span class="domain">(<a href="#">@submissionDomain</a>)</span>
             </p>
@@ -58,15 +61,13 @@
             </p>
             <ul class="flat-list buttons">
                 <li class="first">
-                    @{
-                        if (Model.Comments.Count > 0)
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
-                        }
-                        else
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">discuss</a>
-                        }
+                    @if (commentCount > 0)
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">@commentCount comments</a>
+                    }
+                    else
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">discuss</a>
                     }
                 </li>
                 <li class="share">
@@ -97,15 +98,13 @@
             </p>
             <ul class="flat-list buttons">
                 <li class="first">
-                    @{
-                        if (Model.Comments.Count > 0)
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">@Model.Comments.Count comments</a>
-                        }
-                        else
-                        {
-                            <a href="@commentsUrl" class="comments may-blank">discuss</a>
-                        }
+                    @if (commentCount > 0)
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">@commentCount comments</a>
+                    }
+                    else
+                    {
+                        <a href="@commentsUrl" class="comments may-blank">discuss</a>
                     }
                 </li>
                 <li class="share">

@@ -66,27 +66,7 @@
                         @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.ConfirmPassword)
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Password recovery question</div>
-                    <div class="panel-body">
-                        <p>The password recovery question and answer is optional, if you don't want to use this, leave it blank.</p>
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.RecoveryQuestion, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-4">
-                        @Html.TextAreaFor(m => m.RecoveryQuestion, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.RecoveryQuestion)
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Answer, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-4">
-                        @Html.TextBoxFor(m => m.Answer, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Answer)
-                    </div>
-                </div>
+                </div>              
 
                 <div class="panel panel-default">
                     <div class="panel-heading">Are you a human?</div>
@@ -96,7 +76,7 @@
                 </div>
 
                 <div class="panel panel-default">
-                    @Html.Recaptcha()
+                    @Html.Recaptcha(theme: Recaptcha.Web.RecaptchaTheme.Clean, language: "en")
                 </div>
 
                 <div class="form-group">

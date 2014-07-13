@@ -15,8 +15,10 @@ All Rights Reserved.
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Whoaverse.Models;
+using Whoaverse.Models.ViewModels;
 
 namespace Whoaverse.Utils
 {
@@ -77,7 +79,7 @@ namespace Whoaverse.Utils
                         foreach (Comment c in comments)
                         {
                             c.Name = "deleted";
-                            c.CommentContent = "deleted";
+                            c.CommentContent = "deleted by user";
                             db.SaveChangesAsync();
                         }
 
@@ -88,13 +90,13 @@ namespace Whoaverse.Utils
                             if (s.Type == 1)
                             {
                                 s.Name = "deleted";
-                                s.MessageContent = "deleted";
-                                s.Title = "deleted";
+                                s.MessageContent = "deleted by user";
+                                s.Title = "deleted by user";
                             }
                             else
                             {
                                 s.Name = "deleted";
-                                s.Linkdescription = "deleted";
+                                s.Linkdescription = "deleted by user";
                                 s.MessageContent = "http://whoaverse.com";
                             }
                         }
@@ -117,8 +119,8 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Power == 1).FirstOrDefault();
-                if (subverseOwner != null && subverseOwner.Username.ToLower() == userName.ToLower())
+                var subverseOwner = db.SubverseAdmins.Where(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Power == 1).FirstOrDefault();
+                if (subverseOwner != null && subverseOwner.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -134,8 +136,8 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                var subverseModerator = db.SubverseAdmins.Where(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username.ToLower() == userName && n.Power == 2).FirstOrDefault();
-                if (subverseModerator != null && subverseModerator.Username.ToLower() == userName.ToLower())
+                var subverseModerator = db.SubverseAdmins.Where(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 2).FirstOrDefault();
+                if (subverseModerator != null && subverseModerator.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -174,7 +176,7 @@ namespace Whoaverse.Utils
                     Subscription newSubscription = new Subscription();
                     newSubscription.Username = userName;
                     newSubscription.SubverseName = subverse;
-                    db.Subscriptions.Add(newSubscription);                    
+                    db.Subscriptions.Add(newSubscription);
 
                     // record new subscription in subverse table subscribers field
                     Subverse tmpSubverse = db.Subverses.Find(subverse);
@@ -199,7 +201,7 @@ namespace Whoaverse.Utils
                     var subscription = db.Subscriptions
                                 .Where(b => b.Username == userName && b.SubverseName == subverse)
                                 .FirstOrDefault();
-                    
+
                     if (subverse != null)
                     {
                         // remove subscription record
@@ -216,6 +218,195 @@ namespace Whoaverse.Utils
                         db.SaveChanges();
                     }
 
+                }
+            }
+        }
+
+        // return subscription count for a given user
+        public static int SubscriptionCount(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                return db.Subscriptions
+                                    .Where(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                                    .Count();
+            }
+        }
+
+        // return a list of subverses user is subscribed to
+        public static List<SubverseDetailsViewModel> UserSubscriptions(string userName)
+        {
+            // get a list of subcribed subverses with details and order by subverse names, ascending
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var subscribedSubverses = from c in db.Subverses
+                                          join a in db.Subscriptions
+                                          on c.name equals a.SubverseName
+                                          where a.Username.Equals(userName)
+                                          orderby a.SubverseName ascending
+                                          select new SubverseDetailsViewModel
+                                          {
+                                              Name = c.name
+                                          };
+
+                return subscribedSubverses.ToList();
+            }
+        }
+
+        // return a list of user badges
+        public static List<Userbadge> UserBadges(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                return db.Userbadges.Include("Badge")
+                    .Where(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+        }
+
+        // check if given user has unread private messages, not including messages manually marked as unread
+        public static bool UserHasNewMessages(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var privateMessages = db.Privatemessages
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                var commentReplies = db.Commentreplynotifications
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                var postReplies = db.Postreplynotifications
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                if (privateMessages.Count() > 0 || commentReplies.Count() > 0 || postReplies.Count() > 0)
+                {
+                    var unreadPrivateMessages = privateMessages
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    var unreadCommentReplies = commentReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    var unreadPostReplies = postReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    if (unreadPrivateMessages.Count > 0 || unreadCommentReplies.Count > 0 || unreadPostReplies.Count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        // check if given user has unread comment replies and return the count
+        public static int UnreadCommentRepliesCount(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var commentReplies = db.Commentreplynotifications
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                if (commentReplies.Count() > 0)
+                {
+
+                    var unreadCommentReplies = commentReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    if (unreadCommentReplies.Count > 0)
+                    {
+                        return unreadCommentReplies.Count;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        // check if given user has unread post replies and return the count
+        public static int UnreadPostRepliesCount(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var postReplies = db.Postreplynotifications
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();
+
+                if (postReplies.Count() > 0)
+                {                   
+                    var unreadPostReplies = postReplies
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+
+                    if (unreadPostReplies.Count > 0)
+                    {
+                        return unreadPostReplies.Count;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        // check if given user has unread private messages and return the count
+        public static int UnreadPrivateMessagesCount(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var privateMessages = db.Privatemessages
+                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(s => s.Timestamp)
+                        .ThenBy(s => s.Sender)
+                        .ToList();                
+
+                if (privateMessages.Count() > 0)
+                {
+                    var unreadPrivateMessages = privateMessages
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();                    
+
+                    if (unreadPrivateMessages.Count > 0)
+                    {
+                        return unreadPrivateMessages.Count;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return 0;
                 }
             }
         }

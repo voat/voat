@@ -29,11 +29,9 @@
         @Html.Partial("Userprofile/_UserProfileComment", submission)
     }
 
-    @{
-        if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+    @if (Model.PageCount > 1)
+    {
+        @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
     }
 
 </div>

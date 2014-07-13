@@ -20,6 +20,7 @@
     string subverseOwner = "Atko";
 
     var subOwner = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 1).FirstOrDefault();
+    
     if (subOwner != null)
     {
         subverseOwner = subOwner.Username;
@@ -33,27 +34,37 @@
     @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel(), new ViewDataDictionary { { "SelectedSubverse", ViewBag.SelectedSubverse } })
 
     <div class="spacer">
+        <a href="/v/@Model.name/submit?linkpost=true" class="btn-whoaverse btn-block">
+            Share a link
+        </a>
+    </div>
+
+    <div class="spacer">
+        <a href="/v/@Model.name/submit" class="btn-whoaverse btn-block">
+            Start a discussion
+        </a>
+    </div>
+
+    <div class="spacer">
         <div class="titlebox">
             <h1 class="hover whoaversename">
                 <a href="/v/@Model.name" class="hover">@Model.name</a>
             </h1>
 
-            @{
-                if (User.Identity.IsAuthenticated)
+            @if (User.Identity.IsAuthenticated)
+            {
+                if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
                 {
-                    if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
-                    {
-                        <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
-                    }
-                    else
-                    {
-                        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
-                    }
+                    <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
                 }
                 else
                 {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
+                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
                 }
+            }
+            else
+            {
+                <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
             }
 
             <span class="subscribers">
@@ -85,17 +96,16 @@
     </div>
     <div class="spacer">
         <div class="sidecontentbox ">
-            <a class="helplink" href="#">message the moderators</a>
+            <a class="helplink message-moderators-temporary-class" title="This feature is currently under development. We apologize for any inconvenience." href="#">message the moderators</a>
             <div class="title">
                 <h1>MODERATORS</h1>
             </div>
             <ul class="content">
-                @{foreach (var moderator in subModerators)
+                @foreach (var moderator in subModerators)
                 {
                     <li>
                         <a href="/user/@moderator.Username" class="author may-blank id-t2_5fggn">@moderator.Username</a><span class="userattrs"></span>
                     </li>
-                }
                 }
                 <li>
                     <a href="/user/@subverseOwner" class="author may-blank id-t2_5fggn">@subverseOwner</a>
@@ -104,23 +114,42 @@
             </ul>
         </div>
     </div>
-    @{
-        if (User.Identity.IsAuthenticated && subverseOwner == User.Identity.Name)
-        {
-            <div class="spacer">
-                <div class="sidecontentbox collapsible" id="moderation_tools">
-                    <div class="title"><h1>MODERATION TOOLS</h1><span class="collapse-button">-</span></div>
-                    <ul style="display: block;" class="content">
-                        <li>
-                            <ul class="flat-vert icon-menu hover">
-                                <li>
-                                    <a href="/v/@Model.name/about/edit/">subverse settings</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+    @if (User.Identity.IsAuthenticated && subverseOwner == User.Identity.Name)
+    {
+        <div class="spacer">
+            <div class="sidecontentbox collapsible" id="moderation_tools">
+                <div class="title"><h1>ADMINISTRATION TOOLS</h1><span class="collapse-button">-</span></div>
+                <ul style="display: block;" class="content">
+                    <li>
+                        <ul class="flat-vert icon-menu hover">
+                            <li>
+                                <a href="/v/@Model.name/about/edit/">subverse settings</a>
+                            </li>
+                            <li>
+                                <a href="/v/@Model.name/about/moderators/">subverse moderators</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
-        }
+        </div>
     }
+    else if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
+    {
+    <div class="spacer">
+        <div class="sidecontentbox collapsible" id="moderation_tools">
+            <div class="title"><h1>ADMINISTRATION TOOLS</h1><span class="collapse-button">-</span></div>
+            <ul style="display: block;" class="content">
+                <li>
+                    <ul class="flat-vert icon-menu hover">
+                        <li>
+                            <a href="/v/@Model.name/about/edit/">subverse settings</a>
+                        </li>                        
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div> 
+    }
+
 </div>

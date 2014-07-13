@@ -9,6 +9,7 @@
 
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
+
 @using Recaptcha.Web.Mvc;
 
 @model Whoaverse.Models.AddSubmissionLinkpost
@@ -23,69 +24,66 @@
     string linkPost = Request.Params["linkpost"];
 }
 
-@{
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
 
-    using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
+    <br />
+    <div class="alert alert-info">You are submitting a link.</div>
 
-        <br />
-        <div class="alert alert-info">You are submitting a link.</div>
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true)
 
-        <div class="form-horizontal">
-            <hr />
-            @Html.ValidationSummary(true)
+        <!-- Setup default values -->
+        @Html.Hidden("Date", currentdatetime)
+        @Html.Hidden("Name", loggedinUser)
+        @Html.Hidden("Type", 2)
+        @Html.Hidden("Votes", 1)
+        @Html.Hidden("Rank", 0)
 
-            <!-- Setup default values -->
-            @Html.Hidden("Date", currentdatetime)
-            @Html.Hidden("Name", loggedinUser)
-            @Html.Hidden("Type", 2)
-            @Html.Hidden("Votes", 1)
-            @Html.Hidden("Rank", 0)
-
-            <div class="form-group">
-                @Html.Label("Title", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-9">
-                    @Html.TextBoxFor(m => m.Linkdescription, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.Linkdescription)
-                </div>
+        <div class="form-group">
+            @Html.Label("Title", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-9">
+                @Html.TextBoxFor(m => m.Linkdescription, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Linkdescription)
             </div>
+        </div>
 
-            <div class="form-group">
-                @Html.Label("Subverse", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control", @Value = ViewBag.selectedSubverse })
-                    @Html.ValidationMessageFor(model => model.Subverse)
-                </div>
+        <div class="form-group">
+            @Html.Label("Subverse", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control", @Value = ViewBag.selectedSubverse })
+                @Html.ValidationMessageFor(model => model.Subverse)
             </div>
+        </div>
 
-            <div class="form-group">
-                <div class="control-label col-md-2"></div>
-                <div class="col-md-9">
-                    popular choices:
-                    <b>
-                        videos,
-                        pics,
-                        programming,
-                        funny,
-                        science,
-                        technology,
-                        news,
-                        music
-                    </b>
-                </div>
+        <div class="form-group">
+            <div class="control-label col-md-2"></div>
+            <div class="col-md-9">
+                popular choices:
+                <b>
+                    videos,
+                    pics,
+                    programming,
+                    funny,
+                    science,
+                    technology,
+                    news,
+                    music
+                </b>
             </div>
+        </div>
 
-            <div class="form-group">
-                @Html.Label("URL", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-9">
-                    @Html.TextBoxFor(m => m.MessageContent, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.MessageContent)
-                </div>
+        <div class="form-group">
+            @Html.Label("URL", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-9">
+                @Html.TextBoxFor(m => m.MessageContent, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.MessageContent)
             </div>
+        </div>
 
-            @{
-        if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
+        @if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
         {
 
             <div class="panel panel-default">
@@ -95,18 +93,15 @@
                 </div>
             </div>
 
-                <div class="panel panel-default">
-                    @Html.Recaptcha()
-                </div>
+            <div class="panel panel-default">
+                @Html.Recaptcha(theme: Recaptcha.Web.RecaptchaTheme.Clean, language: "en")
+            </div>
         }
-            }
 
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Submit" class="btn-whoaverse" />
-                </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Submit" class="btn-whoaverse" />
             </div>
         </div>
-    }
+    </div>
 }
-

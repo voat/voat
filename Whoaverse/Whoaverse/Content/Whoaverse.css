@@ -12,6 +12,24 @@
     color: #FFF;
 }
 
+/* TAGS */
+.tagline {
+    color: #888;
+    font-size: x-small;
+}
+
+    .tagline .submitter {
+        color: #0055df;
+    }
+
+    .tagline .moderator {
+        color: #228822;
+    }
+
+    .tagline .admin {
+        color: #ff0011;
+    }
+
 /* the rest of the site 
 -----------------------------------------------------------*/
 .btn-whoaverse {
@@ -70,31 +88,78 @@
     font-family: verdana,arial,helvetica,sans-serif;
     font-size: 10px;
     font-weight: 700;
-    padding: 2px 6px;
     text-decoration: none;
     text-shadow: 0px 1px 0px #ffffff;
     text-align: center;
+    padding: 2px 6px;
 }
 
-    .btn-whoaverse-paging:hover {
-        background-color: #f6f6f6;
+.text-danger:hover {
+    color: white;
+}
+
+.unreadNotification {
+    background-color: #ff9da4 !important;
+}
+
+.tabmenu {
+    list-style-type: none;
+    white-space: nowrap;
+    display: inline-block;
+    margin-top: 5px;
+    vertical-align: bottom;
+}
+
+    .tabmenu li {
+        display: inline;
+        font-weight: bold;
+        margin: 0px 3px;
     }
 
-    .btn-whoaverse-paging:active {
-        position: relative;
-        top: 1px;
+        .tabmenu li a {
+            padding: 2px 6px 0 6px;
+            background-color: rgba(206, 230, 255, 1);
+            color: black;
+        }
+
+        .tabmenu li.selected a {
+            color: orangered;
+            background-color: white;
+            border: 1px solid #5f99cf;
+            border-bottom: 1px solid white;
+            z-index: 100;
+        }
+
+.pagination-container .btn-whoaverse-paging {
+    padding: 0px;
+}
+
+    .pagination-container .btn-whoaverse-paging a {
+        display: inline-block;
+        height: 16px;
+        width: 46px;
+        line-height: 16px;
     }
 
-    .btn-whoaverse-paging.disabled,
-    .btn-whoaverse-paging[disabled],
-    fieldset[disabled] .btn {
-        cursor: not-allowed;
-        pointer-events: none;
-        opacity: 0.65;
-        filter: alpha(opacity=65);
-        -webkit-box-shadow: none;
-        box-shadow: none;
-    }
+.btn-whoaverse-paging:hover {
+    background-color: #f6f6f6;
+}
+
+.btn-whoaverse-paging:active {
+    position: relative;
+    top: 1px;
+}
+
+.btn-whoaverse-paging.disabled,
+.btn-whoaverse-paging[disabled],
+fieldset[disabled] .btn {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
 
 .btn-whoaverse-medium {
     -moz-box-shadow: inset 0px 1px 0px 0px #ffffff;
@@ -142,6 +207,96 @@
     margin-right: 0px;
 }
 
+.alert-info {
+    color: black;
+    background-color: rgba(134, 134, 134, 1);
+}
+
+.alert-warning {
+    background-color: rgba(255, 56, 56, 1);
+}
+
+.alert {
+    border-width: 0px 0px 0px;
+    color: white;
+}
+
+.paragraph-text-left {
+    text-align: left;
+    font-size: 12px;
+}
+
+.panel {
+    border-style: solid;
+    border-color: #E7E7E7;
+    -moz-border-top-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    border-image: none;
+    border-width: 0px 1px 1px;
+    margin-bottom: 2px;
+}
+
+.panel-heading-messagetitle {
+    padding: 3px 15px;
+    border-bottom: 1px solid transparent;
+    border-left: 0px;
+    border-right: 0px;
+    border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.panel-message-body {
+    padding: 3px 15px;
+}
+
+.form-control {
+    box-shadow: 0px 0px 0px;
+}
+
+.commenttextarea {
+    line-height: 1.42857;
+    color: #555;
+    background-color: #FFF;
+    background-image: none;
+    border: 1px solid #E7E7E7;
+    border-radius: 4px;
+    font-family: verdana,arial,helvetica,sans-serif;
+    font-size: 12px;
+    display: block;
+    padding: 6px 12px;
+    width: 40%;
+}
+
+    .commenttextarea:focus {
+        border: 1px solid gray;
+    }
+
+.ikp {
+    cursor: help;
+    border-bottom: 1px dotted gray;
+}
+
+.sidebar-badge {
+    cursor: help;
+    border-bottom: 1px dotted gray;
+}
+
+.disabled-downvote {
+    cursor: help;
+}
+
+.message-moderators-temporary-class {
+    cursor: help;
+}
+
+.submissioninfo {
+    border-bottom: 1px solid #66c4e0;
+}
+
 .well {
     padding: 8px;
     border-radius: 2px;
@@ -163,8 +318,54 @@
     border: 1px solid #F0F0F0;
     display: inline-block;
     border-radius: 4px;
-    resize:horizontal;
-    min-width:40px;
+    resize: horizontal;
+    min-width: 40px;
+}
+
+#header {
+    border-bottom: 1px solid #5f99cf;
+    position: relative;
+    background-image: url('../Graphics/whoaverse-bg.jpg');
+    height: 150px !important;
+    z-index: 99;
+}
+
+#header-img {
+    margin-top: 2px;
+    margin-right: 5px;
+}
+
+    #header-img.default-header {
+        text-indent: -9999px;
+        background-image: url(/Graphics/WVSprite.png);
+        background-position: 0px -313px;
+        background-repeat: no-repeat;
+        height: 40px;
+        width: 120px;
+        display: inline-block;
+        vertical-align: bottom;
+        margin-bottom: 3px;
+    }
+
+#header-top {
+    position: absolute;
+    right: 5px;
+}
+
+#header-bottom-left {
+    font-size: larger;
+    margin-top: 89px;
+    margin-left: 20px;
+}
+
+#header-bottom-right {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(155, 204, 255, 1);
+    padding: 4px;
+    line-height: 12px;
+    border-top-left-radius: 7px;
 }
 
 .promoted {
@@ -279,81 +480,233 @@ a:visited {
     font-size: 12px;
 }
 
-/* Whoaverse Sprites
+/* WHOAVERSE SPRITE
 -----------------------------------------------------------*/
+
+.whoaverse_padded {
+    /* You may have to set 'display: block' */
+    width: 125px;
+    height: 44px;
+    background: url('/Graphics/WVSprite.png') 0 0;
+}
+
 .arrow-downvote {
     /* You may have to set 'display: block' */
-    cursor: pointer;
     width: 18px;
     height: 19px;
-    background: url('/Graphics/WVSprite.png') 0 0;
+    background: url('/Graphics/WVSprite.png') 0 -44px;
+    cursor: pointer;
 }
 
 .arrow-downvoted {
     /* You may have to set 'display: block' */
-    cursor: pointer;
     width: 18px;
     height: 19px;
-    background: url('/Graphics/WVSprite.png') 0 -19px;
+    background: url('/Graphics/WVSprite.png') 0 -63px;
+    cursor: pointer;
 }
 
 .arrow-upvote {
     /* You may have to set 'display: block' */
-    cursor: pointer;
     width: 18px;
     height: 19px;
-    background: url('/Graphics/WVSprite.png') 0 -38px;
+    background: url('/Graphics/WVSprite.png') 0 -82px;
+    cursor: pointer;
 }
 
 .arrow-upvoted {
     /* You may have to set 'display: block' */
-    cursor: pointer;
     width: 18px;
     height: 19px;
-    background: url('/Graphics/WVSprite.png') 0 -57px;
+    background: url('/Graphics/WVSprite.png') 0 -101px;
+    cursor: pointer;
 }
 
 .expand-selfpost-hover {
     /* You may have to set 'display: block' */
     width: 23px;
     height: 23px;
-    background: url('/Graphics/WVSprite.png') 0 -76px;
+    background: url('/Graphics/WVSprite.png') 0 -120px;
 }
 
 .expand-selfpost {
     /* You may have to set 'display: block' */
     width: 23px;
     height: 23px;
-    background: url('/Graphics/WVSprite.png') 0 -99px;
+    background: url('/Graphics/WVSprite.png') 0 -143px;
+}
+
+.nsfw-thumb {
+    /* You may have to set 'display: block' */
+    width: 70px;
+    height: 70px;
+    background: url('/Graphics/WVSprite.png') 0 -176px;
+}
+
+.pattern-welcome {
+    /* You may have to set 'display: block' */
+    width: 128px;
+    height: 128px;
+    background: url('/Graphics/WVSprite.png') 0 -246px;
 }
 
 .thumb-placeholder {
     /* You may have to set 'display: block' */
     width: 70px;
     height: 70px;
-    background: url('/Graphics/WVSprite.png') 0 -122px;
+    background: url('/Graphics/WVSprite.png') 0 -374px;
+}
+
+.whoaverse-404 {
+    /* You may have to set 'display: block' */
+    width: 450px;
+    height: 405px;
+    background: url('/Graphics/WVSprite.png') 0 -444px;
+}
+
+.whoaverse-bg {
+    /* You may have to set 'display: block' */
+    width: 1920px;
+    height: 250px;
+    background: url('/Graphics/WVSprite.png') 0 -849px;
 }
 
 .whoaverse-mascot {
     /* You may have to set 'display: block' */
-    width: 467px;
-    height: 429px;
-    background: url('/Graphics/WVSprite.png') 0 -192px;
+    width: 400px;
+    height: 404px;
+    background: url('/Graphics/WVSprite.png') 0 -1099px;
 }
 
 .whoaverse {
     /* You may have to set 'display: block' */
     width: 120px;
     height: 43px;
-    background: url('/Graphics/WVSprite.png') 0 -621px;
+    background: url('/Graphics/WVSprite.png') 0 -1503px;
 }
 
-.mail-icon {
-    /* You may have to set 'display: block' */
+/* END WHOAVERSE SPRITE */
+
+
+.expando-button {
+    float: left;
+    height: 23px;
+    width: 23px;
+    margin: 2px 5px 2px 0;
+    background: #ffffff none no-repeat scroll center center;
+}
+
+    .expando-button.selftext.collapsed {
+        width: 23px;
+        height: 23px;
+        background: url('/Graphics/WVSprite.png') 0 -143px;
+        background-repeat: no-repeat;
+    }
+
+        .expando-button.selftext.collapsed:hover, .eb-sch {
+            width: 23px;
+            height: 23px;
+            background: url('/Graphics/WVSprite.png') 0 -120px;
+            background-repeat: no-repeat;
+        }
+
+    .expando-button.selftext.expanded, .eb-se {
+        margin-bottom: 5px;
+        background-image: url(/Graphics/WVSprite.png);
+        background-position: -29px -584px;
+        background-repeat: no-repeat;
+    }
+
+        .expando-button.selftext.expanded:hover, .eb-seh {
+            background-image: url(/Graphics/WVSprite.png);
+            background-position: 0px -584px;
+            background-repeat: no-repeat;
+        }
+
+    .expando-button.video.collapsed {
+        background-image: url(/Graphics/WVSprite.png);
+        background-position: -87px -584px;
+        background-repeat: no-repeat;
+    }
+
+        .expando-button.video.collapsed:hover, .eb-vch {
+            background-image: url(/Graphics/WVSprite.png);
+            background-position: -58px -584px;
+            background-repeat: no-repeat;
+        }
+
+    .expando-button.video.expanded, .eb-ve {
+        background-image: url(/Graphics/WVSprite.png);
+        background-position: -29px -613px;
+        background-repeat: no-repeat;
+    }
+
+        .expando-button.video.expanded:hover, .eb-veh {
+            background-image: url(/Graphics/WVSprite.png);
+            background-position: 0px -613px;
+            background-repeat: no-repeat;
+        }
+
+
+.thumbnail {
+    float: left;
+    font-size: 0;
+    margin-bottom: 2px;
+    overflow: hidden;
+    max-width: 70px;
+    width: 100%;
+    height: 70px;
+    margin-right: 5px;
+    border: none;
+    padding: 0 0 0;
+    border-radius: 0 0 0;
+}
+
+    .thumbnail.nsfw {
+        width: 70px;
+        height: 70px;
+        background: url('/Graphics/WVSprite.png') 0 -176px;
+        background-repeat: no-repeat;
+    }
+
+    .thumbnail.self {
+        width: 70px;
+        height: 70px;
+        background: url('/Graphics/WVSprite.png') 0 -374px;
+        background-repeat: no-repeat;
+    }
+
+    .thumbnail.default {
+        width: 70px;
+        height: 70px;
+        background: url('/Graphics/WVSprite.png') 0 -374px;
+        background-repeat: no-repeat;
+    }
+
+
+#mail {
+    position: relative;
+    top: 2px;
+    display: inline-block;
+    text-indent: -9999px;
+    overflow: hidden;
     width: 15px;
     height: 10px;
-    background: url('WVSprite.png') 0 -664px;
 }
+
+    #mail.havemail {
+        background-repeat: no-repeat;
+        width: 15px;
+        height: 10px;
+        background: url(/Graphics/mail-icon-hasmail.png) repeat scroll transparent;
+    }
+
+    #mail.nohavemail {
+        width: 15px;
+        height: 10px;
+        background: url('/Graphics/WVSprite.png') repeat scroll 0 -166px transparent;
+        cursor: pointer;
+    }
 
 .heading-2 {
     color: #000;
@@ -399,4 +752,87 @@ a:visited {
     word-wrap: break-word;
     -moz-font-feature-settings: normal;
     -moz-font-language-override: normal;
+}
+
+/* Responsive optimisation for mobile phones */
+@media (max-width: 480px) {
+
+    /* make comment text area full width */
+    .commenttextarea {
+        width: 100%;
+    }
+
+    /* disable sidebar */
+    .side {
+        display: none;
+    }
+
+    /* disable subverse title */
+    .pagename {
+        display: none;
+    }
+
+    /* modify tabmenu */
+    .tabmenu {
+        margin-top: 3px;
+    }
+
+        .tabmenu li {
+            margin: 0px 0px;
+        }        
+            
+        .tabmenu li.selected a {
+                border: none;
+                background-color: rgba(172, 213, 255, 1);
+            }
+}
+
+/*main menu*/ .whoaSubscriptionMenu {
+    margin: 0;
+    padding: 0;
+}
+
+    .whoaSubscriptionMenu li {
+        list-style: none;
+        float: left;
+    }
+
+        .whoaSubscriptionMenu li a:link, .whoaSubscriptionMenu li a:visited {
+            display: block;
+            text-decoration: none;
+            padding: 0 2px;
+        }
+
+        /*sub menu*/
+        .whoaSubscriptionMenu li ul {
+            position: absolute;
+            visibility: hidden;
+            border-top: 1px solid #fff;
+            border-left: 1px solid rgba(0, 0, 0, 0.4);
+            border-right: 1px solid rgba(0, 0, 0, 0.4);
+            margin: 0;
+            padding: 0;
+        }
+
+            .whoaSubscriptionMenu li ul li {
+                display: inline;
+                float: none;
+            }
+
+                .whoaSubscriptionMenu li ul li a:link, .whoaSubscriptionMenu li ul li a:visited {
+                    background-color: #F0F0F0;
+                    width: auto;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+                }
+
+                .whoaSubscriptionMenu li ul li a:hover {
+                    background-color: #e0f1f8;
+                }
+
+.radio input[type="radio"],
+.radio-inline input[type="radio"],
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
+    position: absolute;
+    margin-left: 0;
 }

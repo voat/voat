@@ -13,6 +13,12 @@
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
 
+    Whoaverse.Models.LoginViewModel loginViewModel = new Whoaverse.Models.LoginViewModel();
+
+    string routeController = (string)ViewContext.RouteData.Values["controller"];
+    string routeAction = (string)ViewContext.RouteData.Values["action"];
+    string routeId = (string)ViewContext.RouteData.Values["id"];
+
     string sortingMode = ViewBag.SortingMode;
     string selectedUser = ViewBag.userid;
     string selectedSubverseNew = "";
@@ -25,19 +31,19 @@
 
     string whattodisplay = ViewBag.whattodisplay;
 
-    ViewBag.Title = ViewBag.Title ?? "whoaverse: the next frontpage of the internet";
+    ViewBag.Title = ViewBag.Title ?? "whoaverse: the frontpage of the universe";
     ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
     ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
-    ViewBag.Description = ViewBag.Description ?? "whoaverse: the next frontpage of the internet";
+    ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
 
-    if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains")
+    if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && selectedSubverse != "inbox" && selectedSubverse != "compose" && selectedSubverse != "sent")
     {
         selectedSubverse = "/v/" + ViewBag.SelectedSubverse;
         selectedSubverseNew = selectedSubverse + "/new";
     }
     else
     {
-        if (selectedSubverse != "user" && selectedSubverse != "domains")
+        if (selectedSubverse != "user" && selectedSubverse != "domains" && selectedSubverse != "inbox" && selectedSubverse != "compose" && selectedSubverse != "sent")
         {
             selectedSubverse = "/";
             selectedSubverseNew = "new";
@@ -127,6 +133,7 @@
         ga('create', 'UA-49743834-1', 'whoaverse.com');
         ga('require', 'displayfeatures');
         ga('send', 'pageview');
+
     </script>
 
     <link rel='shortcut icon' href="http://www.whoaverse.com/favicon.ico" type="image/x-icon" />
@@ -138,73 +145,89 @@
         @Html.Action("listofsubverses", "Home", new { activeSubverse = selectedSubverse })
         <div id="header-bottom-left">
 
-                <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
+            <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
                 <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
-                </a>
-            @{
-                if (selectedSubverse.Equals("user"))
-                {
-                    <ul class="tabmenu ">
-                        <li class="@classOverview"><a href="~/user/@selectedUser">overview</a></li>
-                        <li class="@classComments"><a href="~/user/@selectedUser/comments">comments</a></li>
-                        <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">submitted</a></li>
-                        <li><a href="/submit">submit a message</a></li>
-                        <li><a href="/submit?linkpost=true">submit a link</a></li>
-                    </ul>
-                }
-                else if (selectedSubverse.Equals("/"))
-                {
-                    <ul class="tabmenu ">
-                        <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
-                        <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                        <li><a href="/submit">submit a message</a></li>
-                        <li><a href="/submit?linkpost=true">submit a link</a></li>
-                    </ul>
-                }
-                else if (ViewBag.SelectedSubverse.Equals("domains"))
-                {
-                    if (!Request.Browser.IsMobileDevice)
-                    {
-                        <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedDomain</a></span>
-                    }
-                    <ul class="tabmenu ">
-                        <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
-                        <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                        <li><a href="/submit">submit a message</a></li>
-                        <li><a href="/submit?linkpost=true">submit a link</a></li>
-                    </ul>
-                }
-                else if (ViewBag.SelectedSubverse.Equals("subverses"))
-                {
-                    <ul class="tabmenu ">
-                        <li class="@classHot"><a href="/subverses">popular</a></li>
-                        <li class="@classNew"><a href="/subverses/new">new</a></li>
-                        <li class="@classSubscribed"><a href="/subverses/subscribed">subscribed</a></li>
-                    </ul>
-                }
-                else if (ViewBag.SelectedSubverse.Equals(string.Empty))
-                {
-                    // don't show tab menu
-                }
-                else
-                {
-                    if (!Request.Browser.IsMobileDevice)
-                    {
-                        <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
-                    }
-                    <ul class="tabmenu ">
-                        <li class="@classHot"><a href="@selectedSubverse">hot</a></li>
-                        <li class="@classNew"><a href="@selectedSubverseNew">new</a></li>
-                        <li><a href="@selectedSubverse/submit">submit a message</a></li>
-                        <li><a href="@selectedSubverse/submit?linkpost=true">submit a link</a></li>
-                    </ul>
-                }
-
+            </a>
+            @if (selectedSubverse.Equals("inbox"))
+            {
+                <ul class="tabmenu ">
+                    <li class="selected"><a href="~/messaging/inbox">Inbox</a></li>
+                    <li class="disabled"><a href="~/messaging/sent">Sent</a></li>
+                    <li class="disabled"><a href="~/messaging/compose">Compose</a></li>
+                </ul>
             }
+            else if (selectedSubverse.Equals("sent"))
+            {
+                <ul class="tabmenu ">
+                    <li class="disabled"><a href="~/messaging/inbox">Inbox</a></li>
+                    <li class="selected"><a href="~/messaging/sent">Sent</a></li>
+                    <li class="disabled"><a href="~/messaging/compose">Compose</a></li>
+                </ul>
+            }
+            else if (selectedSubverse.Equals("compose"))
+            {
+                <ul class="tabmenu ">
+                    <li class="disabled"><a href="~/messaging/inbox">Inbox</a></li>
+                    <li class="disabled"><a href="~/messaging/sent">Sent</a></li>
+                    <li class="selected"><a href="~/messaging/compose">Compose</a></li>
+                </ul>
+            }
+            else if (selectedSubverse.Equals("user"))
+            {
+                <ul class="tabmenu ">
+                    <li class="@classOverview"><a href="~/user/@selectedUser">Overview</a></li>
+                    <li class="@classComments"><a href="~/user/@selectedUser/comments">Comments</a></li>
+                    <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">Submitted</a></li>
+                    <li><a href="/submit">Start a discussion</a></li>
+                    <li><a href="/submit?linkpost=true">Share a link</a></li>
+                </ul>
+            }
+            else if (selectedSubverse.Equals("/"))
+            {
+                <ul class="tabmenu ">
+                    <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses.">Hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew" title="Show latest submissions from default subverses.">New</a></li>
+                    <li class="disabled"><a href="~/v/all/new" title="Show latest submissions from all subverses.">Discover</a></li>
+                    <li><a href="/submit">Start a discussion</a></li>
+                    <li><a href="/submit?linkpost=true">Share a link</a></li>
+                </ul>
+            }
+            else if (ViewBag.SelectedSubverse.Equals("domains"))
+            {
+                <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedDomain</a></span>
+                <ul class="tabmenu ">
+                    <li class="@classHot"><a href="@selectedSubverse">Hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew">New</a></li>
+                    <li><a href="/submit">Start a discussion</a></li>
+                    <li><a href="/submit?linkpost=true">Share a link</a></li>
+                </ul>
+            }
+            else if (ViewBag.SelectedSubverse.Equals("subverses"))
+            {
+                <ul class="tabmenu ">
+                    <li class="@classHot"><a href="/subverses">Popular</a></li>
+                    <li class="@classNew"><a href="/subverses/new">New</a></li>
+                    <li class="@classSubscribed"><a href="/subverses/subscribed">Subscribed</a></li>
+                </ul>
+            }
+            else if (ViewBag.SelectedSubverse.Equals(string.Empty))
+            {
+                // don't show tab menu
+            }
+            else
+            {
+                <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
+
+                <ul class="tabmenu ">
+                    <li class="@classHot"><a href="@selectedSubverse">Hot</a></li>
+                    <li class="@classNew"><a href="@selectedSubverseNew">New</a></li>
+                    <li><a href="@selectedSubverse/submit">Start a discussion</a></li>
+                    <li><a href="@selectedSubverse/submit?linkpost=true">Share a link</a></li>
+                </ul>
+            }
+
         </div>
-
         @Html.Partial("_LoginPartial")
-
     </div>
 
     <!-- Must be logged in Modal -->
@@ -216,40 +239,95 @@
                     <h4 class="modal-title" id="myModalLabel">Login or register</h4>
                 </div>
                 <div class="modal-body">
-                    You can login or register by clicking the buttons below.
+                    You can login if you already have an account or register by clicking the button below.
                     Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
+                    <div>
+                        @if (routeController == "Home" && routeAction == "Comments" && routeId != null)
+                        {
+                            @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId } }) } })
+                        }
+                        else
+                        {
+                            @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl(ViewContext.RouteData.Values) } })                            
+                        }
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <a class="btn btn-default" href="~/account/register" role="button">Register</a>
-                    <a class="btn btn-default" href="~/account/login?returnurl=@Url.RouteUrl(ViewContext.RouteData.Values)" role="button">Log in</a>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                    <b>@Html.ActionLink("Register", "Register", "Account")</b> if you don't have an account. You know you want to ;)
                 </div>
             </div>
         </div>
     </div>
     <!-- End Must be logged in Modal -->
+    <!-- Not enough comment contribution points Modal -->
+    <div class="modal fade" id="notenoughccp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Hi! It looks like you are new around here. Welcome to WhoaVerse!</h4>
+                </div>
+                <div class="modal-body">
+                    In order to be able to downvote comments or submissions, you need to have at least 100 comment contribution points.<br /><br />
+                    Every time someone upvotes a comment that you wrote, you gain 1 comment contribution point.<br /><br />
+                    Your comment contribution points are shown in the upper right corner like so: (14|2).<br />
+                    The first number (in this case 14), represents submission contribution points (links that you have submitted or discussions that you started).<br />
+                    The second number, in this case 2, represents your comment contribution points.<br /><br />
+                    Tip: a good way to earn more contribution points is to take part in discussions or say hi in /v/introductions.<br /><br />
+                    This requirement was established as a measure to encourage new members to get involved and participate in discussions.<br />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-whoaverse-medium" data-dismiss="modal">Ok, got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Not enough comment contribution points Modal -->
+    <!-- Not enough comment contribution points for upvoting Modal -->
+    <div class="modal fade" id="notenoughccpupvote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Hi! It looks like you are new around here. Welcome to WhoaVerse!</h4>
+                </div>
+                <div class="modal-body">
+                    In order to be able to upvote comments or submissions, you need to have at least 1 comment contribution point.<br /><br />
+                    Every time someone upvotes a comment that you wrote, you gain 1 comment contribution point.<br /><br />
+                    Your comment contribution points are shown in the upper right corner like so: (14|2).<br />
+                    The first number (in this case 14), represents submission contribution points (links that you have submitted or discussions that you started).<br />
+                    The second number, in this case 2, represents your comment contribution points.<br /><br />
+                    Tip: a good way to earn more contribution points is to take part in discussions or say hi in /v/introductions.<br /><br />
+                    This requirement was established as a measure to encourage new members to get involved and participate in discussions.<br />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-whoaverse-medium" data-dismiss="modal">Ok, got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Not enough comment contribution points for upvoting Modal -->
     @RenderBody()
 
     @Html.Partial("_Footer")
 
     <br />
 
-    @{
-        if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
-        {
-            HttpCookie cookie = new HttpCookie("NotFirstTime");
-            cookie.Value = "whoaverse first time visitor identifier";
-            HttpContext.Current.Response.Cookies.Add(cookie);
+    @if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
+    {
+        HttpCookie cookie = new HttpCookie("NotFirstTime");
+        cookie.Value = "whoaverse first time visitor identifier";
+        HttpContext.Current.Response.Cookies.Add(cookie);
 
-            <div class="eppnotice">
-                <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
-                Cookies help us deliver our services. By using our services, you agree to our use of cookies.
-            </div>
-        }
+        <div class="eppnotice">
+            <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
+            Cookies help us deliver our services. By using our services, you agree to our use of cookies.
+        </div>
     }
 
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+
 </body>
 
 </html>
