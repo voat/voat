@@ -335,14 +335,14 @@ namespace Whoaverse.Controllers
                 if (commentToDelete.Name == User.Identity.Name)
                 {
                     commentToDelete.Name = "deleted";
-                    commentToDelete.CommentContent = "deleted by author";
+                    commentToDelete.CommentContent = "deleted by author at " + System.DateTime.Now;
                     await db.SaveChangesAsync();
                 }
                 // delete comment if delete request is issued by subverse moderator
                 else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
                 {
                     commentToDelete.Name = "deleted";
-                    commentToDelete.CommentContent = "deleted by a moderator";
+                    commentToDelete.CommentContent = "deleted by a moderator at " + System.DateTime.Now;
                     await db.SaveChangesAsync();
                 }
             }
@@ -398,7 +398,7 @@ namespace Whoaverse.Controllers
 
                     if (submissionToDelete.Type == 1)
                     {
-                        submissionToDelete.MessageContent = "deleted by author";
+                        submissionToDelete.MessageContent = "deleted by author at " + System.DateTime.Now;
                     }
                     else
                     {
@@ -414,7 +414,7 @@ namespace Whoaverse.Controllers
 
                     if (submissionToDelete.Type == 1)
                     {
-                        submissionToDelete.MessageContent = "deleted by a moderator";
+                        submissionToDelete.MessageContent = "deleted by a moderator at " + System.DateTime.Now; 
                     }
                     else
                     {

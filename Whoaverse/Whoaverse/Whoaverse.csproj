@@ -371,9 +371,13 @@
     <Content Include="Graphics\arrow-downvoted.png" />
     <Content Include="Graphics\arrow-upvote.png" />
     <Content Include="Graphics\arrow-upvoted.png" />
+    <Content Include="Graphics\Badges\admin.png" />
+    <Content Include="Graphics\Badges\alpha_user.png" />
+    <Content Include="Graphics\Badges\contributor.png" />
+    <Content Include="Graphics\Badges\css_guru.png" />
     <Content Include="Graphics\Badges\developer.png" />
-    <Content Include="Graphics\Badges\globaladmin.png" />
-    <Content Include="Graphics\Badges\Supporter.png" />
+    <Content Include="Graphics\Badges\supporter.png" />
+    <Content Include="Graphics\Badges\tinkerer.png" />
     <Content Include="Graphics\expand-selfpost-hover.png" />
     <Content Include="Graphics\expand-selfpost.png" />
     <Content Include="Graphics\mail-icon-hasmail.png" />

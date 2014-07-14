@@ -49,13 +49,13 @@ namespace Whoaverse.Utils
             // Override spam filter if user has a certain link karma treshold
             if (Whoaverse.Utils.Karma.LinkKarma(loggedInUser) >= 100)
             {
-                trustedUser = true;
+                //trustedUser = true;
             }
 
             // Override spam filter if user has a certain comment karma treshold
-            if (Whoaverse.Utils.Karma.CommentKarma(loggedInUser) >= 100)
+            if (Whoaverse.Utils.Karma.CommentKarma(loggedInUser) >= 3000)
             {
-                trustedUser = true;
+                //trustedUser = true;
             }
 
             // Checks if the hashed value is contained in the Cache (indicating a repeat request)

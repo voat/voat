@@ -283,7 +283,7 @@ namespace Whoaverse.Controllers
             string loggedInUser = User.Identity.Name;
 
             var privateMessageToDelete = db.Privatemessages
-                        .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId).FirstOrDefault();
+                        .Where(s => s.Recipient.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId).FirstOrDefault();
 
             if (privateMessageToDelete != null)
             {
@@ -310,7 +310,7 @@ namespace Whoaverse.Controllers
             string loggedInUser = User.Identity.Name;
 
             var privateMessageToDelete = db.Privatemessages
-                        .Where(s => s.Sender.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId).FirstOrDefault();
+                        .Where(s => s.Sender.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId).FirstOrDefault();
 
             if (privateMessageToDelete != null)
             {

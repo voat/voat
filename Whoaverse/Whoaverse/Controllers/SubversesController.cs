@@ -144,15 +144,14 @@ namespace Whoaverse.Controllers
                 if (ModelState.IsValid)
                 {
                     var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
+
                     if (targetSubverse != null)
                     {
-
                         // restrict incoming submissions to announcements subverse (temporary hard-code solution
                         // TODO: add global administrators table with different access levels
                         if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
                         {
                             message.Subverse = targetSubverse.name;
-                            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
                             message.Date = System.DateTime.Now;
                             message.Name = User.Identity.Name;
                             db.Messages.Add(message);
@@ -161,7 +160,6 @@ namespace Whoaverse.Controllers
                         else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
                         {
                             message.Subverse = targetSubverse.name;
-                            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
                             message.Date = System.DateTime.Now;
                             message.Name = User.Identity.Name;
                             db.Messages.Add(message);
@@ -173,7 +171,7 @@ namespace Whoaverse.Controllers
                             return View();
                         }
 
-                        //get newly generated message ID and execute ranking and self upvoting                
+                        // get newly generated message ID and execute ranking and self upvoting                
                         Votingtracker tmpVotingTracker = new Votingtracker();
                         tmpVotingTracker.MessageId = message.Id;
                         tmpVotingTracker.UserName = message.Name;
