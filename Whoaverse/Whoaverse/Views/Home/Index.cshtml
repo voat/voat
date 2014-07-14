@@ -23,6 +23,7 @@
 
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
+    string classEvenOrOdd = "";
 
     if (sortingMode != "new")
     {
@@ -87,7 +88,18 @@
                 submissionClass = "";
             }
 
-            <div class="thing id-@submission.Id even link @submissionClass" onclick="handleVoting(this);" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="0">
+            if (counter % 2 == 0)
+            {
+                //is even
+                classEvenOrOdd = "even";
+            }
+            else
+            {
+                //is odd
+                classEvenOrOdd = "odd";
+            }
+            
+            <div class="thing id-@submission.Id @classEvenOrOdd link @submissionClass" onclick="handleVoting(this);" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="0">
                 <p class="parent"></p>
                 <span class="rank">@counter</span>
 
