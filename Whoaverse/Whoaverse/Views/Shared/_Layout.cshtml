@@ -24,6 +24,8 @@
     string selectedSubverseNew = "";
     string classHot = "selected";
     string classNew = "disabled";
+    string classLink = "disabled";
+    string classDiscussion = "disabled";
     string classOverview = "disabled";
     string classComments = "disabled";
     string classSubmissions = "disabled";
@@ -61,6 +63,12 @@
         {
             classComments = "selected";
             classOverview = "disabled";
+            classSubmissions = "disabled";
+        }
+        if (whattodisplay == "overview")
+        {
+            classComments = "disabled";
+            classOverview = "selected";
             classSubmissions = "disabled";
         }
         if (whattodisplay == "submissions")
@@ -184,12 +192,26 @@
             }
             else if (selectedSubverse.Equals("/"))
             {
+                if (ViewBag.action != null)
+                {
+                    if (ViewBag.action == "link")
+                    {
+                        classHot = "disabled";
+                        classLink = "selected";
+                    }
+                    else
+                    {
+                        classHot = "disabled";
+                        classDiscussion = "selected";
+                    }
+                }
+                
                 <ul class="tabmenu ">
                     <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses.">Hot</a></li>
                     <li class="@classNew"><a href="@selectedSubverseNew" title="Show latest submissions from default subverses.">New</a></li>
                     <li class="disabled"><a href="~/v/all/new" title="Show latest submissions from all subverses.">Discover</a></li>
-                    <li><a href="/submit">Start a discussion</a></li>
-                    <li><a href="/submit?linkpost=true">Share a link</a></li>
+                    <li class="@classDiscussion"><a href="/submit">Start a discussion</a></li>
+                    <li class="@classLink"><a href="/submit?linkpost=true">Share a link</a></li>
                 </ul>
             }
             else if (ViewBag.SelectedSubverse.Equals("domains"))
@@ -216,13 +238,28 @@
             }
             else
             {
+                // user is in a subverse
+                if (ViewBag.action != null)
+                {
+                    if (ViewBag.action == "link")
+                    {
+                        classHot = "disabled";
+                        classLink = "selected";
+                    }
+                    else
+                    {
+                        classHot = "disabled";
+                        classDiscussion = "selected";
+                    }
+                }
+                
                 <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
 
                 <ul class="tabmenu ">
                     <li class="@classHot"><a href="@selectedSubverse">Hot</a></li>
                     <li class="@classNew"><a href="@selectedSubverseNew">New</a></li>
-                    <li><a href="@selectedSubverse/submit">Start a discussion</a></li>
-                    <li><a href="@selectedSubverse/submit?linkpost=true">Share a link</a></li>
+                    <li class="@classDiscussion"><a href="@selectedSubverse/submit">Start a discussion</a></li>
+                    <li class="@classLink"><a href="@selectedSubverse/submit?linkpost=true">Share a link</a></li>
                 </ul>
             }
 

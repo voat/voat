@@ -272,7 +272,6 @@ namespace Whoaverse.Controllers
             return resultModel;
         }
 
-
         // GET api/userinfo
         /// <summary>
         ///  This API returns basic information about a user.
@@ -339,5 +338,60 @@ namespace Whoaverse.Controllers
             return resultModel;
         }
 
+        // GET api/submissioncomments
+        /// <summary>
+        ///  This API returns comments for a given submission id.
+        /// </summary>
+        /// <param name="submissionId">The submission Id for which to fetch comments.</param>
+        [System.Web.Http.HttpGet]
+        public IEnumerable<ApiComment> SubmissionComments(int submissionId) {
+            Message submission = db.Messages.Find(submissionId);
+
+            if (submission == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            var firstComments = from f in submission.Comments
+                                let commentScore = f.Likes - f.Dislikes
+                                where f.ParentId == null
+                                orderby commentScore descending
+                                select f;
+
+            List<ApiComment> resultList = new List<ApiComment>();
+
+            foreach (var firstComment in firstComments)
+            {
+                //do not show deleted comments unless they have replies
+                if (firstComment.Name == "deleted" && submission.Comments.Where(A => A.ParentId == firstComment.Id).Count() == 0)
+                {
+                    continue;
+                }
+
+                //@Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true } })
+                //int commentId = Convert.ToInt32(ViewData["CommentId"]);
+                //var singleComment = from c in submission.Comments where c.Id == commentId select c;
+                //var commentModel = singleComment.FirstOrDefault();
+
+                ApiComment resultModel = new ApiComment();
+
+                resultModel.Id = firstComment.Id;
+                resultModel.Date = firstComment.Date;
+                resultModel.Dislikes = firstComment.Dislikes;
+                resultModel.LastEditDate = firstComment.LastEditDate;
+                resultModel.Likes = firstComment.Likes;
+                resultModel.MessageId = firstComment.MessageId;
+                resultModel.ParentId = firstComment.ParentId;
+                resultModel.CommentContent = firstComment.CommentContent;
+                resultModel.Name = firstComment.Name;
+
+                // TODO
+                // fetch child comments
+
+                resultList.Add(resultModel);
+            }
+
+            return resultList;
+        }
     }
 }

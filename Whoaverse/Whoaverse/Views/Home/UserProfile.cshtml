@@ -13,7 +13,7 @@
 @model PagedList.IPagedList<Whoaverse.Models.Message>
 
 @{
-    ViewBag.Title = "overview for " + @ViewBag.userid;
+    ViewBag.Title = "Profile overview for " + @ViewBag.userid;
 
     //(current page number -1)*25
     int currentPageNumber = Model.PageNumber;
@@ -34,32 +34,9 @@
     <h2>Profile overview for @ViewBag.userid. To see comments, click the comments tab.</h2>
     <hr />
 
-    @foreach (var submission in Model)
-    {
-        //type 2 = link
-        //type 1 = message
-        if (submission.Type == 1)
-        {
-            submissionClass = "self";
-        }
-        else
-        {
-            submissionClass = "";
-        }
-
-        <div class="thing id-@submission.Id even link @submissionClass" onclick="handleVoting(this);" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="0">
-
-            @Html.Partial("Userprofile/_UserProfileSubmission", submission)
-
-            <div class="child"></div>
-            <div class="clearleft"><!--IE6sux--></div>
-        </div>
-
-    }
-
-    @if (Model.PageCount > 1)
-    {
-        @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-    }
+    <p class="alert alert-info">
+        This view is currently under development. If you want to see comment history for this user, please click the Comments tab above.<br /><br />
+        If you want to see submission history for this user, please click the Submitted tab above.
+    </p>
 
 </div>

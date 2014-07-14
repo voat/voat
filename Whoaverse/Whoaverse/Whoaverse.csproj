@@ -563,6 +563,7 @@
     <Content Include="Views\Account\_LoginModal.cshtml" />
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
+    <Content Include="Views\Home\UserSubmitted.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />

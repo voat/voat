@@ -13,7 +13,7 @@
 @model PagedList.IPagedList<Whoaverse.Models.Comment>
 
 @{
-    ViewBag.Title = "overview for " + @ViewBag.userid;
+    ViewBag.Title = "Comment history (most recent 200 comments) for " + @ViewBag.userid;
 }
 
 @using PagedList.Mvc;
@@ -21,7 +21,7 @@
 
 <div class="content" role="main">
 
-    <h2>Comment history for @ViewBag.userid</h2>
+    <h2>Comment history (most recent 200 comments) for @ViewBag.userid. To see submissions, click the submitted tab.</h2>
     <hr />
 
     @foreach (var submission in Model)

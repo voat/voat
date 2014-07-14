@@ -236,7 +236,7 @@ namespace Whoaverse.Controllers
                     // comment reply is sent to a root comment which has no parent id, trigger post reply notification
                     var commentMessage = db.Messages.Find(comment.MessageId);
                     if (commentMessage != null)
-                    {                        
+                    {
                         // check if recipient exists
                         if (Whoaverse.Utils.User.UserExists(commentMessage.Name))
                         {
@@ -433,10 +433,25 @@ namespace Whoaverse.Controllers
         [Authorize]
         public ActionResult Submit(string selectedsubverse)
         {
+            string linkPost = Request.Params["linkpost"];
+
+            if (linkPost != null)
+            {
+                if (linkPost == "true")
+                {
+                    ViewBag.action = "link";
+                }
+            }
+            else
+            {
+                ViewBag.action = "discussion";
+            }
+
             if (selectedsubverse != "all")
             {
-                ViewBag.selectedSubverse = selectedsubverse;
+                ViewBag.selectedSubverse = selectedsubverse;                
             }
+
             return View();
         }
 
@@ -594,7 +609,7 @@ namespace Whoaverse.Controllers
                     var userComments = from c in db.Comments.OrderByDescending(c => c.Date)
                                        where c.Name.Equals(id)
                                        select c;
-                    return View("usercomments", userComments.ToPagedList(pageNumber, pageSize));
+                    return View("UserComments", userComments.Take(200).ToPagedList(pageNumber, pageSize));
                 }
 
                 //show submissions                        
@@ -603,20 +618,21 @@ namespace Whoaverse.Controllers
                     var userSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
                                           where b.Name.Equals(id)
                                           select b;
-                    return View(userSubmissions.ToPagedList(pageNumber, pageSize));
+                    return View("UserSubmitted", userSubmissions.Take(200).ToPagedList(pageNumber, pageSize));
                 }
 
                 //default, show overview
+                ViewBag.whattodisplay = "overview";
+
                 var userDefaultSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
                                              where b.Name.Equals(id)
                                              select b;
-                return View(userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
+                return View("UserProfile", userDefaultSubmissions.Take(200).ToPagedList(pageNumber, pageSize));
             }
             else
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
-
         }
 
         public ActionResult Index(int? page)

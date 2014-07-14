@@ -57,6 +57,9 @@ namespace Whoaverse
 
             configuration.Routes.MapHttpRoute("API details for a badge", "api/badgeinfo",
                 new { controller = "WebApi", action = "BadgeInfo" });
+
+            configuration.Routes.MapHttpRoute("API comments for a single submission", "api/submissioncomments",
+                new { controller = "WebApi", action = "SubmissionComments" });
         }
     }
 }
