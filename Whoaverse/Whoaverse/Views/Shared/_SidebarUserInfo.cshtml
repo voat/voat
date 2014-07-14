@@ -59,7 +59,14 @@
                 {
                     foreach (var badge in @Whoaverse.Utils.User.UserBadges(userName))
                     {
-                        <p class="sidebar-badge" title="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()">@badge.Badge.BadgeName</p>
+                        if (badge.Badge.BadgeGraphics != null)
+                        {
+                            <img src="~/Graphics/Badges/@badge.Badge.BadgeGraphics" title="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()"/>
+                        }
+                        else
+                        {
+                            <p class="sidebar-badge" title="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()">@badge.Badge.BadgeName</p>
+                        }
                     }
                     if (userRegistrationDateTime < new DateTime(2014, 08, 1))
                     {

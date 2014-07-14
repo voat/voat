@@ -371,6 +371,9 @@
     <Content Include="Graphics\arrow-downvoted.png" />
     <Content Include="Graphics\arrow-upvote.png" />
     <Content Include="Graphics\arrow-upvoted.png" />
+    <Content Include="Graphics\Badges\developer.png" />
+    <Content Include="Graphics\Badges\globaladmin.png" />
+    <Content Include="Graphics\Badges\Supporter.png" />
     <Content Include="Graphics\expand-selfpost-hover.png" />
     <Content Include="Graphics\expand-selfpost.png" />
     <Content Include="Graphics\mail-icon-hasmail.png" />

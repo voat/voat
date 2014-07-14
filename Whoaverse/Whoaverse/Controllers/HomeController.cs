@@ -506,7 +506,7 @@ namespace Whoaverse.Controllers
                                 }
                             }
 
-                            // trim trailing blanks from subverse name if a user mistakenly types them
+                            message.Name = User.Identity.Name;
                             message.Subverse = targetSubverse.name;
 
                             // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
@@ -543,6 +543,7 @@ namespace Whoaverse.Controllers
                         // submission is a self post
                         // trim trailing blanks from subverse name if a user mistakenly types them
                         message.Subverse = targetSubverse.name;
+                        message.Name = User.Identity.Name;
 
                         // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
                         message.Date = System.DateTime.Now;
