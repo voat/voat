@@ -17,6 +17,7 @@
 
 @{
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
+    string sortingMode = Convert.ToString(ViewData["SortingMode"]);
 
     //find the comment based on the received comment id via ViewData
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
@@ -245,20 +246,37 @@
 
 @{
     //look for children comments to this root comment and display them
-    var childComments = from c in Model.Comments where c.ParentId == commentId select c;
+    IEnumerable<Whoaverse.Models.Comment> childComments;
+
+    if (sortingMode == "new")
+    {
+        childComments = from c in Model.Comments 
+                        where c.ParentId == commentId 
+                        orderby c.Date descending
+                        select c;
+    }
+    else
+    {
+        childComments = from c in Model.Comments
+                        let commentScore = c.Likes - c.Dislikes
+                        where c.ParentId == commentId
+                        orderby commentScore descending
+                        select c;
+    }    
+    
     foreach (var childComment in childComments)
     {
         //recalculate parent id score and hide hear instead of passing values around?
         if (parentIsHidden)
         {
             <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0" style="display:none">
-                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true } })
+                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode } })
             </div>
         }
         else
         {
             <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0" style="">
-                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints } })
+                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode } })
             </div>
         }
     }

@@ -15,6 +15,27 @@
 @{
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
     int startingCommentId = Convert.ToInt32(ViewData["StartingCommentId"]);
+
+    string sortingMode = Convert.ToString(ViewData["SortingMode"]);
+
+    IEnumerable<Whoaverse.Models.Comment> firstComments;
+
+    if (sortingMode == "new")
+    {
+        firstComments = from f in Model.Comments
+                        let commentScore = f.Likes - f.Dislikes
+                        where f.Id == startingCommentId
+                        orderby f.Date descending
+                        select f;
+    }
+    else
+    {
+        firstComments = from f in Model.Comments
+                        let commentScore = f.Likes - f.Dislikes
+                        where f.Id == startingCommentId
+                        orderby commentScore descending
+                        select f;
+    }  
 }
 
 <!-- show top 200 submission comments, orderby number of votes each comment has received -->
@@ -28,12 +49,7 @@
 
     <div id="siteTable_t3_24nbon" class="sitetable nestedlisting">
 
-        @{
-            var firstComments = from f in Model.Comments
-                                let commentScore = f.Likes - f.Dislikes
-                                where f.Id == startingCommentId
-                                orderby commentScore descending
-                                select f;
+        @{            
 
             foreach (var firstComment in firstComments)
             {
@@ -46,13 +62,13 @@
                 if (firstComment.Likes - firstComment.Dislikes < -3)
                 {
                     <div class="thread id-@firstComment.Id comment " data-fullname=" t1_cgkmgmm" data-ups="1" data-downs="0">
-                        @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true } })
+                        @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode } })
                     </div>
                 }
                 else
                 {
                     <div class="thread id-@firstComment.Id comment " data-fullname=" t1_cgkmgmm" data-ups="1" data-downs="0">
-                        @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false } })
+                        @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
                     </div>
                 }
 

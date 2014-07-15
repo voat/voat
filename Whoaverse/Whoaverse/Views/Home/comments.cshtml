@@ -79,6 +79,7 @@
             ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
             ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
             ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
+            
             //check if submission has a thumb, otherwise point to site logo
             if (Model.Thumbnail != null)
             {
@@ -88,6 +89,7 @@
             {
                 ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
             }
+            
             @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
         }
     }
@@ -98,14 +100,47 @@
         @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
     }
 
+    <div class="menuarea">
+        <div class="spacer">
+            <span class="dropdown-title lightdrop">sort by: </span>
+            <div class="dropdown lightdrop">
+                @if (ViewBag.StartingCommentId != null)
+                {
+                    if (ViewBag.SortingMode != null)
+                    {
+                        <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId" class="bylink" rel="nofollow">top</a></span>
+                    }
+                    else
+                    {
+                        <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId?sort=new" class="bylink" rel="nofollow">new</a></span>
+                    }
+
+                }
+                else
+                {
+                    if (ViewBag.SortingMode != null)
+                    {
+                        <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/" class="bylink" rel="nofollow">top</a></span>
+                    }
+                    else
+                    {
+                        <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/?sort=new" class="bylink" rel="nofollow">new</a></span>
+                    }                    
+                }
+                
+            </div>            
+        </div>
+        <div class="spacer"></div>
+    </div>
+
     @if (ViewBag.StartingCommentId != null)
     {
         // show comment tree for a single thread starting at passed starting comment id
-        @Html.Partial("_SingleCommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId } })
+        @Html.Partial("_SingleCommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode } })
     }
     else
     {
-        @Html.Partial("_CommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+        @Html.Partial("_CommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
     }
 
 </div>

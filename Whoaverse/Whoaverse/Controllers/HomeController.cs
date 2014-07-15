@@ -124,13 +124,18 @@ namespace Whoaverse.Controllers
         }
 
         // GET: comments for a given submission
-        public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid)
+        public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort)
         {
             string queryString = Request.QueryString["subversetoshow"];
 
             if (startingcommentid != null)
             {
                 ViewBag.StartingCommentId = startingcommentid;
+            }
+
+            if (sort != null)
+            {
+                ViewBag.SortingMode = sort;
             }
 
             if (queryString != null)
@@ -641,6 +646,7 @@ namespace Whoaverse.Controllers
             }
         }
 
+        // GET: /
         public ActionResult Index(int? page)
         {
             ViewBag.SelectedSubverse = "frontpage";
@@ -683,6 +689,7 @@ namespace Whoaverse.Controllers
             }
         }
 
+        // GET: /new
         public ActionResult @New(int? page, string sortingmode)
         {
             // sortingmode: new, contraversial, hot, etc
@@ -745,6 +752,7 @@ namespace Whoaverse.Controllers
 
         }
 
+        // GET: /about
         public ActionResult About(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -763,6 +771,7 @@ namespace Whoaverse.Controllers
             }
         }
 
+        // GET: /cla
         public ActionResult Cla()
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -776,6 +785,7 @@ namespace Whoaverse.Controllers
             return View("~/Views/Welcome/Welcome.cshtml");
         }
 
+        // GET: /help
         public ActionResult Help(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -802,6 +812,7 @@ namespace Whoaverse.Controllers
             }
         }
 
+        // GET: /help/privacy
         public ActionResult Privacy()
         {
             ViewBag.Message = "Privacy Policy";
