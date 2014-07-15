@@ -571,6 +571,7 @@
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
     <Content Include="Views\Home\UserSubmitted.cshtml" />
+    <Content Include="Views\Home\_SingleCommentTree.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />

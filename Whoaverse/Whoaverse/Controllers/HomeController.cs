@@ -124,9 +124,14 @@ namespace Whoaverse.Controllers
         }
 
         // GET: comments for a given submission
-        public ActionResult Comments(int? id, string subversetoshow)
+        public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid)
         {
             string queryString = Request.QueryString["subversetoshow"];
+
+            if (startingcommentid != null)
+            {
+                ViewBag.StartingCommentId = startingcommentid;
+            }
 
             if (queryString != null)
             {

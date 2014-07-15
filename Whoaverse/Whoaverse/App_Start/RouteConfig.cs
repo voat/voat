@@ -311,9 +311,9 @@ namespace Whoaverse
             // v/subversetoshow/comments/123456
             routes.MapRoute(
                 name: "SubverseComments",
-                url: "v/{subversetoshow}/comments/{id}",
-                defaults: new { controller = "Home", action = "Comments" }
-            );
+                url: "v/{subversetoshow}/comments/{id}/{startingcommentid}",
+                defaults: new { controller = "Home", action = "Comments", startingcommentid = UrlParameter.Optional }
+            );            
 
             // v/subversetoshow/sortingmode
             routes.MapRoute(

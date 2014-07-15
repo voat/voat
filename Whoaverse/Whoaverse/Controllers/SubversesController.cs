@@ -396,14 +396,14 @@ namespace Whoaverse.Controllers
                             }
 
                             existingSubverse.rated_adult = updatedModel.rated_adult;
+                            existingSubverse.private_subverse = updatedModel.private_subverse;
 
                             // these properties are currently not implemented but they can be saved and edited for future use
                             existingSubverse.type = updatedModel.type;
                             existingSubverse.label_submit_new_link = updatedModel.label_submit_new_link;
                             existingSubverse.label_sumit_new_selfpost = updatedModel.label_sumit_new_selfpost;
                             existingSubverse.submission_text = updatedModel.submission_text;
-                            existingSubverse.allow_default = updatedModel.allow_default;                          
-                            existingSubverse.private_subverse = updatedModel.private_subverse;
+                            existingSubverse.allow_default = updatedModel.allow_default;                            
 
                             await db.SaveChangesAsync();
 
@@ -634,7 +634,7 @@ namespace Whoaverse.Controllers
 
             if (subversetoshow != "all")
             {
-                //check if subverse exists, if not, send to a page not found error
+                // check if subverse exists, if not, send to a page not found error
                 Subverse subverse = db.Subverses.Find(subversetoshow);
                 if (subverse != null)
                 {
@@ -650,7 +650,7 @@ namespace Whoaverse.Controllers
             }
             else
             {
-                //if selected subverse is ALL, show submissions from all subverses, sorted by date
+                // if selected subverse is ALL, show submissions from all subverses, sorted by date
                 var submissions = db.Messages
                     .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true)
                     .OrderByDescending(s => s.Date).ToList();
@@ -797,6 +797,7 @@ namespace Whoaverse.Controllers
 
                                 if (isAlreadyModerator == null)
                                 {
+                                    subverseAdmin.SubverseName = subverseModel.name;
                                     db.SubverseAdmins.Add(subverseAdmin);
                                     db.SaveChanges();
                                     return RedirectToAction("SubverseModerators");
@@ -835,6 +836,7 @@ namespace Whoaverse.Controllers
                         // check if caller is subverse owner, if not, deny posting
                         if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
                         {
+                            subverseAdmin.SubverseName = subverseModel.name;
                             db.SubverseAdmins.Add(subverseAdmin);
                             db.SaveChanges();
                             return RedirectToAction("SubverseModerators");

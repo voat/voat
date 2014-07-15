@@ -207,9 +207,23 @@ fieldset[disabled] .btn {
     margin-right: 0px;
 }
 
+.alert-singlethread {
+    background: rgba(207, 207, 207, 1);
+    color: black;
+    padding: 5px;
+    margin: 15px;
+    border: 1px solid rgba(96, 96, 96, 1);
+    display: inline-block;
+    border-radius: 7px;
+}
+
 .alert-info {
     color: black;
     background-color: rgba(134, 134, 134, 1);
+}
+
+.alert-danger {
+    background-color: rgba(255, 3, 3, 1) ;
 }
 
 .alert-warning {

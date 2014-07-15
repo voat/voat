@@ -19,7 +19,7 @@
     if (User.Identity.IsAuthenticated)
     {
         commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
-    }  
+    }
 }
 
 <style type="text/css">
@@ -98,6 +98,14 @@
         @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
     }
 
-    @Html.Partial("_CommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+    @if (ViewBag.StartingCommentId != null)
+    {
+        // show comment tree for a single thread starting at passed starting comment id
+        @Html.Partial("_SingleCommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId } })
+    }
+    else
+    {
+        @Html.Partial("_CommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+    }
 
 </div>
