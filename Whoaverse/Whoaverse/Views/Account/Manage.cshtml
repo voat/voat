@@ -26,6 +26,16 @@
             <h1>Your public profile</h1>
             <p class="h6"><a href="/user/@User.Identity.Name">Click here</a> to view your public profile.</p>
             <hr />
+            <h1>User preferences</h1>
+            <h2>You can use this form to customize your WhoaVerse experience.</h2>
+            <hr />
+            @if (ViewBag.HasLocalPassword)
+            {
+                <section id="userPreferences">
+                    @Html.Action("UserPreferences")
+                </section>
+            }
+
             <h1>Change your password</h1>
             <h2>You can use this form to change your password.</h2>
             <hr />

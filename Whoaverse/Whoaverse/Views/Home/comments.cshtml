@@ -30,7 +30,14 @@
 
 <style type="text/css">
             @{
-                Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+                if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
+                {
+                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+                }
+                else if (!User.Identity.IsAuthenticated)
+                {
+                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+                }
             }
 </style>
 
@@ -54,7 +61,10 @@
 }
 <style type="text/css">
             @{
-                Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+                if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
+                {
+                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+                }
             }
 </style>
 
@@ -79,7 +89,7 @@
             ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
             ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
             ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
-            
+
             //check if submission has a thumb, otherwise point to site logo
             if (Model.Thumbnail != null)
             {
@@ -89,7 +99,7 @@
             {
                 ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
             }
-            
+
             @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
         }
     }
@@ -125,10 +135,10 @@
                     else
                     {
                         <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/?sort=new" class="bylink" rel="nofollow">new</a></span>
-                    }                    
+                    }
                 }
-                
-            </div>            
+
+            </div>
         </div>
         <div class="spacer"></div>
     </div>

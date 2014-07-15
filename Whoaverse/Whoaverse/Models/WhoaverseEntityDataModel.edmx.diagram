@@ -28,6 +28,7 @@
         <EntityTypeShape EntityType="whoaverseModel.Privatemessage" Width="1.5" PointX="10.875" PointY="0.75" />
         <EntityTypeShape EntityType="whoaverseModel.Commentreplynotification" Width="2.125" PointX="15.125" PointY="0.75" />
         <EntityTypeShape EntityType="whoaverseModel.Postreplynotification" Width="2.125" PointX="15.125" PointY="4" />
+        <EntityTypeShape EntityType="whoaverseModel.Userpreference" Width="1.5" PointX="5.375" PointY="7.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

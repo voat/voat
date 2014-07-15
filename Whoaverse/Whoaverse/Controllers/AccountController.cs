@@ -78,22 +78,22 @@ namespace Whoaverse.Controllers
 
                         // Check if correct username was entered and see if account was locked out, notify
                         if (await UserManager.IsLockedOutAsync(tmpuser.Id))
-                        {                            
+                        {
                             ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
                             return View(model);
-                        }  
+                        }
                     }
 
                     ModelState.AddModelError("", "Invalid username or password.");
                     return View(model);
-                }                              
+                }
 
                 // When token is verified correctly, clear the access failed count used for lockout
                 await UserManager.ResetAccessFailedCountAsync(user.Id);
 
                 // Sign in and continue
                 await SignInAsync(user, model.RememberMe);
-                return RedirectToLocal(returnUrl);               
+                return RedirectToLocal(returnUrl);
 
             }
 
@@ -156,7 +156,7 @@ namespace Whoaverse.Controllers
                 catch (Exception)
                 {
                     ModelState.AddModelError(string.Empty, "Something bad happened. You broke Whoaverse.");
-                }                
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -317,7 +317,7 @@ namespace Whoaverse.Controllers
                     if (result.Succeeded)
                     {
                         if (hasChangedRecoveryInfo)
-                            return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordAndRecoveryInfoSuccess});
+                            return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordAndRecoveryInfoSuccess });
                         else
                             return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
                     }
@@ -551,7 +551,70 @@ namespace Whoaverse.Controllers
             else
             {
                 return View("~/Views/Errors/Error.cshtml");
-            }                     
+            }
+        }
+
+        [ChildActionOnly]
+        public ActionResult UserPreferences()
+        {
+            try
+            {
+                using (whoaverseEntities db = new whoaverseEntities())
+                {
+                    var userPreferences = db.Userpreferences.Find(User.Identity.Name);
+
+                    if (userPreferences != null)
+                    {
+                        // load existing preferences and return to view engine
+                        UserPreferencesViewModel tmpModel = new UserPreferencesViewModel();
+                        tmpModel.Disable_custom_css = userPreferences.Disable_custom_css;
+
+                        return PartialView("_UserPreferences", tmpModel);
+                    }
+                    else
+                    {
+                        UserPreferencesViewModel tmpModel = new UserPreferencesViewModel();
+                        return PartialView("_UserPreferences", tmpModel);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return new EmptyResult();
+            }
+        }
+
+        // POST: /Account/UserPreferences
+        [Authorize]
+        [HttpPost]
+        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css")] UserPreferencesViewModel model)
+        {
+            // save changes
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var userPreferences = db.Userpreferences.Find(User.Identity.Name);
+
+                if (userPreferences != null)
+                {
+                    // modify existing preferences
+                    userPreferences.Disable_custom_css = (bool)model.Disable_custom_css;
+                    await db.SaveChangesAsync();
+                }
+                else
+                {
+                    // create a new record for this user in userpreferences table
+                    Userpreference tmpModel = new Userpreference();
+                    tmpModel.Disable_custom_css = (bool)model.Disable_custom_css;
+                    tmpModel.Username = User.Identity.Name;
+                    db.Userpreferences.Add(tmpModel);
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            //return RedirectToAction("Manage", new { Message = "Your user preferences have been saved." });
+            return RedirectToAction("Manage");
         }
 
         #region Helpers

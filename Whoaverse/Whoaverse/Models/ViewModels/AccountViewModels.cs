@@ -12,6 +12,7 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Whoaverse.Models
@@ -66,6 +67,12 @@ namespace Whoaverse.Models
         [Display(Name = "Re-type DELETE to confirm")]
         [Compare("FirstWord", ErrorMessage = "Please re-type the word DELETE in this field.")]
         public string SecondWord { get; set; }
+    }
+
+    public class UserPreferencesViewModel
+    {
+        [Display(Name = "Disable custom subverse styles")]
+        public bool Disable_custom_css { get; set; }
     }
 
     public class LoginViewModel

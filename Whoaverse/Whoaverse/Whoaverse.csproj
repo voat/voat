@@ -304,6 +304,9 @@
     <Compile Include="Models\Userbadge.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Userpreference.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\AddSubverse.cs" />
     <Compile Include="Models\AddComment.cs" />
@@ -572,6 +575,7 @@
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
     <Content Include="Views\Home\UserSubmitted.cshtml" />
     <Content Include="Views\Home\_SingleCommentTree.cshtml" />
+    <Content Include="Views\Account\_UserPreferences.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />

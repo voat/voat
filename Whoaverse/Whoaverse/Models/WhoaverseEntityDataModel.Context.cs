@@ -41,5 +41,6 @@ namespace Whoaverse.Models
         public virtual DbSet<Privatemessage> Privatemessages { get; set; }
         public virtual DbSet<Commentreplynotification> Commentreplynotifications { get; set; }
         public virtual DbSet<Postreplynotification> Postreplynotifications { get; set; }
+        public virtual DbSet<Userpreference> Userpreferences { get; set; }
     }
 }

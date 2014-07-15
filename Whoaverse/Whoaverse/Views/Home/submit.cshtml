@@ -24,7 +24,14 @@
 
 <style type="text/css">
             @{
-                Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+                if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
+                {
+                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+                }
+                else if (!User.Identity.IsAuthenticated)
+                {
+                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+                }
             }
 </style>
 

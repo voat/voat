@@ -359,7 +359,7 @@ namespace Whoaverse.Utils
                         .ToList();
 
                 if (postReplies.Count() > 0)
-                {                   
+                {
                     var unreadPostReplies = postReplies
                         .Where(s => s.Status == true && s.Markedasunread == false).ToList();
 
@@ -388,12 +388,12 @@ namespace Whoaverse.Utils
                         .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
                         .OrderBy(s => s.Timestamp)
                         .ThenBy(s => s.Sender)
-                        .ToList();                
+                        .ToList();
 
                 if (privateMessages.Count() > 0)
                 {
                     var unreadPrivateMessages = privateMessages
-                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();                    
+                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
 
                     if (unreadPrivateMessages.Count > 0)
                     {
@@ -407,6 +407,23 @@ namespace Whoaverse.Utils
                 else
                 {
                     return 0;
+                }
+            }
+        }
+
+        // check if a given user does not want to see custom CSS styles
+        public static bool CustomCSSDisabledForUser(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var result = db.Userpreferences.Find(userName);
+                if (result != null)
+                {
+                    return result.Disable_custom_css;
+                }
+                else
+                {
+                    return false;
                 }
             }
         }

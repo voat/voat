@@ -205,7 +205,7 @@
                         classDiscussion = "selected";
                     }
                 }
-                
+
                 <ul class="tabmenu ">
                     <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses.">Hot</a></li>
                     <li class="@classNew"><a href="@selectedSubverseNew" title="Show latest submissions from default subverses.">New</a></li>
@@ -252,7 +252,7 @@
                         classDiscussion = "selected";
                     }
                 }
-                
+
                 <span class="hover pagename"><a href="@selectedSubverse">@ViewBag.SelectedSubverse</a></span>
 
                 <ul class="tabmenu ">
@@ -285,7 +285,7 @@
                         }
                         else
                         {
-                            @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl(ViewContext.RouteData.Values) } })                            
+                            @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl(ViewContext.RouteData.Values) } })
                         }
                     </div>
                 </div>

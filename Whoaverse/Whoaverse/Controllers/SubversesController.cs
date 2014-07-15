@@ -403,7 +403,7 @@ namespace Whoaverse.Controllers
                             existingSubverse.label_submit_new_link = updatedModel.label_submit_new_link;
                             existingSubverse.label_sumit_new_selfpost = updatedModel.label_sumit_new_selfpost;
                             existingSubverse.submission_text = updatedModel.submission_text;
-                            existingSubverse.allow_default = updatedModel.allow_default;                            
+                            existingSubverse.allow_default = updatedModel.allow_default;
 
                             await db.SaveChangesAsync();
 
@@ -454,7 +454,7 @@ namespace Whoaverse.Controllers
                     //check if subverse exists, if not, send to a page not found error
                     Subverse subverse = db.Subverses.Find(subversetoshow);
                     if (subverse != null)
-                    {                        
+                    {
                         // check if subverse is rated adult, show a NSFW warning page before entering
                         if (subverse.rated_adult == true)
                         {
@@ -595,7 +595,7 @@ namespace Whoaverse.Controllers
         public ActionResult AdultContentWarning(string destination, bool? nsfwok)
         {
             ViewBag.SelectedSubverse = String.Empty;
-            
+
             if (destination != null)
             {
                 if (nsfwok != null && nsfwok == true)
@@ -613,12 +613,12 @@ namespace Whoaverse.Controllers
                 {
                     ViewBag.Destination = destination;
                     return View("~/Views/Subverses/AdultContentWarning.cshtml");
-                }                
+                }
             }
             else
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }            
+            }
         }
 
         public ActionResult @New(int? page, string subversetoshow, string sortingmode)
@@ -674,7 +674,7 @@ namespace Whoaverse.Controllers
                 Subverse randomSubverse;
 
                 do
-                {                    
+                {
                     int count = subverse.Count(); // 1st round-trip
                     int index = new Random().Next(count);
 
@@ -684,7 +684,7 @@ namespace Whoaverse.Controllers
                             .Where(x => x.Subverse == randomSubverse.name && x.Name != "deleted")
                             .OrderByDescending(s => s.Rank)
                             .Take(50)
-                            .ToList();                    
+                            .ToList();
 
                     if (submissions != null)
                     {
@@ -693,8 +693,8 @@ namespace Whoaverse.Controllers
                             submissionCount = submissions.Count;
                         }
                     }
-  
-                } while (submissionCount == 0);              
+
+                } while (submissionCount == 0);
 
                 return RedirectToAction("Index", "Subverses", new { subversetoshow = randomSubverse.name });
             }
@@ -812,7 +812,7 @@ namespace Whoaverse.Controllers
                                     ViewBag.SubverseName = subverseAdmin.SubverseName;
                                     ViewBag.SelectedSubverse = string.Empty;
                                     return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
-                                }                                
+                                }
                             }
                             else
                             {

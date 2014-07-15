@@ -18,6 +18,8 @@ namespace Whoaverse.Models
         public string SubverseName { get; set; }
         public string Username { get; set; }
         public int Power { get; set; }
+        public string Added_by { get; set; }
+        public Nullable<System.DateTime> Added_on { get; set; }
     
         public virtual Subverse Subverse { get; set; }
     }
