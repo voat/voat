@@ -223,7 +223,7 @@ fieldset[disabled] .btn {
 }
 
 .alert-danger {
-    background-color: rgba(255, 3, 3, 1) ;
+    background-color: rgba(255, 3, 3, 1);
 }
 
 .alert-warning {
@@ -768,38 +768,6 @@ a:visited {
     -moz-font-language-override: normal;
 }
 
-/* Responsive optimisation for mobile phones */
-@media (max-width: 480px) {
-
-    /* make comment text area full width */
-    .commenttextarea {
-        width: 100%;
-    }
-
-    /* disable sidebar */
-    .side {
-        display: none;
-    }
-
-    /* disable subverse title */
-    .pagename {
-        display: none;
-    }
-
-    /* modify tabmenu */
-    .tabmenu {
-        margin-top: 3px;
-    }
-
-        .tabmenu li {
-            margin: 0px 0px;
-        }        
-            
-        .tabmenu li.selected a {
-                border: none;
-                background-color: rgba(172, 213, 255, 1);
-            }
-}
 
 /*main menu*/ .whoaSubscriptionMenu {
     margin: 0;
@@ -849,4 +817,125 @@ a:visited {
 .checkbox-inline input[type="checkbox"] {
     position: absolute;
     margin-left: 0;
+}
+
+.deepthread a {
+    font-size: larger;
+    color: #336699;
+}
+
+    .deepthread a:hover {
+        text-decoration: underline;
+    }
+
+.comment, .content .details {
+    margin-left: 10px;
+    margin: 0px 8px 8px 10px !important;
+    padding: 5px 8px 0px 5px !important;
+    overflow: hidden !important;
+}
+
+    .comment .edit-body {
+        display: none;
+        visibility: hidden;
+    }
+
+    .comment .midcol {
+        margin-left: 0px;
+    }
+
+    .comment .title {
+        font-size: small;
+        margin-top: 10px;
+    }
+
+    .comment .midcol {
+        width: 18px;
+    }
+
+    .comment .author {
+        font-weight: bold;
+    }
+
+    .comment .collapsed {
+        font-size: x-small;
+        color: gray;
+        font-style: italic;
+        padding-left: 15px;
+        padding-bottom: 10px;
+    }
+
+        .comment .collapsed a {
+            color: gray;
+        }
+
+    .comment .expand {
+        font-style: normal;
+        margin-left: 0px;
+        margin-right: 3px;
+        padding: 1px;
+    }
+
+        .comment .expand:hover {
+            text-decoration: none;
+            color: white;
+            background-color: #369;
+        }
+
+    .comment .score {
+        font-size: x-small;
+    }
+
+    .comment .child, .comment .showreplies {
+        margin-top: 10px;
+        margin-left: 15px;
+        border-left: 1px dotted #DDF;
+    }
+
+    .comment .showreplies {
+        display: block;
+        margin-top: 7px;
+        margin-bottom: 15px;
+        padding: 5px;
+    }
+
+
+/* Responsive optimisation for mobile phones */
+@media (max-width: 480px) {
+
+    /* make comment text area full width */
+    .commenttextarea {
+        width: 100%;
+    }
+
+    /* compact comments */
+    .comment, .content .details {
+        margin: 0px 5px 0px 1px !important;
+        padding: 5px 5px 0px 1px !important;
+        overflow: hidden !important;
+    }
+
+    /* disable sidebar */
+    .side {
+        display: none;
+    }
+
+    /* disable subverse title */
+    .pagename {
+        display: none;
+    }
+
+    /* modify tabmenu */
+    .tabmenu {
+        margin-top: 3px;
+    }
+
+        .tabmenu li {
+            margin: 0px 0px;
+        }
+
+            .tabmenu li.selected a {
+                border: none;
+                background-color: rgba(172, 213, 255, 1);
+            }
 }

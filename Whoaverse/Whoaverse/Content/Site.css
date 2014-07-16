@@ -372,7 +372,7 @@ ul.flat-vert {
     font-variant: small-caps;
     font-size: 1.2em;
     vertical-align: bottom;
-    display: -webkit-inline-box; 
+    display: -webkit-inline-box;
 }
 
     .pagename a {
@@ -579,8 +579,8 @@ ul.flat-vert {
     .morelink:hover, .mlh {
         border-color: #879eb4;
         width: 23px;
-	    height: 23px;
-	    background: url('/Graphics/WVSprite.png') 0 -99px;        
+        height: 23px;
+        background: url('/Graphics/WVSprite.png') 0 -99px;
         background-repeat: repeat;
     }
 
@@ -956,13 +956,13 @@ body > .content .link.compressed .midcol {
         background-repeat: no-repeat;
         vertical-align: middle;
     }
-    
-    .tagline .post_upvotes{
-    	color: #ff4500;
+
+    .tagline .post_upvotes {
+        color: #ff4500;
     }
-    
-    .tagline .post_downvotes{
-    	color: #5f99cf;
+
+    .tagline .post_downvotes {
+        color: #5f99cf;
     }
 
 a.author {
@@ -1397,8 +1397,8 @@ body.with-listing-chooser.explore-page #header .pagename {
         font-weight: bold;
         padding: 0 0 8px 5px;
     }
-    
-    
+
+
 
 .explore-page.res-nightmode .comment-fade {
     display: none;
@@ -2373,100 +2373,9 @@ a.star {
         text-align: right;
     }
 
-.comment, .content .details {
-    margin-left: 10px;
-    margin: 0px 8px 8px 10px !important;
-    padding: 5px 8px 0px 5px !important;
-    overflow: hidden !important;
-}
-
-    .comment .edit-body {
-        display: none;
-        visibility: hidden;
-    }
-
-    .comment .midcol {
-        margin-left: 0px;
-    }
-
-    .comment .title {
-        font-size: small;
-        margin-top: 10px;
-    }
-
-    .comment .midcol {
-        width: 18px;
-    }
-
-    .comment .author {
-        font-weight: bold;
-    }
-
-    .comment .collapsed {
-        font-size: x-small;
-        color: gray;
-        font-style: italic;
-        padding-left: 15px;
-        padding-bottom: 10px;
-    }
-
-        .comment .collapsed a {
-            color: gray;
-        }
-
-    .comment .expand {
-        font-style: normal;
-        margin-left: 0px;
-        margin-right: 3px;
-        padding: 1px;
-    }
-
-        .comment .expand:hover {
-            text-decoration: none;
-            color: white;
-            background-color: #369;
-        }
-
-    .comment .score {
-        font-size: x-small;
-    }
-
-    .comment .child, .comment .showreplies {
-        margin-top: 10px;
-        margin-left: 15px;
-        border-left: 1px dotted #DDF;
-    }
-
-    .comment .showreplies {
-        display: block;
-        margin-top: 7px;
-        margin-bottom: 15px;
-        padding: 5px;
-    }
-
 textarea.gray {
     color: gray;
 }
-
-.deepthread:after {
-    background-image: url(/Graphics/WVSprite.png);
-    background-position: -50px -817px;
-    background-repeat: no-repeat;
-    content: " ";
-    display: inline-block;
-    width: 25px;
-    height: 9px;
-    margin: 5px 0 0 5px;
-}
-
-.deepthread a {
-    font-size: larger;
-    color: #336699;
-}
-
-    .deepthread a:hover {
-        text-decoration: underline;
-    }
 
 .morecomments {
     font-size: larger;

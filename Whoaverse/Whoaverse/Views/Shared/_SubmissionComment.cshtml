@@ -18,6 +18,9 @@
 @{
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
     string sortingMode = Convert.ToString(ViewData["SortingMode"]);
+    
+    // depth level limit of 10 test
+    int counter = Convert.ToInt32(ViewData["Counter"]);       
 
     //find the comment based on the received comment id via ViewData
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
@@ -250,8 +253,8 @@
 
     if (sortingMode == "new")
     {
-        childComments = from c in Model.Comments 
-                        where c.ParentId == commentId 
+        childComments = from c in Model.Comments
+                        where c.ParentId == commentId
                         orderby c.Date descending
                         select c;
     }
@@ -262,22 +265,38 @@
                         where c.ParentId == commentId
                         orderby commentScore descending
                         select c;
-    }    
-    
+    }
+
+    int sameParentCounter = 0;
     foreach (var childComment in childComments)
     {
-        //recalculate parent id score and hide hear instead of passing values around?
+        //recalculate parent id score and hide here instead of passing values around?
+        if (sameParentCounter < 1)
+        {
+            counter++;
+        }
+
+        if (counter > 10)
+        {
+            <br />
+            <span class="deepthread"><a href="/v/@childComment.Message.Subverse/comments/@childComment.MessageId/@childComment.ParentId">Continue this thread &#8594;</a></span>
+            
+            break;
+        }
+
         if (parentIsHidden)
         {
             <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0" style="display:none">
-                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode } })
+                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter } })
             </div>
         }
         else
         {
             <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0" style="">
-                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode } })
+                @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter } })
             </div>
         }
+
+        sameParentCounter++;        
     }
 }
