@@ -11,6 +11,12 @@
         <div class="col-md-1">
             @Html.CheckBoxFor(m => m.Disable_custom_css, new { @class = "checkbox inline no_indent" })
         </div>
+        </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.OpenLinksInNewTab, new { @class = "col-md-2 control-label" })
+        <div class="col-md-1">
+            @Html.CheckBoxFor(m => m.OpenLinksInNewTab, new { @class = "checkbox inline no_indent" })
+        </div>
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-3">

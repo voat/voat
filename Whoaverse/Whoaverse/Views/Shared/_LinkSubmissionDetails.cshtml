@@ -27,7 +27,16 @@
     //type 1 = message
     if (Model.Type == 2)
     {
+        string ahrefTarget = "_self";
 
+        if (User.Identity.IsAuthenticated)
+        {
+            if (Whoaverse.Utils.User.LinksInNewWindow(User.Identity.Name))
+            {
+                ahrefTarget = "_blank";
+            }
+        }        
+        
         string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
 
         <!-- 1 link submission details without comments -->
@@ -41,14 +50,14 @@
 
                 @if (Model.Thumbnail != null)
                 {
-                    <a class="thumbnail may-blank " href="@Model.MessageContent">
+                    <a class="thumbnail may-blank " href="@Model.MessageContent" target="@ahrefTarget">
                         <img src="~/Thumbs/@Model.Thumbnail" alt="" />
                     </a>
                 }
 
                 <div class="entry unvoted">
                     <p class="title">
-                        <a class="title may-blank " href="@Model.MessageContent" tabindex="1" title="@Model.Linkdescription">@Model.Linkdescription</a>&#32;<span class="domain">(<a href="#">@submissionDomain</a>)</span>
+                        <a class="title may-blank " href="@Model.MessageContent" tabindex="1" title="@Model.Linkdescription" target="@ahrefTarget">@Model.Linkdescription</a>&#32;<span class="domain">(<a href="#">@submissionDomain</a>)</span>
                     </p>
 
                     <p class="tagline">

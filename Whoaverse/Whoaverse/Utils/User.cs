@@ -428,6 +428,23 @@ namespace Whoaverse.Utils
             }
         }
 
+        // check if a given user wants to open links in new window
+        public static bool LinksInNewWindow(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var result = db.Userpreferences.Find(userName);
+                if (result != null)
+                {
+                    return result.Clicking_mode;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         // save a submission
         // TODO
     }

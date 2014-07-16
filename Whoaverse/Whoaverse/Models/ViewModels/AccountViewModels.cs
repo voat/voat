@@ -73,6 +73,9 @@ namespace Whoaverse.Models
     {
         [Display(Name = "Disable custom subverse styles")]
         public bool Disable_custom_css { get; set; }
+
+        [Display(Name = "Open links in new tab")]
+        public bool OpenLinksInNewTab { get; set; }
     }
 
     public class LoginViewModel

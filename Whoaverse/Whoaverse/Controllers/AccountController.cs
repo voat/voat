@@ -568,6 +568,7 @@ namespace Whoaverse.Controllers
                         // load existing preferences and return to view engine
                         UserPreferencesViewModel tmpModel = new UserPreferencesViewModel();
                         tmpModel.Disable_custom_css = userPreferences.Disable_custom_css;
+                        tmpModel.OpenLinksInNewTab = userPreferences.Clicking_mode;
 
                         return PartialView("_UserPreferences", tmpModel);
                     }
@@ -589,7 +590,7 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css")] UserPreferencesViewModel model)
+        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, OpenLinksInNewTab")] UserPreferencesViewModel model)
         {
             // save changes
             using (whoaverseEntities db = new whoaverseEntities())
@@ -600,6 +601,7 @@ namespace Whoaverse.Controllers
                 {
                     // modify existing preferences
                     userPreferences.Disable_custom_css = (bool)model.Disable_custom_css;
+                    userPreferences.Clicking_mode = (bool)model.OpenLinksInNewTab;
                     await db.SaveChangesAsync();
                 }
                 else
@@ -607,6 +609,7 @@ namespace Whoaverse.Controllers
                     // create a new record for this user in userpreferences table
                     Userpreference tmpModel = new Userpreference();
                     tmpModel.Disable_custom_css = (bool)model.Disable_custom_css;
+                    tmpModel.Clicking_mode = (bool)model.OpenLinksInNewTab;
                     tmpModel.Username = User.Identity.Name;
                     db.Userpreferences.Add(tmpModel);
                     await db.SaveChangesAsync();

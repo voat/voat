@@ -16,6 +16,16 @@
 
 <!-- 1 user link submission with details without comments -->
 @{
+    string ahrefTarget = "_self";
+
+    if (User.Identity.IsAuthenticated)
+    {
+        if (Whoaverse.Utils.User.LinksInNewWindow(User.Identity.Name))
+        {
+            ahrefTarget = "_blank";
+        }
+    }  
+    
     var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
         
     string postAge = Submissions.CalcSubmissionAge(Model.Date);
@@ -49,15 +59,15 @@
             {
                 if (Model.Linkdescription.ToLower().Contains("nsfw"))
                 {
-                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 if (ratedAdult)
                 {
-                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow"></a>
+                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else
                 {
-                    <a class="thumbnail may-blank " href="@Model.MessageContent">
+                    <a class="thumbnail may-blank " href="@Model.MessageContent" target="@ahrefTarget">
                         <img src="~/Thumbs/@Model.Thumbnail" alt="" />
                     </a>
                 }
@@ -65,7 +75,7 @@
 
             <div class="entry unvoted">
                 <p class="title">
-                    <a class="title may-blank " href="@Model.MessageContent" tabindex="1" rel="nofollow">@Model.Linkdescription</a>
+                    <a class="title may-blank " href="@Model.MessageContent" tabindex="1" rel="nofollow" target="@ahrefTarget">@Model.Linkdescription</a>
                     <span class="domain">(<a href="/domains/@submissionDomain/">@submissionDomain</a>)</span>
                 </p>
                 <p class="tagline">
