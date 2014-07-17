@@ -24,7 +24,9 @@ namespace Whoaverse.Utils
         // re-rank a submission
         public static double CalculateNewRank(double currentRank, double submissionAge, double score)
         {
-            double newRank = ((score - 1) * 0.8) / ((submissionAge + 2) * 1.8);
+            double penalty = 1;
+
+            double newRank = (Math.Pow((score - 1), 0.8)) / (Math.Pow((submissionAge + 2), 1.8)) * penalty;
 
             return Math.Round(newRank, 7);
         }

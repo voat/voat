@@ -28,6 +28,10 @@ namespace Whoaverse.Utils
         {
             var loggedInUser = filterContext.HttpContext.User.Identity.Name;
 
+            //TODO: get message model and apply trustedUser parameter per-subverse basis
+            //var test = filterContext.ActionParameters;
+            //var model = filterContext.ActionParameters["message"];                 
+
             // Store our HttpContext (for easier reference and code brevity)
             var request = filterContext.HttpContext.Request;
 
@@ -47,13 +51,15 @@ namespace Whoaverse.Utils
             var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));
 
             // Override spam filter if user has a certain link karma treshold
+            // TODO: calculate CCP on target subverse, not global CCP for trusteduser status.
             if (Whoaverse.Utils.Karma.LinkKarma(loggedInUser) >= 100)
             {
                 //trustedUser = true;
             }
 
             // Override spam filter if user has a certain comment karma treshold
-            if (Whoaverse.Utils.Karma.CommentKarma(loggedInUser) >= 3000)
+            // TODO: calculate CCP on target subverse, not global CCP for trusteduser status.
+            if (Whoaverse.Utils.Karma.CommentKarma(loggedInUser) >= 100)
             {
                 //trustedUser = true;
             }
@@ -70,6 +76,7 @@ namespace Whoaverse.Utils
                 // if the Request is valid or not
                 cache.Add(hashValue, "", null, DateTime.Now.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
+
             base.OnActionExecuting(filterContext);
         }
     }

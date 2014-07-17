@@ -59,7 +59,7 @@ namespace UnitTests
         public void TestCalcRank()
         {            
             double result = Ranking.CalculateNewRank(0.5, 150, 20);
-            Assert.AreEqual(0.0555555555555556, result, 0.01, "Rank was not calculated.");
+            Assert.AreEqual(0.0012465, result, 0.01, "Rank was not calculated.");
         }
     }
 }
