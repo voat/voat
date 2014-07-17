@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web.Caching;
 using System.Web.Mvc;
+using Whoaverse.Models;
 
 namespace Whoaverse.Utils
 {
@@ -27,10 +28,50 @@ namespace Whoaverse.Utils
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var loggedInUser = filterContext.HttpContext.User.Identity.Name;
+            string targetSubverseName = null;
 
-            //TODO: get message model and apply trustedUser parameter per-subverse basis
-            //var test = filterContext.ActionParameters;
-            //var model = filterContext.ActionParameters["message"];                 
+            if (filterContext.ActionParameters.ContainsKey("message"))
+            {
+                // user is submitting a message
+                Whoaverse.Models.Message incomingMessage = (Whoaverse.Models.Message)filterContext.ActionParameters["message"];
+                var targetSubverse = incomingMessage.Subverse;
+
+                // check user LCP for target subverse
+                if (targetSubverse != null)
+                {
+                    var LCPForSubverse = Whoaverse.Utils.Karma.LinkKarmaForSubverse(loggedInUser, targetSubverse);
+                    if (LCPForSubverse >= 40)
+                    {
+                        // lower DelayRequest time
+                        this.DelayRequest = 10;
+                    } 
+                }                 
+
+                // trigger trustedUser or lower DelayRequest time
+                this.DelayRequest = 10;
+            }
+            else if (filterContext.ActionParameters.ContainsKey("comment"))
+            {
+                // user is submitting a comment
+                Whoaverse.Models.Comment incomingComment = (Whoaverse.Models.Comment)filterContext.ActionParameters["comment"];
+                
+                using (whoaverseEntities db = new whoaverseEntities())
+                {
+                    var relatedMessage = db.Messages.Find(incomingComment.MessageId);
+                    if (relatedMessage != null)
+                    {
+                        targetSubverseName = relatedMessage.Subverse;
+
+                        // check user CCP for target subverse
+                        int CCPForSubverse = Whoaverse.Utils.Karma.CommentKarmaForSubverse(loggedInUser, targetSubverseName);
+                        if (CCPForSubverse >= 40)
+                        {
+                            // lower DelayRequest time
+                            this.DelayRequest = 10;
+                        }     
+                    }
+                }                
+            }
 
             // Store our HttpContext (for easier reference and code brevity)
             var request = filterContext.HttpContext.Request;
@@ -50,20 +91,10 @@ namespace Whoaverse.Utils
             // Generate a hash for your strings (this appends each of the bytes of the value into a single hashed string
             var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));
 
-            // Override spam filter if user has a certain link karma treshold
-            // TODO: calculate CCP on target subverse, not global CCP for trusteduser status.
-            if (Whoaverse.Utils.Karma.LinkKarma(loggedInUser) >= 100)
-            {
-                //trustedUser = true;
-            }
-
-            // Override spam filter if user has a certain comment karma treshold
-            // TODO: calculate CCP on target subverse, not global CCP for trusteduser status.
-            if (Whoaverse.Utils.Karma.CommentKarma(loggedInUser) >= 100)
-            {
-                //trustedUser = true;
-            }
-
+            // TODO:
+            // Override spam filter if user is authorized poster to target subverse
+            // trustedUser = true;
+            
             // Checks if the hashed value is contained in the Cache (indicating a repeat request)
             if (cache[hashValue] != null && loggedInUser != "system" && trustedUser != true)
             {

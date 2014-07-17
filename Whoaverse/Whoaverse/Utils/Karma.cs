@@ -47,6 +47,31 @@ namespace Whoaverse.Utils
             }
         }
 
+        // get link contribution points for a user from a given subverse
+        public static int LinkKarmaForSubverse(string userName, string subverseName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                try
+                {
+                    int likes = db.Messages
+                                                .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
+                                                .Sum(r => (int)r.Likes);
+
+
+                    int dislikes = db.Messages
+                                        .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
+                                        .Sum(r => (int)r.Dislikes);
+
+                    return likes - dislikes;
+                }
+                catch (Exception)
+                {
+                    return 0;
+                }
+            }
+        }
+
         // get comment contribution points for a user
         public static int CommentKarma(string userName)
         {
@@ -73,6 +98,36 @@ namespace Whoaverse.Utils
             }
         }
 
+        // get comment contribution points for a user from a given subverse
+        public static int CommentKarmaForSubverse(string userName, string subverseName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                try
+                {
+                    var sumOfLikes = (from comment in db.Comments
+                                      join message in db.Messages on comment.MessageId equals message.Id
+                                      where comment.Name != "deleted" && comment.Name == userName && message.Subverse == subverseName
+                                      select comment)
+                                       .Distinct()
+                                       .Sum(r => r.Likes);
+
+                    var sumOfDislikes = (from comment in db.Comments
+                                         join message in db.Messages on comment.MessageId equals message.Id
+                                         where comment.Name != "deleted" && comment.Name == userName && message.Subverse == subverseName
+                                         select comment)
+                                       .Distinct()
+                                       .Sum(r => r.Dislikes);
+
+                    return sumOfLikes - sumOfDislikes;
+                }
+                catch (Exception)
+                {
+                    return 0;
+                }
+
+            }
+        }
     }
 
 }
