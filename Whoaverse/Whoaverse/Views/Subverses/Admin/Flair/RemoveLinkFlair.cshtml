@@ -1,0 +1,43 @@
+﻿@model Whoaverse.Models.Subverseflairsetting
+
+<div class="content" role="main">
+
+    <div class="row nomargin">
+        <div class="well col-md-8">
+
+            <h1>Subverse owner link flair management interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+
+            <br />
+            <div class="alert alert-danger">Are you sure you want to remove this link flair?</div>
+
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Label)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Label)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.CssClass)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.CssClass)
+                </dd>              
+            </dl>
+
+            @using (Html.BeginForm("RemoveLinkFlair", "Subverses", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+              
+                <br />
+                <input type="submit" value="Delete" class="btn-whoaverse-medium" />
+                <br /><br />
+                @Html.ActionLink("Back to subverse flairs settings", "SubverseFlairSettings", new { subversetoshow = Model.Subversename })
+            }
+        </div>
+    </div>
+</div>

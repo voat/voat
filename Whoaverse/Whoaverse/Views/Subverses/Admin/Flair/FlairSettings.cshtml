@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Whoaverse.Models.Subverseflairsetting>
+
+<div class="content" role="main">
+
+    <div class="row nomargin">
+        <div class="well col-md-8">
+
+            <h1>Subverse flair management interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+
+            <br />
+            <div class="alert alert-info">Use this area to add/edit/remove flairs for your subverse.</div>
+
+            <div class="form-horizontal">
+                <hr />
+                 @Html.ActionLink("Add a new link flair", "AddLinkFlair")
+                <hr />
+           
+                <h1>Currently active link flairs</h1>
+
+                <table class="table table-striped table-condensed">
+                    <thead>
+                        <tr>
+                            <th><b>Flair label</b></th>
+                            <th><b>CSS class</b></th>
+                            <th><b>Remove</b></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Label</td>
+                                <td>@item.CssClass</td>
+                                <td>@Html.ActionLink("Remove", "RemoveLinkFlair", new { id = item.Id })</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+</div>

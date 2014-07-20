@@ -1,0 +1,56 @@
+﻿@model Whoaverse.Models.ViewModels.SubverseLinkFlairViewModel
+
+@{
+    string subverseName = ViewBag.SubverseName;
+}
+
+<div class="content" role="main">
+
+    <div class="row nomargin">
+        <div class="well col-md-8">
+
+            <h1>Subverse owner link flair management interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+
+            <br />
+            <div class="alert alert-info">Use this area to add/edit/remove link flairs for your subverse.</div>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.Hidden("SubverseName", subverseName)
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Label, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.EditorFor(model => model.Label, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Label, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CssClass, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.EditorFor(model => model.CssClass, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.CssClass, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Add" class="btn-whoaverse-medium" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div>
+                @Html.ActionLink("Back to subverse flairs settings", "SubverseFlairSettings", new { subversetoshow = subverseName })
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -33,9 +33,10 @@
             {
                 @Html.AntiForgeryToken()
 
-                @Html.ActionLink("Back to moderators list", "SubverseModerators", new { subversetoshow = Model.SubverseName })
-                <br /><br />
+                <br />
                 <input type="submit" value="Delete" class="btn-whoaverse-medium" />
+                <br /><br />
+                @Html.ActionLink("Back to moderators list", "SubverseModerators", new { subversetoshow = Model.SubverseName })
             }
         </div>
     </div>

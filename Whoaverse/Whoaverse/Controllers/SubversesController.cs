@@ -900,7 +900,7 @@ namespace Whoaverse.Controllers
             }
         }
 
-        // GET: show add moderators view for selected subverse
+        // GET: show remove moderators view for selected subverse
         [Authorize]
         public ActionResult RemoveModerator(int? id)
         {
@@ -917,6 +917,7 @@ namespace Whoaverse.Controllers
             }
 
             ViewBag.SelectedSubverse = string.Empty;
+            ViewBag.SubverseName = subverseAdmin.SubverseName;
             return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subverseAdmin);
         }
 
@@ -958,5 +959,162 @@ namespace Whoaverse.Controllers
             }
         }
 
+        // GET: show subverse flair settings view for selected subverse
+        [Authorize]
+        public ActionResult SubverseFlairSettings(string subversetoshow)
+        {
+            // get model for selected subverse
+            var subverseModel = db.Subverses.Find(subversetoshow);
+
+            if (subverseModel != null)
+            {
+                // check if caller is subverse owner, if not, deny listing
+                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                {
+                    var subverseFlairsettings = db.Subverseflairsettings.OrderBy(s => s.Id)
+                    .Where(n => n.Subversename == subversetoshow)
+                    .Take(20)
+                    .ToList();
+
+                    ViewBag.SubverseModel = subverseModel;
+                    ViewBag.SubverseName = subversetoshow;
+
+                    ViewBag.SelectedSubverse = string.Empty;
+                    return View("~/Views/Subverses/Admin/Flair/FlairSettings.cshtml", subverseFlairsettings);
+                }
+                else
+                {
+                    return new HttpUnauthorizedResult();
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
+
+        // GET: show add link flair view for selected subverse
+        [Authorize]
+        public ActionResult AddLinkFlair(string subversetoshow)
+        {
+            // get model for selected subverse
+            var subverseModel = db.Subverses.Find(subversetoshow);
+
+            if (subverseModel != null)
+            {
+                // check if caller is subverse owner, if not, deny listing
+                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                {
+                    ViewBag.SubverseModel = subverseModel;
+                    ViewBag.SubverseName = subversetoshow;
+                    ViewBag.SelectedSubverse = string.Empty;
+                    return View("~/Views/Subverses/Admin/Flair/AddLinkFlair.cshtml");
+                }
+                else
+                {
+                    return new HttpUnauthorizedResult();
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
+
+        // POST: add a link flair to given subverse
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddLinkFlair([Bind(Include = "Id,Subversename,Label,CssClass")] Subverseflairsetting subverseFlairSetting)
+        {
+            if (ModelState.IsValid)
+            {
+                // get model for selected subverse
+                var subverseModel = db.Subverses.Find(subverseFlairSetting.Subversename);
+
+                if (subverseModel != null)
+                {
+                    // check if caller is subverse owner, if not, deny posting
+                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseFlairSetting.Subversename))
+                    {
+                        subverseFlairSetting.Subversename = subverseModel.name;
+                        db.Subverseflairsettings.Add(subverseFlairSetting);
+                        db.SaveChanges();
+                        return RedirectToAction("SubverseFlairSettings");
+                    }
+                    else
+                    {
+                        return new HttpUnauthorizedResult();
+                    }
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+            else
+            {
+                return View(subverseFlairSetting);
+            }
+        }
+
+        // GET: show remove link flair view for selected subverse
+        [Authorize]
+        public ActionResult RemoveLinkFlair(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Subverseflairsetting subverseFlairSetting = db.Subverseflairsettings.Find(id);
+
+            if (subverseFlairSetting == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.SubverseName = subverseFlairSetting.Subversename;
+            ViewBag.SelectedSubverse = string.Empty;
+            return View("~/Views/Subverses/Admin/Flair/RemoveLinkFlair.cshtml", subverseFlairSetting);
+        }
+
+        // POST: remove a link flair from given subverse
+        [Authorize]
+        [HttpPost, ActionName("RemoveLinkFlair")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RemoveLinkFlair(int id)
+        {
+            // get link flair for selected subverse
+            var linkFlairToRemove = await db.Subverseflairsettings.FindAsync(id);
+            if (linkFlairToRemove != null)
+            {
+                var subverse = db.Subverses.Find(linkFlairToRemove.Subversename);
+                if (subverse != null)
+                {
+                    // check if caller has clearance to remove a link flair
+                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name))
+                    {
+                        // execute removal
+                        Subverseflairsetting subverseFlairSetting = await db.Subverseflairsettings.FindAsync(id);
+                        db.Subverseflairsettings.Remove(subverseFlairSetting);
+                        await db.SaveChangesAsync();
+                        return RedirectToAction("SubverseFlairSettings");
+                    }
+                    else
+                    {
+                        return new HttpUnauthorizedResult();
+                    }
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
     }
 }

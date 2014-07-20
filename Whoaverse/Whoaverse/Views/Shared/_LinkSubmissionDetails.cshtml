@@ -57,6 +57,10 @@
 
                 <div class="entry unvoted">
                     <p class="title">
+                        @if (Model.FlairLabel != null && Model.FlairCss != null)
+                        {
+                            <span class="@Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
+                        } 
                         <a class="title may-blank " href="@Model.MessageContent" tabindex="1" title="@Model.Linkdescription" target="@ahrefTarget">@Model.Linkdescription</a>&#32;<span class="domain">(<a href="#">@submissionDomain</a>)</span>
                     </p>
 

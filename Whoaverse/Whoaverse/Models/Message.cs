@@ -37,6 +37,8 @@ namespace Whoaverse.Models
         public short Dislikes { get; set; }
         public string Thumbnail { get; set; }
         public Nullable<System.DateTime> LastEditDate { get; set; }
+        public string FlairLabel { get; set; }
+        public string FlairCss { get; set; }
     
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Votingtracker> Votingtrackers { get; set; }

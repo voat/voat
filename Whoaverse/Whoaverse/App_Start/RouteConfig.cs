@@ -266,6 +266,27 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "SubverseSettings" }
             );
 
+            // v/subversetoedit/about/flair
+            routes.MapRoute(
+                name: "subverseFlairSettings",
+                url: "v/{subversetoshow}/about/flair",
+                defaults: new { controller = "Subverses", action = "SubverseFlairSettings" }
+            );
+
+            // v/subversetoedit/about/linkflair/add
+            routes.MapRoute(
+                name: "addSubverseLinkFlair",
+                url: "v/{subversetoshow}/about/linkflair/add",
+                defaults: new { controller = "Subverses", action = "AddLinkFlair" }
+            );
+
+            // v/subversetoedit/about/linkflair/delete
+            routes.MapRoute(
+                name: "removeSubverseLinkFlair",
+                url: "v/{subversetoshow}/about/flair/delete/{id}",
+                defaults: new { controller = "Subverses", action = "RemoveLinkFlair" }
+            );
+
             // v/subversetoedit/about/moderators
             routes.MapRoute(
                 name: "subverseModerators",

@@ -7,8 +7,8 @@
       <Diagram DiagramId="16d91f6c35a3475cb9ce6e7417581c6e" Name="Diagram" ZoomLevel="85">
         <EntityTypeShape EntityType="whoaverseModel.Comment" Width="1.875" PointX="5.625" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Commentvotingtracker" Width="2.125" PointX="8.125" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="whoaverseModel.Message" Width="1.5" PointX="3.375" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="whoaverseModel.Votingtracker" Width="1.5" PointX="3.375" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="whoaverseModel.Message" Width="1.5" PointX="3.375" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="whoaverseModel.Votingtracker" Width="1.5" PointX="3.375" PointY="5.625" IsExpanded="true" />
         <AssociationConnector Association="whoaverseModel.FK_Comments_Messages" ManuallyRouted="false" />
         <AssociationConnector Association="whoaverseModel.FK_Commentvotingtracker_Comments" ManuallyRouted="false" />
         <AssociationConnector Association="whoaverseModel.FK_Votingtracker_Messages" ManuallyRouted="false" />
@@ -28,7 +28,9 @@
         <EntityTypeShape EntityType="whoaverseModel.Privatemessage" Width="1.5" PointX="10.875" PointY="0.75" />
         <EntityTypeShape EntityType="whoaverseModel.Commentreplynotification" Width="2.125" PointX="15.125" PointY="0.75" />
         <EntityTypeShape EntityType="whoaverseModel.Postreplynotification" Width="2.125" PointX="15.125" PointY="4" />
-        <EntityTypeShape EntityType="whoaverseModel.Userpreference" Width="1.5" PointX="5.375" PointY="7.75" />
+        <EntityTypeShape EntityType="whoaverseModel.Userpreference" Width="1.5" PointX="10.375" PointY="7.875" />
+        <EntityTypeShape EntityType="whoaverseModel.Subverseflairsetting" Width="1.5" PointX="5.25" PointY="7.875" />
+        <AssociationConnector Association="whoaverseModel.FK_Subverseflairsettings_Subverses1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -301,6 +301,9 @@
     <Compile Include="Models\SubverseAdmin.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Subverseflairsetting.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Userbadge.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -319,6 +322,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubverseLinkFlairViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseModeratorViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseSettingsViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseDetailsViewModel.cs" />
@@ -578,6 +582,9 @@
     <Content Include="Views\Home\UserSubmitted.cshtml" />
     <Content Include="Views\Home\_SingleCommentTree.cshtml" />
     <Content Include="Views\Account\_UserPreferences.cshtml" />
+    <Content Include="Views\Subverses\Admin\Flair\FlairSettings.cshtml" />
+    <Content Include="Views\Subverses\Admin\Flair\AddLinkFlair.cshtml" />
+    <Content Include="Views\Subverses\Admin\Flair\RemoveLinkFlair.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />

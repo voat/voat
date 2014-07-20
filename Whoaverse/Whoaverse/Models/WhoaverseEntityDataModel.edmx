@@ -89,6 +89,8 @@
           <Property Name="Dislikes" Type="bigint" Nullable="false" />
           <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
           <Property Name="LastEditDate" Type="smalldatetime" />
+          <Property Name="FlairLabel" Type="nvarchar" MaxLength="50" />
+          <Property Name="FlairCss" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Postreplynotifications">
           <Key>
@@ -152,6 +154,15 @@
           <Property Name="Power" Type="int" Nullable="false" />
           <Property Name="Added_by" Type="nvarchar" MaxLength="50" />
           <Property Name="Added_on" Type="smalldatetime" />
+        </EntityType>
+        <EntityType Name="Subverseflairsettings">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Subversename" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Label" Type="nvarchar" MaxLength="50" />
+          <Property Name="CssClass" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Subverses">
           <Key>
@@ -262,6 +273,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Subverseflairsettings_Subverses1">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Subverseflairsettings" Type="Self.Subverseflairsettings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Subverseflairsettings">
+              <PropertyRef Name="Subversename" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Userbadges_Badges">
           <End Role="Badges" Type="Self.Badges" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -302,6 +327,7 @@
           <EntitySet Name="Savedsubmissions" EntityType="Self.Savedsubmissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmins" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subverseflairsettings" EntityType="Self.Subverseflairsettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userbadges" EntityType="Self.Userbadges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userpreferences" EntityType="Self.Userpreferences" Schema="dbo" store:Type="Tables" />
@@ -321,6 +347,10 @@
           <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="Self.FK_SubverseAdmins_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
             <End Role="SubverseAdmins" EntitySet="SubverseAdmins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="Self.FK_Subverseflairsettings_Subverses1">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Subverseflairsettings" EntitySet="Subverseflairsettings" />
           </AssociationSet>
           <AssociationSet Name="FK_Userbadges_Badges" Association="Self.FK_Userbadges_Badges">
             <End Role="Badges" EntitySet="Badges" />
@@ -383,6 +413,8 @@
           <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
           <Property Name="Thumbnail" Type="String" MaxLength="40" FixedLength="true" Unicode="true" />
           <Property Name="LastEditDate" Type="DateTime" Precision="0" />
+          <Property Name="FlairLabel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FlairCss" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -476,6 +508,11 @@
           <EntitySet Name="Commentreplynotifications" EntityType="whoaverseModel.Commentreplynotification" />
           <EntitySet Name="Postreplynotifications" EntityType="whoaverseModel.Postreplynotification" />
           <EntitySet Name="Userpreferences" EntityType="whoaverseModel.Userpreference" />
+          <EntitySet Name="Subverseflairsettings" EntityType="whoaverseModel.Subverseflairsetting" />
+          <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="whoaverseModel.FK_Subverseflairsettings_Subverses1">
+            <End Role="Subverse" EntitySet="Subverses" />
+            <End Role="Subverseflairsetting" EntitySet="Subverseflairsettings" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -506,6 +543,7 @@
           <Property Name="stylesheet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="subscribers" Type="Int32" DefaultValue="1" />
           <Property Name="private_subverse" Type="Boolean" DefaultValue="false" />
+          <NavigationProperty Name="Subverseflairsettings" Relationship="whoaverseModel.FK_Subverseflairsettings_Subverses1" FromRole="Subverse" ToRole="Subverseflairsetting" />
         </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
@@ -693,6 +731,30 @@
           <Property Name="Enable_adult_content" Type="Boolean" Nullable="false" DefaultValue="False" />
           <Property Name="Public_votes" Type="Boolean" Nullable="false" DefaultValue="False" />
         </EntityType>
+        <EntityType Name="Subverseflairsetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Subversename" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Label" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CssClass" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Subverseflairsettings_Subverses1" FromRole="Subverseflairsetting" ToRole="Subverse" />
+        </EntityType>
+        <Association Name="FK_Subverseflairsettings_Subverses1">
+          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whoaverseModel.Subverseflairsetting" Role="Subverseflairsetting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverse">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Subverseflairsetting">
+              <PropertyRef Name="Subversename" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -728,6 +790,8 @@
           <EntitySetMapping Name="Messages">
             <EntityTypeMapping TypeName="whoaverseModel.Message">
               <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="FlairCss" ColumnName="FlairCss" />
+                <ScalarProperty Name="FlairLabel" ColumnName="FlairLabel" />
                 <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
                 <ScalarProperty Name="Thumbnail" ColumnName="Thumbnail" />
                 <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
@@ -918,6 +982,16 @@
                 <ScalarProperty Name="Night_mode" ColumnName="Night_mode" />
                 <ScalarProperty Name="Disable_custom_css" ColumnName="Disable_custom_css" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subverseflairsettings">
+            <EntityTypeMapping TypeName="whoaverseModel.Subverseflairsetting">
+              <MappingFragment StoreEntitySet="Subverseflairsettings">
+                <ScalarProperty Name="CssClass" ColumnName="CssClass" />
+                <ScalarProperty Name="Label" ColumnName="Label" />
+                <ScalarProperty Name="Subversename" ColumnName="Subversename" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
