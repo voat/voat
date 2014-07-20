@@ -45,10 +45,7 @@ namespace Whoaverse.Utils
                         // lower DelayRequest time
                         this.DelayRequest = 10;
                     } 
-                }                 
-
-                // trigger trustedUser or lower DelayRequest time
-                this.DelayRequest = 10;
+                }                
             }
             else if (filterContext.ActionParameters.ContainsKey("comment"))
             {

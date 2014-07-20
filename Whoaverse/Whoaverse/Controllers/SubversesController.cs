@@ -13,6 +13,8 @@ All Rights Reserved.
 */
 
 using PagedList;
+using Recaptcha.Web;
+using Recaptcha.Web.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -135,12 +137,32 @@ namespace Whoaverse.Controllers
 
         // POST: submit a new submission
         [HttpPost]
-        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent")] Message message)
         {
             if (User.Identity.IsAuthenticated)
             {
+                // verify recaptcha if user has less than 25 CCP
+                if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
+                {
+                    RecaptchaVerificationHelper recaptchaHelper = this.GetRecaptchaVerificationHelper();
+
+                    if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                    {
+                        ModelState.AddModelError("", "Captcha answer cannot be empty.");
+                        return View();
+                    }
+
+                    RecaptchaVerificationResult recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
+
+                    if (recaptchaResult != RecaptchaVerificationResult.Success)
+                    {
+                        ModelState.AddModelError("", "Incorrect captcha answer.");
+                        return View();
+                    }
+                }
+
                 if (ModelState.IsValid)
                 {
                     var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
@@ -207,6 +229,26 @@ namespace Whoaverse.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
+                // verify recaptcha if user has less than 25 CCP
+                if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
+                {
+                    RecaptchaVerificationHelper recaptchaHelper = this.GetRecaptchaVerificationHelper();
+
+                    if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                    {
+                        ModelState.AddModelError("", "Captcha answer cannot be empty.");
+                        return View();
+                    }
+
+                    RecaptchaVerificationResult recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
+
+                    if (recaptchaResult != RecaptchaVerificationResult.Success)
+                    {
+                        ModelState.AddModelError("", "Incorrect captcha answer.");
+                        return View();
+                    }
+                }
+
                 try
                 {
                     if (ModelState.IsValid)
@@ -351,7 +393,7 @@ namespace Whoaverse.Controllers
         // POST: Eddit a Subverse
         // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
-        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseSettings(Subverse updatedModel)
         {

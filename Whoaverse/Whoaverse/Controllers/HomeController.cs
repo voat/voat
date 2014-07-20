@@ -13,6 +13,8 @@ All Rights Reserved.
 */
 
 using PagedList;
+using Recaptcha.Web;
+using Recaptcha.Web.Mvc;
 using System;
 using System.IO;
 using System.Linq;
@@ -184,7 +186,7 @@ namespace Whoaverse.Controllers
             comment.Date = System.DateTime.Now;
             comment.Name = User.Identity.Name;
             comment.Votes = 0;
-            comment.Likes = 0;
+            comment.Likes = 0;            
 
             if (ModelState.IsValid)
             {
@@ -424,7 +426,7 @@ namespace Whoaverse.Controllers
 
                     if (submissionToDelete.Type == 1)
                     {
-                        submissionToDelete.MessageContent = "deleted by a moderator at " + System.DateTime.Now; 
+                        submissionToDelete.MessageContent = "deleted by a moderator at " + System.DateTime.Now;
                     }
                     else
                     {
@@ -459,7 +461,7 @@ namespace Whoaverse.Controllers
 
             if (selectedsubverse != "all")
             {
-                ViewBag.selectedSubverse = selectedsubverse;                
+                ViewBag.selectedSubverse = selectedsubverse;
             }
 
             return View();
@@ -471,9 +473,28 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
         {
+            // verify recaptcha if user has less than 25 CCP
+            if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
+            {
+                RecaptchaVerificationHelper recaptchaHelper = this.GetRecaptchaVerificationHelper();
+
+                if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                {
+                    ModelState.AddModelError("", "Captcha answer cannot be empty.");
+                    return View();
+                }
+
+                RecaptchaVerificationResult recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
+
+                if (recaptchaResult != RecaptchaVerificationResult.Success)
+                {
+                    ModelState.AddModelError("", "Incorrect captcha answer.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 // check if subverse exists
