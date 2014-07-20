@@ -30,9 +30,9 @@ namespace Whoaverse.Utils
             var loggedInUser = filterContext.HttpContext.User.Identity.Name;
             string targetSubverseName = null;
 
+            // user is submitting a message
             if (filterContext.ActionParameters.ContainsKey("message"))
             {
-                // user is submitting a message
                 Whoaverse.Models.Message incomingMessage = (Whoaverse.Models.Message)filterContext.ActionParameters["message"];
                 var targetSubverse = incomingMessage.Subverse;
 
@@ -44,14 +44,19 @@ namespace Whoaverse.Utils
                     {
                         // lower DelayRequest time
                         this.DelayRequest = 10;
-                    } 
-                }                
+                    }
+                    else if (Whoaverse.Utils.User.IsUserSubverseModerator(loggedInUser, targetSubverse))
+                    {
+                        // lower DelayRequest time
+                        this.DelayRequest = 10;
+                    }
+                }
             }
+            // user is submitting a comment
             else if (filterContext.ActionParameters.ContainsKey("comment"))
             {
-                // user is submitting a comment
                 Whoaverse.Models.Comment incomingComment = (Whoaverse.Models.Comment)filterContext.ActionParameters["comment"];
-                
+
                 using (whoaverseEntities db = new whoaverseEntities())
                 {
                     var relatedMessage = db.Messages.Find(incomingComment.MessageId);
@@ -65,9 +70,14 @@ namespace Whoaverse.Utils
                         {
                             // lower DelayRequest time
                             this.DelayRequest = 10;
-                        }     
+                        }
+                        else if (Whoaverse.Utils.User.IsUserSubverseModerator(loggedInUser, targetSubverseName))
+                        {
+                            // lower DelayRequest time
+                            this.DelayRequest = 10;
+                        }
                     }
-                }                
+                }
             }
 
             // Store our HttpContext (for easier reference and code brevity)
@@ -91,7 +101,7 @@ namespace Whoaverse.Utils
             // TODO:
             // Override spam filter if user is authorized poster to target subverse
             // trustedUser = true;
-            
+
             // Checks if the hashed value is contained in the Cache (indicating a repeat request)
             if (cache[hashValue] != null && loggedInUser != "system" && trustedUser != true)
             {
