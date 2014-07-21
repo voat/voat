@@ -15,6 +15,8 @@ All Rights Reserved.
 using System.Net;
 using System.Web.Mvc;
 using Whoaverse.Models;
+using System.Linq;
+using Whoaverse.Utils;
 
 namespace Whoaverse.Controllers
 {
@@ -22,7 +24,7 @@ namespace Whoaverse.Controllers
     {
         private whoaverseEntities db = new whoaverseEntities();
 
-        // GET: CommentReplyForm
+        // GET: MessageContent
         public ActionResult MessageContent(int? messageId)
         {
             var message = db.Messages.Find(messageId);            
@@ -38,6 +40,47 @@ namespace Whoaverse.Controllers
                     message.MessageContent = "This message only has a title.";
                     return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", message);
                 }                
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
+
+        // GET: subverse link flairs for selected subverse
+        [Authorize]
+        public ActionResult SubverseLinkFlairs(string subversetoshow, int? messageId)
+        {
+            // get model for selected subverse
+            var subverseModel = db.Subverses.Find(subversetoshow);
+
+            if (subverseModel != null && messageId != null)
+            {
+                var submissionId = db.Messages.Find(messageId);
+                if (submissionId != null && submissionId.Subverses.name == subversetoshow)
+                {
+                    // check if caller is subverse owner or moderator, if not, deny listing
+                    if (Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow) || Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                    {
+                        var subverseLinkFlairs = db.Subverseflairsettings.OrderBy(s => s.Id)
+                        .Where(n => n.Subversename == subversetoshow)
+                        .Take(10)
+                        .ToList();
+
+                        ViewBag.SubmissionId = messageId;
+                        ViewBag.SubverseName = subversetoshow;
+
+                        return PartialView("~/Views/AjaxViews/_LinkFlairSelectDialog.cshtml", subverseLinkFlairs);
+                    }
+                    else
+                    {
+                        return new HttpUnauthorizedResult();
+                    }
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
             }
             else
             {

@@ -108,7 +108,6 @@ namespace Whoaverse.Controllers
             {
                 return Content(string.Empty);
             }
-
         }
 
         // GET: comments for a given submission

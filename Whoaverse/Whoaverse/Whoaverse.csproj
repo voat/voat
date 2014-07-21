@@ -247,6 +247,7 @@
     <Compile Include="Controllers\HtmlElementsController.cs" />
     <Compile Include="Controllers\MessagingController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
+    <Compile Include="Controllers\SubmissionsController.cs" />
     <Compile Include="Controllers\SubversesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WebApiController.cs" />
@@ -585,9 +586,11 @@
     <Content Include="Views\Subverses\Admin\Flair\FlairSettings.cshtml" />
     <Content Include="Views\Subverses\Admin\Flair\AddLinkFlair.cshtml" />
     <Content Include="Views\Subverses\Admin\Flair\RemoveLinkFlair.cshtml" />
+    <Content Include="Views\AjaxViews\_LinkFlairSelectDialog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />
+    <Folder Include="Views\Submissions\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

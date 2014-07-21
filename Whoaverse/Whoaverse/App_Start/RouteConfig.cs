@@ -350,14 +350,28 @@ namespace Whoaverse
                 defaults: new { controller = "HtmlElements", action = "CommentReplyForm" }
             ); 
 
-            // ajaxhelpers/commentreplyform
+            // ajaxhelpers/messagecontent
             routes.MapRoute(
                 name: "MessageContent",
                 url: "ajaxhelpers/messagecontent/{messageId}",
                 defaults: new { controller = "AjaxGateway", action = "MessageContent" }
+            );
+
+            // ajaxhelpers/linkflairselectdialog
+            routes.MapRoute(
+                name: "LinkFlairSelectDialog",
+                url: "ajaxhelpers/linkflairselectdialog/{subversetoshow}/{messageId}",
+                defaults: new { controller = "AjaxGateway", action = "SubverseLinkFlairs" }
+            );
+
+            // ajaxhelpers/applylinkflair
+            routes.MapRoute(
+                name: "ApplyLinkFlair",
+                url: "submissions/applylinkflair/{submissionId}/{flairId}",
+                defaults: new { controller = "Submissions", action = "ApplyLinkFlair" }
             ); 
             
-
+            // default route
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

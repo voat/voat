@@ -186,7 +186,7 @@ namespace Whoaverse.Controllers
             comment.Date = System.DateTime.Now;
             comment.Name = User.Identity.Name;
             comment.Votes = 0;
-            comment.Likes = 0;            
+            comment.Likes = 0;
 
             if (ModelState.IsValid)
             {
@@ -492,6 +492,7 @@ namespace Whoaverse.Controllers
                 if (recaptchaResult != RecaptchaVerificationResult.Success)
                 {
                     ModelState.AddModelError("", "Incorrect captcha answer.");
+                    return View();
                 }
             }
 
@@ -506,68 +507,77 @@ namespace Whoaverse.Controllers
                     // generate a thumbnail if submission is a direct link to image or video
                     if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
                     {
-                        try
+
+                        string domain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(message.MessageContent);
+
+                        // check if hostname is banned before accepting submission
+                        if (Utils.BanningUtility.IsHostnameBanned(domain))
                         {
-                            string domain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(message.MessageContent);
+                            ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
+                            return View();
+                        }
 
-                            // check if hostname is banned before accepting submission
-                            if (Utils.BanningUtility.IsHostnameBanned(domain))
-                            {
-                                ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
-                                return View();
-                            }
-
-                            // if domain is youtube, try generating a thumbnail for the video
-                            if (domain == "youtube.com")
+                        // if domain is youtube, try generating a thumbnail for the video
+                        if (domain == "youtube.com")
+                        {
+                            try
                             {
                                 string thumbFileName = ThumbGenerator.GenerateThumbFromYoutubeVideo(message.MessageContent);
                                 message.Thumbnail = thumbFileName;
                             }
-                            else
+                            catch (Exception)
                             {
-                                string extension = Path.GetExtension(message.MessageContent);
+                                // thumnail generation failed, skip adding thumbnail
+                            }
+                        }
+                        else
+                        {
+                            string extension = Path.GetExtension(message.MessageContent);
 
-                                if (extension != String.Empty && extension != null)
+                            // this is a direct link to image
+                            if (extension != String.Empty && extension != null)
+                            {
+                                if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
                                 {
-                                    if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
+                                    try
                                     {
                                         string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
                                         message.Thumbnail = thumbFileName;
                                     }
+                                    catch (Exception)
+                                    {
+                                        // thumnail generation failed, skip adding thumbnail
+                                    }
                                 }
                             }
-
-                            message.Name = User.Identity.Name;
-                            message.Subverse = targetSubverse.name;
-
-                            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                            message.Date = System.DateTime.Now;
-
-                            message.Likes = 1;
-
-                            // restrict incoming submissions to announcements subverse (temporary hard-code solution
-                            // TODO: add global administrators table with different access levels
-                            if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
-                            {
-                                db.Messages.Add(message);
-                                await db.SaveChangesAsync();
-                            }
-                            else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
-                            {
-                                db.Messages.Add(message);
-                                await db.SaveChangesAsync();
-                            }
-                            else
-                            {
-                                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
-                                return View();
-                            }
-
                         }
-                        catch (Exception)
+
+                        message.Name = User.Identity.Name;
+                        message.Subverse = targetSubverse.name;
+
+                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                        message.Date = System.DateTime.Now;
+
+                        message.Likes = 1;
+
+                        // restrict incoming submissions to announcements subverse (temporary hard-code solution
+                        // TODO: add global administrators table with different access levels
+                        if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
                         {
-                            //unable to generate a thumbnail, don't use any
+                            db.Messages.Add(message);
+                            await db.SaveChangesAsync();
                         }
+                        else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
+                        {
+                            db.Messages.Add(message);
+                            await db.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
+                            return View();
+                        }
+
                     }
                     else if (message.Type == 1 && message.Title != null)
                     {

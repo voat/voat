@@ -279,7 +279,7 @@ function postCommentReplyAjax(senderButton) {
         return false;
     } else {
         $form.find("#errorMessage").toggle(true);
-    }    
+    }
 }
 
 //append a comment edit form to calling area while preventing multiple appends
@@ -593,4 +593,35 @@ function deletePrivateMessageFromSent(obj, privateMessageId) {
     });
 
     return false;
+}
+
+//function to load select link flair modal dialog for given subverse and given submission
+function selectflair(messageId, subverseName) {
+    var flairSelectDialog = $.get(
+        "/ajaxhelpers/linkflairselectdialog/" + subverseName + "/" + messageId,
+        null,
+        function (data) {
+            $("#linkFlairSelectModal").html(data);
+            $('#linkFlairSelectModal').modal();
+        }
+     );
+}
+
+//function to apply flair to a given submission
+function applyflair(messageId, flairId, flairLabel, flairCssClass) {
+    $.ajax({
+        type: "POST",
+        url: "/submissions/applylinkflair/" + messageId + "/" + flairId,
+        success: function () {
+            $('#linkFlairSelectModal').modal('hide');
+
+            //set linkflair
+            $('#linkflair').attr('class', flairCssClass);
+            $('#linkflair').attr('title', flairLabel);
+            $('#linkflair').html(flairLabel);
+        },
+        error: function () {
+            alert('Unable to apply link flair.');
+        }
+    });
 }

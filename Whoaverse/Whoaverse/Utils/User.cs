@@ -445,7 +445,30 @@ namespace Whoaverse.Utils
             }
         }
 
-        // save a submission
-        // TODO
+        // check if a given user has used his daily voting quota
+        public static bool UserDailyVotingQuotaUsed(string userName)
+        {
+            int dailyVotingQuota = 5;
+            
+            // check how many comment votes user made today
+
+            // check how many submission votes user made today
+
+            throw new NotImplementedException();
+        }
+
+        // check if a given user has used his daily posting quota
+        public static bool UserDailyPostingQuotaUsed(string userName)
+        {
+            // if user is a new user with low CCP threshold
+            int dailyPostingQuota = 10;
+
+            // if user is old user with high CCP threshold
+            dailyPostingQuota = 100;
+
+            // check how many submission user made today            
+
+            throw new NotImplementedException();
+        }
     }
 }
