@@ -51,9 +51,9 @@ namespace Whoaverse.Controllers
                             db.SaveChanges();
                             return new HttpStatusCodeResult(HttpStatusCode.OK);
                         }
-                        
+
                         // flar model was not found, return badrequest httpstatuscode
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);        
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                     }
                     else
                     {
@@ -68,8 +68,44 @@ namespace Whoaverse.Controllers
             else
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }           
+            }
         }
 
+        // POST: clear link flair from a given submission
+        [Authorize]
+        [HttpPost]
+        public ActionResult ClearLinkFlair(int? submissionId)
+        {
+            if (submissionId != null)
+            {
+                // get model for selected submission
+                var submissionModel = db.Messages.Find(submissionId);
+
+                if (submissionModel != null)
+                {
+                    // check if caller is subverse moderator, if not, deny posting
+                    if (Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+                    {
+                        // clear flair and save submission
+                        submissionModel.FlairCss = null;
+                        submissionModel.FlairLabel = null;
+                        db.SaveChanges();
+                        return new HttpStatusCodeResult(HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        return new HttpUnauthorizedResult();
+                    }
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
     }
 }

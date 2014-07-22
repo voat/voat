@@ -625,3 +625,22 @@ function applyflair(messageId, flairId, flairLabel, flairCssClass) {
         }
     });
 }
+
+//function to clear flair from a given submission
+function clearflair(messageId) {
+    $.ajax({
+        type: "POST",
+        url: "/submissions/clearlinkflair/" + messageId,
+        success: function () {
+            $('#linkFlairSelectModal').modal('hide');
+
+            //clear linkflair
+            $('#linkflair').attr('class', "");
+            $('#linkflair').attr('title', "");
+            $('#linkflair').html("");
+        },
+        error: function () {
+            alert('Unable to clear link flair.');
+        }
+    });
+}

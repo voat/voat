@@ -369,6 +369,13 @@ namespace Whoaverse
                 name: "ApplyLinkFlair",
                 url: "submissions/applylinkflair/{submissionId}/{flairId}",
                 defaults: new { controller = "Submissions", action = "ApplyLinkFlair" }
+            );
+
+            // ajaxhelpers/clearlinkflair
+            routes.MapRoute(
+                name: "ClearLinkFlair",
+                url: "submissions/clearlinkflair/{submissionId}",
+                defaults: new { controller = "Submissions", action = "ClearLinkFlair" }
             ); 
             
             // default route

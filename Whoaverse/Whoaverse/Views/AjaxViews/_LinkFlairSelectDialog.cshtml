@@ -28,6 +28,8 @@
         <div class="modal-body">
             @if (Model.Count() > 0)
             {
+                <p><b>Defined flairs:</b></p>
+                <button type="button" class="btn btn-default btn-xs" onclick="return clearflair(@submissionId)">Clear current flair</button>
                 foreach (var item in Model)
                 {
                     <button type="button" class="btn btn-default btn-xs" onclick="return applyflair(@submissionId, @item.Id, '@item.Label', '@item.CssClass')">@item.Label</button>
@@ -35,7 +37,10 @@
             }
             else
             {
-                <p>This subverse does not currently have any link flairs setup. Please go to flair settings (link on your subverse sidebar) to configure link flairs.</p>
+                <p><b>Defined flairs:</b></p>    
+                <button type="button" class="btn btn-default btn-xs" onclick="return clearflair(@submissionId)">Clear current flair</button>
+                <br /><br />
+                <p class="alert alert-info">This subverse does not currently have any link flairs setup. Please go to flair settings (link on your subverse sidebar) to configure link flairs.</p>
             }
         </div>
         <div class="modal-footer">

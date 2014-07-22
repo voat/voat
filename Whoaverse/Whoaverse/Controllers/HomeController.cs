@@ -34,7 +34,6 @@ namespace Whoaverse.Controllers
         private whoaverseEntities db = new whoaverseEntities();
 
         // GET: list of default subverses
-        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Listofsubverses()
         {
             try

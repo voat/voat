@@ -19,6 +19,9 @@ namespace Whoaverse
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            ViewEngines.Engines.Clear();
+            ViewEngines.Engines.Add(new RazorViewEngine());
+
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
 
             Application["onlineVisitors"] = 3;

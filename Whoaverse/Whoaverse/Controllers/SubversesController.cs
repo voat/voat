@@ -634,7 +634,6 @@ namespace Whoaverse.Controllers
             return View("~/Views/Errors/Subversenotfound.cshtml");
         }
 
-        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult AdultContentWarning(string destination, bool? nsfwok)
         {
             ViewBag.SelectedSubverse = String.Empty;
