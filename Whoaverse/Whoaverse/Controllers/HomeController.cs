@@ -16,14 +16,17 @@ using PagedList;
 using Recaptcha.Web;
 using Recaptcha.Web.Mvc;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.ServiceModel.Syndication;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml.Linq;
 using Whoaverse.Models;
 using Whoaverse.Utils;
 
@@ -923,5 +926,78 @@ namespace Whoaverse.Controllers
             }
         }
 
+
+        //EXPERIMENTAL FRONTPAGE RSS
+        public ActionResult Rss()
+        {
+            var submissions = (from message in db.Messages
+                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                               where message.Name != "deleted"
+                               select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Rank).Take(25).ToList();
+
+            SyndicationFeed feed = new SyndicationFeed("WhoaVerse", "The frontpage of the Universe", new Uri("http://www.whoaverse.com"));
+            feed.Language = "en-US";
+            feed.ImageUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Graphics/whoaverse_padded.png");
+
+            List<SyndicationItem> feedItems = new List<SyndicationItem>();
+
+            foreach (var submission in submissions)
+            {
+                var commentsUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse + "/comments/" + submission.Id);
+                var subverseUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse);
+                
+                string thumbnailUrl = "";
+
+                if (submission.Type == 1)
+                {
+                    // message type submission
+                    SyndicationItem item = new SyndicationItem(
+                        submission.Title,
+                        submission.MessageContent + "</br>" + "Submitted by " + "<a href='u/" + submission.Name + "'>" + submission.Name + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
+                        commentsUrl,
+                        "Item ID",
+                        submission.Date);
+
+                    feedItems.Add(item);
+                }
+                else
+                {
+                    // link type submission
+                    var linkUrl = new Uri(submission.MessageContent);
+
+                    // add a thumbnail if submission has one
+                    if (submission.Thumbnail != null)
+                    {
+                        thumbnailUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Thumbs/" + submission.Thumbnail).ToString();
+                        SyndicationItem item = new SyndicationItem(
+                                                submission.Linkdescription,
+                                                "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='"+submission.Linkdescription+"' alt='"+submission.Linkdescription+"' src='" + thumbnailUrl + "' /></a>"+
+                                                "</br>" +
+                                                "Submitted by " + "<a href='u/" + submission.Name + "'>" + submission.Name + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>"+
+                                                " | <a href='" + linkUrl + "'>link</a>",
+                                                commentsUrl,
+                                                "Item ID",
+                                                submission.Date);                        
+
+                        feedItems.Add(item);
+                    }
+                    else
+                    {
+                        SyndicationItem item = new SyndicationItem(
+                                                submission.Linkdescription,
+                                                "Submitted by " + "<a href='u/" + submission.Name + "'>" + submission.Name + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
+                                                commentsUrl,
+                                                "Item ID",
+                                                submission.Date);
+                        feedItems.Add(item);
+                    }
+                }
+            }
+
+            feed.Items = feedItems;
+            return new FeedResult(new Rss20FeedFormatter(feed));
+        }
     }
 }

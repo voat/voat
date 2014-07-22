@@ -28,6 +28,13 @@ namespace Whoaverse
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.LowercaseUrls = true;
 
+            // /rss
+            routes.MapRoute(
+                name: "frontpagerss",
+                url: "rss",
+                defaults: new { controller = "Home", action = "Rss" }
+            ); 
+
             // /subverses/create
             routes.MapRoute(
                 name: "CreateSubverse",
@@ -376,7 +383,9 @@ namespace Whoaverse
                 name: "ClearLinkFlair",
                 url: "submissions/clearlinkflair/{submissionId}",
                 defaults: new { controller = "Submissions", action = "ClearLinkFlair" }
-            ); 
+            );
+
+            
             
             // default route
             routes.MapRoute(

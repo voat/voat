@@ -130,6 +130,7 @@
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -350,6 +351,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\AntispamUtility.cs" />
     <Compile Include="Utils\BanningUtility.cs" />
+    <Compile Include="Utils\RSSUtility.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\Karma.cs" />
