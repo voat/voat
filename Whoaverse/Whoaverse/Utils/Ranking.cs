@@ -28,6 +28,11 @@ namespace Whoaverse.Utils
 
             double newRank = (Math.Pow((score - 1), 0.8)) / (Math.Pow((submissionAge + 2), 1.8)) * penalty;
 
+            if (double.IsNaN(newRank))
+            {
+                return 0;
+            }
+
             return Math.Round(newRank, 7);
         }
     }

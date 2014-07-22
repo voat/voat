@@ -91,6 +91,13 @@ namespace Whoaverse
                 defaults: new { controller = "Home", action = "UserProfile" }
             );
 
+            // u/someuserhere
+            routes.MapRoute(
+                name: "usershortroute",
+                url: "u/{id}",
+                defaults: new { controller = "Home", action = "UserProfile" }
+            );
+
             // inbox
             routes.MapRoute(
                 name: "Inbox",
@@ -138,14 +145,7 @@ namespace Whoaverse
                 name: "DeletePrivateMessageFromSent",
                 url: "messaging/deletesent",
                 defaults: new { controller = "Messaging", action = "DeletePrivateMessageFromSent" }
-            );
-
-            // u/someuserhere
-            routes.MapRoute(
-                name: "usershortroute",
-                url: "u/{id}",
-                defaults: new { controller = "Home", action = "UserProfile" }
-            );
+            );            
 
             // help/pagetoshow
             routes.MapRoute(

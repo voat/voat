@@ -13,7 +13,6 @@ All Rights Reserved.
 */
 
 using System.Linq;
-using System.Threading.Tasks;
 using Whoaverse.Models;
 
 namespace Whoaverse.Utils
@@ -164,8 +163,9 @@ namespace Whoaverse.Utils
                         {
                             submission.Dislikes++;
 
-                            double currentScore = submission.Likes - submission.Dislikes;
-                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);
+                            double currentScore = submission.Likes - submission.Dislikes; 
+                            double submissionAge = Whoaverse.Utils.Submissions.CalcSubmissionAgeDouble(submission.Date);    
+
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
                             submission.Rank = newRank;
