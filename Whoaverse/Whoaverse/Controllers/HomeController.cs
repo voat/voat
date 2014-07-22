@@ -33,7 +33,8 @@ namespace Whoaverse.Controllers
     {
         private whoaverseEntities db = new whoaverseEntities();
 
-        // GET: list of subverses
+        // GET: list of default subverses
+        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Listofsubverses()
         {
             try
@@ -446,12 +447,16 @@ namespace Whoaverse.Controllers
         public ActionResult Submit(string selectedsubverse)
         {
             string linkPost = Request.Params["linkpost"];
+            string linkDescription = Request.Params["linkdescription"];
+            string linkUrl = Request.Params["linkurl"];
 
             if (linkPost != null)
             {
                 if (linkPost == "true")
                 {
                     ViewBag.action = "link";
+                    ViewBag.linkDescription = linkDescription;
+                    ViewBag.linkUrl = linkUrl;
                 }
             }
             else
@@ -784,6 +789,7 @@ namespace Whoaverse.Controllers
         }
 
         // GET: /about
+        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult About(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -803,6 +809,7 @@ namespace Whoaverse.Controllers
         }
 
         // GET: /cla
+        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Cla()
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -810,6 +817,7 @@ namespace Whoaverse.Controllers
             return View("~/Views/Legal/Cla.cshtml");
         }
 
+        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Welcome()
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -817,6 +825,7 @@ namespace Whoaverse.Controllers
         }
 
         // GET: /help
+        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Help(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -844,6 +853,7 @@ namespace Whoaverse.Controllers
         }
 
         // GET: /help/privacy
+        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Privacy()
         {
             ViewBag.Message = "Privacy Policy";
@@ -894,6 +904,7 @@ namespace Whoaverse.Controllers
         }
 
         // GET: promoted submission
+        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult PromotedSubmission()
         {
             var submissionId = db.Promotedsubmissions.FirstOrDefault();

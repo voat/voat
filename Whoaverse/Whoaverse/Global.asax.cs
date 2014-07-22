@@ -18,7 +18,9 @@ namespace Whoaverse
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            
+
+            ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
+
             Application["onlineVisitors"] = 3;
         }
 

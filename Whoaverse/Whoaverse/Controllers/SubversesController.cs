@@ -527,7 +527,7 @@ namespace Whoaverse.Controllers
                     //if selected subverse is ALL, show submissions from all subverses, sorted by rank
                     var submissions = db.Messages
                         .Where(x => x.Name != "deleted")
-                        .OrderByDescending(s => s.Rank).ToList();
+                        .OrderByDescending(s => s.Rank).Take(1000).ToList();
 
                     ViewBag.Title = "all subverses";
                     return View(submissions.ToPagedList(pageNumber, pageSize));
@@ -627,12 +627,14 @@ namespace Whoaverse.Controllers
             return View("~/Views/Subverses/Subverses.cshtml", subverses.ToPagedList(pageNumber, pageSize));
         }
 
+        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Subversenotfound()
         {
             ViewBag.SelectedSubverse = "404";
             return View("~/Views/Errors/Subversenotfound.cshtml");
         }
 
+        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult AdultContentWarning(string destination, bool? nsfwok)
         {
             ViewBag.SelectedSubverse = String.Empty;
@@ -681,7 +683,7 @@ namespace Whoaverse.Controllers
                 {
                     var submissions = db.Messages
                         .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
-                        .OrderByDescending(s => s.Date).ToList();
+                        .OrderByDescending(s => s.Date).Take(1000).ToList();
                     return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                 }
                 else
@@ -694,7 +696,7 @@ namespace Whoaverse.Controllers
                 // if selected subverse is ALL, show submissions from all subverses, sorted by date
                 var submissions = db.Messages
                     .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true)
-                    .OrderByDescending(s => s.Date).ToList();
+                    .OrderByDescending(s => s.Date).Take(1000).ToList();
 
                 return View("Index", submissions.ToPagedList(pageNumber, pageSize));
             }
@@ -968,7 +970,7 @@ namespace Whoaverse.Controllers
             if (subverseModel != null)
             {
                 // check if caller is subverse owner, if not, deny listing
-                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
                 {
                     var subverseFlairsettings = db.Subverseflairsettings.OrderBy(s => s.Id)
                     .Where(n => n.Subversename == subversetoshow)
@@ -1002,7 +1004,7 @@ namespace Whoaverse.Controllers
             if (subverseModel != null)
             {
                 // check if caller is subverse owner, if not, deny listing
-                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
                 {
                     ViewBag.SubverseModel = subverseModel;
                     ViewBag.SubverseName = subversetoshow;
@@ -1034,7 +1036,7 @@ namespace Whoaverse.Controllers
                 if (subverseModel != null)
                 {
                     // check if caller is subverse owner, if not, deny posting
-                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseFlairSetting.Subversename))
+                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseFlairSetting.Subversename) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subverseFlairSetting.Subversename))
                     {
                         subverseFlairSetting.Subversename = subverseModel.name;
                         db.Subverseflairsettings.Add(subverseFlairSetting);
@@ -1092,7 +1094,7 @@ namespace Whoaverse.Controllers
                 if (subverse != null)
                 {
                     // check if caller has clearance to remove a link flair
-                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name))
+                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subverse.name))
                     {
                         // execute removal
                         Subverseflairsetting subverseFlairSetting = await db.Subverseflairsettings.FindAsync(id);

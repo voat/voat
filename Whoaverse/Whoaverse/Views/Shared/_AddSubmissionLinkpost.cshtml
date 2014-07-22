@@ -22,6 +22,9 @@
     DateTime currentdatetime = System.DateTime.Now;
 
     string linkPost = Request.Params["linkpost"];
+    
+    string linkDescription = Request.Params["linkdescription"];
+    string linkUrl = Request.Params["linkurl"];
 }
 
 @using (Html.BeginForm())
@@ -45,7 +48,7 @@
         <div class="form-group">
             @Html.Label("Title", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.TextBoxFor(m => m.Linkdescription, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Linkdescription, new { @class = "form-control", Value=@linkDescription })
                 @Html.ValidationMessageFor(model => model.Linkdescription)
             </div>
         </div>
@@ -78,7 +81,7 @@
         <div class="form-group">
             @Html.Label("URL", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.TextBoxFor(m => m.MessageContent, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.MessageContent, new { @class = "form-control", Value = @linkUrl })
                 @Html.ValidationMessageFor(model => model.MessageContent)
             </div>
         </div>

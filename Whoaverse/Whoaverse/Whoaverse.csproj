@@ -399,6 +399,7 @@
     <Content Include="Graphics\whoaverse-bg.jpg" />
     <Content Include="Graphics\whoaverse-mascot.png" />
     <Content Include="Graphics\whoaverse.png" />
+    <Content Include="Graphics\whoaverse_32x32.png" />
     <Content Include="Graphics\whoaverse_padded.png" />
     <EntityDeploy Include="Models\WhoaverseEntityDataModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
