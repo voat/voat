@@ -50,7 +50,14 @@
                         <input name="thing_id" value="xxxx" type="hidden">
                         <div class="usertext-body may-blank-within">
                             <div class="md">
-                                <p class="subversedescriptionboxcontent">@Model.description</p>
+                                @if (!String.IsNullOrWhiteSpace(Model.description))
+                                {
+                                    <p class="subversedescriptionboxcontent">@Model.description</p>                                    
+                                }
+                                else
+                                {
+                                    <p class="subversedescriptionboxcontent">The owner of this subverse did not write a description yet.</p>
+                                }
                             </div>
                         </div>
                     </form>
