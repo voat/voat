@@ -433,7 +433,7 @@ ul.flat-vert {
 .dropdown.lightdrop .selected {
     position: relative;
     background: none no-repeat scroll center right;
-    background-image: url(../droparrowgray.gif);
+    /*background-image: url('../Graphics/drop-arrow.png');*/    
     padding-right: 21px;
     text-decoration: underline;
     color: gray;
@@ -446,7 +446,7 @@ ul.flat-vert {
 .dropdown.tabdrop .selected {
     position: relative;
     background: #ffffff none no-repeat scroll center right;
-    background-image: url(../droparrowgray.gif);
+    /*background-image: url('../Graphics/drop-arrow.png');*/
     padding: 2px 21px 1px 5px;
     margin-left: 3px;
     border: 1px solid #5f99cf;
@@ -5035,7 +5035,7 @@ ul#image-preview-list {
 
 .dropdown.srdrop .selected {
     background: none no-repeat scroll center right;
-    background-image: url(../droparrowgray.gif);
+    /*background-image: url('../Graphics/drop-arrow.png');*/
     display: inline-block;
     vertical-align: bottom;
     padding-right: 21px;

@@ -270,7 +270,13 @@ fieldset[disabled] .btn {
 }
 
 .form-control {
-    box-shadow: 0px 0px 0px;
+    box-shadow: none;
+}
+
+.form-control:focus {
+  border-color: #66c4e0;
+  outline: 0;
+  box-shadow: none;
 }
 
 .commenttextarea {
@@ -279,6 +285,7 @@ fieldset[disabled] .btn {
     background-color: #FFF;
     background-image: none;
     border: 1px solid #E7E7E7;
+    box-shadow: none;
     border-radius: 4px;
     font-family: verdana,arial,helvetica,sans-serif;
     font-size: 12px;
@@ -288,7 +295,8 @@ fieldset[disabled] .btn {
 }
 
     .commenttextarea:focus {
-        border: 1px solid gray;
+        border: 1px solid #66c4e0;
+        outline: none;
     }
 
 .ikp {
