@@ -356,9 +356,21 @@ namespace Whoaverse.Controllers
                 // delete comment if delete request is issued by subverse moderator
                 else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
                 {
+                    // notify comment author that his comment has been deleted by a moderator
+                    Utils.MesssagingUtility.SendPrivateMessage(
+                        "Whoaverse", 
+                        commentToDelete.Name, 
+                        "Your comment has been deleted by a moderator", 
+                        "Your [comment](/v/"+commentSubverse+"/comments/"+commentToDelete.MessageId+"/"+commentToDelete.Id+") has been deleted by: " +
+                        "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " on: " + System.DateTime.Now + "  " + Environment.NewLine + 
+                        "Original comment content was: " + Environment.NewLine + 
+                        "---" + Environment.NewLine +
+                        commentToDelete.CommentContent
+                        );
+
                     commentToDelete.Name = "deleted";
                     commentToDelete.CommentContent = "deleted by a moderator at " + System.DateTime.Now;
-                    await db.SaveChangesAsync();
+                    await db.SaveChangesAsync();                    
                 }
             }
 
@@ -424,16 +436,43 @@ namespace Whoaverse.Controllers
                 }
                 // delete submission if delete request is issued by subverse moderator
                 else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
-                {
-                    submissionToDelete.Name = "deleted";
+                {                  
 
                     if (submissionToDelete.Type == 1)
                     {
+                        // notify submission author that his submission has been deleted by a moderator
+                        Utils.MesssagingUtility.SendPrivateMessage(
+                            "Whoaverse",
+                            submissionToDelete.Name,
+                            "Your submission has been deleted by a moderator",
+                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.Id + ") has been deleted by: " +
+                            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + System.DateTime.Now + "  " + Environment.NewLine +
+                            "Original submission content was: " + Environment.NewLine +
+                            "---" + Environment.NewLine +
+                            "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
+                            "Submission content: " + submissionToDelete.MessageContent
+                            );
+
                         submissionToDelete.MessageContent = "deleted by a moderator at " + System.DateTime.Now;
+                        submissionToDelete.Name = "deleted";
                     }
                     else
                     {
+                        // notify submission author that his submission has been deleted by a moderator
+                        Utils.MesssagingUtility.SendPrivateMessage(
+                            "Whoaverse",
+                            submissionToDelete.Name,
+                            "Your submission has been deleted by a moderator",
+                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.Id + ") has been deleted by: " +
+                            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + System.DateTime.Now + "  " + Environment.NewLine +
+                            "Original submission content was: " + Environment.NewLine +
+                            "---" + Environment.NewLine +
+                            "Link description: " + submissionToDelete.Linkdescription + ", " + Environment.NewLine +
+                            "Link URL: " + submissionToDelete.MessageContent
+                            );
+
                         submissionToDelete.MessageContent = "http://whoaverse.com";
+                        submissionToDelete.Name = "deleted";
                     }
 
                     await db.SaveChangesAsync();

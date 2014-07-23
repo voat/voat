@@ -50,15 +50,8 @@
     <div id="siteTable_t3_24nbon" class="sitetable nestedlisting">
 
         @{            
-
             foreach (var firstComment in firstComments)
             {
-                //do not show deleted comments unless they have replies
-                if (firstComment.Name == "deleted" && Model.Comments.Where(A => A.ParentId == firstComment.Id).Count() == 0)
-                {
-                    continue;
-                }
-
                 if (firstComment.Likes - firstComment.Dislikes < -3)
                 {
                     <div class="thread id-@firstComment.Id comment " data-fullname=" t1_cgkmgmm" data-ups="1" data-downs="0">
@@ -71,7 +64,6 @@
                         @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
                     </div>
                 }
-
             }
         }
 
