@@ -17,6 +17,7 @@
 @{
     var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
 
+    string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
     DateTime submissionDate = Model.Date;
@@ -29,7 +30,10 @@
             <p class="title">
                 @if (Model.FlairLabel != null && Model.FlairCss != null)
                 {
-                    <span class="@Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
+                    if (routeActiveSubverse != string.Empty && routeActiveSubverse != "all" && routeActiveSubverse != null)
+                    {   
+                        <span class="@Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
+                    }                    
                 }                
                 <a class="title may-blank " href="@commentsUrl" tabindex="1" title="@Model.Title">@Model.Title</a>
                 <span class="domain">(<a href="/v/@Model.Subverse">self.@Model.Subverse</a>)</span>

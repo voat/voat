@@ -16,17 +16,17 @@
 
 @{
     string ahrefTarget = "_self";
-    
+
     if (User.Identity.IsAuthenticated)
     {
         if (Whoaverse.Utils.User.LinksInNewWindow(User.Identity.Name))
         {
             ahrefTarget = "_blank";
-        }        
-    }    
-    
+        }
+    }
+
     var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
-    
+
     bool ratedAdult = false;
     if (Model.Subverses != null)
     {
@@ -41,7 +41,7 @@
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
     DateTime submissionDate = Model.Date;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Submissions.CalcSubmissionAge(submissionDate);    
 
     //type 2 = urls
     if (Model.Type == 2)
@@ -91,7 +91,10 @@
             <p class="title">
                 @if (Model.FlairLabel != null && Model.FlairCss != null)
                 {
-                    <span class="@Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
+                    if (routeActiveSubverse != "" && routeActiveSubverse != "all" && routeActiveSubverse != null)
+                    {
+                        <span class="@Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
+                    }                    
                 }
                 <a class="title may-blank " href="@Model.MessageContent" tabindex="1" title="@Model.Linkdescription" target="@ahrefTarget">@Model.Linkdescription</a>
                 <span class="domain">(<a href="/domains/@submissionDomain/">@submissionDomain</a>)</span>
