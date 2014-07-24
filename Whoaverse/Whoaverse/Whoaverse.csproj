@@ -591,6 +591,7 @@
     <Content Include="Views\Subverses\Admin\Flair\AddLinkFlair.cshtml" />
     <Content Include="Views\Subverses\Admin\Flair\RemoveLinkFlair.cshtml" />
     <Content Include="Views\AjaxViews\_LinkFlairSelectDialog.cshtml" />
+    <Content Include="Views\Subverses\_SubverseModerators.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />

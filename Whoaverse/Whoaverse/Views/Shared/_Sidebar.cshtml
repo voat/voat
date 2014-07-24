@@ -20,13 +20,11 @@
     string subverseOwner = "Atko";
 
     var subOwner = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 1).FirstOrDefault();
-    
+
     if (subOwner != null)
     {
         subverseOwner = subOwner.Username;
-    }
-
-    var subModerators = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 2).ToList();
+    }   
 }
 
 <div class="side">
@@ -101,16 +99,9 @@
                 <h1>MODERATORS</h1>
             </div>
             <ul class="content">
-                @foreach (var moderator in subModerators)
-                {
-                    <li>
-                        <a href="/user/@moderator.Username" class="author may-blank id-t2_5fggn">@moderator.Username</a><span class="userattrs"></span>
-                    </li>
-                }
-                <li>
-                    <a href="/user/@subverseOwner" class="author may-blank id-t2_5fggn">@subverseOwner</a>
-                    <span class="userattrs"></span>
-                </li>
+                @{
+                    Html.RenderAction("SubverseModeratorsList", "Subverses", new { subverseName = Model.name });    
+                }                
             </ul>
         </div>
     </div>

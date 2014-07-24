@@ -1116,5 +1116,29 @@ namespace Whoaverse.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
+        
+        // GET: render a partial view with list of moderators for a given subverse, if no moderators are found, return subverse owner
+        [ChildActionOnly]
+        public ActionResult SubverseModeratorsList(string subverseName)
+        {
+            var subverseModerators =
+                db.SubverseAdmins.OrderBy(s => s.Username)
+                .Where(n => n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase) && n.Power == 2)
+                .Take(10)
+                .ToList();
+
+            if (subverseModerators.Count == 0)
+            {
+                subverseModerators =
+                db.SubverseAdmins
+                .Where(n => n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase) && n.Power == 1)
+                .Take(1)
+                .ToList();
+            }
+
+            ViewBag.subverseModerators = subverseModerators;
+
+            return PartialView("~/Views/Subverses/_SubverseModerators.cshtml", subverseModerators);
+        }
     }
 }

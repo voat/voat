@@ -945,7 +945,7 @@ namespace Whoaverse.Controllers
         }
 
         // GET: promoted submission
-        [OutputCache(VaryByParam = "none", Duration = 3600)]
+        [OutputCache(VaryByParam = "none", Duration = 300)]
         public ActionResult PromotedSubmission()
         {
             var submissionId = db.Promotedsubmissions.FirstOrDefault();

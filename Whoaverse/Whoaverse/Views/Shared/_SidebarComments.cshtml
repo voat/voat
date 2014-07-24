@@ -102,16 +102,9 @@
                 <h1>MODERATORS</h1>
             </div>
             <ul class="content">
-                @foreach (var moderator in subModerators)
-                {
-                    <li>
-                        <a href="/user/@moderator.Username" class="author may-blank id-t2_5fggn">@moderator.Username</a><span class="userattrs"></span>
-                    </li>
+                @{
+                    Html.RenderAction("SubverseModeratorsList", "Subverses", new { subverseName = Model.name });
                 }
-                <li>
-                    <a href="/user/@subverseOwner" class="author may-blank id-t2_5fggn">@subverseOwner</a>
-                    <span class="userattrs"></span>
-                </li>
             </ul>
         </div>
     </div>
