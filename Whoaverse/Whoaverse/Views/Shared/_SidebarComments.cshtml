@@ -76,8 +76,12 @@
                 <span class="number">~@HttpContext.Current.Application["onlineVisitors"]</span>
                 <span class="word">users here now</span>
             </p>
-            <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t5_317us4tp">
-                <input name="thing_id" value="t5_317us" type="hidden">
+            @if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
+            {
+                <div class="leavemoderator">you are a moderator of this subverse. (<a href="/v/@Model.name/about/moderators/resign">change</a>)</div>
+            }  
+            <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxxx">
+                <input name="thing_id" value="xxxx" type="hidden">
                 <div class="usertext-body may-blank-within">
                     <div class="md">
                         <p>

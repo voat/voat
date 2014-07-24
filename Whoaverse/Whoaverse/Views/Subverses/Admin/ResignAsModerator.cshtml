@@ -1,0 +1,43 @@
+﻿@model Whoaverse.Models.SubverseAdmin
+
+<div class="content" role="main">
+
+    <div class="row nomargin">
+        <div class="well col-md-8">
+
+            <h1>You are about to resign as moderator from: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+
+            <br />
+            <div class="alert alert-danger">Are you sure you want to resign as moderator from this subverse?</div>
+
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Username)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Username)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Power)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Power)
+                </dd>
+            </dl>
+
+            @using (Html.BeginForm("ResignAsModerator", "Subverses", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <br />
+                <input type="submit" value="Resign" class="btn-whoaverse-medium" />
+                <br /><br />
+                @Html.ActionLink("Back to subverse frontpage", "Index", new { subversetoshow = Model.SubverseName })
+            }
+        </div>
+    </div>
+</div>

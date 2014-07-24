@@ -104,6 +104,13 @@
       "height": 43,
       "offsetX": 0,
       "offsetY": 1503
+    },
+    {
+      "name": "/Graphics/group_edit.png",
+      "width": 16,
+      "height": 16,
+      "offsetX": 0,
+      "offsetY": 1546
     }
   ]
 }

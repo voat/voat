@@ -91,3 +91,9 @@
 	height: 43px;
 	background: url('WVSprite.png') 0 -1503px;
 }
+@mixin sprite-Graphics-group_edit() {
+/* You may have to set 'display: block' */
+	width: 16px;
+	height: 16px;
+	background: url('WVSprite.png') 0 -1546px;
+}

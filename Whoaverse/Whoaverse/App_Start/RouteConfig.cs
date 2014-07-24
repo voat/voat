@@ -315,6 +315,13 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "RemoveModerator" }
             );
 
+            // v/subversetoedit/about/moderators/leave
+            routes.MapRoute(
+                name: "resignAsModerator",
+                url: "v/{subversetoresignfrom}/about/moderators/resign/",
+                defaults: new { controller = "Subverses", action = "ResignAsModerator" }
+            );
+
             // v/subversetoshow
             routes.MapRoute(
                 name: "SubverseIndex",

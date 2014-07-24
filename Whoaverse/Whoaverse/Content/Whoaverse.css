@@ -274,11 +274,11 @@ fieldset[disabled] .btn {
     box-shadow: none;
 }
 
-.form-control:focus {
-  border-color: #66c4e0;
-  outline: 0;
-  box-shadow: none;
-}
+    .form-control:focus {
+        border-color: #66c4e0;
+        outline: 0;
+        box-shadow: none;
+    }
 
 .commenttextarea {
     line-height: 1.42857;
@@ -375,7 +375,7 @@ fieldset[disabled] .btn {
 .well {
     padding: 8px;
     border-radius: 2px;
-    background-color: #F7F7F7;    
+    background-color: #F7F7F7;
     box-shadow: none;
 }
 
@@ -559,14 +559,18 @@ a:visited {
 -----------------------------------------------------------*/
 
 .whoaverse_padded {
-    /* You may have to set 'display: block' */
     width: 125px;
     height: 44px;
     background: url('/Graphics/WVSprite.png') 0 0;
 }
 
+.group_edit {
+    width: 16px;
+    height: 16px;
+    background: url('/Graphics/WVSprite.png') 0 -1546px;
+}
+
 .arrow-downvote {
-    /* You may have to set 'display: block' */
     width: 18px;
     height: 19px;
     background: url('/Graphics/WVSprite.png') 0 -44px;
@@ -574,7 +578,6 @@ a:visited {
 }
 
 .arrow-downvoted {
-    /* You may have to set 'display: block' */
     width: 18px;
     height: 19px;
     background: url('/Graphics/WVSprite.png') 0 -63px;
@@ -582,7 +585,6 @@ a:visited {
 }
 
 .arrow-upvote {
-    /* You may have to set 'display: block' */
     width: 18px;
     height: 19px;
     background: url('/Graphics/WVSprite.png') 0 -82px;
@@ -590,7 +592,6 @@ a:visited {
 }
 
 .arrow-upvoted {
-    /* You may have to set 'display: block' */
     width: 18px;
     height: 19px;
     background: url('/Graphics/WVSprite.png') 0 -101px;
@@ -598,63 +599,54 @@ a:visited {
 }
 
 .expand-selfpost-hover {
-    /* You may have to set 'display: block' */
     width: 23px;
     height: 23px;
     background: url('/Graphics/WVSprite.png') 0 -120px;
 }
 
 .expand-selfpost {
-    /* You may have to set 'display: block' */
     width: 23px;
     height: 23px;
     background: url('/Graphics/WVSprite.png') 0 -143px;
 }
 
 .nsfw-thumb {
-    /* You may have to set 'display: block' */
     width: 70px;
     height: 70px;
     background: url('/Graphics/WVSprite.png') 0 -176px;
 }
 
 .pattern-welcome {
-    /* You may have to set 'display: block' */
     width: 128px;
     height: 128px;
     background: url('/Graphics/WVSprite.png') 0 -246px;
 }
 
 .thumb-placeholder {
-    /* You may have to set 'display: block' */
     width: 70px;
     height: 70px;
     background: url('/Graphics/WVSprite.png') 0 -374px;
 }
 
 .whoaverse-404 {
-    /* You may have to set 'display: block' */
     width: 450px;
     height: 405px;
     background: url('/Graphics/WVSprite.png') 0 -444px;
 }
 
 .whoaverse-bg {
-    /* You may have to set 'display: block' */
     width: 1920px;
     height: 250px;
     background: url('/Graphics/WVSprite.png') 0 -849px;
 }
 
 .whoaverse-mascot {
-    /* You may have to set 'display: block' */
     width: 400px;
     height: 404px;
     background: url('/Graphics/WVSprite.png') 0 -1099px;
 }
 
 .whoaverse {
-    /* You may have to set 'display: block' */
     width: 120px;
     height: 43px;
     background: url('/Graphics/WVSprite.png') 0 -1503px;
@@ -721,7 +713,6 @@ a:visited {
             background-position: 0px -613px;
             background-repeat: no-repeat;
         }
-
 
 .thumbnail {
     float: left;
@@ -960,6 +951,44 @@ a:visited {
         padding: 5px;
     }
 
+.titlebox form.toggle, .leavemoderator {
+    margin: 0;
+    padding: 5px 0px;
+    font-size: smaller;
+    color: gray;
+    background: #ffffff none no-repeat scroll center left;
+}
+
+.usertable .moderator.toggle .main:before, .titlebox .leavemoderator:before, .titlebox form.leavecontributor-button:before, .icon-menu .reddit-edit:before, .icon-menu .reddit-traffic:before, .icon-menu .reddit-reported:before, .icon-menu .reddit-spam:before, .icon-menu .wikiaction-pages:before, .icon-menu .wikiaction-revisions:before, .icon-menu .reddit-ban:before, .icon-menu .reddit-flair:before, .icon-menu .reddit-moderationlog:before, .icon-menu .reddit-unmoderated:before, .icon-menu .reddit-moderators:before, .icon-menu .moderator-mail:before, .icon-menu .reddit-contributors:before, .icon-menu .reddit-modqueue:before, .giftgold a:before, .gilded-link a:before, .infobar.gold:before, .gold-form h1.goldgift:before, .users-online:before, .notice-taken:before, .notice-available:before, .info-notice:before {
+    height: 16px;
+    width: 16px;
+    display: block;
+    content: " ";
+    float: left;
+    margin-right: 5px;
+}
+
+.titlebox .leavemoderator:before, .moderator.toggle .main:before {
+    background-image: url('/Graphics/WVSprite.png');
+    background-position: 0 -1546px;
+    background-repeat: no-repeat;
+}
+
+.moderator.accept-invite .main:before {
+    background-image: url(/Graphics/WVSprite.png);
+    background-position: 0px -642px;
+    background-repeat: no-repeat;
+}
+
+.titlebox form.leavecontributor-button:before {
+    background-image: url(/Graphics/WVSprite.png);
+    background-position: -66px -730px;
+    background-repeat: no-repeat;
+}
+
+.titlebox form.flairtoggle {
+    padding: 0;
+}
 
 /* Responsive optimisation for mobile phones */
 @media (max-width: 480px) {

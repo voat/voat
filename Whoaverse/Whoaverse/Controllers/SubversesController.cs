@@ -384,8 +384,8 @@ namespace Whoaverse.Controllers
                 return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", viewModel);
             }
             else
-            {
-                return new HttpUnauthorizedResult();
+            {                
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -771,7 +771,7 @@ namespace Whoaverse.Controllers
                 }
                 else
                 {
-                    return new HttpUnauthorizedResult();
+                    return RedirectToAction("Index", "Home");
                 }
             }
             else
@@ -800,7 +800,7 @@ namespace Whoaverse.Controllers
                 }
                 else
                 {
-                    return new HttpUnauthorizedResult();
+                    return RedirectToAction("Index", "Home");
                 }
             }
             else
@@ -858,7 +858,7 @@ namespace Whoaverse.Controllers
                             }
                             else
                             {
-                                return new HttpUnauthorizedResult();
+                                return RedirectToAction("Index", "Home");
                             }
                         }
                         else
@@ -885,7 +885,7 @@ namespace Whoaverse.Controllers
                         }
                         else
                         {
-                            return new HttpUnauthorizedResult();
+                            return RedirectToAction("Index", "Home");
                         }
                     }
                 }
@@ -921,6 +921,63 @@ namespace Whoaverse.Controllers
             return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subverseAdmin);
         }
 
+        // GET: show resign as moderator view for selected subverse
+        [Authorize]
+        public ActionResult ResignAsModerator(string subversetoresignfrom)
+        {
+            if (subversetoresignfrom == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            SubverseAdmin subverseAdmin = db.SubverseAdmins
+                .Where(s => s.SubverseName == subversetoresignfrom && s.Username == User.Identity.Name && s.Power > 1)
+                .FirstOrDefault();
+
+            if (subverseAdmin == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.SelectedSubverse = string.Empty;
+            ViewBag.SubverseName = subverseAdmin.SubverseName;
+
+            return View("~/Views/Subverses/Admin/ResignAsModerator.cshtml", subverseAdmin);
+        }
+
+        // POST: resign as moderator from given subverse
+        [Authorize]
+        [HttpPost]
+        [ActionName("ResignAsModerator")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ResignAsModeratorPost(string subversetoresignfrom)
+        {
+            // get moderator name for selected subverse
+            var moderatorToBeRemoved = db.SubverseAdmins
+                .Where(s => s.SubverseName == subversetoresignfrom && s.Username == User.Identity.Name && s.Power != 1)
+                .FirstOrDefault();
+
+            if (moderatorToBeRemoved != null)
+            {
+                var subverse = db.Subverses.Find(moderatorToBeRemoved.SubverseName);
+                if (subverse != null)
+                {
+                    // execute removal                    
+                    db.SubverseAdmins.Remove(moderatorToBeRemoved);
+                    await db.SaveChangesAsync();
+                    return RedirectToAction("Index", "Subverses", new { subversetoshow = subversetoresignfrom });
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
+
         // POST: remove a moderator from given subverse
         [Authorize]
         [HttpPost, ActionName("RemoveModerator")]
@@ -945,7 +1002,7 @@ namespace Whoaverse.Controllers
                     }
                     else
                     {
-                        return new HttpUnauthorizedResult();
+                        return RedirectToAction("Index", "Home");
                     }
                 }
                 else
@@ -984,7 +1041,7 @@ namespace Whoaverse.Controllers
                 }
                 else
                 {
-                    return new HttpUnauthorizedResult();
+                    return RedirectToAction("Index", "Home");
                 }
             }
             else
@@ -1012,7 +1069,7 @@ namespace Whoaverse.Controllers
                 }
                 else
                 {
-                    return new HttpUnauthorizedResult();
+                    return RedirectToAction("Index", "Home");
                 }
             }
             else
@@ -1044,7 +1101,7 @@ namespace Whoaverse.Controllers
                     }
                     else
                     {
-                        return new HttpUnauthorizedResult();
+                        return RedirectToAction("Index", "Home");
                     }
                 }
                 else
@@ -1103,7 +1160,7 @@ namespace Whoaverse.Controllers
                     }
                     else
                     {
-                        return new HttpUnauthorizedResult();
+                        return RedirectToAction("Index", "Home");
                     }
                 }
                 else
@@ -1116,7 +1173,7 @@ namespace Whoaverse.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
-        
+
         // GET: render a partial view with list of moderators for a given subverse, if no moderators are found, return subverse owner
         [ChildActionOnly]
         public ActionResult SubverseModeratorsList(string subverseName)

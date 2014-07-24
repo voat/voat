@@ -6950,45 +6950,6 @@ dd {
 
 
 
-.titlebox form.toggle, .leavemoderator {
-    margin: 0;
-    padding: 5px 0px;
-    font-size: smaller;
-    color: gray;
-    background: #ffffff none no-repeat scroll center left;
-}
-
-.usertable .moderator.toggle .main:before, .titlebox .leavemoderator:before, .titlebox form.leavecontributor-button:before, .icon-menu .reddit-edit:before, .icon-menu .reddit-traffic:before, .icon-menu .reddit-reported:before, .icon-menu .reddit-spam:before, .icon-menu .wikiaction-pages:before, .icon-menu .wikiaction-revisions:before, .icon-menu .reddit-ban:before, .icon-menu .reddit-flair:before, .icon-menu .reddit-moderationlog:before, .icon-menu .reddit-unmoderated:before, .icon-menu .reddit-moderators:before, .icon-menu .moderator-mail:before, .icon-menu .reddit-contributors:before, .icon-menu .reddit-modqueue:before, .giftgold a:before, .gilded-link a:before, .infobar.gold:before, .gold-form h1.goldgift:before, .users-online:before, .notice-taken:before, .notice-available:before, .info-notice:before {
-    height: 16px;
-    width: 16px;
-    display: block;
-    content: " ";
-    float: left;
-    margin-right: 5px;
-}
-
-.titlebox .leavemoderator:before, .moderator.toggle .main:before {
-    background-image: url(/Graphics/WVSprite.png);
-    background-position: -66px -774px;
-    background-repeat: no-repeat;
-}
-
-.moderator.accept-invite .main:before {
-    background-image: url(/Graphics/WVSprite.png);
-    background-position: 0px -642px;
-    background-repeat: no-repeat;
-}
-
-.titlebox form.leavecontributor-button:before {
-    background-image: url(/Graphics/WVSprite.png);
-    background-position: -66px -730px;
-    background-repeat: no-repeat;
-}
-
-.titlebox form.flairtoggle {
-    padding: 0;
-}
-
 .titlebox .tagline {
     margin: 5px 0 5px 20px;
 }

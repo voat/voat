@@ -392,6 +392,7 @@
     <Content Include="Graphics\Badges\tinkerer.png" />
     <Content Include="Graphics\expand-selfpost-hover.png" />
     <Content Include="Graphics\expand-selfpost.png" />
+    <Content Include="Graphics\group_edit.png" />
     <Content Include="Graphics\mail-icon-hasmail.png" />
     <Content Include="Graphics\mail-icon.png" />
     <Content Include="Graphics\nsfw-thumb.png" />
@@ -592,6 +593,7 @@
     <Content Include="Views\Subverses\Admin\Flair\RemoveLinkFlair.cshtml" />
     <Content Include="Views\AjaxViews\_LinkFlairSelectDialog.cshtml" />
     <Content Include="Views\Subverses\_SubverseModerators.cshtml" />
+    <Content Include="Views\Subverses\Admin\ResignAsModerator.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />

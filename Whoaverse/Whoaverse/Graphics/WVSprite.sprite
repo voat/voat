@@ -12,7 +12,7 @@
     <!--Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only.-->
     <fullPathForIdentifierName>true</fullPathForIdentifierName>
     <!--Use absolute path in the generated CSS-like files. By default, the URLs are relative to sprite image file (and the location of CSS, LESS and SCSS).-->
-    <useAbsoluteUrl>false</useAbsoluteUrl>
+    <useAbsoluteUrl>true</useAbsoluteUrl>
     <!--Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file.-->
     <outputDirectoryForCss />
     <!--Specifies a custom subfolder to save LESS files to. By default, compiled output will be placed in the same folder and nested under the original file.-->
@@ -37,5 +37,6 @@
     <file>/Graphics/whoaverse-bg.jpg</file>
     <file>/Graphics/whoaverse-mascot.png</file>
     <file>/Graphics/whoaverse.png</file>
+    <file>/Graphics/group_edit.png</file>
   </files>
 </sprite>
