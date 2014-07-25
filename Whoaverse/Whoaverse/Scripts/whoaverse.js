@@ -534,10 +534,9 @@ function submitUnSubscribeRequest(subverseName) {
 
 //a function to load content of a self post and append it to calling object
 function loadSelfText(obj, messageId) {
-    //classes should be added later when icons are re-designed
 
-    //$(obj).toggleClass("collapsed");
-    //$(obj).toggleClass("expanded");
+    $(obj).toggleClass("collapsed");
+    $(obj).toggleClass("expanded");
 
     //fetch message content and append under class md
     var messageContent = $.get(

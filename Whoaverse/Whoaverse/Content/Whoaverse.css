@@ -679,14 +679,12 @@ a:visited {
 
     .expando-button.selftext.expanded, .eb-se {
         margin-bottom: 5px;
-        background-image: url(/Graphics/WVSprite.png);
-        background-position: -29px -584px;
+        background: url('/Graphics/WVSprite.png') 0 -1585px;
         background-repeat: no-repeat;
     }
 
         .expando-button.selftext.expanded:hover, .eb-seh {
-            background-image: url(/Graphics/WVSprite.png);
-            background-position: 0px -584px;
+            background: url('/Graphics/WVSprite.png') 0 -1562px;
             background-repeat: no-repeat;
         }
 

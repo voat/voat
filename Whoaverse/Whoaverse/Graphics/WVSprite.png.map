@@ -111,6 +111,20 @@
       "height": 16,
       "offsetX": 0,
       "offsetY": 1546
+    },
+    {
+      "name": "/Graphics/expanded-selfpost-hover.png",
+      "width": 23,
+      "height": 23,
+      "offsetX": 0,
+      "offsetY": 1562
+    },
+    {
+      "name": "/Graphics/expanded-selfpost.png",
+      "width": 23,
+      "height": 23,
+      "offsetX": 0,
+      "offsetY": 1585
     }
   ]
 }

@@ -26,7 +26,7 @@ namespace Whoaverse.Utils
 
         private static PagedListRenderOptions plro = new PagedListRenderOptions();
 
-        // setup custom paged list render options and allow reuse throughout views which depend on paged list, avoiding code repeat
+        // custom paged list render options without pagination
         public static PagedListRenderOptions PagedListRenderOptions()
         {
             plro.Display = PagedListDisplayMode.IfNeeded;
