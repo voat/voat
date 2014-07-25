@@ -31,6 +31,7 @@ namespace Whoaverse.Utils
                             tmpVotingTracker.CommentId = commentId;
                             tmpVotingTracker.UserName = userWhichUpvoted;
                             tmpVotingTracker.VoteStatus = 1;
+                            tmpVotingTracker.Timestamp = System.DateTime.Now;
                             db.Commentvotingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
                         }
@@ -53,6 +54,7 @@ namespace Whoaverse.Utils
                             if (votingTracker != null)
                             {
                                 votingTracker.VoteStatus = 1;
+                                votingTracker.Timestamp = System.DateTime.Now;
                             }
                             db.SaveChanges();
                         }
@@ -99,6 +101,7 @@ namespace Whoaverse.Utils
                             tmpVotingTracker.CommentId = commentId;
                             tmpVotingTracker.UserName = userWhichDownvoted;
                             tmpVotingTracker.VoteStatus = -1;
+                            tmpVotingTracker.Timestamp = System.DateTime.Now;
                             db.Commentvotingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
                         }
@@ -121,6 +124,7 @@ namespace Whoaverse.Utils
                             if (votingTracker != null)
                             {
                                 votingTracker.VoteStatus = -1;
+                                votingTracker.Timestamp = System.DateTime.Now;
                             }
                             db.SaveChanges();
                         }

@@ -445,16 +445,30 @@ namespace Whoaverse.Utils
             }
         }
 
-        // check if a given user has used his daily voting quota
-        public static bool UserDailyVotingQuotaUsed(string userName)
+        // check how many votes a user has used in the past 24 hours
+        public static int TotalVotesUsedInPast24Hours(string userName)
         {
-            int dailyVotingQuota = 5;
-            
-            // check how many comment votes user made today
+            int commentVotesUsedInPast24Hrs = 0;
+            int submissionVotesUsedInPast24Hrs = 0;
 
-            // check how many submission votes user made today
+            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
 
-            throw new NotImplementedException();
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                // calculate how many comment votes user made in the past 24 hours
+                var commentVotesUsedToday = db.Commentvotingtrackers
+                    .Where(c => c.Timestamp >= startDate && c.Timestamp <= DateTime.Now && c.UserName == userName);
+
+                commentVotesUsedInPast24Hrs = commentVotesUsedToday.Count();
+
+                // calculate how many submission votes user made in the past 24 hours
+                var submissionVotesUsedToday = db.Votingtrackers
+                    .Where(c => c.Timestamp >= startDate && c.Timestamp <= DateTime.Now && c.UserName == userName);
+
+                submissionVotesUsedInPast24Hrs = submissionVotesUsedToday.Count();
+            }
+
+            return (commentVotesUsedInPast24Hrs + submissionVotesUsedInPast24Hrs);
         }
 
         // check if a given user has used his daily posting quota

@@ -18,6 +18,7 @@ namespace Whoaverse.Models
         public int CommentId { get; set; }
         public string UserName { get; set; }
         public Nullable<int> VoteStatus { get; set; }
+        public Nullable<System.DateTime> Timestamp { get; set; }
     
         public virtual Comment Comment { get; set; }
     }

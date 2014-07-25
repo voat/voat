@@ -18,6 +18,7 @@ namespace Whoaverse.Models
         public int MessageId { get; set; }
         public string UserName { get; set; }
         public Nullable<int> VoteStatus { get; set; }
+        public Nullable<System.DateTime> Timestamp { get; set; }
     
         public virtual Message Message { get; set; }
     }

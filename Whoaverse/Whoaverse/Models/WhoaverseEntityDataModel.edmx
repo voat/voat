@@ -63,6 +63,7 @@
           <Property Name="CommentId" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar(max)" />
           <Property Name="VoteStatus" Type="int" />
+          <Property Name="Timestamp" Type="smalldatetime" />
         </EntityType>
         <EntityType Name="Defaultsubverses">
           <Key>
@@ -220,6 +221,7 @@
           <Property Name="MessageId" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar(max)" />
           <Property Name="VoteStatus" Type="int" />
+          <Property Name="Timestamp" Type="smalldatetime" />
         </EntityType>
         <Association Name="FK_Comments_Messages">
           <End Role="Messages" Type="Self.Messages" Multiplicity="0..1" />
@@ -391,6 +393,7 @@
           <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="VoteStatus" Type="Int32" />
           <NavigationProperty Name="Comment" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Commentvotingtracker" ToRole="Comments" />
+          <Property Name="Timestamp" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="Message">
           <Key>
@@ -425,6 +428,7 @@
           <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="VoteStatus" Type="Int32" />
           <NavigationProperty Name="Message" Relationship="Self.FK_Votingtracker_Messages" FromRole="Votingtracker" ToRole="Messages" />
+          <Property Name="Timestamp" Type="DateTime" Precision="0" />
         </EntityType>
         <Association Name="FK_Comments_Messages">
           <End Role="Messages" Type="Self.Message" Multiplicity="0..1" />
@@ -780,6 +784,7 @@
           <EntitySetMapping Name="Commentvotingtrackers">
             <EntityTypeMapping TypeName="whoaverseModel.Commentvotingtracker">
               <MappingFragment StoreEntitySet="Commentvotingtracker">
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="CommentId" ColumnName="CommentId" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
@@ -812,6 +817,7 @@
           <EntitySetMapping Name="Votingtrackers">
             <EntityTypeMapping TypeName="whoaverseModel.Votingtracker">
               <MappingFragment StoreEntitySet="Votingtracker">
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="MessageId" ColumnName="MessageId" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
