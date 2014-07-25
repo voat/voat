@@ -46,9 +46,16 @@
 
         <div class="midcol @likesOrDislikesClass">
 
-            @if (commentContributionPoints < 1)
+            @if (commentContributionPoints < 20)
             {
-                <div class="@votingStatusClassUpArrow login-required" onclick="notEnoughCCPUpVote();" role="button" aria-label="upvote" tabindex="0"></div>
+                if (Whoaverse.Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                {
+                    <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
+                }
+                else
+                {
+                    <div class="@votingStatusClassUpArrow login-required" onclick="notEnoughCCPUpVote();" role="button" aria-label="upvote" tabindex="0"></div>
+                }
             }
             else
             {
@@ -59,7 +66,7 @@
             <div class="score unvoted">@score</div>
             <div class="score likes">@Model.Likes</div>
 
-            @if (commentContributionPoints < 1)
+            @if (commentContributionPoints < 100)
             {
                 <div class="@votingStatusClassDownArrow login-required" onclick="notEnoughCCP();" role="button" aria-label="downvote" tabindex="0"></div>
             }

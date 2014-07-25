@@ -23,6 +23,7 @@ namespace Whoaverse.Controllers
 {
     public class CommentController : Controller
     {
+        // POST: votecomment/{commentId}/{typeOfVote}
         [Authorize]
         public JsonResult VoteComment(int commentId, int typeOfVote)
         {
@@ -30,7 +31,7 @@ namespace Whoaverse.Controllers
 
             if (typeOfVote == 1)
             {
-                if (Karma.CommentKarma(loggedInUser) > 1)
+                if (Karma.CommentKarma(loggedInUser) > 20)
                 {
                     // perform upvoting or resetting
                     VotingComments.UpvoteComment(commentId, loggedInUser);

@@ -26,6 +26,12 @@
     {
         urlaction = "New";
     }
+
+    int commentContributionPoints = 0;
+    if (User.Identity.IsAuthenticated)
+    {
+        commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
+    }  
 }
 
 @using PagedList.Mvc;
@@ -84,8 +90,8 @@
             <div class="thing id-@submission.Id even link @submissionClass" onclick="handleVoting(this);" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="0">
                 <p class="parent"></p>
                 <span class="rank">@counter</span>
-
-                @Html.Partial("_votingIconsSubmission", submission)
+                
+                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
                 @Html.Partial("_Submission", submission)
 
                 <div class="child"></div>

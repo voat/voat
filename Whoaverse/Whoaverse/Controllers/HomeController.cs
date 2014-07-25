@@ -901,6 +901,7 @@ namespace Whoaverse.Controllers
             return View("~/Views/Help/Privacy.cshtml");
         }
 
+        // POST: vote/{messageId}/{typeOfVote}
         [Authorize]
         public JsonResult Vote(int messageId, int typeOfVote)
         {
@@ -908,9 +909,14 @@ namespace Whoaverse.Controllers
 
             if (typeOfVote == 1)
             {
-                if (Karma.CommentKarma(loggedInUser) > 1)
+                if (Karma.CommentKarma(loggedInUser) > 20)
                 {
                     // perform upvoting or resetting
+                    Voting.UpvoteSubmission(messageId, loggedInUser);
+                }
+                else if (Whoaverse.Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                {
+                    // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
                     Voting.UpvoteSubmission(messageId, loggedInUser);
                 }
             }
