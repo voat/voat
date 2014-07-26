@@ -399,9 +399,9 @@ fieldset[disabled] .btn {
 
 #header {
     border-bottom: 1px solid #5f99cf;
+    background-color: #FBFBFB;
     position: relative;
-    background-image: url('../Graphics/whoaverse-bg.jpg');
-    height: 150px !important;
+    height: 100px !important;
     z-index: 99;
 }
 
@@ -429,7 +429,7 @@ fieldset[disabled] .btn {
 
 #header-bottom-left {
     font-size: larger;
-    margin-top: 89px;
+    margin-top: 39px;
     margin-left: 20px;
 }
 
@@ -1014,12 +1014,30 @@ a:visited {
     }
 
     /* modify tabmenu */
+
+    #header {
+        height: 105px !important;
+    }
+
+    #header-bottom-left {
+        margin-top: 0;
+    }
+
     .tabmenu {
         margin-top: 3px;
     }
 
         .tabmenu li {
             margin: 0px 0px;
+            
+        }
+
+            .tabmenu li.selected a {
+                border-radius: 0 0 0 0;
+            }
+
+        .tabmenu li a {
+            border-radius: 0 0 0 0;
         }
 
             .tabmenu li.selected a {

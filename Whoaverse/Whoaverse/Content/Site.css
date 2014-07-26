@@ -5079,10 +5079,12 @@ ul#image-preview-list {
     background-color: #f0f0f0;
     position: absolute;
     right: 0;
-    top: -1px;
+    top: 0;
     padding: 0 5px 0 15px;
     font-weight: bold;
     margin: 0;
+    border-bottom: 1px solid #808080;
+    height: 18px;
 }
 
     #sr-more-link:hover {
