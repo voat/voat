@@ -35,7 +35,12 @@ namespace Whoaverse.Controllers
                 {
                     // perform upvoting or resetting
                     VotingComments.UpvoteComment(commentId, loggedInUser);
-                }                
+                }
+                else if (Whoaverse.Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                {
+                    // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
+                    VotingComments.UpvoteComment(commentId, loggedInUser);
+                }
             }
             else if (typeOfVote == -1)
             {
