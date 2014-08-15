@@ -24,10 +24,11 @@ http://recaptchanet.codeplex.com/documentation
 4.2 Update the Web.config File
 ----------------------------------------------
 1. Copy and paste your public and private keys in the respective value attributes of the 
+
 following appSettings keys:
 
-<add key="recaptchaPublicKey" value="" />
-<add key="recaptchaPrivateKey" value="" />
+<add name="recaptchaPublicKey" value="" />
+<add name="recaptchaPrivateKey" value="" />
 
 4.3. How to Use Recaptcha in ASP.NET Web Forms
 ----------------------------------------------
