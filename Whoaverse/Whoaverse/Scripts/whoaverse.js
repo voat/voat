@@ -128,6 +128,8 @@ function voteUpComment(commentid) {
         //add upvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true) //set upvote arrow to upvoted
         $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false) //remove upvote arrow
+        // TODO
+        // increment comment points counter
     } else if ($(".id-" + commentid).children(".midcol").is(".likes")) {
         //REMOVE LIKE IF LIKED
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", true) //add class unvoted
@@ -144,6 +146,8 @@ function voteUpComment(commentid) {
         $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true) //set downvoted arrow to downvote
         $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false) //remove downvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true) //add upvoted arrow
+        // TODO
+        // increment comment points counter
     }
 
 }
