@@ -2248,11 +2248,11 @@ a.star {
 }
 
 .link .score.likes {
-    color: #FF8B60;
+    color: rgba(42, 159, 191, 1);      
 }
 
 .link .score.dislikes {
-    color: #9494FF;
+    color: rgba(207, 132, 0, 1);
 }
 
 .link .rank {
@@ -4115,11 +4115,11 @@ button.button[disabled] {
 }
 
 .blog5 .arrow.upmod b {
-    color: #FF8B60;
+    color: rgba(42, 159, 191, 1);  
 }
 
 .blog5 .arrow.downmod b {
-    color: #9494FF;
+    color: #FF8B60;
 }
 
 .blog5 .right {

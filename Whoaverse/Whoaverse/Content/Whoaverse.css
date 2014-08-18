@@ -31,11 +31,11 @@
     }
 
     .tagline .post_upvotes {
-        color: #5f99cf;        
+        color: rgba(42, 159, 191, 1);  
     }
 
     .tagline .post_downvotes {        
-        color: #ff4500;
+        color: rgba(207, 132, 0, 1);
     }
 
 /* the rest of the site 
