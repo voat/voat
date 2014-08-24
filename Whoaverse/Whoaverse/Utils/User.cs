@@ -446,6 +446,10 @@ namespace Whoaverse.Utils
         }
 
         // check how many votes a user has used in the past 24 hours
+        // TODO: this is executed 25 times for frontpage, needs to be redesigned as follows:
+        // - only call this function if user is attempting to vote
+        // - if voting fails, display modal dialog showing why voting failed (example: too many votes in past 24hrs)
+
         public static int TotalVotesUsedInPast24Hours(string userName)
         {
             int commentVotesUsedInPast24Hrs = 0;
