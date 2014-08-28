@@ -1694,11 +1694,13 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 .tagline .post_upvotes {
     color: #FE5E5E;
     visibility: visible;
+    font-size: 11px;
 }
 
 .tagline .post_downvotes {
     color: #5DBEFF;
     visibility: visible;
+    font-size: 11px;
 }
 
 
