@@ -14,7 +14,7 @@
 ================================================================================ */
 
 body {
-    background: #FFF;
+    background: #FAFAFA;
     color: #333;
     font: 11px Arial,sans-serif;
     line-height: 1.43;
@@ -1558,7 +1558,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 .link .title {
     color: #3A3A3A;
     font-size: 16px;
-    font-weight: normal;
+    font-weight: 700;
     line-height: 22px;
     margin: 0;
     overflow: hidden;
