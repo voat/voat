@@ -396,6 +396,7 @@
     <Content Include="Graphics\expanded-selfpost-hover.png" />
     <Content Include="Graphics\expanded-selfpost.png" />
     <Content Include="Graphics\group_edit.png" />
+    <Content Include="Graphics\Light-SpriteSheet.png" />
     <Content Include="Graphics\mail-icon-hasmail.png" />
     <Content Include="Graphics\mail-icon.png" />
     <Content Include="Graphics\nsfw-thumb.png" />

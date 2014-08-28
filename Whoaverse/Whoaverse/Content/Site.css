@@ -119,7 +119,7 @@ h2 {
         }
 
         h2 a:hover {
-            text-decoration: underline;
+            text-decoration: none;
         }
 
 h3 {
@@ -255,7 +255,7 @@ label.disabled {
     }
 
 .hover a:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .selected, .choice.primary {
@@ -435,7 +435,7 @@ ul.flat-vert {
     background: none no-repeat scroll center right;
     /*background-image: url('../Graphics/drop-arrow.png');*/    
     padding-right: 21px;
-    text-decoration: underline;
+    text-decoration: none;
     color: gray;
 }
 
@@ -745,7 +745,7 @@ ul.flat-vert {
     }
 
     .infotable a:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
     .infotable .state-button a {
@@ -886,7 +886,7 @@ body > .content .link.compressed .midcol {
     }
 
         .domain a:hover {
-            text-decoration: underline;
+            text-decoration: none;
             max-width: none;
         }
 
@@ -935,7 +935,7 @@ body > .content .link.compressed .midcol {
     }
 
     .tagline a:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
     .tagline .edited-timestamp {
@@ -1469,7 +1469,7 @@ body.with-listing-chooser.explore-page #header .pagename {
 
 .help a.help {
     color: #808080;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .help.help-cover {
@@ -1591,7 +1591,7 @@ body.with-listing-chooser.explore-page #header .pagename {
     }
 
     .help-bubble a:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
 .hover-bubble.multi-selector {
@@ -2182,7 +2182,7 @@ a.star {
         }
 
 .entry .buttons a:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .entry .buttons .status-msg {
@@ -2380,7 +2380,7 @@ textarea.gray {
     }
 
         .morecomments a:hover {
-            text-decoration: underline;
+            text-decoration: none;
         }
 
     .morecomments .gray {
@@ -3123,7 +3123,7 @@ label + #moresearchinfo {
 
     .searchfail a {
         color: red;
-        text-decoration: underline;
+        text-decoration: none;
     }
 
 .searchfacets {
@@ -3142,7 +3142,7 @@ label + #moresearchinfo {
     }
 
     .searchfacets .facet:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
     .searchfacets .list {
@@ -3171,7 +3171,7 @@ li.searchfacet {
 }
 
     .legal a {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
 .divide {
@@ -3537,7 +3537,7 @@ body.rulespage-body {
 }
 
     .error-log a:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
     .error-log .rest {
@@ -3849,7 +3849,7 @@ body.rulespage-body {
 
     .bottommenu a {
         color: gray;
-        text-decoration: underline;
+        text-decoration: none;
     }
 
     .bottommenu .updated {
@@ -3948,7 +3948,7 @@ button.button[disabled] {
     }
 
 .button a:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .button .blog1 {
@@ -4068,7 +4068,7 @@ button.button[disabled] {
     .blog5 ul a {
         color: #515481;
         font-weight: bold;
-        text-decoration: underline;
+        text-decoration: none;
     }
 
 .blog5 li {
@@ -4662,7 +4662,7 @@ form input[type=checkbox], form input[type=radio] {
 
     .content.submit .info-notice a {
         font-weight: bold;
-        text-decoration: underline;
+        text-decoration: none;
     }
 
 .opt-form {
@@ -4802,7 +4802,7 @@ form input[type=checkbox], form input[type=radio] {
     }
 
         .stats a:hover {
-            text-decoration: underline;
+            text-decoration: none;
         }
 
     .stats td.k {
@@ -4920,7 +4920,7 @@ ul#image-preview-list {
     }
 
         #validation-errors a:hover {
-            text-decoration: underline;
+            text-decoration: none;
         }
 
     #validation-errors pre {
@@ -5082,7 +5082,7 @@ ul#image-preview-list {
 }
 
     #sr-more-link:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
 .subscription-box li {
@@ -5702,7 +5702,7 @@ ul.tabmenu.formtab {
     }
 
 .traffic-table a:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .traffic-table thead th {
@@ -6636,7 +6636,7 @@ dd {
 }
 
     .gray-buttons button:hover, .gray-buttons a:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
 .multi-details h1 {
@@ -8150,7 +8150,7 @@ body:not(.gold) .allminus-link {
 }
 
     .api-help .toc a:hover, .api-help .endpoint a:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
 .api-help .toc .mode-selector {
@@ -8494,7 +8494,7 @@ body:not(.gold) .allminus-link {
 }
 
     .sr-interest-bar a:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 
 .sr-interest-bar .results .random {

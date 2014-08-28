@@ -40,7 +40,7 @@ namespace Whoaverse.Models
         [StringLength(200, ErrorMessage = "Submission title is limited to 200 characters.")]
         public string Title { get; set; }
 
-        [Required(ErrorMessage = "You must choose a subverse to send the post to. Example: programming, videos, pics, funny.")]
+        [Required(ErrorMessage = "You must type a subverse to send the post to. Example: programming, videos, pics, funny.")]
         [StringLength(200, ErrorMessage = "Subverse title is limited to 20 characters.")]
         public string Subverse { get; set; }
 

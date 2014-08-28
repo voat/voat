@@ -52,6 +52,12 @@ namespace Whoaverse.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                //deny access to registered users
+                return RedirectToAction("Index", "Home");
+            }
+
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.ReturnUrl = returnUrl;
             return View();
@@ -105,6 +111,12 @@ namespace Whoaverse.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                //deny access to registered users
+                return RedirectToAction("Index", "Home");
+            }
+
             ViewBag.SelectedSubverse = string.Empty;
             return View();
         }
