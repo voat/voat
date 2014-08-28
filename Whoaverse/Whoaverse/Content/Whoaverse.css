@@ -1695,12 +1695,14 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     color: #FE5E5E;
     visibility: visible;
     font-size: 11px;
+    font-weight: bold;
 }
 
 .tagline .post_downvotes {
     color: #5DBEFF;
     visibility: visible;
     font-size: 11px;
+    font-weight: bold;
 }
 
 
