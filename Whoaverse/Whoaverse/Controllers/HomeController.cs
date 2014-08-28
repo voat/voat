@@ -297,6 +297,10 @@ namespace Whoaverse.Controllers
             }
             else
             {
+                if (Request.IsAjaxRequest()){
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
                 return View("~/Views/Help/SpeedyGonzales.cshtml");
             }
@@ -858,7 +862,6 @@ namespace Whoaverse.Controllers
             return View("~/Views/Legal/Cla.cshtml");
         }
 
-        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Welcome()
         {
             ViewBag.SelectedSubverse = string.Empty;

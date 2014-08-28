@@ -293,7 +293,11 @@ function postCommentReplyAjax(senderButton) {
             url: $form.attr('action'),
             data: $form.serialize(),
             error: function (xhr, status, error) {
-                //do something about the error
+                //submission failed, likely cause: user triggered anti-spam throttle
+                $form.find("#submitbutton").val("Submit reply");
+                $form.find("#submitbutton").prop('disabled', false);
+                $form.find("#errorMessage").html("You are doing that too fast. Please wait 2 minutes before trying again.");
+                $form.find("#errorMessage").toggle(true);
             },
 
             success: function (response) {
