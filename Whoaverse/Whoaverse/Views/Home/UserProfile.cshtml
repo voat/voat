@@ -39,4 +39,22 @@
         If you want to see submission history for this user, please click the Submitted tab above.
     </p>
 
-</div>
+    <h2>This user has mostly submitted to the following subverses (showing top 5):</h2>
+    <hr />
+    <div class="alert alert-info">
+        @{
+            var userStatsModel = Whoaverse.Utils.User.userStatsModel(@ViewBag.userid);
+
+            foreach (var item in userStatsModel.TopSubversesUserContributedTo)
+            {
+                <p><strong>@item.Count</strong> submissions to @item.SubverseName</p>
+            }
+        }
+    </div>
+    <h2>Submission stats:</h2>
+    <hr />
+    <div class="alert alert-info">
+        This user has so far submitted a total of <strong>@userStatsModel.LinkSubmissionsSubmitted</strong> link type submissions and a total of <strong>@userStatsModel.MessageSubmissionsSubmitted</strong> message type submissions.
+    </div>        
+
+    </div>

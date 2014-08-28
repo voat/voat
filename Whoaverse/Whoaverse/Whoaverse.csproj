@@ -325,6 +325,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
+    <Compile Include="Models\ViewModels\UserStatsModel.cs" />
     <Compile Include="Models\ViewModels\SubverseLinkFlairViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseModeratorViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseSettingsViewModel.cs" />

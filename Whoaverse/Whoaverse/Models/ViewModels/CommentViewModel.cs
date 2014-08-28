@@ -21,7 +21,8 @@ namespace Whoaverse.Models
 {
     public class CommentViewModel
     {
-        public CommentViewModel(){
+        public CommentViewModel()
+        {
 
             this.ChildComments = new HashSet<Comment>();            
 

@@ -475,6 +475,33 @@ namespace Whoaverse.Utils
             return (commentVotesUsedInPast24Hrs + submissionVotesUsedInPast24Hrs);
         }
 
+        // 5 subverses user submitted to most
+        public static UserStatsModel userStatsModel(string userName)
+        {
+            UserStatsModel userStatsModel = new UserStatsModel();
+
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var subverses = db.Messages.Where(a => a.Name == userName)
+                         .GroupBy(a => new { a.Name, a.Subverse })
+                         .Select(g => new SubverseStats { SubverseName = g.Key.Subverse, Count = g.Count() })
+                         .OrderByDescending (s => s.Count)
+                         .Take(5)
+                         .ToList();
+
+                var linkSubmissionsCount = db.Messages.Where(a => a.Name == userName && a.Type == 2).Count();
+                var messageSubmissionsCount = db.Messages.Where(a => a.Name == userName && a.Type == 1).Count();
+                
+                //todo: top rated submissions
+
+                userStatsModel.TopSubversesUserContributedTo = subverses;
+                userStatsModel.LinkSubmissionsSubmitted = linkSubmissionsCount;
+                userStatsModel.MessageSubmissionsSubmitted = messageSubmissionsCount;
+            }
+
+            return userStatsModel;
+        }
+
         // check if a given user has used his daily posting quota
         public static bool UserDailyPostingQuotaUsed(string userName)
         {
