@@ -301,7 +301,7 @@ namespace Whoaverse.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
 
-                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
+                ModelState.AddModelError(String.Empty, "Sorry, you are doing that too fast. Please try again in 2 minutes.");
                 return View("~/Views/Help/SpeedyGonzales.cshtml");
             }
         }

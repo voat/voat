@@ -31,10 +31,10 @@
 
     @Html.Hidden("MessageId", messageId)
 
-
     @Html.TextAreaFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
-    @Html.ValidationMessageFor(model => model.CommentContent)
-    <br />
+    <div>
+        @Html.ValidationMessageFor(model => model.CommentContent)
+    </div>
     <input type="submit" value="Submit" class="btn-whoaverse-medium" />
 }
 
