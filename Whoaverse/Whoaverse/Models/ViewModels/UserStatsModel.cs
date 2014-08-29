@@ -19,10 +19,14 @@ namespace Whoaverse.Models.ViewModels
 {
     public class UserStatsModel
     {
-        public IEnumerable<SubverseStats> TopSubversesUserContributedTo { get; set; }
+        public IEnumerable<SubverseStats> TopSubversesUserContributedTo { get; set; }        
         public int LinkSubmissionsSubmitted { get; set; }
         public int MessageSubmissionsSubmitted { get; set; }
-        public IEnumerable<Message> TopRatedSubmissions { get; set; }
+        public int TotalCommentsSubmitted { get; set; }
+        public IEnumerable<Message> HighestRatedSubmissions { get; set; }
+        public IEnumerable<Message> LowestRatedSubmissions { get; set; }
+        public IEnumerable<Comment> HighestRatedComments { get; set; }
+        public IEnumerable<Comment> LowestRatedComments { get; set; }
     }
 
     public class SubverseStats

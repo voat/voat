@@ -475,13 +475,14 @@ namespace Whoaverse.Utils
             return (commentVotesUsedInPast24Hrs + submissionVotesUsedInPast24Hrs);
         }
 
-        // 5 subverses user submitted to most
+        // return user statistics for user profile overview
         public static UserStatsModel userStatsModel(string userName)
         {
             UserStatsModel userStatsModel = new UserStatsModel();
 
             using (whoaverseEntities db = new whoaverseEntities())
             {
+                // 5 subverses user submitted to most
                 var subverses = db.Messages.Where(a => a.Name == userName)
                          .GroupBy(a => new { a.Name, a.Subverse })
                          .Select(g => new SubverseStats { SubverseName = g.Key.Subverse, Count = g.Count() })
@@ -489,14 +490,48 @@ namespace Whoaverse.Utils
                          .Take(5)
                          .ToList();
 
+                // total comment count
+                var comments = db.Comments.Where(a => a.Name == userName).Count();
+
+                // get 3 highest rated comments
+                var highestRatedComments = db.Comments
+                    .Include("Message")
+                    .Where(a => a.Name == userName)
+                    .OrderByDescending(s => s.Likes - s.Dislikes)
+                    .Take(3)
+                    .ToList();
+
+                // get 3 lowest rated comments
+                var lowestRatedComments = db.Comments
+                    .Include ("Message")
+                    .Where(a => a.Name == userName)                    
+                    .OrderBy(s => s.Likes - s.Dislikes)                    
+                    .Take(3)                    
+                    .ToList(); 
+
                 var linkSubmissionsCount = db.Messages.Where(a => a.Name == userName && a.Type == 2).Count();
                 var messageSubmissionsCount = db.Messages.Where(a => a.Name == userName && a.Type == 1).Count();
                 
-                //todo: top rated submissions
+                // get 5 highest rated submissions
+                var highestRatedSubmissions = db.Messages.Where(a => a.Name == userName)
+                    .OrderByDescending(s => s.Likes-s.Dislikes)
+                    .Take(5)
+                    .ToList();
+
+                // get 5 lowest rated submissions
+                var lowestRatedSubmissions = db.Messages.Where(a => a.Name == userName)
+                    .OrderBy(s => s.Likes - s.Dislikes)
+                    .Take(5)
+                    .ToList();                
 
                 userStatsModel.TopSubversesUserContributedTo = subverses;
                 userStatsModel.LinkSubmissionsSubmitted = linkSubmissionsCount;
                 userStatsModel.MessageSubmissionsSubmitted = messageSubmissionsCount;
+                userStatsModel.LowestRatedSubmissions = lowestRatedSubmissions;
+                userStatsModel.HighestRatedSubmissions = highestRatedSubmissions;
+                userStatsModel.TotalCommentsSubmitted = comments;
+                userStatsModel.HighestRatedComments = highestRatedComments;
+                userStatsModel.LowestRatedComments = lowestRatedComments;
             }
 
             return userStatsModel;

@@ -30,6 +30,15 @@ namespace Whoaverse.Utils
 
             return m.Transform(originalMessage);
         }
+
+        // credits to http://stackoverflow.com/questions/1613896/truncate-string-on-whole-words-in-net-c-sharp
+        public static string TruncateAtWord(this string input, int length)
+        {
+            if (input == null || input.Length < length)
+                return input;
+            int iNextSpace = input.LastIndexOf(" ", length);
+            return string.Format("{0}...", input.Substring(0, (iNextSpace > 0) ? iNextSpace : length).Trim());
+        }
         
     }
 }

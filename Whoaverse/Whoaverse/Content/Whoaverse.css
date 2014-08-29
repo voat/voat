@@ -31,7 +31,7 @@ a, a:visited {
     }
 
     a.author {
-        margin: 0 3px;
+        margin: 0 0;
     }
 
 .tagline a.author:hover {
@@ -311,8 +311,7 @@ label {
 }
 
     .tagline a {
-        color: #4AABE7;
-        text-decoration: none;
+        color: #4AABE7;        
     }
 
         .tagline a:visited {
@@ -321,7 +320,6 @@ label {
 
         .tagline a:hover {
             color: #4399CD;
-            text-decoration: none;
         }
 
     .tagline .submitter {
@@ -2032,6 +2030,42 @@ textarea.form-control {
     padding: 8px;
 }
 
+/* ! Vote ratios */
+.post_upvotes {
+    color: #FE5E5E;
+    visibility: visible;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.post_downvotes {
+    color: #5DBEFF;
+    visibility: visible;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.user-profile-submission-title {
+    color: #5AB3EA !important;
+    font-size: 12px;
+}
+
+.user-profile-submission-author {
+    color: #444 !important;
+    font-size: 12px;
+}
+
+.user-profile-submission-score {
+    color: rgba(107, 107, 107, 1) !important;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.user-profile-stats-heading {
+    font-size: 14px;
+    margin-top: 5px;
+    border-bottom: solid 1px;
+}
 
 /* ! Register
 ================================================================================ */
@@ -2074,10 +2108,6 @@ textarea.form-control {
     padding: 20px;
 }
 
-/*.form-group .control-label {
-        padding-right: 15px;
-}*/
-
 .form-horizontal .form-group {
     margin-left: 0;
     margin-right: 0;
@@ -2102,19 +2132,6 @@ textarea.form-control {
     text-shadow: 0 1px 0 hsla( 0,0%,0%,0.3 );
     width: 360px;
 }
-
-/*.col-md-1 {
-    padding-left: 0;
-    padding-right: 0;
-}
-.col-md-2 {
-    padding-left: 0;
-    padding-right: 0;
-}
-.col-md-4 {
-    padding-left: 0;
-    padding-right: 0;
-}*/
 
 .modal-body .col-md-4 {
     float: none;
