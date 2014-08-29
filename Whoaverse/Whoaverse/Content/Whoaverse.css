@@ -14,8 +14,8 @@
 ================================================================================ */
 
 body {
-    background: #FAFAFA;
-    color: #333;
+    background: #FFF;
+    color: #404040;
     font: 11px Arial,sans-serif;
     line-height: 1.43;
     margin: 0;
@@ -1566,7 +1566,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
     .link .title.may-blank:visited {
-        color: #454545;
+        color: #2E5488;
     }
 
     .link .title.may-blank:hover {
