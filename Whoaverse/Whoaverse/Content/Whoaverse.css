@@ -2,11 +2,6 @@
     Minity CSS stylesheet for Whoaverse (http://whoaverse.com/)
     Designed by Nurdoidz
     
-    ----------------------------------------------------------------------------
-    Version 1.0.00 (2014-08-20)
-    + Release
-    ----------------------------------------------------------------------------
-
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
@@ -22,12 +17,13 @@ body {
 }
 
 a, a:visited {
+    color: #4AABE7;
     text-decoration: none;
 }
 
     a:hover {
         color: #66C2FB;
-        text-decoration: none;
+        text-decoration: underline;
     }
 
     a.author {
@@ -320,6 +316,10 @@ label {
 
         .tagline a:hover {
             color: #4399CD;
+<<<<<<< HEAD
+            text-decoration: underline;
+=======
+>>>>>>> upstream/master
         }
 
     .tagline .submitter {
@@ -475,8 +475,8 @@ label {
     border: 1px solid #4C9FD2;
     -webkit-border-radius: 2px;
     border-radius: 2px;
-    -webkit-box-shadow: 0 2px 0 hsla( 0,0%,0%,0.1 );
-    box-shadow: 0 2px 0 hsla( 0,0%,0%,0.1 );
+    -webkit-box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
     color: #FFF;
     display: inline-block;
     font-size: 10px;
@@ -491,8 +491,8 @@ label {
         background: -ms-linear-gradient( top,#66C2FB,#5AB3EA );
         background: -o-linear-gradient( top,#66C2FB,#5AB3EA );
         border-color: #5BACDE;
-        -webkit-box-shadow: 0 2px 0 hsla( 0,0%,0%,0.15 );
-        box-shadow: 0 2px 0 hsla( 0,0%,0%,0.15 );
+        -webkit-box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: #FFF;
     }
 
@@ -522,8 +522,8 @@ label {
     border: 1px solid #4C9FD2;
     -webkit-border-radius: 2px;
     border-radius: 2px;
-    -webkit-box-shadow: 0 2px 0 hsla( 0,0%,0%,0.1 );
-    box-shadow: 0 2px 0 hsla( 0,0%,0%,0.1 );
+    -webkit-box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
     color: #FFF;
     cursor: pointer;
     display: inline-block;
@@ -539,8 +539,8 @@ label {
         background: -ms-linear-gradient( top,#66C2FB,#5AB3EA );
         background: -o-linear-gradient( top,#66C2FB,#5AB3EA );
         border-color: #5BACDE;
-        -webkit-box-shadow: 0 2px 0 hsla( 0,0%,0%,0.15 );
-        box-shadow: 0 2px 0 hsla( 0,0%,0%,0.15 );
+        -webkit-box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: #FFF;
     }
 
@@ -940,7 +940,7 @@ pre, code {
 
 
 /* ! Header : Top : Subverses list
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 #sr-bar li a {
     color: #818181;
@@ -997,7 +997,7 @@ pre, code {
 
 
 /* ! Header : Top : Subverses list : Subscription menu
-            -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .whoaSubscriptionMenu {
     margin: 0;
@@ -1068,7 +1068,7 @@ pre, code {
 
 
 /* ! Header : Left : Logo
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 #header-img {
     margin: 7px 12px 10px;
@@ -1088,7 +1088,7 @@ pre, code {
 
 
 /* ! Header : Left : Page name
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .pagename {
     font-size: 16px;
@@ -1111,7 +1111,7 @@ pre, code {
 
 
 /* ! Header : Left : Tab menu
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .tabmenu {
     display: inline-block;
@@ -1124,7 +1124,7 @@ pre, code {
 
 
     /* ! Header : Left : Tab menu : Tab
-                -------------------------------------------------------------------------------- */
+        -------------------------------------------------------------------------------- */
 
     .tabmenu li {
         display: inline;
@@ -1146,7 +1146,7 @@ pre, code {
 
 
         /* ! Header : Left : Tab menu : Tab : Selected
-                    -------------------------------------------------------------------------------- */
+            -------------------------------------------------------------------------------- */
 
         .tabmenu li.selected a {
             background: #FFF;
@@ -1166,7 +1166,7 @@ pre, code {
 
 
         /* ! Header : Left : Tab menu : Tab : Unselected
-                    -------------------------------------------------------------------------------- */
+            -------------------------------------------------------------------------------- */
 
         .tabmenu li.disabled a {
             color: #555;
@@ -1323,12 +1323,12 @@ pre, code {
     }
 
 .titlebox .bottom {
-    border-top: 1px solid #AAA;
+    border-top: 1px solid #D5D5D5;
 }
 
 
 /* ! Sidebar : Titlebox : Page name
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .titlebox h1 {
     font-family: inherit;
@@ -1349,7 +1349,7 @@ pre, code {
 
 
 /* ! Sidebar : Titlebox : Markdown
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .titlebox .md {
     font-size: 13px;
@@ -1358,7 +1358,7 @@ pre, code {
 
 
 /* ! Sidebar : Titlebox : Admin tools
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .sidecontentbox .collapse-button {
     background: #eee;
@@ -1376,7 +1376,8 @@ pre, code {
 }
 
 .sidecontentbox .content {
-    border: 1px solid #C0C0C0;
+    background: #FCFCFC;
+    border: 1px solid #E4E4E4;
     margin: 0;
     padding: 5px;
 }
@@ -1489,7 +1490,7 @@ ul.content {
 
 
 /* ! Sitetable : Link : Thumbnail
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .thumbnail {
     background: none;
@@ -1551,29 +1552,34 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 
 /* ! Sitetable : Link : Title
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .link .title {
     color: #3A3A3A;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: normal;
     line-height: 22px;
     margin: 0;
     overflow: hidden;
     padding: 0 8px 0 0;
 }
 
-    .link .title.may-blank:visited {
-        color: #2E5488;
+    .link .title.may-blank {
+        color: #606060;
+        font-weight: bold;
     }
 
-    .link .title.may-blank:hover {
-        color: #4AABE7;
-    }
+        .link .title.may-blank:visited {
+            color: #472E88;
+        }
+
+        .link .title.may-blank:hover {
+            color: #4AABE7;
+        }
 
 
 /* ! Sitetable : Link : Title : Sticky
-            -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .promoted {
     background: #63D99C;
@@ -1597,7 +1603,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 
 /* ! Sitetable : Link : Title : Domain
-            -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .domain {
     color: #666;
@@ -1622,7 +1628,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 
 /* ! Sitetable : Link : Expando
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .expando-button {
     float: left;
@@ -1662,7 +1668,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 
 /* ! Sitetable : Link : Tag line
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .link a.author {
     color: #6D6D6D;
@@ -1705,12 +1711,12 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 
 /* ! Sitetable : Link : Flat list 
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .link .flat-list {
     display: block;
     font-size: 11px;
-    margin: 10px 0 2px;
+    margin: 6px 0 0;
     padding: 0;
 }
 
@@ -1723,25 +1729,25 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
     .link .buttons li a {
-        color: #6C6C6C;
+        color: #808080;
         font-weight: normal;
     }
 
         .link .buttons li a:hover {
-            text-decoration: none;
+            text-decoration: underline;
         }
 
 
 /* ! Sitetable : Link : Markdown
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .link .usertext .md {
-    background: #F6F6F6;
-    border: 1px solid #DCDCDC;
+    background: #F7F7F7;
+    border: 1px solid #E4E4E4;
     -webkit-border-radius: 0;
     border-radius: 0;
     margin: 10px 0 0;
-    padding: 5px;
+    padding: 5px 10px;
 }
 
 
@@ -1775,7 +1781,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 
 /* ! Sitetable : Comments : Tag line
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .tagline {
     font-size: 11px;
@@ -1830,7 +1836,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 
 /* ! Sitetable : Comments : Markdown
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .comment .md {
     font-size: 13px;
@@ -1838,7 +1844,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 
 /* ! Sitetable : Comments : Form
-        -------------------------------------------------------------------------------- */
+    -------------------------------------------------------------------------------- */
 
 .comment .form-control {
     margin-bottom: 10px;
