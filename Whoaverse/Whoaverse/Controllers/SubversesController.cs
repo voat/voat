@@ -422,13 +422,13 @@ namespace Whoaverse.Controllers
 
                             if (updatedModel.stylesheet != null)
                             {
-                                if (updatedModel.stylesheet.Length < 15001)
+                                if (updatedModel.stylesheet.Length < 50001)
                                 {
                                     existingSubverse.stylesheet = updatedModel.stylesheet;
                                 }
                                 else
                                 {
-                                    ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 15000 characters.");
+                                    ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 50000 characters.");
                                     return View();
                                 }
                             }
