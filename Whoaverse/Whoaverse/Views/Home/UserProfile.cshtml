@@ -37,9 +37,8 @@
         If you want to see submission history for this user, please click the Submitted tab above.
     </p>
 
-    <h2>Submission distribution</h2>
-    <hr />
-    <div class="alert alert-info">
+    <div class="userstats-heading-1">Submission distribution</div>
+    <div class="userstats-body">
         @{
             var userStatsModel = Whoaverse.Utils.User.userStatsModel(@ViewBag.userid);
 
@@ -58,16 +57,14 @@
 
         }
     </div>
-    <h2>Submission counters</h2>
-    <hr />
-    <div class="alert alert-info">
+    <div class="userstats-heading-1">Submission counters</div>
+    <div class="userstats-body">
         This user has so far submitted a total of <strong>@userStatsModel.LinkSubmissionsSubmitted</strong> link type submissions, <strong>@userStatsModel.MessageSubmissionsSubmitted</strong> message type submissions and a total of <strong>@userStatsModel.TotalCommentsSubmitted</strong> comments.
     </div>
 
-    <h2>Submission ratings</h2>
-    <hr />
-    <div class="alert alert-info">
-        <p class="user-profile-stats-heading">5 highest rated submissions:</p>
+    <div class="userstats-heading-1">Submission ratings</div>
+    <p class="userstats-heading-2">5 highest rated submissions:</p>
+    <div class="userstats-body">
         @{
             if (userStatsModel.HighestRatedSubmissions.Count > 0)
             {
@@ -77,11 +74,11 @@
                     
                     if (item.Type == 1)
                     {
-                        <p><a class="user-profile-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Title</a>, submitted: @item.Date, <span class="user-profile-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
+                        <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Title</a>, submitted: @item.Date, <span class="user-profile-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
                     }
                     else
                     {
-                        <p><a class="user-profile-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Linkdescription</a>, submitted: @item.Date, <span class="user-profile-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
+                        <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Linkdescription</a>, submitted: @item.Date, <span class="user-profile-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
                     }
                 }
             }
@@ -90,8 +87,9 @@
                 <p>This user made no submissions.</p>
             }
         }
-        <br />
-        <p class="user-profile-stats-heading">5 lowest rated submissions:</p>
+    </div>
+    <p class="userstats-heading-2">5 lowest rated submissions:</p>
+    <div class="userstats-body">
         @{
             if (userStatsModel.LowestRatedSubmissions.Count > 0)
             {
@@ -101,11 +99,11 @@
                     
                     if (item.Type == 1)
                     {
-                        <p><a class="user-profile-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Title</a>, submitted: @item.Date, <span class="user-profile-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
+                        <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Title</a>, submitted: @item.Date, <span class="user-profile-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
                     }
                     else
                     {
-                        <p><a class="user-profile-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Linkdescription</a>, submitted: @item.Date, <span class="user-profile-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
+                        <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Linkdescription</a>, submitted: @item.Date, <span class="user-profile-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
                     }
                 }
             }
@@ -116,10 +114,9 @@
 
         }
     </div>
-    <h2>Comment ratings</h2>
-    <hr />
-    <div class="alert alert-info">
-        <p class="user-profile-stats-heading">3 highest rated comments:</p>
+    <div class="userstats-heading-1">Comment ratings</div>
+    <p class="userstats-heading-2">3 highest rated comments:</p>
+    <div class="userstats-body">
         @{
             if (userStatsModel.HighestRatedComments.Count > 0)
             {
@@ -171,7 +168,9 @@
             }
             
         }
-        <p class="user-profile-stats-heading">3 lowest rated comments:</p>
+    </div>
+    <p class="userstats-heading-2">3 lowest rated comments:</p>
+    <div class="userstats-body">
         @{
             if (userStatsModel.LowestRatedComments.Count > 0)
             {

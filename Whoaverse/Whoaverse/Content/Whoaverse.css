@@ -23,7 +23,7 @@ a, a:visited {
 
     a:hover {
         color: #66C2FB;
-        text-decoration: underline;
+        text-decoration: none;
     }
 
     a.author {
@@ -316,14 +316,11 @@ label {
 
         .tagline a:hover {
             color: #4399CD;
-<<<<<<< HEAD
             text-decoration: underline;
-=======
->>>>>>> upstream/master
         }
 
     .tagline .submitter {
-        color: #4AABE7;
+        color: #3A97D0;
     }
 
     .tagline .moderator {
@@ -400,6 +397,47 @@ label {
     width: 16px;
 }
 
+.userstats {
+    background: #FCFCFC;
+    border: 1px solid #DEDEDE;
+    -webkit-box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
+    margin: 0 0 24px;
+}
+
+    .userstats-heading-1 {
+        border-bottom: 1px solid #D9D9D9;
+        color: #535353;
+        font-size: 13px;
+        font-weight: bold;
+        margin: 0 5px;
+        padding: 10px;
+    }
+
+    .userstats-heading-2 {
+        background: #F8F8F8;
+        border: 1px dotted #D3D3D3;
+        color: #5D5D5D;
+        font-size: 13px;
+        font-style: italic;
+        font-weight: bold;
+        margin: 10px;
+        padding: 5px;
+    }
+
+    .userstats-body {
+        font-size: 12px;
+        margin: 10px 13px;
+    }
+
+        .userstats-body > p {
+            margin: 0 0 6px;
+        }
+
+    .userstats-submission-title:hover {
+        text-decoration: underline;
+    }
+
 .validation-summary-errors {
     font-weight: bold;
     padding: 15px;
@@ -464,6 +502,10 @@ label {
         opacity: 0.65;
         -webkit-box-shadow: none;
         box-shadow: none;
+    }
+
+    a.btn-whoaverse {
+        color: #4C4C4C;
     }
 
 .btn-whoaverse-paging {
@@ -558,7 +600,7 @@ label {
     font-size: 13px;
     line-height: 140%;
     margin-bottom: 10px;
-    max-width: 800px;
+    max-width: 825px;
     padding: 8px;
     -webkit-transition: border-color 0.1s ease-in-out 0s;
     -moz-transition: border-color 0.1s ease-in-out 0s;
@@ -760,6 +802,7 @@ label {
 
 .md {
     font-size: 13px;
+    max-width: 825px;
     overflow: auto;
 }
 
@@ -783,24 +826,32 @@ label {
         border-bottom: 1px dotted #BABABA;
         font-size: 125%;
         font-weight: normal;
-        margin: 4px 0;
+        line-height: 163%;
+        margin: 10px 0;
     }
 
     .md h2 {
         color: inherit;
         font-size: 115%;
         font-weight: bold;
-        margin: 4px 0;
+        line-height: 163%;
+        margin: 10px 0;
     }
 
     .md h3, .md h4, .md h5, .md h6 {
         font-size: 110%;
         font-style: italic;
-        margin: 4px 0;
+        line-height: 163%;
+        margin: 10px 0;
+    }
+
+    .md hr {
+        margin: 10px 0;
     }
 
     .md p {
-        margin: 6px 0;
+        line-height: 150%;
+        margin: 7px 0;
     }
 
 p.heading-2 {
@@ -822,6 +873,10 @@ p.heading-3 {
 
 .md table > tbody > tr:nth-child(1) {
     background: #EEE;
+}
+
+pre {
+    padding: 4px 6px;
 }
 
 pre code {
@@ -883,7 +938,7 @@ pre, code {
 
     .panel-title a:hover {
         color: #FFF;
-        text-decoration: none;
+        text-decoration: underline;
     }
 
 .table > thead > tr > td.info, .table > tbody > tr > td.info,
@@ -928,7 +983,7 @@ pre, code {
 }
 
 .hover a:hover {
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 
@@ -1564,17 +1619,18 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     padding: 0 8px 0 0;
 }
 
-    .link .title.may-blank {
-        color: #606060;
+    .link a.title.may-blank {
+        color: #4F4F4F;
         font-weight: bold;
     }
 
-        .link .title.may-blank:visited {
-            color: #472E88;
+        .link a.title.may-blank:visited {
+            color: #665398;
         }
 
-        .link .title.may-blank:hover {
+        .link a.title.may-blank:hover {
             color: #4AABE7;
+            text-decoration: none;
         }
 
 
@@ -1676,7 +1732,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
     .link a.author:visited {
-        color: unset;
+        color: #6D6D6D;
     }
 
     .link a.author:hover {
@@ -1686,6 +1742,10 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 .subreddit.may-blank {
     color: #4399CD;
 }
+
+    .subreddit.may-blank:visited {
+        color: #4399CD;
+    }
 
     .subreddit.may-blank:hover {
         color: #4AABE7;
@@ -1742,13 +1802,23 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     -------------------------------------------------------------------------------- */
 
 .link .usertext .md {
-    background: #F7F7F7;
-    border: 1px solid #E4E4E4;
+    background: #FCFCFC;
+    border: 1px solid #DEDEDE;
     -webkit-border-radius: 0;
     border-radius: 0;
+    -webkit-box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
     margin: 10px 0 0;
     padding: 5px 10px;
 }
+
+    .link .usertext .md blockquote {
+        background: #FFF;
+    }
+
+    .link .usertext .md pre, .link .usertext .md code {
+        background: #FFF;
+    }
 
 
 /* ! Sitetable : Comments
@@ -1809,20 +1879,20 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     }
 
 .comment a.author {
-    color: #6D6D6D;
+    color: #4AABE7;
     font-weight: bold;
 }
 
     .comment a.author:visited {
-        color: unset;
-    }
-
-    .comment a.author:hover {
         color: #4AABE7;
     }
 
+    .comment a.author:hover {
+        text-decoration: underline;
+    }
+
 .comment a.submitter {
-    color: #4AABE7;
+    color: #3A97D0;
 }
 
 .comment a.moderator {
@@ -1954,7 +2024,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
     #about-main .md .panel-heading a:hover {
-        text-decoration: none;
+        text-decoration: underline;
     }
 
 #about-main .md .panel-heading-messagetitle {
