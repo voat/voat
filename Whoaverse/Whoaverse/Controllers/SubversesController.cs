@@ -384,7 +384,7 @@ namespace Whoaverse.Controllers
                 return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", viewModel);
             }
             else
-            {                
+            {
                 return RedirectToAction("Index", "Home");
             }
         }
@@ -670,37 +670,43 @@ namespace Whoaverse.Controllers
             ViewBag.SortingMode = sortingmode;
             ViewBag.SelectedSubverse = subversetoshow;
 
-            int pageSize = 25;
-            int pageNumber = (page ?? 1);
-
-            ViewBag.Title = subversetoshow;
-
-            if (subversetoshow != "all")
+            if (sortingmode.Equals("new"))
             {
-                // check if subverse exists, if not, send to a page not found error
-                Subverse subverse = db.Subverses.Find(subversetoshow);
-                if (subverse != null)
+                int pageSize = 25;
+                int pageNumber = (page ?? 1);
+
+                ViewBag.Title = subversetoshow;
+
+                if (subversetoshow != "all")
                 {
-                    var submissions = db.Messages
-                        .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
-                        .OrderByDescending(s => s.Date).Take(1000).ToList();
-                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                    // check if subverse exists, if not, send to a page not found error
+                    Subverse subverse = db.Subverses.Find(subversetoshow);
+                    if (subverse != null)
+                    {
+                        var submissions = db.Messages
+                            .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
+                            .OrderByDescending(s => s.Date).Take(1000).ToList();
+                        return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                    }
+                    else
+                    {
+                        return View("~/Views/Errors/Subversenotfound.cshtml");
+                    }
                 }
                 else
                 {
-                    return View("~/Views/Errors/Subversenotfound.cshtml");
+                    // if selected subverse is ALL, show submissions from all subverses, sorted by date
+                    var submissions = db.Messages
+                        .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true)
+                        .OrderByDescending(s => s.Date).Take(1000).ToList();
+
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                 }
             }
             else
             {
-                // if selected subverse is ALL, show submissions from all subverses, sorted by date
-                var submissions = db.Messages
-                    .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true)
-                    .OrderByDescending(s => s.Date).Take(1000).ToList();
-
-                return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                return RedirectToAction("Index", "Home");
             }
-
         }
 
         // fetch a random subbverse with x subscribers and x submissions
