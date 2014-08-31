@@ -88,7 +88,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "userprofilefilter",
                 url: "user/{id}/{whattodisplay}",
-                defaults: new { controller = "Home", action = "UserProfile" }
+                defaults: new { controller = "Home", action = "UserProfile", whattodisplay = UrlParameter.Optional }
             );
 
             // user/someuserhere
