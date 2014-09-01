@@ -242,11 +242,17 @@ function voteDownComment(commentid) {
         $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true) //add downvoted arrow
         // increment/decrement comment points counters and update DOM element
         scoreLikes--;
-        scoreDislikes--; // this will always be a negative number        
+        scoreDislikes--; // this will always be a negative number
         $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);
         $(".id-" + commentid).find('.post_downvotes').filter(":first").html(scoreDislikes);
-        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+        var score = 0;
+        if (scoreDislikes < 0) {
+            score = scoreLikes + scoreDislikes;
+        } else {
+            score = scoreLikes - scoreDislikes;
+        }
+        $(".id-" + commentid).find('.score.unvoted').filter(":first").html(score + " points");
+        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html(score + " points");
     }
 }
 
