@@ -88,7 +88,7 @@
             <a href="/user/@commentModel.Name" class="author gray may-blank id-t2_@commentId">@commentModel.Name</a>
             <span class="userattrs"></span>
             <span class="score dislikes">@commentModel.Dislikes points</span>
-            <span class="score unvoted">@commentScore points</span>
+            <span class="score onlycollapsed">@commentScore points</span>
             <span class="score likes">@commentModel.Likes points</span>
         }
         else
@@ -133,7 +133,7 @@
                 <span class="score dislikes">@commentModel.Dislikes points</span>
                 <span class="score unvoted">@commentScore points</span>
                 <span class="score likes">@commentModel.Likes points</span>
-                <span class="commentvotesratio">(<span class="post_upvotes">+@commentModel.Likes</span>|<span class="post_downvotes">&minus;@commentModel.Dislikes</span>)</span>
+                <span class="commentvotesratio">(<span class="post_upvotes">+@commentModel.Likes</span>|<span class="post_downvotes">-@commentModel.Dislikes</span>)</span>
             }
             else
             {

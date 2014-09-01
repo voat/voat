@@ -100,7 +100,7 @@
                     <span class="score dislikes">@Model.Dislikes points</span>
                     <span class="score unvoted">@commentScore points</span>
                     <span class="score likes">@Model.Likes points</span>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">&minus;@Model.Dislikes</span>)</span>
+                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
                     <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago
                 </p>
                 <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t1_cgpb6dh3f5">

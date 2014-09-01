@@ -149,70 +149,105 @@ function submitUpVote(messageid) {
 }
 
 function voteUpComment(commentid) {
-    //DEBUG alert('Received model.id in voteUpSubmission: ' + submissionid);
-
     submitCommentUpVote(commentid);
 
-    //ADD LIKE IF UNVOTED
+    // get current score
+    var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
+    var scoreDislikes = $(".id-" + commentid).find('.post_downvotes').filter(":first").html();
+    var scoreUnvoted = $(".id-" + commentid).find('.score.unvoted').filter(":first").html();
+
+    // ADD LIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
         $(".id-" + commentid).children(".midcol").toggleClass("likes", true) //add class likes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
-        //add upvoted arrow
+        // add upvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true) //set upvote arrow to upvoted
         $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false) //remove upvote arrow
-        // TODO
-        // increment comment points counter
+        // increment comment points counter and update DOM element
+        scoreLikes++;
+        $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);        
+        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".likes")) {
-        //REMOVE LIKE IF LIKED
+        // REMOVE LIKE IF LIKED
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", true) //add class unvoted
         $(".id-" + commentid).children(".midcol").toggleClass("likes", false) //remove class dislikes
-        //remove upvoted arrow
+        // remove upvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true) //set arrow to upvote
         $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false) //remove upvoted arrow
+        // decrement comment points counter and update DOM element
+        scoreLikes--;
+        $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);
+        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".dislikes")) {
-        //ADD LIKE IF DISLIKED
+        // ADD LIKE IF DISLIKED
         $(".id-" + commentid).children(".midcol").toggleClass("dislikes", false) //remove class dislikes
         $(".id-" + commentid).children(".midcol").toggleClass("likes", true) //add class likes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
-        //remove downvoted arrow
+        // remove downvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true) //set downvoted arrow to downvote
         $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false) //remove downvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true) //add upvoted arrow
-        // TODO
-        // increment comment points counter
+        // increment/decrement comment points counters and update DOM element
+        scoreLikes++;
+        scoreDislikes++; // this will always be a negative number        
+        $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);
+        $(".id-" + commentid).find('.post_downvotes').filter(":first").html(scoreDislikes);
+        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     }
-
 }
 
 function voteDownComment(commentid) {
-    //DEBUG alert('Received model.id in voteDownSubmission: ' + submissionid);
     submitCommentDownVote(commentid);
 
-    //ADD DISLIKE IF UNVOTED
+    // get current score
+    var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
+    var scoreDislikes = $(".id-" + commentid).find('.post_downvotes').filter(":first").html();
+    var scoreUnvoted = $(".id-" + commentid).find('.score.unvoted').filter(":first").html();
+
+    // ADD DISLIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
         $(".id-" + commentid).children(".midcol").toggleClass("dislikes", true) //add class dislikes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
-        //add downvoted arrow
+        // add downvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true) //set downvote arrow to downvoted
         $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false) //remove downvote arrow
+        // increment comment points counter and update DOM element        
+        scoreDislikes--;
+        $(".id-" + commentid).find('.post_downvotes').filter(":first").html(scoreDislikes);
+        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes + scoreDislikes) + " points");
+        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes + scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".dislikes")) {
-        //REMOVE DISLIKE IF DISLIKED
+        // REMOVE DISLIKE IF DISLIKED
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", true) //add class unvoted
         $(".id-" + commentid).children(".midcol").toggleClass("dislikes", false) //remove class dislikes
-        //remove downvoted arrow
+        // remove downvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true) //set arrow to downvote
         $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false) //remove downvoted arrow
+        // decrement comment points counter and update DOM element
+        scoreDislikes++;
+        $(".id-" + commentid).find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
+        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".likes")) {
-        //ADD DISLIKE IF LIKED
+        // ADD DISLIKE IF LIKED
         $(".id-" + commentid).children(".midcol").toggleClass("likes", false) //remove class likes
         $(".id-" + commentid).children(".midcol").toggleClass("dislikes", true) //add class dislikes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
-        //remove upvoted arrow
+        // remove upvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true) //set upvoted arrow to upvote
         $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false) //remove upvoted arrow
         $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true) //add downvoted arrow
+        // increment/decrement comment points counters and update DOM element
+        scoreLikes--;
+        scoreDislikes--; // this will always be a negative number        
+        $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);
+        $(".id-" + commentid).find('.post_downvotes').filter(":first").html(scoreDislikes);
+        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     }
-
 }
 
 function submitCommentUpVote(commentid) {
@@ -236,7 +271,7 @@ function submitCommentDownVote(commentid) {
     });
 }
 
-//prepare auth tokens
+// prepare auth tokens
 $(document).ready(function () {
     securityToken = $('[name=__RequestVerificationToken]').val();
     $('body').bind('ajaxSend', function (elm, xhr, s) {
@@ -255,7 +290,7 @@ $(document).ready(function () {
     function closeSubMenu() { $(this).find('ul').css('visibility', 'hidden'); };
 });
 
-//append a comment reply form to calling area while preventing multiple appends
+// append a comment reply form to calling area while preventing multiple appends
 function reply(parentcommentid, messageid) {
     //exit function if the form is already being shown
     if ($("#commentreplyform-" + parentcommentid).exists()) {
@@ -279,7 +314,7 @@ function reply(parentcommentid, messageid) {
     $.validator.unobtrusive.parse(form);
 }
 
-//post comment reply form through ajax
+// post comment reply form through ajax
 function postCommentReplyAjax(senderButton) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
@@ -322,7 +357,7 @@ function postCommentReplyAjax(senderButton) {
     }
 }
 
-//append a comment edit form to calling area while preventing multiple appends
+// append a comment edit form to calling area while preventing multiple appends
 function edit(parentcommentid, messageid) {
 
     //hide original text comment
@@ -338,7 +373,7 @@ function edit(parentcommentid, messageid) {
     $.validator.unobtrusive.parse(form);
 }
 
-//append a submission edit form to calling area while preventing multiple appends
+// append a submission edit form to calling area while preventing multiple appends
 function editsubmission(submissionid) {
 
     //hide original text    
@@ -354,13 +389,13 @@ function editsubmission(submissionid) {
     $.validator.unobtrusive.parse(form);
 }
 
-//remove submission edit form for given submission id and replace it with original content
+// remove submission edit form for given submission id and replace it with original content
 function removesubmissioneditform(submissionid) {
     $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
     $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);
 }
 
-//submit edited submission and replace the old one with formatted response received by server
+// submit edited submission and replace the old one with formatted response received by server
 function editmessagesubmit(submissionid) {
     var submissioncontent = $("#submissionid-" + submissionid).find('.form-control').val();
     var submissionobject = { "SubmissionId": submissionid, "SubmissionContent": submissioncontent };
@@ -380,12 +415,12 @@ function editmessagesubmit(submissionid) {
     return false;
 }
 
-//remove reply form for given parent id
+// remove reply form for given parent id
 function removereplyform(parentcommentid) {
     $('#replyform-' + parentcommentid).remove();
 }
 
-//remove edit form for given parent id and replace it with original comment
+// remove edit form for given parent id and replace it with original comment
 function removeeditform(parentcommentid) {
     $("#" + parentcommentid).find('.usertext-body').toggle(1);
     $("#" + parentcommentid).find('.usertext-edit').toggle(1);
@@ -417,7 +452,7 @@ function hidecomment(commentid) {
     return (false);
 }
 
-//submit edited comment and replace the old one with formatted response received by server
+// submit edited comment and replace the old one with formatted response received by server
 function editcommentsubmit(commentid) {
     var commentcontent = $("#" + commentid).find('.form-control').val();
     var commentobject = { "CommentId": commentid, "CommentContent": commentcontent };
@@ -437,7 +472,7 @@ function editcommentsubmit(commentid) {
     return false;
 }
 
-//delete comment
+// delete comment
 function deletecomment(commentid) {
     //hide comment menu buttons
     $("#" + commentid).find('.flat-list').html('');
@@ -463,7 +498,7 @@ function deletecomment(commentid) {
     deletecommentsubmit(commentid);
 }
 
-//submit comment deletion request
+// submit comment deletion request
 function deletecommentsubmit(commentid) {
     var commentobject = { "commentid": commentid };
 
@@ -479,7 +514,7 @@ function deletecommentsubmit(commentid) {
     return false;
 }
 
-//submit submission deletion request
+// submit submission deletion request
 function deletesubmission(submissionid) {
     var submissionobject = { "submissionid": submissionid };
 
@@ -495,36 +530,36 @@ function deletesubmission(submissionid) {
     $('body').load($(location).attr('href'));
 }
 
-//toggle are you sure question
+// toggle are you sure question
 function toggle(commentid) {
     $("#" + commentid).find('.option, .main').toggleClass("active");
     return false;
 }
 
-//togle back are you sure question
+// togle back are you sure question
 function toggleback(commentid) {
     $("#" + commentid).find('.option, .error').toggleClass("active");
     return false;
 }
 
-//toggle are you sure question for submission deletion
+// toggle are you sure question for submission deletion
 function togglesubmission(submissionid) {
     $("#submissionid-" + submissionid).find('.option, .main').toggleClass("active");
     return false;
 }
 
-//togle back are you sure question for submission deletion
+// togle back are you sure question for submission deletion
 function togglesubmissionback(submissionid) {
     $("#submissionid-" + submissionid).find('.option, .error').toggleClass("active");
     return false;
 }
 
-//check if an object exists
+// check if an object exists
 $.fn.exists = function () {
     return this.length !== 0;
 }
 
-//subscribe button
+// subscribe button
 function subscribe(obj, subverseName) {
     $(obj).attr("onclick", "unsubscribe(this)");
     $(obj).html("unsubscribe");
@@ -533,7 +568,7 @@ function subscribe(obj, subverseName) {
     submitSubscribeRequest(subverseName);
 }
 
-//unsubscribe button
+// unsubscribe button
 function unsubscribe(obj, subverseName) {
     $(obj).attr("onclick", "subscribe(this)");
     $(obj).html("subscribe");
@@ -572,7 +607,7 @@ function submitUnSubscribeRequest(subverseName) {
     });
 }
 
-//a function to load content of a self post and append it to calling object
+// a function to load content of a self post and append it to calling object
 function loadSelfText(obj, messageId) {
 
     $(obj).toggleClass("collapsed");
@@ -592,7 +627,7 @@ function loadSelfText(obj, messageId) {
     $(obj).parent().find(".expando").next().next().next().toggle();
 }
 
-//function to post delete private message request to messaging controller and remove deleted message DOM
+// function to post delete private message request to messaging controller and remove deleted message DOM
 function deletePrivateMessage(obj, privateMessageId) {
     var privateMessageObject = { "privateMessageId": privateMessageId };
 
@@ -613,7 +648,7 @@ function deletePrivateMessage(obj, privateMessageId) {
     return false;
 }
 
-//function to post delete sent private message request to messaging controller and remove deleted message DOM
+// function to post delete sent private message request to messaging controller and remove deleted message DOM
 function deletePrivateMessageFromSent(obj, privateMessageId) {
     var privateMessageObject = { "privateMessageId": privateMessageId };
 
@@ -634,7 +669,7 @@ function deletePrivateMessageFromSent(obj, privateMessageId) {
     return false;
 }
 
-//function to load select link flair modal dialog for given subverse and given submission
+// function to load select link flair modal dialog for given subverse and given submission
 function selectflair(messageId, subverseName) {
     var flairSelectDialog = $.get(
         "/ajaxhelpers/linkflairselectdialog/" + subverseName + "/" + messageId,
@@ -646,7 +681,7 @@ function selectflair(messageId, subverseName) {
      );
 }
 
-//function to apply flair to a given submission
+// function to apply flair to a given submission
 function applyflair(messageId, flairId, flairLabel, flairCssClass) {
     $.ajax({
         type: "POST",
@@ -665,7 +700,7 @@ function applyflair(messageId, flairId, flairLabel, flairCssClass) {
     });
 }
 
-//function to clear flair from a given submission
+// function to clear flair from a given submission
 function clearflair(messageId) {
     $.ajax({
         type: "POST",
