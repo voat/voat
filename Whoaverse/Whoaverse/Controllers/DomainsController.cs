@@ -59,26 +59,33 @@ namespace Whoaverse.Controllers
             //sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
 
-            ViewBag.SelectedSubverse = "domains";
-            ViewBag.SelectedDomain = domainname + "." + ext;
-
-            int pageSize = 25;
-            int pageNumber = (page ?? 1);
-
-            //check if at least one submission for given domain was found, if not, send to a page not found error
-            var submissions = db.Messages
-                        .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
-                        .OrderByDescending(s => s.Date).Take(100).ToList();
-
-            if (submissions != null)
+            if (sortingmode.Equals("new"))
             {
-                ViewBag.Title = "Showing all newest submissions which link to " + domainname;
-                return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                ViewBag.SelectedSubverse = "domains";
+                ViewBag.SelectedDomain = domainname + "." + ext;
+
+                int pageSize = 25;
+                int pageNumber = (page ?? 1);
+
+                //check if at least one submission for given domain was found, if not, send to a page not found error
+                var submissions = db.Messages
+                            .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
+                            .OrderByDescending(s => s.Date).Take(100).ToList();
+
+                if (submissions != null)
+                {
+                    ViewBag.Title = "Showing all newest submissions which link to " + domainname;
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                }
+                else
+                {
+                    ViewBag.SelectedSubverse = "404";
+                    return View("~/Views/Errors/Subversenotfound.cshtml");
+                }
             }
             else
             {
-                ViewBag.SelectedSubverse = "404";
-                return View("~/Views/Errors/Subversenotfound.cshtml");
+                return RedirectToAction("Index", "Home");
             }
         }
     }

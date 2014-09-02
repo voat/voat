@@ -297,7 +297,8 @@ namespace Whoaverse.Controllers
             }
             else
             {
-                if (Request.IsAjaxRequest()){
+                if (Request.IsAjaxRequest())
+                {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
 
@@ -362,19 +363,19 @@ namespace Whoaverse.Controllers
                 {
                     // notify comment author that his comment has been deleted by a moderator
                     Utils.MesssagingUtility.SendPrivateMessage(
-                        "Whoaverse", 
-                        commentToDelete.Name, 
-                        "Your comment has been deleted by a moderator", 
-                        "Your [comment](/v/"+commentSubverse+"/comments/"+commentToDelete.MessageId+"/"+commentToDelete.Id+") has been deleted by: " +
-                        "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " on: " + System.DateTime.Now + "  " + Environment.NewLine + 
-                        "Original comment content was: " + Environment.NewLine + 
+                        "Whoaverse",
+                        commentToDelete.Name,
+                        "Your comment has been deleted by a moderator",
+                        "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.MessageId + "/" + commentToDelete.Id + ") has been deleted by: " +
+                        "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " on: " + System.DateTime.Now + "  " + Environment.NewLine +
+                        "Original comment content was: " + Environment.NewLine +
                         "---" + Environment.NewLine +
                         commentToDelete.CommentContent
                         );
 
                     commentToDelete.Name = "deleted";
                     commentToDelete.CommentContent = "deleted by a moderator at " + System.DateTime.Now;
-                    await db.SaveChangesAsync();                    
+                    await db.SaveChangesAsync();
                 }
             }
 
@@ -440,7 +441,7 @@ namespace Whoaverse.Controllers
                 }
                 // delete submission if delete request is issued by subverse moderator
                 else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
-                {                  
+                {
 
                     if (submissionToDelete.Type == 1)
                     {
@@ -776,61 +777,67 @@ namespace Whoaverse.Controllers
             // sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
 
-            int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            if (sortingmode.Equals("new"))
+            {
+                int pageSize = 25;
+                int pageNumber = (page ?? 1);
 
-            // setup a cookie to find first time visitors and display welcome banner
-            string cookieName = "NotFirstTime";
-            if (this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-            {
-                // not a first time visitor
-                ViewBag.FirstTimeVisitor = false;
-            }
-            else
-            {
-                // add a cookie for first time visitors
-                HttpCookie cookie = new HttpCookie(cookieName);
-                cookie.Value = "whoaverse first time visitor identifier";
-                cookie.Expires = DateTime.Now.AddMonths(6);
-                this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
-                ViewBag.FirstTimeVisitor = true;
-            }
-
-            try
-            {
-                // show only submissions from subverses that user is subscribed to if user is logged in
-                // also do a check so that user actually has subscriptions
-                if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                // setup a cookie to find first time visitors and display welcome banner
+                string cookieName = "NotFirstTime";
+                if (this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                 {
-                    var submissions = (from message in db.Messages
-                                       join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
-                                       join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
-                                       where message.Name != "deleted"
-                                       select message)
-                                       .Distinct()
-                                       .OrderByDescending(s => s.Date).Take(1000).ToList();
-
-                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                    // not a first time visitor
+                    ViewBag.FirstTimeVisitor = false;
                 }
                 else
                 {
-                    // get only submissions from default subverses, sort by date
-                    var submissions = (from message in db.Messages
-                                       join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                       where message.Name != "deleted"
-                                       select message)
-                                       .Distinct()
-                                       .OrderByDescending(s => s.Date).Take(1000).ToList();
-
-                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                    // add a cookie for first time visitors
+                    HttpCookie cookie = new HttpCookie(cookieName);
+                    cookie.Value = "whoaverse first time visitor identifier";
+                    cookie.Expires = DateTime.Now.AddMonths(6);
+                    this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+                    ViewBag.FirstTimeVisitor = true;
                 }
 
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("HeavyLoad", "Home");
-            }
+                try
+                {
+                    // show only submissions from subverses that user is subscribed to if user is logged in
+                    // also do a check so that user actually has subscriptions
+                    if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                    {
+                        var submissions = (from message in db.Messages
+                                           join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
+                                           join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
+                                           where message.Name != "deleted"
+                                           select message)
+                                           .Distinct()
+                                           .OrderByDescending(s => s.Date).Take(1000).ToList();
 
+                        return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                    }
+                    else
+                    {
+                        // get only submissions from default subverses, sort by date
+                        var submissions = (from message in db.Messages
+                                           join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                           where message.Name != "deleted"
+                                           select message)
+                                           .Distinct()
+                                           .OrderByDescending(s => s.Date).Take(1000).ToList();
+
+                        return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                    }
+
+                }
+                catch (Exception)
+                {
+                    return RedirectToAction("HeavyLoad", "Home");
+                }
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: /about
@@ -994,7 +1001,7 @@ namespace Whoaverse.Controllers
             {
                 var commentsUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse + "/comments/" + submission.Id);
                 var subverseUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse);
-                
+
                 string thumbnailUrl = "";
 
                 if (submission.Type == 1)
@@ -1020,13 +1027,13 @@ namespace Whoaverse.Controllers
                         thumbnailUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Thumbs/" + submission.Thumbnail).ToString();
                         SyndicationItem item = new SyndicationItem(
                                                 submission.Linkdescription,
-                                                "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='"+submission.Linkdescription+"' alt='"+submission.Linkdescription+"' src='" + thumbnailUrl + "' /></a>"+
+                                                "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='" + submission.Linkdescription + "' alt='" + submission.Linkdescription + "' src='" + thumbnailUrl + "' /></a>" +
                                                 "</br>" +
-                                                "Submitted by " + "<a href='u/" + submission.Name + "'>" + submission.Name + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>"+
+                                                "Submitted by " + "<a href='u/" + submission.Name + "'>" + submission.Name + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>" +
                                                 " | <a href='" + linkUrl + "'>link</a>",
                                                 commentsUrl,
                                                 "Item ID",
-                                                submission.Date);                        
+                                                submission.Date);
 
                         feedItems.Add(item);
                     }
