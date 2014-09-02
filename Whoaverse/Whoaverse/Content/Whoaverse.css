@@ -133,7 +133,10 @@ label {
 }
 
 .flair {
-    display:none;
+    display: none;
+}
+
+.flair, .linkflairlabel {
     background: #F8F8F8;
     border: 1px solid #E6E6E6;
     -webkit-border-radius: 2px;
@@ -146,19 +149,7 @@ label {
 }
 
 .linkflairlabel {
-    background: #F8F8F8;
-    border: 1px solid #E6E6E6;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    color: #666;
     display: inline-block;
-    line-height: 150%;
-    margin-right: 3px;
-    padding: 2px 4px;
-    vertical-align: middle;
-}
-
-.linkflairlabel {
     font-size: 10px;
     max-width: 100px;
 }
@@ -1800,14 +1791,14 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 .tagline .post_upvotes {
     color: #FE5E5E;
     visibility: visible;
-    font-size: 11px;
+    font-size: 95%;
     font-weight: bold;
 }
 
 .tagline .post_downvotes {
     color: #5DBEFF;
     visibility: visible;
-    font-size: 11px;
+    font-size: 95%;
     font-weight: bold;
 }
 
