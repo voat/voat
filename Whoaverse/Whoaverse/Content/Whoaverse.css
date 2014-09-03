@@ -133,7 +133,10 @@ label {
 }
 
 .flair {
-    display:none;
+    display: none;
+}
+
+.flair, .linkflairlabel {
     background: #F8F8F8;
     border: 1px solid #E6E6E6;
     -webkit-border-radius: 2px;
@@ -146,19 +149,7 @@ label {
 }
 
 .linkflairlabel {
-    background: #F8F8F8;
-    border: 1px solid #E6E6E6;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    color: #666;
     display: inline-block;
-    line-height: 150%;
-    margin-right: 3px;
-    padding: 2px 4px;
-    vertical-align: middle;
-}
-
-.linkflairlabel {
     font-size: 10px;
     max-width: 100px;
 }
@@ -171,14 +162,18 @@ label {
     color: #DCDCDC;
 }
 
+input, button, select, textarea {
+    background: inherit;
+    border: 1px solid #888;
+}
+
 .intro-text {
     font-size: 12px;
 }
 
 .control-label {
-    font: 11px arial,helvetica,sans-serif;
-    color: black;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: bold;
 }
 
 .label {
@@ -447,9 +442,34 @@ label {
             margin: 0 0 6px;
         }
 
-    .userstats-submission-title:hover {
-        text-decoration: underline;
+    .userstats-submission-title {
+        color: #4AABE7;
     }
+
+        .userstats-submission-title:hover {
+            text-decoration: underline;
+        }
+
+    .userstats-submission-author {
+        font-weight: bold;
+    }
+
+        .userstats-submission-author:hover {
+            color: #4AABE7;
+        }
+
+    .userstats-submission-score {
+        color: #777;
+        font-weight: bold;
+    }
+
+    .userstats-submission-subverse {
+        color: #4AABE7;
+    }
+
+        .userstats-submission-subverse:hover {
+            text-decoration: underline;
+        }
 
 .validation-summary-errors {
     font-weight: bold;
@@ -1771,14 +1791,14 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 .tagline .post_upvotes {
     color: #FE5E5E;
     visibility: visible;
-    font-size: 11px;
+    font-size: 95%;
     font-weight: bold;
 }
 
 .tagline .post_downvotes {
     color: #5DBEFF;
     visibility: visible;
-    font-size: 11px;
+    font-size: 95%;
     font-weight: bold;
 }
 
@@ -2123,38 +2143,19 @@ textarea.form-control {
 .post_upvotes {
     color: #FE5E5E;
     visibility: visible;
-    font-size: 11px;
     font-weight: bold;
 }
 
 .post_downvotes {
     color: #5DBEFF;
     visibility: visible;
-    font-size: 11px;
     font-weight: bold;
 }
 
-.user-profile-submission-title {
-    color: #5AB3EA !important;
-    font-size: 12px;
+.control-label {
+    color: #444;
 }
 
-.user-profile-submission-author {
-    color: #444 !important;
-    font-size: 12px;
-}
-
-.user-profile-submission-score {
-    color: rgba(107, 107, 107, 1) !important;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.user-profile-stats-heading {
-    font-size: 14px;
-    margin-top: 5px;
-    border-bottom: solid 1px;
-}
 
 /* ! Register
 ================================================================================ */
