@@ -390,7 +390,7 @@ namespace Whoaverse
                 name: "ClearLinkFlair",
                 url: "submissions/clearlinkflair/{submissionId}",
                 defaults: new { controller = "Submissions", action = "ClearLinkFlair" }
-            );            
+            );
             
             // default route
             routes.MapRoute(

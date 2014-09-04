@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Whoaverse.Utils;
 
 namespace Whoaverse
 {
@@ -39,9 +40,7 @@ namespace Whoaverse
         // fire each time a new session is created     
         protected void Session_Start(object sender, EventArgs e)
         {
-            Application.Lock();
-            Application["onlineVisitors"] = (int)Application["onlineVisitors"] + 1;
-            Application.UnLock();
+
         }
 
         // fire when a session is abandoned or expires
@@ -49,6 +48,10 @@ namespace Whoaverse
         {
             Application.Lock();
             Application["onlineVisitors"] = (int)Application["onlineVisitors"] - 1;
+            
+            // experimental
+            SessionTracker.Remove(new Session() { SessionID = Session.SessionID });
+
             Application.UnLock();
         }
     }

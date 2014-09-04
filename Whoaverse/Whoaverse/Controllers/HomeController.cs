@@ -168,6 +168,13 @@ namespace Whoaverse.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
+            // experimental
+            // register a new session for this subverse
+            string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
+            SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
+            // get session count where path = current subverse                       
+            ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
+
             return View(message);
         }
 

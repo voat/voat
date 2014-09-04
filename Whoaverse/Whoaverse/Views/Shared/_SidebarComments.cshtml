@@ -72,8 +72,8 @@
                 <span id="subscriberCount" class="number">@ViewBag.SubscriberCount</span>
                 <span class="word">subscribers</span>
             </span>
-            <p class="users-online fuzzed" title="logged-in users viewing this subverse in the past 15 minutes">
-                <span class="number">~@HttpContext.Current.Application["onlineVisitors"]</span>
+            <p class="users-online fuzzed" title="number of users viewing this subverse in the past 15 minutes">
+                <span class="number">~@Whoaverse.Utils.SessionTracker.ActiveSessionsForSubverse(Model.name)</span>
                 <span class="word">users here now</span>
             </p>
             @if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))

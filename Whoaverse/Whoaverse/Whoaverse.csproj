@@ -355,6 +355,7 @@
     <Compile Include="Utils\BanningUtility.cs" />
     <Compile Include="Utils\MesssagingUtility.cs" />
     <Compile Include="Utils\RSSUtility.cs" />
+    <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\Karma.cs" />

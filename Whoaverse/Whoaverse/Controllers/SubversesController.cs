@@ -393,7 +393,7 @@ namespace Whoaverse.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
         //TODO: re-enable throttle
-        //[PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
+        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseSettings(Subverse updatedModel)
         {
@@ -489,6 +489,13 @@ namespace Whoaverse.Controllers
 
             ViewBag.SelectedSubverse = subversetoshow;
 
+            // experimental
+            // register a new session for this subverse
+            string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
+            SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
+            // get session count where path = current subverse                       
+            ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
+
             try
             {
                 if (subversetoshow != "all")
@@ -512,7 +519,7 @@ namespace Whoaverse.Controllers
                             .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
                             .OrderByDescending(s => s.Rank)
                             .Take(1000)
-                            .ToList();
+                            .ToList();                        
 
                         ViewBag.Title = subverse.description;
                         return View(submissions.ToPagedList(pageNumber, pageSize));
@@ -676,6 +683,13 @@ namespace Whoaverse.Controllers
                 int pageNumber = (page ?? 1);
 
                 ViewBag.Title = subversetoshow;
+
+                // experimental
+                // register a new session for this subverse
+                string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
+                SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
+                // get session count where path = current subverse                       
+                ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
 
                 if (subversetoshow != "all")
                 {
