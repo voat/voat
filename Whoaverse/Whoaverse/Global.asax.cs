@@ -50,7 +50,7 @@ namespace Whoaverse
             Application["onlineVisitors"] = (int)Application["onlineVisitors"] - 1;
             
             // experimental
-            SessionTracker.Remove(new Session() { SessionID = Session.SessionID });
+            SessionTracker.States.RemoveAll(s => s.SessionID == Session.SessionID);
 
             Application.UnLock();
         }
