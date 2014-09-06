@@ -24,8 +24,6 @@ namespace Whoaverse
             ViewEngines.Engines.Add(new RazorViewEngine());
 
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
-
-            Application["onlineVisitors"] = 3;
         }
 
         protected void Application_Error(object sender, EventArgs e)
@@ -46,13 +44,15 @@ namespace Whoaverse
         // fire when a session is abandoned or expires
         protected void Session_End(object sender, EventArgs e)
         {
-            Application.Lock();
-            Application["onlineVisitors"] = (int)Application["onlineVisitors"] - 1;
-            
             // experimental
-            SessionTracker.States.RemoveAll(s => s.SessionID == Session.SessionID);
-
-            Application.UnLock();
+            try
+            {
+                SessionTracker.States.RemoveAll(s => s.SessionID == Session.SessionID);
+            }
+            catch (Exception)
+            {
+               //
+            }
         }
     }
 }

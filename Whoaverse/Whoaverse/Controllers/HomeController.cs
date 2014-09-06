@@ -133,49 +133,61 @@ namespace Whoaverse.Controllers
         {
             string queryString = Request.QueryString["subversetoshow"];
 
-            if (startingcommentid != null)
+            if (db.Subverses.Find(subversetoshow) != null)
             {
-                ViewBag.StartingCommentId = startingcommentid;
-            }
+                if (startingcommentid != null)
+                {
+                    ViewBag.StartingCommentId = startingcommentid;
+                }
 
-            if (sort != null)
-            {
-                ViewBag.SortingMode = sort;
-            }
+                if (sort != null)
+                {
+                    ViewBag.SortingMode = sort;
+                }
 
-            if (queryString != null)
-            {
-                ViewBag.SelectedSubverse = queryString;
-            }
-            else if (subversetoshow != null)
-            {
-                ViewBag.SelectedSubverse = subversetoshow;
+                if (queryString != null)
+                {
+                    ViewBag.SelectedSubverse = queryString;
+                }
+                else if (subversetoshow != null)
+                {
+                    ViewBag.SelectedSubverse = subversetoshow;
+                }
+                else
+                {
+                    return View("~/Views/Errors/Error.cshtml");
+                }
+
+                if (id == null)
+                {
+                    return View("~/Views/Errors/Error.cshtml");
+                }
+
+                Message message = db.Messages.Find(id);
+
+                if (message == null)
+                {
+                    return View("~/Views/Errors/Error_404.cshtml");
+                }
+
+                // experimental
+                // register a new session for this subverse
+                try
+                {
+                    string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
+                    SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
+                }
+                catch (Exception)
+                {                    
+                    //
+                }
+
+                return View(message);
             }
             else
             {
-                return View("~/Views/Errors/Error.cshtml");
-            }
-
-            if (id == null)
-            {
-                return View("~/Views/Errors/Error.cshtml");
-            }
-
-            Message message = db.Messages.Find(id);
-
-            if (message == null)
-            {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
-
-            // experimental
-            // register a new session for this subverse
-            string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
-            SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
-            // get session count where path = current subverse                       
-            ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
-
-            return View(message);
         }
 
         // GET: submitcomment

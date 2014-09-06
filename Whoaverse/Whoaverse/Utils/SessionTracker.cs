@@ -30,13 +30,7 @@ namespace Whoaverse.Utils
             if (!SessionExists(state))
             {
                 States.Add(state);
-            }            
-        }
-
-        // remove a session
-        public static void Remove(Session state)
-        {
-            States.Remove(state);
+            }
         }
 
         // check if session exists
@@ -55,7 +49,7 @@ namespace Whoaverse.Utils
                 return false;
             }
         }
-        
+
         // count sessions for given subverse
         public static int ActiveSessionsForSubverse(string subverseName)
         {
@@ -63,16 +57,23 @@ namespace Whoaverse.Utils
                          where stateCollection.Subverse.Equals(subverseName)
                          select stateCollection;
 
-            return result.Count();
+            if (result != null)
+            {
+                return result.Count();
+            }
+            else
+            {
+                return -1;
+            }            
         }
     }
- 
+
     public class Session
     {
         private string _sessionId;
         private string _subverse;
- 
+
         public string SessionID { get { return _sessionId; } set { _sessionId = value; } }
         public string Subverse { get { return _subverse; } set { _subverse = value; } }
-    }    
+    }
 }

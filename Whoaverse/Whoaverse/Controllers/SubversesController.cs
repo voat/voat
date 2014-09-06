@@ -113,18 +113,25 @@ namespace Whoaverse.Controllers
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow)
         {
-            ViewBag.SelectedSubverse = subversetoshow;
-
-            if (id == null)
+            if (db.Subverses.Find(subversetoshow) != null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                ViewBag.SelectedSubverse = subversetoshow;
+
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Message message = db.Messages.Find(id);
+                if (message == null)
+                {
+                    return View("~/Views/Errors/Error_404.cshtml");
+                }
+                return View(message);
             }
-            Message message = db.Messages.Find(id);
-            if (message == null)
+            else
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
-            return View(message);
         }
 
         // GET: submit
@@ -491,10 +498,15 @@ namespace Whoaverse.Controllers
 
             // experimental
             // register a new session for this subverse
-            string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
-            SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
-            // get session count where path = current subverse                       
-            ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
+            try
+            {
+                string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
+                SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
+            }
+            catch (Exception)
+            {
+                //
+            }
 
             try
             {
@@ -519,7 +531,7 @@ namespace Whoaverse.Controllers
                             .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
                             .OrderByDescending(s => s.Rank)
                             .Take(1000)
-                            .ToList();                        
+                            .ToList();
 
                         ViewBag.Title = subverse.description;
                         return View(submissions.ToPagedList(pageNumber, pageSize));
@@ -685,11 +697,16 @@ namespace Whoaverse.Controllers
                 ViewBag.Title = subversetoshow;
 
                 // experimental
-                // register a new session for this subverse
-                string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
-                SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
-                // get session count where path = current subverse                       
-                ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
+                // register a new session for this subverse                
+                try
+                {
+                    string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
+                    SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
+                }
+                catch (Exception)
+                {
+                    //
+                }
 
                 if (subversetoshow != "all")
                 {
