@@ -28,7 +28,7 @@ namespace Whoaverse.Controllers
             //Response.StatusCode = 404;
             return View("~/Views/Errors/Error_404.cshtml");
         }
-        public ActionResult Index()
+        public ActionResult CriticalError()
         {
             return View("~/Views/Errors/Error.cshtml");
         }

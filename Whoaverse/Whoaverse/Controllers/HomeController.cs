@@ -175,10 +175,10 @@ namespace Whoaverse.Controllers
                 try
                 {
                     string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
-                    SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
+                    SessionTracker.Add(currentSubverse, Session.SessionID);
                 }
                 catch (Exception)
-                {                    
+                {
                     //
                 }
 

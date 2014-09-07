@@ -24,6 +24,9 @@ namespace Whoaverse
             ViewEngines.Engines.Add(new RazorViewEngine());
 
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
+
+            // clear all sessions used for online users count
+            SessionTracker.RemoveAllSessions();
         }
 
         protected void Application_Error(object sender, EventArgs e)
@@ -47,7 +50,7 @@ namespace Whoaverse
             // experimental
             try
             {
-                SessionTracker.States.RemoveAll(s => s.SessionID == Session.SessionID);
+                SessionTracker.Remove(Session.SessionID);
             }
             catch (Exception)
             {

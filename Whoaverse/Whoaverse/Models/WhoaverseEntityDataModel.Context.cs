@@ -43,5 +43,6 @@ namespace Whoaverse.Models
         public virtual DbSet<Postreplynotification> Postreplynotifications { get; set; }
         public virtual DbSet<Userpreference> Userpreferences { get; set; }
         public virtual DbSet<Subverseflairsetting> Subverseflairsettings { get; set; }
+        public virtual DbSet<Sessiontracker> Sessiontrackers { get; set; }
     }
 }

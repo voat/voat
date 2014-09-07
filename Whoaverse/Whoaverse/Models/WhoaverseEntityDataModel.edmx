@@ -137,6 +137,14 @@
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SubmissionId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="Sessiontracker">
+          <Key>
+            <PropertyRef Name="SessionId" />
+            <PropertyRef Name="Subverse" />
+          </Key>
+          <Property Name="SessionId" Type="nvarchar" MaxLength="24" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
+        </EntityType>
         <EntityType Name="Subscriptions">
           <Key>
             <PropertyRef Name="Id" />
@@ -327,6 +335,7 @@
           <EntitySet Name="Privatemessages" EntityType="Self.Privatemessages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Promotedsubmissions" EntityType="Self.Promotedsubmissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Savedsubmissions" EntityType="Self.Savedsubmissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sessiontracker" EntityType="Self.Sessiontracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverseflairsettings" EntityType="Self.Subverseflairsettings" Schema="dbo" store:Type="Tables" />
@@ -517,6 +526,7 @@
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Subverseflairsetting" EntitySet="Subverseflairsettings" />
           </AssociationSet>
+          <EntitySet Name="Sessiontrackers" EntityType="whoaverseModel.Sessiontracker" />
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -759,6 +769,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Sessiontracker">
+          <Key>
+            <PropertyRef Name="SessionId" />
+            <PropertyRef Name="Subverse" />
+          </Key>
+          <Property Name="SessionId" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="true" />
+          <Property Name="Subverse" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -998,6 +1016,14 @@
                 <ScalarProperty Name="Label" ColumnName="Label" />
                 <ScalarProperty Name="Subversename" ColumnName="Subversename" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sessiontrackers">
+            <EntityTypeMapping TypeName="whoaverseModel.Sessiontracker">
+              <MappingFragment StoreEntitySet="Sessiontracker">
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

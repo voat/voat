@@ -56,6 +56,15 @@ namespace Whoaverse.Controllers
                     ViewBag.likes = likes;
                     ViewBag.dislikes = dislikes;
 
+                    try
+                    {
+                        ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(selectedSubverse);
+                    }
+                    catch (Exception)
+                    {
+                        ViewBag.OnlineUsers = -1;
+                    }
+
                     return PartialView("_SidebarComments", subverse);
                 }
                 else
@@ -85,6 +94,15 @@ namespace Whoaverse.Controllers
 
                 ViewBag.SubscriberCount = subscriberCount;
                 ViewBag.SelectedSubverse = selectedSubverse;
+
+                try
+                {
+                    ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(selectedSubverse);
+                }
+                catch (Exception)
+                {
+                    ViewBag.OnlineUsers = -1;
+                }
 
                 return PartialView("_Sidebar", subverse);
             }
@@ -501,11 +519,12 @@ namespace Whoaverse.Controllers
             try
             {
                 string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
-                SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
+                SessionTracker.Add(currentSubverse,Session.SessionID);
+                ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
             }
             catch (Exception)
             {
-                //
+                ViewBag.OnlineUsers = -1;
             }
 
             try
@@ -701,11 +720,12 @@ namespace Whoaverse.Controllers
                 try
                 {
                     string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
-                    SessionTracker.Add(new Session() { SessionID = Session.SessionID, Subverse = currentSubverse });
+                    SessionTracker.Add(currentSubverse, Session.SessionID);
+                    ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
                 }
                 catch (Exception)
                 {
-                    //
+                    ViewBag.OnlineUsers = -1;
                 }
 
                 if (subversetoshow != "all")

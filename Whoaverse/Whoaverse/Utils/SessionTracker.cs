@@ -17,63 +17,116 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Whoaverse.Models;
 
 namespace Whoaverse.Utils
 {
     public static class SessionTracker
     {
-        public static List<Session> States = new List<Session>();
+        // remove a session
+        public static void Remove(string SessionIdToRemove)
+        {
+            try
+            {
+                using (whoaverseEntities db = new whoaverseEntities())
+                {
+                    // remove all records for given session id
+                    db.Sessiontrackers.RemoveRange(db.Sessiontrackers.Where(s => s.SessionId == SessionIdToRemove));
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception)
+            {
+                //
+            }
+        }
+
+        // clear all sessions
+        public static void RemoveAllSessions()
+        {
+            try
+            {
+                using (whoaverseEntities db = new whoaverseEntities())
+                {
+                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE SESSIONTRACKER");
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception)
+            {                
+                //
+            }
+        }
 
         // add a new session
-        public static void Add(Session state)
+        public static void Add(string subverseName, string sessionId)
         {
-            if (!SessionExists(state))
+            try
             {
-                States.Add(state);
+                if (!SessionExists(sessionId, subverseName))
+                {
+                    using (whoaverseEntities db = new whoaverseEntities())
+                    {
+                        Sessiontracker newSession = new Sessiontracker();
+                        newSession.SessionId = sessionId;
+                        newSession.Subverse = subverseName;
+                        db.Sessiontrackers.Add(newSession);
+                        db.SaveChanges();
+
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                //
             }
         }
 
         // check if session exists
-        public static bool SessionExists(Session state)
+        public static bool SessionExists(string sessionId, string subverseName)
         {
-            var result = from stateCollection in States
-                         where stateCollection.Subverse.Equals(state.Subverse) && stateCollection.SessionID.Equals(state.SessionID)
-                         select stateCollection;
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var result = from sessions in db.Sessiontrackers
+                             where sessions.Subverse.Equals(subverseName) && sessions.SessionId.Equals(sessionId)
+                             select sessions;
 
-            if (result.Count() > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                if (result.Count() > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
 
-        // count sessions for given subverse
+        // get session count for given subverse
         public static int ActiveSessionsForSubverse(string subverseName)
         {
-            var result = from stateCollection in States
-                         where stateCollection.Subverse.Equals(subverseName)
-                         select stateCollection;
-
-            if (result != null)
+            try
             {
-                return result.Count();
+                using (whoaverseEntities db = new whoaverseEntities())
+                {
+                    var result = from sessions in db.Sessiontrackers
+                                 where sessions.Subverse.Equals(subverseName)
+                                 select sessions;
+
+                    if (result != null)
+                    {
+                        return result.Count();
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
             }
-            else
+            catch (Exception)
             {
                 return -1;
             }            
         }
-    }
-
-    public class Session
-    {
-        private string _sessionId;
-        private string _subverse;
-
-        public string SessionID { get { return _sessionId; } set { _sessionId = value; } }
-        public string Subverse { get { return _subverse; } set { _subverse = value; } }
     }
 }
