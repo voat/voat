@@ -45,6 +45,21 @@
     </div>
 
     <div class="spacer">
+        <p>7 subverses with most online users right now:</p>
+        <hr />
+        @{
+            var mostActiveSubverses = Whoaverse.Utils.SessionTracker.MostActiveSubverses();
+        }
+
+        @foreach (var subverse in mostActiveSubverses)
+        {
+            <p>
+                <a href="/v/@subverse.Name" class="subverse">/v/@subverse.Name</a>, users online: @subverse.UsersOnline.
+            </p>
+        }
+    </div>
+    <hr />
+    <div class="spacer">
         <div class="centered">
             <p>Want to support WhoaVerse project?</p>
             <p>Help us pay for server costs and get a donor badge on your WhoaVerse profile.</p><br />

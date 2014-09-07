@@ -417,7 +417,6 @@ namespace Whoaverse.Controllers
         // POST: Eddit a Subverse
         // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
-        //TODO: re-enable throttle
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseSettings(Subverse updatedModel)

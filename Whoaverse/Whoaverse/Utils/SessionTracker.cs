@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Whoaverse.Models;
+using Whoaverse.Models.ViewModels;
 
 namespace Whoaverse.Utils
 {
@@ -53,7 +54,7 @@ namespace Whoaverse.Utils
                 }
             }
             catch (Exception)
-            {                
+            {
                 //
             }
         }
@@ -126,7 +127,34 @@ namespace Whoaverse.Utils
             catch (Exception)
             {
                 return -1;
-            }            
+            }
+        }
+
+        // get top 10 subverses by number of online users
+        public static List<ActiveSubverseViewModel> MostActiveSubverses()
+        {
+            try
+            {
+                using (whoaverseEntities db = new whoaverseEntities())
+                {
+                    var groups = db.Sessiontrackers
+                                .GroupBy(n => n.Subverse)
+                                .Select(n => new ActiveSubverseViewModel()
+                                {
+                                    Name = n.Key,
+                                    UsersOnline = n.Count()
+                                }
+                                )
+                                .OrderByDescending(n => n.UsersOnline)
+                                .Take(7);
+
+                    return groups.ToList();
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

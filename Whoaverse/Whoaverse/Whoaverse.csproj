@@ -322,6 +322,7 @@
     <Compile Include="Models\AddSubmissionLinkpost.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
     <Compile Include="Models\Cla.cs" />
+    <Compile Include="Models\ViewModels\ActiveSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentViewModel.cs" />
     <Compile Include="Models\EditSubmission.cs" />
     <Compile Include="Models\EditComment.cs" />
