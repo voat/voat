@@ -780,6 +780,7 @@ input, button, select, textarea {
     height: 16px;
     margin: auto;
     width: 16px;
+    outline-style: none;
 }
 
 .arrow-upvote {
