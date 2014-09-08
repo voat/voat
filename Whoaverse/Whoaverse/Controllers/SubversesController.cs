@@ -131,9 +131,11 @@ namespace Whoaverse.Controllers
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow)
         {
-            if (db.Subverses.Find(subversetoshow) != null)
+            var subverse = db.Subverses.Find(subversetoshow);
+
+            if (subverse != null)
             {
-                ViewBag.SelectedSubverse = subversetoshow;
+                ViewBag.SelectedSubverse = subverse.name;
 
                 if (id == null)
                 {
@@ -511,7 +513,7 @@ namespace Whoaverse.Controllers
                 return View("~/Views/Errors/Subversenotfound.cshtml");
             }
 
-            ViewBag.SelectedSubverse = subversetoshow;
+            
 
             // experimental
             // register a new session for this subverse
@@ -534,6 +536,8 @@ namespace Whoaverse.Controllers
                     Subverse subverse = db.Subverses.Find(subversetoshow);
                     if (subverse != null)
                     {
+                        ViewBag.SelectedSubverse = subverse.name;
+
                         // check if subverse is rated adult, show a NSFW warning page before entering
                         if (subverse.rated_adult == true)
                         {
@@ -562,6 +566,8 @@ namespace Whoaverse.Controllers
                 }
                 else
                 {
+                    ViewBag.SelectedSubverse = "all";
+
                     //if selected subverse is ALL, show submissions from all subverses, sorted by rank
                     var submissions = db.Messages
                         .Where(x => x.Name != "deleted")

@@ -26,7 +26,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Xml.Linq;
 using Whoaverse.Models;
 using Whoaverse.Utils;
 
@@ -131,10 +130,12 @@ namespace Whoaverse.Controllers
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort)
         {
-            string queryString = Request.QueryString["subversetoshow"];
+            var subverse = db.Subverses.Find(subversetoshow);
 
-            if (db.Subverses.Find(subversetoshow) != null)
+            if (subverse != null)
             {
+                ViewBag.SelectedSubverse = subverse.name;
+                
                 if (startingcommentid != null)
                 {
                     ViewBag.StartingCommentId = startingcommentid;
@@ -143,20 +144,7 @@ namespace Whoaverse.Controllers
                 if (sort != null)
                 {
                     ViewBag.SortingMode = sort;
-                }
-
-                if (queryString != null)
-                {
-                    ViewBag.SelectedSubverse = queryString;
-                }
-                else if (subversetoshow != null)
-                {
-                    ViewBag.SelectedSubverse = subversetoshow;
-                }
-                else
-                {
-                    return View("~/Views/Errors/Error.cshtml");
-                }
+                }                
 
                 if (id == null)
                 {
@@ -860,7 +848,6 @@ namespace Whoaverse.Controllers
         }
 
         // GET: /about
-        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult About(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -880,7 +867,6 @@ namespace Whoaverse.Controllers
         }
 
         // GET: /cla
-        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Cla()
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -895,7 +881,6 @@ namespace Whoaverse.Controllers
         }
 
         // GET: /help
-        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Help(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -923,7 +908,6 @@ namespace Whoaverse.Controllers
         }
 
         // GET: /help/privacy
-        [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Privacy()
         {
             ViewBag.Message = "Privacy Policy";
@@ -998,7 +982,6 @@ namespace Whoaverse.Controllers
                 return new EmptyResult();
             }
         }
-
 
         //EXPERIMENTAL FRONTPAGE RSS
         public ActionResult Rss()
