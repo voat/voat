@@ -23,6 +23,9 @@ using Whoaverse.Models;
 using Whoaverse.Utils;
 using Recaptcha.Web;
 using Recaptcha.Web.Mvc;
+using System.Net.Security;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Whoaverse.Controllers
 {
@@ -129,26 +132,20 @@ namespace Whoaverse.Controllers
         {
             if (ModelState.IsValid)
             {
-                // begin recaptcha helper setup
-                var recaptchaHelper = this.GetRecaptchaVerificationHelper();
+                // begin recaptcha check
+                bool isCaptchaCodeValid = false;
+                string CaptchaMessage = "";
+                isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
 
-                if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                if (!isCaptchaCodeValid)
                 {
-                    ModelState.AddModelError("", "Captcha answer cannot be empty");
-                    return View(model);
+                    ModelState.AddModelError("", "Incorrect recaptcha answer.");
+                    return View();
                 }
-
-                var recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
-
-                if (recaptchaResult != RecaptchaVerificationResult.Success)
-                {
-                    ModelState.AddModelError("", "Incorrect captcha answer");
-                    return View(model);
-                }
-                // end recaptcha helper setup
+                // end recaptcha check
 
                 try
-                {
+                {                    
                     var user = new ApplicationUser() { UserName = model.UserName, RecoveryQuestion = model.RecoveryQuestion, Answer = model.Answer };
 
                     user.RegistrationDateTime = DateTime.Now;
@@ -193,23 +190,17 @@ namespace Whoaverse.Controllers
             {
                 if (string.IsNullOrEmpty(model.InputAnswer))
                 {
-                    // begin recaptcha helper setup
-                    var recaptchaHelper = this.GetRecaptchaVerificationHelper();
+                    // begin recaptcha check
+                    bool isCaptchaCodeValid = false;
+                    string CaptchaMessage = "";
+                    isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
 
-                    if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                    if (!isCaptchaCodeValid)
                     {
-                        ModelState.AddModelError("", "Captcha answer cannot be empty");
-                        return View(model);
+                        ModelState.AddModelError("", "Incorrect recaptcha answer.");
+                        return View();
                     }
-
-                    var recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
-
-                    if (recaptchaResult != RecaptchaVerificationResult.Success)
-                    {
-                        ModelState.AddModelError("", "Incorrect captcha answer");
-                        return View(model);
-                    }
-                    // end recaptcha helper setup
+                    // end recaptcha check
 
                     // Find username and pass it along
                     var user = await UserManager.FindByNameAsync(model.UserName);

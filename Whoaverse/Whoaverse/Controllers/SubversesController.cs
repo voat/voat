@@ -172,21 +172,17 @@ namespace Whoaverse.Controllers
                 // verify recaptcha if user has less than 25 CCP
                 if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
                 {
-                    RecaptchaVerificationHelper recaptchaHelper = this.GetRecaptchaVerificationHelper();
+                    // begin recaptcha check
+                    bool isCaptchaCodeValid = false;
+                    string CaptchaMessage = "";
+                    isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
 
-                    if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                    if (!isCaptchaCodeValid)
                     {
-                        ModelState.AddModelError("", "Captcha answer cannot be empty.");
+                        ModelState.AddModelError("", "Incorrect recaptcha answer.");
                         return View();
                     }
-
-                    RecaptchaVerificationResult recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
-
-                    if (recaptchaResult != RecaptchaVerificationResult.Success)
-                    {
-                        ModelState.AddModelError("", "Incorrect captcha answer.");
-                        return View();
-                    }
+                    // end recaptcha check
                 }
 
                 if (ModelState.IsValid)
@@ -258,21 +254,17 @@ namespace Whoaverse.Controllers
                 // verify recaptcha if user has less than 25 CCP
                 if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
                 {
-                    RecaptchaVerificationHelper recaptchaHelper = this.GetRecaptchaVerificationHelper();
+                    // begin recaptcha check
+                    bool isCaptchaCodeValid = false;
+                    string CaptchaMessage = "";
+                    isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
 
-                    if (String.IsNullOrEmpty(recaptchaHelper.Response))
+                    if (!isCaptchaCodeValid)
                     {
-                        ModelState.AddModelError("", "Captcha answer cannot be empty.");
+                        ModelState.AddModelError("", "Incorrect recaptcha answer.");
                         return View();
                     }
-
-                    RecaptchaVerificationResult recaptchaResult = recaptchaHelper.VerifyRecaptchaResponse();
-
-                    if (recaptchaResult != RecaptchaVerificationResult.Success)
-                    {
-                        ModelState.AddModelError("", "Incorrect captcha answer.");
-                        return View();
-                    }
+                    // end recaptcha check
                 }
 
                 try

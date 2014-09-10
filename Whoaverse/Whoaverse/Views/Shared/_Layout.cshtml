@@ -35,7 +35,7 @@
 
     ViewBag.Title = ViewBag.Title ?? "whoaverse: the frontpage of the universe";
     ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
-    ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
+    ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
     ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
 
     if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && selectedSubverse != "inbox" && selectedSubverse != "compose" && selectedSubverse != "sent")
@@ -144,7 +144,7 @@
 
     </script>
 
-    <link rel='shortcut icon' href="http://www.whoaverse.com/favicon.ico" type="image/x-icon" />
+    <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
 
 </head>
 <body>

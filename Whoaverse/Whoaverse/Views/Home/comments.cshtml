@@ -77,7 +77,7 @@
         {
             ViewBag.Title = Model.Title + " | " + selectedSubverse;
             ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-            ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
+            ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
             ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
             @Html.Partial("_MessageSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
         }
@@ -92,11 +92,11 @@
             //check if submission has a thumb, otherwise point to site logo
             if (Model.Thumbnail != null)
             {
-                ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Thumbs/" + @Model.Thumbnail;
+                ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Thumbs/" + @Model.Thumbnail;
             }
             else
             {
-                ViewBag.Image = ViewBag.Image ?? "http://whoaverse.com/Graphics/whoaverse_padded.png";
+                ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
             }
 
             @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })

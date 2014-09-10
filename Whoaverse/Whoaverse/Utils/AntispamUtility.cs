@@ -1,13 +1,28 @@
 ﻿/*
- * This source file is subject to The Code Project Open License (CPOL) 1.02
- * Original code can be found at: http://rionscode.wordpress.com/2013/02/24/prevent-repeated-requests-using-actionfilters-in-asp-net-mvc/
- * Copyright Rion Williams 2013
- */
+This source file is subject to version 3 of the GPL license, 
+that is bundled with this package in the file LICENSE, and is 
+available online at http://www.gnu.org/licenses/gpl.txt; 
+you may not use this file except in compliance with the License. 
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+the specific language governing rights and limitations under the License.
+
+All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All Rights Reserved.
+
+This source file is subject to The Code Project Open License (CPOL) 1.02
+Original code can be found at: http://rionscode.wordpress.com/2013/02/24/prevent-repeated-requests-using-actionfilters-in-asp-net-mvc/
+Copyright Rion Williams 2013
+*/
 
 using System;
+using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 using Whoaverse.Models;
@@ -116,6 +131,73 @@ namespace Whoaverse.Utils
             }
 
             base.OnActionExecuting(filterContext);
+        }
+
+
+    }
+
+    public static class ReCaptchaUtility
+    {
+        // special thanks to Sourav Mondal - http://dotnetawesome.blogspot.ch - for his writeup on Google reCaptcha implementation in ASP.NET MVC
+        public static bool GetCaptchaResponse(string message, HttpRequestBase currentRequest)
+        {
+            // get private key from Web.config
+            string privateKey = ConfigurationManager.AppSettings["recaptchaPrivateKey"].ToString();
+
+            bool flag = false;
+            message = "";
+
+            string[] result;
+            HttpWebRequest request;
+
+            // check if connection is secure and use appropriate protocol for verification
+            if (currentRequest.IsSecureConnection)
+            {
+                request = (HttpWebRequest)WebRequest.Create("https://www.google.com/recaptcha/api/verify");
+            }
+            else
+            {
+                request = (HttpWebRequest)WebRequest.Create("http://www.google.com/recaptcha/api/verify");
+            }
+
+            request.ProtocolVersion = HttpVersion.Version10;
+            request.Timeout = 0x7530;
+            request.Method = "POST";
+            request.UserAgent = "reCAPTCHA/ASP.NET";
+            request.ContentType = "application/x-www-form-urlencoded";
+            string formData = string.Format(
+                "privatekey={0}&remoteip={1}&challenge={2}&response={3}",
+                new object[]{
+            HttpUtility.UrlEncode(privateKey),
+            HttpUtility.UrlEncode(Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString()),
+            HttpUtility.UrlEncode(currentRequest.Form["recaptcha_challenge_field"]),
+            HttpUtility.UrlEncode(currentRequest.Form["recaptcha_response_field"])
+        });
+            byte[] formbytes = Encoding.ASCII.GetBytes(formData);
+
+            using (System.IO.Stream requestStream = request.GetRequestStream())
+            {
+                requestStream.Write(formbytes, 0, formbytes.Length);
+            }
+
+            try
+            {
+                using (WebResponse httpResponse = request.GetResponse())
+                {
+                    using (System.IO.TextReader readStream = new System.IO.StreamReader(httpResponse.GetResponseStream(), Encoding.UTF8))
+                    {
+                        result = readStream.ReadToEnd().Split(new string[] { "\n", @"\n" }, StringSplitOptions.RemoveEmptyEntries);
+                        message = result[1];
+                        flag = Convert.ToBoolean(result[0]);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return false;
+            }
+            return flag;
         }
     }
 }
