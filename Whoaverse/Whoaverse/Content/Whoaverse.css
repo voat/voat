@@ -309,7 +309,7 @@ input, button, select, textarea {
 }
 
 .tagline {
-    color: #868686;
+    color: #909090;
     font-size: 12px;
     line-height: 18px;
 }
@@ -328,7 +328,7 @@ input, button, select, textarea {
         }
 
     .tagline .submitter {
-        color: #3A97D0;
+        color: #308BC4;
     }
 
     .tagline .moderator {
@@ -780,7 +780,6 @@ input, button, select, textarea {
     height: 16px;
     margin: auto;
     width: 16px;
-    outline-style: none;
 }
 
 .arrow-upvote {
@@ -1791,16 +1790,18 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 .tagline .post_upvotes {
     color: #FE5E5E;
-    visibility: visible;
     font-size: 95%;
     font-weight: bold;
+    padding: 0 2px 0 1px;
+    visibility: visible;
 }
 
 .tagline .post_downvotes {
     color: #5DBEFF;
-    visibility: visible;
     font-size: 95%;
     font-weight: bold;
+    padding: 0 1px 0 2px;
+    visibility: visible;
 }
 
 
@@ -1883,6 +1884,10 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         padding: 5px;
     }
 
+    .comment .flat-list {
+        font-size: 10px;
+    }
+
 
 /* ! Sitetable : Comments : Tag line
     -------------------------------------------------------------------------------- */
@@ -1926,7 +1931,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     }
 
 .comment a.submitter {
-    color: #3A97D0;
+    color: #308BC4;
 }
 
 .comment a.moderator {
