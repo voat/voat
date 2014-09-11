@@ -696,7 +696,7 @@ function applyflair(messageId, flairId, flairLabel, flairCssClass) {
             $('#linkFlairSelectModal').modal('hide');
 
             //set linkflair
-            $('#linkflair').attr('class', flairCssClass);
+            $('#linkflair').attr('class', "flair " + flairCssClass);
             $('#linkflair').attr('title', flairLabel);
             $('#linkflair').html(flairLabel);
         },

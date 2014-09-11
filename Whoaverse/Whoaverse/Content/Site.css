@@ -1,5 +1,4 @@
-﻿/* Move down content because we have a fixed navbar that is 50px tall */
-body {
+﻿.body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -11,17 +10,6 @@ body {
     padding-right: 15px;
 }
 
-/* Responsive: Portrait tablets and up */
-/*@media screen and (min-width: 768px) {
-    .jumbotron {
-        margin-top: 20px;
-    }
-
-    .body-content {
-        padding: 0;
-    }*/
-
-
 /*    
     "Portions of this file are subject to the Common Public Attribution License
     Version 1.0. (the "License"); you may not use this file except in compliance
@@ -32,7 +20,6 @@ body {
 .no-select {
     -webkit-user-select: none;
     -moz-user-select: none;
-    -o-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
@@ -222,10 +209,9 @@ label.disabled {
     border-radius: 7px;
     -webkit-background-clip: padding-box;
     -moz-background-clip: padding-box;
+    background-clip: padding-box;
     color: #2E6399;
     text-shadow: 0px 1px 0px rgba(255,255,255,0.7);
-    -webkit-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8);
-    -moz-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8);
     box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8);
     text-decoration: none;
     font-weight: bold;
@@ -241,8 +227,6 @@ label.disabled {
         background: -webkit-gradient(linear,0% 0%,0% 100%,to(#d4e3f2),from(#adc9e6));
         background: -moz-linear-gradient(top,#adc9e6,#d4e3f2);
         background-color: #D4E3F2;
-        -webkit-box-shadow: inset 0px -1px 0px rgba(255,255,255,0.7);
-        -moz-box-shadow: inset 0px -1px 0px rgba(255,255,255,0.7);
         box-shadow: inset 0px -1px 0px rgba(255,255,255,0.7);
     }
 
@@ -433,7 +417,7 @@ ul.flat-vert {
 .dropdown.lightdrop .selected {
     position: relative;
     background: none no-repeat scroll center right;
-    /*background-image: url('../Graphics/drop-arrow.png');*/    
+    /*background-image: url('../Graphics/drop-arrow.png');*/
     padding-right: 21px;
     text-decoration: none;
     color: gray;
@@ -589,6 +573,8 @@ ul.flat-vert {
         width: 100%;
         height: 100%;
         overflow: hidden;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
         text-overflow: ellipsis;
         color: #369;
     }
@@ -880,6 +866,8 @@ body > .content .link.compressed .midcol {
         display: inline-block;
         overflow: hidden;
         white-space: nowrap;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
         text-overflow: ellipsis;
         vertical-align: middle;
         max-width: 19em;
@@ -957,7 +945,7 @@ body > .content .link.compressed .midcol {
         vertical-align: middle;
     }
 
-    
+
 
 a.author {
     margin-right: 0.5em;
@@ -989,6 +977,8 @@ a.author {
     font-size: x-small;
     max-width: 10em;
     overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -1083,11 +1073,7 @@ a.author {
     font-size: x-small;
     position: absolute;
     width: 400px;
-}
-
-    .flairselector img {
-        margin: none;
-    }
+}    
 
     .flairselector h2 {
         background: #cee3f8;
@@ -1601,7 +1587,6 @@ body.with-listing-chooser.explore-page #header .pagename {
     padding: 8px 0;
     -webkit-user-select: none;
     -moz-user-select: none;
-    -o-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
@@ -1674,8 +1659,6 @@ body.with-listing-chooser.explore-page #header .pagename {
 .infotext {
     border: 1px solid #369;
     background-color: #EFF7FF;
-    -webkit-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8),0px 1px 0px rgba(255,255,255,0.6);
-    -moz-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8),0px 1px 0px rgba(255,255,255,0.6);
     box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8),0px 1px 0px rgba(255,255,255,0.6);
 }
 
@@ -2248,7 +2231,7 @@ a.star {
 }
 
 .link .score.likes {
-    color: rgba(42, 159, 191, 1);      
+    color: rgba(42, 159, 191, 1);
 }
 
 .link .score.dislikes {
@@ -3622,7 +3605,7 @@ body.rulespage-body {
         }
 
         .error-log a:focus {
-            -moz-outline-style: none;
+            outline-style: none;
         }
 
         .error-log .edit-area {
@@ -3972,7 +3955,6 @@ button.button[disabled] {
         }
 
     .button .blog1 .score {
-        float: center;
         margin-top: 2px;
         margin-right: 5px;
     }
@@ -4115,7 +4097,7 @@ button.button[disabled] {
 }
 
 .blog5 .arrow.upmod b {
-    color: rgba(42, 159, 191, 1);  
+    color: rgba(42, 159, 191, 1);
 }
 
 .blog5 .arrow.downmod b {
@@ -4160,7 +4142,7 @@ button.button[disabled] {
     }
 
     .instructions a:focus {
-        -moz-outline-style: none;
+        outline-style: none;
     }
 
     .instructions strong {
@@ -4373,7 +4355,6 @@ body.contact-us-page {
         padding: 1px 4px 0px;
         overflow: hidden;
         outline: none;
-        -moz-outline: none;
     }
 
     .toolbar .likes .score.likes {
@@ -4578,8 +4559,6 @@ form input[type=checkbox], form input[type=radio] {
         border: 1px solid gray;
         width: 300px;
         padding: 2px;
-        -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3),0px 1px 0px rgba(255,255,255,0.6);
-        -moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3),0px 1px 0px rgba(255,255,255,0.6);
         box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3),0px 1px 0px rgba(255,255,255,0.6);
     }
 
@@ -4866,7 +4845,6 @@ ul#image-preview-list {
 
         ul#image-preview-list .preview img {
             max-width: 100px;
-            padding: auto;
         }
 
     ul#image-preview-list .description {
@@ -5147,7 +5125,6 @@ ul#image-preview-list {
 #sr-list-cover {
     position: absolute;
     background: #808080 none no-repeat scroll center center;
-    background-color: url(../throbber.gif);
     height: 100%;
     width: 100%;
     opacity: .7;
@@ -5516,8 +5493,6 @@ ul.tabmenu.formtab {
     background-color: #EFF7FF;
     width: 570px;
     padding: 5px;
-    -webkit-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8),0px 1px 0px rgba(255,255,255,0.6);
-    -moz-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8),0px 1px 0px rgba(255,255,255,0.6);
     box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8),0px 1px 0px rgba(255,255,255,0.6);
 }
 
@@ -6076,8 +6051,6 @@ table.lined-table {
     z-index: 1000;
     display: none;
     border-radius: 6px;
-    -webkit-box-shadow: 0px 4px 6px 3px rgba(0,0,0,0.2),inset 0px 1px 0px 0px rgba(255,255,255,0.9);
-    -moz-box-shadow: 0px 4px 6px 3px rgba(0,0,0,0.2),inset 0px 1px 0px 0px rgba(255,255,255,0.9);
     box-shadow: 0px 4px 6px 3px rgba(0,0,0,0.2),inset 0px 1px 0px 0px rgba(255,255,255,0.9);
     text-shadow: 0px 1px 0px rgba(255,255,255,0.8);
 }
@@ -6128,8 +6101,6 @@ table.lined-table {
     font-weight: bold;
     font-size: 1.3em;
     text-shadow: 0px 1px 0px rgba(255,255,255,0.7);
-    -webkit-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8);
-    -moz-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8);
     box-shadow: inset 0px 1px 0px rgba(255,255,255,0.8);
 }
 
@@ -6163,10 +6134,6 @@ table.lined-table {
     padding: 0px 5px;
 }
 
-.ui-datepicker-year {
-    margin-left: none !important;
-}
-
 .ui-datepicker-inline .ui-datepicker-title {
     text-align: center;
     padding: 5px;
@@ -6182,8 +6149,6 @@ table.lined-table {
 .ui-datepicker-inline .ui-datepicker-calendar th, .ui-datepicker-inline .ui-datepicker-calendar td {
     padding: 0px;
     border: 1px solid #5E96CF;
-    -webkit-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.7);
-    -moz-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.7);
     box-shadow: inset 0px 1px 0px rgba(255,255,255,0.7);
 }
 
@@ -6204,8 +6169,6 @@ table.lined-table {
     background-color: #C8DBEF;
     font-size: 1.5em;
     font-weight: bold;
-    -webkit-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.7);
-    -moz-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.7);
     box-shadow: inset 0px 1px 0px rgba(255,255,255,0.7);
 }
 
@@ -6219,8 +6182,6 @@ table.lined-table {
     background: -webkit-gradient(linear,0% 0%,0% 100%,from(#76a6d6),to(#3573b1));
     background: -moz-linear-gradient(top,#76a6d6,#3573b1);
     background-color: #4F8AC9;
-    -webkit-box-shadow: inset 0px 2px 3px rgba(0,0,0,0.6);
-    -moz-box-shadow: inset 0px 2px 3px rgba(0,0,0,0.6);
     box-shadow: inset 0px 2px 3px rgba(0,0,0,0.6);
     text-shadow: 0px -1px 0px rgba(0,0,0,0.8);
 }
@@ -6606,6 +6567,8 @@ dd {
     display: inline-block;
     width: 93px;
     margin-right: 3px;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
     overflow: hidden;
 }
@@ -6822,6 +6785,9 @@ dd {
 .side .recommend-box {
     margin: 15px 5px 30px 0px;
     opacity: 0;
+    -moz-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
     transition: all 0.1s ease-in-out;
 }
 
@@ -6854,6 +6820,8 @@ dd {
             overflow: hidden;
             line-height: 1.8em;
             padding-left: 2px;
+            -ms-text-overflow: ellipsis;
+            -o-text-overflow: ellipsis;
             text-overflow: ellipsis;
             vertical-align: middle;
             width: 111px;
@@ -7373,6 +7341,7 @@ body:not(.gold) .allminus-link {
     #per-sr-karma tbody th {
         white-space: nowrap;
         overflow: hidden;
+        -ms-text-overflow: ellipsis;
         text-overflow: ellipsis;
         -o-text-overflow: ellipsis;
     }
@@ -7689,8 +7658,6 @@ body:not(.gold) .allminus-link {
 .styled-input {
     border: 1px solid gray;
     padding: 2px;
-    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3),0px 1px 0px rgba(255,255,255,0.6);
-    -moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3),0px 1px 0px rgba(255,255,255,0.6);
     box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3),0px 1px 0px rgba(255,255,255,0.6);
 }
 
@@ -8242,7 +8209,6 @@ body:not(.gold) .allminus-link {
 .api-help .overview h2, .api-help .methods h2 {
     color: black;
     font-size: 1.45em;
-    text-align: middle;
     margin-top: 1.5em;
     margin-bottom: 1em;
     border-bottom: 1px solid #aaa;
@@ -9258,6 +9224,8 @@ body.with-listing-chooser {
         display: block;
         position: relative;
         overflow: hidden;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
         text-overflow: ellipsis;
         margin-right: 5px;
     }
@@ -9380,7 +9348,6 @@ body.with-listing-chooser {
 
 .user-jumped-to {
     border-radius: 5px;
-    -moz-border-radius: 5px;
     border: 1px solid #DDF;
     display: inline-block;
     margin-top: 10px;
@@ -9419,6 +9386,7 @@ body.with-listing-chooser {
     }
 
         .submit_text .content p {
+            -ms-word-wrap: break-word;
             word-wrap: break-word;
             clear: both;
         }
@@ -9449,7 +9417,6 @@ body.with-listing-chooser {
     background-color: #DDF;
     padding: 2px 5px;
     border-radius: 5px;
-    -moz-border-radius: 5px;
 }
 
     .save-category.hidden {
