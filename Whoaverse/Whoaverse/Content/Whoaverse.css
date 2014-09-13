@@ -1752,18 +1752,18 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 .tagline .post_upvotes {
     color: #FE5E5E;
-    padding: 0 2px 0 1px;
-    padding: 0 1px 0 2px;
-    visibility: visible;
     font-size: 95%;
     font-weight: bold;
+    padding: 0 1px 0 2px;
+    visibility: visible;
 }
 
 .tagline .post_downvotes {
     color: #5DBEFF;
-    visibility: visible;
     font-size: 95%;
     font-weight: bold;
+    padding: 0 2px 0 1px;
+    visibility: visible;
 }
 
 
