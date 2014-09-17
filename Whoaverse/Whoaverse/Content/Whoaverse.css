@@ -2230,6 +2230,7 @@ textarea.form-control {
     margin-left: 0;
 }
 
+
 /* ! Responsivity
 ================================================================================ */
 
@@ -2288,7 +2289,7 @@ textarea.form-control {
     }
 }
 
-@media ( max-width: 725px ) {
+@media ( max-width: 750px ) {
     .pagename {
         display: none;
     }
@@ -2298,14 +2299,14 @@ textarea.form-control {
     }
 }
 
-@media ( max-width: 640px ) {
+@media ( max-width: 725px ) {
     #about-main .container {
         margin-left: 20px;
         margin-right: 20px;
     }
 }
 
-@media ( max-width: 600px ) {
+@media ( max-width: 700px ) {
     #header-img {
         display: none;
     }
@@ -2364,7 +2365,7 @@ textarea.form-control {
     }
 }
 
-@media ( max-width: 500px ) {
+@media ( max-width: 550px ) {
     .tabmenu li {
         margin: 0 1px 0 0;
     }
