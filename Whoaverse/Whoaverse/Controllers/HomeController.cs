@@ -135,7 +135,7 @@ namespace Whoaverse.Controllers
             if (subverse != null)
             {
                 ViewBag.SelectedSubverse = subverse.name;
-                
+
                 if (startingcommentid != null)
                 {
                     ViewBag.StartingCommentId = startingcommentid;
@@ -144,7 +144,7 @@ namespace Whoaverse.Controllers
                 if (sort != null)
                 {
                     ViewBag.SortingMode = sort;
-                }                
+                }
 
                 if (id == null)
                 {
@@ -549,7 +549,7 @@ namespace Whoaverse.Controllers
                 }
                 // end recaptcha check
             }
-            
+
             if (ModelState.IsValid)
             {
                 // check if subverse exists
@@ -979,15 +979,34 @@ namespace Whoaverse.Controllers
             }
         }
 
-        //EXPERIMENTAL FRONTPAGE RSS
-        public ActionResult Rss()
+        // GET: rss/{subverseName}
+        public ActionResult Rss(string subverseName)
         {
-            var submissions = (from message in db.Messages
+            List<Message> submissions = new List<Message>();
+
+            if (subverseName != null)
+            {
+                // return only frontpage submissions from a given subverse
+                Subverse subverse = db.Subverses.Find(subverseName);
+                if (subverse != null)
+                {
+                    submissions = (from message in db.Messages
+                                   where message.Name != "deleted" && message.Subverse == subverse.name
+                                   select message)
+                                       .Distinct()
+                                       .OrderByDescending(s => s.Rank).Take(25).ToList();
+                }
+            }
+            else
+            {
+                // return site-wide frontpage submissions
+                submissions = (from message in db.Messages
                                join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                where message.Name != "deleted"
                                select message)
-                                       .Distinct()
-                                       .OrderByDescending(s => s.Rank).Take(25).ToList();
+                                          .Distinct()
+                                          .OrderByDescending(s => s.Rank).Take(25).ToList();
+            }
 
             SyndicationFeed feed = new SyndicationFeed("WhoaVerse", "The frontpage of the Universe", new Uri("http://www.whoaverse.com"));
             feed.Language = "en-US";

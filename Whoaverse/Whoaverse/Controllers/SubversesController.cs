@@ -503,9 +503,7 @@ namespace Whoaverse.Controllers
             if (subversetoshow == null)
             {
                 return View("~/Views/Errors/Subversenotfound.cshtml");
-            }
-
-            
+            }            
 
             // experimental
             // register a new session for this subverse

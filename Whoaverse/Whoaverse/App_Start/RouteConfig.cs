@@ -30,9 +30,9 @@ namespace Whoaverse
 
             // /rss
             routes.MapRoute(
-                name: "frontpagerss",
-                url: "rss",
-                defaults: new { controller = "Home", action = "Rss" }
+                name: "rss",
+                url: "rss/{subverseName}",
+                defaults: new { controller = "Home", action = "Rss", subverseName = UrlParameter.Optional }                
             ); 
 
             // /subverses/create
