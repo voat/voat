@@ -428,6 +428,23 @@ namespace Whoaverse.Utils
             }
         }
 
+        // check if a given user wants to see NSFW (adult) content
+        public static bool AdultContentEnabled(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var result = db.Userpreferences.Find(userName);
+                if (result != null)
+                {
+                    return result.Enable_adult_content;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         // check if a given user wants to open links in new window
         public static bool LinksInNewWindow(string userName)
         {

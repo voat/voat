@@ -70,6 +70,13 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "AdultContentWarning" }
             );
 
+            // /subverses/adultcontent
+            routes.MapRoute(
+                name: "AdultContentFiltered",
+                url: "subverses/adultcontentfiltered",
+                defaults: new { controller = "Subverses", action = "AdultContentFiltered" }
+            );
+
             // /subverses/new
             routes.MapRoute(
                 name: "SubversesNew",

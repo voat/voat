@@ -572,6 +572,7 @@ namespace Whoaverse.Controllers
                         UserPreferencesViewModel tmpModel = new UserPreferencesViewModel();
                         tmpModel.Disable_custom_css = userPreferences.Disable_custom_css;
                         tmpModel.OpenLinksInNewTab = userPreferences.Clicking_mode;
+                        tmpModel.Enable_adult_content = userPreferences.Enable_adult_content;
 
                         return PartialView("_UserPreferences", tmpModel);
                     }
@@ -593,7 +594,7 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, OpenLinksInNewTab")] UserPreferencesViewModel model)
+        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, OpenLinksInNewTab, Enable_adult_content")] UserPreferencesViewModel model)
         {
             // save changes
             using (whoaverseEntities db = new whoaverseEntities())
@@ -605,6 +606,7 @@ namespace Whoaverse.Controllers
                     // modify existing preferences
                     userPreferences.Disable_custom_css = (bool)model.Disable_custom_css;
                     userPreferences.Clicking_mode = (bool)model.OpenLinksInNewTab;
+                    userPreferences.Enable_adult_content = (bool)model.Enable_adult_content;
                     await db.SaveChangesAsync();
                 }
                 else
@@ -613,6 +615,7 @@ namespace Whoaverse.Controllers
                     Userpreference tmpModel = new Userpreference();
                     tmpModel.Disable_custom_css = (bool)model.Disable_custom_css;
                     tmpModel.Clicking_mode = (bool)model.OpenLinksInNewTab;
+                    tmpModel.Enable_adult_content = (bool)model.Enable_adult_content;
                     tmpModel.Username = User.Identity.Name;
                     db.Userpreferences.Add(tmpModel);
                     await db.SaveChangesAsync();

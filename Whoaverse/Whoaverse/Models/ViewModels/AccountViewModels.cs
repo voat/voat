@@ -76,6 +76,9 @@ namespace Whoaverse.Models
 
         [Display(Name = "Open links in new tab")]
         public bool OpenLinksInNewTab { get; set; }
+
+        [Display(Name = "Display NSFW content")]
+        public bool Enable_adult_content { get; set; }
     }
 
     public class LoginViewModel

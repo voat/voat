@@ -612,6 +612,7 @@
     <Content Include="Views\AjaxViews\_LinkFlairSelectDialog.cshtml" />
     <Content Include="Views\Subverses\_SubverseModerators.cshtml" />
     <Content Include="Views\Subverses\Admin\ResignAsModerator.cshtml" />
+    <Content Include="Views\Subverses\AdultContentFiltered.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />
