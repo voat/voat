@@ -890,7 +890,7 @@ pre, code {
     box-shadow: none;
 }
 
-    .panel-heading, .panel-default > .panel-heading {
+    .panel-heading, .panel-info > .panel-heading, .panel-default > .panel-heading {
         background: #EEE;
         background: -webkit-linear-gradient( top,#EEE,#E8E8E8 );
         background: -moz-linear-gradient( top,#EEE,#E8E8E8 );
@@ -2062,7 +2062,7 @@ textarea.form-control {
 }
 
 /* ! Register
-================================================================================ */
+-------------------------------------------------------------------------------- */
 
 .modal-dialog {
     width: 400px;
@@ -2185,6 +2185,13 @@ textarea.form-control {
             padding: 15px;
             text-align: center;
         }
+
+/* ! 404 Error
+-------------------------------------------------------------------------------- */
+        
+.content.error-page {
+    margin: 0 10px;
+}
 
 /* ! Responsivity
 ================================================================================ */
