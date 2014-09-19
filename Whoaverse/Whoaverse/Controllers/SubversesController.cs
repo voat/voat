@@ -798,33 +798,40 @@ namespace Whoaverse.Controllers
                                             .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
                                             .OrderByDescending(s => s.Date).Take(1000).ToList();
 
-                        if (User.Identity.IsAuthenticated)
+                        if (subverse.rated_adult == true)
                         {
-                            // check if user wants to see NSFW content by reading user preference
-                            if (Whoaverse.Utils.User.AdultContentEnabled(User.Identity.Name))
+                            if (User.Identity.IsAuthenticated)
                             {
-                                return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                                // check if user wants to see NSFW content by reading user preference
+                                if (Whoaverse.Utils.User.AdultContentEnabled(User.Identity.Name))
+                                {
+                                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                                }
+                                else
+                                {
+                                    return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
+                                }
                             }
                             else
                             {
-                                return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
+                                // check if user wants to see NSFW content by reading NSFW cookie
+                                if (!this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                                {
+                                    var sfwsubmissions = db.Messages
+                                                .Where(x => x.Subverse == subversetoshow && x.Name != "deleted" && x.Subverses.rated_adult == false)
+                                                .OrderByDescending(s => s.Date).Take(1000).ToList();
+                                    return View("Index", sfwsubmissions.ToPagedList(pageNumber, pageSize));
+                                }
+                                else
+                                {
+                                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                                }
                             }
                         }
                         else
                         {
-                            // check if user wants to see NSFW content by reading NSFW cookie
-                            if (!this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-                            {
-                                var sfwsubmissions = db.Messages
-                                            .Where(x => x.Subverse == subversetoshow && x.Name != "deleted" && x.Subverses.rated_adult == false)
-                                            .OrderByDescending(s => s.Date).Take(1000).ToList();
-                                return View("Index", sfwsubmissions.ToPagedList(pageNumber, pageSize));
-                            }
-                            else
-                            {
-                                return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-                            }
-                        }                        
+                            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                        }
                     }
                     else
                     {
