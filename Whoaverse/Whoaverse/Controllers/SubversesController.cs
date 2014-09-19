@@ -817,10 +817,7 @@ namespace Whoaverse.Controllers
                                 // check if user wants to see NSFW content by reading NSFW cookie
                                 if (!this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                                 {
-                                    var sfwsubmissions = db.Messages
-                                                .Where(x => x.Subverse == subversetoshow && x.Name != "deleted" && x.Subverses.rated_adult == false)
-                                                .OrderByDescending(s => s.Date).Take(1000).ToList();
-                                    return View("Index", sfwsubmissions.ToPagedList(pageNumber, pageSize));
+                                    return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
                                 }
                                 else
                                 {
@@ -855,9 +852,8 @@ namespace Whoaverse.Controllers
                         else
                         {
                             var sfwsubmissions = db.Messages
-                            .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
-                            .OrderByDescending(s => s.Date).Take(1000).ToList();
-
+                                        .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
+                                        .OrderByDescending(s => s.Date).Take(1000).ToList();
                             return View("Index", sfwsubmissions.ToPagedList(pageNumber, pageSize));
                         }
                     }
@@ -869,7 +865,6 @@ namespace Whoaverse.Controllers
                             var sfwsubmissions = db.Messages
                             .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
                             .OrderByDescending(s => s.Date).Take(1000).ToList();
-
                             return View("Index", sfwsubmissions.ToPagedList(pageNumber, pageSize));
                         }
                         else
