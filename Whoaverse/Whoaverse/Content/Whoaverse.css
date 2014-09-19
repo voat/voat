@@ -5,9 +5,6 @@
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
-/* ! Body
-================================================================================ */
-
 body {
     background: #FFF;
     color: #404040;
@@ -23,6 +20,10 @@ a, a:visited {
 
     a:hover {
         color: #66C2FB;
+        text-decoration: none;
+    }
+
+    a:focus {
         text-decoration: none;
     }
 
@@ -565,6 +566,10 @@ a.btn-whoaverse {
         top: 1px;
     }
 
+    .btn-whoaverse-paging:focus {
+        color: #FFF;
+    }
+
     .btn-whoaverse-paging.disabled, .btn-whoaverse-paging[disabled], fieldset[disabled] .btn {
         cursor: not-allowed;
         pointer-events: none;
@@ -819,6 +824,10 @@ a.btn-whoaverse {
     overflow: auto;
 }
 
+    .md a:hover {
+        text-decoration: underline;
+    }
+
     .md blockquote {
         background: #F5F5F5;
         border-color: #E8E8E8 #E8E8E8 #E8E8E8 #DBDBDB;
@@ -866,6 +875,15 @@ a.btn-whoaverse {
         margin: 7px 0;
     }
 
+    .md table {
+        background-color: #FFF;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
+    }
+
+        .md table thead {
+            border-bottom: 2px solid #DDD;
+        }
+
 p.heading-2 {
     font-size: 125%;
     font-weight: bold;
@@ -881,10 +899,6 @@ p.heading-3 {
 .md td, .md th {
     border: 1px solid #DDD;
     padding: 2px 5px;
-}
-
-.md table > tbody > tr:nth-child(1) {
-    background: #EEE;
 }
 
 pre {
@@ -1894,6 +1908,10 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     color: #E12D39;
 }
 
+.comment .flat-list.buttons li a:hover {
+    text-decoration: underline;
+}
+
 
 
 /* ! Sitetable : Comments : Markdown
@@ -1949,10 +1967,23 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     padding: 15px;
 }
 
+.footer a:hover {
+    text-decoration: underline;
+}
+
 .bottommenu {
     color: #6D6D6D;
     font-size: 11px;
 }
+
+.bottommenu a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+    .bottommenu a:hover {
+        text-decoration: underline;
+    }
 
 
 
