@@ -29,7 +29,7 @@
 
             @if (Model.Count > 0)
             {
-                <p>You sent a total of @Model.Count message(s).</p>
+                <p>Currently displaying latest @Model.Count message(s) that you sent. Your Outbox contains a total of @ViewBag.OutboxCount message(s).</p>
                 <p>Here they are, sorted by the order in which you sent them.</p>
                 <hr />
 
@@ -51,7 +51,7 @@
 
                         <ul class="flat-list buttons">
                             <li>
-                                <a class="btn-whoaverse-paging" href="javascript:void(0)" onclick="return deletePrivateMessageFromSent(this, @message.Id)">Delete</a>
+                                <a class="btn-whoaverse-paging" href="javascript:void(0)" onclick="return deletePrivateMessageFromSent(this, @message.Id)">Delete and revoke</a>
                             </li>
                         </ul>
                         <br /><br />

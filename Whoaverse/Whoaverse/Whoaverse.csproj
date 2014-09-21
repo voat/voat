@@ -256,6 +256,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AddPrivateMessage.cs" />
     <Compile Include="Models\ApiModels\ApiUserBadge.cs" />
     <Compile Include="Models\ApiModels\ApiComment.cs" />
     <Compile Include="Models\ApiModels\ApiMessage.cs" />
@@ -613,6 +614,7 @@
     <Content Include="Views\Subverses\_SubverseModerators.cshtml" />
     <Content Include="Views\Subverses\Admin\ResignAsModerator.cshtml" />
     <Content Include="Views\Subverses\AdultContentFiltered.cshtml" />
+    <Content Include="Views\AjaxViews\_PrivateMessageReplyForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\HtmlElements\" />

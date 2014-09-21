@@ -126,6 +126,13 @@ namespace Whoaverse
                 defaults: new { controller = "Messaging", action = "Compose" }
             );
 
+            // send private message
+            routes.MapRoute(
+                name: "SendPrivateMessage",
+                url: "messaging/sendprivatemessage",
+                defaults: new { controller = "Messaging", action = "SendPrivateMessage" }
+            );
+
             // compose
             routes.MapRoute(
                 name: "Sent",
@@ -369,6 +376,13 @@ namespace Whoaverse
                 name: "CommentReplyForm",
                 url: "ajaxhelpers/commentreplyform/{parentCommentId}/{messageId}",
                 defaults: new { controller = "HtmlElements", action = "CommentReplyForm" }
+            );
+
+            // ajaxhelpers/privatemessagereplyform
+            routes.MapRoute(
+                name: "PrivateMessageReplyForm",
+                url: "ajaxhelpers/privatemessagereplyform/{parentPrivateMessageId}",
+                defaults: new { controller = "HtmlElements", action = "PrivateMessageReplyForm" }
             ); 
 
             // ajaxhelpers/messagecontent

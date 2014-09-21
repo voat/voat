@@ -69,6 +69,7 @@ namespace Whoaverse.Controllers
                     }
                 }
 
+                ViewBag.InboxCount = privateMessages.Count();
                 return View(privateMessages.ToPagedList(pageNumber, pageSize));
             }
             catch (Exception)
@@ -171,7 +172,7 @@ namespace Whoaverse.Controllers
             {
                 return RedirectToAction("HeavyLoad", "Home");
             }
-        }        
+        }
 
         // GET: InboxUserMentions
         [Authorize]
@@ -196,24 +197,20 @@ namespace Whoaverse.Controllers
             // get logged in username and fetch sent messages
             try
             {
-                if (User.Identity.IsAuthenticated)
-                {
-                    var privateMessages = db.Privatemessages
-                        .Where(s => s.Sender.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
-                        .OrderByDescending(s => s.Timestamp)
-                        .ThenBy(s => s.Recipient)
-                        .ToList().AsEnumerable();
+                var privateMessages = db.Privatemessages
+                    .Where(s => s.Sender.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(s => s.Timestamp)
+                    .ThenBy(s => s.Recipient)
+                    .ToList().AsEnumerable();
 
-                    return View(privateMessages.ToPagedList(pageNumber, pageSize));
-                }
+                ViewBag.OutboxCount = privateMessages.Count();
+                return View(privateMessages.ToPagedList(pageNumber, pageSize));
+
             }
             catch (Exception)
             {
                 return RedirectToAction("HeavyLoad", "Home");
             }
-
-            // return sent messages view
-            return View();
         }
 
         // GET: Compose
@@ -271,6 +268,50 @@ namespace Whoaverse.Controllers
             else
             {
                 return View();
+            }
+        }
+
+        // POST: Send new private message or reply
+        [Authorize]
+        [HttpPost]
+        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> SendPrivateMessage([Bind(Include = "Id,Recipient,Subject,Body")] Privatemessage privateMessage)
+        {
+            if (ModelState.IsValid)
+            {
+                if (privateMessage.Recipient != null && privateMessage.Subject != null && privateMessage.Body != null)
+                {
+                    // check if recipient exists
+                    if (Whoaverse.Utils.User.UserExists(privateMessage.Recipient))
+                    {
+                        // send the message
+                        privateMessage.Timestamp = System.DateTime.Now;
+                        privateMessage.Sender = User.Identity.Name;
+                        privateMessage.Status = true;
+                        db.Privatemessages.Add(privateMessage);
+
+                        try
+                        {
+                            await db.SaveChangesAsync();
+                        }
+                        catch (Exception)
+                        {
+                            return RedirectToAction("HeavyLoad", "Home");
+                        }
+                    }
+                    else
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                    }
+                }
+
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
         }
 

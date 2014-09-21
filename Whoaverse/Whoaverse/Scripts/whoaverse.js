@@ -165,7 +165,7 @@ function voteUpComment(commentid) {
         $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false) //remove upvote arrow
         // increment comment points counter and update DOM element
         scoreLikes++;
-        $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);        
+        $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);
         $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
         $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".likes")) {
@@ -320,6 +320,33 @@ function reply(parentcommentid, messageid) {
     $.validator.unobtrusive.parse(form);
 }
 
+// append a private message reply form to calling area
+function replyprivatemessage(parentprivatemessageid, recipient, subject) {
+    //exit function if the form is already being shown
+    if ($("#privatemessagereplyform-" + parentprivatemessageid).exists()) {
+        return;
+    }
+
+    var token = $("input[name='__RequestVerificationToken']").val();
+
+    var replyform = $.get(
+        "/ajaxhelpers/privatemessagereplyform/" + parentprivatemessageid + "?recipient=" + recipient + "&subject=" + subject,
+        null,
+        function (data) {
+            $("#messageContainer-" + parentprivatemessageid).append(data)
+        }
+     );
+
+    var form = $('#privatemessagereplyform-' + parentprivatemessageid)
+            .removeData("validator") /* added by the raw jquery.validate plugin */
+            .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
+
+    $.validator.unobtrusive.parse(form);
+
+    // TODO
+    // showRecaptcha('recaptchaContainer');
+}
+
 // post comment reply form through ajax
 function postCommentReplyAjax(senderButton) {
     var $form = $(senderButton).parents('form');
@@ -354,6 +381,41 @@ function postCommentReplyAjax(senderButton) {
                 //temporary replacement: reload entire page
                 $('body').load($(location).attr('href') + "#" + parentId);
 
+            }
+        });
+
+        return false;
+    } else {
+        $form.find("#errorMessage").toggle(true);
+    }
+}
+
+// post private message reply form through ajax
+function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
+    var $form = $(senderButton).parents('form');
+    $form.find("#errorMessage").toggle(false);
+
+    if ($form.find("#Body").val().length > 0) {
+        $form.find("#submitbutton").val("Please wait...");
+        $form.find("#submitbutton").prop('disabled', true);
+
+        $.ajax({
+            type: "POST",
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            error: function (xhr, status, error) {
+                //submission failed, likely cause: user triggered anti-spam throttle
+                $form.find("#submitbutton").val("Submit reply");
+                $form.find("#submitbutton").prop('disabled', false);
+                $form.find("#errorMessage").html("You are doing that too fast. Please wait 2 minutes before trying again.");
+                $form.find("#errorMessage").toggle(true);
+            },
+
+            success: function (response) {
+                // remove reply form 
+                removereplyform(parentprivatemessageid);
+                // change reply button to "reply sent"                
+                $("#messageContainer-" + parentprivatemessageid).find("#replyPrivateMessage").html("Reply sent.");
             }
         });
 

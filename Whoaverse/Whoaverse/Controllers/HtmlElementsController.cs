@@ -33,6 +33,23 @@ namespace Whoaverse.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }                  
+        }
+
+        // GET: PrivateMessageReplyForm
+        public ActionResult PrivateMessageReplyForm(int? parentPrivateMessageId, string recipient, string subject)
+        {
+            if (parentPrivateMessageId != null)
+            {
+                ViewBag.ParentPrivateMessageId = parentPrivateMessageId;
+                ViewBag.Recipient = recipient;
+                ViewBag.Subject = subject;
+
+                return PartialView("~/Views/AjaxViews/_PrivateMessageReplyForm.cshtml");
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }       
 
     }
