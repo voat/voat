@@ -275,7 +275,10 @@ namespace Whoaverse.Controllers
                         subverse.name = subverseTmpModel.Name;
                         subverse.title = "/v/" + subverseTmpModel.Name;
                         subverse.description = subverseTmpModel.Description;
-                        subverse.type = subverseTmpModel.Type;
+                        subverse.type = "link";
+                        subverse.enable_thumbnails = true;
+                        subverse.rated_adult = false;
+                        subverse.private_subverse = false;
                         subverse.sidebar = subverseTmpModel.Sidebar;
                         subverse.creation_date = System.DateTime.Now;
 
@@ -397,6 +400,7 @@ namespace Whoaverse.Controllers
                 viewModel.Label_sumit_new_selfpost = subverse.label_sumit_new_selfpost;
                 viewModel.Rated_adult = subverse.rated_adult;
                 viewModel.Private_subverse = subverse.private_subverse;
+                viewModel.Enable_thumbnails = subverse.enable_thumbnails;
 
                 ViewBag.SelectedSubverse = string.Empty;
                 ViewBag.SubverseName = subverse.name;
@@ -457,6 +461,7 @@ namespace Whoaverse.Controllers
 
                             existingSubverse.rated_adult = updatedModel.rated_adult;
                             existingSubverse.private_subverse = updatedModel.private_subverse;
+                            existingSubverse.enable_thumbnails = updatedModel.enable_thumbnails;
 
                             // these properties are currently not implemented but they can be saved and edited for future use
                             existingSubverse.type = updatedModel.type;

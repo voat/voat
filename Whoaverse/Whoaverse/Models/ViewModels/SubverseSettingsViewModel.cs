@@ -48,6 +48,7 @@ namespace Whoaverse.Models.ViewModels
         public bool? Rated_adult { get; set; }
         public bool? Allow_default { get; set; }
         public bool? Private_subverse { get; set; }
+        public bool? Enable_thumbnails { get; set; }
 
     }
 }

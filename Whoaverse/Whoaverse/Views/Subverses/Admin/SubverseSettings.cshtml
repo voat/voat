@@ -74,6 +74,14 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        @Html.Label("Thumbnails enabled", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Enable_thumbnails, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Enable_thumbnails, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
                     <hr />
                     <div class="alert alert-warning">
                         <p>All settings beyond this point can be edited and saved. However, these properties are not yet implemented and changes made here
