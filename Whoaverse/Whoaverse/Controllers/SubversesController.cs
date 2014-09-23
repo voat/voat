@@ -1361,20 +1361,26 @@ namespace Whoaverse.Controllers
         [ChildActionOnly]
         public ActionResult SubverseModeratorsList(string subverseName)
         {
-            var subverseModerators =
+            // get all administration members for a subverse
+            var subverseAdministration =
                 db.SubverseAdmins.OrderBy(s => s.Username)
-                .Where(n => n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase) && n.Power == 2)
+                .Where(n => n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
                 .Take(10)
                 .ToList();
 
-            if (subverseModerators.Count == 0)
+            // find all moderators with power = 2
+            var subverseModerators = subverseAdministration
+                .Where(m => m.Power == 2);
+
+            // if there are no moderators with power = 2, find subverse owner with power = 1 and return him instead
+            if (subverseModerators.Count() == 0)
             {
                 subverseModerators =
-                db.SubverseAdmins
+                subverseAdministration
                 .Where(n => n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase) && n.Power == 1)
                 .Take(1)
                 .ToList();
-            }
+            }         
 
             ViewBag.subverseModerators = subverseModerators;
 
