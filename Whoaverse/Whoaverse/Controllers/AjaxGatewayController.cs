@@ -62,10 +62,11 @@ namespace Whoaverse.Controllers
                     // check if caller is subverse owner or moderator, if not, deny listing
                     if (Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow) || Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
                     {
-                        var subverseLinkFlairs = db.Subverseflairsettings.OrderBy(s => s.Id)
+                        var subverseLinkFlairs = db.Subverseflairsettings
                         .Where(n => n.Subversename == subversetoshow)
                         .Take(10)
-                        .ToList();
+                        .ToList()
+                        .OrderBy(s => s.Id);
 
                         ViewBag.SubmissionId = messageId;
                         ViewBag.SubverseName = subversetoshow;

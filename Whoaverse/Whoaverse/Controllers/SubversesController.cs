@@ -537,7 +537,7 @@ namespace Whoaverse.Controllers
                         var submissions = db.Messages
                                             .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
                                             .OrderByDescending(s => s.Rank)
-                                            .Take(1000)
+                                            .Take(500)
                                             .ToList();
 
                         // check if subverse is rated adult, show a NSFW warning page before entering
@@ -589,7 +589,7 @@ namespace Whoaverse.Controllers
                     var submissions = db.Messages
                                         .Where(x => x.Name != "deleted")
                                         .OrderByDescending(s => s.Rank)
-                                        .Take(1000).ToList();
+                                        .Take(500).ToList();
 
                     // check if user wants to see NSFW content by reading user preference
                     if (User.Identity.IsAuthenticated)
@@ -605,7 +605,7 @@ namespace Whoaverse.Controllers
                             var sfwsubmissions = db.Messages
                                                 .Where(x => x.Name != "deleted" && x.Subverses.rated_adult == false)
                                                 .OrderByDescending(s => s.Rank)
-                                                .Take(1000).ToList();
+                                                .Take(500).ToList();
                             return View(sfwsubmissions.ToPagedList(pageNumber, pageSize));
                         }
                     }
@@ -618,7 +618,7 @@ namespace Whoaverse.Controllers
                             var sfwsubmissions = db.Messages
                                                 .Where(x => x.Name != "deleted" && x.Subverses.rated_adult == false)
                                                 .OrderByDescending(s => s.Rank)
-                                                .Take(1000).ToList();
+                                                .Take(500).ToList();
                             return View(sfwsubmissions.ToPagedList(pageNumber, pageSize));
                         }
                         else
@@ -801,7 +801,9 @@ namespace Whoaverse.Controllers
                         ViewBag.Title = subverse.description;
                         var submissions = db.Messages
                                             .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
-                                            .OrderByDescending(s => s.Date).Take(1000).ToList();
+                                            .OrderByDescending(s => s.Date)
+                                            .Take(500)
+                                            .ToList();
 
                         if (subverse.rated_adult == true)
                         {
@@ -845,7 +847,9 @@ namespace Whoaverse.Controllers
                     // selected subverse is ALL, show submissions from all subverses, sorted by date
                     var submissions = db.Messages
                                         .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true)
-                                        .OrderByDescending(s => s.Date).Take(1000).ToList();
+                                        .OrderByDescending(s => s.Date)
+                                        .Take(500)
+                                        .ToList();
 
                     // check if user wants to see NSFW content by reading user preference
                     if (User.Identity.IsAuthenticated)
@@ -858,7 +862,9 @@ namespace Whoaverse.Controllers
                         {
                             var sfwsubmissions = db.Messages
                                         .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
-                                        .OrderByDescending(s => s.Date).Take(1000).ToList();
+                                        .OrderByDescending(s => s.Date)
+                                        .Take(500)
+                                        .ToList();
                             return View("Index", sfwsubmissions.ToPagedList(pageNumber, pageSize));
                         }
                     }
@@ -869,7 +875,9 @@ namespace Whoaverse.Controllers
                         {
                             var sfwsubmissions = db.Messages
                             .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
-                            .OrderByDescending(s => s.Date).Take(1000).ToList();
+                            .OrderByDescending(s => s.Date)
+                            .Take(500)
+                            .ToList();
                             return View("Index", sfwsubmissions.ToPagedList(pageNumber, pageSize));
                         }
                         else
@@ -941,9 +949,10 @@ namespace Whoaverse.Controllers
                 // check if caller is subverse owner, if not, deny listing
                 if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
                 {
-                    var subverseModerators = db.SubverseAdmins.OrderBy(s => s.Power)
+                    var subverseModerators = db.SubverseAdmins
                     .Where(n => n.SubverseName == subversetoshow)
-                    .Take(200)
+                    .Take(20)
+                    .OrderBy(s => s.Power)
                     .ToList();
 
                     ViewBag.SubverseModel = subverseModel;
@@ -1211,9 +1220,10 @@ namespace Whoaverse.Controllers
                 // check if caller is subverse owner, if not, deny listing
                 if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
                 {
-                    var subverseFlairsettings = db.Subverseflairsettings.OrderBy(s => s.Id)
+                    var subverseFlairsettings = db.Subverseflairsettings
                     .Where(n => n.Subversename == subversetoshow)
                     .Take(20)
+                    .OrderBy(s => s.Id)
                     .ToList();
 
                     ViewBag.SubverseModel = subverseModel;
@@ -1361,12 +1371,13 @@ namespace Whoaverse.Controllers
         [ChildActionOnly]
         public ActionResult SubverseModeratorsList(string subverseName)
         {
-            // get all administration members for a subverse
+            // get 10 administration members for a subverse
             var subverseAdministration =
-                db.SubverseAdmins.OrderBy(s => s.Username)
+                db.SubverseAdmins
                 .Where(n => n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
                 .Take(10)
-                .ToList();
+                .ToList()
+                .OrderBy(s => s.Username);
 
             // find all moderators with power = 2
             var subverseModerators = subverseAdministration

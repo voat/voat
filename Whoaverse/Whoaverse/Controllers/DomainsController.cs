@@ -40,7 +40,9 @@ namespace Whoaverse.Controllers
             var submissions = db.Messages
                         .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
                         .OrderByDescending(s => s.Rank)
-                        .ThenByDescending(s => s.Date).Take(100).ToList();
+                        .ThenByDescending(s => s.Date)
+                        .Take(100)
+                        .ToList();
 
             if (submissions != null)
             {
@@ -70,7 +72,9 @@ namespace Whoaverse.Controllers
                 //check if at least one submission for given domain was found, if not, send to a page not found error
                 var submissions = db.Messages
                             .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
-                            .OrderByDescending(s => s.Date).Take(100).ToList();
+                            .OrderByDescending(s => s.Date)
+                            .Take(100)
+                            .ToList();
 
                 if (submissions != null)
                 {

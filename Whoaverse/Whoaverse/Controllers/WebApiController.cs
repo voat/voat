@@ -92,13 +92,16 @@ namespace Whoaverse.Controllers
         [System.Web.Http.HttpGet]
         public IEnumerable<ApiMessage> Frontpage()
         {
-            //get only submissions from default subverses, order by rank
+            // DISTINCT ISSUE
+            // get only submissions from default subverses, order by rank
             var frontpageSubmissions = (from message in db.Messages
-                                        join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                         where message.Name != "deleted"
+                                        join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name                                        
                                         select message)
-                               .Distinct()
-                               .OrderByDescending(s => s.Rank).Take(100).ToList();
+                                        .Distinct()
+                                        .OrderByDescending(s => s.Rank)
+                                        .Take(100)
+                                        .ToList();
 
             List<ApiMessage> resultList = new List<ApiMessage>();
 
@@ -135,12 +138,15 @@ namespace Whoaverse.Controllers
         [System.Web.Http.HttpGet]
         public IEnumerable<ApiMessage> SubverseFrontpage(string subverse)
         {
-            //get only submissions from given subverses, order by rank
+            // DISTINCT ISSUE
+            // get only submissions from given subverses, order by rank
             var frontpageSubmissions = (from message in db.Messages
                                         where message.Name != "deleted" && message.Subverse == subverse
                                         select message)
-                               .Distinct()
-                               .OrderByDescending(s => s.Rank).Take(100).ToList();
+                                        .Distinct()
+                                        .OrderByDescending(s => s.Rank)
+                                        .Take(100)
+                                        .ToList();
 
             if (frontpageSubmissions == null)
             {

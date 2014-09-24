@@ -62,7 +62,9 @@ namespace Whoaverse.Controllers
                 return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", db.SubverseAdmins
                 .Where(x => x.Username == userName)
                 .Select(s => new SelectListItem { Value = s.SubverseName })
-                .OrderBy(s => s.Value).ToList().AsEnumerable());
+                .OrderBy(s => s.Value)
+                .ToList()
+                .AsEnumerable());
             }
             else
             {
@@ -561,81 +563,81 @@ namespace Whoaverse.Controllers
                     // generate a thumbnail if submission is a direct link to image or video
                     if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
                     {
-                            string domain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(message.MessageContent);
+                        string domain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(message.MessageContent);
 
-                            // check if hostname is banned before accepting submission
-                            if (Utils.BanningUtility.IsHostnameBanned(domain))
+                        // check if hostname is banned before accepting submission
+                        if (Utils.BanningUtility.IsHostnameBanned(domain))
+                        {
+                            ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
+                            return View();
+                        }
+
+                        // check if target subverse has thumbnails setting enabled before generating a thumbnail
+                        if (targetSubverse.enable_thumbnails == true || targetSubverse.enable_thumbnails == null)
+                        {
+
+                            // if domain is youtube, try generating a thumbnail for the video
+                            if (domain == "youtube.com")
                             {
-                                ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
-                                return View();
-                            }
-
-                            // check if target subverse has thumbnails setting enabled before generating a thumbnail
-                            if (targetSubverse.enable_thumbnails == true || targetSubverse.enable_thumbnails == null)
-                            {
-
-                                // if domain is youtube, try generating a thumbnail for the video
-                                if (domain == "youtube.com")
+                                try
                                 {
-                                    try
-                                    {
-                                        string thumbFileName = ThumbGenerator.GenerateThumbFromYoutubeVideo(message.MessageContent);
-                                        message.Thumbnail = thumbFileName;
-                                    }
-                                    catch (Exception)
-                                    {
-                                        // thumnail generation failed, skip adding thumbnail
-                                    }
+                                    string thumbFileName = ThumbGenerator.GenerateThumbFromYoutubeVideo(message.MessageContent);
+                                    message.Thumbnail = thumbFileName;
                                 }
-                                else
+                                catch (Exception)
                                 {
-                                    string extension = Path.GetExtension(message.MessageContent);
+                                    // thumnail generation failed, skip adding thumbnail
+                                }
+                            }
+                            else
+                            {
+                                string extension = Path.GetExtension(message.MessageContent);
 
-                                    // this is a direct link to image
-                                    if (extension != String.Empty && extension != null)
+                                // this is a direct link to image
+                                if (extension != String.Empty && extension != null)
+                                {
+                                    if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
                                     {
-                                        if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
+                                        try
                                         {
-                                            try
-                                            {
-                                                string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
-                                                message.Thumbnail = thumbFileName;
-                                            }
-                                            catch (Exception)
-                                            {
-                                                // thumnail generation failed, skip adding thumbnail
-                                            }
+                                            string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
+                                            message.Thumbnail = thumbFileName;
+                                        }
+                                        catch (Exception)
+                                        {
+                                            // thumnail generation failed, skip adding thumbnail
                                         }
                                     }
                                 }
                             }
+                        }
 
-                            message.Name = User.Identity.Name;
-                            message.Subverse = targetSubverse.name;
+                        message.Name = User.Identity.Name;
+                        message.Subverse = targetSubverse.name;
 
-                            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                            message.Date = System.DateTime.Now;
+                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                        message.Date = System.DateTime.Now;
 
-                            message.Likes = 1;
+                        message.Likes = 1;
 
-                            // restrict incoming submissions to announcements subverse (temporary hard-code solution
-                            // TODO: add global administrators table with different access levels
-                            if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
-                            {
-                                db.Messages.Add(message);
-                                await db.SaveChangesAsync();
-                            }
-                            else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
-                            {
-                                db.Messages.Add(message);
-                                await db.SaveChangesAsync();
-                            }
-                            else
-                            {
-                                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
-                                return View();
-                            }
-                      
+                        // restrict incoming submissions to announcements subverse (temporary hard-code solution
+                        // TODO: add global administrators table with different access levels
+                        if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
+                        {
+                            db.Messages.Add(message);
+                            await db.SaveChangesAsync();
+                        }
+                        else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
+                        {
+                            db.Messages.Add(message);
+                            await db.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
+                            return View();
+                        }
+
                     }
                     else if (message.Type == 1 && message.Title != null)
                     {
@@ -749,25 +751,31 @@ namespace Whoaverse.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
+                    // DISTINCT ISSUE
                     var submissions = (from message in db.Messages
+                                       where message.Name != "deleted"
                                        join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
                                        join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
-                                       where message.Name != "deleted"
                                        select message)
                                        .Distinct()
-                                       .OrderByDescending(s => s.Rank).Take(1000).ToList();
+                                       .OrderByDescending(s => s.Rank)
+                                       .Take(500)
+                                       .ToList();
 
                     return View(submissions.ToPagedList(pageNumber, pageSize));
                 }
                 else
                 {
-                    //get only submissions from default subverses, order by rank
+                    // DISTINCT ISSUE
+                    // get only submissions from default subverses, order by rank
                     var submissions = (from message in db.Messages
-                                       join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                        where message.Name != "deleted"
+                                       join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                        select message)
                                        .Distinct()
-                                       .OrderByDescending(s => s.Rank).Take(1000).ToList();
+                                       .OrderByDescending(s => s.Rank)
+                                       .Take(500)
+                                       .ToList();
 
                     return View(submissions.ToPagedList(pageNumber, pageSize));
                 }
@@ -812,25 +820,31 @@ namespace Whoaverse.Controllers
                     // also do a check so that user actually has subscriptions
                     if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                     {
+                        // DISTINCT ISSUE
                         var submissions = (from message in db.Messages
+                                           where message.Name != "deleted"
                                            join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
                                            join ownsubscriptions in db.Subscriptions on subscribedsubverses.Username equals User.Identity.Name
-                                           where message.Name != "deleted"
                                            select message)
                                            .Distinct()
-                                           .OrderByDescending(s => s.Date).Take(1000).ToList();
+                                           .OrderByDescending(s => s.Date)
+                                           .Take(500)
+                                           .ToList();
 
                         return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                     }
                     else
                     {
+                        // DISTINCT ISSUE
                         // get only submissions from default subverses, sort by date
                         var submissions = (from message in db.Messages
-                                           join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                            where message.Name != "deleted"
+                                           join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                            select message)
                                            .Distinct()
-                                           .OrderByDescending(s => s.Date).Take(1000).ToList();
+                                           .OrderByDescending(s => s.Date)
+                                           .Take(500)
+                                           .ToList();
 
                         return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                     }
@@ -994,22 +1008,28 @@ namespace Whoaverse.Controllers
                 Subverse subverse = db.Subverses.Find(subverseName);
                 if (subverse != null)
                 {
+                    // DISTINCT ISSUE
                     submissions = (from message in db.Messages
                                    where message.Name != "deleted" && message.Subverse == subverse.name
                                    select message)
-                                       .Distinct()
-                                       .OrderByDescending(s => s.Rank).Take(25).ToList();
+                                   .Distinct()
+                                   .OrderByDescending(s => s.Rank)
+                                   .Take(25)
+                                   .ToList();
                 }
             }
             else
             {
+                // DISTINCT ISSUE
                 // return site-wide frontpage submissions
                 submissions = (from message in db.Messages
-                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                where message.Name != "deleted"
+                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                select message)
-                                          .Distinct()
-                                          .OrderByDescending(s => s.Rank).Take(25).ToList();
+                               .Distinct()
+                               .OrderByDescending(s => s.Rank)
+                               .Take(25)
+                               .ToList();
             }
 
             SyndicationFeed feed = new SyndicationFeed("WhoaVerse", "The frontpage of the Universe", new Uri("http://www.whoaverse.com"));

@@ -109,14 +109,12 @@ namespace Whoaverse.Utils
                                       join message in db.Messages on comment.MessageId equals message.Id
                                       where comment.Name != "deleted" && comment.Name == userName && message.Subverse == subverseName
                                       select comment)
-                                       .Distinct()
                                        .Sum(r => r.Likes);
 
                     var sumOfDislikes = (from comment in db.Comments
                                          join message in db.Messages on comment.MessageId equals message.Id
                                          where comment.Name != "deleted" && comment.Name == userName && message.Subverse == subverseName
                                          select comment)
-                                       .Distinct()
                                        .Sum(r => r.Dislikes);
 
                     return sumOfLikes - sumOfDislikes;
