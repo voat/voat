@@ -846,12 +846,12 @@ input, button, select, textarea {
     }
 
     .md table {
-        background-color: #FFF;
+        background-color: #333;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
     }
 
         .md table thead {
-            border-bottom: 2px solid #DDD;
+            border-bottom: 2px solid #222;
         }
 
         .md td, .md th {
@@ -945,6 +945,25 @@ pre, code {
 .table > tfoot > tr.info > td, .table > thead > tr.info > th,
 .table > tbody > tr.info > th, .table > tfoot > tr.info > th {
     background: #333;
+}
+
+.table-striped > tbody > tr:nth-child(2n+1) > td,
+.table-striped > tbody > tr:nth-child(2n+1) > th {
+    background: #333;
+}
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th,
+.table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-top: 1px solid #222;
+}
+
+.table > thead > tr > th {
+    border-bottom: 2px solid #222;
+}
+
+.table-hover > tbody > tr:hover > td,
+.table-hover > tbody > tr:hover > th {
+    background: #303030;
 }
 
 /* ! Header
