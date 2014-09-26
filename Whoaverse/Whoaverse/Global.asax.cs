@@ -41,7 +41,16 @@ namespace Whoaverse
         // fire each time a new session is created     
         protected void Session_Start(object sender, EventArgs e)
         {
-
+            if (User.Identity.IsAuthenticated)
+            {
+                // read style preference
+                Session["UserTheme"] = Whoaverse.Utils.User.UserStylePreference(User.Identity.Name);
+            }
+            else
+            {
+                // set default theme to light
+                Session["UserTheme"] = "light";
+            }            
         }
 
         // fire when a session is abandoned or expires
@@ -54,7 +63,7 @@ namespace Whoaverse
             }
             catch (Exception)
             {
-               //
+                //
             }
         }
     }

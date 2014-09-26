@@ -30,10 +30,17 @@ namespace Whoaverse
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
+            bundles.Add(new StyleBundle("~/Content/light").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/site.css",
-                      "~/Content/whoaverse.css",
+                      "~/Content/Site.css",
+                      "~/Content/Whoaverse.css",
+                      "~/Content/PagedList.css"
+                      ));
+
+            bundles.Add(new StyleBundle("~/Content/dark").Include(
+                      "~/Content/bootstrap.css",
+                      "~/Content/Site.css",
+                      "~/Content/Whoaverse-Dark.css",
                       "~/Content/PagedList.css"
                       ));
         }

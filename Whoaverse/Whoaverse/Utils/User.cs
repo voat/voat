@@ -431,6 +431,30 @@ namespace Whoaverse.Utils
             }
         }
 
+        // check which theme style user selected
+        public static string UserStylePreference(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var result = db.Userpreferences.Find(userName);
+                if (result != null)
+                {
+                    if (result.Night_mode == true)
+                    {
+                        return "dark";
+                    }
+                    else
+                    {
+                        return "light";
+                    }
+                }
+                else
+                {
+                    return "light";
+                }
+            }
+        }
+
         // check if a given user wants to see NSFW (adult) content
         public static bool AdultContentEnabled(string userName)
         {

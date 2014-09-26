@@ -388,6 +388,7 @@
     <Content Include="Content\Site.min.css">
       <DependentUpon>Site.css</DependentUpon>
     </Content>
+    <Content Include="Content\Whoaverse-Dark.css" />
     <Content Include="Content\Whoaverse.css" />
     <Content Include="Content\Whoaverse.min.css">
       <DependentUpon>Whoaverse.css</DependentUpon>
@@ -408,6 +409,7 @@
     <Content Include="Graphics\Badges\donor.png" />
     <Content Include="Graphics\Badges\supporter.png" />
     <Content Include="Graphics\Badges\tinkerer.png" />
+    <Content Include="Graphics\Dark-SpriteSheet.png" />
     <Content Include="Graphics\expand-selfpost-hover.png" />
     <Content Include="Graphics\expand-selfpost.png" />
     <Content Include="Graphics\expanded-selfpost-hover.png" />
@@ -425,6 +427,7 @@
     <Content Include="Graphics\whoaverse-mascot.png" />
     <Content Include="Graphics\whoaverse.png" />
     <Content Include="Graphics\whoaverse_32x32.png" />
+    <Content Include="Graphics\whoaverse_mascot_head.png" />
     <Content Include="Graphics\whoaverse_padded.png" />
     <EntityDeploy Include="Models\WhoaverseEntityDataModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
@@ -622,9 +625,7 @@
     <Content Include="Views\Shared\Navigation\_SubversesMenu.cshtml" />
     <Content Include="Views\Shared\Navigation\_DomainsMenu.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Nav\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>

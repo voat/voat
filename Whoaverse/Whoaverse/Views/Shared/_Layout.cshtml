@@ -12,6 +12,8 @@
 
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
+    
+    var theme = Session["UserTheme"];
 
     Whoaverse.Models.LoginViewModel loginViewModel = new Whoaverse.Models.LoginViewModel();
 
@@ -75,7 +77,18 @@
     <meta property="og:site_name" content="whoaverse" />
     <meta property="og:description" content="@ViewBag.Description" />
 
-    @Styles.Render("~/Content/css")
+    @if (theme != null)
+    {
+        if (theme == "light")
+        {
+            @Styles.Render("~/Content/Light")
+        }
+        else
+        {
+            @Styles.Render("~/Content/Dark")
+        }
+    }
+
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/whoaverse")
 

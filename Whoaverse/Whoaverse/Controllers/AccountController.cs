@@ -102,8 +102,10 @@ namespace Whoaverse.Controllers
 
                 // Sign in and continue
                 await SignInAsync(user, model.RememberMe);
-                return RedirectToLocal(returnUrl);
 
+                // Read User Theme preference and set value to session variable
+                Session["UserTheme"] = Whoaverse.Utils.User.UserStylePreference(user.UserName);
+                return RedirectToLocal(returnUrl);
             }
 
             // If we got this far, something failed, redisplay form
@@ -487,6 +489,7 @@ namespace Whoaverse.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
+            Session["UserTheme"] = "light";
             return RedirectToAction("Index", "Home");
         }
 
@@ -571,6 +574,7 @@ namespace Whoaverse.Controllers
                         // load existing preferences and return to view engine
                         UserPreferencesViewModel tmpModel = new UserPreferencesViewModel();
                         tmpModel.Disable_custom_css = userPreferences.Disable_custom_css;
+                        tmpModel.Night_mode = userPreferences.Night_mode;
                         tmpModel.OpenLinksInNewTab = userPreferences.Clicking_mode;
                         tmpModel.Enable_adult_content = userPreferences.Enable_adult_content;
 
@@ -594,7 +598,7 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, OpenLinksInNewTab, Enable_adult_content")] UserPreferencesViewModel model)
+        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content")] UserPreferencesViewModel model)
         {
             // save changes
             using (whoaverseEntities db = new whoaverseEntities())
@@ -605,20 +609,28 @@ namespace Whoaverse.Controllers
                 {
                     // modify existing preferences
                     userPreferences.Disable_custom_css = (bool)model.Disable_custom_css;
+                    userPreferences.Night_mode = (bool)model.Night_mode;
                     userPreferences.Clicking_mode = (bool)model.OpenLinksInNewTab;
-                    userPreferences.Enable_adult_content = (bool)model.Enable_adult_content;
+                    userPreferences.Enable_adult_content = (bool)model.Enable_adult_content;                    
+
                     await db.SaveChangesAsync();
+                    // apply theme change
+                    Session["UserTheme"] = Whoaverse.Utils.User.UserStylePreference(User.Identity.Name);
                 }
                 else
                 {
                     // create a new record for this user in userpreferences table
                     Userpreference tmpModel = new Userpreference();
                     tmpModel.Disable_custom_css = (bool)model.Disable_custom_css;
+                    tmpModel.Night_mode = (bool)model.Night_mode;
                     tmpModel.Clicking_mode = (bool)model.OpenLinksInNewTab;
                     tmpModel.Enable_adult_content = (bool)model.Enable_adult_content;
                     tmpModel.Username = User.Identity.Name;
-                    db.Userpreferences.Add(tmpModel);
+                    db.Userpreferences.Add(tmpModel);                    
+
                     await db.SaveChangesAsync();
+                    // apply theme change
+                    Session["UserTheme"] = Whoaverse.Utils.User.UserStylePreference(User.Identity.Name);
                 }
             }
 

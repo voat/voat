@@ -1,24 +1,24 @@
-﻿/*  ============================================================================
-    Minity CSS stylesheet for Whoaverse (http://whoaverse.com/)
+/*  ============================================================================
+    Minity Dark CSS stylesheet for Whoaverse (http://whoaverse.com/)
     Designed by Nurdoidz
     
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
 body {
-    background: #FFF;
-    color: #404040;
+    background: #333;
+    color: #DFDFDF;
     font: 11px Arial,sans-serif;
     line-height: 1.43;
     margin: 0;
 }
 
 a, a:visited {
-    color: #4AABE7;
+    color: #56A8DA;
     text-decoration: none;
 }
     a:hover {
-        color: #66C2FB;
+        color: #DC5757;
         text-decoration: none;
     }
     a:focus {
@@ -38,13 +38,13 @@ b, strong {
 }
 
 h2 {
-    color: #333;
+    color: #CCC;
     font-size: 13px;
 }
 
 hr {
     margin: 10px 0;
-    border-color: #CCC;
+    border-color: #222;
 }
 
 label {
@@ -59,20 +59,20 @@ label {
 }
 
 .alert-danger {
-    background: #F56363;
-    background: -webkit-linear-gradient( top,#F56363,#EF4444 );
-    background: -moz-linear-gradient( top,#F56363,#EF4444 );
-    background: -ms-linear-gradient( top,#F56363,#EF4444 );
-    background: -o-linear-gradient( top,#F56363,#EF4444 );
-    border-color: #E14242;
-    color: #FFF;
+    background: #2E2E2E;
+    background: -webkit-linear-gradient( top,#2E2E2E,#2B2B2B );
+    background: -moz-linear-gradient( top,#2E2E2E,#2B2B2B );
+    background: -ms-linear-gradient( top,#2E2E2E,#2B2B2B );
+    background: -o-linear-gradient( top,#2E2E2E,#2B2B2B );
+    border-color: #272727;
+    color: #D3D3D3;
     font-size: 12px;
 }
 
 .alert-info {
-    background: none repeat scroll 0 0 rgba(233, 233, 233, 1);
-    border: 1px solid #DCDCDC;
-    color: rgba(90, 90, 90, 1);
+    background: #2E2E2E;
+    border: 1px solid #272727;
+    color: #D3D3D3;
     font-size: 12px;
 }
 
@@ -81,21 +81,21 @@ label {
     }
 
 .alert-warning {
-    background: #F5E163;
-    background: -webkit-linear-gradient( top,#F5E163,#E1CD4B );
-    background: -moz-linear-gradient( top,#F5E163,#E1CD4B );
-    background: -ms-linear-gradient( top,#F5E163,#E1CD4B );
-    background: -o-linear-gradient( top,#F5E163,#E1CD4B );
-    border-color: #E1CB42;
-    color: #746801;
+    background: #B0A03C;
+    background: -webkit-linear-gradient( top,#B0A03C,#9C8D2F );
+    background: -moz-linear-gradient( top,#B0A03C,#9C8D2F );
+    background: -ms-linear-gradient( top,#B0A03C,#9C8D2F );
+    background: -o-linear-gradient( top,#B0A03C,#9C8D2F );
+    border-color: #736824;
+    color: #333;
     font-size: 12px;
 }
 
 .alert-singlethread {
-    background: #FFEA9A;
+    background: #444;
     border-radius: 3px;
-    border: 1px solid #DEC05F;
-    color: #333;
+    border: 1px solid #555;
+    color: #CCC;
     display: block;
     margin: 15px 10px;
     padding: 8px;
@@ -104,9 +104,9 @@ label {
 /* Circled numbered steps */
 
 .circle-step {
-    background: #4AABE7;
+    background: #438BB7;
     border-radius: 15px;
-    border: 1px solid #FFF;
+    border: 1px solid #234A62;
     box-shadow: 0 1px 1px hsla( 0,0%,0%,0.3 );
     color: #FFF;
     display: inline-block;
@@ -118,14 +118,10 @@ label {
 }
 
 .eppnotice {
-    background-color: #F2F2F2;
-    color: #777;
+    background-color: #484848;
+    color: #D9D9D9;
     padding-right: 35px;
     padding: 4px;
-}
-
-.frontpagemascotsidebar {
-    background: white;
 }
 
 .field-validation-error {
@@ -135,7 +131,11 @@ label {
 }
 
 .flat-list li.selected a {
-    color: #555;
+    color: #BBB;
+}
+
+.frontpagemascotsidebar {
+    background: #333;
 }
 
 .gray {
@@ -144,7 +144,7 @@ label {
 
 input, button, select, textarea {
     background: inherit;
-    border: 1px solid #888;
+    border: 1px solid #222;
 }
 
 .intro-text {
@@ -154,12 +154,12 @@ input, button, select, textarea {
 .control-label {
     font-size: 11px;
     font-weight: bold;
-    color: #444;
+    color: #AAA;
 }
 
 .label {
     border-radius: 2px;
-    color: #555;
+    color: #DDD;
     display: inline-block;
     font-size: 10px;
     font-weight: 700;
@@ -169,7 +169,7 @@ input, button, select, textarea {
 }
 
 .label-default {
-    background: #DDD;
+    background: #555;
 }
 
 .dropdown.lightdrop .selected {
@@ -203,13 +203,13 @@ input, button, select, textarea {
 /* Vote number values */
 
 .post_upvotes {
-    color: #FE5E5E;
+    color: #CC4C4C;
     visibility: visible;
     font-weight: bold;
 }
 
 .post_downvotes {
-    color: #5DBEFF;
+    color: #438DB7;
     visibility: visible;
     font-weight: bold;
 }
@@ -228,7 +228,7 @@ input, button, select, textarea {
 }
 
 .searchresults {
-    border-bottom: 1px solid #DDD;
+    border-bottom: 1px solid #222;
     font-size: 12px;
     overflow: hidden;
     padding: 10px;
@@ -245,10 +245,10 @@ input, button, select, textarea {
 }
 
 .submissionscore {
-    background: #F6F6F6;
-    border: 1px solid #E8E8E8;
+    background: #292929;
+    border: 1px solid #222;
     border-radius: 2px;
-    color: #FE5E5E;
+    color: #CC4C4C;
     display: inline-block;
     font-weight: normal;
     min-width: 40px;
@@ -261,8 +261,8 @@ input, button, select, textarea {
 }
 
 .well.subversedescriptionbox {
-    background: #F6F6F6;
-    border: 1px solid #E2E2E2;
+    background: #292929;
+    border: 1px solid #222;
     border-radius: 3px;
     display: block;
     margin: 10px 5px;
@@ -276,24 +276,24 @@ input, button, select, textarea {
     }
 
 .subverse .entry > p {
-    color: #666;
+    color: #CCC;
     font-size: 12px;
 }
 
 /* Tag line */
 
 .tagline {
-    color: #909090;
+    color: #9B9B9B;
     font-size: 12px;
     line-height: 18px;
     font-size: 11px;
 }
 
     .tagline a {
-        color: #4AABE7;
+        color: #56A8DA;
     }
         .tagline a:visited {
-            color: #555;
+            color: #4B8AE1;
         }
         .tagline a:hover {
             color: #4399CD;
@@ -301,7 +301,7 @@ input, button, select, textarea {
         }
 
     .tagline .submitter {
-        color: #308BC4;
+        color: #56A8DA;
     }
 
     .tagline .moderator {
@@ -349,7 +349,7 @@ input, button, select, textarea {
 }
 
     .user .userkarma {
-        border-bottom: 1px dotted #999;
+        border-bottom: 1px dotted #666;
         cursor: help;
         font-weight: normal;
         margin: 0 2px;
@@ -377,15 +377,15 @@ input, button, select, textarea {
 /* User profile stats */
 
 .userstats {
-    background: #FCFCFC;
-    border: 1px solid #DEDEDE;
+    background: #313131;
+    border: 1px solid #272727;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
     margin: 0 0 24px;
 }
 
     .userstats-heading-1 {
-        border-bottom: 1px solid #D9D9D9;
-        color: #535353;
+        border-bottom: 1px solid #222;
+        color: #AAA;
         font-size: 13px;
         font-weight: bold;
         margin: 0 5px;
@@ -393,9 +393,9 @@ input, button, select, textarea {
     }
 
     .userstats-heading-2 {
-        background: #F8F8F8;
-        border: 1px dotted #D3D3D3;
-        color: #5D5D5D;
+        background: #2C2C2C;
+        border: 1px dotted #222;
+        color: #DDD;
         font-size: 13px;
         font-style: italic;
         font-weight: bold;
@@ -413,10 +413,11 @@ input, button, select, textarea {
         }
 
         .userstats-submission-title {
-            color: #4AABE7;
+            color: #56A8DA;
         }
 
         .userstats-submission-title:hover {
+            color: #DC5757;
             text-decoration: underline;
         }
 
@@ -425,19 +426,20 @@ input, button, select, textarea {
         }
 
         .userstats-submission-author:hover {
-            color: #4AABE7;
+            color: #DC5757;
         }
 
         .userstats-submission-score {
-            color: #777;
+            color: #AAA;
             font-weight: bold;
         }
 
         .userstats-submission-subverse {
-            color: #4AABE7;
+            color: #56A8DA;
         }
 
         .userstats-submission-subverse:hover {
+            color: #DC5757;
             text-decoration: underline;
         }
 
@@ -462,15 +464,15 @@ input, button, select, textarea {
 }
 
 .btn-whoaverse {
-    background: #F8F8F8;
-    background: -webkit-linear-gradient( top,#FDFDFD,#F7F7F7 );
-    background: -moz-linear-gradient( top,#FDFDFD,#F7F7F7 );
-    background: -ms-linear-gradient( top,#FDFDFD,#F7F7F7 );
-    background: -o-linear-gradient( top,#FDFDFD,#F7F7F7 );
-    border: 1px solid #DFDFDF;
+    background: #4B4B4B;
+    background: -webkit-linear-gradient( top,#4B4B4B,#454545 );
+    background: -moz-linear-gradient( top,#4B4B4B,#454545 );
+    background: -ms-linear-gradient( top,#4B4B4B,#454545 );
+    background: -o-linear-gradient( top,#4B4B4B,#454545 );
+    border: 1px solid #303030;
     border-radius: 3px;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
-    color: #4C4C4C;
+    color: #DDD;
     display: inline-block;
     font-size: 12px;
     font-weight: bold;
@@ -478,14 +480,14 @@ input, button, select, textarea {
     text-align: center;
 }
     .btn-whoaverse:hover {
-        background: #F8F8F8;
-        background: -webkit-linear-gradient( top,#F8F8F8,#F2F2F2 );
-        background: -moz-linear-gradient( top,#F8F8F8,#F2F2F2 );
-        background: -ms-linear-gradient( top,#F8F8F8,#F2F2F2 );
-        background: -o-linear-gradient( top,#F8F8F8,#F2F2F2 );
-        border-color: #CCC;
+        background: #38434B;
+        background: -webkit-linear-gradient( top,#38434B,#353C44 );
+        background: -moz-linear-gradient( top,#38434B,#353C44 );
+        background: -ms-linear-gradient( top,#38434B,#353C44 );
+        background: -o-linear-gradient( top,#38434B,#353C44 );
+        border-color: #242E39;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
-        color: #444;
+        color: #FFF;
     }
     
     .btn-whoaverse:active {
@@ -501,16 +503,16 @@ input, button, select, textarea {
     }
 
     a.btn-whoaverse {
-        color: #4C4C4C;
+        color: #DDD;
     }
 
 .btn-whoaverse-paging {
-    background: #4AABE7;
-    background: -webkit-linear-gradient( top,#54B5F1,#4AABE7 );
-    background: -moz-linear-gradient( top,#54B5F1,#4AABE7 );
-    background: -ms-linear-gradient( top,#54B5F1,#4AABE7 );
-    background: -o-linear-gradient( top,#54B5F1,#4AABE7 );
-    border: 1px solid #4C9FD2;
+    background: #4B4B4B;
+    background: -webkit-linear-gradient( top,#4B4B4B,#454545 );
+    background: -moz-linear-gradient( top,#4B4B4B,#454545 );
+    background: -ms-linear-gradient( top,#4B4B4B,#454545 );
+    background: -o-linear-gradient( top,#4B4B4B,#454545 );
+    border: 1px solid #303030;
     border-radius: 2px;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
     color: #FFF;
@@ -520,12 +522,12 @@ input, button, select, textarea {
     text-align: center;
 }
     .btn-whoaverse-paging:hover {
-        background: #66C2FB;
-        background: -webkit-linear-gradient( top,#66C2FB,#5AB3EA );
-        background: -moz-linear-gradient( top,#66C2FB,#5AB3EA );
-        background: -ms-linear-gradient( top,#66C2FB,#5AB3EA );
-        background: -o-linear-gradient( top,#66C2FB,#5AB3EA );
-        border-color: #5BACDE;
+        background: #38434B;
+        background: -webkit-linear-gradient( top,#38434B,#353C44 );
+        background: -moz-linear-gradient( top,#38434B,#353C44 );
+        background: -ms-linear-gradient( top,#38434B,#353C44 );
+        background: -o-linear-gradient( top,#38434B,#353C44 );
+        border-color: #242E39;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: #FFF;
     }
@@ -549,12 +551,12 @@ input, button, select, textarea {
     }
 
 .btn-whoaverse-medium {
-    background: #4AABE7;
-    background: -webkit-linear-gradient( top,#54B5F1,#4AABE7 );
-    background: -moz-linear-gradient( top,#54B5F1,#4AABE7 );
-    background: -ms-linear-gradient( top,#54B5F1,#4AABE7 );
-    background: -o-linear-gradient( top,#54B5F1,#4AABE7 );
-    border: 1px solid #4C9FD2;
+    background: #4B4B4B;
+    background: -webkit-linear-gradient( top,#4B4B4B,#454545 );
+    background: -moz-linear-gradient( top,#4B4B4B,#454545 );
+    background: -ms-linear-gradient( top,#4B4B4B,#454545 );
+    background: -o-linear-gradient( top,#4B4B4B,#454545 );
+    border: 1px solid #303030;
     border-radius: 2px;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
     color: #FFF;
@@ -565,12 +567,12 @@ input, button, select, textarea {
     text-align: center;
 }
     .btn-whoaverse-medium:hover {
-        background: #66C2FB;
-        background: -webkit-linear-gradient( top,#66C2FB,#5AB3EA );
-        background: -moz-linear-gradient( top,#66C2FB,#5AB3EA );
-        background: -ms-linear-gradient( top,#66C2FB,#5AB3EA );
-        background: -o-linear-gradient( top,#66C2FB,#5AB3EA );
-        border-color: #5BACDE;
+        background: #38434B;
+        background: -webkit-linear-gradient( top,#38434B,#353C44 );
+        background: -moz-linear-gradient( top,#38434B,#353C44 );
+        background: -ms-linear-gradient( top,#38434B,#353C44 );
+        background: -o-linear-gradient( top,#38434B,#353C44 );
+        border-color: #242E39;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: #FFF;
     }
@@ -579,10 +581,10 @@ input, button, select, textarea {
 ------------------------------------------------------------------------------------ */
 
 .commenttextarea {
-    background: none;
-    border: 1px solid #CBCBCB;
+    background: #292929;
+    border: 1px solid #222;
     border-radius: 2px;
-    color: #333;
+    color: #DDD;
     font-family: inherit;
     font-size: 13px;
     line-height: 140%;
@@ -596,15 +598,15 @@ input, button, select, textarea {
     width: 100%;
 }
     .commenttextarea:focus {
-        border-color: #999;
+        border-color: #111;
     }
 
 .form-control {
-    background: #FFF;
-    border: 1px solid #CBCBCB;
+    background: #292929;
+    border: 1px solid #222;
     border-radius: 2px;
     box-shadow: none;
-    color: #484848;
+    color: #DDD;
     display: block;
     font-family: inherit;
     font-size: 12px;
@@ -618,21 +620,21 @@ input, button, select, textarea {
     width: 100%;
 }
     .form-control:focus {
-        border-color: #999;
+        border-color: #111;
         box-shadow: none;
     }
 
     .form-control::-moz-placeholder {
-        color: #777;
+        color: #AAA;
         opacity: 1;
     }
 
     .form-control:-ms-input-placeholder {
-        color: #777;
+        color: #AAA;
     }
 
     .form-control::-webkit-input-placeholder {
-        color: #777;
+        color: #AAA;
     }
 
 /* ! Body : WVSprites
@@ -720,7 +722,7 @@ input, button, select, textarea {
 /* Global */
 
 .arrow-downvote, .arrow-downvoted, .arrow-upvote, .arrow-upvoted {
-    background: url( /Graphics/Light-SpriteSheet.png );
+    background: url( /Graphics/Dark-SpriteSheet.png );
     cursor: pointer;
     height: 16px;
     margin: auto;
@@ -756,7 +758,7 @@ input, button, select, textarea {
 
 .comment .arrow-downvote, .comment .arrow-downvoted,
 .comment .arrow-upvote, .comment .arrow-upvoted {
-    background: url( /Graphics/Light-SpriteSheet.png );
+    background: url( /Graphics/Dark-SpriteSheet.png );
     height: 12px;
     width: 12px;
 }
@@ -797,8 +799,8 @@ input, button, select, textarea {
     }
 
     .md blockquote {
-        background: #F5F5F5;
-        border-color: #E8E8E8 #E8E8E8 #E8E8E8 #DBDBDB;
+        background: #292929;
+        border-color: #242424 #242424 #242424 #202020;
         border-style: solid;
         border-width: 1px 1px 1px 3px;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
@@ -812,7 +814,7 @@ input, button, select, textarea {
         }
 
     .md h1 {
-        border-bottom: 1px dotted #BABABA;
+        border-bottom: 1px dotted #666;
         font-size: 125%;
         font-weight: normal;
         line-height: 163%;
@@ -853,7 +855,7 @@ input, button, select, textarea {
         }
 
         .md td, .md th {
-            border: 1px solid #DDD;
+            border: 1px solid #292929;
             padding: 2px 5px;
         }
 
@@ -878,10 +880,10 @@ pre {
     }
 
 pre, code {
-    background: #F5F5F5;
-    border: 1px solid #CCC;
+    background: #2E2E2E;
+    border: 1px solid #272727;
     border-radius: 3px;
-    color: #333;
+    color: #CCC;
     font-size: inherit;
 }
 
@@ -889,30 +891,30 @@ pre, code {
 ------------------------------------------------------------------------------------ */
 
 .panel {
-    background: #FFF;
+    background: #333;
     border: 0;
     border-radius: 0;
     box-shadow: none;
 }
 
     .panel-heading, .panel-info > .panel-heading, .panel-default > .panel-heading {
-        background: #EEE;
-        background: -webkit-linear-gradient( top,#EEE,#E8E8E8 );
-        background: -moz-linear-gradient( top,#EEE,#E8E8E8 );
-        background: -ms-linear-gradient( top,#EEE,#E8E8E8 );
-        background: -o-linear-gradient( top,#EEE,#E8E8E8 );
-        border-color: #D6D6D6;
+        background: #2E2E2E;
+        background: -webkit-linear-gradient( top,#2E2E2E,#2B2B2B );
+        background: -moz-linear-gradient( top,#2E2E2E,#2B2B2B );
+        background: -ms-linear-gradient( top,#2E2E2E,#2B2B2B );
+        background: -o-linear-gradient( top,#2E2E2E,#2B2B2B );
+        border-color: #272727;
         border-radius: 3px 3px 0 0;
         border-style: solid;
         border-width: 1px 1px 2px;
-        color: #333;
+        color: #D3D3D3;
         font-size: 12px;
         padding: 10px 15px;
     }
 
     .panel-body {
-        background: #FFF;
-        border-color: #DCDCDC;
+        background: #333;
+        border-color: #292929;
         border-radius: 0 0 3px 3px;
         border-style: none solid solid;
         border-width: 1px;
@@ -930,9 +932,9 @@ pre, code {
         }
 
     .panel-footer {
-        background: #EEE;
+        background: #333;
         border-radius: 3px;
-        border-top: 1px solid #CCC;
+        border-top: 1px solid #292929;
         padding: 10px 15px;
     }
 
@@ -942,14 +944,14 @@ pre, code {
 .table > thead > tr.info > td, .table > tbody > tr.info > td,
 .table > tfoot > tr.info > td, .table > thead > tr.info > th,
 .table > tbody > tr.info > th, .table > tfoot > tr.info > th {
-    background: #EEE;
+    background: #333;
 }
 
 /* ! Header
 -------------------------------------------------------------------------------- */
 
 #header {
-    background: #FFF;
+    background: #292929;
     height: 81px;
     margin: 0 0 10px;
     position: relative;
@@ -965,8 +967,8 @@ pre, code {
     -------------------------------------------------------------------------------- */
 
     #sr-header-area {
-        background: #FFF;
-        border-bottom: 1px solid #DCDCDC;
+        background: #333;
+        border-bottom: 1px solid #222;
         font-size: 12px;
         height: 24px;
         line-height: 22px;
@@ -989,7 +991,7 @@ pre, code {
         ------------------------------------------------------------------------------------ */
 
         #sr-bar li a {
-            color: #818181;
+            color: #AAA;
             -webkit-transition: color 0.2s ease;
             -moz-transition: color 0.2s ease;
             -o-transition: color 0.2s ease;
@@ -997,7 +999,7 @@ pre, code {
         }
 
         #sr-header-area:hover #sr-bar li a {
-            color: #444;
+            color: #DDD;
         }
 
 
@@ -1007,11 +1009,11 @@ pre, code {
         }
 
         #sr-header-area .selected a {
-            color: #4AABE7;
+            color: #438BB7;
         }
 
         .sr-list li a {
-            color: #444;
+            color: #DDD;
         }
 
         .sr-bar .separator {
@@ -1020,9 +1022,9 @@ pre, code {
 
 
         #sr-more-link {
-            background: #FFF;
+            background: #333;
             border: 0;
-            color: #444;
+            color: #DDD;
             display: inline-block;
             font-weight: normal;
             height: 24px;
@@ -1035,7 +1037,7 @@ pre, code {
         }
 
         #sr-more-link:hover {
-            background: #4AABE7;
+            background: #555;
             color: #FFF;
             text-decoration: none;
         }
@@ -1056,7 +1058,7 @@ pre, code {
 
                     .whoaSubscriptionMenu li ul {
                         border: 1px solid;
-                        border-color: #FFF #EDEDED #EDEDED;
+                        border-color: #333 #3A3A3A #3A3A3A;
                         box-shadow: 3px 3px 3px hsla( 0,0%,0%,0.2 );
                         font-size: 12px;
                         margin: 0;
@@ -1073,9 +1075,9 @@ pre, code {
 
                             .whoaSubscriptionMenu li ul li a:link,
                             .whoaSubscriptionMenu li ul li a:visited {
-                                background: #FFF;
-                                border-bottom: 1px solid #EDEDED;
-                                color: #444;
+                                background: #333;
+                                border-bottom: 1px solid #222;
+                                color: #DDD;
                                 display: block;
                                 line-height: 16px;
                                 padding: 3px 7px;
@@ -1083,11 +1085,11 @@ pre, code {
                                 width: auto;
                             }
                             .whoaSubscriptionMenu li ul li a:hover {
-                                background: #4AABE7;
-                                background: -webkit-linear-gradient( top,#54B5F1,#4AABE7 );
-                                background: -moz-linear-gradient( top,#54B5F1,#4AABE7 );
-                                background: -ms-linear-gradient( top,#54B5F1,#4AABE7 );
-                                background: -o-linear-gradient( top,#54B5F1,#4AABE7 );
+                                background: #347AA4;
+                                background: -webkit-linear-gradient( top,#438BB7,#347AA4 );
+                                background: -moz-linear-gradient( top,#438BB7,#347AA4 );
+                                background: -ms-linear-gradient( top,#438BB7,#347AA4 );
+                                background: -o-linear-gradient( top,#438BB7,#347AA4 );
                                 color: #FFF !important;
                             }
 
@@ -1095,10 +1097,10 @@ pre, code {
     ------------------------------------------------------------------------------------ */
 
     #header-bottom-left {
-        background: #F6F6F6;
+        background: #292929;
         bottom: 0;
-        border-bottom: 1px solid #DCDCDC;
-        border-top: 1px solid #DCDCDC;
+        border-bottom: 1px solid #222;
+        border-top: 1px solid #222;
         font-size: 14px;
         height: 58px;
         margin: 0;
@@ -1138,12 +1140,12 @@ pre, code {
         }
 
             .pagename a {
-                color: #5A5A5A;
+                color: #CCC;
                 display: inline-block;
                 padding: 6px 12px;
             }
                 .pagename a:hover {
-                    color: #4AABE7;
+                    color: #438BB7;
                     text-decoration: none;
                 }
 
@@ -1182,42 +1184,42 @@ pre, code {
                 ------------------------------------------------------------------------------------ */
 
                 .tabmenu li.selected a {
-                    background: #FFF;
-                    background: -webkit-linear-gradient( top,#FFF,#FBFBFB );
-                    background: -moz-linear-gradient( top,#FFF,#FBFBFB );
-                    background: -ms-linear-gradient( top,#FFF,#FBFBFB );
-                    background: -o-linear-gradient( top,#FFF,#FBFBFB );
-                    border: 1px solid #D0D0D0;
+                    background: #333;
+                    background: -webkit-linear-gradient( top,#333,#303030 );
+                    background: -moz-linear-gradient( top,#333,#303030 );
+                    background: -ms-linear-gradient( top,#333,#303030 );
+                    background: -o-linear-gradient( top,#333,#303030 );
+                    border: 1px solid #222;
                     box-shadow: 0 2px 0 hsla( 0,0%,0%,0.1 );
-                    color: #444;
+                    color: #DDD;
                 }
                     .tabmenu li.selected a:hover {
-                        color: #4AABE7;
+                        color: #439BB7;
                     }
 
                 /* ! Header : Left : Tab menu : Tab : Unselected
                 ------------------------------------------------------------------------------------ */
 
                 .tabmenu li.disabled a {
-                    color: #555;
+                    color: #AAA;
                 }
                     .tabmenu li.disabled a:hover {
-                        background: #FFF;
-                        background: -webkit-linear-gradient( top,#FFF,#FBFBFB );
-                        background: -moz-linear-gradient( top,#FFF,#FBFBFB );
-                        background: -ms-linear-gradient( top,#FFF,#FBFBFB );
-                        background: -o-linear-gradient( top,#FFF,#FBFBFB );
-                        border: 1px solid #D0D0D0;
+                        background: #333;
+                        background: -webkit-linear-gradient( top,#333,#303030 );
+                        background: -moz-linear-gradient( top,#333,#303030 );
+                        background: -ms-linear-gradient( top,#333,#303030 );
+                        background: -o-linear-gradient( top,#333,#303030 );
+                        border: 1px solid #222;
                         box-shadow: 0 2px 0 hsla( 0,0%,0%,0.1 );
-                        color: #444;
+                        color: #DDD;
                     }
 
     /* ! Header : Right
     ------------------------------------------------------------------------------------ */
 
     #header-bottom-right {
-        background: #FFF;
-        border: 1px solid #DCDCDC;
+        background: #333;
+        border: 1px solid #222;
         border-radius: 0 0 0 5px;
         border-style: none none solid solid;
         line-height: 100%;
@@ -1229,14 +1231,14 @@ pre, code {
     }
 
         #header-bottom-right a {
-            color: #555;
+            color: #DDD;
         }
             #header-bottom-right a:hover {
-                color: #4AABE7;
+                color: #438BB7;
             }
 
         #header-bottom-right .separator {
-            color: #BBB;
+            color: #222;
             margin: 0 4px;
         }
 
@@ -1249,7 +1251,7 @@ pre, code {
     }
 
         #mail.havemail {
-            background: url( /Graphics/Light-SpriteSheet.png );
+            background: url( /Graphics/Dark-SpriteSheet.png );
             background-position: -15px 0;
             cursor: pointer;
             height: 10px;
@@ -1257,7 +1259,7 @@ pre, code {
         }
 
         #mail.nohavemail {
-            background: url( /Graphics/Light-SpriteSheet.png );
+            background: url( /Graphics/Dark-SpriteSheet.png );
             background-position: 0 0;
             cursor: pointer;
             height: 10px;
@@ -1284,7 +1286,7 @@ pre, code {
 }
 
 .sidebox .subtitle {
-    color: #666;
+    color: #AAA;
 }
 
     /* ! Sidebar : Search
@@ -1302,20 +1304,21 @@ pre, code {
     }
 
         .submissioninfo h2.whoaversename {
-            color: #444;
+            color: #BBB;
             font-size: 15px;
             margin: 10px 0;
         }
 
     .side .titlebox.submissioninfo .bottom {
-        color: #444;
+        border-top: 1px solid #222;
+        color: #AAA;
         font-size: 10px;
         padding: 0;
         margin: 0 0 20px;
     }
 
     .ikp {
-        border-bottom: 1px dotted #ADADAD;
+        border-bottom: 1px dotted #666;
         cursor: help;
     }
 
@@ -1338,11 +1341,11 @@ pre, code {
             }
 
         .titlebox .bottom {
-            border-top: 1px solid #D5D5D5;
+            border-top: 1px solid #222;
         }
 
             .side .titlebox .bottom .h6 {
-                color: #666;
+                color: #aaa;
             }
 
         /* ! Sidebar : Titlebox : Page name
@@ -1360,7 +1363,7 @@ pre, code {
                 color: inherit;
             }
                 .titlebox h1 a:hover {
-                    color: #4AABE7;
+                    color: #438BB7;
                     text-decoration: none;
                 }
 
@@ -1376,17 +1379,17 @@ pre, code {
         ------------------------------------------------------------------------------------ */
 
         .sidecontentbox .content {
-            background: #FCFCFC;
-            border: 1px solid #E4E4E4;
+            background: #303030;
+            border: 1px solid #272727;
             margin: 0;
             padding: 5px;
         }
 
             .sidecontentbox .collapse-button {
-                background: #eee;
+                background: #292929;
                 border-radius: 2px;
-                border: 1px solid #999;
-                color: #333;
+                border: 1px solid #222;
+                color: #aaa;
                 display: inline-block;
                 font-size: 10px;
                 height: 10px;
@@ -1434,7 +1437,7 @@ pre, code {
     ------------------------------------------------------------------------------------ */
 
     .link {
-        border-bottom: 1px solid #E9E9E9;
+        border-bottom: 1px solid #272727;
         margin: 0;
         padding: 12px 0;
     }
@@ -1453,7 +1456,7 @@ pre, code {
         ------------------------------------------------------------------------------------ */
 
         .link .rank {
-            color: #CCC;
+            color: #555;
             float: left;
             font-family: inherit;
             font-size: 10px;
@@ -1470,17 +1473,17 @@ pre, code {
         }
 
         .link .score {
-            color: #CCC;
+            color: #666;
             min-width: 28px;
             text-align: center;
         }
 
             .link .score.dislikes {
-                color: #5DBEFF;
+                color: #438DB7;
             }
 
             .link .score.likes {
-                color: #FE5E5E;
+                color: #CC4C4C;
             }
 
         .score.likes, .score.dislikes,
@@ -1503,7 +1506,7 @@ pre, code {
 
         .thumbnail {
             background: none;
-            border: 2px solid #FFF;
+            border: 2px solid #333;
             border-radius: 4px;
             display: block;
             float: left;
@@ -1522,7 +1525,7 @@ pre, code {
         }
 
             a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
-                border-color: #4AABE7;
+                border-color: #438BB7;
             }
 
             .thumbnail > img, .thumbnail a > img {
@@ -1558,7 +1561,7 @@ pre, code {
         ------------------------------------------------------------------------------------ */
 
         .link .title {
-            color: #3A3A3A;
+            color: #B9B9B9;
             font-size: 16px;
             font-weight: normal;
             line-height: 22px;
@@ -1580,10 +1583,10 @@ pre, code {
             }
 
             .flair, .linkflairlabel {
-                background: #F8F8F8;
-                border: 1px solid #E6E6E6;
+                background: #444;
+                border: 1px solid #222;
                 border-radius: 2px;
-                color: #666;
+                color: #DDD;
                 line-height: 150%;
                 margin-right: 3px;
                 padding: 2px 4px;
@@ -1593,8 +1596,8 @@ pre, code {
             /* Sticky */
 
             .promoted {
-                background: #63D99C;
-                border: 1px solid #54C88C;
+                background: #B44747;
+                border: 1px solid #9D3131;
                 border-radius: 2px;
                 color: #FFF;
                 display: inline-block;
@@ -1614,16 +1617,16 @@ pre, code {
             /* Title */
 
             .link a.title.may-blank {
-                color: #4F4F4F;
+                color: #B9B9B9;
                 font-weight: bold;
             }
 
             .link a.title.may-blank:visited {
-                color: #665398;
+                color: #7E6ABB;
             }
 
             .link a.title.may-blank:hover {
-                color: #4AABE7;
+                color: #56A8DA;
                 text-decoration: none;
             }
 
@@ -1636,7 +1639,7 @@ pre, code {
             }
 
                 .domain a {
-                    color: #888;
+                    color: #777;
                     max-width: none;
                     overflow: hidden;
                     -ms-text-overflow: ellipsis;
@@ -1647,7 +1650,7 @@ pre, code {
                     white-space: nowrap;
                 }
                     .domain a:hover {
-                        color: #4AABE7;
+                        color: #438BB7;
                         text-decoration: none;
                     }
 
@@ -1662,26 +1665,26 @@ pre, code {
         }
 
             .expando-button.selftext.collapsed {
-                background: url( /Graphics/Light-SpriteSheet.png );
+                background: url( /Graphics/Dark-SpriteSheet.png );
                 background-position: 0 -42px;
                 height: 16px;
                 width: 16px;
             }
                 .expando-button.selftext.collapsed:hover {
-                    background: url( /Graphics/Light-SpriteSheet.png );
+                    background: url( /Graphics/Dark-SpriteSheet.png );
                     background-position: -16px -42px;
                     height: 16px;
                     width: 16px;
                 }
 
             .expando-button.selftext.expanded {
-                background: url( /Graphics/Light-SpriteSheet.png );
+                background: url( /Graphics/Dark-SpriteSheet.png );
                 background-position: 0 -58px;
                 height: 16px;
                 width: 16px;
             }
                 .expando-button.selftext.expanded:hover {
-                    background: url( /Graphics/Light-SpriteSheet.png );
+                    background: url( /Graphics/Dark-SpriteSheet.png );
                     background-position: -16px -58px;
                     height: 16px;
                     width: 16px;
@@ -1691,24 +1694,24 @@ pre, code {
         ------------------------------------------------------------------------------------ */
 
         .link a.author {
-            color: #6D6D6D;
+            color: #999;
             font-weight: bold;
         }
             .link a.author:visited {
-                color: #6D6D6D;
+                color: #999;
             }
             .link a.author:hover {
-                color: #4AABE7;
+                color: #438BB7;
             }
 
         .subreddit.may-blank {
-            color: #4399CD;
+            color: #438BB7;
         }
             .subreddit.may-blank:visited {
-                color: #4399CD;
+                color: #438BB7;
             }
             .subreddit.may-blank:hover {
-                color: #4AABE7;
+                color: #438BB7;
             }
 
         .link .tagline {
@@ -1716,7 +1719,7 @@ pre, code {
         }
 
         .tagline .post_upvotes {
-            color: #FE5E5E;
+            color: #CC4C4C;
             font-size: 95%;
             font-weight: bold;
             padding: 0 1px 0 2px;
@@ -1724,7 +1727,7 @@ pre, code {
         }
 
         .tagline .post_downvotes {
-            color: #5DBEFF;
+            color: #438DB7;
             font-size: 95%;
             font-weight: bold;
             padding: 0 2px 0 1px;
@@ -1750,7 +1753,7 @@ pre, code {
             }
 
                 .link .buttons li a {
-                    color: #808080;
+                    color: #BCBCBC;
                     font-weight: normal;
                 }
                     .link .buttons li a:hover {
@@ -1761,8 +1764,8 @@ pre, code {
         ------------------------------------------------------------------------------------ */
 
         .link .usertext .md {
-            background: #FCFCFC;
-            border: 1px solid #DEDEDE;
+            background: #313131;
+            border: 1px solid #272727;
             border-radius: 0;
             box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
             margin: 10px 0 0;
@@ -1770,11 +1773,11 @@ pre, code {
         }
 
             .link .usertext .md blockquote {
-                background: #FFF;
+                background: #333;
             }
 
             .link .usertext .md pre, .link .usertext .md code {
-                background: #FFF;
+                background: #333;
             }
 
     /* ! Sitetable : Comments
@@ -1801,7 +1804,7 @@ pre, code {
     }
 
         .comment .comment {
-            border-left: 1px solid #E4E4E4;
+            border-left: 1px solid #222;
             margin-left: 30px;
         }
 
@@ -1844,18 +1847,19 @@ pre, code {
             }
 
         .comment a.author {
-            color: #4AABE7;
+            color: #56A8DA;
             font-weight: bold;
         }
             .comment a.author:visited {
-                color: #4AABE7;
+                color: #56A8DA;
             }
             .comment a.author:hover {
+                color: #438BB7;
                 text-decoration: underline;
             }
 
         .comment a.submitter {
-            color: #308BC4;
+            color: #438BB7;
         }
 
         .comment a.moderator {
@@ -1912,7 +1916,9 @@ pre, code {
 }
 
     .footer {
-        border: none;
+        border: 1px #222;
+        border-radius: none;
+        border-style: solid none none;
         clear: both;
         color: inherit;
         margin: 30px 0 0;
@@ -1980,8 +1986,8 @@ pre, code {
         }
 
     #about-main .md .panel-heading-messagetitle {
-        background: #F6F6F6;
-        border-color: #DCDCDC;
+        background: #2E2E2E;
+        border-color: #222;
         border-style: none solid solid;
         border-width: 1px;
         margin-bottom: 0;
@@ -1989,7 +1995,7 @@ pre, code {
     }
 
     #about-main .md .panel-message-body {
-        border-color: #DCDCDC;
+        border-color: #222;
         border-radius: 0 0 3px 3px;
         border-style: none solid solid;
         border-width: 1px;
@@ -1997,29 +2003,29 @@ pre, code {
     }
 
     #about-main .btn-whoaverse-paging {
-        background: #F8F8F8;
-        background: -webkit-linear-gradient( top,#FDFDFD,#F7F7F7 );
-        background: -moz-linear-gradient( top,#FDFDFD,#F7F7F7 );
-        background: -ms-linear-gradient( top,#FDFDFD,#F7F7F7 );
-        background: -o-linear-gradient( top,#FDFDFD,#F7F7F7 );
-        border: 1px solid #DFDFDF;
+        background: #4B4B4B;
+        background: -webkit-linear-gradient( top,#4B4B4B,#454545 );
+        background: -moz-linear-gradient( top,#4B4B4B,#454545 );
+        background: -ms-linear-gradient( top,#4B4B4B,#454545 );
+        background: -o-linear-gradient( top,#4B4B4B,#454545 );
+        border: 1px solid #303030;
         border-radius: 3px;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
-        color: #4C4C4C;
+        color: #CCC;
         display: inline-block;
         font-size: 12px;
         padding: 3px 6px;
         text-align: center;
     }
         #about-main .btn-whoaverse-paging:hover {
-            background: #F8F8F8;
-            background: -webkit-linear-gradient( top,#F8F8F8,#F2F2F2 );
-            background: -moz-linear-gradient( top,#F8F8F8,#F2F2F2 );
-            background: -ms-linear-gradient( top,#F8F8F8,#F2F2F2 );
-            background: -o-linear-gradient( top,#F8F8F8,#F2F2F2 );
-            border-color: #CCC;
+            background: #424242;
+            background: -webkit-linear-gradient( top,#424242,#3B3B3B );
+            background: -moz-linear-gradient( top,#424242,#3B3B3B );
+            background: -ms-linear-gradient( top,#424242,#3B3B3B );
+            background: -o-linear-gradient( top,#424242,#3B3B3B );
+            border-color: #2C2C2C;
             box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
-            color: #444;
+            color: #EEE;
         }
 
     #about-main .md ul.flat-list {
@@ -2047,8 +2053,8 @@ pre, code {
 -------------------------------------------------------------------------------- */
 
 .well {
-    background: #F6F6F6;
-    border: 1px solid #DCDCDC;
+    background: #333;
+    border: 1px solid #303030;
     border-radius: 0;
     box-shadow: none;
     font-size: 12px;
@@ -2075,18 +2081,18 @@ textarea.form-control {
 }
 
     .modal-content {
-        background: #FFF;
+        background: #333;
         border: 0;
         border-radius: 4px;
     }
 
         .modal-header {
-            background: #4AABE7;
-            background: -webkit-linear-gradient( top,#69C0F5,#4AABE7 );
-            background: -moz-linear-gradient( top,#69C0F5,#4AABE7 );
-            background: -ms-linear-gradient( top,#69C0F5,#4AABE7 );
-            background: -o-linear-gradient( top,#69C0F5,#4AABE7 );
-            border-bottom: 2px solid #4C9FD2;
+            background: #438DB7;
+            background: -webkit-linear-gradient( top,#438DB7,#3E81A8 );
+            background: -moz-linear-gradient( top,#438DB7,#3E81A8 );
+            background: -ms-linear-gradient( top,#438DB7,#3E81A8 );
+            background: -o-linear-gradient( top,#438DB7,#3E81A8 );
+            border-bottom: 2px solid #377396;
             border-radius: 3px 3px 0 0;
         }
 
@@ -2111,12 +2117,12 @@ textarea.form-control {
             }
 
             .modal-body label.control-label {
-                background: #4AABE7;
-                background: -webkit-linear-gradient( top,#69C0F5,#4AABE7 );
-                background: -moz-linear-gradient( top,#69C0F5,#4AABE7 );
-                background: -ms-linear-gradient( top,#69C0F5,#4AABE7 );
-                background: -o-linear-gradient( top,#69C0F5,#4AABE7 );
-                border-bottom: 2px solid #4C9FD2;
+                background: #438DB7;
+                background: -webkit-linear-gradient( top,#438DB7,#3E81A8 );
+                background: -moz-linear-gradient( top,#438DB7,#3E81A8 );
+                background: -ms-linear-gradient( top,#438DB7,#3E81A8 );
+                background: -o-linear-gradient( top,#438DB7,#3E81A8 );
+                border-bottom: 2px solid #377396;
                 border-radius: 3px 3px 0 0;
                 color: #FFF;
                 display: block;
@@ -2150,7 +2156,7 @@ textarea.form-control {
                     width: 360px;
                 }
                     .modal-body .col-md-4 input.form-control:focus {
-                        border-color: #4C9FD2;
+                        border-color: #377396;
                     }
 
             .modal-body .checkbox {
@@ -2185,7 +2191,7 @@ textarea.form-control {
             }
 
         .modal-footer {
-            border-top: 1px solid #D6D6D6;
+            border-top: 1px solid #252525;
             font-size: 12px;
             padding: 15px;
             text-align: center;
@@ -2293,7 +2299,7 @@ textarea.form-control {
 
     .comment .arrow-downvote, .comment .arrow-downvoted,
     .comment .arrow-upvote, .comment .arrow-upvoted {
-        background: url( /Graphics/Light-SpriteSheet.png );
+        background: url( /Graphics/Dark-SpriteSheet.png );
         height: 16px;
         width: 16px;
     }

@@ -3,15 +3,21 @@
 
 @using (Html.BeginForm("UserPreferences", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
-    @Html.AntiForgeryToken()    
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary()
-    
+
     <div class="form-group">
         @Html.LabelFor(m => m.Disable_custom_css, new { @class = "col-md-2 control-label" })
         <div class="col-md-1">
             @Html.CheckBoxFor(m => m.Disable_custom_css, new { @class = "checkbox inline no_indent" })
         </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Night_mode, new { @class = "col-md-2 control-label" })
+        <div class="col-md-1">
+            @Html.CheckBoxFor(m => m.Night_mode, new { @class = "checkbox inline no_indent" })
         </div>
+    </div>
     <div class="form-group">
         @Html.LabelFor(m => m.OpenLinksInNewTab, new { @class = "col-md-2 control-label" })
         <div class="col-md-1">
@@ -28,6 +34,6 @@
         <div class="col-md-offset-2 col-md-3">
             <input type="submit" value="Save" class="btn-whoaverse" />
         </div>
-    </div>    
+    </div>
 }
 
