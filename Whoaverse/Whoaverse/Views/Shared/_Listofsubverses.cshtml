@@ -15,7 +15,7 @@
 @{
     object routeDataObject = new object();
     string showingSubverse;
-    string selectedFrontpageClass = "selected";
+    string selectedFrontpageClass = "";
     string selectedClass = "selected";
 
     routeDataObject = ViewContext.RouteData.Values["activeSubverse"];
@@ -23,14 +23,20 @@
     if (routeDataObject != null)
     {
         showingSubverse = ViewContext.RouteData.Values["activeSubverse"].ToString();
-        selectedFrontpageClass = "";
+        
+        if (showingSubverse == "/")
+        {
+            selectedFrontpageClass = "selected";
+        }
+        
         selectedClass = "selected";
     }
     else
     {
         showingSubverse = null;
+        selectedFrontpageClass = "";
         selectedClass = "";
-    }
+    }   
 
 }
 
@@ -42,13 +48,16 @@
             </ul>
             <ul class="flat-list sr-bar hover">
                 <li class="@selectedFrontpageClass">
-                    <span class="separator">-</span><a href="/">front</a>
+                    <span class="separator">-</span>
+                    <a href="/">front</a>
                 </li>
                 <li>
-                    <span class="separator">-</span><a href="/v/all">all</a>
+                    <span class="separator">-</span>
+                    <a href="/v/all">all</a>
                 </li>
                 <li>
-                    <span class="separator">-</span><a href="/random" class="random">random</a>
+                    <span class="separator">-</span>
+                    <a href="/random" class="random">random</a>
                 </li>
             </ul>
             <ul class="flat-list sr-bar hover" id="sr-bar">
@@ -75,6 +84,7 @@
             </ul>
 
         </div><a href="/subverses" id="sr-more-link">more »</a>
+        <br />
     </div>
 </div>
 

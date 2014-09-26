@@ -1,0 +1,47 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@{
+    string classOverview = "disabled";
+    string classComments = "disabled";
+    string classSubmissions = "disabled";
+    var selectedUser = ViewBag.selectedUser;
+    var whattodisplay = ViewBag.whattodisplay;
+
+    if (whattodisplay != null)
+    {
+        if (whattodisplay == "comments")
+        {
+            classComments = "selected";
+            classOverview = "disabled";
+            classSubmissions = "disabled";
+        }
+        if (whattodisplay == "overview")
+        {
+            classComments = "disabled";
+            classOverview = "selected";
+            classSubmissions = "disabled";
+        }
+        if (whattodisplay == "submissions")
+        {
+            classComments = "disabled";
+            classOverview = "disabled";
+            classSubmissions = "selected";
+        }
+    }
+}
+
+<ul class="tabmenu ">
+    <li class="@classOverview"><a href="~/user/@selectedUser">Overview</a></li>
+    <li class="@classComments"><a href="~/user/@selectedUser/comments">Comments</a></li>
+    <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">Submitted</a></li>
+</ul>

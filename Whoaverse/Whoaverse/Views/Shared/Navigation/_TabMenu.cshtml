@@ -1,0 +1,71 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@{
+    var selectedSubverse = ViewBag.selectedSubverse;
+    var sortingMode = ViewBag.sortingMode;
+    var selectedSubverseName = ViewBag.selectedSubverseName;
+    var action = ViewBag.action;
+    bool? frontpage = ViewBag.frontpage;
+
+    var classHot = "selected";
+    var classNew = "disabled";
+    var classDiscussion = "disabled";
+    var classLink = "disabled";
+
+    if (sortingMode != null)
+    {
+        if (sortingMode.Equals("new"))
+        {
+            classHot = "disabled";
+            classNew = "selected";
+        }
+    }
+
+    if (action != null)
+    {
+        if (action == "link")
+        {
+            classHot = "disabled";
+            classLink = "selected";
+        }
+        else
+        {
+            classHot = "disabled";
+            classDiscussion = "selected";
+        }
+    }    
+
+    if (frontpage.HasValue)
+    {
+        if (frontpage == true)
+        {
+            <ul class="tabmenu ">
+                <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses.">Hot</a></li>
+                <li class="@classNew"><a href="/new" title="Show latest submissions from default subverses.">New</a></li>
+                <li class="disabled"><a href="~/v/all/new" title="Show latest submissions from all subverses.">Discover</a></li>
+                <li class="@classDiscussion"><a href="/submit">Start a discussion</a></li>
+                <li class="@classLink"><a href="/submit?linkpost=true">Share a link</a></li>
+            </ul>
+        }
+    }
+    else
+    {
+        <span class="hover pagename"><a href="@selectedSubverse">@selectedSubverseName</a></span>
+        <ul class="tabmenu">
+            <li class="@classHot"><a href="@selectedSubverse">Hot</a></li>
+            <li class="@classNew"><a href="@selectedSubverse/new">New</a></li>
+            <li class="@classDiscussion"><a href="@selectedSubverse/submit">Start a discussion</a></li>
+            <li class="@classLink"><a href="@selectedSubverse/submit?linkpost=true">Share a link</a></li>
+        </ul>
+    }
+}

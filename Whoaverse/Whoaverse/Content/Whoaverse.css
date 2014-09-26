@@ -483,7 +483,8 @@ input, button, select, textarea {
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: #444;
     }
-    7.btn-whoaverse:active {
+    
+    .btn-whoaverse:active {
         position: relative;
         top: 1px;
     }
@@ -2189,7 +2190,7 @@ textarea.form-control {
 /* ! 404 Error
 -------------------------------------------------------------------------------- */
         
-.content.error-page {
+.error-page {
     margin: 0 10px;
 }
 

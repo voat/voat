@@ -35,7 +35,7 @@ namespace Whoaverse.Controllers
         [Authorize]
         public ActionResult Inbox(int? page)
         {
-            ViewBag.SelectedSubverse = "inbox";
+            ViewBag.PmView = "inbox";
             ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
             ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
             ViewBag.UnreadPrivateMessages = Whoaverse.Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
@@ -82,7 +82,7 @@ namespace Whoaverse.Controllers
         [Authorize]
         public ActionResult InboxCommentReplies(int? page)
         {
-            ViewBag.SelectedSubverse = "inbox";
+            ViewBag.PmView = "inbox";
 
             ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
             ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
@@ -130,7 +130,7 @@ namespace Whoaverse.Controllers
         [Authorize]
         public ActionResult InboxPostReplies(int? page)
         {
-            ViewBag.SelectedSubverse = "inbox";
+            ViewBag.PmView = "inbox";
 
             ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
             ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
@@ -178,7 +178,7 @@ namespace Whoaverse.Controllers
         [Authorize]
         public ActionResult InboxUserMentions()
         {
-            ViewBag.SelectedSubverse = "inboxusermentions";
+            ViewBag.PmView = "inboxusermentions";
             // get logged in username and fetch received user mentions
 
             // return user mentions inbox view
@@ -189,7 +189,7 @@ namespace Whoaverse.Controllers
         [Authorize]
         public ActionResult Sent(int? page)
         {
-            ViewBag.SelectedSubverse = "sent";
+            ViewBag.PmView = "sent";
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
@@ -217,9 +217,14 @@ namespace Whoaverse.Controllers
         [Authorize]
         public ActionResult Compose()
         {
-            ViewBag.SelectedSubverse = "compose";
+            ViewBag.PmView = "compose";
+            
+            string recipient = Request.Params["recipient"];
 
-            // get logged in username and configure compose view
+            if (recipient != null)
+            {
+                ViewBag.recipient = recipient;                   
+            }
 
             // return compose view
             return View();

@@ -248,6 +248,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HtmlElementsController.cs" />
     <Compile Include="Controllers\MessagingController.cs" />
+    <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SubmissionsController.cs" />
     <Compile Include="Controllers\SubversesController.cs" />
@@ -615,10 +616,14 @@
     <Content Include="Views\Subverses\Admin\ResignAsModerator.cshtml" />
     <Content Include="Views\Subverses\AdultContentFiltered.cshtml" />
     <Content Include="Views\AjaxViews\_PrivateMessageReplyForm.cshtml" />
+    <Content Include="Views\Shared\Navigation\_TabMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_PmMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_UserProfileMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_SubversesMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_DomainsMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\HtmlElements\" />
-    <Folder Include="Views\Submissions\" />
+    <Folder Include="Views\Nav\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -654,7 +654,6 @@ namespace Whoaverse.Controllers
             catch (Exception)
             {
                 return RedirectToAction("HeavyLoad", "Home");
-
             }
         }
 
@@ -662,7 +661,7 @@ namespace Whoaverse.Controllers
         public ViewResult SubversesSubscribed(int? page)
         {
             ViewBag.SelectedSubverse = "subverses";
-            ViewBag.whattodisplay = "subscribed";
+            ViewBag.SubversesView = "subscribed";
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
