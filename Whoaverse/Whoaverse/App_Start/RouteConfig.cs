@@ -399,6 +399,13 @@ namespace Whoaverse
                 defaults: new { controller = "AjaxGateway", action = "SubverseLinkFlairs" }
             );
 
+            // ajaxhelpers/titlefromuri
+            routes.MapRoute(
+                name: "TitleFromUri",
+                url: "ajaxhelpers/titlefromuri",
+                defaults: new { controller = "AjaxGateway", action = "TitleFromUri" }
+            );
+
             // ajaxhelpers/applylinkflair
             routes.MapRoute(
                 name: "ApplyLinkFlair",

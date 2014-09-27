@@ -49,6 +49,7 @@
             @Html.Label("Title", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-9">
                 @Html.TextBoxFor(m => m.Linkdescription, new { @class = "form-control", Value=@linkDescription })
+                <a href="javascript:void(0)" onclick="return suggestTitle()">Suggest title (first enter the URL)</a>
                 @Html.ValidationMessageFor(model => model.Linkdescription)
             </div>
         </div>

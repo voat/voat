@@ -17,22 +17,19 @@
 
     string loggedinUser = User.Identity.Name;
     DateTime today = System.DateTime.Now;
-    string linkPost = Request.Params["linkpost"];    
+    string linkPost = Request.Params["linkpost"];
 
     string selectedSubverse = ViewBag.selectedSubverse;
 }
 
 <style type="text/css">
-            @{
-                if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
-                {
-                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-                }
-                else if (!User.Identity.IsAuthenticated)
-                {
-                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-                }
-            }
+@if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+} else if (!User.Identity.IsAuthenticated)
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+}
 </style>
 
 <div class="content" role="main">

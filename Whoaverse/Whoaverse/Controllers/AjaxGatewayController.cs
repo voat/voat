@@ -88,5 +88,13 @@ namespace Whoaverse.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
+
+        // GET: title from Uri
+        [Authorize]
+        public string TitleFromUri()
+        {
+            string uri = Request.Params["uri"];
+            return Whoaverse.Utils.UrlUtility.GetTitleFromUri(uri);
+        }
     }
 }

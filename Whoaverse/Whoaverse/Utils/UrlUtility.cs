@@ -14,7 +14,10 @@ All Rights Reserved.
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -34,8 +37,36 @@ namespace Whoaverse.Utils
             catch (Exception)
             {
                 return "http://whoaverse.com";
+            }                  
+        }
+
+        // return remote page title from URI
+        public static string GetTitleFromUri(string @remoteUri)
+        {
+            try
+            {
+                HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(@remoteUri);
+                req.Timeout = 3000;
+                StreamReader SR = new StreamReader(req.GetResponse().GetResponseStream());
+
+                Char[] buffer = new Char[256];
+                int counter = SR.Read(buffer, 0, 256);
+                while (counter > 0)
+                {
+                    String outputData = new String(buffer, 0, counter);
+                    Match match = Regex.Match(outputData, @"<title>([^<]+)", RegexOptions.IgnoreCase);
+                    if (match.Success)
+                    {
+                        return match.Groups[1].Value;
+                    }
+                    counter = SR.Read(buffer, 0, 256);
+                }
+                return "We were unable to suggest a title.";
             }
-                  
+            catch (Exception)
+            {
+                return "We were unable to suggest a title.";
+            }            
         }
 
     }

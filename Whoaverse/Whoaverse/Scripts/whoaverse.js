@@ -786,3 +786,18 @@ function clearflair(messageId) {
         }
     });
 }
+
+// a function to suggest a title for given Uri
+function suggestTitle() {
+    var uri = $("#MessageContent").val();
+
+    // request a title from uri to title service
+    var title = $.get(
+        "/ajaxhelpers/titlefromuri?uri=" + uri,
+        null,
+        function (data) {
+            $("#Linkdescription").val(data)
+        }).fail(function () {
+            $("#Linkdescription").val("We were unable to suggest a title.")
+        });
+}

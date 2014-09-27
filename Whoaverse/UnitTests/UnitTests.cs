@@ -61,5 +61,13 @@ namespace UnitTests
             double result = Ranking.CalculateNewRank(0.5, 150, 20);
             Assert.AreEqual(0.0012465, result, 0.01, "Rank was not calculated.");
         }
+
+        [TestMethod]
+        public void TestRemoteTitle()
+        {
+            string testUri = "http://google.com";
+            string result = Whoaverse.Utils.UrlUtility.GetTitleFromUri(testUri);
+            Assert.AreEqual("Google", result, "Title from remote Uri does not match expected result.");
+        }
     }
 }
