@@ -27,13 +27,17 @@
         commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
     }
 
-    if (sortingMode != "new")
+    switch (sortingMode)
     {
-        urlaction = "Index";
-    }
-    else
-    {
-        urlaction = "New";
+        case "new":
+            urlaction = "SortedSubverseFrontpage";
+            break;
+        case "top":
+            urlaction = "SortedSubverseFrontpage";
+            break;
+        default:
+            urlaction = "Index";
+            break;
     }
 }
 
