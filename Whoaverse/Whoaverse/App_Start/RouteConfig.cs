@@ -368,7 +368,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "SubverseLatestPosts",
                 url: "v/{subversetoshow}/{sortingmode}",
-                defaults: new { controller = "Subverses", action = "New" }
+                defaults: new { controller = "Subverses", action = "SortedSubverseFrontpage" }
             );
 
             // ajaxhelpers/commentreplyform

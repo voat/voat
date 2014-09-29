@@ -13,19 +13,22 @@
 @{
     var classHot = "selected";
     var classNew = "disabled";
-    var classSubscribed = "disabled";
-    var sortingMode = ViewBag.sortingMode;
+    var classSubscribed = "disabled";    
     var subversesView = ViewBag.SubversesView;
+    string sortingMode = ViewBag.sortingMode;
 
-    if (sortingMode != null)
+    switch (sortingMode)
     {
-        if (sortingMode.Equals("new"))
-        {
-            classHot = "disabled";
+        case "new":            
             classNew = "selected";
-        }        
+            classHot = "disabled";
+            break;        
+        default:
+            classHot = "selected";
+            classNew = "disabled";
+            break;
     }
-    
+       
     if (subversesView != null)
     {
         classHot = "disabled";
