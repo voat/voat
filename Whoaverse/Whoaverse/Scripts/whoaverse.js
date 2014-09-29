@@ -801,3 +801,17 @@ function suggestTitle() {
             $("#Linkdescription").val("We were unable to suggest a title.")
         });
 }
+
+// a function to toggle sticky mode for a submission
+function toggleSticky(messageId) {
+    $.ajax({
+        type: "POST",
+        url: "/submissions/togglesticky/" + messageId,
+        success: function () {            
+            $('#togglesticky').html("toggled");
+        },
+        error: function () {
+            alert('Something went wrong while sending a sticky toggle request.');
+        }
+    });
+}

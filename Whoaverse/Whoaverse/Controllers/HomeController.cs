@@ -977,22 +977,24 @@ namespace Whoaverse.Controllers
             return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
         }
 
-        // GET: promoted submission
-        public ActionResult PromotedSubmission()
+        // GET: stickied submission from /v/announcements for display on frontpage
+        [ChildActionOnly]
+        public ActionResult StickiedSubmission()
         {
-            var submissionId = db.Promotedsubmissions.FirstOrDefault();
+            var stickiedSubmissions = db.Stickiedsubmissions
+                .Where(s => s.Subversename == "announcements")
+                .FirstOrDefault();
 
-            if (submissionId == null) return new EmptyResult();
+            if (stickiedSubmissions == null) return new EmptyResult();
 
-            Message promotedSubmission = db.Messages.Find(submissionId.promoted_submission_id);
+            Message stickiedSubmission = db.Messages.Find(stickiedSubmissions.Submission_id);
 
-            if (promotedSubmission != null)
-            {
-                return PartialView("_Promoted", promotedSubmission);
+            if (stickiedSubmission != null)
+            {                
+                return PartialView("~/Views/Subverses/_Stickied.cshtml", stickiedSubmission);
             }
             else
             {
-                //don't return a sidebar since subverse doesn't exist or is a system subverse
                 return new EmptyResult();
             }
         }

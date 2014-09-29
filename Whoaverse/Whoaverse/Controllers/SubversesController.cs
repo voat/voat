@@ -1451,5 +1451,27 @@ namespace Whoaverse.Controllers
 
             return PartialView("~/Views/Subverses/_SubverseModerators.cshtml", subverseModerators);
         }
+
+        // GET: stickied submission
+        [ChildActionOnly]
+        public ActionResult StickiedSubmission(string subverseName)
+        {
+            var stickiedSubmissions = db.Stickiedsubmissions
+                .Where(s => s.Subversename == subverseName)
+                .FirstOrDefault();
+
+            if (stickiedSubmissions == null) return new EmptyResult();
+
+            Message stickiedSubmission = db.Messages.Find(stickiedSubmissions.Submission_id);
+
+            if (stickiedSubmission != null)
+            {
+                return PartialView("_Stickied", stickiedSubmission);
+            }
+            else
+            {
+                return new EmptyResult();
+            }
+        }
     }
 }

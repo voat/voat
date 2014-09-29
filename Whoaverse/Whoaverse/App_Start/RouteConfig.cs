@@ -419,6 +419,13 @@ namespace Whoaverse
                 url: "submissions/clearlinkflair/{submissionId}",
                 defaults: new { controller = "Submissions", action = "ClearLinkFlair" }
             );
+
+            // ajaxhelpers/togglesticky
+            routes.MapRoute(
+                name: "ToggleSticky",
+                url: "submissions/togglesticky/{submissionId}",
+                defaults: new { controller = "Submissions", action = "ToggleSticky" }
+            );
             
             // default route
             routes.MapRoute(

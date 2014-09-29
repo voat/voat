@@ -107,5 +107,61 @@ namespace Whoaverse.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
+
+        // POST: toggle sticky status of a submission
+        [Authorize]
+        [HttpPost]
+        public ActionResult ToggleSticky(int submissionId)
+        {
+            // get model for selected submission
+            var submissionModel = db.Messages.Find(submissionId);
+
+            if (submissionModel != null)
+            {
+                // check if caller is subverse moderator, if not, deny change
+                if (Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+                {
+                    try
+                    {
+                        // find and clear current sticky if toggling
+                        var existingSticky = db.Stickiedsubmissions.Where(s => s.Submission_id == submissionId).FirstOrDefault();
+                        if (existingSticky != null)
+                        {
+                            db.Stickiedsubmissions.Remove(existingSticky);
+                            db.SaveChanges();
+                            return new HttpStatusCodeResult(HttpStatusCode.OK);
+                        }
+
+                        // remove all stickies for subverse matching submission subverse
+                        db.Stickiedsubmissions.RemoveRange(db.Stickiedsubmissions.Where(s => s.Subversename == submissionModel.Subverse));
+
+                        // set new submission as sticky
+                        var stickyModel = new Stickiedsubmission();
+                        stickyModel.Submission_id = submissionId;
+                        stickyModel.Stickied_by = User.Identity.Name;
+                        stickyModel.Stickied_date = DateTime.Now;
+                        stickyModel.Subversename = submissionModel.Subverse;
+
+                        db.Stickiedsubmissions.Add(stickyModel);
+                        db.SaveChanges();
+
+                        return new HttpStatusCodeResult(HttpStatusCode.OK);
+                    }
+                    catch (Exception)
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+                    }
+                }
+                else
+                {
+                    return new HttpUnauthorizedResult();
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
     }
+
 }

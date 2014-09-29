@@ -51,23 +51,21 @@
 }
 
 <style type="text/css">
-            @{
-                if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
-                {
-                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-                }
-                else if (!User.Identity.IsAuthenticated)
-                {
-                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-                }
-            }
+@if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+}
+else if (!User.Identity.IsAuthenticated)
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+}
 </style>
 
 <div class="content" role="main">
 
-    <br /><br />
-
     <div class="sitetable linklisting">
+
+        @Html.Action("StickiedSubmission", "Subverses", new { subverseName = selectedSubverse })
 
         @{
             //(current page number -1)*25

@@ -27,6 +27,7 @@ namespace Whoaverse.Models
             this.Messages = new HashSet<Message>();
             this.SubverseAdmins = new HashSet<SubverseAdmin>();
             this.Subverseflairsettings = new HashSet<Subverseflairsetting>();
+            this.Stickiedsubmissions = new HashSet<Stickiedsubmission>();
         }
     
         public string name { get; set; }
@@ -56,5 +57,6 @@ namespace Whoaverse.Models
         public virtual Defaultsubverse Defaultsubvers { get; set; }
         public virtual ICollection<SubverseAdmin> SubverseAdmins { get; set; }
         public virtual ICollection<Subverseflairsetting> Subverseflairsettings { get; set; }
+        public virtual ICollection<Stickiedsubmission> Stickiedsubmissions { get; set; }
     }
 }

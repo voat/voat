@@ -99,6 +99,9 @@
                                             <span class="option main active">
                                                 <a href="javascript:void(0)" class="togglebutton" onclick="return selectflair(@Model.Id, '@Model.Subverse')">flair</a>
                                             </span>
+                                            <span class="option main active">
+                                                <a href="javascript:void(0)" class="togglebutton" onclick="return toggleSticky(@Model.Id)" id="togglesticky">toggle sticky</a>
+                                            </span>
                                         }
                                         <span class="option error">
                                             are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletesubmission(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglesubmissionback(@Model.Id)">no</a>
@@ -116,6 +119,9 @@
                                         </span>
                                         <span class="option main active">
                                             <a href="javascript:void(0)" class="togglebutton" onclick="return selectflair(@Model.Id, '@Model.Subverse')">flair</a>
+                                        </span>
+                                        <span class="option main active">
+                                            <a href="javascript:void(0)" class="togglebutton" onclick="return toggleSticky(@Model.Id)" id="togglesticky">toggle sticky</a>
                                         </span>
                                         <span class="option error">
                                             are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletesubmission(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglesubmissionback(@Model.Id)">no</a>

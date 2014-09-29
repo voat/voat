@@ -300,6 +300,9 @@
     <Compile Include="Models\Sessiontracker.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Stickiedsubmission.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Subscription.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -575,8 +578,6 @@
     <Content Include="Views\Shared\_SidebarUserInfo.cshtml" />
     <Content Include="Views\Account\_DeleteAccount.cshtml" />
     <Content Include="Views\Account\AccountDeleted.cshtml" />
-    <Content Include="Views\Home\_Promoted.cshtml" />
-    <Content Include="Views\Shared\_PromotedSubmission.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionLink.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionSelf.cshtml" />
     <Content Include="Views\Shared\_SubmissionSelf.cshtml" />
@@ -624,6 +625,8 @@
     <Content Include="Views\Shared\Navigation\_UserProfileMenu.cshtml" />
     <Content Include="Views\Shared\Navigation\_SubversesMenu.cshtml" />
     <Content Include="Views\Shared\Navigation\_DomainsMenu.cshtml" />
+    <Content Include="Views\Shared\_StickiedSubmission.cshtml" />
+    <Content Include="Views\Subverses\_Stickied.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -29,16 +29,14 @@
 </style>
 
 <style type="text/css">
-            @{
-                if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
-                {
-                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-                }
-                else if (!User.Identity.IsAuthenticated)
-                {
-                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-                }
-            }
+@if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+}
+else if (!User.Identity.IsAuthenticated)
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+}
 </style>
 
 <!--
@@ -55,16 +53,14 @@
        lastEditDate = Model.LastEditDate,
        submissionId = Model.Id,
        likes = Model.Likes,
-       dislikes = Model.Dislikes       
+       dislikes = Model.Dislikes
    })
 }
 <style type="text/css">
-            @{
-                if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
-                {
-                    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-                }
-            }
+@if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+}
 </style>
 
 <div class="content" role="main">
@@ -123,7 +119,6 @@
                     {
                         <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId?sort=new" class="bylink" rel="nofollow">new</a></span>
                     }
-
                 }
                 else
                 {
@@ -136,7 +131,6 @@
                         <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/?sort=new" class="bylink" rel="nofollow">new</a></span>
                     }
                 }
-
             </div>
         </div>
         <div class="spacer"></div>

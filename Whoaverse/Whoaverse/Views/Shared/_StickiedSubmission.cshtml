@@ -24,19 +24,6 @@
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
 
-    string sortingMode = ViewBag.SortingMode;
-    string classHot = "disabled";
-    string classNew = "";
-
-    if (sortingMode != null)
-    {
-        if (sortingMode.Equals("new"))
-        {
-            classHot = "";
-            classNew = "disabled";
-        }
-    }
-
     //type 2 = urls
     if (Model.Type == 2)
     {
