@@ -1186,12 +1186,12 @@ pre, code {
             .tabmenu li {
                 display: inline;
                 font-weight: normal;
-                margin: 0 3px;
+                margin: 0 2px;
             }
 
                 .tabmenu li a {
                     background: none;
-                    padding: 7px 13px;
+                    padding: 7px 10px;
                 }
 
                 .tabmenu li.disabled a, .tabmenu li.selected a {
@@ -1479,7 +1479,7 @@ pre, code {
             float: left;
             font-family: inherit;
             font-size: 10px;
-            margin-top: 20px;
+            margin-top: 19px;
             text-align: center;
         }
 
@@ -1493,6 +1493,7 @@ pre, code {
 
         .link .score {
             color: #666;
+            line-height: 13px;
             min-width: 28px;
             text-align: center;
         }
@@ -1519,6 +1520,30 @@ pre, code {
         .dislikes div.score.dislikes {
             display: block;
         }
+
+        /* Scorebar */
+
+        .scorebar {
+            border-radius: 2px;
+            float: left;
+            height: 51px;
+            margin-right: 12px;
+            overflow: hidden;
+            width: 2px;
+        }
+
+            .scorebar-likes {
+                background: #883939;
+                clear: both;
+                width: 100%;
+            }
+
+            .scorebar-dislikes {
+                background: #36627D;
+                border-top: 1px solid #333;
+                clear: both;
+                width: 100%;
+            }
 
         /* ! Sitetable : Link : Thumbnail
         ------------------------------------------------------------------------------------ */
@@ -1773,7 +1798,7 @@ pre, code {
 
                 .link .buttons li a {
                     color: #BCBCBC;
-                    font-weight: normal;
+                    font-weight: bold;
                 }
                     .link .buttons li a:hover {
                         text-decoration: underline;
@@ -1787,7 +1812,7 @@ pre, code {
             border: 1px solid #272727;
             border-radius: 0;
             box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
-            margin: 10px 0 0;
+            margin: 15px 0 0;
             padding: 5px 10px;
         }
 

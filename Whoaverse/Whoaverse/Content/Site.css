@@ -9438,23 +9438,3 @@ body.with-listing-chooser {
         font-size: small;
         font-style: italic;
     }
-
-.scorebar {
-    width: 2px;
-    height: 56px;
-    overflow: hidden;
-    margin-right: 12px;
-    float: left;    
-}
-
-.scorebar-likes {
-    width: 100%;
-    clear: both;
-    background: none repeat scroll 0% 0% #FE5E5E;
-}
-
-.scorebar-dislikes {
-    width: 100%;
-    clear: both;
-    background: none repeat scroll 0% 0% #4AABE7;
-}
