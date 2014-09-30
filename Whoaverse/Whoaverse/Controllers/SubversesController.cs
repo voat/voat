@@ -275,12 +275,14 @@ namespace Whoaverse.Controllers
                         subverse.name = subverseTmpModel.Name;
                         subverse.title = "/v/" + subverseTmpModel.Name;
                         subverse.description = subverseTmpModel.Description;
+                        subverse.sidebar = subverseTmpModel.Sidebar;
+                        subverse.creation_date = System.DateTime.Now;
+
+                        // setup default values
                         subverse.type = "link";
                         subverse.enable_thumbnails = true;
                         subverse.rated_adult = false;
-                        subverse.private_subverse = false;
-                        subverse.sidebar = subverseTmpModel.Sidebar;
-                        subverse.creation_date = System.DateTime.Now;
+                        subverse.private_subverse = false;                        
 
                         // check if subverse exists before attempting to create it
                         if (db.Subverses.Find(subverse.name) == null)

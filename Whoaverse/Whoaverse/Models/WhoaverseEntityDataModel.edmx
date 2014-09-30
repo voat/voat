@@ -198,16 +198,16 @@
           <Property Name="spam_filter_links" Type="nvarchar" MaxLength="10" />
           <Property Name="spam_filter_selfpost" Type="nvarchar" MaxLength="10" />
           <Property Name="spam_filter_comments" Type="nvarchar" MaxLength="10" />
-          <Property Name="rated_adult" Type="bit" />
+          <Property Name="rated_adult" Type="bit" Nullable="false" />
           <Property Name="allow_default" Type="bit" />
-          <Property Name="enable_thumbnails" Type="bit" />
+          <Property Name="enable_thumbnails" Type="bit" Nullable="false" />
           <Property Name="exclude_sitewide_bans" Type="bit" />
           <Property Name="traffic_stats_public" Type="bit" />
           <Property Name="minutes_to_hide_comments" Type="int" />
           <Property Name="creation_date" Type="smalldatetime" Nullable="false" />
           <Property Name="stylesheet" Type="nvarchar(max)" />
           <Property Name="subscribers" Type="int" />
-          <Property Name="private_subverse" Type="bit" />
+          <Property Name="private_subverse" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Userbadges">
           <Key>
@@ -595,9 +595,9 @@
           <Property Name="spam_filter_links" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="spam_filter_selfpost" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="spam_filter_comments" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="rated_adult" Type="Boolean" DefaultValue="false" />
-          <Property Name="allow_default" Type="Boolean" DefaultValue="false" />
-          <Property Name="enable_thumbnails" Type="Boolean" DefaultValue="true" />
+          <Property Name="rated_adult" Type="Boolean" DefaultValue="false" Nullable="false" />
+          <Property Name="allow_default" Type="Boolean" DefaultValue="false" Nullable="false" />
+          <Property Name="enable_thumbnails" Type="Boolean" DefaultValue="true" Nullable="false" />
           <Property Name="exclude_sitewide_bans" Type="Boolean" DefaultValue="false" />
           <Property Name="traffic_stats_public" Type="Boolean" DefaultValue="false" />
           <Property Name="minutes_to_hide_comments" Type="Int32" />
@@ -608,7 +608,7 @@
           <NavigationProperty Name="SubverseAdmins" Relationship="whoaverseModel.FK_SubverseAdmins_Subverses" FromRole="Subverse" ToRole="SubverseAdmin" />
           <Property Name="stylesheet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="subscribers" Type="Int32" DefaultValue="1" />
-          <Property Name="private_subverse" Type="Boolean" DefaultValue="false" />
+          <Property Name="private_subverse" Type="Boolean" DefaultValue="false" Nullable="false" />
           <NavigationProperty Name="Subverseflairsettings" Relationship="whoaverseModel.FK_Subverseflairsettings_Subverses1" FromRole="Subverse" ToRole="Subverseflairsetting" />
           <NavigationProperty Name="Stickiedsubmissions" Relationship="whoaverseModel.FK_Stickiedsubmissions_Subverses" FromRole="Subverse" ToRole="Stickiedsubmission" />
           </EntityType>

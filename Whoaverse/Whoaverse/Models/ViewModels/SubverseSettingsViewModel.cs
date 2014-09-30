@@ -45,10 +45,17 @@ namespace Whoaverse.Models.ViewModels
         [StringLength(50, ErrorMessage = "The label for new self submissions is limited to 50 characters.")]
         public string Label_sumit_new_selfpost { get; set; }
 
-        public bool? Rated_adult { get; set; }
-        public bool? Allow_default { get; set; }
-        public bool? Private_subverse { get; set; }
-        public bool? Enable_thumbnails { get; set; }
+        [Required(ErrorMessage = "This setting is required.")]
+        public bool Rated_adult { get; set; }
+
+        [Required(ErrorMessage = "This setting is required.")]
+        public bool Allow_default { get; set; }
+
+        [Required(ErrorMessage = "This setting is required.")]
+        public bool Private_subverse { get; set; }
+
+        [Required(ErrorMessage = "This setting is required.")]
+        public bool Enable_thumbnails { get; set; }
 
     }
 }

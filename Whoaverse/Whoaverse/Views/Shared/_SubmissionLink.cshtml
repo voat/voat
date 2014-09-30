@@ -30,10 +30,7 @@
     bool ratedAdult = false;
     if (Model.Subverses != null)
     {
-        if (Model.Subverses.rated_adult.HasValue)
-        {
-            ratedAdult = Model.Subverses.rated_adult.Value;
-        }
+        ratedAdult = Model.Subverses.rated_adult;        
     }
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];

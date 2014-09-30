@@ -42,10 +42,20 @@ namespace Whoaverse.Models
         public string Label_sumit_new_selfpost { get; set; }
         public string Spam_filter_links { get; set; }
         public string Spam_filter_selfpost { get; set; }
-        public string Spam_filter_comments { get; set; }
-        public Nullable<int> Rated_adult { get; set; }        
-        public Nullable<int> Allow_default { get; set; }
-        public Nullable<int> Enable_thumbnails { get; set; }
+        public string Spam_filter_comments { get; set; }       
+ 
+        [Required(ErrorMessage = "This setting is required.")]        
+        public bool Rated_adult { get; set; }
+
+        [Required(ErrorMessage = "This setting is required.")]        
+        public bool Allow_default { get; set; }
+
+        [Required(ErrorMessage = "This setting is required.")]
+        public bool Enable_thumbnails { get; set; }
+
+        [Required(ErrorMessage = "This setting is required.")]
+        public bool Private_subverse { get; set; }
+
         public Nullable<int> Exclude_sitewide_bans { get; set; }
         public Nullable<int> Traffic_stats_public { get; set; }
         public Nullable<int> Minutes_to_hide_comments { get; set; }        

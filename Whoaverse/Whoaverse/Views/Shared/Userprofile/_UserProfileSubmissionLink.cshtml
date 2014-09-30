@@ -34,10 +34,7 @@
     bool ratedAdult = false;
     if (Model.Subverses != null)
     {
-        if (Model.Subverses.rated_adult.HasValue)
-        {
-            ratedAdult = Model.Subverses.rated_adult.Value;
-        }
+        ratedAdult = Model.Subverses.rated_adult;
     }
 
     //type 2 = urls, model.messagecontent = url, model.linkdescription = link description
