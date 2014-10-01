@@ -92,13 +92,11 @@ namespace Whoaverse.Controllers
         [System.Web.Http.HttpGet]
         public IEnumerable<ApiMessage> Frontpage()
         {
-            // DISTINCT ISSUE
             // get only submissions from default subverses, order by rank
             var frontpageSubmissions = (from message in db.Messages
                                         where message.Name != "deleted"
                                         join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name                                        
                                         select message)
-                                        .Distinct()
                                         .OrderByDescending(s => s.Rank)
                                         .Take(100)
                                         .ToList();
@@ -138,12 +136,10 @@ namespace Whoaverse.Controllers
         [System.Web.Http.HttpGet]
         public IEnumerable<ApiMessage> SubverseFrontpage(string subverse)
         {
-            // DISTINCT ISSUE
             // get only submissions from given subverses, order by rank
             var frontpageSubmissions = (from message in db.Messages
                                         where message.Name != "deleted" && message.Subverse == subverse
                                         select message)
-                                        .Distinct()
                                         .OrderByDescending(s => s.Rank)
                                         .Take(100)
                                         .ToList();

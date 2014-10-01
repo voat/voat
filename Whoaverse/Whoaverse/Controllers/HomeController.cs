@@ -751,7 +751,7 @@ namespace Whoaverse.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
-                    // DISTINCT ISSUE
+                    // DISTINCT ISSUE: rewrite the query to avoid use of resource-intensive distinct
                     var submissions = (from message in db.Messages
                                        where message.Name != "deleted"
                                        join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
@@ -766,13 +766,11 @@ namespace Whoaverse.Controllers
                 }
                 else
                 {
-                    // DISTINCT ISSUE
                     // get only submissions from default subverses, order by rank
                     var submissions = (from message in db.Messages
                                        where message.Name != "deleted"
                                        join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                        select message)
-                                       .Distinct()
                                        .OrderByDescending(s => s.Rank)
                                        .Take(500)
                                        .ToList();
@@ -820,7 +818,7 @@ namespace Whoaverse.Controllers
                     // also do a check so that user actually has subscriptions
                     if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                     {
-                        // DISTINCT ISSUE
+                        // DISTINCT ISSUE: rewrite the query to avoid use of resource-intensive distinct
                         var submissions = (from message in db.Messages
                                            where message.Name != "deleted"
                                            join subscribedsubverses in db.Subscriptions on message.Subverse equals subscribedsubverses.SubverseName
@@ -835,13 +833,11 @@ namespace Whoaverse.Controllers
                     }
                     else
                     {
-                        // DISTINCT ISSUE
                         // get only submissions from default subverses, sort by date
                         var submissions = (from message in db.Messages
                                            where message.Name != "deleted"
                                            join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                           select message)
-                                           .Distinct()
+                                           select message)                                           
                                            .OrderByDescending(s => s.Date)
                                            .Take(500)
                                            .ToList();
@@ -1010,11 +1006,9 @@ namespace Whoaverse.Controllers
                 Subverse subverse = db.Subverses.Find(subverseName);
                 if (subverse != null)
                 {
-                    // DISTINCT ISSUE
                     submissions = (from message in db.Messages
                                    where message.Name != "deleted" && message.Subverse == subverse.name
                                    select message)
-                                   .Distinct()
                                    .OrderByDescending(s => s.Rank)
                                    .Take(25)
                                    .ToList();
@@ -1022,13 +1016,11 @@ namespace Whoaverse.Controllers
             }
             else
             {
-                // DISTINCT ISSUE
                 // return site-wide frontpage submissions
                 submissions = (from message in db.Messages
                                where message.Name != "deleted"
                                join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                               select message)
-                               .Distinct()
+                               select message)                               
                                .OrderByDescending(s => s.Rank)
                                .Take(25)
                                .ToList();
