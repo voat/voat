@@ -588,7 +588,7 @@ input, button, select, textarea {
     font-size: 13px;
     line-height: 140%;
     margin-bottom: 10px;
-    max-width: 825px;
+    max-width: 650px;
     padding: 8px;
     -webkit-transition: border-color 0.1s ease-in-out 0s;
     -moz-transition: border-color 0.1s ease-in-out 0s;
@@ -789,7 +789,7 @@ input, button, select, textarea {
 
 .md {
     font-size: 13px;
-    max-width: 825px;
+    max-width: 650px;
     overflow: auto;
 }
 
@@ -2320,7 +2320,7 @@ textarea.form-control {
 
     .comment .arrow-downvote, .comment .arrow-downvoted,
     .comment .arrow-upvote, .comment .arrow-upvoted {
-        background: url( /Graphics/Light-SpriteSheet.png );
+        background: url( /Graphics/Dark-SpriteSheet.png );
         height: 16px;
         width: 16px;
     }
@@ -2370,6 +2370,11 @@ textarea.form-control {
 }
 
 @media ( max-width: 420px ) {
+    .tabmenu li a {
+        font-size: 12px;
+        padding: 6px 4px;
+    }
+
     .modal-dialog {
         width: 300px;
     }
