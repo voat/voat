@@ -1661,12 +1661,12 @@ pre, code {
             /* Title */
 
             .link a.title.may-blank {
-                color: #B9B9B9;
+                color: #C3C3C3;
                 font-weight: bold;
             }
 
             .link a.title.may-blank:visited {
-                color: #7E6ABB;
+                color: #8A8A8A;
             }
 
             .link a.title.may-blank:hover {
