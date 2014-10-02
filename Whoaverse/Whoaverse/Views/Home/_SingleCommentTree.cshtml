@@ -54,13 +54,13 @@
             {
                 if (firstComment.Likes - firstComment.Dislikes < -3)
                 {
-                    <div class="thread id-@firstComment.Id comment " data-fullname=" t1_cgkmgmm" data-ups="1" data-downs="0">
+                    <div class="thread id-@firstComment.Id comment" data-fullname="" data-ups="" data-downs="">
                         @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode } })
                     </div>
                 }
                 else
                 {
-                    <div class="thread id-@firstComment.Id comment " data-fullname=" t1_cgkmgmm" data-ups="1" data-downs="0">
+                    <div class="thread id-@firstComment.Id comment" data-fullname="" data-ups="" data-downs="">
                         @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
                     </div>
                 }

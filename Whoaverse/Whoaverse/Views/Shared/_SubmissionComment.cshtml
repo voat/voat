@@ -286,13 +286,13 @@
 
         if (parentIsHidden)
         {
-            <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0" style="display:none">
+            <div class="child id-@childComment.Id comment" data-fullname="" data-ups="" data-downs="" style="display:none">
                 @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter } })
             </div>
         }
         else
         {
-            <div class="child id-@childComment.Id comment " data-fullname="t1_cgkmgmm" data-ups="1" data-downs="0" style="">
+            <div class="child id-@childComment.Id comment" data-fullname="" data-ups="" data-downs="" style="">
                 @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter } })
             </div>
         }

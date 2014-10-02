@@ -951,7 +951,7 @@ a.author {
     margin-right: 0.5em;
 }
 
-.thing .parent .author {
+.submission .parent .author {
     margin-right: 0.5em;
 }
 
@@ -1182,7 +1182,7 @@ a.author {
     margin-left: 60px;
 }
 
-.thing .title {
+.submission .title {
     color: blue;
     outline: none;
     margin-right: .4em;
@@ -1190,11 +1190,11 @@ a.author {
     overflow: hidden;
 }
 
-    .thing .title:visited, .thing.visited .title {
+    .submission .title:visited, .submission.visited .title {
         color: #551a8b;
     }
 
-.thing.stickied a.title, .thing.stickied a.title:visited, .thing.stickied a.title.visited {
+.submission.stickied a.title, .submission.stickied a.title:visited, .submission.stickied a.title.visited {
     font-weight: bold;
     color: #228822;
 }
@@ -2185,7 +2185,7 @@ a.star {
         display: inline;
     }
 
-.thing .stub {
+.submission .stub {
     display: none;
 }
 
@@ -3904,7 +3904,7 @@ button.button[disabled] {
     font-size: larger;
 }
 
-.button.thing {
+.button.submission {
     margin: 0px;
     padding: 0px;
 }
@@ -4714,7 +4714,7 @@ form input[type=checkbox], form input[type=radio] {
     background-color: #f6e69f;
 }
 
-.thing.spam {
+.submission.spam {
     background-color: #fa8072;
 }
 
@@ -7524,7 +7524,7 @@ body:not(.gold) .allminus-link {
     margin: 5px 0;
 }
 
-.thing .gold-form {
+.submission .gold-form {
     margin: 10px 0 10px 4px;
     min-height: 0;
 }

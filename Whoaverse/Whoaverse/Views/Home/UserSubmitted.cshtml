@@ -45,7 +45,7 @@
             submissionClass = "";
         }
 
-        <div class="thing id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="0">
+        <div class="submission id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
 
             @Html.Partial("Userprofile/_UserProfileSubmission", submission)
 
