@@ -2320,7 +2320,7 @@ textarea.form-control {
 
     .comment .arrow-downvote, .comment .arrow-downvoted,
     .comment .arrow-upvote, .comment .arrow-upvoted {
-        background: url( /Graphics/Dark-SpriteSheet.png );
+        background: url( /Graphics/Light-SpriteSheet.png );
         height: 16px;
         width: 16px;
     }
