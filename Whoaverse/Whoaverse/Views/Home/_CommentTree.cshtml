@@ -36,12 +36,22 @@
     }  
 }
 
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="menuarea">
+        <div class="spacer">
+            <span class="label label-default">want to join the discussion? <a href="javascript:void(0)" onclick="mustLogin();" class="login-required">login</a> or <a href="/account/register">register</a> in seconds.</span>
+        </div>
+    </div>
+}
+
+<div class="menuarea">
+    <h2><span class="label label-default">top 200 comments</span>&nbsp;<a href="javascript:void(0)" class="title-button ">show 500</a></h2>
+</div>
+
 <!-- show top 200 submission comments, orderby number of votes each comment has received -->
 <div class='commentarea'>
-    <div>
-        <h2><span class="label label-default">top 200 comments</span>&nbsp;<a href="#" class="title-button ">show 500</a></h2>
-    </div>
-
+    
     <div id="siteTable_t3_24nbon" class="sitetable nestedlisting">
 
         @{              
