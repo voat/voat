@@ -1196,7 +1196,7 @@ a.author {
 
 .submission.stickied a.title, .submission.stickied a.title:visited, .submission.stickied a.title.visited {
     font-weight: bold;
-    color: #228822;
+    color: #228822;    
 }
 
 body.with-listing-chooser.explore-page #header .pagename {
@@ -9438,3 +9438,4 @@ body.with-listing-chooser {
         font-size: small;
         font-style: italic;
     }
+

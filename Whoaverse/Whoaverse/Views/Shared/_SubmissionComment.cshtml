@@ -85,7 +85,7 @@
         {
             int commentScore = commentModel.Likes - commentModel.Dislikes;
 
-            <a href="/user/@commentModel.Name" class="author gray may-blank id-t2_@commentId">@commentModel.Name</a>
+            <a href="/user/@commentModel.Name" class="author gray may-blank">@commentModel.Name</a>
             <span class="userattrs"></span>
             <span class="score dislikes">@commentModel.Dislikes points</span>
             <span class="score onlycollapsed">@commentScore points</span>
@@ -110,23 +110,23 @@
                 {
                     if (isOpModerator || isOpSubverseAdmin)
                     {
-                        <a href="/user/@commentModel.Name" class="author moderator may-blank id-t2_@commentId">@commentModel.Name</a>
+                        <a href="/user/@commentModel.Name" class="author moderator may-blank">@commentModel.Name</a>
                         <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>, <a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
                     }
                     else
                     {
-                        <a href="/user/@commentModel.Name" class="author submitter may-blank id-t2_@commentId">@commentModel.Name</a>
+                        <a href="/user/@commentModel.Name" class="author submitter may-blank">@commentModel.Name</a>
                         <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>]</span>
                     }
                 }
                 else if (isCommentAuthorModerator || isCommehtAuthorSubverseAdmin)
                 {
-                    <a href="/user/@commentModel.Name" class="author moderator may-blank id-t2_@commentId">@commentModel.Name</a>
+                    <a href="/user/@commentModel.Name" class="author moderator may-blank">@commentModel.Name</a>
                     <span class="userattrs">[<a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
                 }
                 else
                 {
-                    <a href="/user/@commentModel.Name" class="author may-blank id-t2_@commentId">@commentModel.Name</a>
+                    <a href="/user/@commentModel.Name" class="author may-blank">@commentModel.Name</a>
                     <span class="userattrs"></span>
                 }
 
