@@ -14,13 +14,9 @@ All Rights Reserved.
 
 using PagedList;
 using System;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Whoaverse.Models;
 using Whoaverse.Utils;

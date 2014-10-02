@@ -13,11 +13,8 @@ All Rights Reserved.
 */
 
 using PagedList;
-using Recaptcha.Web;
-using Recaptcha.Web.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;

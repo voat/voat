@@ -581,6 +581,7 @@ namespace Whoaverse.Utils
             return userStatsModel;
         }
 
+        // STUB
         // check if a given user has used his daily posting quota
         public static bool UserDailyPostingQuotaUsed(string userName)
         {

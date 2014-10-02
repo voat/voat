@@ -12,10 +12,6 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Whoaverse.Controllers

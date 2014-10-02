@@ -13,8 +13,6 @@ All Rights Reserved.
 */
 
 using PagedList;
-using Recaptcha.Web;
-using Recaptcha.Web.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -573,7 +571,7 @@ namespace Whoaverse.Controllers
                         }
 
                         // check if target subverse has thumbnails setting enabled before generating a thumbnail
-                        if (targetSubverse.enable_thumbnails == true || targetSubverse.enable_thumbnails == null)
+                        if (targetSubverse.enable_thumbnails == true)
                         {
 
                             // if domain is youtube, try generating a thumbnail for the video

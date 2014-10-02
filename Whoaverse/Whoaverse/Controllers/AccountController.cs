@@ -16,16 +16,12 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Whoaverse.Models;
 using Whoaverse.Utils;
-using Recaptcha.Web;
-using Recaptcha.Web.Mvc;
-using System.Net.Security;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Whoaverse.Controllers
 {

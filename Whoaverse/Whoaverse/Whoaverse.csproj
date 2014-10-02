@@ -115,10 +115,6 @@
     <Reference Include="PagedList.Mvc">
       <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="Recaptcha.Web, Version=1.6.0.0, Culture=neutral, PublicKeyToken=ed5d2e6fb7aa7814, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RecaptchaNet.1.6.0\lib\net45\Recaptcha.Web.dll</HintPath>
-    </Reference>
     <Reference Include="RouteDebugger">
       <HintPath>..\packages\routedebugger.2.1.4.0\lib\net40\RouteDebugger.dll</HintPath>
     </Reference>
@@ -392,6 +388,9 @@
       <DependentUpon>Site.css</DependentUpon>
     </Content>
     <Content Include="Content\Whoaverse-Dark.css" />
+    <Content Include="Content\Whoaverse-Dark.min.css">
+      <DependentUpon>Whoaverse-Dark.css</DependentUpon>
+    </Content>
     <Content Include="Content\Whoaverse.css" />
     <Content Include="Content\Whoaverse.min.css">
       <DependentUpon>Whoaverse.css</DependentUpon>
