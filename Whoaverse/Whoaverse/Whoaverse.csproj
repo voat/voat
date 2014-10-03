@@ -626,6 +626,7 @@
     <Content Include="Views\Shared\Navigation\_DomainsMenu.cshtml" />
     <Content Include="Views\Shared\_StickiedSubmission.cshtml" />
     <Content Include="Views\Subverses\_Stickied.cshtml" />
+    <Content Include="Views\Shared\_DefaultMessage.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -80,6 +80,11 @@ else if (!User.Identity.IsAuthenticated)
             string submissionClass = "";
         }
 
+        @if (Model.Count < 1)
+        {
+            Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() { {"selectedSubverse", selectedSubverse }});
+        }
+
         @foreach (var submission in Model)
         {
             //type 2 = link
