@@ -203,13 +203,13 @@ input, button, select, textarea {
 /* Vote number values */
 
 .post_upvotes {
-    color: #FE5E5E;
+    color: #4AABE7;
     visibility: visible;
     font-weight: bold;
 }
 
 .post_downvotes {
-    color: #5DBEFF;
+    color: #8870FF;
     visibility: visible;
     font-weight: bold;
 }
@@ -580,7 +580,7 @@ input, button, select, textarea {
 ------------------------------------------------------------------------------------ */
 
 .commenttextarea {
-    background: none;
+    background: #FFF;
     border: 1px solid #CBCBCB;
     border-radius: 2px;
     color: #333;
@@ -1221,6 +1221,7 @@ pre, code {
         border: 1px solid #DCDCDC;
         border-radius: 0 0 0 5px;
         border-style: none none solid solid;
+        font-size: 11px;
         line-height: 100%;
         padding: 7px;
         position: absolute;
@@ -1478,11 +1479,11 @@ pre, code {
         }
 
             .link .score.dislikes {
-                color: #5DBEFF;
+                color: #8870FF;
             }
 
             .link .score.likes {
-                color: #FE5E5E;
+                color: #4AABE7;
             }
 
         .score.likes, .score.dislikes,
@@ -1512,13 +1513,13 @@ pre, code {
         }
 
             .scorebar-likes {
-                background: #FF8F8F;
+                background: #82CFFF;
                 clear: both;
                 width: 100%;
             }
 
             .scorebar-dislikes {
-                background: #82CFFF;
+                background: #B6A6FF;
                 border-top: 1px solid #FFF;
                 clear: both;
                 width: 100%;
@@ -1619,8 +1620,8 @@ pre, code {
             /* Sticky */
 
             .promoted {
-                background: #63D99C;
-                border: 1px solid #54C88C;
+                background: #A26DF9;
+                border: 1px solid #8358CB;
                 border-radius: 2px;
                 color: #FFF;
                 display: inline-block;
@@ -1716,24 +1717,25 @@ pre, code {
         /* ! Sitetable : Link : Tag line
         ------------------------------------------------------------------------------------ */
 
-        .link a.author {
+        .link a.subreddit {
             color: #6D6D6D;
             font-weight: bold;
         }
-            .link a.author:visited {
+            .link a.subreddit:visited {
                 color: #6D6D6D;
             }
-            .link a.author:hover {
+            .link a.subreddit:hover {
                 color: #4AABE7;
             }
 
-        .subreddit.may-blank {
+        .link a.author {
             color: #4399CD;
+            font-weight: normal;
         }
-            .subreddit.may-blank:visited {
+            .link a.author:visited {
                 color: #4399CD;
             }
-            .subreddit.may-blank:hover {
+            .link a.author:hover {
                 color: #4AABE7;
             }
 
@@ -1742,7 +1744,7 @@ pre, code {
         }
 
         .tagline .post_upvotes {
-            color: #FE5E5E;
+            color: #4AABE7;
             font-size: 95%;
             font-weight: bold;
             padding: 0 1px 0 2px;
@@ -1750,7 +1752,7 @@ pre, code {
         }
 
         .tagline .post_downvotes {
-            color: #5DBEFF;
+            color: #8870FF;
             font-size: 95%;
             font-weight: bold;
             padding: 0 2px 0 1px;
@@ -1767,7 +1769,7 @@ pre, code {
             padding: 0;
         }
 
-            .link .buttons li {
+            .link .flat-list li {
                 border: 0;
                 display: inline-block;
                 line-height: 150%;
@@ -1775,11 +1777,11 @@ pre, code {
                 text-align: center;
             }
 
-                .link .buttons li a {
+                .link .flat-list li a {
                     color: #808080;
                     font-weight: bold;
                 }
-                    .link .buttons li a:hover {
+                    .link .flat-list li a:hover {
                         text-decoration: underline;
                     }
 
@@ -2240,9 +2242,9 @@ textarea.form-control {
     }
 
     #header-bottom-right {
-        font-size: 9px;
+        font-size: 10px;
         line-height: 80%;
-        padding: 4px 7px;
+        padding: 6px;
         top: 17px;
     }
 
@@ -2253,7 +2255,7 @@ textarea.form-control {
 
     .tabmenu {
         line-height: 63px;
-        padding-top: 8px;
+        padding-top: 11px;
     }
 }
 
@@ -2311,7 +2313,7 @@ textarea.form-control {
     }
 
     .link .title {
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .comment .comment {
@@ -2360,6 +2362,70 @@ textarea.form-control {
 }
 
 @media ( max-width: 550px ) {
+    .expando-button {
+        float: right;
+        height: 32px;
+        margin: 5px 5px 2px 0;
+        width: 32px;
+    }
+
+        .expando-button.selftext.collapsed {
+            background: url( /Graphics/Light-SpriteSheet.png );
+            background-position: -32px -42px;
+            height: 32px;
+            width: 32px;
+        }
+            .expando-button.selftext.collapsed:hover {
+                background: url( /Graphics/Light-SpriteSheet.png );
+                background-position: -32px -42px;
+                height: 32px;
+                width: 32px;
+            }
+
+        .expando-button.selftext.expanded {
+            background: url( /Graphics/Light-SpriteSheet.png );
+            background-position: -64px -42px;
+            height: 32px;
+            width: 32px;
+        }
+            .expando-button.selftext.expanded:hover {
+                background: url( /Graphics/Light-SpriteSheet.png );
+                background-position: -64px -42px;
+                height: 32px;
+                width: 32px;
+            }
+
+    .link .flat-list.buttons {
+        padding: 5px 0;
+    }
+
+        .link .flat-list.buttons li a {
+            background: #FFF;
+            border: 1px solid #DEDEDE;
+            border-radius: 2px;
+            box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+            padding: 4px 6px;
+        }
+            .link .flat-list.buttons li a:hover {
+                text-decoration: none;
+            }
+
+    .comment .flat-list.buttons {
+        display: inline-block;
+        padding: 5px 0;
+    }
+
+        .comment .flat-list.buttons li a {
+            background: #FFF;
+            border: 1px solid #DEDEDE;
+            border-radius: 2px;
+            box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+            padding: 4px 6px;
+        }
+            .comment .flat-list.buttons li a:hover {
+                text-decoration: none;
+            }
+
     .tabmenu li {
         margin: 0 1px 0 0;
     }
