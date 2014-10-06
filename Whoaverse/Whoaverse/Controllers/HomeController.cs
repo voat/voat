@@ -753,9 +753,7 @@ namespace Whoaverse.Controllers
                                        join s in db.Subscriptions on m.Subverse equals s.SubverseName
                                        where m.Name != "deleted" && s.Username == User.Identity.Name
                                        select m)
-                                       .OrderByDescending(s => s.Rank)
-                                       .Take(500)
-                                       .ToList();
+                                       .OrderByDescending(s => s.Rank);
 
                     return View(submissions.ToPagedList(pageNumber, pageSize));
                 }
@@ -766,9 +764,7 @@ namespace Whoaverse.Controllers
                                        where message.Name != "deleted"
                                        join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                        select message)
-                                       .OrderByDescending(s => s.Rank)
-                                       .Take(500)
-                                       .ToList();
+                                       .OrderByDescending(s => s.Rank);
 
                     return View(submissions.ToPagedList(pageNumber, pageSize));
                 }
@@ -817,9 +813,7 @@ namespace Whoaverse.Controllers
                                            join s in db.Subscriptions on m.Subverse equals s.SubverseName
                                            where m.Name != "deleted" && s.Username == User.Identity.Name
                                            select m)
-                                           .OrderByDescending(s => s.Date)
-                                           .Take(500)
-                                           .ToList();
+                                           .OrderByDescending(s => s.Date);
 
                         return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                     }
@@ -830,9 +824,7 @@ namespace Whoaverse.Controllers
                                            where message.Name != "deleted"
                                            join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                            select message)
-                                           .OrderByDescending(s => s.Date)
-                                           .Take(500)
-                                           .ToList();
+                                           .OrderByDescending(s => s.Date);
 
                         return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                     }
