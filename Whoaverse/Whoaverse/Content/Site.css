@@ -5299,11 +5299,15 @@ ul.tabmenu.formtab {
 .usertext-edit {
     margin-top: 5px;
     padding: 0 1px;
-    width: 500px;
+    width: 100%;
+	min-width: 100%;
+	max-width: 100%;
 }
 
     .usertext-edit textarea {
-        width: 500px;
+        width: 100%;
+		min-width: 100%;
+		max-width: 100%;
         height: 100px;
     }
 
