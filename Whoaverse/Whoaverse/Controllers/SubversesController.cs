@@ -279,7 +279,7 @@ namespace Whoaverse.Controllers
                         subverse.type = "link";
                         subverse.enable_thumbnails = true;
                         subverse.rated_adult = false;
-                        subverse.private_subverse = false;                        
+                        subverse.private_subverse = false;
 
                         // check if subverse exists before attempting to create it
                         if (db.Subverses.Find(subverse.name) == null)
@@ -656,6 +656,15 @@ namespace Whoaverse.Controllers
             }
         }
 
+        // GET: show subverse search view
+        public ActionResult Search()
+        {
+            ViewBag.SelectedSubverse = "subverses";
+            ViewBag.SubversesView = "search";
+
+            return View("~/Views/Subverses/SearchForSubverse.cshtml", new SearchSubverseViewModel());
+        }
+
         [Authorize]
         public ViewResult SubversesSubscribed(int? page)
         {
@@ -871,7 +880,7 @@ namespace Whoaverse.Controllers
                     {
                         submissions = db.Messages
                                         .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true)
-                                        .OrderByDescending(s => s.Likes-s.Dislikes)
+                                        .OrderByDescending(s => s.Likes - s.Dislikes)
                                         .Take(500)
                                         .ToList();
                     }
@@ -920,7 +929,7 @@ namespace Whoaverse.Controllers
                                     .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
                                     .OrderByDescending(s => s.Date)
                                     .Take(500)
-                                    .ToList();                                
+                                    .ToList();
                             }
                             else if (sortingmode.Equals("top"))
                             {

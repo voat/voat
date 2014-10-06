@@ -330,6 +330,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
+    <Compile Include="Models\ViewModels\SearchSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\UserStatsModel.cs" />
     <Compile Include="Models\ViewModels\SubverseLinkFlairViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseModeratorViewModel.cs" />
@@ -627,6 +628,7 @@
     <Content Include="Views\Shared\_StickiedSubmission.cshtml" />
     <Content Include="Views\Subverses\_Stickied.cshtml" />
     <Content Include="Views\Shared\_DefaultMessage.cshtml" />
+    <Content Include="Views\Subverses\SearchForSubverse.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

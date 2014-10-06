@@ -11,34 +11,60 @@
     All Rights Reserved.*@
 
 @{
-    var classHot = "selected";
-    var classNew = "disabled";
-    var classSubscribed = "disabled";    
-    var subversesView = ViewBag.SubversesView;
+    var classHot = "";
+    var classNew = "";
+    var classSearch = "";
+    var classSubscribed = "";
+
+    string subversesView = ViewBag.SubversesView;
     string sortingMode = ViewBag.sortingMode;
 
     switch (sortingMode)
     {
-        case "new":            
+        case "new":
             classNew = "selected";
             classHot = "disabled";
-            break;        
+            classSubscribed = "disabled";
+            classSearch = "disabled";
+            break;
+        case "search":
+            classSearch = "selected";
+            classNew = "disabled";
+            classHot = "disabled";
+            classSubscribed = "disabled";
+            break;
         default:
             classHot = "selected";
             classNew = "disabled";
+            classSearch = "disabled";
+            classSubscribed = "disabled";
             break;
     }
-       
+
     if (subversesView != null)
     {
-        classHot = "disabled";
-        classNew = "disabled";
-        classSubscribed = "selected";
+        switch (subversesView)
+        {
+            case "search":
+                classSearch = "selected";
+                classHot = "disabled";
+                classNew = "disabled";
+                classSubscribed = "disabled";
+                break;
+            default:
+                classSubscribed = "selected";
+                classHot = "disabled";
+                classNew = "disabled";
+                classSearch = "disabled";
+                break;
+        }
     }
+
 }
 
 <ul class="tabmenu">
     <li class="@classHot"><a href="/subverses">Popular</a></li>
     <li class="@classNew"><a href="/subverses/new">New</a></li>
     <li class="@classSubscribed"><a href="/subverses/subscribed">Subscribed</a></li>
+    <li class="@classSearch"><a href="/subverses/search">Search</a></li>
 </ul>
