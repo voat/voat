@@ -1276,6 +1276,7 @@ pre, code {
     margin-left: auto;
     margin-right: auto;
     max-width: 1075px;
+    overflow: auto;
     padding: 10px;
 }
 
