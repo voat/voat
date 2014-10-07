@@ -2435,6 +2435,7 @@ textarea.form-control {
             border: 1px solid #2C2C2C;
             border-radius: 2px;
             box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+            line-height: 30px;
             padding: 4px 6px;
         }
             .link .flat-list.buttons li a:hover {
@@ -2451,6 +2452,7 @@ textarea.form-control {
             border: 1px solid #2C2C2C;
             border-radius: 2px;
             box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+            line-height: 30px;
             padding: 4px 6px;
         }
             .comment .flat-list.buttons li a:hover {
