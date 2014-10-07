@@ -366,7 +366,6 @@
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\Karma.cs" />
     <Compile Include="Utils\PagerOptions.cs" />
-    <Compile Include="Utils\PromotionUtility.cs" />
     <Compile Include="Utils\Ranking.cs" />
     <Compile Include="Utils\Submissions.cs" />
     <Compile Include="Utils\ThumbGenerator.cs" />
