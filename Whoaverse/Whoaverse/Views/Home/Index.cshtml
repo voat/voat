@@ -44,68 +44,71 @@
     }
 </style>
 
-@{
-    @Html.Partial("_SidebarFrontpage");
-}
+<div id="container">
 
-<div class="content" role="main">
+    @{
+        @Html.Partial("_SidebarFrontpage");
+    }
 
-    <div class="sitetable linklisting">
+    <div class="content" role="main">
 
-        @Html.Action("StickiedSubmission", "Home")
+        <div class="sitetable linklisting">
 
-        @{
-            //(current page number -1)*25
-            int currentPageNumber = Model.PageNumber;
-            int counterCont = (currentPageNumber - 1) * 25;
+            @Html.Action("StickiedSubmission", "Home")
 
-            int counter = counterCont + 1;
-            string submissionClass = "";
-        }
+            @{
+                //(current page number -1)*25
+                int currentPageNumber = Model.PageNumber;
+                int counterCont = (currentPageNumber - 1) * 25;
 
-        @foreach (var submission in Model)
-        {
-            //type 2 = link
-            //type 1 = message
-            if (submission.Type == 1)
-            {
-                submissionClass = "self";
-            }
-            else
-            {
-                submissionClass = "";
+                int counter = counterCont + 1;
+                string submissionClass = "";
             }
 
-            if (counter % 2 == 0)
+            @foreach (var submission in Model)
             {
-                //is even
-                classEvenOrOdd = "even";
+                //type 2 = link
+                //type 1 = message
+                if (submission.Type == 1)
+                {
+                    submissionClass = "self";
+                }
+                else
+                {
+                    submissionClass = "";
+                }
+
+                if (counter % 2 == 0)
+                {
+                    //is even
+                    classEvenOrOdd = "even";
+                }
+                else
+                {
+                    //is odd
+                    classEvenOrOdd = "odd";
+                }
+                
+                <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+                    <p class="parent"></p>
+                    <span class="rank">@counter</span>
+
+                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                    @Html.Partial("_Submission", submission)
+
+                    <div class="child"></div>
+                    <div class="clearleft"><!--IE6fix--></div>
+                </div>
+                counter++;
             }
-            else
+
+            @if (Model.PageCount > 1)
             {
-                //is odd
-                classEvenOrOdd = "odd";
+                @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
+                <a href="/random">or try a random subverse</a>
             }
-            
-            <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
-                <p class="parent"></p>
-                <span class="rank">@counter</span>
 
-                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
-                @Html.Partial("_Submission", submission)
-
-                <div class="child"></div>
-                <div class="clearleft"><!--IE6fix--></div>
-            </div>
-            counter++;
-        }
-
-        @if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-            <a href="/random">or try a random subverse</a>
-        }
+        </div>
 
     </div>
-
 </div>
