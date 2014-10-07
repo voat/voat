@@ -19,19 +19,22 @@
 @using PagedList.Mvc;
 @using Whoaverse.Utils;
 
-<div class="content" role="main">
+<div id="container">
 
-    <h2>Comment history (most recent 200 comments) for @ViewBag.userid. To see submissions, click the submitted tab.</h2>
-    <hr />
+    <div class="content" role="main">
 
-    @foreach (var submission in Model)
-    {
-        @Html.Partial("Userprofile/_UserProfileComment", submission)
-    }
+        <h2>Comment history (most recent 200 comments) for @ViewBag.userid. To see submissions, click the submitted tab.</h2>
+        <hr />
 
-    @if (Model.PageCount > 1)
-    {
-        @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-    }
+        @foreach (var submission in Model)
+        {
+            @Html.Partial("Userprofile/_UserProfileComment", submission)
+        }
 
+        @if (Model.PageCount > 1)
+        {
+            @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
+        }
+
+    </div>
 </div>

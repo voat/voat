@@ -27,37 +27,39 @@
 @using PagedList.Mvc;
 @using Whoaverse.Utils;
 
-<div class="content" role="main">
+<div id="container">
+    <div class="content" role="main">
 
-    <h2>Submission history (most recent 200 submissions) for @ViewBag.userid. To see comments, click the comments tab.</h2>
-    <hr />
+        <h2>Submission history (most recent 200 submissions) for @ViewBag.userid. To see comments, click the comments tab.</h2>
+        <hr />
 
-    @foreach (var submission in Model)
-    {
-        //type 2 = link
-        //type 1 = message
-        if (submission.Type == 1)
+        @foreach (var submission in Model)
         {
-            submissionClass = "self";
+            //type 2 = link
+            //type 1 = message
+            if (submission.Type == 1)
+            {
+                submissionClass = "self";
+            }
+            else
+            {
+                submissionClass = "";
+            }
+
+            <div class="submission id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+
+                @Html.Partial("Userprofile/_UserProfileSubmission", submission)
+
+                <div class="child"></div>
+                <div class="clearleft"><!--IE6fix--></div>
+            </div>
+
         }
-        else
+
+        @if (Model.PageCount > 1)
         {
-            submissionClass = "";
+            @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
         }
 
-        <div class="submission id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
-
-            @Html.Partial("Userprofile/_UserProfileSubmission", submission)
-
-            <div class="child"></div>
-            <div class="clearleft"><!--IE6fix--></div>
-        </div>
-
-    }
-
-    @if (Model.PageCount > 1)
-    {
-        @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-    }
-
+    </div>
 </div>

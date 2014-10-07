@@ -39,12 +39,14 @@ else if (!User.Identity.IsAuthenticated)
 }
 </style>
 
-<!--
-    display 1 submission with details and comments
--->
-@if (!selectedSubverse.Equals("user"))
-{
-    @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new
+<div id="container">
+
+    <!--
+        display 1 submission with details and comments
+    -->
+    @if (!selectedSubverse.Equals("user"))
+    {
+        @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new
    {
        selectedSubverse = selectedSubverse,
        showingComments = true,
@@ -55,95 +57,96 @@ else if (!User.Identity.IsAuthenticated)
        likes = Model.Likes,
        dislikes = Model.Dislikes
    })
-}
-<style type="text/css">
+    }
+    <style type="text/css">
 @if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
 }
-</style>
+    </style>
 
-<div class="content" role="main">
+    <div class="content" role="main">
 
-    <br /><br />
+        <br /><br />
 
-    @{
-        //type 1 = message submission
-        if (Model.Type == 1)
-        {
-            ViewBag.Title = Model.Title + " | " + selectedSubverse;
-            ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-            ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
-            ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
-            @Html.Partial("_MessageSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
-        }
-
-        //type 2 = link submission
-        if (Model.Type == 2)
-        {
-            ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
-            ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-            ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
-
-            //check if submission has a thumb, otherwise point to site logo
-            if (Model.Thumbnail != null)
+        @{
+            //type 1 = message submission
+            if (Model.Type == 1)
             {
-                ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Thumbs/" + @Model.Thumbnail;
-            }
-            else
-            {
+                ViewBag.Title = Model.Title + " | " + selectedSubverse;
+                ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
+                ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
+                @Html.Partial("_MessageSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
             }
 
-            @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
-        }
-    }
+            //type 2 = link submission
+            if (Model.Type == 2)
+            {
+                ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
+                ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
+                ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
 
-    @if (User.Identity.IsAuthenticated)
-    //if user logged in, show add comment form
-    {
-        @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
-    }
-
-    <div class="menuarea">
-        <div class="spacer">
-            <span class="dropdown-title lightdrop">sort by: </span>
-            <div class="dropdown lightdrop">
-                @if (ViewBag.StartingCommentId != null)
+                //check if submission has a thumb, otherwise point to site logo
+                if (Model.Thumbnail != null)
                 {
-                    if (ViewBag.SortingMode != null)
-                    {
-                        <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId" class="bylink" rel="nofollow">top</a></span>
-                    }
-                    else
-                    {
-                        <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId?sort=new" class="bylink" rel="nofollow">new</a></span>
-                    }
+                    ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Thumbs/" + @Model.Thumbnail;
                 }
                 else
                 {
-                    if (ViewBag.SortingMode != null)
+                    ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
+                }
+
+                @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+            }
+        }
+
+        @if (User.Identity.IsAuthenticated)
+        //if user logged in, show add comment form
+        {
+            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
+        }
+
+        <div class="menuarea">
+            <div class="spacer">
+                <span class="dropdown-title lightdrop">sort by: </span>
+                <div class="dropdown lightdrop">
+                    @if (ViewBag.StartingCommentId != null)
                     {
-                        <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/" class="bylink" rel="nofollow">top</a></span>
+                        if (ViewBag.SortingMode != null)
+                        {
+                            <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId" class="bylink" rel="nofollow">top</a></span>
+                        }
+                        else
+                        {
+                            <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId?sort=new" class="bylink" rel="nofollow">new</a></span>
+                        }
                     }
                     else
                     {
-                        <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/?sort=new" class="bylink" rel="nofollow">new</a></span>
+                        if (ViewBag.SortingMode != null)
+                        {
+                            <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/" class="bylink" rel="nofollow">top</a></span>
+                        }
+                        else
+                        {
+                            <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/?sort=new" class="bylink" rel="nofollow">new</a></span>
+                        }
                     }
-                }
+                </div>
             </div>
+            <div class="spacer"></div>
         </div>
-        <div class="spacer"></div>
+
+        @if (ViewBag.StartingCommentId != null)
+        {
+            // show comment tree for a single thread starting at passed starting comment id
+            @Html.Partial("_SingleCommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode } })
+        }
+        else
+        {
+            @Html.Partial("_CommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
+        }
+
     </div>
-
-    @if (ViewBag.StartingCommentId != null)
-    {
-        // show comment tree for a single thread starting at passed starting comment id
-        @Html.Partial("_SingleCommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode } })
-    }
-    else
-    {
-        @Html.Partial("_CommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
-    }
-
 </div>

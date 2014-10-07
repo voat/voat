@@ -16,59 +16,62 @@
     ViewBag.Title = "Manage Account";
 }
 
-@Html.Partial("_SidebarUserInfo")
+<div id="container">
 
-<div id="about-main" class="content about-page" role="main">
+    @Html.Partial("_SidebarUserInfo")
 
-    <div class="row nomargin">
-        <div class="well col-md-8">
+    <div id="about-main" class="content about-page" role="main">
 
-            <h1>Your public profile</h1>
-            <p class="h6"><a href="/user/@User.Identity.Name">Click here</a> to view your public profile.</p>
-            <hr />
-            <h1>User preferences</h1>
-            <h2>You can use this form to customize your WhoaVerse experience.</h2>
-            <hr />
-            @if (ViewBag.HasLocalPassword)
-            {
-                <section id="userPreferences">
-                    @Html.Action("UserPreferences")
+        <div class="row nomargin">
+            <div class="well col-md-8">
+
+                <h1>Your public profile</h1>
+                <p class="h6"><a href="/user/@User.Identity.Name">Click here</a> to view your public profile.</p>
+                <hr />
+                <h1>User preferences</h1>
+                <h2>You can use this form to customize your WhoaVerse experience.</h2>
+                <hr />
+                @if (ViewBag.HasLocalPassword)
+                {
+                    <section id="userPreferences">
+                        @Html.Action("UserPreferences")
+                    </section>
+                }
+
+                <h1>Change your password</h1>
+                <h2>You can use this form to change your password.</h2>
+                <hr />
+
+                <p class="text-success">@ViewBag.StatusMessage</p>
+
+                @if (ViewBag.HasLocalPassword)
+                {
+                    @Html.Partial("_ChangeAccountSettings")
+                }
+                else
+                {
+                    @Html.Partial("_SetPasswordPartial")
+                }
+
+                <hr />
+                <h1>Delete your account</h1>
+                <h2>You can use this form to permanently delete your account.</h2>
+                <hr />
+
+                @if (ViewBag.HasLocalPassword)
+                {
+                    @Html.Partial("_DeleteAccount")
+                }
+
+                <section id="externalLogins">
+                    @Html.Action("RemoveAccountList")
                 </section>
+
+            </div>
+            @section Scripts {
+                @Scripts.Render("~/bundles/jqueryval")
             }
-
-            <h1>Change your password</h1>
-            <h2>You can use this form to change your password.</h2>
-            <hr />
-
-            <p class="text-success">@ViewBag.StatusMessage</p>
-
-            @if (ViewBag.HasLocalPassword)
-            {
-                @Html.Partial("_ChangeAccountSettings")
-            }
-            else
-            {
-                @Html.Partial("_SetPasswordPartial")
-            }
-
-            <hr />
-            <h1>Delete your account</h1>
-            <h2>You can use this form to permanently delete your account.</h2>
-            <hr />
-
-            @if (ViewBag.HasLocalPassword)
-            {
-                @Html.Partial("_DeleteAccount")
-            }
-
-            <section id="externalLogins">
-                @Html.Action("RemoveAccountList")
-            </section>
 
         </div>
-        @section Scripts {
-            @Scripts.Render("~/bundles/jqueryval")
-        }
-
     </div>
 </div>
