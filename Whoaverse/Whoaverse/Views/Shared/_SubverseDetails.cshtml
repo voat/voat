@@ -18,74 +18,58 @@
     string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
 }
 
-<div class="row">
-    <div class="submission odd subverse" onclick="" data-fullname="">
-        <div class="col-md-6">
-            <p class="parent"></p>
-            <div class="midcol">
-                @if (User.Identity.IsAuthenticated)
+<div class="midcol">
+    @if (User.Identity.IsAuthenticated)
+    {
+        if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
+        {
+            <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
+        }
+        else
+        {
+            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
+        }
+    }
+    else
+    {
+        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
+    }
+</div>
+
+<div class="entry">
+    <p class="titlerow">
+        <a href="/v/@Model.name" class="h4">@Model.title: @Model.name</a>
+    </p>
+    <div class="well well-lg subversedescriptionbox">
+        <div class="usertext-body may-blank-within">
+            <div class="md">
+                @if (!String.IsNullOrWhiteSpace(Model.description))
                 {
-                    if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
-                    {
-                        <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
-                    }
-                    else
-                    {
-                        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
-                    }
+                    <p class="subversedescriptionboxcontent">@Model.description</p>
                 }
                 else
                 {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
+                    <p class="subversedescriptionboxcontent">The owner of this subverse did not write a description yet.</p>
                 }
-
             </div>
-
-            <div class="entry unvoted">
-                <p class="titlerow">
-                    <a href="/v/@Model.name" class="h4">@Model.title: @Model.name</a>
-                </p>
-                <div class="well well-sm subversedescriptionbox">
-                    <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxx9ma">
-                        <input name="thing_id" value="xxxx" type="hidden">
-                        <div class="usertext-body may-blank-within">
-                            <div class="md">
-                                @if (!String.IsNullOrWhiteSpace(Model.description))
-                                {
-                                    <p class="subversedescriptionboxcontent">@Model.description</p>                                    
-                                }
-                                else
-                                {
-                                    <p class="subversedescriptionboxcontent">The owner of this subverse did not write a description yet.</p>
-                                }
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <p class="">
-                    <span class="">
-                        <span id="subscribercount" class="number">@ViewBag.SubscriberCount</span>
-                        <span class="word">subscribers, a community for @subverseAge</span>
-                    </span>
-                </p>
-                <ul class="flat-list buttons">
-                    <li>
-                        <form class="toggle report-button " action="#" method="get">
-                            <input name="executed" value="reported" type="hidden">
-                            <span class="option main active"><a href="#" class="togglebutton" onclick="return toggle(this)">report</a></span>
-                            <span class="option error">
-                                are you sure?
-                                <a href="javascript:void(0)" class="yes" onclick="change_state(this, 'report', hide_thing, undefined, null)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggle(this)">no</a>
-                            </span>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-        <div class="child"></div>
-        <div class="clearleft">
-            <!--IE6fix-->
         </div>
     </div>
+    <p class="">
+        <span class="">
+            <span id="subscribercount" class="number">@ViewBag.SubscriberCount</span>
+            <span class="word">subscribers, a community for @subverseAge</span>
+        </span>
+    </p>
+    <ul class="flat-list buttons">
+        <li>
+            <form class="toggle report-button " action="#" method="get">
+                <input name="executed" value="reported" type="hidden">
+                <span class="option main active"><a href="#" class="togglebutton" onclick="return toggle(this)">report</a></span>
+                <span class="option error">
+                    are you sure?
+                    <a href="javascript:void(0)" class="yes" onclick="change_state(this, 'report', hide_thing, undefined, null)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggle(this)">no</a>
+                </span>
+            </form>
+        </li>
+    </ul>
 </div>

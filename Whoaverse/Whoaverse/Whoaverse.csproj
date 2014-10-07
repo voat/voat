@@ -592,7 +592,6 @@
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserModerates.cshtml" />
     <Content Include="Views\Account\RecoverPassword.cshtml" />
     <Content Include="Views\Errors\DbNotResponding.cshtml" />
-    <Content Include="Views\Shared\_ListofsubversesHeavyLoad.cshtml" />
     <Content Include="Views\Shared\_SidebarComments.cshtml" />
     <Content Include="Views\Subverses\Admin\AddModerator.cshtml" />
     <Content Include="Views\Subverses\Admin\RemoveModerator.cshtml" />
