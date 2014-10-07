@@ -25,93 +25,95 @@
 
 @Html.AntiForgeryToken()
 
-<div id="about-main" class="content about-page" role="main">
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
 
-    <div class="menuarea">
-        <div class="spacer">
-            <ul class="flat-list hover">
-                <li>
-                    <a href="#">all [not implemented]</a>
-                </li>
-                <li>
-                    <span class="separator">|</span>
-                    <a href="#" class="choice">unread [not implemented]</a>
-                </li>
-                <li>
-                    <span class="separator">|</span>
-                    <a href="/messaging/inbox/" class="choice">Private messages [@ViewBag.UnreadPrivateMessages]</a>
-                </li>
-                <li>
-                    <span class="separator">|</span>
-                    <a href="/messaging/commentreplies/" class="choice">Comment replies [@ViewBag.UnreadCommentReplies]</a>
-                </li>
-                <li class="selected">
-                    <span class="separator">|</span>
-                    <a href="/messaging/postreplies/" class="choice">Post replies [@ViewBag.UnreadPostReplies]</a>
-                </li>
-            </ul>
+        <div class="menuarea">
+            <div class="spacer">
+                <ul class="flat-list hover">
+                    <li>
+                        <a href="#">all [not implemented]</a>
+                    </li>
+                    <li>
+                        <span class="separator">|</span>
+                        <a href="#" class="choice">unread [not implemented]</a>
+                    </li>
+                    <li>
+                        <span class="separator">|</span>
+                        <a href="/messaging/inbox/" class="choice">Private messages [@ViewBag.UnreadPrivateMessages]</a>
+                    </li>
+                    <li>
+                        <span class="separator">|</span>
+                        <a href="/messaging/commentreplies/" class="choice">Comment replies [@ViewBag.UnreadCommentReplies]</a>
+                    </li>
+                    <li class="selected">
+                        <span class="separator">|</span>
+                        <a href="/messaging/postreplies/" class="choice">Post replies [@ViewBag.UnreadPostReplies]</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
 
-    <div class="row nomargin">
-        <div class="md">
-            <p class="heading-2">Hi there, @User.Identity.Name!</p>
+        <div class="row nomargin">
+            <div class="md">
+                <p class="heading-2">Hi there, @User.Identity.Name!</p>
 
-            @if (Model.Count > 0)
-            {
-                <p>You have @Model.Count post reply notification(s).</p>
-                <p>Showing newest post replies first.</p>
-                <hr />
-
-                foreach (var message in Model)
+                @if (Model.Count > 0)
                 {
-                    if (message.Status == true)
+                    <p>You have @Model.Count post reply notification(s).</p>
+                    <p>Showing newest post replies first.</p>
+                    <hr />
+
+                    foreach (var message in Model)
                     {
-                        statusClass = "unreadNotification";
-                    }
-                    else
-                    {
-                        statusClass = "";
-                    }
-                    <div id="messageContainer-@message.Id">
-                        <div class="panel panel-default">
-                            <div class="panel panel-heading @statusClass">
-                                From: <a href="/u/@message.Sender">@message.Sender</a> | Sent: @message.Timestamp
-                            </div>
-                            <div class="panel panel-heading-messagetitle">
-                                <b>@message.Subject</b>
+                        if (message.Status == true)
+                        {
+                            statusClass = "unreadNotification";
+                        }
+                        else
+                        {
+                            statusClass = "";
+                        }
+                        <div id="messageContainer-@message.Id">
+                            <div class="panel panel-default">
+                                <div class="panel panel-heading @statusClass">
+                                    From: <a href="/u/@message.Sender">@message.Sender</a> | Sent: @message.Timestamp
+                                </div>
+                                <div class="panel panel-heading-messagetitle">
+                                    <b>@message.Subject</b>
+                                </div>
+
+                                <div class="panel-message-body">
+                                    @Html.Raw(Whoaverse.Utils.Formatting.FormatMessage(message.Body))
+                                </div>
                             </div>
 
-                            <div class="panel-message-body">
-                                @Html.Raw(Whoaverse.Utils.Formatting.FormatMessage(message.Body))
-                            </div>
+                            <ul class="flat-list buttons">
+                                <li>
+                                    <a class="btn-whoaverse-paging" href="/v/@message.Subverse/comments/@message.SubmissionId#@message.CommentId">Context</a>
+                                </li>
+                                <li>|</li>
+                                <li>
+                                    <a class="btn-whoaverse-paging" href="#">Mark as unread [not implemented]</a>
+                                </li>
+                                <li>|</li>
+                                <li>
+                                    <a class="btn-whoaverse-paging" href="javascript:void(0)" onclick="return replyToPrivateMessage(this, @message.Id)">Reply [not implemented]</a>
+                                </li>
+                            </ul>
+                            <br /><br />
                         </div>
-
-                        <ul class="flat-list buttons">
-                            <li>
-                                <a class="btn-whoaverse-paging" href="/v/@message.Subverse/comments/@message.SubmissionId#@message.CommentId">Context</a>
-                            </li>
-                            <li>|</li>
-                            <li>
-                                <a class="btn-whoaverse-paging" href="#">Mark as unread [not implemented]</a>
-                            </li>
-                            <li>|</li>
-                            <li>
-                                <a class="btn-whoaverse-paging" href="javascript:void(0)" onclick="return replyToPrivateMessage(this, @message.Id)">Reply [not implemented]</a>
-                            </li>
-                        </ul>
-                        <br /><br />
-                    </div>
+                    }
                 }
-            }
-            else
-            {
-                <p>
-                    You have no post reply notifications :( <br /><br />
-                    If you started submitting more stuff, you would be getting more post reply notifications. How's that for advice from artificial intelligence?
-                </p>
-            }
+                else
+                {
+                    <p>
+                        You have no post reply notifications :( <br /><br />
+                        If you started submitting more stuff, you would be getting more post reply notifications. How's that for advice from artificial intelligence?
+                    </p>
+                }
 
+            </div>
         </div>
     </div>
 </div>

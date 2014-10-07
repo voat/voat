@@ -33,57 +33,58 @@
     }
 </style>
 
-<div class="content" role="main">
+<div id="container">
+    <div class="content" role="main">
 
-    <div class="searchresults" style="display: block;">
-        Here are your search results:
-    </div>
+        <div class="searchresults" style="display: block;">
+            Here are your search results:
+        </div>
 
-    <br />
-    <br />
+        <br />
+        <br />
 
-    <div class="sitetable linklisting">
+        <div class="sitetable linklisting">
 
-        @{
-            //(current page number -1)*25
-            int currentPageNumber = Model.PageNumber;
-            int counterCont = (currentPageNumber - 1) * 25;
+            @{
+                //(current page number -1)*25
+                int currentPageNumber = Model.PageNumber;
+                int counterCont = (currentPageNumber - 1) * 25;
 
-            int counter = counterCont + 1;
-            string submissionClass = "";
-        }
+                int counter = counterCont + 1;
+                string submissionClass = "";
+            }
 
-        @foreach (var submission in Model)
+            @foreach (var submission in Model)
+            {
+                //type 2 = link
+                //type 1 = message
+                if (submission.Type == 1)
+                {
+                    submissionClass = "self";
+                }
+                else
+                {
+                    submissionClass = "";
+                }
+
+                <div class="submission id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+                    <p class="parent"></p>
+                    <span class="rank">@counter</span>
+
+                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                    @Html.Partial("_Submission", submission)
+
+                    <div class="child"></div>
+                    <div class="clearleft"><!--IE6fix--></div>
+                </div>
+                counter++;
+            }
+
+        </div>
+
+        @if (Model.PageCount > 1)
         {
-            //type 2 = link
-            //type 1 = message
-            if (submission.Type == 1)
-            {
-                submissionClass = "self";
-            }
-            else
-            {
-                submissionClass = "";
-            }
-
-            <div class="submission id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
-                <p class="parent"></p>
-                <span class="rank">@counter</span>
-
-                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
-                @Html.Partial("_Submission", submission)
-
-                <div class="child"></div>
-                <div class="clearleft"><!--IE6fix--></div>
-            </div>
-            counter++;
+            @Html.PagedListPager(Model, page => Url.Action("", new { page, q = searchTerm, sub = selectedSubverse }), WhoaversePagerOptions.PagedListRenderOptions())
         }
-
     </div>
-
-    @if (Model.PageCount > 1)
-    {
-        @Html.PagedListPager(Model, page => Url.Action("", new { page, q = searchTerm, sub = selectedSubverse }), WhoaversePagerOptions.PagedListRenderOptions())
-    }
-
 </div>

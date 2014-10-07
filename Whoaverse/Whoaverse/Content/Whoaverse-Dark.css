@@ -6,7 +6,7 @@
     ============================================================================ */
  
 body {
-    background: #333;
+    background: #292929;
     color: #DFDFDF;
     font: 11px Arial,sans-serif;
     line-height: 1.43;
@@ -590,7 +590,6 @@ input, button, select, textarea {
     font-size: 13px;
     line-height: 140%;
     margin-bottom: 10px;
-    max-width: 650px;
     padding: 8px;
     -webkit-transition: border-color 0.1s ease-in-out 0s;
     -moz-transition: border-color 0.1s ease-in-out 0s;
@@ -791,9 +790,7 @@ input, button, select, textarea {
 
 .md {
     font-size: 13px;
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
+    max-width: 650px;
     overflow: auto;
 }
 
@@ -1119,7 +1116,7 @@ pre, code {
     ------------------------------------------------------------------------------------ */
 
     #header-bottom-left {
-        background: #292929;
+        background: #333;
         bottom: 0;
         border-bottom: 1px solid #222;
         border-top: 1px solid #222;
@@ -1288,6 +1285,20 @@ pre, code {
             height: 10px;
             width: 15px;
         }
+
+/* ! Container
+-------------------------------------------------------------------------------- */
+
+#container {
+    background: #333;
+    border: 1px solid #222;
+    border-radius: 3px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1075px;
+    padding: 10px;
+}
 
 /* ! Sidebar
 -------------------------------------------------------------------------------- */
@@ -1484,6 +1495,7 @@ pre, code {
             font-family: inherit;
             font-size: 10px;
             margin-top: 19px;
+            min-width: 16px;
             text-align: center;
         }
 
@@ -1995,16 +2007,9 @@ pre, code {
 -------------------------------------------------------------------------------- */
 
 .content.about-page {
-    margin: 0;
-    padding: 30px;
+    margin: 30px;
+    padding: 0;
 }
-
-    #about-main .container {
-        margin: 0 auto;
-        max-width: 750px;
-        padding: 0;
-        width: auto;
-    }
 
     #about-main p.paragraph-text-left,
     #about-main p.text-left,
@@ -2430,6 +2435,7 @@ textarea.form-control {
             border: 1px solid #2C2C2C;
             border-radius: 2px;
             box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+            line-height: 30px;
             padding: 4px 6px;
         }
             .link .flat-list.buttons li a:hover {
@@ -2446,6 +2452,7 @@ textarea.form-control {
             border: 1px solid #2C2C2C;
             border-radius: 2px;
             box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+            line-height: 30px;
             padding: 4px 6px;
         }
             .comment .flat-list.buttons li a:hover {
