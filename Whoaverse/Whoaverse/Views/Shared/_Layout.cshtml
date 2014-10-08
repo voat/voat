@@ -113,52 +113,54 @@
 
     <div id="header" role="banner">
         @Html.Action("listofsubverses", "Home", new { activeSubverse = selectedSubverse })
-        <div id="header-bottom-left">
+        <div id="header-container">
+            <div id="header-banner">
 
-            <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
-                <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
-            </a>
+                <a title="Whoaverse.com - Alpha" href="/" id="header-img-a">
+                    <img id="header-img" src="~/Graphics/whoaverse_padded.png" alt=" whoaverse.com" height="40" width="113">
+                </a>
 
-            @if (ViewBag.PmView != null)
-            {
-                Html.RenderAction("PmMenu", "Nav", new { selectedView = ViewBag.PmView, sortingMode = sortingMode });
-            }
+                @if (ViewBag.PmView != null)
+                {
+                    Html.RenderAction("PmMenu", "Nav", new { selectedView = ViewBag.PmView, sortingMode = sortingMode });
+                }
 
-            @if (selectedSubverse != null)
-            {
-                if (selectedSubverse.Equals("user"))
+                @if (selectedSubverse != null)
                 {
-                    // render user profile tab menu
-                    Html.RenderAction("UserProfileMenu", "Nav", new { whattodisplay = ViewBag.whattodisplay, selectedUser = selectedUser });                    
+                    if (selectedSubverse.Equals("user"))
+                    {
+                        // render user profile tab menu
+                        Html.RenderAction("UserProfileMenu", "Nav", new { whattodisplay = ViewBag.whattodisplay, selectedUser = selectedUser });                    
+                    }
+                    else if (selectedSubverse.Equals("/"))
+                    {
+                        // render frontpage tab menu
+                        Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, frontpage = true });
+                    }
+                    else if (ViewBag.SelectedSubverse.Equals("domains"))
+                    {
+                        // render domains tab menu
+                        Html.RenderAction("DomainsMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, selectedDomain = ViewBag.selectedDomain });
+                    }
+                    else if (ViewBag.SelectedSubverse.Equals("subverses"))
+                    {
+                        // render browse subverses tab menu
+                        Html.RenderAction("SubversesMenu", "Nav", new { sortingMode = sortingMode, subversesView = ViewBag.SubversesView });
+                    }
+                    else if (ViewBag.SelectedSubverse.Equals(string.Empty))
+                    {
+                        // don't show tab menu
+                    }
+                    else
+                    {
+                        // render subverse tab menu
+                        Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, selectedSubverseName = ViewBag.SelectedSubverse });
+                    }
                 }
-                else if (selectedSubverse.Equals("/"))
-                {
-                    // render frontpage tab menu
-                    Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, frontpage = true });
-                }
-                else if (ViewBag.SelectedSubverse.Equals("domains"))
-                {
-                    // render domains tab menu
-                    Html.RenderAction("DomainsMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, selectedDomain = ViewBag.selectedDomain });
-                }
-                else if (ViewBag.SelectedSubverse.Equals("subverses"))
-                {
-                    // render browse subverses tab menu
-                    Html.RenderAction("SubversesMenu", "Nav", new { sortingMode = sortingMode, subversesView = ViewBag.SubversesView });
-                }
-                else if (ViewBag.SelectedSubverse.Equals(string.Empty))
-                {
-                    // don't show tab menu
-                }
-                else
-                {
-                    // render subverse tab menu
-                    Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, selectedSubverseName = ViewBag.SelectedSubverse });
-                }
-            }
 
+            @Html.Partial("_LoginPartial")
+            </div>
         </div>
-        @Html.Partial("_LoginPartial")
     </div>
 
     <!-- Must be logged in Modal -->

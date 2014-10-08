@@ -1058,7 +1058,7 @@ pre, code {
                         border: 1px solid;
                         border-color: #FFF #EDEDED #EDEDED;
                         box-shadow: 3px 3px 3px hsla( 0,0%,0%,0.2 );
-                        font-size: 12px;
+                        font-size: 10px;
                         margin: 0;
                         padding: 0;
                         position: absolute;
@@ -1078,7 +1078,7 @@ pre, code {
                                 color: #444;
                                 display: block;
                                 line-height: 16px;
-                                padding: 3px 7px;
+                                padding: 1px 6px;
                                 text-decoration: none;
                                 width: auto;
                             }
@@ -1091,23 +1091,27 @@ pre, code {
                                 color: #FFF !important;
                             }
 
-    /* ! Header : Left
+    /* ! Header : Banner
     ------------------------------------------------------------------------------------ */
 
-    #header-bottom-left {
+    #header-container {
         background: #FFF;
-        bottom: 0;
         border-bottom: 1px solid #DCDCDC;
         border-top: 1px solid #DCDCDC;
-        font-size: 14px;
+        bottom: 0;
         height: 58px;
-        margin: 0;
         position: absolute;
         width: 100%;
         z-index: 1;
     }
 
-        /* ! Header : Left : Logo
+    #header-banner {
+        font-size: 14px;
+        margin: 0 auto;
+        max-width: 1075px;
+    }
+
+        /* ! Header : Banner : Logo
         ------------------------------------------------------------------------------------ */
 
         #header-img {
@@ -1126,7 +1130,7 @@ pre, code {
             width: 120px;
         }
 
-        /* ! Header : Left : Page name
+        /* ! Header : Banner : Page name
         ------------------------------------------------------------------------------------ */
 
         .pagename {
@@ -1147,7 +1151,7 @@ pre, code {
                     text-decoration: none;
                 }
 
-        /* ! Header : Left : Tab menu
+        /* ! Header : Banner : Tab menu
         ------------------------------------------------------------------------------------ */
 
         .tabmenu {
@@ -1159,7 +1163,7 @@ pre, code {
             white-space: nowrap;
         }
 
-            /* ! Header : Left : Tab menu : Tab
+            /* ! Header : Banner : Tab menu : Tab
             ------------------------------------------------------------------------------------ */
 
             .tabmenu li {
@@ -1178,7 +1182,7 @@ pre, code {
                     border-radius: 3px;
                 }
 
-                /* ! Header : Left : Tab menu : Tab : Selected
+                /* ! Header : Banner : Tab menu : Tab : Selected
                 ------------------------------------------------------------------------------------ */
 
                 .tabmenu li.selected a {
@@ -1195,7 +1199,7 @@ pre, code {
                         color: #4AABE7;
                     }
 
-                /* ! Header : Left : Tab menu : Tab : Unselected
+                /* ! Header : Banner : Tab menu : Tab : Unselected
                 ------------------------------------------------------------------------------------ */
 
                 .tabmenu li.disabled a {
@@ -1212,58 +1216,52 @@ pre, code {
                         color: #444;
                     }
 
-    /* ! Header : Right
-    ------------------------------------------------------------------------------------ */
+        /* ! Header : Banner : Account
+        ------------------------------------------------------------------------------------ */
 
-    #header-bottom-right {
-        background: #FFF;
-        border: 1px solid #DCDCDC;
-        border-radius: 0 0 0 5px;
-        border-style: none none solid solid;
-        font-size: 11px;
-        line-height: 100%;
-        padding: 7px;
-        position: absolute;
-        right: 0;
-        top: 23px;
-        z-index: 5;
-    }
-
-        #header-bottom-right a {
-            color: #555;
+        #header-account {
+            font-size: 11px;
+            line-height: 56px;
+            padding: 0;
+            position: relative;
+            right: 0;
         }
-            #header-bottom-right a:hover {
-                color: #4AABE7;
+
+            #header-account a {
+                color: #555;
+            }
+                #header-account a:hover {
+                    color: #4AABE7;
+                }
+
+            #header-account .separator {
+                color: #BBB;
+                margin: 0 4px;
             }
 
-        #header-bottom-right .separator {
-            color: #BBB;
-            margin: 0 4px;
+        #mail {
+            display: inline-block;
+            overflow: hidden;
+            position: relative;
+            text-indent: -9999px;
+            top: 2px;
         }
 
-    #mail {
-        display: inline-block;
-        overflow: hidden;
-        position: relative;
-        text-indent: -9999px;
-        top: 2px;
-    }
+            #mail.havemail {
+                background: url( /Graphics/Light-SpriteSheet.png );
+                background-position: -15px 0;
+                cursor: pointer;
+                height: 10px;
+                width: 15px;
+            }
 
-        #mail.havemail {
-            background: url( /Graphics/Light-SpriteSheet.png );
-            background-position: -15px 0;
-            cursor: pointer;
-            height: 10px;
-            width: 15px;
-        }
-
-        #mail.nohavemail {
-            background: url( /Graphics/Light-SpriteSheet.png );
-            background-position: 0 0;
-            cursor: pointer;
-            height: 10px;
-            width: 15px;
-        }
+            #mail.nohavemail {
+                background: url( /Graphics/Light-SpriteSheet.png );
+                background-position: 0 0;
+                cursor: pointer;
+                height: 10px;
+                width: 15px;
+            }
 
 /* ! Container
 -------------------------------------------------------------------------------- */
@@ -2252,14 +2250,19 @@ textarea.form-control {
         height: 18px;
     }
 
-    #header-bottom-right {
+    #header-container {
+        height: 64px;
+    }
+
+    #header-account {
         font-size: 10px;
         line-height: 80%;
         padding: 6px;
-        top: 17px;
+        position: absolute;
+        top: 0;
     }
 
-    #header-bottom-left {
+    #header-banner {
         font-size: 13px;
         height: 64px;
     }

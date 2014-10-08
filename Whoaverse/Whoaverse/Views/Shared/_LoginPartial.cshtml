@@ -21,7 +21,7 @@
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {
         @Html.AntiForgeryToken()
-        <div id="header-bottom-right">
+        <div id="header-account">
             <span class="user">@Html.ActionLink(User.Identity.Name, "UserProfile", "Home", routeValues: new { Id = User.Identity.Name, whattodisplay = String.Empty }, htmlAttributes: new { title = "Profile" })&nbsp;(<span class="userkarma" title="submission contribution points">@linkKarma</span>|<span class="userkarma" title="comment contribution points">@commentKarma</span>)</span>
             <span class="separator">|</span>
             <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</span>
@@ -44,13 +44,13 @@ else
 {
     if (!Request.Browser.IsMobileDevice)
     {
-        <div id="header-bottom-right">
+        <div id="header-account">
             <span class="user">want to join? <a href="#" onclick="mustLogin();" class="login-required">login</a> or <a href="/account/register">register</a> in seconds</span>
         </div>
     }
     else
     {
-        <div id="header-bottom-right">
+        <div id="header-account">
             <span class="user" onclick="mustLogin();"><a href="#" class="login-required">login or register</a></span>
         </div>
     }
