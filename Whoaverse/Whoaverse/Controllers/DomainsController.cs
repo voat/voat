@@ -30,6 +30,11 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
             ViewBag.SelectedSubverse = "domains";
             ViewBag.SelectedDomain = domainname + "." + ext;
 
@@ -65,6 +70,11 @@ namespace Whoaverse.Controllers
 
                 int pageSize = 25;
                 int pageNumber = (page ?? 1);
+
+                if (pageNumber < 1)
+                {
+                    return View("~/Views/Errors/Error_404.cshtml");
+                }
 
                 //check if at least one submission for given domain was found, if not, send to a page not found error
                 var submissions = db.Messages

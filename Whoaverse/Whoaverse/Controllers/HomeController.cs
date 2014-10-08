@@ -707,6 +707,11 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
             if (Whoaverse.Utils.User.UserExists(id) && id != "deleted")
             {
                 //show comments
@@ -748,6 +753,11 @@ namespace Whoaverse.Controllers
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
             try
             {
@@ -791,6 +801,11 @@ namespace Whoaverse.Controllers
             {
                 int pageSize = 25;
                 int pageNumber = (page ?? 1);
+
+                if (pageNumber < 1)
+                {
+                    return View("~/Views/Errors/Error_404.cshtml");
+                }
 
                 // setup a cookie to find first time visitors and display welcome banner
                 string cookieName = "NotFirstTime";

@@ -39,6 +39,11 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
             // get logged in username and fetch received messages
             try
             {
@@ -87,6 +92,11 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
             // get logged in username and fetch received comment replies
             try
             {
@@ -134,6 +144,11 @@ namespace Whoaverse.Controllers
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
             // get logged in username and fetch received comment replies
             try
@@ -189,6 +204,11 @@ namespace Whoaverse.Controllers
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
             // get logged in username and fetch sent messages
             try

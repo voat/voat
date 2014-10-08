@@ -38,6 +38,11 @@ namespace Whoaverse.Controllers
                     int pageSize = 25;
                     int pageNumber = (page ?? 1);
 
+                    if (pageNumber < 1)
+                    {
+                        return View("~/Views/Errors/Error_404.cshtml");
+                    }
+
                     //show search results, default sorting by rank and date
                     var linkSubmissions = db.Messages
                         .Where(x => x.Name != "deleted" & x.Subverse == sub & x.Linkdescription.ToLower().Contains(q))
@@ -68,6 +73,11 @@ namespace Whoaverse.Controllers
 
                     int pageSize = 25;
                     int pageNumber = (page ?? 1);
+
+                    if (pageNumber < 1)
+                    {
+                        return View("~/Views/Errors/Error_404.cshtml");
+                    }
 
                     //show search results, default sorting by rank and date
                     var linkSubmissions = db.Messages

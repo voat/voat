@@ -508,6 +508,12 @@ namespace Whoaverse.Controllers
         {
             int pageSize = 25;
             int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
             string cookieName = "NSFWEnabled";
 
             if (subversetoshow == null)
@@ -642,6 +648,11 @@ namespace Whoaverse.Controllers
             int pageSize = 25;
             int pageNumber = (page ?? 1);
 
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
             try
             {
                 //order by subscriber count (popularity)
@@ -672,6 +683,11 @@ namespace Whoaverse.Controllers
             ViewBag.SubversesView = "subscribed";
             int pageSize = 25;
             int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
             // get a list of subcribed subverses with details and order by subverse names, ascending
             var subscribedSubverses = from c in db.Subverses
@@ -721,6 +737,11 @@ namespace Whoaverse.Controllers
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
             var subverses = db.Subverses
                 .OrderByDescending(s => s.creation_date);
@@ -782,6 +803,11 @@ namespace Whoaverse.Controllers
             {
                 int pageSize = 25;
                 int pageNumber = (page ?? 1);
+
+                if (pageNumber < 1)
+                {
+                    return View("~/Views/Errors/Error_404.cshtml");
+                }
 
                 ViewBag.Title = subversetoshow;
 
