@@ -15,8 +15,7 @@
 <div class="spacer">
 
     @using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
-    {
-        <h2>@Html.ValidationSummary(true)</h2>
+    {        
         @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search whoaverse" })
         @Html.ValidationMessage("q")
     }
