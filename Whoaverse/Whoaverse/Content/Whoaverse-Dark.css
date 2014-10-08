@@ -1130,6 +1130,7 @@ pre, code {
         font-size: 14px;
         margin: 0 auto;
         max-width: 1075px;
+        position: relative;
     }
 
         /* ! Header : Banner : Logo
@@ -1244,8 +1245,9 @@ pre, code {
             font-size: 11px;
             line-height: 56px;
             padding: 0;
-            position: relative;
+            position: absolute;
             right: 0;
+            top: 0;
         }
 
             #header-account a {
@@ -2281,8 +2283,6 @@ textarea.form-control {
         font-size: 10px;
         line-height: 80%;
         padding: 6px;
-        position: absolute;
-        top: 0;
     }
 
     #header-banner {
