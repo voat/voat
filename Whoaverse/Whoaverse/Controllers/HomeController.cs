@@ -158,6 +158,12 @@ namespace Whoaverse.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
 
+                // make sure that the combination of selected subverse and message subverse are linked
+                if (message.Subverse != subversetoshow)
+                {
+                    return View("~/Views/Errors/Error_404.cshtml");
+                }
+
                 // experimental
                 // register a new session for this subverse
                 try
