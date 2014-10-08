@@ -246,8 +246,6 @@
 
     @Html.Partial("_Footer")
 
-    <br />
-
     @if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
     {
         HttpCookie cookie = new HttpCookie("NotFirstTime");

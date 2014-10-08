@@ -1763,6 +1763,7 @@ pre, code {
             }
             .link a.subreddit:hover {
                 color: #DC5757;
+                text-decoration: none;
             }
 
         .link a.author {
@@ -1774,6 +1775,7 @@ pre, code {
             }
             .link a.author:hover {
                 color: #DC5757;
+                text-decoration: underline;
             }
 
         .link .tagline {
@@ -1972,19 +1974,18 @@ pre, code {
 /* ! Footer
 -------------------------------------------------------------------------------- */
 
-.centered {
+.footer-container {
     text-align: center;
-    vertical-align: middle;
+    background: #333;
+    border-top: 1px solid #222;
+    clear: both;
+    margin-top: 10px;
 }
 
     .footer {
-        border: 1px #222;
-        border-radius: none;
-        border-style: solid none none;
-        clear: both;
+        border: none;
         color: inherit;
-        margin: 30px 0 0;
-        padding: 15px;
+        margin: 15px auto 20px;
     }
 
         .footer a:hover {
