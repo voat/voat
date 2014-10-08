@@ -1755,11 +1755,11 @@ pre, code {
         ------------------------------------------------------------------------------------ */
 
         .link a.subreddit {
-            color: #6D6D6D;
+            color: #ABABAB;
             font-weight: bold;
         }
             .link a.subreddit:visited {
-                color: #6D6D6D;
+                color: #ABABAB;
             }
             .link a.subreddit:hover {
                 color: #DC5757;
