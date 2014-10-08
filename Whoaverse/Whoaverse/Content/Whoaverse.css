@@ -2250,11 +2250,16 @@ textarea.form-control {
         height: 18px;
     }
 
+    #header-container {
+        height: 64px;
+    }
+
     #header-account {
         font-size: 10px;
         line-height: 80%;
         padding: 6px;
-        top: 17px;
+        position: absolute;
+        top: 0;
     }
 
     #header-banner {
