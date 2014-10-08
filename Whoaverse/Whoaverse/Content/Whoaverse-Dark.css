@@ -162,7 +162,7 @@ input, button, select, textarea {
     color: #DDD;
     display: inline-block;
     font-size: 10px;
-    font-weight: 700;
+    font-weight: bold;
     line-height: 1;
     padding: 5px;
     text-align: center;
@@ -341,7 +341,7 @@ input, button, select, textarea {
 }
 
 .unreadNotification {
-    background-color: #ff9da4;
+    background-color: #FF9DA4;
 }
 
 .user {
@@ -1755,14 +1755,15 @@ pre, code {
         ------------------------------------------------------------------------------------ */
 
         .link a.subreddit {
-            color: #6D6D6D;
+            color: #ABABAB;
             font-weight: bold;
         }
             .link a.subreddit:visited {
-                color: #6D6D6D;
+                color: #ABABAB;
             }
             .link a.subreddit:hover {
                 color: #DC5757;
+                text-decoration: none;
             }
 
         .link a.author {
@@ -1774,6 +1775,7 @@ pre, code {
             }
             .link a.author:hover {
                 color: #DC5757;
+                text-decoration: underline;
             }
 
         .link .tagline {
@@ -1806,7 +1808,7 @@ pre, code {
             padding: 0;
         }
 
-            .link .buttons li {
+            .link .flat-list li {
                 border: 0;
                 display: inline-block;
                 line-height: 150%;
@@ -1814,11 +1816,11 @@ pre, code {
                 text-align: center;
             }
 
-                .link .buttons li a {
+                .link .flat-list li a {
                     color: #BCBCBC;
                     font-weight: bold;
                 }
-                    .link .buttons li a:hover {
+                    .link .flat-list li a:hover {
                         text-decoration: underline;
                     }
 
@@ -1830,7 +1832,7 @@ pre, code {
             border: 1px solid #272727;
             border-radius: 0;
             box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
-            margin: 15px 0 0;
+            margin: 0;
             padding: 5px 10px;
         }
 
@@ -1972,19 +1974,18 @@ pre, code {
 /* ! Footer
 -------------------------------------------------------------------------------- */
 
-.centered {
+.footer-container {
     text-align: center;
-    vertical-align: middle;
+    background: #333;
+    border-top: 1px solid #222;
+    clear: both;
+    margin-top: 10px;
 }
 
     .footer {
-        border: 1px #222;
-        border-radius: none;
-        border-style: solid none none;
-        clear: both;
+        border: none;
         color: inherit;
-        margin: 30px 0 0;
-        padding: 15px;
+        margin: 15px auto 20px;
     }
 
         .footer a:hover {
@@ -1992,7 +1993,7 @@ pre, code {
         }
 
         .bottommenu {
-            color: #6D6D6D;
+            color: #959595;
             font-size: 11px;
         }
 
@@ -2081,6 +2082,7 @@ pre, code {
             border-color: #2C2C2C;
             box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
             color: #EEE;
+            text-decoration: none;
         }
 
     #about-main .md ul.flat-list {
@@ -2345,7 +2347,7 @@ textarea.form-control {
     }
 
     .link .title {
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .comment .comment {
@@ -2427,7 +2429,12 @@ textarea.form-control {
                 width: 32px;
             }
 
+    .link {
+        padding-bottom: 6px;
+    }
+
     .link .flat-list.buttons {
+        margin: 0;
         padding: 5px 0;
     }
 
