@@ -2057,11 +2057,8 @@ body.with-listing-chooser.explore-page #header .pagename {
         }
 
 .md {
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
+    max-width: 650px;
     overflow: auto;
-    font-size: small;
 }
 
     .md p, .md h1 {

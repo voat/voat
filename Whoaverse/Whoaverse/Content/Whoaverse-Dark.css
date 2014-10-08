@@ -1079,7 +1079,7 @@ pre, code {
                         border: 1px solid;
                         border-color: #333 #3A3A3A #3A3A3A;
                         box-shadow: 3px 3px 3px hsla( 0,0%,0%,0.2 );
-                        font-size: 12px;
+                        font-size: 10px;
                         margin: 0;
                         padding: 0;
                         position: absolute;
@@ -1099,7 +1099,7 @@ pre, code {
                                 color: #DDD;
                                 display: block;
                                 line-height: 16px;
-                                padding: 3px 7px;
+                                padding: 1px 6px;
                                 text-decoration: none;
                                 width: auto;
                             }
@@ -1115,17 +1115,21 @@ pre, code {
     /* ! Header : Left
     ------------------------------------------------------------------------------------ */
 
-    #header-bottom-left {
+    #header-container {
         background: #333;
         bottom: 0;
         border-bottom: 1px solid #222;
         border-top: 1px solid #222;
-        font-size: 14px;
         height: 58px;
-        margin: 0;
         position: absolute;
         width: 100%;
         z-index: 1;
+    }
+
+    #header-bottom-left {
+        font-size: 14px;
+        margin: 0 auto;
+        max-width: 1075px;
     }
 
         /* ! Header : Left : Logo
@@ -1237,17 +1241,11 @@ pre, code {
     ------------------------------------------------------------------------------------ */
 
     #header-bottom-right {
-        background: #333;
-        border: 1px solid #222;
-        border-radius: 0 0 0 5px;
-        border-style: none none solid solid;
         font-size: 11px;
-        line-height: 100%;
-        padding: 7px;
-        position: absolute;
+        line-height: 56px;
+        padding: 0;
+        position: relative;
         right: 0;
-        top: 23px;
-        z-index: 5;
     }
 
         #header-bottom-right a {
