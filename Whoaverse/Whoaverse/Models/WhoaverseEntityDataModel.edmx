@@ -199,7 +199,7 @@
           <Property Name="spam_filter_selfpost" Type="nvarchar" MaxLength="10" />
           <Property Name="spam_filter_comments" Type="nvarchar" MaxLength="10" />
           <Property Name="rated_adult" Type="bit" Nullable="false" />
-          <Property Name="allow_default" Type="bit" />
+          <Property Name="allow_default" Type="bit" Nullable="false" />
           <Property Name="enable_thumbnails" Type="bit" Nullable="false" />
           <Property Name="exclude_sitewide_bans" Type="bit" />
           <Property Name="traffic_stats_public" Type="bit" />
@@ -208,6 +208,7 @@
           <Property Name="stylesheet" Type="nvarchar(max)" />
           <Property Name="subscribers" Type="int" />
           <Property Name="private_subverse" Type="bit" Nullable="false" />
+          <Property Name="authorized_submitters_only" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Userbadges">
           <Key>
@@ -611,6 +612,7 @@
           <Property Name="private_subverse" Type="Boolean" DefaultValue="false" Nullable="false" />
           <NavigationProperty Name="Subverseflairsettings" Relationship="whoaverseModel.FK_Subverseflairsettings_Subverses1" FromRole="Subverse" ToRole="Subverseflairsetting" />
           <NavigationProperty Name="Stickiedsubmissions" Relationship="whoaverseModel.FK_Stickiedsubmissions_Subverses" FromRole="Subverse" ToRole="Stickiedsubmission" />
+          <Property Name="authorized_submitters_only" Type="Boolean" Nullable="false" DefaultValue="false" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
@@ -934,6 +936,7 @@
           <EntitySetMapping Name="Subverses">
             <EntityTypeMapping TypeName="whoaverseModel.Subverse">
               <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="authorized_submitters_only" ColumnName="authorized_submitters_only" />
                 <ScalarProperty Name="private_subverse" ColumnName="private_subverse" />
                 <ScalarProperty Name="subscribers" ColumnName="subscribers" />
                 <ScalarProperty Name="stylesheet" ColumnName="stylesheet" />

@@ -164,83 +164,74 @@ namespace Whoaverse.Controllers
         }
 
         // POST: submit a new submission
+        [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent")] Message message)
         {
-            if (User.Identity.IsAuthenticated)
+            // verify recaptcha if user has less than 25 CCP
+            if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
             {
-                // verify recaptcha if user has less than 25 CCP
-                if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
-                {
-                    // begin recaptcha check
-                    bool isCaptchaCodeValid = false;
-                    string CaptchaMessage = "";
-                    isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
+                // begin recaptcha check
+                bool isCaptchaCodeValid = false;
+                string CaptchaMessage = "";
+                isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
 
-                    if (!isCaptchaCodeValid)
-                    {
-                        ModelState.AddModelError("", "Incorrect recaptcha answer.");
-                        return View();
-                    }
-                    // end recaptcha check
+                if (!isCaptchaCodeValid)
+                {
+                    ModelState.AddModelError("", "Incorrect recaptcha answer.");
+                    return View();
                 }
+                // end recaptcha check
+            }
 
-                if (ModelState.IsValid)
+            if (ModelState.IsValid)
+            {
+                var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
+
+                if (targetSubverse != null)
                 {
-                    var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
-
-                    if (targetSubverse != null)
+                    // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
+                    if (targetSubverse.authorized_submitters_only)
                     {
-                        // restrict incoming submissions to announcements subverse (temporary hard-code solution
-                        // TODO: add global administrators table with different access levels
-                        if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
+                        if (!Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
                         {
-                            message.Subverse = targetSubverse.name;
-                            message.Date = System.DateTime.Now;
-                            message.Name = User.Identity.Name;
-                            db.Messages.Add(message);
-                            await db.SaveChangesAsync();
+                            // user is not a moderator, check if user is an administrator
+                            if (!Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
+                            {
+                                ModelState.AddModelError("", "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
+                                return View();
+                            }
                         }
-                        else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
-                        {
-                            message.Subverse = targetSubverse.name;
-                            message.Date = System.DateTime.Now;
-                            message.Name = User.Identity.Name;
-                            db.Messages.Add(message);
-                            await db.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
-                            return View();
-                        }
-
-                        // get newly generated message ID and execute ranking and self upvoting                
-                        Votingtracker tmpVotingTracker = new Votingtracker();
-                        tmpVotingTracker.MessageId = message.Id;
-                        tmpVotingTracker.UserName = message.Name;
-                        tmpVotingTracker.VoteStatus = 1;
-                        db.Votingtrackers.Add(tmpVotingTracker);
-                        await db.SaveChangesAsync();
-
-                        return RedirectToAction("Index");
                     }
-                    else
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                    }
+
+                    // accept submission and save it to the database
+                    message.Subverse = targetSubverse.name;
+                    message.Date = System.DateTime.Now;
+                    message.Name = User.Identity.Name;
+                    db.Messages.Add(message);
+                    await db.SaveChangesAsync();
+
+                    // get newly generated submission ID and execute ranking and self upvoting                
+                    Votingtracker tmpVotingTracker = new Votingtracker();
+                    tmpVotingTracker.MessageId = message.Id;
+                    tmpVotingTracker.UserName = message.Name;
+                    tmpVotingTracker.VoteStatus = 1;
+                    db.Votingtrackers.Add(tmpVotingTracker);
+                    await db.SaveChangesAsync();
+
+                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Sorry, you are doing that too fast. Please try again in a few minutes.");
-                    return View(message);
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
             }
             else
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                ModelState.AddModelError(string.Empty, "Sorry, you are doing that too fast. Please try again in a few minutes.");
+                return View(message);
             }
         }
 
@@ -405,6 +396,7 @@ namespace Whoaverse.Controllers
                 viewModel.Rated_adult = subverse.rated_adult;
                 viewModel.Private_subverse = subverse.private_subverse;
                 viewModel.Enable_thumbnails = subverse.enable_thumbnails;
+                viewModel.Authorized_submitters_only = subverse.authorized_submitters_only;
 
                 ViewBag.SelectedSubverse = string.Empty;
                 ViewBag.SubverseName = subverse.name;
@@ -455,7 +447,7 @@ namespace Whoaverse.Controllers
                                 else
                                 {
                                     ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 50000 characters.");
-                                    return View();
+                                    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
                                 }
                             }
                             else
@@ -466,6 +458,7 @@ namespace Whoaverse.Controllers
                             existingSubverse.rated_adult = updatedModel.rated_adult;
                             existingSubverse.private_subverse = updatedModel.private_subverse;
                             existingSubverse.enable_thumbnails = updatedModel.enable_thumbnails;
+                            existingSubverse.authorized_submitters_only = updatedModel.authorized_submitters_only;
 
                             // these properties are currently not implemented but they can be saved and edited for future use
                             existingSubverse.type = updatedModel.type;
@@ -488,18 +481,18 @@ namespace Whoaverse.Controllers
                     else
                     {
                         ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
-                        return View();
+                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
                     }
                 }
                 else
                 {
-                    return View();
+                    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
                 }
             }
             catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "Something bad happened.");
-                return View();
+                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
             }
         }
 
@@ -918,7 +911,7 @@ namespace Whoaverse.Controllers
                                         .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
                                         .OrderByDescending(s => s.Date);
                             }
-                            else 
+                            else
                             {
                                 sfwsubmissions = db.Messages
                                         .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)

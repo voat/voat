@@ -24,6 +24,7 @@ namespace Whoaverse.Models
             this.traffic_stats_public = false;
             this.subscribers = 1;
             this.private_subverse = false;
+            this.authorized_submitters_only = false;
             this.Messages = new HashSet<Message>();
             this.SubverseAdmins = new HashSet<SubverseAdmin>();
             this.Subverseflairsettings = new HashSet<Subverseflairsetting>();
@@ -52,6 +53,7 @@ namespace Whoaverse.Models
         public string stylesheet { get; set; }
         public Nullable<int> subscribers { get; set; }
         public bool private_subverse { get; set; }
+        public bool authorized_submitters_only { get; set; }
     
         public virtual ICollection<Message> Messages { get; set; }
         public virtual Defaultsubverse Defaultsubvers { get; set; }

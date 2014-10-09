@@ -554,7 +554,7 @@ namespace Whoaverse.Controllers
                     return View();
                 }
                 // end recaptcha check
-            }
+            }                       
 
             if (ModelState.IsValid)
             {
@@ -562,6 +562,19 @@ namespace Whoaverse.Controllers
                 var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
                 if (targetSubverse != null && message.Subverse != "all")
                 {
+                    // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
+                    if (targetSubverse.authorized_submitters_only)
+                    {
+                        if (!Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
+                        {
+                            // user is not a moderator, check if user is an administrator
+                            if (!Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
+                            {
+                                ModelState.AddModelError("", "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
+                                return View();
+                            }
+                        }
+                    }
 
                     // submission is a link post
                     // generate a thumbnail if submission is a direct link to image or video
@@ -616,62 +629,28 @@ namespace Whoaverse.Controllers
                             }
                         }
 
+                        // accept submission and save it to the database
                         message.Name = User.Identity.Name;
                         message.Subverse = targetSubverse.name;
-
                         // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
                         message.Date = System.DateTime.Now;
-
                         message.Likes = 1;
-
-                        // restrict incoming submissions to announcements subverse (temporary hard-code solution
-                        // TODO: add global administrators table with different access levels
-                        if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
-                        {
-                            db.Messages.Add(message);
-                            await db.SaveChangesAsync();
-                        }
-                        else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
-                        {
-                            db.Messages.Add(message);
-                            await db.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
-                            return View();
-                        }
+                        db.Messages.Add(message);
+                        await db.SaveChangesAsync();                        
 
                     }
                     else if (message.Type == 1 && message.Title != null)
                     {
                         // submission is a self post
+                        // accept submission and save it to the database
                         // trim trailing blanks from subverse name if a user mistakenly types them
                         message.Subverse = targetSubverse.name;
                         message.Name = User.Identity.Name;
-
                         // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
                         message.Date = System.DateTime.Now;
-
                         message.Likes = 1;
-
-                        // restrict incoming submissions to announcements subverse (temporary hard-code solution
-                        // TODO: add global administrators table with different access levels
-                        if (message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase) && User.Identity.Name == "Atko")
-                        {
-                            db.Messages.Add(message);
-                            await db.SaveChangesAsync();
-                        }
-                        else if (!message.Subverse.Equals("announcements", StringComparison.OrdinalIgnoreCase))
-                        {
-                            db.Messages.Add(message);
-                            await db.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to is restricted.");
-                            return View();
-                        }
+                        db.Messages.Add(message);
+                        await db.SaveChangesAsync();                        
                     }
 
                     return RedirectToRoute(
@@ -695,7 +674,6 @@ namespace Whoaverse.Controllers
             {
                 return View();
             }
-
         }
 
         // GET: user/id
