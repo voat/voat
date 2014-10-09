@@ -144,7 +144,7 @@ namespace Whoaverse.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
                 // make sure that the combination of selected subverse and message subverse are linked
-                if (message.Subverse != subversetoshow)
+                if (!message.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase))
                 {
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
