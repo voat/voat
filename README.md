@@ -47,7 +47,7 @@ This was just a hobby project to help me get a better understanding of C# and AS
 - WhoaVerse has increased focus on users privacy. It enables users to delete their account by automatically overwriting every comment and every submission the user has made with a string "deleted", before proceeding to remove the user account from user credentials database. 
 - built-in night mode
 - responsive design which works great on mobile out of the box
-- limited voting (new users need to gain a certain amount of points before they are able to vote without restrictions, reddit does not have this)
+- limited voting (new users need to gain a certain amount of points before they are able to vote without restrictions)
 - limited number of owned subs per user
 - a score bar which graphically shows percentage of upvotes/downvotes
 - user profiles which show statistics about user activity, for example, submission distribution and highest-lowest rated submissions
