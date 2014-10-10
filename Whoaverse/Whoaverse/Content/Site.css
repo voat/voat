@@ -2176,6 +2176,14 @@ a.star {
     font-size: x-small;
 }
 
+.toggle .option {
+    display: none;
+}
+
+    .toggle .option.active {
+        display: inline;
+    }
+
 .submission .stub {
     display: none;
 }
@@ -5283,6 +5291,10 @@ ul.tabmenu.formtab {
     border-radius: 7px;
 }
 
+.usertext {
+    font-size: small;
+}
+
 .usertext-edit {
     margin-top: 5px;
     padding: 0 1px;
@@ -7112,6 +7124,11 @@ a.adminbox {
 
 .wide {
     width: 100%;
+}
+
+.centered {
+    text-align: center;
+    vertical-align: middle;
 }
 
 .sr-ad-table .inherited {
