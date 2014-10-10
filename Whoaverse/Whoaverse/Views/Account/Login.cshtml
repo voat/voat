@@ -17,60 +17,62 @@ All Rights Reserved.*@
     ViewBag.Title = "Log in";
 }
 
-<div id="about-main" class="content about-page" role="main">
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
 
-    <div class="row nomargin">
-        <div class="well col-md-8">
+        <div class="row nomargin">
+            <div class="well">
 
-            <h1>@ViewBag.Title.</h1>            
+                <h1>@ViewBag.Title.</h1>
 
-            <section id="loginForm">
-                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-                {
-                    @Html.AntiForgeryToken()
-                    <h1>Welcome back fancy pants!</h1>
-                    <hr />
-                    <div>
-                        <h2>@Html.ValidationSummary(true)</h2>
-                        <br />
-                        <br />
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
-                        <div class="col-md-4">
-                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.UserName)
+                <section id="loginForm">
+                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <h1>Welcome back fancy pants!</h1>
+                        <hr />
+                        <div>
+                            <h2>@Html.ValidationSummary(true)</h2>
+                            <br />
+                            <br />
                         </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                        <div class="col-md-4">
-                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Password)
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+                            <div class="col-md-4">
+                                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.UserName)
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-4">
-                            <div class="checkbox">
-                                @Html.CheckBoxFor(m => m.RememberMe)
-                                @Html.LabelFor(m => m.RememberMe)
-                            </div>                            
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+                            <div class="col-md-4">
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.Password)
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-4">
-                            <input type="submit" value="Log in" class="btn-whoaverse" />
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4">
+                                <div class="checkbox">
+                                    @Html.CheckBoxFor(m => m.RememberMe)
+                                    @Html.LabelFor(m => m.RememberMe)
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <p>
-                        @Html.ActionLink("Register", "Register") if you don't have an account. You know you want to ;)
-                    </p>
-                }
-            </section>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4">
+                                <input type="submit" value="Log in" class="btn-whoaverse" />
+                            </div>
+                        </div>
+                        <p>
+                            @Html.ActionLink("Register", "Register") if you don't have an account. You know you want to ;)
+                        </p>
+                    }
+                </section>
 
-                </div>
-                @section Scripts {
-                    @Scripts.Render("~/bundles/jqueryval")
-                }
             </div>
+            @section Scripts {
+                @Scripts.Render("~/bundles/jqueryval")
+            }
+        </div>
     </div>
+</div>

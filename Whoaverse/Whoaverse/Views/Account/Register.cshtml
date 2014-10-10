@@ -16,107 +16,109 @@
     ViewBag.Title = "Register";
 }
 
-<div id="about-main" class="content about-page" role="main">
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
 
-    <div class="row nomargin">
-        <div class="well col-md-8">
+        <div class="row nomargin">
+            <div class="well">
 
-            <h1>@ViewBag.Title.</h1>
+                <h1>@ViewBag.Title.</h1>
 
-            @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            { @Html.AntiForgeryToken()
-                <h2>All it takes is a username and password. We don't ask for your e-mail or anything else.</h2><br />
-                <div class="panel panel-default">
-                    <div class="panel-heading">Privacy philosophy</div>
-                    <div class="panel-body">
-                        <p>We respect your privacy. We really do.</p>
-                        <p>Your personal information is never for sale.</p>
-                        <p>We use and disclose information to prevent people from abusing the platform.</p>
-                        <p>We never disclose information for any other reason unless required by law.</p>
-                        <p>Our Privacy Policy can be found <a href="/help/privacy">here</a>.</p>
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                { @Html.AntiForgeryToken()
+                    <h2>All it takes is a username and password. We don't ask for your e-mail or anything else.</h2><br />
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Privacy philosophy</div>
+                        <div class="panel-body">
+                            <p>We respect your privacy. We really do.</p>
+                            <p>Your personal information is never for sale.</p>
+                            <p>We use and disclose information to prevent people from abusing the platform.</p>
+                            <p>We never disclose information for any other reason unless required by law.</p>
+                            <p>Our Privacy Policy can be found <a href="/help/privacy">here</a>.</p>
+                        </div>
                     </div>
-                </div>
-                <hr />
-                @Html.ValidationSummary()
-                <div class="form-group">
-                    @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-4">
-                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.UserName)
+                    <hr />
+                    @Html.ValidationSummary()
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.UserName)
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-4">
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Password)
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-4">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Password)
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-4">
-                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.ConfirmPassword)
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-4">
+                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ConfirmPassword)
+                        </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Are you a human?</div>
-                    <div class="panel-body">
-                        <p>Please re-type the text you see in the photo:</p>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Are you a human?</div>
+                        <div class="panel-body">
+                            <p>Please re-type the text you see in the photo:</p>
+                        </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    @if (Request.IsSecureConnection)
-                    {
-                        <script type="text/javascript">
-                            var RecaptchaOptions = {
-                                theme: 'white',
-                                lang: 'en',
-                                tabindex: 0
-                            };
-                        </script>
-                        <script type="text/javascript"
-                                src="https://www.google.com/recaptcha/api/challenge?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-">
-                        </script>                        
-                        <noscript>
-                            <iframe src="https://www.google.com/recaptcha/api/noscript?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-"
-                                    height="300" width="500" frameborder="0"></iframe><br>
-                            <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
-                            <input type="hidden" name="recaptcha_response_field"
-                                   value="manual_challenge">
-                        </noscript>
-                    }
-                    else
-                    {
-                        <script type="text/javascript">
-                            var RecaptchaOptions = {
-                                theme: 'white',
-                                lang: 'en',
-                                tabindex: 0
-                            };
-                        </script>
-                        <script type="text/javascript"
-                                src="http://www.google.com/recaptcha/api/challenge?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-">
-                        </script>
-                        <noscript>
-                            <iframe src="http://www.google.com/recaptcha/api/noscript?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-"
-                                    height="300" width="500" frameborder="0"></iframe><br>
-                            <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
-                            <input type="hidden" name="recaptcha_response_field"
-                                   value="manual_challenge">
-                        </noscript>
-                    }
-                </div>
-                <div class="form-group">
-                    <input type="submit" class="btn-whoaverse" value="Register" />
-                </div>
-            }
+                    <div class="panel panel-default">
+                        @if (Request.IsSecureConnection)
+                        {
+                            <script type="text/javascript">
+                                var RecaptchaOptions = {
+                                    theme: 'white',
+                                    lang: 'en',
+                                    tabindex: 0
+                                };
+                            </script>
+                            <script type="text/javascript"
+                                    src="https://www.google.com/recaptcha/api/challenge?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-">
+                            </script>
+                            <noscript>
+                                <iframe src="https://www.google.com/recaptcha/api/noscript?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-"
+                                        height="300" width="500" frameborder="0"></iframe><br>
+                                <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+                                <input type="hidden" name="recaptcha_response_field"
+                                       value="manual_challenge">
+                            </noscript>
+                        }
+                        else
+                        {
+                            <script type="text/javascript">
+                                var RecaptchaOptions = {
+                                    theme: 'white',
+                                    lang: 'en',
+                                    tabindex: 0
+                                };
+                            </script>
+                            <script type="text/javascript"
+                                    src="http://www.google.com/recaptcha/api/challenge?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-">
+                            </script>
+                            <noscript>
+                                <iframe src="http://www.google.com/recaptcha/api/noscript?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-"
+                                        height="300" width="500" frameborder="0"></iframe><br>
+                                <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+                                <input type="hidden" name="recaptcha_response_field"
+                                       value="manual_challenge">
+                            </noscript>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" class="btn-whoaverse" value="Register" />
+                    </div>
+                }
 
-            @section Scripts {
-                @Scripts.Render("~/bundles/jqueryval")
-            }
+                @section Scripts {
+                    @Scripts.Render("~/bundles/jqueryval")
+                }
+
+            </div>
 
         </div>
-
     </div>
 </div>
