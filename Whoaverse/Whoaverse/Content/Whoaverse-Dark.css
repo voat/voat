@@ -889,6 +889,9 @@ pre, code {
 
 /* ! Body : Tables
 ------------------------------------------------------------------------------------ */
+.panel-transparent{
+    background: none repeat scroll 0% 0% rgba(255, 0, 0, 0) !important;
+}
 
 .panel {
     background: #333;

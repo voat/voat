@@ -13,7 +13,7 @@
 @model Whoaverse.Models.RegisterViewModel
 
 @{
-    ViewBag.Title = "Register";
+    ViewBag.Title = "Get a WhoaVerse account";
 }
 
 <div id="container">
@@ -28,16 +28,15 @@
                 { @Html.AntiForgeryToken()
                     <h2>All it takes is a username and password. We don't ask for your e-mail or anything else.</h2><br />
                     <div class="panel panel-default">
-                        <div class="panel-heading">Privacy philosophy</div>
+                        <div class="panel-heading">How we view your privacy</div>
                         <div class="panel-body">
                             <p>We respect your privacy. We really do.</p>
                             <p>Your personal information is never for sale.</p>
-                            <p>We use and disclose information to prevent people from abusing the platform.</p>
+                            <p>We use and disclose information to prevent people from abusing our platform.</p>
                             <p>We never disclose information for any other reason unless required by law.</p>
                             <p>Our Privacy Policy can be found <a href="/help/privacy">here</a>.</p>
                         </div>
                     </div>
-                    <hr />
                     @Html.ValidationSummary()
                     <div class="form-group">
                         @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
@@ -63,7 +62,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Are you a human?</div>
                         <div class="panel-body">
-                            <p>Please re-type the text you see in the photo:</p>
+                            <p>Please type the text you see in the image below:</p>
                         </div>
                     </div>
                     <div class="panel panel-default">

@@ -22,7 +22,6 @@
     {
         @Html.AntiForgeryToken()
 
-        <br />
         <div class="alert alert-info">You are creating a new subverse. You are awesome!</div>
         <div class="alert alert-info">If the subverse you are trying to register is already taken and not actively used, you can try to claim it by submitting a takeover request to <a href="/v/subverserequest">/v/subverserequest</a></div>
 
@@ -82,15 +81,21 @@
             </div>
 
             <div class="panel panel-default">
-                @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
+                <div class="panel-heading">Are you a human?</div>
+                <div class="panel-body">
+                    <p>Please type the text you see in the image below:</p>
+                </div>
+            </div>
+
+            <div class="panel panel-default panel-transparent">
                 @if (Request.IsSecureConnection)
                 {
                     <script type="text/javascript">
-                            var RecaptchaOptions = {
-                                theme: 'white',
-                                lang: 'en',
-                                tabindex: 0
-                            };
+                        var RecaptchaOptions = {
+                            theme: 'white',
+                            lang: 'en',
+                            tabindex: 0
+                        };
                     </script>
                     <script type="text/javascript"
                             src="https://www.google.com/recaptcha/api/challenge?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-">
@@ -106,11 +111,11 @@
                 else
                 {
                     <script type="text/javascript">
-                            var RecaptchaOptions = {
-                                theme: 'white',
-                                lang: 'en',
-                                tabindex: 0
-                            };
+                        var RecaptchaOptions = {
+                            theme: 'white',
+                            lang: 'en',
+                            tabindex: 0
+                        };
                     </script>
                     <script type="text/javascript"
                             src="http://www.google.com/recaptcha/api/challenge?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-">
@@ -122,13 +127,11 @@
                         <input type="hidden" name="recaptcha_response_field"
                                value="manual_challenge">
                     </noscript>
-                }                              
+                }
             </div>
 
             <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Create" class="btn-whoaverse" />
-                </div>
             </div>
 
         </div>

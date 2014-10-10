@@ -7,14 +7,14 @@
     @Html.ValidationSummary()
     <div class="form-group">
         @Html.LabelFor(m => m.FirstWord, new { @class = "col-md-2 control-label" })
-        <div class="col-md-2">
+        <div class="col-md-3">
             @Html.TextBoxFor(m => m.FirstWord, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.FirstWord)
         </div>
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.SecondWord, new { @class = "col-md-2 control-label" })
-        <div class="col-md-2">
+        <div class="col-md-3">
             @Html.TextBoxFor(m => m.SecondWord, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.SecondWord)
         </div>

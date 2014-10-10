@@ -6,34 +6,23 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.Disable_custom_css, new { @class = "col-md-2 control-label" })
-        <div class="col-md-1">
-            @Html.CheckBoxFor(m => m.Disable_custom_css, new { @class = "checkbox inline no_indent" })
-        </div>
+    <div class="checkbox">
+        @Html.CheckBoxFor(m => m.Disable_custom_css)
+        @Html.LabelFor(m => m.Disable_custom_css)
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Night_mode, new { @class = "col-md-2 control-label" })
-        <div class="col-md-1">
-            @Html.CheckBoxFor(m => m.Night_mode, new { @class = "checkbox inline no_indent" })
-        </div>
+    <div class="checkbox">
+        @Html.CheckBoxFor(m => m.Night_mode)
+        @Html.LabelFor(m => m.Night_mode)
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.OpenLinksInNewTab, new { @class = "col-md-2 control-label" })
-        <div class="col-md-1">
-            @Html.CheckBoxFor(m => m.OpenLinksInNewTab, new { @class = "checkbox inline no_indent" })
-        </div>
+    <div class="checkbox">
+        @Html.CheckBoxFor(m => m.OpenLinksInNewTab)
+        @Html.LabelFor(m => m.OpenLinksInNewTab)
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Enable_adult_content, new { @class = "col-md-2 control-label" })
-        <div class="col-md-1">
-            @Html.CheckBoxFor(m => m.Enable_adult_content, new { @class = "checkbox inline no_indent" })
-        </div>
+    <div class="checkbox">
+        @Html.CheckBoxFor(m => m.Enable_adult_content)
+        @Html.LabelFor(m => m.Enable_adult_content)
     </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-3">
-            <input type="submit" value="Save" class="btn-whoaverse" />
-        </div>
-    </div>
+    <br />
+    <input type="submit" value="Save" class="btn-whoaverse" />
 }
 

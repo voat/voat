@@ -32,21 +32,18 @@
 }
 </style>
 
-<div class="content" role="main">
+<div id="container">
 
-    <div class="row nomargin">
-        <div class="well col-md-10">
+    <div class="well">
 
-            @if (linkPost == "true")
-            {
-                @Html.Partial("_AddSubmissionLinkpost")
-            }
-            else
-            {
-                @Html.Partial("_AddSubmissionSelfpost")
-            }
+        @if (linkPost == "true")
+        {
+            @Html.Partial("_AddSubmissionLinkpost")
+        }
+        else
+        {
+            @Html.Partial("_AddSubmissionSelfpost")
+        }
 
-        </div>
     </div>
-
 </div>
