@@ -16,27 +16,27 @@
     string selectedSubverse = ViewBag.SelectedSubverse;
 }
 <div id="container">
-<div class="content" role="main">
+    <div role="main">
 
-    <div class="sitetable linklisting">
+        <div class="sitetable linklisting">
 
-        <div class="spacer">
+            <div class="spacer">
 
-            <p>This section is under development.</p>
+                <p>This section is under development.</p>
 
-            @*@using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
-            {
-                <h2>@Html.ValidationSummary(true)</h2>
-                @Html.TextBox("SearchTerm", null, new { @class = "form-control", @placeholder = "Find a subverse" })
-                @Html.ValidationMessage("SearchTerm")
+                @*@using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        <h2>@Html.ValidationSummary(true)</h2>
+                        @Html.TextBox("SearchTerm", null, new { @class = "form-control", @placeholder = "Find a subverse" })
+                        @Html.ValidationMessage("SearchTerm")
 
-                <input type="checkbox" name="SearchInDescription" value="true" id="SearchInDescription"
-                       @Html.Raw((Model.SearchInDescription) ? "checked=\"checked\"" : "") />
+                        <input type="checkbox" name="SearchInDescription" value="true" id="SearchInDescription"
+                               @Html.Raw((Model.SearchInDescription) ? "checked=\"checked\"" : "") />
 
-                @Html.Label("Also search in subverse description")
-            }*@
+                        @Html.Label("Also search in subverse description")
+                    }*@
 
+            </div>
         </div>
     </div>
-</div>
 </div>
