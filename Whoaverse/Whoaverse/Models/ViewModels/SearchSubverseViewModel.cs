@@ -20,9 +20,9 @@ namespace Whoaverse.Models.ViewModels
     {
         [Required (ErrorMessage="Please enter a term to search for.")]
         [StringLength(100, ErrorMessage = "The search term must be at least {2} characters long.", MinimumLength = 3)]
-        public string SearchTerm { get; set; }
+        public string q { get; set; }
 
         // include subverse description in search
-        public bool SearchInDescription { get; set; }
+        public bool d { get; set; }
     }
 }

@@ -47,7 +47,7 @@ namespace Whoaverse
                 name: "Search",
                 url: "search",
                 defaults: new { controller = "Search", action = "SearchResults" }
-            );
+            );                        
 
             // /subverses
             routes.MapRoute(
@@ -59,9 +59,9 @@ namespace Whoaverse
             // /subverses/search
             routes.MapRoute(
                 name: "SubversesSearch",
-                url: "subverses/search/",
+                url: "subverses/search",
                 defaults: new { controller = "Subverses", action = "Search" }
-            ); 
+            );
 
             // /subverses/subscribed
             routes.MapRoute(

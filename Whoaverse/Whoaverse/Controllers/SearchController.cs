@@ -13,7 +13,9 @@ All Rights Reserved.
 */
 
 using PagedList;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web.Mvc;
 using Whoaverse.Models;
 using Whoaverse.Utils;
@@ -33,7 +35,7 @@ namespace Whoaverse.Controllers
                 if (l != null && sub != null)
                 {
                     //ViewBag.SelectedSubverse = string.Empty;
-                    ViewBag.SearchTerm = q;                    
+                    ViewBag.SearchTerm = q;
 
                     int pageSize = 25;
                     int pageNumber = (page ?? 1);
@@ -102,11 +104,57 @@ namespace Whoaverse.Controllers
 
                     return View("~/Views/Search/Index.cshtml", results.ToPagedList(pageNumber, pageSize));
                 }
-                
+
             }
             else
             {
-                return new EmptyResult();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+        }
+
+        [PreventSpam]
+        public ActionResult FindSubverse(int? page, string d, string q)
+        {
+            if (q != null && q.Length >= 3)
+            {
+                IEnumerable<Subverse> results;
+
+                ViewBag.SelectedSubverse = string.Empty;
+                ViewBag.SearchTerm = q;
+
+                int pageSize = 25;
+                int pageNumber = (page ?? 1);
+
+                if (pageNumber < 1)
+                {
+                    return View("~/Views/Errors/Error_404.cshtml");
+                }
+
+                // find a subverse by name and/or description, sort search results by number of subscribers
+                var subversesByName = db.Subverses
+                    .Where(s => s.name.ToLower().Contains(q))
+                    .OrderByDescending(s => s.subscribers).ToList();
+
+                if (d != null)
+                {
+                    var subversesByDescription = db.Subverses
+                    .Where(s => s.description.ToLower().Contains(q))
+                    .OrderByDescending(s => s.subscribers).ToList();
+                    results = subversesByName.Concat(subversesByDescription);
+                }
+                else
+                {
+                    results = subversesByName;
+                }
+
+                ViewBag.Title = "Search results";
+
+                return View("~/Views/Search/FindSubverseSearchResult.cshtml", results.ToPagedList(pageNumber, pageSize));
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
         }

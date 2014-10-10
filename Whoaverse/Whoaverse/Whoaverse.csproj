@@ -627,6 +627,7 @@
     <Content Include="Views\Subverses\_Stickied.cshtml" />
     <Content Include="Views\Shared\_DefaultMessage.cshtml" />
     <Content Include="Views\Subverses\SearchForSubverse.cshtml" />
+    <Content Include="Views\Search\FindSubverseSearchResult.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
