@@ -10,6 +10,9 @@ html {
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
 }
+body {
+  margin: 0;
+}
 article,
 aside,
 details,
@@ -48,6 +51,10 @@ a:hover {
 }
 abbr[title] {
   border-bottom: 1px dotted;
+}
+b,
+strong {
+  font-weight: bold;
 }
 dfn {
   font-style: italic;
@@ -871,10 +878,28 @@ th {
 .glyphicon-tree-deciduous:before {
   content: "\e200";
 }
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
 html {
   font-size: 10px;
 
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333;
+  background-color: #fff;
 }
 input,
 button,
@@ -884,8 +909,25 @@ textarea {
   font-size: inherit;
   line-height: inherit;
 }
+a {
+  color: #428bca;
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  color: #2a6496;
+  text-decoration: underline;
+}
+a:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
 figure {
   margin: 0;
+}
+img {
+  vertical-align: middle;
 }
 .img-responsive,
 .thumbnail > img,
@@ -917,6 +959,12 @@ figure {
 .img-circle {
   border-radius: 50%;
 }
+hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 0;
+  border-top: 1px solid #eee;
+}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -935,6 +983,23 @@ figure {
   margin: 0;
   overflow: visible;
   clip: auto;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.1;
+  color: inherit;
 }
 h1 small,
 h2 small,
@@ -1035,6 +1100,8 @@ h6,
   font-size: 12px;
 }
 p {
+  margin: 0 0 10px;
+}
 .lead {
   margin-bottom: 20px;
   font-size: 16px;
@@ -2240,6 +2307,12 @@ legend {
   color: #333;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
+}
+label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 input[type="search"] {
   -webkit-box-sizing: border-box;
