@@ -51,7 +51,6 @@
                     {
                         <p>This user made no submissions.</p>
                     }
-
                 }
             </div>
         </div>
@@ -59,6 +58,15 @@
             <div class="userstats-heading-1">Submission counters</div>
             <div class="userstats-body">
                 This user has so far submitted a total of <strong>@userStatsModel.LinkSubmissionsSubmitted</strong> link type submissions, <strong>@userStatsModel.MessageSubmissionsSubmitted</strong> message type submissions and a total of <strong>@userStatsModel.TotalCommentsSubmitted</strong> comments.
+            </div>
+        </div>
+        <div class="userstats">
+            <div class="userstats-heading-1">Voting habits</div>
+            <div class="userstats-body">
+                <p class="userstats-heading-2">Submissions</p>
+                This user has upvoted <strong>@userStatsModel.TotalSubmissionsUpvoted</strong> submissions and downvoted <strong>@userStatsModel.TotalSubmissionsDownvoted</strong>.
+                <p class="userstats-heading-2">Comments</p>
+                This user has upvoted <strong>@userStatsModel.TotalCommentsUpvoted</strong> comments and downvoted <strong>@userStatsModel.TotalCommentsDownvoted</strong>.
             </div>
         </div>
         <div class="userstats">

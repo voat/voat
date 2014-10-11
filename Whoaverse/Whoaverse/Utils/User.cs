@@ -537,6 +537,12 @@ namespace Whoaverse.Utils
                 // total comment count
                 var comments = db.Comments.Where(a => a.Name == userName).Count();
 
+                // voting habits
+                var commentUpvotes = db.Commentvotingtrackers.Where(a => a.UserName == userName && a.VoteStatus == 1).Count();
+                var commentDownvotes = db.Commentvotingtrackers.Where(a => a.UserName == userName && a.VoteStatus == -1).Count();
+                var submissionUpvotes = db.Votingtrackers.Where(a => a.UserName == userName && a.VoteStatus == 1).Count();
+                var submissionDownvotes = db.Votingtrackers.Where(a => a.UserName == userName && a.VoteStatus == -1).Count();
+
                 // get 3 highest rated comments
                 var highestRatedComments = db.Comments
                     .Include("Message")
@@ -576,6 +582,10 @@ namespace Whoaverse.Utils
                 userStatsModel.TotalCommentsSubmitted = comments;
                 userStatsModel.HighestRatedComments = highestRatedComments;
                 userStatsModel.LowestRatedComments = lowestRatedComments;
+                userStatsModel.TotalCommentsUpvoted = commentUpvotes;
+                userStatsModel.TotalCommentsDownvoted = commentDownvotes;
+                userStatsModel.TotalSubmissionsUpvoted = submissionUpvotes;
+                userStatsModel.TotalSubmissionsDownvoted = submissionDownvotes;
             }
 
             return userStatsModel;

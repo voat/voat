@@ -27,6 +27,11 @@ namespace Whoaverse.Models.ViewModels
         public IEnumerable<Message> LowestRatedSubmissions { get; set; }
         public IEnumerable<Comment> HighestRatedComments { get; set; }
         public IEnumerable<Comment> LowestRatedComments { get; set; }
+
+        public int TotalCommentsUpvoted { get; set; }
+        public int TotalCommentsDownvoted { get; set; }
+        public int TotalSubmissionsUpvoted { get; set; }
+        public int TotalSubmissionsDownvoted { get; set; }
     }
 
     public class SubverseStats
