@@ -31,6 +31,11 @@ You can use whoaverse.sql and whoaverse_user.sql to generate necessary tables fo
 #### step 2
 - After cloning this repository, you will need to modify and place Web.config file in WhoaVerse folder (the same folder where the file packages.config is located). You need to modify the following 2 connection strings in this file to reflect your SQL server address, port, database names and database usernames: 
 DefaultConnection and whoaverseEntities
+- You need to sign up for recaptcha service at https://www.google.com/recaptcha/admin#whyrecaptcha to get your public and private recaptcha keys
+- Once you have your recaptcha keys, you need to modify the Web.config file and in section <appSettings>, you need to add the following for your keys:
+
+<add key="recaptchaPublicKey" value="your public key goes here" />
+<add key="recaptchaPrivateKey" value="your private key goes here" />
 
 #### step 3
 - Reinstall dependencies (binaries for NuGet packages) by issuing the following command in Package Manager Console (when asked to overwrite existing files, choose no for all:
