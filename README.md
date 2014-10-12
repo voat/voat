@@ -36,7 +36,7 @@ DefaultConnection and whoaverseEntities
 <add name="whoaverseEntities" connectionString="metadata=res://*/Models.WhoaverseEntityDataModel.csdl|res://*/Models.WhoaverseEntityDataModel.ssdl|res://*/Models.WhoaverseEntityDataModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=yourdomain.com;initial catalog=whoaverse;persist security info=True;user id=yourusername;password=yourpassword;MultipleActiveResultSets=True;App=EntityFramework&quot;" providerName="System.Data.EntityClient" />
 ```
 - You need to sign up for recaptcha service at https://www.google.com/recaptcha/admin#whyrecaptcha to get your public and private recaptcha keys
-- Once you have your recaptcha keys, you need to modify the Web.config file and in section <appSettings>, you need to add the following for your keys:
+- Once you have your recaptcha keys, you need to modify the Web.config file and in section `<appSettings>`, you need to add the following for your keys:
 ```
 <add key="recaptchaPublicKey" value="your public key goes here" />
 <add key="recaptchaPrivateKey" value="your private key goes here" />
