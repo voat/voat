@@ -90,7 +90,7 @@ else if (!User.Identity.IsAuthenticated)
                 //check if submission has a thumb, otherwise point to site logo
                 if (Model.Thumbnail != null)
                 {
-                    ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Thumbs/" + @Model.Thumbnail;
+                    ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Thumbs/" + @Model.Thumbnail;
                 }
                 else
                 {
