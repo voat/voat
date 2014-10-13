@@ -591,6 +591,23 @@ namespace Whoaverse.Utils
             return userStatsModel;
         }
 
+        // check if a given user is banned
+        public static bool IsUserBanned(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var bannedUser = db.Bannedusers.Where(n => n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                if (bannedUser != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                };
+            }
+        }
+
         // STUB
         // check if a given user has used his daily posting quota
         public static bool UserDailyPostingQuotaUsed(string userName)

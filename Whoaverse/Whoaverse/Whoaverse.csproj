@@ -266,6 +266,9 @@
     <Compile Include="Models\Banneddomain.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Banneduser.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Comment.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>

@@ -35,6 +35,7 @@
         <EntityTypeShape EntityType="whoaverseModel.Stickiedsubmission" Width="1.5" PointX="5.875" PointY="10.625" />
         <AssociationConnector Association="whoaverseModel.FK_Stickiedsubmissions_Messages" />
         <AssociationConnector Association="whoaverseModel.FK_Stickiedsubmissions_Subverses" />
+        <EntityTypeShape EntityType="whoaverseModel.Banneduser" Width="1.5" PointX="13.375" PointY="8.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

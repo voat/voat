@@ -24,6 +24,16 @@
           <Property Name="Added_on" Type="smalldatetime" Nullable="false" />
           <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
         </EntityType>
+        <EntityType Name="Bannedusers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Date_banned" Type="smalldatetime" Nullable="false" />
+          <Property Name="Reason" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Banned_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="Commentreplynotifications">
           <Key>
             <PropertyRef Name="Id" />
@@ -360,6 +370,7 @@
         <EntityContainer Name="whoaverseModelStoreContainer">
           <EntitySet Name="Badges" EntityType="Self.Badges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Banneddomains" EntityType="Self.Banneddomains" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Bannedusers" EntityType="Self.Bannedusers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Commentreplynotifications" EntityType="Self.Commentreplynotifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
@@ -580,6 +591,7 @@
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Stickiedsubmission" EntitySet="Stickiedsubmissions" />
           </AssociationSet>
+          <EntitySet Name="Bannedusers" EntityType="whoaverseModel.Banneduser" />
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -867,6 +879,16 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Banneduser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Date_banned" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Reason" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Banned_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1125,6 +1147,17 @@
                 <ScalarProperty Name="Stickied_by" ColumnName="Stickied_by" />
                 <ScalarProperty Name="Subversename" ColumnName="Subversename" />
                 <ScalarProperty Name="Submission_id" ColumnName="Submission_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Bannedusers">
+            <EntityTypeMapping TypeName="whoaverseModel.Banneduser">
+              <MappingFragment StoreEntitySet="Bannedusers">
+                <ScalarProperty Name="Banned_by" ColumnName="Banned_by" />
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
+                <ScalarProperty Name="Date_banned" ColumnName="Date_banned" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

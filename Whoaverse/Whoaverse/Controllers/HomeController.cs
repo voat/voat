@@ -540,6 +540,13 @@ namespace Whoaverse.Controllers
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
         {
+            // check if user is banned
+            if (Utils.User.IsUserBanned(message.Name))
+            {
+                ViewBag.SelectedSubverse = message.Subverse;
+                return View("~/Views/Home/Comments.cshtml", message);
+            }
+
             // verify recaptcha if user has less than 25 CCP
             if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
             {

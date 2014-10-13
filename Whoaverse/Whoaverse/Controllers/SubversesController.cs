@@ -170,6 +170,13 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent")] Message message)
         {
+            // check if user is banned
+            if (Utils.User.IsUserBanned(message.Name))
+            {
+                ViewBag.SelectedSubverse = message.Subverse;
+                return View("~/Views/Home/Comments.cshtml", message);
+            }
+
             // verify recaptcha if user has less than 25 CCP
             if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
             {
