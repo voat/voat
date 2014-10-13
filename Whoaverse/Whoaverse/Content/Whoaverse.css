@@ -1225,7 +1225,6 @@ pre, code {
 
         #header-account {
             font-size: 11px;
-            line-height: 56px;
             padding: 0;
             position: absolute;
             right: 0;
@@ -1243,6 +1242,32 @@ pre, code {
                 color: #BBB;
                 margin: 0 4px;
             }
+
+            /* logged in */
+            
+            .logged-in {
+                background: #F6F6F6;
+                border: 1px solid #DCDCDC;
+                border-radius: 3px;
+                margin: 14px 0 0;
+                padding: 5px;
+            }
+
+            .logged-out {
+                background: #F6F6F6;
+                border: 1px solid #DCDCDC;
+                border-radius: 3px;
+                margin: 14px 0 0;
+                padding: 5px;
+            }
+
+                #header-account .logged-out a {
+                    color: #4AABE7;
+                    font-weight: bold;
+                }
+                    #header-account .logged-out a:hover {
+                        text-decoration: underline;
+                    }
 
         #mail {
             display: inline-block;
@@ -1955,8 +1980,6 @@ pre, code {
 -------------------------------------------------------------------------------- */
 
 .footer-container {
-    background: #FFF;
-    border-top: 1px solid #DCDCDC;
     clear: both;
     margin-top: 10px;
     text-align: center;
