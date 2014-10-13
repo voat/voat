@@ -348,10 +348,10 @@ function replyprivatemessage(parentprivatemessageid, recipient, subject) {
 }
 
 // post comment reply form through ajax
-function postCommentReplyAjax(senderButton) {
+function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
-
+    
     if ($form.find("#CommentContent").val().length > 0) {
         $form.find("#submitbutton").val("Please wait...");
         $form.find("#submitbutton").prop('disabled', true);
@@ -369,18 +369,17 @@ function postCommentReplyAjax(senderButton) {
             },
 
             success: function (response) {
-
-                //reload page while keeping scroll position?            
-                var parentId = $form.find("#ParentId").val();
-
                 //remove reply form
-                //removereplyform(parentId);
+                removereplyform(parentcommentid);
 
-                //TODO: load newly posted comment or just append it without page reload (best solution)           
-
-                //temporary replacement: reload entire page
-                $('body').load($(location).attr('href') + "#" + parentId);
-
+                // load rendered comment that was just posted and append it
+                var replyresult = $.get(
+                    "/ajaxhelpers/singlesubmissioncomment/"+messageId+"/"+userName,
+                    null,
+                    function (data) {
+                        $(".id-" + parentcommentid).append(data)
+                    }
+                 );
             }
         });
 
@@ -388,6 +387,7 @@ function postCommentReplyAjax(senderButton) {
     } else {
         $form.find("#errorMessage").toggle(true);
     }
+
 }
 
 // post private message reply form through ajax
@@ -807,7 +807,7 @@ function toggleSticky(messageId) {
     $.ajax({
         type: "POST",
         url: "/submissions/togglesticky/" + messageId,
-        success: function () {            
+        success: function () {
             $('#togglesticky').html("toggled");
         },
         error: function () {

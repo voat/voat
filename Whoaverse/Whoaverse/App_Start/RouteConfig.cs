@@ -385,6 +385,13 @@ namespace Whoaverse
                 defaults: new { controller = "HtmlElements", action = "CommentReplyForm" }
             );
 
+            // ajaxhelpers/singlesubmissioncomment
+            routes.MapRoute(
+                name: "SingleSubmissionComment",
+                url: "ajaxhelpers/singlesubmissioncomment/{messageId}/{userName}",
+                defaults: new { controller = "HtmlElements", action = "SingleMostRecentCommentByUser" }
+            );
+
             // ajaxhelpers/privatemessagereplyform
             routes.MapRoute(
                 name: "PrivateMessageReplyForm",

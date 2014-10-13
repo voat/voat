@@ -628,6 +628,7 @@
     <Content Include="Views\Shared\_DefaultMessage.cshtml" />
     <Content Include="Views\Subverses\SearchForSubverse.cshtml" />
     <Content Include="Views\Search\FindSubverseSearchResult.cshtml" />
+    <Content Include="Views\AjaxViews\_SingleSubmissionComment.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

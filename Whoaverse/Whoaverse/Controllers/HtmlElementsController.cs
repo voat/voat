@@ -14,11 +14,15 @@ All Rights Reserved.
 
 using System.Net;
 using System.Web.Mvc;
+using Whoaverse.Models;
+using System.Linq;
 
 namespace Whoaverse.Controllers
 {
     public class HtmlElementsController : Controller
     {
+        private whoaverseEntities db = new whoaverseEntities();
+
         // GET: CommentReplyForm
         public ActionResult CommentReplyForm(int? parentCommentId, int? messageId)
         {
@@ -51,6 +55,33 @@ namespace Whoaverse.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }       
+
+        // GET: latest single submission comment for given user
+        public ActionResult SingleMostRecentCommentByUser(string userName, int? messageId)
+        {
+            if (userName != null && messageId != null)
+            {
+                var comment = db.Comments
+                        .Where(c => c.Name == userName && c.MessageId == messageId)
+                        .OrderByDescending(c => c.Id)
+                        .FirstOrDefault();
+
+                ViewBag.CommentId = comment.Id;
+
+                if (comment != null)
+                {
+                    return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }                
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
 
     }
 }

@@ -1,0 +1,240 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.Comment
+
+@using Whoaverse.Utils;
+@using Whoaverse.Models;
+
+@{
+    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
+
+    //check if thread should be hidden
+    bool parentIsHidden = Convert.ToBoolean(ViewData["parentIsHidden"]);
+    bool childTohiddenParent = Convert.ToBoolean(ViewData["childTohiddenParent"]);
+
+    DateTime submissionDate = Model.Date;
+    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    string opName = Model.Name;
+    string commentAuthor = Model.Name;
+
+    string collapsedComment = "";
+    string uncollapsedComment = "";
+    string showIfParent = "";
+
+    //apply class style if OP is the Comment Author
+    opName = opName.Trim();
+    commentAuthor = commentAuthor.Trim();
+    bool isOpModerator = Whoaverse.Utils.User.IsUserSubverseModerator(opName, Model.Message.Subverse);
+    bool isOpSubverseAdmin = Whoaverse.Utils.User.IsUserSubverseAdmin(opName, Model.Message.Subverse);
+    bool isCommentAuthorModerator = Whoaverse.Utils.User.IsUserSubverseModerator(commentAuthor, Model.Message.Subverse);
+    bool isCommehtAuthorSubverseAdmin = Whoaverse.Utils.User.IsUserSubverseAdmin(commentAuthor, Model.Message.Subverse);
+
+    //collapse comments with score of -5 or less
+    if (parentIsHidden)
+    {
+        collapsedComment = ""; //show collapsed comment
+        uncollapsedComment = "display:none"; //hide uncollapsed comment
+        if (childTohiddenParent)
+        {
+            showIfParent = "display: none";
+            uncollapsedComment = "";
+            collapsedComment = "display: none";
+        }
+    }
+    else
+    {
+        collapsedComment = "display:none"; //hide collapsed comment
+        uncollapsedComment = ""; //show uncollapsed comment
+    }
+}
+
+<div class="child id-@Model.Id comment" data-fullname="" data-ups="" data-downs="" style="">
+
+    <!-- 1 submission comment -->
+    <p class="parent">
+        <a></a>
+    </p>
+
+    @if (Model.Name != "deleted")
+    {
+        @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", Model.Id }, { "CCP", commentContributionPoints }, { "collapsedStyle", uncollapsedComment } })
+    }
+
+    <div class="entry unvoted">
+
+        <div class="collapsed" style='@collapsedComment'>
+            <a href="#" class="expand" onclick="return showcomment(@Model.Id)">[+]</a>
+            @if (Model.Name != "deleted")
+            {
+                int commentScore = Model.Likes - Model.Dislikes;
+
+                <a href="/user/@Model.Name" class="author gray may-blank">@Model.Name</a>
+                <span class="userattrs"></span>
+                <span class="score dislikes">@Model.Dislikes points</span>
+                <span class="score onlycollapsed">@commentScore points</span>
+                <span class="score likes">@Model.Likes points</span>
+            }
+            else
+            {
+                <span class="userattrs">[deleted]</span>
+            }
+            <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return showcomment(@Model.Id)">(show children)</a>
+        </div>
+
+        <div class="noncollapsed" id="@Model.Id" style="@uncollapsedComment">
+            <p class="tagline">
+                <a href="#" class="expand" onclick="return hidecomment(@Model.Id)">[&ndash;]</a>
+
+                @if (Model.Name != "deleted")
+                {
+                    int commentScore = Model.Likes - Model.Dislikes;
+
+                    if (opName == commentAuthor)
+                    {
+                        if (isOpModerator || isOpSubverseAdmin)
+                        {
+                            <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>
+                            <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>, <a class="moderator" title="moderator" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">M</a>]</span>
+                        }
+                        else
+                        {
+                            <a href="/user/@Model.Name" class="author submitter may-blank">@Model.Name</a>
+                            <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                        }
+                    }
+                    else if (isCommentAuthorModerator || isCommehtAuthorSubverseAdmin)
+                    {
+                        <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>
+                        <span class="userattrs">[<a class="moderator" title="moderator" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">M</a>]</span>
+                    }
+                    else
+                    {
+                        <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
+                        <span class="userattrs"></span>
+                    }
+
+                    <span class="score dislikes">@Model.Dislikes points</span>
+                    <span class="score unvoted">@commentScore points</span>
+                    <span class="score likes">@Model.Likes points</span>
+                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
+                }
+                else
+                {
+                    <span class="userattrs">[deleted]</span>
+                }
+
+                <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago
+            </p>
+
+            <form class="usertext" onsubmit="return editcommentsubmit(@Model.Id)" id="commenteditform-@Model.Id" action="#">
+                @Html.AntiForgeryToken()
+                <input id="CommentId" name="CommentId" value="@Model.Id" type="hidden">
+
+                @if (Model.Name != "deleted")
+                {
+                    <div class="usertext-body may-blank-within">
+                        <div class="md">
+                            @Html.Raw(@Formatting.FormatMessage(@Model.CommentContent))
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="usertext gray">
+                        <div class="md">
+                            [@Model.CommentContent]
+                        </div>
+                    </div>
+                }
+
+                <div class="usertext-edit" style="width: 775px; display: none;">
+                    <div>
+                        <textarea aria-invalid="false" class="form-control valid" cols="20" id="CommentContent" name="CommentContent" rows="2" data-rule-required="true" data-msg-required="The comment can not be empty.">@Model.CommentContent</textarea>
+                        <span data-valmsg-replace="false" data-valmsg-for="CommentContent" class="field-validation-error"></span>
+                        <div class="usertext-buttons">
+                            <input value="Save" class="btn-whoaverse-paging" type="submit">
+                            <button class="btn-whoaverse-paging" onclick="removeeditform(@Model.Id)" type="button">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+            <ul class="flat-list buttons">
+                @if (Model.Name != "deleted")
+                {
+                    <li class="first">
+                        <a href="/v/@Model.Message.Subverse/comments/@Model.MessageId/@Model.Id" class="bylink" rel="nofollow">permalink</a>
+                    </li>
+                }
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (User.Identity.Name == commentAuthor)
+                    {
+                        <li>
+                            <a class="" href="javascript:void(0)" onclick="return edit(@Model.Id, @Model.MessageId)">edit</a>
+                        </li>
+                        <li>
+                            <form class="toggle del-button " action="#" method="get">
+                                <input class="active" name="executed" value="deleted" type="hidden">
+                                <span class="option main active">
+                                    <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(@Model.Id)">delete</a>
+                                </span>
+                                <span class="option error">
+                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(@Model.Id)">no</a>
+                                </span>
+                            </form>
+                        </li>
+                    }
+                    else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse))
+                    {
+                        <li>
+                            <form class="toggle del-button " action="#" method="get">
+                                <input class="active" name="executed" value="deleted" type="hidden">
+                                <span class="option main active">
+                                    <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(@Model.Id)">delete</a>
+                                </span>
+                                <span class="option error">
+                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(@Model.Id)">no</a>
+                                </span>
+                            </form>
+                        </li>
+                    }
+                    else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
+                    {
+                        <li>
+                            <form class="toggle del-button " action="#" method="get">
+                                <input class="active" name="executed" value="deleted" type="hidden">
+                                <span class="option main active">
+                                    <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(@Model.Id)">delete</a>
+                                </span>
+                                <span class="option error">
+                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(@Model.Id)">no</a>
+                                </span>
+                            </form>
+                        </li>
+                    }
+
+                    if (Model.Name != "deleted")
+                    {
+                        <li>
+                            <a class="" href="javascript:void(0)" onclick="return reply(@Model.Id, @Model.MessageId)">reply</a>
+                        </li>
+                    }
+
+                }
+
+            </ul>
+        </div>
+    </div>
+</div>

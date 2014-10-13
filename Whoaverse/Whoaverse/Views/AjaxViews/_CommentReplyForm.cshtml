@@ -40,7 +40,7 @@
             </ul>
         </div>
 
-        <input type="button" id="submitbutton" value="Submit reply" class="btn-whoaverse-paging" onclick="postCommentReplyAjax(this)">
+        <input type="button" id="submitbutton" value="Submit reply" class="btn-whoaverse-paging" onclick="postCommentReplyAjax(this, @messageId, '@User.Identity.Name', @parentCommentId)">
         <button class="btn-whoaverse-paging" onclick="removereplyform(@parentCommentId);" type="button">Cancel</button>
         <br>
     </form>    
