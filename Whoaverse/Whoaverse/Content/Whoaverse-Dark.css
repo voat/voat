@@ -1246,14 +1246,13 @@ pre, code {
 
         #header-account {
             font-size: 11px;
-            line-height: 56px;
             padding: 0;
             position: absolute;
             right: 0;
             top: 0;
         }
 
-            #header-account a {
+            #header-account a {k
                 color: #DDD;
             }
                 #header-account a:hover {
@@ -1264,6 +1263,34 @@ pre, code {
                 color: #222;
                 margin: 0 4px;
             }
+
+            /* logged in */
+            
+            .logged-in {
+                background: #292929;
+                border: 1px solid #222;
+                border-radius: 3px;
+                margin: 14px 0 0;
+                padding: 5px;
+            }
+            
+            /* logged out */
+            
+            .logged-out {
+                background: #292929;
+                border: 1px solid #222;
+                border-radius: 3px;
+                margin: 14px 0 0;
+                padding: 5px;
+            }
+
+                #header-account .logged-out a {
+                    color: #56A8DA;
+                    font-weight: bold;
+                }
+                    #header-account .logged-out a:hover {
+                        text-decoration: underline;
+                    }
 
         #mail {
             display: inline-block;
@@ -1978,11 +2005,9 @@ pre, code {
 -------------------------------------------------------------------------------- */
 
 .footer-container {
-    text-align: center;
-    background: #333;
-    border-top: 1px solid #222;
     clear: both;
     margin-top: 10px;
+    text-align: center;
 }
 
     .footer {
