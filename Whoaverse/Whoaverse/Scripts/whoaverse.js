@@ -361,7 +361,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
             url: $form.attr('action'),
             data: $form.serialize(),
             error: function (xhr, status, error) {
-                //submission failed, likely cause: user triggered anti-spam throttle
+                // submission failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit reply");
                 $form.find("#submitbutton").prop('disabled', false);
                 $form.find("#errorMessage").html("You are doing that too fast. Please wait 2 minutes before trying again.");
@@ -369,7 +369,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
             },
 
             success: function (response) {
-                //remove reply form
+                // remove reply form
                 removereplyform(parentcommentid);
 
                 // load rendered comment that was just posted and append it
@@ -380,6 +380,9 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
                         $(".id-" + parentcommentid).append(data)
                     }
                  );
+
+                // TODO: scroll to the newly posted comment
+                // $('#div_' + element_id)[0].scrollIntoView(true);
             }
         });
 

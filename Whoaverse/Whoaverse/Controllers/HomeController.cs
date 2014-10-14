@@ -12,6 +12,7 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using OpenGraph_Net;
 using PagedList;
 using System;
 using System.Collections.Generic;
@@ -632,6 +633,23 @@ namespace Whoaverse.Controllers
                                             // thumnail generation failed, skip adding thumbnail
                                         }
                                     }
+                                }
+                                else
+                                {
+                                    // try generating a thumbnail by using the Open Graph Protocol
+                                    try
+                                    {
+                                        OpenGraph graph = OpenGraph.ParseUrl(message.MessageContent);
+                                        if (graph.Image != null)
+                                        {
+                                            string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(graph.Image.ToString());
+                                            message.Thumbnail = thumbFileName;
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        // thumnail generation failed, skip adding thumbnail
+                                    }        
                                 }
                             }
                         }
