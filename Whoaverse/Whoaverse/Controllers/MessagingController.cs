@@ -123,6 +123,7 @@ namespace Whoaverse.Controllers
                     }
                 }
 
+                ViewBag.CommentRepliesCount = commentReplies.Count();
                 return View(commentReplies.ToPagedList(pageNumber, pageSize));
 
             }
@@ -176,6 +177,7 @@ namespace Whoaverse.Controllers
                     }
                 }
 
+                ViewBag.PostRepliesCount = postReplies.Count();
                 return View(postReplies.ToPagedList(pageNumber, pageSize));
 
             }

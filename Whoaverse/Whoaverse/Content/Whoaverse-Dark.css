@@ -794,6 +794,10 @@ input, button, select, textarea {
     overflow: auto;
 }
 
+.md .single-notification {
+    max-width: none;
+}
+
     .md a:hover {
         text-decoration: underline;
     }

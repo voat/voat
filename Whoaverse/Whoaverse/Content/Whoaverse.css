@@ -786,13 +786,17 @@ input, button, select, textarea {
 /* ! Body : Markdown
 ------------------------------------------------------------------------------------ */
 
+.single-notification {
+    max-width: none !important;
+}
+
 .md {
     font-size: 13px;
     max-width: 650px;
     overflow: auto;
 }
 
-    .md a:hover {
+   .md a:hover {
         text-decoration: underline;
     }
 
