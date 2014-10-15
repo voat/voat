@@ -17,6 +17,12 @@ namespace Whoaverse.Utils
             {
                 Comment comment = db.Comments.Find(commentId);
 
+                if (comment.Message.Subverses.anonymized_mode)
+                {
+                    // do not execute voting, subverse is in anonymized mode
+                    return;
+                }                
+
                 switch (result)
                 {
                     // never voted before
@@ -86,6 +92,12 @@ namespace Whoaverse.Utils
             using (whoaverseEntities db = new whoaverseEntities())
             {
                 Comment comment = db.Comments.Find(commentId);
+
+                if (comment.Message.Subverses.anonymized_mode)
+                {
+                    // do not execute voting, subverse is in anonymized mode
+                    return;
+                }  
 
                 switch (result)
                 {

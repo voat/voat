@@ -60,5 +60,8 @@ namespace Whoaverse.Models.ViewModels
         [Required(ErrorMessage = "This setting is required.")]
         public bool Authorized_submitters_only { get; set; }
 
+        [Required(ErrorMessage = "This setting is required.")]
+        public bool Anonymized_mode { get; set; }
+
     }
 }

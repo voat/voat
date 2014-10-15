@@ -52,6 +52,7 @@ namespace Whoaverse.Controllers
                     ViewBag.lastEditDate = lastEditDate;
                     ViewBag.likes = likes;
                     ViewBag.dislikes = dislikes;
+                    ViewBag.anonymized_mode = subverse.anonymized_mode;
 
                     try
                     {
@@ -404,6 +405,7 @@ namespace Whoaverse.Controllers
                 viewModel.Private_subverse = subverse.private_subverse;
                 viewModel.Enable_thumbnails = subverse.enable_thumbnails;
                 viewModel.Authorized_submitters_only = subverse.authorized_submitters_only;
+                viewModel.Anonymized_mode = subverse.anonymized_mode;
 
                 ViewBag.SelectedSubverse = string.Empty;
                 ViewBag.SubverseName = subverse.name;
@@ -473,6 +475,7 @@ namespace Whoaverse.Controllers
                             existingSubverse.label_sumit_new_selfpost = updatedModel.label_sumit_new_selfpost;
                             existingSubverse.submission_text = updatedModel.submission_text;
                             existingSubverse.allow_default = updatedModel.allow_default;
+                            existingSubverse.anonymized_mode = updatedModel.anonymized_mode;
 
                             await db.SaveChangesAsync();
 

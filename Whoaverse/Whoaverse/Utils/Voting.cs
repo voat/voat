@@ -71,6 +71,12 @@ namespace Whoaverse.Utils
             {
                 Message submission = db.Messages.Find(submissionId);
 
+                if (submission.Subverses.anonymized_mode)
+                {
+                    // do not execute voting, subverse is in anonymized mode
+                    return;
+                }  
+
                 switch (result)
                 {
                     //never voted before
@@ -155,6 +161,12 @@ namespace Whoaverse.Utils
             using (whoaverseEntities db = new whoaverseEntities())
             {
                 Message submission = db.Messages.Find(submissionId);
+
+                if (submission.Subverses.anonymized_mode)
+                {
+                    // do not execute voting, subverse is in anonymized mode
+                    return;
+                }  
 
                 switch (result)
                 {

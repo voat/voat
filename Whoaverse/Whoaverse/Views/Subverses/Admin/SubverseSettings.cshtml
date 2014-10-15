@@ -16,142 +16,150 @@
     ViewBag.Title = "Subverse settings";
 }
 
-<div class="content" role="main">
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
 
-    <h1>Subverse settings interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+        <h1>Subverse settings interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
 
-    <div class="row nomargin">
-        <div class="well col-md-10">
+        <h2>Subverse settings</h2>
 
-            <h2>Subverse settings</h2>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
 
-            @using (Html.BeginForm())
-            {
-                @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.Name)
 
-                <div class="form-horizontal">
-                    <hr />
-                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                    @Html.HiddenFor(model => model.Name)
-
-                    <div class="form-group">
-                        @Html.Label("Sidebar text, accepts Markup formatting", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.TextAreaFor(model => model.Sidebar, new { @class = "form-control", rows = "5"})
-                            @Html.ValidationMessageFor(model => model.Sidebar, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.Label("Custom stylesheet, max 50000 characters", htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.TextAreaFor(model => model.Stylesheet, new { @class = "form-control", @rows="20"})
-                            @Html.ValidationMessageFor(model => model.Stylesheet, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.Label("Description ", htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.Label("Set private (exclude the subverse from showing in /v/all)", htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.Private_subverse, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Private_subverse, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.Label("Rated adult", htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.Rated_adult, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Rated_adult, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.Label("Thumbnails enabled", htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.Enable_thumbnails, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Enable_thumbnails, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.Label("Only allow submissions from authorized submitters", htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.Authorized_submitters_only, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Authorized_submitters_only, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <hr />
-                    <div class="alert alert-warning">
-                        <p>All settings beyond this point can be edited and saved. However, these properties are not yet implemented and changes made here
-                        will not have any real effect.</p>                        
-                    </div>                    
-                    <hr />
-
-                    <div class="form-group">
-                       @Html.Label("Message submissions text", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.TextAreaFor(model => model.Submission_text, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Submission_text, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.Label("Subverse type", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(model => model.Type, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="control-label col-md-2"></div>
-                        <div class="col-md-9">
-                            Confused? Enter "link" (without the quotes) if you want to accept link and self type submissions. Enter "self" if you only want to accept self type submissions.
-                        </div>
-                    </div>    
-
-                    <div class="form-group">
-                        @Html.Label("Label for submitting new linkpost", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(model => model.Label_submit_new_link, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Label_submit_new_link, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.Label("Label for submitting new selfpost", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(model => model.Label_sumit_new_selfpost, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Label_sumit_new_selfpost, "", new { @class = "text-danger" })
-                        </div>
-                    </div> 
-
-                    <div class="form-group">
-                        @Html.Label("Allow default", htmlAttributes: new { @class = "control-label col-md-2" }) 
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.Allow_default, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Allow_default, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="Save" class="btn-whoaverse btn-default" />
-                        </div>
+                <div class="form-group">
+                    @Html.Label("Sidebar text, accepts Markup formatting", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(model => model.Sidebar, new { @class = "form-control", rows = "5" })
+                        @Html.ValidationMessageFor(model => model.Sidebar, "", new { @class = "text-danger" })
                     </div>
                 </div>
-            }
 
-        </div>
-</div>
+                <div class="form-group">
+                    @Html.Label("Custom stylesheet, max 50000 characters", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(model => model.Stylesheet, new { @class = "form-control", @rows = "20" })
+                        @Html.ValidationMessageFor(model => model.Stylesheet, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Description ", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Set private (exclude the subverse from showing in /v/all)", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Private_subverse, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Private_subverse, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Rated adult", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Rated_adult, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Rated_adult, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Thumbnails enabled", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Enable_thumbnails, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Enable_thumbnails, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Only allow submissions from authorized submitters", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Authorized_submitters_only, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Authorized_submitters_only, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Anonymized mode", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Anonymized_mode, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Anonymized_mode, "", new { @class = "text-danger" })
+                        @Html.Label("(Hide all usernames and disable voting on submissions and comments)")
+                    </div>
+                </div>
+
+                <hr />
+                <div class="alert alert-warning">
+                    <p>
+                        All settings beyond this point can be edited and saved. However, these properties are not yet implemented and changes made here
+                        will not have any real effect.
+                    </p>
+                </div>
+                <hr />
+
+                <div class="form-group">
+                    @Html.Label("Message submissions text", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(model => model.Submission_text, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Submission_text, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Subverse type", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Type, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="control-label col-md-2"></div>
+                    <div class="col-md-9">
+                        Confused? Enter "link" (without the quotes) if you want to accept link and self type submissions. Enter "self" if you only want to accept self type submissions.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Label for submitting new linkpost", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Label_submit_new_link, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Label_submit_new_link, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Label for submitting new selfpost", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Label_sumit_new_selfpost, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Label_sumit_new_selfpost, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Allow default", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Allow_default, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Allow_default, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn-whoaverse btn-default" />
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
 </div>

@@ -15,6 +15,7 @@
 @using Whoaverse.Utils;
 
 @{
+    Random rnd = new Random();
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
@@ -50,9 +51,19 @@
                 }
                 else
                 {
-                    <span class="userattrs">
-                        <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
-                    </span>
+                    if (Model.Subverses.anonymized_mode)
+                    {
+                        <span class="userattrs">
+                            <a href="#" class="author may-blank">@rnd.Next(10000,20000)</a>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="userattrs">
+                            <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
+                        </span>
+                    }
+
                 }
 
             </p>

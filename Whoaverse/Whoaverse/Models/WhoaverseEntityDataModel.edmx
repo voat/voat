@@ -219,6 +219,7 @@
           <Property Name="subscribers" Type="int" />
           <Property Name="private_subverse" Type="bit" Nullable="false" />
           <Property Name="authorized_submitters_only" Type="bit" Nullable="false" />
+          <Property Name="anonymized_mode" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Userbadges">
           <Key>
@@ -625,6 +626,7 @@
           <NavigationProperty Name="Subverseflairsettings" Relationship="whoaverseModel.FK_Subverseflairsettings_Subverses1" FromRole="Subverse" ToRole="Subverseflairsetting" />
           <NavigationProperty Name="Stickiedsubmissions" Relationship="whoaverseModel.FK_Stickiedsubmissions_Subverses" FromRole="Subverse" ToRole="Stickiedsubmission" />
           <Property Name="authorized_submitters_only" Type="Boolean" Nullable="false" DefaultValue="false" />
+          <Property Name="anonymized_mode" Type="Boolean" Nullable="false" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
@@ -958,6 +960,7 @@
           <EntitySetMapping Name="Subverses">
             <EntityTypeMapping TypeName="whoaverseModel.Subverse">
               <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="anonymized_mode" ColumnName="anonymized_mode" />
                 <ScalarProperty Name="authorized_submitters_only" ColumnName="authorized_submitters_only" />
                 <ScalarProperty Name="private_subverse" ColumnName="private_subverse" />
                 <ScalarProperty Name="subscribers" ColumnName="subscribers" />

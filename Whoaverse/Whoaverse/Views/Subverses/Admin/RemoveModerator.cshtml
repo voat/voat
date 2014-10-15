@@ -1,43 +1,40 @@
 ﻿@model Whoaverse.Models.SubverseAdmin
 
-<div class="content" role="main">
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
 
-    <div class="row nomargin">
-        <div class="well col-md-8">
+        <h1>Subverse owner moderator management interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
 
-            <h1>Subverse owner moderator management interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+        <br />
+        <div class="alert alert-danger">Are you sure you want to remove this moderator?</div>
+
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Username)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Username)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Power)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Power)
+            </dd>
+        </dl>
+
+        @using (Html.BeginForm("RemoveModerator", "Subverses", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
 
             <br />
-            <div class="alert alert-danger">Are you sure you want to remove this moderator?</div>
-
-            <hr />
-            <dl class="dl-horizontal">
-                <dt>
-                    @Html.DisplayNameFor(model => model.Username)
-                </dt>
-
-                <dd>
-                    @Html.DisplayFor(model => model.Username)
-                </dd>
-
-                <dt>
-                    @Html.DisplayNameFor(model => model.Power)
-                </dt>
-
-                <dd>
-                    @Html.DisplayFor(model => model.Power)
-                </dd>
-            </dl>
-
-            @using (Html.BeginForm("RemoveModerator", "Subverses", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
-
-                <br />
-                <input type="submit" value="Delete" class="btn-whoaverse-medium" />
-                <br /><br />
-                @Html.ActionLink("Back to moderators list", "SubverseModerators", new { subversetoshow = Model.SubverseName })
-            }
-        </div>
+            <input type="submit" value="Delete" class="btn-whoaverse-medium" />
+            <br /><br />
+            @Html.ActionLink("Back to moderators list", "SubverseModerators", new { subversetoshow = Model.SubverseName })
+        }
     </div>
 </div>

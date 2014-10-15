@@ -15,6 +15,8 @@
     double totalVotes = ViewBag.dislikes + ViewBag.likes;
     double difference = ViewBag.Likes - ViewBag.dislikes;
 
+    Random rnd = new Random();
+
     if (totalVotes > 0)
     {
         percentageOfLove = Math.Round((ViewBag.likes / totalVotes) * 100, 2);
@@ -39,9 +41,18 @@
                 }
                 else
                 {
-                    <p class="h6">
-                        Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
-                    </p>
+                    if (ViewBag.anonymized_mode)
+                    {
+                        <p class="h6">
+                            Posted by: <a href="#" class="author may-blank">@rnd.Next(10000,20000)</a>                            
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="h6">
+                            Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
+                        </p>
+                    }
                 }
 
                 <p class="h6">

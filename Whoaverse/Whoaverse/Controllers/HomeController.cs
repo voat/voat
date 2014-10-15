@@ -33,6 +33,7 @@ namespace Whoaverse.Controllers
     public class HomeController : Controller
     {
         private whoaverseEntities db = new whoaverseEntities();
+        Random rnd = new Random();
 
         // GET: list of default subverses
         public ActionResult Listofsubverses()
@@ -232,7 +233,14 @@ namespace Whoaverse.Controllers
                                     commentReplyNotification.CommentId = comment.Id;
                                     commentReplyNotification.SubmissionId = commentMessage.Id;
                                     commentReplyNotification.Recipient = parentComment.Name;
-                                    commentReplyNotification.Sender = User.Identity.Name;
+                                    if (parentComment.Message.Subverses.anonymized_mode)
+                                    {
+                                        commentReplyNotification.Sender = rnd.Next(10000, 20000).ToString();
+                                    }
+                                    else
+                                    {
+                                        commentReplyNotification.Sender = User.Identity.Name;
+                                    }                                    
                                     commentReplyNotification.Body = comment.CommentContent;
                                     commentReplyNotification.Subverse = commentMessage.Subverse;
                                     commentReplyNotification.Status = true;
@@ -278,7 +286,16 @@ namespace Whoaverse.Controllers
                                 postReplyNotification.CommentId = comment.Id;
                                 postReplyNotification.SubmissionId = commentMessage.Id;
                                 postReplyNotification.Recipient = commentMessage.Name;
-                                postReplyNotification.Sender = User.Identity.Name;
+
+                                if (commentMessage.Subverses.anonymized_mode)
+                                {
+                                    postReplyNotification.Sender = rnd.Next(10000, 20000).ToString();
+                                }
+                                else
+                                {
+                                    postReplyNotification.Sender = User.Identity.Name;
+                                }                                
+
                                 postReplyNotification.Body = comment.CommentContent;
                                 postReplyNotification.Subverse = commentMessage.Subverse;
                                 postReplyNotification.Status = true;
@@ -562,7 +579,7 @@ namespace Whoaverse.Controllers
                     return View();
                 }
                 // end recaptcha check
-            }                       
+            }
 
             if (ModelState.IsValid)
             {
@@ -666,7 +683,7 @@ namespace Whoaverse.Controllers
                                     catch (Exception)
                                     {
                                         // thumnail generation failed, skip adding thumbnail
-                                    }        
+                                    }
                                 }
                             }
                         }
@@ -678,7 +695,7 @@ namespace Whoaverse.Controllers
                         message.Date = System.DateTime.Now;
                         message.Likes = 1;
                         db.Messages.Add(message);
-                        await db.SaveChangesAsync();                        
+                        await db.SaveChangesAsync();
 
                     }
                     else if (message.Type == 1 && message.Title != null)
@@ -692,7 +709,7 @@ namespace Whoaverse.Controllers
                         message.Date = System.DateTime.Now;
                         message.Likes = 1;
                         db.Messages.Add(message);
-                        await db.SaveChangesAsync();                        
+                        await db.SaveChangesAsync();
                     }
 
                     return RedirectToRoute(
@@ -734,29 +751,29 @@ namespace Whoaverse.Controllers
 
             if (Whoaverse.Utils.User.UserExists(id) && id != "deleted")
             {
-                //show comments
+                // show comments
                 if (whattodisplay != null && whattodisplay == "comments")
                 {
                     var userComments = from c in db.Comments.OrderByDescending(c => c.Date)
-                                       where c.Name.Equals(id)
+                                       where c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false
                                        select c;
                     return View("UserComments", userComments.Take(200).ToPagedList(pageNumber, pageSize));
                 }
 
-                //show submissions                        
+                // show submissions                        
                 if (whattodisplay != null && whattodisplay == "submissions")
                 {
                     var userSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                          where b.Name.Equals(id)
+                                          where b.Name.Equals(id) && b.Subverses.anonymized_mode == false
                                           select b;
                     return View("UserSubmitted", userSubmissions.Take(200).ToPagedList(pageNumber, pageSize));
                 }
 
-                //default, show overview
+                // default, show overview
                 ViewBag.whattodisplay = "overview";
 
                 var userDefaultSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                             where b.Name.Equals(id)
+                                             where b.Name.Equals(id) && b.Subverses.anonymized_mode == false
                                              select b;
                 return View("UserProfile", userDefaultSubmissions.Take(200).ToPagedList(pageNumber, pageSize));
             }
@@ -1024,6 +1041,7 @@ namespace Whoaverse.Controllers
         public ActionResult Rss(string subverseName)
         {
             List<Message> submissions = new List<Message>();
+            Random rnd = new Random();
 
             if (subverseName != null)
             {
@@ -1063,23 +1081,34 @@ namespace Whoaverse.Controllers
                 var subverseUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse);
 
                 string thumbnailUrl = "";
+                string authorName = submission.Name;
 
                 if (submission.Type == 1)
                 {
                     // message type submission
-                    SyndicationItem item = new SyndicationItem(
-                        submission.Title,
-                        submission.MessageContent + "</br>" + "Submitted by " + "<a href='u/" + submission.Name + "'>" + submission.Name + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
-                        commentsUrl,
-                        "Item ID",
-                        submission.Date);
+                    if (submission.Subverses.anonymized_mode)
+                    {
+                        authorName = rnd.Next(10000, 20000).ToString();
+                    }
 
+                    SyndicationItem item = new SyndicationItem(
+                    submission.Title,
+                    submission.MessageContent + "</br>" + "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
+                    commentsUrl,
+                    "Item ID",
+                    submission.Date);
                     feedItems.Add(item);
                 }
                 else
                 {
                     // link type submission
                     var linkUrl = new Uri(submission.MessageContent);
+                    authorName = submission.Name;
+
+                    if (submission.Subverses.anonymized_mode)
+                    {
+                        authorName = rnd.Next(10000, 20000).ToString();
+                    }
 
                     // add a thumbnail if submission has one
                     if (submission.Thumbnail != null)
@@ -1089,7 +1118,7 @@ namespace Whoaverse.Controllers
                                                 submission.Linkdescription,
                                                 "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='" + submission.Linkdescription + "' alt='" + submission.Linkdescription + "' src='" + thumbnailUrl + "' /></a>" +
                                                 "</br>" +
-                                                "Submitted by " + "<a href='u/" + submission.Name + "'>" + submission.Name + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>" +
+                                                "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>" +
                                                 " | <a href='" + linkUrl + "'>link</a>",
                                                 commentsUrl,
                                                 "Item ID",
@@ -1101,7 +1130,7 @@ namespace Whoaverse.Controllers
                     {
                         SyndicationItem item = new SyndicationItem(
                                                 submission.Linkdescription,
-                                                "Submitted by " + "<a href='u/" + submission.Name + "'>" + submission.Name + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
+                                                "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
                                                 commentsUrl,
                                                 "Item ID",
                                                 submission.Date);

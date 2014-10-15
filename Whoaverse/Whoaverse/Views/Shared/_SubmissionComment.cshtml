@@ -16,11 +16,12 @@
 @using Whoaverse.Models;
 
 @{
+    Random rnd = new Random();
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
     string sortingMode = Convert.ToString(ViewData["SortingMode"]);
-    
+
     // depth level limit of 10 test
-    int counter = Convert.ToInt32(ViewData["Counter"]);       
+    int counter = Convert.ToInt32(ViewData["Counter"]);
 
     //find the comment based on the received comment id via ViewData
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
@@ -46,7 +47,7 @@
     bool isOpModerator = Whoaverse.Utils.User.IsUserSubverseModerator(opName, Model.Subverse);
     bool isOpSubverseAdmin = Whoaverse.Utils.User.IsUserSubverseAdmin(opName, Model.Subverse);
     bool isCommentAuthorModerator = Whoaverse.Utils.User.IsUserSubverseModerator(commentAuthor, Model.Subverse);
-    bool isCommehtAuthorSubverseAdmin = Whoaverse.Utils.User.IsUserSubverseAdmin(commentAuthor, Model.Subverse);
+    bool isCommentAuthorSubverseAdmin = Whoaverse.Utils.User.IsUserSubverseAdmin(commentAuthor, Model.Subverse);
 
     //collapse comments with score of -5 or less
     if (parentIsHidden)
@@ -85,7 +86,14 @@
         {
             int commentScore = commentModel.Likes - commentModel.Dislikes;
 
-            <a href="/user/@commentModel.Name" class="author gray may-blank">@commentModel.Name</a>
+            if (Model.Subverses.anonymized_mode)
+            {
+                <a href="#" class="author gray may-blank">@rnd.Next(10000, 20000)</a>
+            }
+            else
+            {
+                <a href="/user/@commentModel.Name" class="author gray may-blank">@commentModel.Name</a>
+            }
             <span class="userattrs"></span>
             <span class="score dislikes">@commentModel.Dislikes points</span>
             <span class="score onlycollapsed">@commentScore points</span>
@@ -106,28 +114,46 @@
             {
                 int commentScore = commentModel.Likes - commentModel.Dislikes;
 
-                if (opName == commentAuthor)
+                if (!Model.Subverses.anonymized_mode)
                 {
-                    if (isOpModerator || isOpSubverseAdmin)
+
+                    if (opName == commentAuthor)
+                    {
+                        if (isOpModerator || isOpSubverseAdmin)
+                        {
+                            <a href="/user/@commentModel.Name" class="author moderator may-blank">@commentModel.Name</a>
+                            <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>, <a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
+                        }
+                        else
+                        {
+                            <a href="/user/@commentModel.Name" class="author submitter may-blank">@commentModel.Name</a>
+                            <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>]</span>
+                        }
+                    }
+                    else if (isCommentAuthorModerator || isCommentAuthorSubverseAdmin)
                     {
                         <a href="/user/@commentModel.Name" class="author moderator may-blank">@commentModel.Name</a>
-                        <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>, <a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
+                        <span class="userattrs">[<a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
                     }
                     else
                     {
-                        <a href="/user/@commentModel.Name" class="author submitter may-blank">@commentModel.Name</a>
-                        <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>]</span>
+                        <a href="/user/@commentModel.Name" class="author may-blank">@commentModel.Name</a>
+                        <span class="userattrs"></span>
                     }
-                }
-                else if (isCommentAuthorModerator || isCommehtAuthorSubverseAdmin)
-                {
-                    <a href="/user/@commentModel.Name" class="author moderator may-blank">@commentModel.Name</a>
-                    <span class="userattrs">[<a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
+
                 }
                 else
                 {
-                    <a href="/user/@commentModel.Name" class="author may-blank">@commentModel.Name</a>
-                    <span class="userattrs"></span>
+                    if (opName == commentAuthor)
+                    {
+                        <a href="#" class="author submitter may-blank">@rnd.Next(10000, 20000)</a>
+                        <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>]</span>
+                    }
+                    else
+                    {
+                        <a href="#" class="author may-blank">@rnd.Next(10000, 20000)</a>
+                        <span class="userattrs"></span>
+                    }
                 }
 
                 <span class="score dislikes">@commentModel.Dislikes points</span>
@@ -242,9 +268,7 @@
             }
 
         </ul>
-
     </div>
-
 </div>
 
 @{
@@ -280,7 +304,7 @@
         {
             <br />
             <span class="deepthread"><a href="/v/@childComment.Message.Subverse/comments/@childComment.MessageId/@childComment.ParentId">Continue this thread &#8594;</a></span>
-            
+
             break;
         }
 
@@ -297,6 +321,6 @@
             </div>
         }
 
-        sameParentCounter++;        
+        sameParentCounter++;
     }
 }

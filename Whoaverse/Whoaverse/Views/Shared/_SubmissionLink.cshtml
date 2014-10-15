@@ -16,6 +16,7 @@
 
 @{
     string ahrefTarget = "_self";
+    Random rnd = new Random();
 
     if (User.Identity.IsAuthenticated)
     {
@@ -30,7 +31,7 @@
     bool ratedAdult = false;
     if (Model.Subverses != null)
     {
-        ratedAdult = Model.Subverses.rated_adult;        
+        ratedAdult = Model.Subverses.rated_adult;
     }
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
@@ -38,7 +39,7 @@
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
     DateTime submissionDate = Model.Date;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);    
+    string postAge = Submissions.CalcSubmissionAge(submissionDate);
 
     //type 2 = urls
     if (Model.Type == 2)
@@ -91,7 +92,7 @@
                     if (routeActiveSubverse != "" && routeActiveSubverse != "all" && routeActiveSubverse != null)
                     {
                         <span class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
-                    }                    
+                    }
                 }
                 <a class="title may-blank " href="@Model.MessageContent" tabindex="1" title="@Model.Linkdescription" target="@ahrefTarget">@Model.Linkdescription</a>
                 <span class="domain">(<a href="/domains/@submissionDomain/">@submissionDomain</a>)</span>
@@ -106,13 +107,23 @@
             }
             else
             {
-                <p class="tagline">
-                    submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
-                    <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
-                </p>
+                if (Model.Subverses.anonymized_mode)
+                {
+                    <p class="tagline">
+                        submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="#" class="author may-blank">@rnd.Next(10000, 20000)</a>
+                        <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                        <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
+                    </p>
+                }
+                else
+                {
+                    <p class="tagline">
+                        submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
+                        <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                        <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
+                    </p>
+                }
             }
-
 
             <ul class="flat-list buttons">
                 <li class="first">

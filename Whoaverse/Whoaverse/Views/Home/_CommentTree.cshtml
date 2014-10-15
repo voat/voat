@@ -54,9 +54,7 @@
     
     <div id="siteTable" class="sitetable nestedlisting">
 
-        @{              
-
-            foreach (var firstComment in firstComments)
+        @foreach (var firstComment in firstComments)
             {
                 //do not show deleted comments unless they have replies
                 if (firstComment.Name == "deleted" && Model.Comments.Where(A => A.ParentId == firstComment.Id).Count() == 0)
@@ -76,9 +74,7 @@
                         @Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
                     </div>
                 }
-
-            }
-        }
+            }        
 
     </div>
 

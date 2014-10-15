@@ -25,6 +25,7 @@ namespace Whoaverse.Controllers
     public class WebApiController : ApiController
     {
         private whoaverseEntities db = new whoaverseEntities();
+        Random rnd = new Random();
 
         // GET api/defaultsubverses
         /// <summary>
@@ -115,7 +116,14 @@ namespace Whoaverse.Controllers
                 resultModel.Likes = item.Likes;
                 resultModel.Linkdescription = item.Linkdescription;
                 resultModel.MessageContent = item.MessageContent;
-                resultModel.Name = item.Name;
+                if (item.Subverses.anonymized_mode)
+                {
+                    resultModel.Name = rnd.Next(10000, 20000).ToString();
+                }
+                else
+                {
+                    resultModel.Name = item.Name;
+                }                
                 resultModel.Rank = item.Rank;
                 resultModel.Subverse = item.Subverse;
                 resultModel.Thumbnail = item.Thumbnail;
@@ -163,7 +171,14 @@ namespace Whoaverse.Controllers
                 resultModel.Likes = item.Likes;
                 resultModel.Linkdescription = item.Linkdescription;
                 resultModel.MessageContent = item.MessageContent;
-                resultModel.Name = item.Name;
+                if (item.Subverses.anonymized_mode)
+                {
+                    resultModel.Name = rnd.Next(10000, 20000).ToString();
+                }
+                else
+                {
+                    resultModel.Name = item.Name;
+                }                
                 resultModel.Rank = item.Rank;
                 resultModel.Subverse = item.Subverse;
                 resultModel.Thumbnail = item.Thumbnail;
@@ -199,6 +214,14 @@ namespace Whoaverse.Controllers
             resultModel.LastEditDate = submission.LastEditDate;
             resultModel.Likes = submission.Likes;
             resultModel.Dislikes = submission.Dislikes;
+            if (submission.Subverses.anonymized_mode)
+            {
+                resultModel.Name = rnd.Next(10000, 20000).ToString();
+            }
+            else
+            {
+                resultModel.Name = submission.Name;
+            }            
             resultModel.Rank = submission.Rank;
             resultModel.Thumbnail = submission.Thumbnail;
             resultModel.Subverse = submission.Subverse;
@@ -235,7 +258,14 @@ namespace Whoaverse.Controllers
             resultModel.CommentContent = comment.CommentContent;
             resultModel.ParentId = comment.ParentId;
             resultModel.MessageId = comment.MessageId;
-            resultModel.Name = comment.Name;
+            if (comment.Message.Subverses.anonymized_mode)
+            {
+                resultModel.Name = rnd.Next(10000, 20000).ToString();
+            }
+            else
+            {
+                resultModel.Name = comment.Name;
+            }            
 
             return resultModel;
         }
@@ -370,11 +400,6 @@ namespace Whoaverse.Controllers
                     continue;
                 }
 
-                //@Html.Partial("_SubmissionComment", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true } })
-                //int commentId = Convert.ToInt32(ViewData["CommentId"]);
-                //var singleComment = from c in submission.Comments where c.Id == commentId select c;
-                //var commentModel = singleComment.FirstOrDefault();
-
                 ApiComment resultModel = new ApiComment();
 
                 resultModel.Id = firstComment.Id;
@@ -385,7 +410,14 @@ namespace Whoaverse.Controllers
                 resultModel.MessageId = firstComment.MessageId;
                 resultModel.ParentId = firstComment.ParentId;
                 resultModel.CommentContent = firstComment.CommentContent;
-                resultModel.Name = firstComment.Name;
+                if (firstComment.Message.Subverses.anonymized_mode)
+                {
+                    resultModel.Name = rnd.Next(10000, 20000).ToString();
+                }
+                else
+                {
+                    resultModel.Name = firstComment.Name;
+                }                
 
                 // TODO
                 // fetch child comments
