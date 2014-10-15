@@ -13,6 +13,10 @@
 @using Whoaverse.Utils;
 @using Whoaverse.Models.ViewModels
 
+@{
+    var mostActiveSubverses = Whoaverse.Utils.SessionTracker.MostActiveSubverses();
+}
+
 <div class="side">
 
     @Html.Partial("_SearchMinimal", new SearchViewModel ())
@@ -22,13 +26,11 @@
             Share a link
         </a>
     </div>
-
     <div class="spacer">
         <a href="/submit" class="btn-whoaverse btn-block">
             Start a discussion
         </a>
     </div>
-
     <div class="spacer">
         <div class="sidebox create">
             <a href="/subverses/create" class="btn-whoaverse btn-block">
@@ -36,14 +38,9 @@
             </a>            
         </div>
     </div>
-
     <div class="spacer">
         <p>Subverses with most online users right now:</p>
         <hr />
-        @{
-            var mostActiveSubverses = Whoaverse.Utils.SessionTracker.MostActiveSubverses();
-        }
-
         @foreach (var subverse in mostActiveSubverses)
         {
             <p>
@@ -55,22 +52,7 @@
     <div class="spacer">
         <div class="centered">
             <p>Want to support WhoaVerse project?</p>
-            <p>Help us pay for server costs and get a donor badge on your WhoaVerse profile.</p><br />
-            <p>Our BitCoin address: <a href="bitcoin:1C4Q1RvUb3bzk4aaLVgGccnSnaHYFdESzY">1C4Q1RvUb3bzk4aaLVgGccnSnaHYFdESzY</a></p><br />
-            
-            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                <input type="hidden" name="cmd" value="_donations">
-                <input type="hidden" name="business" value="team@whoaverse.com">
-                <input type="hidden" name="lc" value="US">
-                <input type="hidden" name="item_name" value="Donation to help with WhoaVerse server costs">
-                <input type="hidden" name="no_note" value="0">
-                <input type="hidden" name="currency_code" value="USD">
-                <input type="hidden" name="bn" value="PP-DonationsBF:paypal_donate.png:NonHostedGuest">
-                <input type="image" src="~/Graphics/Temp/paypal_donate.png" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-            </form>
-        </div>
-        
+            <p>You can help us by telling your friends about WhoaVerse.</p>
+        </div>        
     </div>
-
 </div>
