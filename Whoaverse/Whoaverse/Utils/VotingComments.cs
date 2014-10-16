@@ -17,7 +17,7 @@ namespace Whoaverse.Utils
             {
                 Comment comment = db.Comments.Find(commentId);
 
-                if (comment.Message.Subverses.anonymized_mode)
+                if (comment.Message.Anonymized)
                 {
                     // do not execute voting, subverse is in anonymized mode
                     return;
@@ -93,7 +93,7 @@ namespace Whoaverse.Utils
             {
                 Comment comment = db.Comments.Find(commentId);
 
-                if (comment.Message.Subverses.anonymized_mode)
+                if (comment.Message.Anonymized)
                 {
                     // do not execute voting, subverse is in anonymized mode
                     return;

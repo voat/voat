@@ -64,6 +64,7 @@
           <Property Name="Likes" Type="bigint" Nullable="false" />
           <Property Name="Dislikes" Type="bigint" Nullable="false" />
           <Property Name="ParentId" Type="int" />
+          <Property Name="Anonymized" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -102,6 +103,7 @@
           <Property Name="LastEditDate" Type="smalldatetime" />
           <Property Name="FlairLabel" Type="nvarchar" MaxLength="50" />
           <Property Name="FlairCss" Type="nvarchar" MaxLength="50" />
+          <Property Name="Anonymized" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Postreplynotifications">
           <Key>
@@ -447,6 +449,7 @@
           <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
           <Property Name="ParentId" Type="Int32" />
           <Property Name="LastEditDate" Type="DateTime" Precision="0" />
+          <Property Name="Anonymized" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -483,6 +486,7 @@
           <Property Name="FlairLabel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="FlairCss" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Stickiedsubmission" Relationship="whoaverseModel.FK_Stickiedsubmissions_Messages" FromRole="Message" ToRole="Stickiedsubmission" />
+          <Property Name="Anonymized" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -900,6 +904,7 @@
           <EntitySetMapping Name="Comments">
             <EntityTypeMapping TypeName="whoaverseModel.Comment">
               <MappingFragment StoreEntitySet="Comments">
+                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
                 <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
@@ -927,6 +932,7 @@
           <EntitySetMapping Name="Messages">
             <EntityTypeMapping TypeName="whoaverseModel.Message">
               <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
                 <ScalarProperty Name="FlairCss" ColumnName="FlairCss" />
                 <ScalarProperty Name="FlairLabel" ColumnName="FlairLabel" />
                 <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />

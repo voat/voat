@@ -55,7 +55,8 @@ else if (!User.Identity.IsAuthenticated)
        lastEditDate = Model.LastEditDate,
        submissionId = Model.Id,
        likes = Model.Likes,
-       dislikes = Model.Dislikes
+       dislikes = Model.Dislikes,
+       anonymized = Model.Anonymized
    })
     }
     <style type="text/css">
@@ -115,22 +116,30 @@ else if (!User.Identity.IsAuthenticated)
                     {
                         if (ViewBag.SortingMode != null)
                         {
-                            <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId" class="bylink" rel="nofollow">top</a></span>
+                            <span class="selected">
+                                <a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId" class="bylink" rel="nofollow">top</a>
+                            </span>
                         }
                         else
                         {
-                            <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId?sort=new" class="bylink" rel="nofollow">new</a></span>
+                            <span class="selected">
+                                <a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId?sort=new" class="bylink" rel="nofollow">new</a>
+                            </span>
                         }
                     }
                     else
                     {
                         if (ViewBag.SortingMode != null)
                         {
-                            <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/" class="bylink" rel="nofollow">top</a></span>
+                            <span class="selected">
+                                <a href="/v/@Model.Subverse/comments/@Model.Id/" class="bylink" rel="nofollow">top</a>
+                            </span>
                         }
                         else
                         {
-                            <span class="selected"><a href="/v/@Model.Subverse/comments/@Model.Id/?sort=new" class="bylink" rel="nofollow">new</a></span>
+                            <span class="selected">
+                                <a href="/v/@Model.Subverse/comments/@Model.Id/?sort=new" class="bylink" rel="nofollow">new</a>
+                            </span>
                         }
                     }
                 </div>

@@ -41,18 +41,9 @@
                 }
                 else
                 {
-                    if (ViewBag.anonymized_mode)
-                    {
-                        <p class="h6">
-                            Posted by: <a href="#" class="author may-blank">@rnd.Next(10000,20000)</a>                            
-                        </p>
-                    }
-                    else
-                    {
-                        <p class="h6">
-                            Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
-                        </p>
-                    }
+                    <p class="h6">
+                        Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
+                    </p>
                 }
 
                 <p class="h6">
@@ -88,5 +79,4 @@
             </div>
         </div>
     </div>
-
 }

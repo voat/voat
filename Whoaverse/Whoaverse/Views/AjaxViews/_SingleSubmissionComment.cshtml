@@ -16,6 +16,7 @@
 @using Whoaverse.Models;
 
 @{
+    Random rnd = new Random();
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
     //check if thread should be hidden
@@ -24,7 +25,7 @@
 
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
-    string opName = Model.Name;
+    string opName = Model.Message.Name;
     string commentAuthor = Model.Name;
 
     string collapsedComment = "";
@@ -103,23 +104,51 @@
                     {
                         if (isOpModerator || isOpSubverseAdmin)
                         {
-                            <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>
+                            if (Model.Anonymized)
+                            {
+                                <a href="#" class="author moderator may-blank">@rnd.Next(10000,20000).ToString()</a>
+                            }
+                            else
+                            {
+                                <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>
+                            }
                             <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>, <a class="moderator" title="moderator" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">M</a>]</span>
                         }
                         else
                         {
-                            <a href="/user/@Model.Name" class="author submitter may-blank">@Model.Name</a>
+                            if (Model.Anonymized)
+                            {
+                                <a href="#" class="author submitter may-blank">@rnd.Next(10000, 20000).ToString()</a>                                
+                            }
+                            else
+                            {
+                                <a href="/user/@Model.Name" class="author submitter may-blank">@Model.Name</a>
+                            }
                             <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
                         }
                     }
                     else if (isCommentAuthorModerator || isCommehtAuthorSubverseAdmin)
                     {
-                        <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>
+                        if (Model.Anonymized)
+                        {
+                            <a href="#" class="author moderator may-blank">@rnd.Next(10000, 20000).ToString()</a>                            
+                        }
+                        else
+                        {
+                            <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>                            
+                        }
                         <span class="userattrs">[<a class="moderator" title="moderator" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">M</a>]</span>
                     }
                     else
                     {
-                        <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
+                        if (Model.Anonymized)
+                        {
+                            <a href="#" class="author may-blank">@rnd.Next(10000, 20000).ToString()</a>
+                        }
+                        else
+                        {
+                            <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
+                        }
                         <span class="userattrs"></span>
                     }
 
@@ -224,16 +253,13 @@
                             </form>
                         </li>
                     }
-
                     if (Model.Name != "deleted")
                     {
                         <li>
                             <a class="" href="javascript:void(0)" onclick="return reply(@Model.Id, @Model.MessageId)">reply</a>
                         </li>
                     }
-
                 }
-
             </ul>
         </div>
     </div>

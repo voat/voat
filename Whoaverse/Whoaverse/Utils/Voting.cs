@@ -71,7 +71,7 @@ namespace Whoaverse.Utils
             {
                 Message submission = db.Messages.Find(submissionId);
 
-                if (submission.Subverses.anonymized_mode)
+                if (submission.Anonymized)
                 {
                     // do not execute voting, subverse is in anonymized mode
                     return;
@@ -162,7 +162,7 @@ namespace Whoaverse.Utils
             {
                 Message submission = db.Messages.Find(submissionId);
 
-                if (submission.Subverses.anonymized_mode)
+                if (submission.Anonymized)
                 {
                     // do not execute voting, subverse is in anonymized mode
                     return;

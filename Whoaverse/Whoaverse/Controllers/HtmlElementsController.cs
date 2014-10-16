@@ -16,12 +16,14 @@ using System.Net;
 using System.Web.Mvc;
 using Whoaverse.Models;
 using System.Linq;
+using System;
 
 namespace Whoaverse.Controllers
 {
     public class HtmlElementsController : Controller
     {
         private whoaverseEntities db = new whoaverseEntities();
+        Random rnd = new Random();
 
         // GET: CommentReplyForm
         public ActionResult CommentReplyForm(int? parentCommentId, int? messageId)
@@ -70,6 +72,10 @@ namespace Whoaverse.Controllers
 
                 if (comment != null)
                 {
+                    if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
+                    {
+                        comment.Name = rnd.Next(10000, 20000).ToString();
+                    }
                     return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
                 }
                 else

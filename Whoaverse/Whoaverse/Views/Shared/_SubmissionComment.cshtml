@@ -86,7 +86,7 @@
         {
             int commentScore = commentModel.Likes - commentModel.Dislikes;
 
-            if (Model.Subverses.anonymized_mode)
+            if (Model.Anonymized || Model.Subverses.anonymized_mode)
             {
                 <a href="#" class="author gray may-blank">@rnd.Next(10000, 20000)</a>
             }
@@ -114,46 +114,56 @@
             {
                 int commentScore = commentModel.Likes - commentModel.Dislikes;
 
-                if (!Model.Subverses.anonymized_mode)
+                if (opName == commentAuthor)
                 {
-
-                    if (opName == commentAuthor)
+                    if (isOpModerator || isOpSubverseAdmin)
                     {
-                        if (isOpModerator || isOpSubverseAdmin)
+                        if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                        {
+                            <a href="#" class="author moderator may-blank">@rnd.Next(10000, 20000).ToString()</a>
+                        }
+                        else
                         {
                             <a href="/user/@commentModel.Name" class="author moderator may-blank">@commentModel.Name</a>
-                            <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>, <a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
+                        }
+                        <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>, <a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
+                    }
+                    else
+                    {
+                        if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                        {
+                            <a href="#" class="author submitter may-blank">@rnd.Next(10000, 20000).ToString()</a>
                         }
                         else
                         {
                             <a href="/user/@commentModel.Name" class="author submitter may-blank">@commentModel.Name</a>
-                            <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>]</span>
                         }
+                        <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>]</span>
                     }
-                    else if (isCommentAuthorModerator || isCommentAuthorSubverseAdmin)
+                }
+                else if (isCommentAuthorModerator || isCommentAuthorSubverseAdmin)
+                {
+                    if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                    {
+                        <a href="#" class="author moderator may-blank">@rnd.Next(10000, 20000).ToString()</a>
+                    }
+                    else
                     {
                         <a href="/user/@commentModel.Name" class="author moderator may-blank">@commentModel.Name</a>
-                        <span class="userattrs">[<a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
+                    }
+                    <span class="userattrs">[<a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@commentModel.MessageId">M</a>]</span>
+                }
+                else
+                {
+                    if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                    {
+                        <a href="#" class="author may-blank">@rnd.Next(10000, 20000).ToString()</a>
                     }
                     else
                     {
                         <a href="/user/@commentModel.Name" class="author may-blank">@commentModel.Name</a>
-                        <span class="userattrs"></span>
                     }
-
-                }
-                else
-                {
-                    if (opName == commentAuthor)
-                    {
-                        <a href="#" class="author submitter may-blank">@rnd.Next(10000, 20000)</a>
-                        <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@commentModel.MessageId">S</a>]</span>
-                    }
-                    else
-                    {
-                        <a href="#" class="author may-blank">@rnd.Next(10000, 20000)</a>
-                        <span class="userattrs"></span>
-                    }
+                    <span class="userattrs"></span>
                 }
 
                 <span class="score dislikes">@commentModel.Dislikes points</span>

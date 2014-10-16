@@ -39,6 +39,7 @@ namespace Whoaverse.Models
         public Nullable<System.DateTime> LastEditDate { get; set; }
         public string FlairLabel { get; set; }
         public string FlairCss { get; set; }
+        public bool Anonymized { get; set; }
     
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Votingtracker> Votingtrackers { get; set; }

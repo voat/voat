@@ -116,7 +116,7 @@ namespace Whoaverse.Controllers
                 resultModel.Likes = item.Likes;
                 resultModel.Linkdescription = item.Linkdescription;
                 resultModel.MessageContent = item.MessageContent;
-                if (item.Subverses.anonymized_mode)
+                if (item.Anonymized || item.Subverses.anonymized_mode)
                 {
                     resultModel.Name = rnd.Next(10000, 20000).ToString();
                 }
@@ -171,7 +171,7 @@ namespace Whoaverse.Controllers
                 resultModel.Likes = item.Likes;
                 resultModel.Linkdescription = item.Linkdescription;
                 resultModel.MessageContent = item.MessageContent;
-                if (item.Subverses.anonymized_mode)
+                if (item.Anonymized || item.Subverses.anonymized_mode)
                 {
                     resultModel.Name = rnd.Next(10000, 20000).ToString();
                 }
@@ -214,7 +214,7 @@ namespace Whoaverse.Controllers
             resultModel.LastEditDate = submission.LastEditDate;
             resultModel.Likes = submission.Likes;
             resultModel.Dislikes = submission.Dislikes;
-            if (submission.Subverses.anonymized_mode)
+            if (submission.Anonymized || submission.Subverses.anonymized_mode)
             {
                 resultModel.Name = rnd.Next(10000, 20000).ToString();
             }
@@ -258,7 +258,7 @@ namespace Whoaverse.Controllers
             resultModel.CommentContent = comment.CommentContent;
             resultModel.ParentId = comment.ParentId;
             resultModel.MessageId = comment.MessageId;
-            if (comment.Message.Subverses.anonymized_mode)
+            if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
             {
                 resultModel.Name = rnd.Next(10000, 20000).ToString();
             }
@@ -410,7 +410,7 @@ namespace Whoaverse.Controllers
                 resultModel.MessageId = firstComment.MessageId;
                 resultModel.ParentId = firstComment.ParentId;
                 resultModel.CommentContent = firstComment.CommentContent;
-                if (firstComment.Message.Subverses.anonymized_mode)
+                if (firstComment.Message.Anonymized || firstComment.Message.Subverses.anonymized_mode)
                 {
                     resultModel.Name = rnd.Next(10000, 20000).ToString();
                 }

@@ -208,7 +208,15 @@ namespace Whoaverse.Controllers
 
             if (ModelState.IsValid)
             {
-                //TODO: check if user is shadowbanned and flag the comment
+                // TODO: check if user is shadowbanned and flag the comment
+
+                // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
+                Message message = db.Messages.Find(comment.MessageId);
+                if (message != null && message.Anonymized || message.Subverses.anonymized_mode)
+                {
+                    comment.Anonymized = true;
+                }
+
                 db.Comments.Add(comment);
                 await db.SaveChangesAsync();
 
@@ -233,7 +241,7 @@ namespace Whoaverse.Controllers
                                     commentReplyNotification.CommentId = comment.Id;
                                     commentReplyNotification.SubmissionId = commentMessage.Id;
                                     commentReplyNotification.Recipient = parentComment.Name;
-                                    if (parentComment.Message.Subverses.anonymized_mode)
+                                    if (parentComment.Message.Anonymized || parentComment.Message.Subverses.anonymized_mode)
                                     {
                                         commentReplyNotification.Sender = rnd.Next(10000, 20000).ToString();
                                     }
@@ -287,7 +295,7 @@ namespace Whoaverse.Controllers
                                 postReplyNotification.SubmissionId = commentMessage.Id;
                                 postReplyNotification.Recipient = commentMessage.Name;
 
-                                if (commentMessage.Subverses.anonymized_mode)
+                                if (commentMessage.Anonymized || commentMessage.Subverses.anonymized_mode)
                                 {
                                     postReplyNotification.Sender = rnd.Next(10000, 20000).ToString();
                                 }
@@ -688,8 +696,17 @@ namespace Whoaverse.Controllers
                             }
                         }
 
+                        // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                        if (targetSubverse.anonymized_mode)
+                        {
+                            message.Anonymized = true;                            
+                        }
+                        else
+                        {
+                            message.Name = User.Identity.Name;
+                        }
+
                         // accept submission and save it to the database
-                        message.Name = User.Identity.Name;
                         message.Subverse = targetSubverse.name;
                         // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
                         message.Date = System.DateTime.Now;
@@ -704,7 +721,15 @@ namespace Whoaverse.Controllers
                         // accept submission and save it to the database
                         // trim trailing blanks from subverse name if a user mistakenly types them
                         message.Subverse = targetSubverse.name;
-                        message.Name = User.Identity.Name;
+                        // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                        if (targetSubverse.anonymized_mode)
+                        {
+                            message.Anonymized = true;                            
+                        }
+                        else
+                        {
+                            message.Name = User.Identity.Name;
+                        }                        
                         // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
                         message.Date = System.DateTime.Now;
                         message.Likes = 1;
@@ -755,7 +780,7 @@ namespace Whoaverse.Controllers
                 if (whattodisplay != null && whattodisplay == "comments")
                 {
                     var userComments = from c in db.Comments.OrderByDescending(c => c.Date)
-                                       where c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false
+                                       where c.Name.Equals(id) && c.Message.Anonymized == false
                                        select c;
                     return View("UserComments", userComments.Take(200).ToPagedList(pageNumber, pageSize));
                 }
@@ -764,7 +789,7 @@ namespace Whoaverse.Controllers
                 if (whattodisplay != null && whattodisplay == "submissions")
                 {
                     var userSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                          where b.Name.Equals(id) && b.Subverses.anonymized_mode == false
+                                          where b.Name.Equals(id) && b.Anonymized == false
                                           select b;
                     return View("UserSubmitted", userSubmissions.Take(200).ToPagedList(pageNumber, pageSize));
                 }
@@ -773,7 +798,7 @@ namespace Whoaverse.Controllers
                 ViewBag.whattodisplay = "overview";
 
                 var userDefaultSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                             where b.Name.Equals(id) && b.Subverses.anonymized_mode == false
+                                             where b.Name.Equals(id) && b.Anonymized == false
                                              select b;
                 return View("UserProfile", userDefaultSubmissions.Take(200).ToPagedList(pageNumber, pageSize));
             }
@@ -1086,7 +1111,7 @@ namespace Whoaverse.Controllers
                 if (submission.Type == 1)
                 {
                     // message type submission
-                    if (submission.Subverses.anonymized_mode)
+                    if (submission.Anonymized || submission.Subverses.anonymized_mode)
                     {
                         authorName = rnd.Next(10000, 20000).ToString();
                     }
@@ -1105,7 +1130,7 @@ namespace Whoaverse.Controllers
                     var linkUrl = new Uri(submission.MessageContent);
                     authorName = submission.Name;
 
-                    if (submission.Subverses.anonymized_mode)
+                    if (submission.Anonymized || submission.Subverses.anonymized_mode)
                     {
                         authorName = rnd.Next(10000, 20000).ToString();
                     }

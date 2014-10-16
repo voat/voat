@@ -29,9 +29,10 @@ namespace Whoaverse.Controllers
     public class SubversesController : Controller
     {
         private whoaverseEntities db = new whoaverseEntities();
+        Random rnd = new Random();
 
         // GET: sidebar for selected subverse
-        public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments, string name, DateTime? date, DateTime? lastEditDate, int? likes, int? dislikes)
+        public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments, string name, DateTime? date, DateTime? lastEditDate, int? likes, int? dislikes, bool anonymized)
         {
             Subverse subverse = db.Subverses.Find(selectedSubverse);
 
@@ -47,7 +48,15 @@ namespace Whoaverse.Controllers
 
                 if (showingComments)
                 {
-                    ViewBag.name = name;
+                    if (anonymized)
+                    {
+                        ViewBag.name = name;
+                    }
+                    else
+                    {
+                        ViewBag.name = rnd.Next(10000, 20000).ToString();
+                    }
+                    
                     ViewBag.date = date;
                     ViewBag.lastEditDate = lastEditDate;
                     ViewBag.likes = likes;
@@ -217,7 +226,17 @@ namespace Whoaverse.Controllers
                     // accept submission and save it to the database
                     message.Subverse = targetSubverse.name;
                     message.Date = System.DateTime.Now;
-                    message.Name = User.Identity.Name;
+                    // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                    if (targetSubverse.anonymized_mode)
+                    {
+                        message.Anonymized = true;
+                        message.Name = rnd.Next(10000, 20000).ToString();
+                    }
+                    else
+                    {
+                        message.Name = User.Identity.Name;
+                    }
+                    
                     db.Messages.Add(message);
                     await db.SaveChangesAsync();
 
@@ -658,7 +677,7 @@ namespace Whoaverse.Controllers
 
             try
             {
-                //order by subscriber count (popularity)
+                // order by subscriber count (popularity)
                 var subverses = db.Subverses
                     .OrderByDescending(s => s.subscribers);
 
@@ -747,6 +766,7 @@ namespace Whoaverse.Controllers
             }
 
             var subverses = db.Subverses
+                .Where(s => s.description != null && s.subscribers > 4)
                 .OrderByDescending(s => s.creation_date);
 
             return View("~/Views/Subverses/Subverses.cshtml", subverses.ToPagedList(pageNumber, pageSize));
