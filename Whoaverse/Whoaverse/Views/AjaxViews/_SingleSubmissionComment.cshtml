@@ -68,7 +68,7 @@
 
     @if (Model.Name != "deleted")
     {
-        @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", Model.Id }, { "CCP", commentContributionPoints }, { "collapsedStyle", uncollapsedComment } })
+            @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", Model.Id }, { "CCP", commentContributionPoints }, { "collapsedStyle", uncollapsedComment } })
     }
 
     <div class="entry unvoted">
@@ -106,7 +106,7 @@
                         {
                             if (Model.Anonymized)
                             {
-                                <a href="#" class="author moderator may-blank">@rnd.Next(10000,20000).ToString()</a>
+                                <a href="#" class="author moderator may-blank">@Model.Id</a>
                             }
                             else
                             {
@@ -118,7 +118,7 @@
                         {
                             if (Model.Anonymized)
                             {
-                                <a href="#" class="author submitter may-blank">@rnd.Next(10000, 20000).ToString()</a>                                
+                                <a href="#" class="author submitter may-blank">@Model.Id</a>
                             }
                             else
                             {
@@ -131,11 +131,11 @@
                     {
                         if (Model.Anonymized)
                         {
-                            <a href="#" class="author moderator may-blank">@rnd.Next(10000, 20000).ToString()</a>                            
+                            <a href="#" class="author moderator may-blank">@Model.Id</a>
                         }
                         else
                         {
-                            <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>                            
+                            <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>
                         }
                         <span class="userattrs">[<a class="moderator" title="moderator" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">M</a>]</span>
                     }
@@ -143,7 +143,7 @@
                     {
                         if (Model.Anonymized)
                         {
-                            <a href="#" class="author may-blank">@rnd.Next(10000, 20000).ToString()</a>
+                            <a href="#" class="author may-blank">@Model.Id</a>
                         }
                         else
                         {

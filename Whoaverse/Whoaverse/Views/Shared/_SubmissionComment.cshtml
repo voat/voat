@@ -88,7 +88,7 @@
 
             if (Model.Anonymized || Model.Subverses.anonymized_mode)
             {
-                <a href="#" class="author gray may-blank">@rnd.Next(10000, 20000)</a>
+                <a href="#" class="author gray may-blank">@commentModel.Id</a>
             }
             else
             {
@@ -120,7 +120,7 @@
                     {
                         if (Model.Anonymized || Model.Subverses.anonymized_mode)
                         {
-                            <a href="#" class="author moderator may-blank">@rnd.Next(10000, 20000).ToString()</a>
+                            <a href="#" class="author moderator may-blank">@commentModel.Id</a>
                         }
                         else
                         {
@@ -132,7 +132,7 @@
                     {
                         if (Model.Anonymized || Model.Subverses.anonymized_mode)
                         {
-                            <a href="#" class="author submitter may-blank">@rnd.Next(10000, 20000).ToString()</a>
+                            <a href="#" class="author submitter may-blank">@commentModel.Id</a>
                         }
                         else
                         {
@@ -145,7 +145,7 @@
                 {
                     if (Model.Anonymized || Model.Subverses.anonymized_mode)
                     {
-                        <a href="#" class="author moderator may-blank">@rnd.Next(10000, 20000).ToString()</a>
+                        <a href="#" class="author moderator may-blank">@commentModel.Id</a>
                     }
                     else
                     {
@@ -157,7 +157,7 @@
                 {
                     if (Model.Anonymized || Model.Subverses.anonymized_mode)
                     {
-                        <a href="#" class="author may-blank">@rnd.Next(10000, 20000).ToString()</a>
+                        <a href="#" class="author may-blank">@commentModel.Id</a>
                     }
                     else
                     {

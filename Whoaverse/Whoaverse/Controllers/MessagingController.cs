@@ -266,17 +266,18 @@ namespace Whoaverse.Controllers
                         privateMessage.Timestamp = System.DateTime.Now;
                         privateMessage.Sender = User.Identity.Name;
                         privateMessage.Status = true;
-                        db.Privatemessages.Add(privateMessage);
-
-                        try
+                        if (!Utils.User.IsUserBanned(User.Identity.Name))
                         {
-                            await db.SaveChangesAsync();
-                        }
-                        catch (Exception)
-                        {
-                            return RedirectToAction("HeavyLoad", "Home");
-                        }
-
+                            db.Privatemessages.Add(privateMessage);
+                            try
+                            {
+                                await db.SaveChangesAsync();
+                            }
+                            catch (Exception)
+                            {
+                                return RedirectToAction("HeavyLoad", "Home");
+                            }
+                        }                        
                     }
                     else
                     {
@@ -284,9 +285,7 @@ namespace Whoaverse.Controllers
                         return View();
                     }
                 }
-
                 return RedirectToAction("Sent", "Messaging");
-
             }
             else
             {
@@ -312,16 +311,19 @@ namespace Whoaverse.Controllers
                         privateMessage.Timestamp = System.DateTime.Now;
                         privateMessage.Sender = User.Identity.Name;
                         privateMessage.Status = true;
-                        db.Privatemessages.Add(privateMessage);
+                        if (!Utils.User.IsUserBanned(User.Identity.Name))
+                        {
+                            db.Privatemessages.Add(privateMessage);
 
-                        try
-                        {
-                            await db.SaveChangesAsync();
-                        }
-                        catch (Exception)
-                        {
-                            return RedirectToAction("HeavyLoad", "Home");
-                        }
+                            try
+                            {
+                                await db.SaveChangesAsync();
+                            }
+                            catch (Exception)
+                            {
+                                return RedirectToAction("HeavyLoad", "Home");
+                            }
+                        }                        
                     }
                     else
                     {

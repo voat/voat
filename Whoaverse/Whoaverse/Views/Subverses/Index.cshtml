@@ -114,7 +114,7 @@ else if (!User.Identity.IsAuthenticated)
                     <p class="parent"></p>
                     <span class="rank">@counter</span>
                    
-                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })                    
                     @Html.Partial("_Submission", submission)
 
                     <div class="child"></div>

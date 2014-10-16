@@ -51,7 +51,7 @@
                 <p class="parent"></p>
                 <span class="rank">1</span>
 
-                @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })          
 
                 @if (Model.Thumbnail != null)
                 {
@@ -77,7 +77,7 @@
                             if (Model.Anonymized || Model.Subverses.anonymized_mode)
                             {
                                 <span class="userattrs">
-                                    <a href="#" class="author may-blank">@rnd.Next(10000, 20000)</a>
+                                    <a href="#" class="author may-blank">@Model.Id</a>
                                 </span>
                             }
                             else

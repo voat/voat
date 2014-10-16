@@ -207,9 +207,7 @@ namespace Whoaverse.Controllers
             comment.Likes = 0;
 
             if (ModelState.IsValid)
-            {
-                // TODO: check if user is shadowbanned and flag the comment
-
+            {              
                 // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
                 Message message = db.Messages.Find(comment.MessageId);
                 if (message != null && message.Anonymized || message.Subverses.anonymized_mode)
@@ -217,8 +215,12 @@ namespace Whoaverse.Controllers
                     comment.Anonymized = true;
                 }
 
-                db.Comments.Add(comment);
-                await db.SaveChangesAsync();
+                // check if user is banned, don't save the comment if true
+                if (!Utils.User.IsUserBanned(User.Identity.Name))
+                {
+                    db.Comments.Add(comment);
+                    await db.SaveChangesAsync();
+                }                
 
                 // send comment reply notification to parent comment author if the comment is not a new root comment
                 if (comment.ParentId != null && comment.CommentContent != null)
@@ -1113,7 +1115,7 @@ namespace Whoaverse.Controllers
                     // message type submission
                     if (submission.Anonymized || submission.Subverses.anonymized_mode)
                     {
-                        authorName = rnd.Next(10000, 20000).ToString();
+                        authorName = submission.Id.ToString();
                     }
 
                     SyndicationItem item = new SyndicationItem(
@@ -1132,7 +1134,7 @@ namespace Whoaverse.Controllers
 
                     if (submission.Anonymized || submission.Subverses.anonymized_mode)
                     {
-                        authorName = rnd.Next(10000, 20000).ToString();
+                        authorName = submission.Id.ToString();
                     }
 
                     // add a thumbnail if submission has one

@@ -118,7 +118,7 @@ namespace Whoaverse.Controllers
                 resultModel.MessageContent = item.MessageContent;
                 if (item.Anonymized || item.Subverses.anonymized_mode)
                 {
-                    resultModel.Name = rnd.Next(10000, 20000).ToString();
+                    resultModel.Name = item.Id.ToString();
                 }
                 else
                 {
@@ -173,7 +173,7 @@ namespace Whoaverse.Controllers
                 resultModel.MessageContent = item.MessageContent;
                 if (item.Anonymized || item.Subverses.anonymized_mode)
                 {
-                    resultModel.Name = rnd.Next(10000, 20000).ToString();
+                    resultModel.Name = item.Id.ToString();
                 }
                 else
                 {
@@ -216,7 +216,7 @@ namespace Whoaverse.Controllers
             resultModel.Dislikes = submission.Dislikes;
             if (submission.Anonymized || submission.Subverses.anonymized_mode)
             {
-                resultModel.Name = rnd.Next(10000, 20000).ToString();
+                resultModel.Name = submission.Id.ToString();
             }
             else
             {
@@ -260,7 +260,7 @@ namespace Whoaverse.Controllers
             resultModel.MessageId = comment.MessageId;
             if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
             {
-                resultModel.Name = rnd.Next(10000, 20000).ToString();
+                resultModel.Name = comment.Id.ToString();
             }
             else
             {
@@ -412,7 +412,7 @@ namespace Whoaverse.Controllers
                 resultModel.CommentContent = firstComment.CommentContent;
                 if (firstComment.Message.Anonymized || firstComment.Message.Subverses.anonymized_mode)
                 {
-                    resultModel.Name = rnd.Next(10000, 20000).ToString();
+                    resultModel.Name = firstComment.Id.ToString();
                 }
                 else
                 {

@@ -74,7 +74,7 @@ namespace Whoaverse.Controllers
                 {
                     if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
                     {
-                        comment.Name = rnd.Next(10000, 20000).ToString();
+                        comment.Name = comment.Id.ToString();
                     }
                     return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
                 }

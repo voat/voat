@@ -50,7 +50,7 @@ namespace Whoaverse.Controllers
                 {
                     if (anonymized || subverse.anonymized_mode)
                     {
-                        ViewBag.name = rnd.Next(10000, 20000).ToString();
+                        ViewBag.name = "Anonymous";
                     }
                     else
                     {
@@ -230,7 +230,7 @@ namespace Whoaverse.Controllers
                     if (targetSubverse.anonymized_mode)
                     {
                         message.Anonymized = true;
-                        message.Name = rnd.Next(10000, 20000).ToString();
+                        message.Name = User.Identity.Name;
                     }
                     else
                     {
