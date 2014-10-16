@@ -95,6 +95,10 @@
                 created by <a href="/user/@subverseOwner" class="author may-blank">@subverseOwner</a>
                 <span class="userattrs"></span>
                 <span class="age">a community for <time title="@Model.creation_date" datetime="@Model.creation_date">@subverseAge</time></span>
+                @if (Model.anonymized_mode)
+                {
+                    <p>This subverse is permamently anonymized: all usernames are hidden and voting is disabled.</p>
+                }
             </div>
             <div class="clear">
             </div>
