@@ -93,7 +93,7 @@
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.Anonymized_mode, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.Anonymized_mode, "", new { @class = "text-danger" })
-                        @Html.Label("(Hide all usernames and disable voting on submissions and comments)")
+                        @Html.Label("(Hide all usernames and disable voting on submissions and comments, WARNING: this cannot be changed once activated)")
                     </div>
                 </div>
 

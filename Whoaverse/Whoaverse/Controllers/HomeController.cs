@@ -780,7 +780,7 @@ namespace Whoaverse.Controllers
                 if (whattodisplay != null && whattodisplay == "comments")
                 {
                     var userComments = from c in db.Comments.OrderByDescending(c => c.Date)
-                                       where c.Name.Equals(id) && c.Message.Anonymized == false
+                                       where (c.Name.Equals(id) && c.Message.Anonymized == false) || (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
                                        select c;
                     return View("UserComments", userComments.Take(200).ToPagedList(pageNumber, pageSize));
                 }
@@ -789,7 +789,7 @@ namespace Whoaverse.Controllers
                 if (whattodisplay != null && whattodisplay == "submissions")
                 {
                     var userSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                          where b.Name.Equals(id) && b.Anonymized == false
+                                          where (b.Name.Equals(id) && b.Anonymized == false) || (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
                                           select b;
                     return View("UserSubmitted", userSubmissions.Take(200).ToPagedList(pageNumber, pageSize));
                 }

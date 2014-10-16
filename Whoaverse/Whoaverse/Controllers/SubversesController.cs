@@ -48,13 +48,13 @@ namespace Whoaverse.Controllers
 
                 if (showingComments)
                 {
-                    if (anonymized)
+                    if (anonymized || subverse.anonymized_mode)
                     {
-                        ViewBag.name = name;
+                        ViewBag.name = rnd.Next(10000, 20000).ToString();
                     }
                     else
                     {
-                        ViewBag.name = rnd.Next(10000, 20000).ToString();
+                        ViewBag.name = name;                        
                     }
                     
                     ViewBag.date = date;
@@ -452,7 +452,6 @@ namespace Whoaverse.Controllers
                     // check if subverse exists before attempting to edit it
                     if (existingSubverse != null)
                     {
-
                         // check if user requesting edit is authorized to do so for current subverse
                         // check that the user requesting to edit subverse settings is subverse owner!
                         SubverseAdmin subAdmin = db.SubverseAdmins
@@ -493,7 +492,14 @@ namespace Whoaverse.Controllers
                             existingSubverse.label_submit_new_link = updatedModel.label_submit_new_link;
                             existingSubverse.label_sumit_new_selfpost = updatedModel.label_sumit_new_selfpost;
                             existingSubverse.submission_text = updatedModel.submission_text;
-                            existingSubverse.allow_default = updatedModel.allow_default;
+                            existingSubverse.allow_default = updatedModel.allow_default;                            
+
+                            if (existingSubverse.anonymized_mode == true && updatedModel.anonymized_mode == false)
+                            {
+                                ModelState.AddModelError(string.Empty, "Sorry, this subverse is permanently locked to anonymized mode.");
+                                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                            }
+
                             existingSubverse.anonymized_mode = updatedModel.anonymized_mode;
 
                             await db.SaveChangesAsync();
