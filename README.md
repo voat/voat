@@ -55,6 +55,7 @@ This was just a hobby project to help me get a better understanding of C# and AS
 ### How does it differ from related projects?
 - WhoaVerse has increased focus on users privacy. It enables users to delete their account by automatically overwriting every comment and every submission the user has made with a string "deleted", before proceeding to remove the user account from user credentials database. 
 - built-in night mode
+- anonymized mode: subverse owners can irreversibly convert their subverse to anonymized mode which hides all usernames and disables all voting actions within that subverse
 - responsive design which works great on mobile out of the box
 - limited voting (new users need to gain a certain amount of points before they are able to vote without restrictions)
 - limited number of owned subs per user
