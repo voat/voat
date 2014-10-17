@@ -277,8 +277,11 @@ function submitCommentDownVote(commentid) {
     });
 }
 
-// prepare auth tokens
 $(document).ready(function () {
+    // activate bootsrap popovers
+    $('[data-toggle="popover"]').popover({ trigger: 'hover', 'placement': 'top' });
+
+    // prepare auth tokens
     securityToken = $('[name=__RequestVerificationToken]').val();
     $('body').bind('ajaxSend', function (elm, xhr, s) {
         if (s.type == 'POST' && typeof securityToken != 'undefined') {
