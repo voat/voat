@@ -46,5 +46,6 @@ namespace Whoaverse.Models
         public virtual DbSet<Sessiontracker> Sessiontrackers { get; set; }
         public virtual DbSet<Stickiedsubmission> Stickiedsubmissions { get; set; }
         public virtual DbSet<Banneduser> Bannedusers { get; set; }
+        public virtual DbSet<Survey> Surveys { get; set; }
     }
 }

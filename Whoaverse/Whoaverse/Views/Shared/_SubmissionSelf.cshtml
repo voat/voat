@@ -17,12 +17,18 @@
 @{
     var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
     Random rnd = new Random();
+    bool anonymizedSubverse = false;
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
+
+    if (Model.Subverses != null)
+    {
+        anonymizedSubverse = Model.Subverses.anonymized_mode;
+    }
 
     //type 1 = message
     if (Model.Type == 1)
@@ -54,7 +60,7 @@
                 <div class="expando" style="display: none;" id="@Model.Id"></div>
                 <!-- EXPERIMENTAL EXPANDO BUTTON END -->
 
-                if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                if (Model.Anonymized || anonymizedSubverse)
                 {
                     <p class="tagline">
                         submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="#" class="author may-blank">@Model.Id</a>

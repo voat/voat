@@ -251,6 +251,7 @@
     <Compile Include="Controllers\HtmlElementsController.cs" />
     <Compile Include="Controllers\MessagingController.cs" />
     <Compile Include="Controllers\NavController.cs" />
+    <Compile Include="Controllers\PartnerController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SubmissionsController.cs" />
     <Compile Include="Controllers\SubversesController.cs" />
@@ -275,6 +276,7 @@
     <Compile Include="Models\Banneduser.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PartnerIntent.cs" />
     <Compile Include="Models\Comment.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -318,6 +320,9 @@
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Subverseflairsetting.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Survey.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Userbadge.cs">
@@ -639,14 +644,17 @@
     <Content Include="Views\Subverses\SearchForSubverse.cshtml" />
     <Content Include="Views\Search\FindSubverseSearchResult.cshtml" />
     <Content Include="Views\AjaxViews\_SingleSubmissionComment.cshtml" />
+    <Content Include="Views\Partner\PartnerProgramInformation.cshtml" />
+    <Content Include="Views\Partner\PartnerIntentRegistration.cshtml" />
+    <Content Include="Views\Partner\PartnerProgramIntentSent.cshtml" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

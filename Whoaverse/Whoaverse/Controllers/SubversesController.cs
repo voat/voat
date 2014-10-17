@@ -772,7 +772,7 @@ namespace Whoaverse.Controllers
             }
 
             var subverses = db.Subverses
-                .Where(s => s.description != null && s.subscribers > 4)
+                .Where(s => s.description != null && s.sidebar != null)
                 .OrderByDescending(s => s.creation_date);
 
             return View("~/Views/Subverses/Subverses.cshtml", subverses.ToPagedList(pageNumber, pageSize));
@@ -1517,6 +1517,6 @@ namespace Whoaverse.Controllers
             {
                 return new EmptyResult();
             }
-        }
+        }        
     }
 }

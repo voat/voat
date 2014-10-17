@@ -440,6 +440,20 @@ namespace Whoaverse
                 url: "submissions/togglesticky/{submissionId}",
                 defaults: new { controller = "Submissions", action = "ToggleSticky" }
             );
+
+            // p/partnerprogram
+            routes.MapRoute(
+                name: "PartnerProgramInformation",
+                url: "p/partnerprogram",
+                defaults: new { controller = "Partner", action = "PartnerProgramInformation" }
+            );
+
+            // p/partnerintent
+            routes.MapRoute(
+                name: "PartnerProgramIntent",
+                url: "p/apply",
+                defaults: new { controller = "Partner", action = "PartnerIntentRegistration" }
+            );
             
             // default route
             routes.MapRoute(

@@ -27,7 +27,7 @@ namespace Whoaverse.Utils
         // check if user exists in database
         public static bool UserExists(string userName)
         {
-            using (UserManager<ApplicationUser> tmpUserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+            using (UserManager<WhoaVerseUser> tmpUserManager = new UserManager<WhoaVerseUser>(new UserStore<WhoaVerseUser>(new ApplicationDbContext())))
             {
                 var tmpuser = tmpUserManager.FindByName(userName);
                 if (tmpuser != null)
@@ -44,7 +44,7 @@ namespace Whoaverse.Utils
         // return user registration date
         public static DateTime GetUserRegistrationDateTime(string userName)
         {
-            using (UserManager<ApplicationUser> tmpUserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+            using (UserManager<WhoaVerseUser> tmpUserManager = new UserManager<WhoaVerseUser>(new UserStore<WhoaVerseUser>(new ApplicationDbContext())))
             {
                 var tmpuser = tmpUserManager.FindByName(userName);
                 if (tmpuser != null)
@@ -63,7 +63,7 @@ namespace Whoaverse.Utils
         {
             using (whoaverseEntities db = new whoaverseEntities())
             {
-                using (UserManager<ApplicationUser> tmpUserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+                using (UserManager<WhoaVerseUser> tmpUserManager = new UserManager<WhoaVerseUser>(new UserStore<WhoaVerseUser>(new ApplicationDbContext())))
                 {
                     var tmpuser = tmpUserManager.FindByName(userName);
                     if (tmpuser != null)
@@ -139,7 +139,7 @@ namespace Whoaverse.Utils
                 var subverseModerator = db.SubverseAdmins
                     .Where(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 2)
                     .FirstOrDefault();
-                
+
                 if (subverseModerator != null && subverseModerator.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
@@ -530,7 +530,7 @@ namespace Whoaverse.Utils
                 var subverses = db.Messages.Where(a => a.Name == userName)
                          .GroupBy(a => new { a.Name, a.Subverse })
                          .Select(g => new SubverseStats { SubverseName = g.Key.Subverse, Count = g.Count() })
-                         .OrderByDescending (s => s.Count)
+                         .OrderByDescending(s => s.Count)
                          .Take(5)
                          .ToList();
 
@@ -553,18 +553,18 @@ namespace Whoaverse.Utils
 
                 // get 3 lowest rated comments
                 var lowestRatedComments = db.Comments
-                    .Include ("Message")
-                    .Where(a => a.Name == userName)                    
-                    .OrderBy(s => s.Likes - s.Dislikes)                    
-                    .Take(3)                    
-                    .ToList(); 
+                    .Include("Message")
+                    .Where(a => a.Name == userName)
+                    .OrderBy(s => s.Likes - s.Dislikes)
+                    .Take(3)
+                    .ToList();
 
                 var linkSubmissionsCount = db.Messages.Where(a => a.Name == userName && a.Type == 2).Count();
                 var messageSubmissionsCount = db.Messages.Where(a => a.Name == userName && a.Type == 1).Count();
-                
+
                 // get 5 highest rated submissions
                 var highestRatedSubmissions = db.Messages.Where(a => a.Name == userName)
-                    .OrderByDescending(s => s.Likes-s.Dislikes)
+                    .OrderByDescending(s => s.Likes - s.Dislikes)
                     .Take(5)
                     .ToList();
 
@@ -572,7 +572,7 @@ namespace Whoaverse.Utils
                 var lowestRatedSubmissions = db.Messages.Where(a => a.Name == userName)
                     .OrderBy(s => s.Likes - s.Dislikes)
                     .Take(5)
-                    .ToList();                
+                    .ToList();
 
                 userStatsModel.TopSubversesUserContributedTo = subverses;
                 userStatsModel.LinkSubmissionsSubmitted = linkSubmissionsCount;
@@ -605,6 +605,16 @@ namespace Whoaverse.Utils
                 {
                     return false;
                 };
+            }
+        }
+
+        // check if a given user is registered as a partner
+        public static bool IsUserPartner(string userName)
+        {
+            using (UserManager<WhoaVerseUser> tmpUserManager = new UserManager<WhoaVerseUser>(new UserStore<WhoaVerseUser>(new ApplicationDbContext())))
+            {
+                var tmpuser = tmpUserManager.FindByName(userName);
+                return (tmpuser != null) ? tmpuser.Partner : false;
             }
         }
 

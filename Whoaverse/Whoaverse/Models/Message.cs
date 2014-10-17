@@ -45,5 +45,7 @@ namespace Whoaverse.Models
         public virtual ICollection<Votingtracker> Votingtrackers { get; set; }
         public virtual Subverse Subverses { get; set; }
         public virtual Stickiedsubmission Stickiedsubmission { get; set; }
+        public virtual Message Messages1 { get; set; }
+        public virtual Message Message1 { get; set; }
     }
 }

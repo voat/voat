@@ -91,7 +91,7 @@ namespace Whoaverse.Controllers
                     smtp.Host = "whoaverse.com";
                     smtp.Port = 25;
 
-                    //format CLA email
+                    // format CLA email
                     sb.Append("Full name: " + claModel.FullName);
                     sb.Append(Environment.NewLine);
                     sb.Append("Email: " + claModel.Email);
@@ -111,7 +111,7 @@ namespace Whoaverse.Controllers
 
                     msg.Body = sb.ToString();
 
-                    //send the email with CLA data
+                    // send the email with CLA data
                     smtp.Send(msg);
                     msg.Dispose();
                     ViewBag.SelectedSubverse = string.Empty;
@@ -373,7 +373,6 @@ namespace Whoaverse.Controllers
                 {
                     return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
                 }
-
             }
             else
             {
@@ -439,7 +438,7 @@ namespace Whoaverse.Controllers
                     existingSubmission.LastEditDate = System.DateTime.Now;
                     db.SaveChanges();
 
-                    //parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
+                    // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
                     string formattedSubmission = Utils.Formatting.FormatMessage(model.SubmissionContent);
                     return Json(new { response = formattedSubmission });
                 }

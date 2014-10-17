@@ -223,6 +223,23 @@
           <Property Name="authorized_submitters_only" Type="bit" Nullable="false" />
           <Property Name="anonymized_mode" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="Survey">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Interested_in_content_creation" Type="bit" Nullable="false" />
+          <Property Name="Interested_in_commenting" Type="bit" Nullable="false" />
+          <Property Name="Interested_in_donating_earnings" Type="bit" Nullable="false" />
+          <Property Name="Preferred_payment_method" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Interested_in_bitcoin_payout" Type="bit" Nullable="false" />
+          <Property Name="Country" Type="nvarchar" MaxLength="50" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" />
+          <Property Name="Date_submitted" Type="smalldatetime" Nullable="false" />
+          <Property Name="Wants_to_be_contacted_at_service_launch" Type="bit" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Wants_to_subscribe_to_whoaverse_news" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="Userbadges">
           <Key>
             <PropertyRef Name="Id" />
@@ -289,6 +306,32 @@
             </Principal>
             <Dependent Role="Defaultsubverses">
               <PropertyRef Name="name" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
+          <End Role="Messages1" Type="Self.Messages" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Messages1">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="Subverse" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -389,6 +432,7 @@
           <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverseflairsettings" EntityType="Self.Subverseflairsettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userbadges" EntityType="Self.Userbadges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userpreferences" EntityType="Self.Userpreferences" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Votingtracker" EntityType="Self.Votingtracker" Schema="dbo" store:Type="Tables" />
@@ -403,6 +447,14 @@
           <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="Self.FK_Defaultsubverses_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
             <End Role="Defaultsubverses" EntitySet="Defaultsubverses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Messages" Association="Self.FK_Messages_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Messages1" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Subverses" Association="Self.FK_Messages_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Messages" EntitySet="Messages" />
           </AssociationSet>
           <AssociationSet Name="FK_Stickiedsubmissions_Messages" Association="Self.FK_Stickiedsubmissions_Messages">
             <End Role="Messages" EntitySet="Messages" />
@@ -487,6 +539,8 @@
           <Property Name="FlairCss" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Stickiedsubmission" Relationship="whoaverseModel.FK_Stickiedsubmissions_Messages" FromRole="Message" ToRole="Stickiedsubmission" />
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Messages1" Relationship="whoaverseModel.FK_Messages_Messages" FromRole="Message" ToRole="Message1" />
+          <NavigationProperty Name="Message1" Relationship="whoaverseModel.FK_Messages_Messages" FromRole="Message1" ToRole="Message" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -597,6 +651,11 @@
             <End Role="Stickiedsubmission" EntitySet="Stickiedsubmissions" />
           </AssociationSet>
           <EntitySet Name="Bannedusers" EntityType="whoaverseModel.Banneduser" />
+          <EntitySet Name="Surveys" EntityType="whoaverseModel.Survey" />
+          <AssociationSet Name="FK_Messages_Messages" Association="whoaverseModel.FK_Messages_Messages">
+            <End Role="Message" EntitySet="Messages" />
+            <End Role="Message1" EntitySet="Messages" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -895,6 +954,35 @@
           <Property Name="Reason" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Banned_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="Survey">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Interested_in_content_creation" Type="Boolean" Nullable="false" />
+          <Property Name="Interested_in_commenting" Type="Boolean" Nullable="false" />
+          <Property Name="Interested_in_donating_earnings" Type="Boolean" Nullable="false" />
+          <Property Name="Preferred_payment_method" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Interested_in_bitcoin_payout" Type="Boolean" Nullable="false" />
+          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Date_submitted" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Wants_to_be_contacted_at_service_launch" Type="Boolean" Nullable="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Wants_to_subscribe_to_whoaverse_news" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Messages_Messages">
+          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="1" />
+          <End Type="whoaverseModel.Message" Role="Message1" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Message">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Message1">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1167,6 +1255,24 @@
                 <ScalarProperty Name="Date_banned" ColumnName="Date_banned" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Surveys">
+            <EntityTypeMapping TypeName="whoaverseModel.Survey">
+              <MappingFragment StoreEntitySet="Survey">
+                <ScalarProperty Name="Wants_to_subscribe_to_whoaverse_news" ColumnName="Wants_to_subscribe_to_whoaverse_news" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Wants_to_be_contacted_at_service_launch" ColumnName="Wants_to_be_contacted_at_service_launch" />
+                <ScalarProperty Name="Date_submitted" ColumnName="Date_submitted" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="Interested_in_bitcoin_payout" ColumnName="Interested_in_bitcoin_payout" />
+                <ScalarProperty Name="Preferred_payment_method" ColumnName="Preferred_payment_method" />
+                <ScalarProperty Name="Interested_in_donating_earnings" ColumnName="Interested_in_donating_earnings" />
+                <ScalarProperty Name="Interested_in_commenting" ColumnName="Interested_in_commenting" />
+                <ScalarProperty Name="Interested_in_content_creation" ColumnName="Interested_in_content_creation" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -17,6 +17,8 @@
 @{
     string ahrefTarget = "_self";
     Random rnd = new Random();
+    bool ratedAdult = false;
+    bool anonymizedSubverse = false;
 
     if (User.Identity.IsAuthenticated)
     {
@@ -28,10 +30,11 @@
 
     var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
 
-    bool ratedAdult = false;
+    
     if (Model.Subverses != null)
     {
         ratedAdult = Model.Subverses.rated_adult;
+        anonymizedSubverse = Model.Subverses.anonymized_mode;
     }
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
@@ -107,7 +110,7 @@
             }
             else
             {
-                if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                if (Model.Anonymized || anonymizedSubverse)
                 {
                     <p class="tagline">
                         submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="#" class="author may-blank">@Model.Id</a>
