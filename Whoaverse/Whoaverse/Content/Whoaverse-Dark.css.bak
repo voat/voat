@@ -2317,14 +2317,6 @@ textarea.form-control {
         padding: 6px;
     }
 
-        .logged-in {
-            margin: 0;
-        }
-
-        .logged-out {
-            margin: 0;
-        }
-
     #header-banner {
         font-size: 13px;
         height: 64px;
@@ -2337,20 +2329,6 @@ textarea.form-control {
 }
 
 @media ( max-width: 870px ) {
-    .logged-in {
-        background: none;
-        border: 0;
-        border-radius: 0;
-        padding: 0;
-    }
-
-    .logged-out {
-        background: none;
-        border: 0;
-        border-radius: 0;
-        padding: 0;
-    }
-
     .side {
         display: none;
     }
@@ -2377,6 +2355,14 @@ textarea.form-control {
 }
 
 @media ( max-width: 750px ) {
+    .logged-in {
+                margin: 0px 0 0;
+            }
+
+            .logged-out {
+                margin: 0px 0 0;
+            }
+
     .pagename {
         display: none;
     }
@@ -2387,6 +2373,14 @@ textarea.form-control {
 }
 
 @media ( max-width: 725px ) {
+    .logged-in {
+                margin: 0px 0 0;
+            }
+
+            .logged-out {
+                margin: 0px 0 0;
+            }
+
     #about-main .container {
         margin-left: 20px;
         margin-right: 20px;
@@ -2394,6 +2388,14 @@ textarea.form-control {
 }
 
 @media ( max-width: 700px ) {
+    .logged-in {
+                margin: 0px 0 0;
+            }
+
+            .logged-out {
+                margin: 0px 0 0;
+            }
+
     #header-img {
         display: none;
     }
@@ -2453,6 +2455,14 @@ textarea.form-control {
 }
 
 @media ( max-width: 550px ) {
+    .logged-in {
+                margin: 0px 0 0;
+            }
+
+            .logged-out {
+                margin: 0px 0 0;
+            }
+
     .expando-button {
         float: right;
         height: 32px;
@@ -2534,6 +2544,14 @@ textarea.form-control {
 }
 
 @media ( max-width: 420px ) {
+    .logged-in {
+                margin: 0px 0 0;
+            }
+
+            .logged-out {
+                margin: 0px 0 0;
+            }
+
     .tabmenu li a {
         font-size: 12px;
         padding: 6px 4px;
