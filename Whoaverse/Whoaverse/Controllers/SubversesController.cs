@@ -32,9 +32,9 @@ namespace Whoaverse.Controllers
         Random rnd = new Random();
 
         // GET: sidebar for selected subverse
-        public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments, string name, DateTime? date, DateTime? lastEditDate, int? likes, int? dislikes, bool anonymized)
+        public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments, string name, DateTime? date, DateTime? lastEditDate, int? submissionId, int? likes, int? dislikes, bool anonymized)
         {
-            Subverse subverse = db.Subverses.Find(selectedSubverse);
+            Subverse subverse = db.Subverses.Find(selectedSubverse);            
 
             if (subverse != null)
             {
@@ -50,7 +50,8 @@ namespace Whoaverse.Controllers
                 {
                     if (anonymized || subverse.anonymized_mode)
                     {
-                        ViewBag.name = "Anonymous";
+                        ViewBag.name = submissionId.ToString();
+                        ViewBag.anonymized = true;
                     }
                     else
                     {

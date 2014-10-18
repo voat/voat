@@ -17,6 +17,8 @@
 
     Random rnd = new Random();
 
+    bool? anonymized = ViewBag.anonymized;
+
     if (totalVotes > 0)
     {
         percentageOfLove = Math.Round((ViewBag.likes / totalVotes) * 100, 2);
@@ -41,9 +43,18 @@
                 }
                 else
                 {
-                    <p class="h6">
-                        Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
-                    </p>
+                    if (anonymized == true)
+                    {
+                        <p class="h6">
+                            Posted by: <a href="#" class="author may-blank">@ViewBag.name</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="h6">
+                            Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
+                        </p>
+                    }
                 }
 
                 <p class="h6">
