@@ -91,6 +91,17 @@ label {
     font-size: 12px;
 }
 
+.alert-notice {
+    border-top: 1px solid;
+    padding: 15px;
+    margin-bottom: 20px;
+    background: none repeat scroll 0% 0% #292929;
+    border-width: 8px 1px 1px;
+    border-color: #5BACDE #222 #222;
+    color: #DFDFDF;
+    font-size: 12px;
+}
+
 .alert-singlethread {
     background: #444;
     border-radius: 3px;
