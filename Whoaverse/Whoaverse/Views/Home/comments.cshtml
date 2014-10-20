@@ -56,7 +56,7 @@ else if (!User.Identity.IsAuthenticated)
        submissionId = Model.Id,
        likes = Model.Likes,
        dislikes = Model.Dislikes,
-       anonymized = Model.Anonymized       
+       anonymized = Model.Anonymized
    })
     }
     <style type="text/css">
@@ -78,7 +78,7 @@ else if (!User.Identity.IsAuthenticated)
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
                 ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
-                @Html.Partial("_MessageSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints}, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("_MessageSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
 
             //type 2 = link submission
@@ -98,7 +98,7 @@ else if (!User.Identity.IsAuthenticated)
                     ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
                 }
 
-                @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints}, {"SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
         }
 
@@ -108,6 +108,7 @@ else if (!User.Identity.IsAuthenticated)
             @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
         }
 
+        <div class="horizontal-line"></div>
         <div class="menuarea">
             <div class="spacer">
                 <span class="dropdown-title lightdrop">sort by: </span>

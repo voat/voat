@@ -87,7 +87,7 @@ else if (!User.Identity.IsAuthenticated)
             }
 
             @foreach (var submission in Model)
-            {               
+            {
                 //type 2 = link
                 //type 1 = message
                 if (submission.Type == 1)
@@ -113,13 +113,14 @@ else if (!User.Identity.IsAuthenticated)
                 <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
                     <p class="parent"></p>
                     <span class="rank">@counter</span>
-                   
-                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })                    
+
+                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
                     @Html.Partial("_Submission", submission)
 
                     <div class="child"></div>
                     <div class="clearleft"><!--IE6fix--></div>
                 </div>
+                <div class="horizontal-line"></div>
                 counter++;
             }
 

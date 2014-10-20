@@ -23,8 +23,7 @@
 
 @using (Html.BeginForm("submitcomment", "Home"))
 {
-    @Html.AntiForgeryToken()
-    <hr />
+    @Html.AntiForgeryToken()    
     @Html.ValidationSummary(true)
 
     <!-- Setup default values -->
@@ -36,6 +35,5 @@
         @Html.ValidationMessageFor(model => model.CommentContent)
     </div>
     <input type="submit" value="Submit" class="btn-whoaverse-medium" />
+    <div class="spacer"></div>
 }
-
-<hr />

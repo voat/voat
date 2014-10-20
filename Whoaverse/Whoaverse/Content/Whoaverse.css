@@ -54,6 +54,10 @@ label {
     font-weight: normal;
 }
 
+.horizontal-line {
+    border-bottom: 1px solid #E9E9E9;
+}
+
 /* Alerts */
 
 .alert {
@@ -298,10 +302,6 @@ input, button, select, textarea {
     text-align: center;
 }
 
-.subreddit {
-    margin: 0;
-}
-
 .well.subversedescriptionbox {
     background: #F6F6F6;
     border: 1px solid #E2E2E2;
@@ -398,25 +398,6 @@ input, button, select, textarea {
         font-weight: normal;
         margin: 0 2px;
     }
-
-.usertable .moderator.toggle .main:before, .titlebox .leavemoderator:before,
-.titlebox form.leavecontributor-button:before, .icon-menu .reddit-edit:before,
-.icon-menu .reddit-traffic:before, .icon-menu .reddit-reported:before,
-.icon-menu .reddit-spam:before, .icon-menu .wikiaction-pages:before,
-.icon-menu .wikiaction-revisions:before, .icon-menu .reddit-ban:before,
-.icon-menu .reddit-flair:before, .icon-menu .reddit-moderationlog:before,
-.icon-menu .reddit-unmoderated:before, .icon-menu .reddit-moderators:before,
-.icon-menu .moderator-mail:before, .icon-menu .reddit-contributors:before,
-.icon-menu .reddit-modqueue:before, .giftgold a:before, .gilded-link a:before,
-.infobar.gold:before, .gold-form h1.goldgift:before, .users-online:before,
-.notice-taken:before, .notice-available:before, .info-notice:before {
-    content: " ";
-    display: block;
-    float: left;
-    height: 16px;
-    margin-right: 5px;
-    width: 16px;
-}
 
 /* User profile stats */
 
@@ -1544,8 +1525,7 @@ ul.content {
 /* ! Sitetable : Link
     ------------------------------------------------------------------------------------ */
 
-.link {
-    border-bottom: 1px solid #E9E9E9;
+.link {    
     margin: 0;
     padding: 12px 0;
 }
@@ -1828,18 +1808,18 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         }
 
 /* ! Sitetable : Link : Tag line
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
-.link a.subreddit {
+.link a.subverse {
     color: #6D6D6D;
     font-weight: bold;
 }
 
-    .link a.subreddit:visited {
+    .link a.subverse:visited {
         color: #6D6D6D;
     }
 
-    .link a.subreddit:hover {
+    .link a.subverse:hover {
         color: #4AABE7;
         text-decoration: none;
     }

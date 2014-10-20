@@ -105,7 +105,7 @@
             {
                 <p class="tagline">
                     submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by
-                    <span class="userattrs">[deleted]</span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                    <span class="userattrs">[deleted]</span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
                 </p>
             }
             else
@@ -114,7 +114,7 @@
                 {
                     <p class="tagline">
                         submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="#" class="author may-blank">@Model.Id</a>
-                        <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                        <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
                         <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
                     </p>
                 }
@@ -122,7 +122,7 @@
                 {
                     <p class="tagline">
                         submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
-                        <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subreddit hover may-blank">@Model.Subverse</a>
+                        <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
                         <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
                     </p>
                 }
