@@ -24,12 +24,9 @@
 
         <div class="row nomargin">
             <div class="well col-md-12">
-
-                <h1>Your public profile</h1>
-                <hr />
+                <div class="alert-title">Your public profile</div>
                 <p class="h6"><a href="/user/@User.Identity.Name">Click here</a> to view your public profile.</p>
-                <h1>User preferences</h1>
-                <hr />
+                <div class="alert-title">User preferences</div>
                 <h2>You can use this form to customize your WhoaVerse experience.</h2>
 
                 @if (ViewBag.HasLocalPassword)
@@ -39,8 +36,7 @@
                     </section>
                 }
 
-                <h1>Change your password</h1>
-                <hr />
+                <div class="alert-title">Change your password</div>
                 <h2>You can use this form to change your password.</h2>
                 <br />
 
@@ -55,8 +51,7 @@
                     @Html.Partial("_SetPasswordPartial")
                 }
 
-                <h1>Delete your account</h1>
-                <hr />
+                <div class="alert-title">Delete your account</div>
                 <h2>You can use this form to permanently delete your account.</h2>
                 <br />
 

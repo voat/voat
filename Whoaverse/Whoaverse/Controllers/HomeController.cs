@@ -551,10 +551,13 @@ namespace Whoaverse.Controllers
                 ViewBag.action = "discussion";
             }
 
-            if (!selectedsubverse.Equals("all", StringComparison.OrdinalIgnoreCase))
+            if (selectedsubverse != null)
             {
-                ViewBag.selectedSubverse = selectedsubverse;
-            }
+                if (!selectedsubverse.Equals("all", StringComparison.OrdinalIgnoreCase))
+                {
+                    ViewBag.selectedSubverse = selectedsubverse;
+                }
+            }            
 
             return View();
         }

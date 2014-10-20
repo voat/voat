@@ -114,6 +114,16 @@ label {
     font-size: 12px;
 }
 
+.alert-title {
+    border-bottom: 2px solid;
+    padding: 2px;
+    margin-bottom: 20px;
+    border-color: #5BACDE #4AABE7 #4AABE7;
+    color: #404040;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+}
+
 /* Circled numbered steps */
 
 .circle-step {
@@ -261,9 +271,9 @@ input, button, select, textarea {
     background: #F6F6F6;
     border: 1px solid #E8E8E8;
     border-radius: 2px;
-    color: #FE5E5E;
+    color: #4AABE7;
     display: inline-block;
-    font-weight: normal;
+    font-weight: bold;
     min-width: 40px;
     padding: 3px;
     text-align: center;
@@ -1495,12 +1505,15 @@ ul.content {
 
 /* ! Sitetable
 -------------------------------------------------------------------------------- */
+.content-no-margin {
+    margin: 0 10px 0 10px;
+    z-index: 1;
+}
 
 .content {
     margin: 0 320px 0 10px;
     z-index: 1;
 }
-
     .content > br {
         display: none;
     }

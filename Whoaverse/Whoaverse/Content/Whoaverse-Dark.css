@@ -102,6 +102,16 @@ label {
     font-size: 12px;
 }
 
+.alert-title {
+    border-bottom: 2px solid;
+    padding: 2px;
+    margin-bottom: 20px;    
+    border-color: #5BACDE #4AABE7 #4AABE7;
+    color: #DFDFDF;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+}
+
 .alert-singlethread {
     background: #444;
     border-radius: 3px;
@@ -259,9 +269,9 @@ input, button, select, textarea {
     background: #292929;
     border: 1px solid #222;
     border-radius: 2px;
-    color: #CC4C4C;
+    color: #438DB7;
     display: inline-block;
-    font-weight: normal;
+    font-weight: bold;
     min-width: 40px;
     padding: 3px;
     text-align: center;
@@ -1499,6 +1509,11 @@ pre, code {
 
 /* ! Sitetable
 -------------------------------------------------------------------------------- */
+
+.content-no-margin {
+    margin: 0 10px 0 10px;
+    z-index: 1;
+}
 
 .content {
     margin: 0 320px 0 10px;

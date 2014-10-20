@@ -20,11 +20,8 @@
 @using Whoaverse.Utils;
 
 <div id="container">
-
-    <div class="content" role="main">
-
-        <h2>Comment history (most recent 200 comments) for @ViewBag.userid. To see submissions, click the submitted tab.</h2>
-        <hr />
+    <div class="content-no-margin" role="main">
+        <div class="alert-title">Comment history (most recent 200 comments) for @ViewBag.userid. To see submissions, click the submitted tab.</div>
 
         @foreach (var submission in Model)
         {

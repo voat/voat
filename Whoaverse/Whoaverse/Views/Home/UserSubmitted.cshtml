@@ -14,24 +14,20 @@
 
 @{
     ViewBag.Title = "Submission history (most recent 200 submissions) for " + @ViewBag.userid;
-
     //(current page number -1)*25
     int currentPageNumber = Model.PageNumber;
     int counterCont = (currentPageNumber - 1) * 25;
-
     int counter = counterCont + 1;
     string submissionClass = "";
-
 }
 
 @using PagedList.Mvc;
 @using Whoaverse.Utils;
 
 <div id="container">
-    <div class="content" role="main">
+    <div class="content-no-margin" role="main">
 
-        <h2>Submission history (most recent 200 submissions) for @ViewBag.userid. To see comments, click the comments tab.</h2>
-        <hr />
+        <div class="alert-title">Submission history (most recent 200 submissions) for @ViewBag.userid. To see comments, click the comments tab.</div>
 
         @foreach (var submission in Model)
         {
@@ -45,15 +41,11 @@
             {
                 submissionClass = "";
             }
-
             <div class="submission id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
-
                 @Html.Partial("Userprofile/_UserProfileSubmission", submission)
-
                 <div class="child"></div>
                 <div class="clearleft"><!--IE6fix--></div>
             </div>
-
         }
 
         @if (Model.PageCount > 1)

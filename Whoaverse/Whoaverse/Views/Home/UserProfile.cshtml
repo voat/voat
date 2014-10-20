@@ -30,9 +30,7 @@
     @Html.Partial("_SidebarUserInfo")
 
     <div class="content" role="main">
-
-        <h2>Profile overview for @ViewBag.userid. To see comments, click the comments tab.</h2>
-        <hr />
+        <div class="alert-title">Profile overview for @ViewBag.userid. To see comments, click the comments tab.</div>
         <div class="userstats">
             <div class="userstats-heading-1">Submission distribution</div>
             <div class="userstats-body">
@@ -119,7 +117,6 @@
                     {
                         <p>This user made no submissions.</p>
                     }
-
                 }
             </div>
         </div>
@@ -142,9 +139,9 @@
                                     }
                                     else
                                     {
-                                        <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Linkdescription</a><b> by</b>
+                                        <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Linkdescription</a>
                                     }
-                                    by <a href="/user/@item.Message.Name" class="userstats-submission-author">@item.Message.Name</a> in <a href="/v/@item.Message.Subverse" class="userstats-submission-subverse">@item.Message.Subverse</a>
+                                    submitted by <a href="/user/@item.Message.Name">@item.Message.Name</a> to <a href="/v/@item.Message.Subverse" class="userstats-submission-subverse">@item.Message.Subverse</a>
                                 </p>
 
                                 <div class="entry unvoted">
@@ -160,7 +157,7 @@
                                             @{
                             string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
                                             }
-                                            @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                                            <b>@ViewBag.userid</b> wrote: @Html.Raw(@Formatting.FormatMessage(trimmedComment))
                                         </div>
                                     </div>
                                     <ul class="flat-list buttons">
@@ -189,17 +186,16 @@
                             var score = item.Likes - item.Dislikes;
 
                             <div class="thread comment" data-ups="@item.Likes" data-downs="@item.Dislikes">
-                                <p>
-                                    @if (item.Message.Type == 1)
-                                    {
-                                        <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Title</a>
-                                    }
-                                    else
-                                    {
-                                        <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Linkdescription</a><b> by</b>
-                                    }
-                                    by <a href="/user/@item.Message.Name" class="userstats-submission-author">@item.Message.Name</a> in <a href="/v/@item.Message.Subverse" class="userstats-submission-subverse">@item.Message.Subverse</a>
-                                </p>
+
+                                @if (item.Message.Type == 1)
+                                {
+                                    <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Title</a>
+                                }
+                                else
+                                {
+                                    <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Linkdescription</a>
+                                }
+                                submitted by <a href="/user/@item.Message.Name">@item.Message.Name</a> to <a href="/v/@item.Message.Subverse" class="userstats-submission-subverse">@item.Message.Subverse</a>
 
                                 <div class="entry unvoted">
                                     <p class="tagline">
@@ -214,7 +210,7 @@
                                             @{
                             string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
                                             }
-                                            @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                                            <b>@ViewBag.userid</b> wrote: @Html.Raw(@Formatting.FormatMessage(trimmedComment))
                                         </div>
                                     </div>
                                     <ul class="flat-list buttons">
@@ -230,7 +226,6 @@
                     {
                         <p>This user made no comments.</p>
                     }
-
                 }
             </div>
         </div>
