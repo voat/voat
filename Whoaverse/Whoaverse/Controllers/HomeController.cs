@@ -784,7 +784,7 @@ namespace Whoaverse.Controllers
                     var userComments = from c in db.Comments.OrderByDescending(c => c.Date)
                                        where (c.Name.Equals(id) && c.Message.Anonymized == false) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
                                        select c;
-                    return View("UserComments", userComments.Take(200).ToPagedList(pageNumber, pageSize));
+                    return View("UserComments", userComments.ToPagedList(pageNumber, pageSize));
                 }
 
                 // show submissions                        
@@ -793,7 +793,7 @@ namespace Whoaverse.Controllers
                     var userSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
                                           where (b.Name.Equals(id) && b.Anonymized == false) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
                                           select b;
-                    return View("UserSubmitted", userSubmissions.Take(200).ToPagedList(pageNumber, pageSize));
+                    return View("UserSubmitted", userSubmissions.ToPagedList(pageNumber, pageSize));
                 }
 
                 // default, show overview
@@ -802,7 +802,7 @@ namespace Whoaverse.Controllers
                 var userDefaultSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
                                              where b.Name.Equals(id) && b.Anonymized == false
                                              select b;
-                return View("UserProfile", userDefaultSubmissions.Take(200).ToPagedList(pageNumber, pageSize));
+                return View("UserProfile", userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
             }
             else
             {
