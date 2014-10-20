@@ -564,7 +564,7 @@ namespace Whoaverse.Controllers
 
             try
             {
-                if (subversetoshow != "all")
+                if (!subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
                 {
                     // check if subverse exists, if not, send to a page not found error
                     Subverse subverse = db.Subverses.Find(subversetoshow);
@@ -853,7 +853,7 @@ namespace Whoaverse.Controllers
                     ViewBag.OnlineUsers = -1;
                 }
 
-                if (subversetoshow != "all")
+                if (!subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
                 {
                     // check if subverse exists, if not, send to a page not found error
                     Subverse subverse = db.Subverses.Find(subversetoshow);
@@ -1000,7 +1000,7 @@ namespace Whoaverse.Controllers
             {
                 // fetch a random subverse with minimum number of subscribers
                 var subverse = from subverses in db.Subverses
-                          .Where(s => s.subscribers > 10 && s.name != "all")
+                          .Where(s => s.subscribers > 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase))
                                select subverses;
 
                 int submissionCount = 0;

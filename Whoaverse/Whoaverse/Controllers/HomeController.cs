@@ -551,7 +551,7 @@ namespace Whoaverse.Controllers
                 ViewBag.action = "discussion";
             }
 
-            if (selectedsubverse != "all")
+            if (!selectedsubverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
                 ViewBag.selectedSubverse = selectedsubverse;
             }
@@ -595,7 +595,7 @@ namespace Whoaverse.Controllers
             {
                 // check if subverse exists
                 var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
-                if (targetSubverse != null && message.Subverse != "all")
+                if (targetSubverse != null && !message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
                 {
                     // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
                     if (targetSubverse.authorized_submitters_only)
