@@ -21,6 +21,7 @@
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
     var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
+    bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 }
 
 <!-- Link flair select modal placeholder -->
@@ -51,7 +52,7 @@
                 }
                 else
                 {
-                    if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                    if (Model.Anonymized || subverseAnonymized == true)
                     {
                         <span class="userattrs">
                             <a href="#" class="author may-blank">@Model.Id</a>
@@ -63,11 +64,8 @@
                             <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
                         </span>
                     }
-
                 }
-
             </p>
-
             @if (!Model.MessageContent.IsEmpty())
             {
                 <div class="expando">

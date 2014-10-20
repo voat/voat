@@ -137,6 +137,7 @@ namespace Whoaverse.Controllers
             if (subverse != null)
             {
                 ViewBag.SelectedSubverse = subverse.name;
+                ViewBag.SubverseAnonymized = subverse.anonymized_mode;
 
                 if (startingcommentid != null)
                 {
