@@ -112,6 +112,25 @@ label {
     font-size: 18px;
 }
 
+.alert-h1 {
+    border-bottom: 2px solid;
+    padding: 2px;
+    margin-bottom: 2px;
+    border-color: #5BACDE #4AABE7 #4AABE7;
+    color: #DFDFDF;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+}
+
+.alert-h2 {
+    border-bottom: 2px solid;
+    margin-bottom: 2px;
+    border-color: #5BACDE #4AABE7 #4AABE7;
+    color: #DFDFDF;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
 .alert-singlethread {
     background: #444;
     border-radius: 3px;
