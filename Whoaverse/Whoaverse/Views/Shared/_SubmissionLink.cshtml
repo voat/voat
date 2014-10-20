@@ -92,7 +92,7 @@
             <p class="title">
                 @if (Model.FlairLabel != null && Model.FlairCss != null)
                 {
-                    if (routeActiveSubverse != "" && !routeActiveSubverse.Equals("all", StringComparison.OrdinalIgnoreCase) && routeActiveSubverse != null)
+                    if (routeActiveSubverse != "" && routeActiveSubverse != "all" && routeActiveSubverse != null)
                     {
                         <span class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
                     }

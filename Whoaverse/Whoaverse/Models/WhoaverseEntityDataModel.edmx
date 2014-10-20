@@ -272,7 +272,9 @@
           <Property Name="Timestamp" Type="smalldatetime" />
         </EntityType>
         <Association Name="FK_Comments_Messages">
-          <End Role="Messages" Type="Self.Messages" Multiplicity="0..1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Comments" Type="Self.Comments" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Messages">
@@ -284,7 +286,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Commentvotingtracker_Comments">
-          <End Role="Comments" Type="Self.Comments" Multiplicity="1" />
+          <End Role="Comments" Type="Self.Comments" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Commentvotingtracker" Type="Self.Commentvotingtracker" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Comments">
@@ -306,18 +310,6 @@
             </Principal>
             <Dependent Role="Defaultsubverses">
               <PropertyRef Name="name" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Messages_Messages">
-          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
-          <End Role="Messages1" Type="Self.Messages" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="Messages">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Messages1">
-              <PropertyRef Name="Id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -447,10 +439,6 @@
           <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="Self.FK_Defaultsubverses_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
             <End Role="Defaultsubverses" EntitySet="Defaultsubverses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Messages_Messages" Association="Self.FK_Messages_Messages">
-            <End Role="Messages" EntitySet="Messages" />
-            <End Role="Messages1" EntitySet="Messages" />
           </AssociationSet>
           <AssociationSet Name="FK_Messages_Subverses" Association="Self.FK_Messages_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
