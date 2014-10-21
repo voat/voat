@@ -420,26 +420,33 @@ namespace Whoaverse
                 defaults: new { controller = "AjaxGateway", action = "TitleFromUri" }
             );
 
-            // ajaxhelpers/applylinkflair
+            // ajaxhelpers/autocompletesubversename
+            routes.MapRoute(
+                name: "AutocompleteSubverseName",
+                url: "ajaxhelpers/autocompletesubversename",
+                defaults: new { controller = "AjaxGateway", action = "AutocompleteSubverseName" }
+            );
+
+            // submissions/applylinkflair
             routes.MapRoute(
                 name: "ApplyLinkFlair",
                 url: "submissions/applylinkflair/{submissionId}/{flairId}",
                 defaults: new { controller = "Submissions", action = "ApplyLinkFlair" }
             );
 
-            // ajaxhelpers/clearlinkflair
+            // submissions/clearlinkflair
             routes.MapRoute(
                 name: "ClearLinkFlair",
                 url: "submissions/clearlinkflair/{submissionId}",
                 defaults: new { controller = "Submissions", action = "ClearLinkFlair" }
             );
 
-            // ajaxhelpers/togglesticky
+            // submissions/togglesticky
             routes.MapRoute(
                 name: "ToggleSticky",
                 url: "submissions/togglesticky/{submissionId}",
                 defaults: new { controller = "Submissions", action = "ToggleSticky" }
-            );
+            );            
 
             // p/partnerprogram
             routes.MapRoute(

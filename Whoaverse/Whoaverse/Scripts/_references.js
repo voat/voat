@@ -1,4 +1,5 @@
-﻿/// <autosync enabled="true" />
+﻿/// <reference path="jquery-ui-1.11.1.js" />
+/// <autosync enabled="true" />
 /// <reference path="bootstrap.js" />
 /// <reference path="jquery-2.1.1.js" />
 /// <reference path="jquery.unobtrusive-ajax.js" />

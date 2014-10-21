@@ -18,6 +18,33 @@ All Rights Reserved.
  * - Atko
  */
 
+$(document).ready(function () {
+    // activate bootsrap popovers
+    $('[data-toggle="popover"]').popover({ trigger: 'hover', 'placement': 'top' });
+
+    // prepare auth tokens
+    securityToken = $('[name=__RequestVerificationToken]').val();
+    $('body').bind('ajaxSend', function (elm, xhr, s) {
+        if (s.type == 'POST' && typeof securityToken != 'undefined') {
+            if (s.data.length > 0) {
+                s.data += "&__RequestVerificationToken=" + encodeURIComponent(securityToken);
+            } else {
+                s.data = "__RequestVerificationToken=" + encodeURIComponent(securityToken);
+            }
+        }
+    });
+
+    $('.whoaSubscriptionMenu > li').bind('mouseover', openSubMenu);
+    $('.whoaSubscriptionMenu > li').bind('mouseout', closeSubMenu);
+    function openSubMenu() { $(this).find('ul').css('visibility', 'visible'); };
+    function closeSubMenu() { $(this).find('ul').css('visibility', 'hidden'); };
+
+    $('#Subverse').autocomplete(
+        {
+            source: '/ajaxhelpers/autocompletesubversename'
+        });
+});
+
 function click_voting() {
     $(this).toggleClass("arrow upmod login-required")
 }
@@ -276,28 +303,6 @@ function submitCommentDownVote(commentid) {
         url: "/votecomment/" + commentid + "/-1"
     });
 }
-
-$(document).ready(function () {
-    // activate bootsrap popovers
-    $('[data-toggle="popover"]').popover({ trigger: 'hover', 'placement': 'top' });
-
-    // prepare auth tokens
-    securityToken = $('[name=__RequestVerificationToken]').val();
-    $('body').bind('ajaxSend', function (elm, xhr, s) {
-        if (s.type == 'POST' && typeof securityToken != 'undefined') {
-            if (s.data.length > 0) {
-                s.data += "&__RequestVerificationToken=" + encodeURIComponent(securityToken);
-            } else {
-                s.data = "__RequestVerificationToken=" + encodeURIComponent(securityToken);
-            }
-        }
-    });
-
-    $('.whoaSubscriptionMenu > li').bind('mouseover', openSubMenu);
-    $('.whoaSubscriptionMenu > li').bind('mouseout', closeSubMenu);
-    function openSubMenu() { $(this).find('ul').css('visibility', 'visible'); };
-    function closeSubMenu() { $(this).find('ul').css('visibility', 'hidden'); };
-});
 
 // append a comment reply form to calling area while preventing multiple appends
 function reply(parentcommentid, messageid) {
@@ -821,3 +826,17 @@ function toggleSticky(messageId) {
         }
     });
 }
+
+// jquery UI binding for subverse name autocomplete textbox
+//$(function () {
+//    $("#Subverse").autocomplete({
+//        source: "/ajaxhelpers/autocompletesubversename",
+//        minLength: 3,
+//        select: function (event, ui) {
+//            if (ui.item) {
+//                $("#Subverse").val(ui.item.value);
+//                $("form").submit();
+//            }
+//        }
+//    });
+//});

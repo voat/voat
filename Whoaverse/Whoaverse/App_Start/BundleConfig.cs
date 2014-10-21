@@ -10,6 +10,7 @@ namespace Whoaverse
         {
             bundles.Add(new ScriptBundle("~/bundles/whoaverse").Include(
                         "~/Scripts/jquery-{version}.js",
+                        "~/Scripts/jquery-ui-{version}.js",
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*",
                         "~/Scripts/whoaverse.js"

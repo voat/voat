@@ -12,6 +12,7 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -27,7 +28,7 @@ namespace Whoaverse.Controllers
         // GET: MessageContent
         public ActionResult MessageContent(int? messageId)
         {
-            var message = db.Messages.Find(messageId);            
+            var message = db.Messages.Find(messageId);
 
             if (message != null)
             {
@@ -39,7 +40,7 @@ namespace Whoaverse.Controllers
                 {
                     message.MessageContent = "This message only has a title.";
                     return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", message);
-                }                
+                }
             }
             else
             {
@@ -95,6 +96,27 @@ namespace Whoaverse.Controllers
         {
             string uri = Request.Params["uri"];
             return Whoaverse.Utils.UrlUtility.GetTitleFromUri(uri);
+        }
+
+        // GET: subverse names containing search term (used for autocomplete on new submission views)
+        public JsonResult AutocompleteSubverseName(string term)
+        {
+            List<string> resultList = new List<string>();
+
+            var subverseNameSuggestions = db.Subverses
+                .Where(s => s.name.ToLower().StartsWith(term))
+                .Take(10).ToArray();
+
+            // jquery UI doesn't play nice with key value pairs so we have to build a simple string array
+            if (subverseNameSuggestions.Count() > 0)
+            {
+                foreach (var item in subverseNameSuggestions)
+                {
+                    resultList.Add(item.name);
+                }
+            }
+
+            return Json(resultList, JsonRequestBehavior.AllowGet);
         }
     }
 }
