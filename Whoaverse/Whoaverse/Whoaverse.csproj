@@ -347,6 +347,7 @@
     <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchSubverseViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubmissionViewModel.cs" />
     <Compile Include="Models\ViewModels\UserStatsModel.cs" />
     <Compile Include="Models\ViewModels\SubverseLinkFlairViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseModeratorViewModel.cs" />
@@ -684,6 +685,8 @@
     <Content Include="Views\Partner\PartnerProgramInformation.cshtml" />
     <Content Include="Views\Partner\PartnerIntentRegistration.cshtml" />
     <Content Include="Views\Partner\PartnerProgramIntentSent.cshtml" />
+    <Content Include="Views\Shared\Submissions\_SubmissionFlatListButtons.cshtml" />
+    <Content Include="Views\Shared\Submissions\FlatListButtons\_FlatListButtonDelete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

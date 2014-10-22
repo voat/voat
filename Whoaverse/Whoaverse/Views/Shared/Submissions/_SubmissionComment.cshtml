@@ -28,6 +28,10 @@
     var singleComment = from c in Model.Comments where c.Id == commentId select c;
     var commentModel = singleComment.FirstOrDefault();
 
+    Whoaverse.Models.ViewModels.SubmissionViewModel submissionViewModel = new Whoaverse.Models.ViewModels.SubmissionViewModel();
+    submissionViewModel.CommentModel = commentModel;
+    submissionViewModel.SubmissionModel = Model;
+
     //check if thread should be hidden
     bool parentIsHidden = Convert.ToBoolean(ViewData["parentIsHidden"]);
     bool childTohiddenParent = Convert.ToBoolean(ViewData["childTohiddenParent"]);
@@ -212,72 +216,7 @@
             </div>
 
         </form>
-        <ul class="flat-list buttons">
-            @if (commentModel.Name != "deleted")
-            {
-                <li class="first">
-                    <a href="/v/@Model.Subverse/comments/@commentModel.MessageId/@commentModel.Id" class="bylink" rel="nofollow">permalink</a>
-                </li>
-            }
-
-            @if (User.Identity.IsAuthenticated)
-            {
-                if (User.Identity.Name == commentAuthor)
-                {
-                    <li>
-                        <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @commentModel.MessageId)">edit</a>
-                    </li>
-                    <li>
-                        <form class="toggle del-button " action="#" method="get">
-                            <input class="active" name="executed" value="deleted" type="hidden">
-                            <span class="option main active">
-                                <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(@commentId)">delete</a>
-                            </span>
-                            <span class="option error">
-                                are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@commentId)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(@commentId)">no</a>
-                            </span>
-                        </form>
-                    </li>
-                }
-                else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentModel.Message.Subverse))
-                {
-                    <li>
-                        <form class="toggle del-button " action="#" method="get">
-                            <input class="active" name="executed" value="deleted" type="hidden">
-                            <span class="option main active">
-                                <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(@commentId)">delete</a>
-                            </span>
-                            <span class="option error">
-                                are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@commentId)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(@commentId)">no</a>
-                            </span>
-                        </form>
-                    </li>
-                }
-                else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, commentModel.Message.Subverse))
-                {
-                    <li>
-                        <form class="toggle del-button " action="#" method="get">
-                            <input class="active" name="executed" value="deleted" type="hidden">
-                            <span class="option main active">
-                                <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(@commentId)">delete</a>
-                            </span>
-                            <span class="option error">
-                                are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@commentId)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(@commentId)">no</a>
-                            </span>
-                        </form>
-                    </li>
-                }
-
-                if (commentModel.Name != "deleted")
-                {
-                    <li>
-                        <a class="" href="javascript:void(0)" onclick="return reply(@commentId, @commentModel.MessageId)">reply</a>
-                    </li>
-                }
-
-            }
-
-        </ul>
+        @Html.Partial("~/Views/Shared/Submissions/_SubmissionFlatListButtons.cshtml", submissionViewModel)
     </div>
 </div>
 
