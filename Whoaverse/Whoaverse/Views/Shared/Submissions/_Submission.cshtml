@@ -23,12 +23,12 @@
     //type 2 = urls
     if (Model.Type == 2)
     {
-        @Html.Partial("_SubmissionLink", Model)
+        @Html.Partial("~/Views/Shared/Submissions/_SubmissionLink.cshtml", Model)
     }
     //type 1 = message
     else
     {
-        @Html.Partial("_SubmissionSelf", Model)
+        @Html.Partial("~/Views/Shared/Submissions/_SubmissionSelf.cshtml", Model)
     }
 
 }

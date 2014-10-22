@@ -72,7 +72,7 @@
                     <span class="rank">@counter</span>
 
                     @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })                    
-                    @Html.Partial("_Submission", submission)
+                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                     <div class="child"></div>
                     <div class="clearleft"><!--IE6fix--></div>

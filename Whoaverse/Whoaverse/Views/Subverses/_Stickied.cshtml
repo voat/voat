@@ -13,7 +13,7 @@
     <span class="rank"></span>
 
     @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })    
-    @Html.Partial("_StickiedSubmission", Model)
+    @Html.Partial("~/Views/Shared/Submissions/_StickiedSubmission.cshtml", Model)
 
     <div class="child"></div>
     <div class="clearleft"><!--IE6fix--></div>

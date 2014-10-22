@@ -73,7 +73,7 @@ namespace Whoaverse.Controllers
                         ViewBag.OnlineUsers = -1;
                     }
 
-                    return PartialView("_SidebarComments", subverse);
+                    return PartialView("~/Views/Shared/Sidebars/_SidebarComments.cshtml", subverse);
                 }
                 else
                 {
@@ -112,7 +112,7 @@ namespace Whoaverse.Controllers
                     ViewBag.OnlineUsers = -1;
                 }
 
-                return PartialView("_Sidebar", subverse);
+                return PartialView("~/Views/Shared/Sidebars/_Sidebar.cshtml", subverse);
             }
             else
             {

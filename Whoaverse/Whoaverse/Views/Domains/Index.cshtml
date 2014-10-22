@@ -45,7 +45,7 @@
 
 <div id="container">
     @{
-        @Html.Partial("_SidebarFrontpage")
+        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
         if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
         {
             <div class="infobar welcome" style="display: block;">
@@ -93,7 +93,7 @@
                     <span class="rank">@counter</span>                    
 
                     @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })                    
-                    @Html.Partial("_Submission", submission)
+                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                     <div class="child"></div>
                     <div class="clearleft"><!--IE6fix--></div>
