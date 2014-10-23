@@ -826,17 +826,3 @@ function toggleSticky(messageId) {
         }
     });
 }
-
-// jquery UI binding for subverse name autocomplete textbox
-//$(function () {
-//    $("#Subverse").autocomplete({
-//        source: "/ajaxhelpers/autocompletesubversename",
-//        minLength: 3,
-//        select: function (event, ui) {
-//            if (ui.item) {
-//                $("#Subverse").val(ui.item.value);
-//                $("form").submit();
-//            }
-//        }
-//    });
-//});

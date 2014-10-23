@@ -455,6 +455,7 @@
     <Content Include="Graphics\arrow-upvoted.png" />
     <Content Include="Graphics\Badges\admin.png" />
     <Content Include="Graphics\Badges\alpha_user.png" />
+    <Content Include="Graphics\Badges\mysteriouscake.png" />
     <Content Include="Graphics\Badges\contributor.png" />
     <Content Include="Graphics\Badges\css_guru.png" />
     <Content Include="Graphics\Badges\developer.png" />
@@ -685,8 +686,9 @@
     <Content Include="Views\Partner\PartnerProgramInformation.cshtml" />
     <Content Include="Views\Partner\PartnerIntentRegistration.cshtml" />
     <Content Include="Views\Partner\PartnerProgramIntentSent.cshtml" />
-    <Content Include="Views\Shared\Submissions\_SubmissionFlatListButtons.cshtml" />
-    <Content Include="Views\Shared\Submissions\FlatListButtons\_FlatListButtonDelete.cshtml" />
+    <Content Include="Views\Shared\Comments\FlatListButtons\_CommentFlatListButtons.cshtml" />
+    <Content Include="Views\Shared\Comments\FlatListButtons\_FlatListButtonDelete.cshtml" />
+    <Content Include="Views\Shared\Comments\FlatListButtons\_FlatListButtonReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

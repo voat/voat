@@ -33,15 +33,15 @@
                 <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @Model.CommentModel.MessageId)">edit</a>
             </li>
 
-            @Html.Partial("~/Views/Shared/Submissions/FlatListButtons/_FlatListButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
+            @Html.Partial("~/Views/Shared/Comments/FlatListButtons/_FlatListButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }
         else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.CommentModel.Message.Subverse))
         {
-            @Html.Partial("~/Views/Shared/Submissions/FlatListButtons/_FlatListButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
+            @Html.Partial("~/Views/Shared/Comments/FlatListButtons/_FlatListButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }
         else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.CommentModel.Message.Subverse))
         {
-            @Html.Partial("~/Views/Shared/Submissions/FlatListButtons/_FlatListButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
+            @Html.Partial("~/Views/Shared/Comments/FlatListButtons/_FlatListButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }
 
         if (commentAuthor != "deleted")
@@ -49,6 +49,7 @@
             <li>
                 <a class="" href="javascript:void(0)" onclick="return reply(@commentId, @Model.CommentModel.MessageId)">reply</a>
             </li>
+            @*@Html.Partial("~/Views/Shared/Comments/FlatListButtons/_FlatListButtonReport.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })*@
         }
     }
 
