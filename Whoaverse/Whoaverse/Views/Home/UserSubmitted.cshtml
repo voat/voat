@@ -13,7 +13,7 @@
 @model PagedList.IPagedList<Whoaverse.Models.Message>
 
 @{
-    ViewBag.Title = "Submission history (most recent 200 submissions) for " + @ViewBag.userid;
+    ViewBag.Title = "Submission history for " + @ViewBag.userid;
     //(current page number -1)*25
     int currentPageNumber = Model.PageNumber;
     int counterCont = (currentPageNumber - 1) * 25;
@@ -27,7 +27,7 @@
 <div id="container">
     <div class="content-no-margin" role="main">
 
-        <div class="alert-title">Submission history (most recent 200 submissions) for @ViewBag.userid. To see comments, click the comments tab.</div>
+        <div class="alert-title">Submission history for @ViewBag.userid.</div>
 
         @foreach (var submission in Model)
         {

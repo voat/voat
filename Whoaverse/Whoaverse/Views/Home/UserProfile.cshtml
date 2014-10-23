@@ -30,7 +30,7 @@
     @Html.Partial("~/Views/Shared/Sidebars/_SidebarUserInfo.cshtml")
 
     <div class="content" role="main">
-        <div class="alert-title">Profile overview for @ViewBag.userid. To see comments, click the comments tab.</div>
+        <div class="alert-title">Profile overview for @ViewBag.userid.</div>
         <div class="userstats">
             <div class="userstats-heading-1">Submission distribution</div>
             <div class="userstats-body">
@@ -55,7 +55,7 @@
         <div class="userstats">
             <div class="userstats-heading-1">Submission counters</div>
             <div class="userstats-body">
-                This user has so far submitted a total of <strong>@userStatsModel.LinkSubmissionsSubmitted</strong> link type submissions, <strong>@userStatsModel.MessageSubmissionsSubmitted</strong> message type submissions and a total of <strong>@userStatsModel.TotalCommentsSubmitted</strong> comments.
+                This user has so far shared a total of <strong>@userStatsModel.LinkSubmissionsSubmitted</strong> links, started a total of <strong>@userStatsModel.MessageSubmissionsSubmitted</strong> discussions and submitted a total of <strong>@userStatsModel.TotalCommentsSubmitted</strong> comments.
             </div>
         </div>
         <div class="userstats">
