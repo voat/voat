@@ -15,6 +15,7 @@ All Rights Reserved.
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
+using System.Linq;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace Whoaverse.Controllers
     [Authorize]
     public class AccountController : AsyncController
     {
+        private whoaverseEntities db = new whoaverseEntities();
 
         public AccountController()
             : this(new UserManager<WhoaVerseUser>(new UserStore<WhoaVerseUser>(new ApplicationDbContext())))
@@ -506,6 +508,25 @@ namespace Whoaverse.Controllers
 
             //return RedirectToAction("Manage", new { Message = "Your user preferences have been saved." });
             return RedirectToAction("Manage");
+        }
+
+        // GET: list of subverses user moderates
+        [ChildActionOnly]
+        public ActionResult SubversesUserModerates(string userName)
+        {
+            if (userName != null)
+            {
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", db.SubverseAdmins
+                .Where(x => x.Username == userName)
+                .Select(s => new SelectListItem { Value = s.SubverseName })
+                .OrderBy(s => s.Value)
+                .ToList()
+                .AsEnumerable());
+            }
+            else
+            {
+                return new EmptyResult();
+            }
         }
 
         #region Helpers

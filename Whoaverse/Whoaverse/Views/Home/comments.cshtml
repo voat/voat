@@ -47,24 +47,25 @@ else if (!User.Identity.IsAuthenticated)
     @if (!selectedSubverse.Equals("user"))
     {
         @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new
-   {
-       selectedSubverse = selectedSubverse,
-       showingComments = true,
-       name = Model.Name,
-       date = Model.Date,
-       lastEditDate = Model.LastEditDate,
-       submissionId = Model.Id,
-       likes = Model.Likes,
-       dislikes = Model.Dislikes,
-       anonymized = Model.Anonymized
-   })
+       {
+           selectedSubverse = selectedSubverse,
+           showingComments = true,
+           name = Model.Name,
+           date = Model.Date,
+           lastEditDate = Model.LastEditDate,
+           submissionId = Model.Id,
+           likes = Model.Likes,
+           dislikes = Model.Dislikes,
+           anonymized = Model.Anonymized
+       })
     }
-    <style type="text/css">
+    
+<style type="text/css">
 @if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
 }
-    </style>
+</style>
 
     <div class="content" role="main">
 
@@ -151,11 +152,11 @@ else if (!User.Identity.IsAuthenticated)
         @if (ViewBag.StartingCommentId != null)
         {
             // show comment tree for a single thread starting at passed starting comment id
-            @Html.Partial("_SingleCommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode } })
+            @Html.Partial("~/Views/Home/_SingleCommentTree.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode } })
         }
         else
         {
-            @Html.Partial("_CommentTree", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
+            @Html.Partial("~/Views/Home/_CommentTree.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
         }
 
     </div>

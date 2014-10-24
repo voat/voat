@@ -608,7 +608,7 @@
     <Content Include="Views\Help\Markdown.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Errors\Subversenotfound.cshtml" />
-    <Content Include="Views\Shared\_Listofsubverses.cshtml" />
+    <Content Include="Views\Shared\_ListOfDefaultSubverses.cshtml" />
     <Content Include="Views\Shared\_AddComment.cshtml" />
     <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
     <Content Include="Views\Errors\Error_404.cshtml" />

@@ -13,7 +13,7 @@ namespace Whoaverse.Controllers
         private whoaverseEntities db = new whoaverseEntities();
         
         // GET: rss/{subverseName}
-        public ActionResult Rss(string subverseName)
+        public ActionResult RSS(string subverseName)
         {
             List<Message> submissions = new List<Message>();
             Random rnd = new Random();

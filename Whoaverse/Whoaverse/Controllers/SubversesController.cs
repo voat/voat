@@ -1518,6 +1518,20 @@ namespace Whoaverse.Controllers
             {
                 return new EmptyResult();
             }
-        }        
+        }
+
+        // GET: list of default subverses
+        public ActionResult ListOfDefaultSubverses()
+        {
+            try
+            {
+                var listOfSubverses = db.Defaultsubverses.OrderBy(s => s.position).ToList().AsEnumerable();
+                return PartialView("_ListOfDefaultSubverses", listOfSubverses);
+            }
+            catch (Exception)
+            {
+                return new EmptyResult();
+            }
+        }
     }
 }

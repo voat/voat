@@ -114,7 +114,7 @@
 <body>
 
     <div id="header" role="banner">
-        @Html.Action("listofsubverses", "Home", new { activeSubverse = selectedSubverse })
+        @Html.Action("ListOfDefaultSubverses", "Subverses", new { activeSubverse = selectedSubverse })
         <div id="header-container">
             <div id="header-banner">
 
@@ -177,7 +177,7 @@
                     You can login if you already have an account or register by clicking the button below.
                     Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
                     <div>
-                        @if (routeController == "Home" && routeAction == "Comments" && routeId != null)
+                        @if (routeController == "Comment" && routeAction == "Comments" && routeId != null)
                         {
                             @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId } }) } })
                         }

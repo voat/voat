@@ -28,7 +28,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "rss",
                 url: "rss/{subverseName}",
-                defaults: new { controller = "RSS", action = "Rss", subverseName = UrlParameter.Optional }                
+                defaults: new { controller = "RSS", action = "RSS", subverseName = UrlParameter.Optional }                
             ); 
 
             // /subverses/create
@@ -91,7 +91,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "comments",
                 url: "comments/{id}",
-                defaults: new { controller = "Home", action = "Comments" }
+                defaults: new { controller = "Comment", action = "Comments" }
             );
 
             // user/someuserhere/thingtoshow
@@ -210,7 +210,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "vote",
                 url: "vote/{messageId}/{typeOfVote}",
-                defaults: new { controller = "Home", action = "Vote" }
+                defaults: new { controller = "Submissions", action = "Vote" }
             );
 
             // vote comment
@@ -224,14 +224,14 @@ namespace Whoaverse
             routes.MapRoute(
                   "editcomment",
                   "editcomment/{id}",
-                  new { controller = "Home", action = "Editcomment", id = UrlParameter.Optional }
+                  new { controller = "Comment", action = "EditComment", id = UrlParameter.Optional }
              );
 
             // deletecomment
             routes.MapRoute(
                   "deletecomment",
                   "deletecomment/{id}",
-                  new { controller = "Home", action = "DeleteComment", id = UrlParameter.Optional }
+                  new { controller = "Comment", action = "DeleteComment", id = UrlParameter.Optional }
              );
 
             // reportcomment
@@ -273,7 +273,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "submitcomment",
                 url: "submitcomment",
-                defaults: new { controller = "Home", action = "Submitcomment" }
+                defaults: new { controller = "Comment", action = "SubmitComment" }
             );
 
             // /random
@@ -371,7 +371,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "SubverseComments",
                 url: "v/{subversetoshow}/comments/{id}/{startingcommentid}",
-                defaults: new { controller = "Home", action = "Comments", startingcommentid = UrlParameter.Optional }
+                defaults: new { controller = "Comment", action = "Comments", startingcommentid = UrlParameter.Optional }
             );            
 
             // v/subversetoshow/sortingmode
