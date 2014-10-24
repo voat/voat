@@ -136,37 +136,6 @@ namespace Whoaverse.Controllers
             }
         }
 
-        // GET: comments for a given submission
-        public ActionResult Comments(int? id, string subversetoshow)
-        {
-            var subverse = db.Subverses.Find(subversetoshow);
-
-            if (subverse != null)
-            {
-                ViewBag.SelectedSubverse = subverse.name;
-
-                if (id == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                Message message = db.Messages.Find(id);
-                if (message == null)
-                {
-                    return View("~/Views/Errors/Error_404.cshtml");
-                }
-                // make sure that the combination of selected subverse and message subverse are linked
-                if (!message.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase))
-                {
-                    return View("~/Views/Errors/Error_404.cshtml");
-                }
-                return View(message);
-            }
-            else
-            {
-                return View("~/Views/Errors/Error_404.cshtml");
-            }
-        }
-
         // GET: submit
         [Authorize]
         public ActionResult Submit()
@@ -1532,6 +1501,26 @@ namespace Whoaverse.Controllers
             {
                 return new EmptyResult();
             }
+        }
+
+        // POST: subscribe to a subverse
+        [Authorize]
+        public JsonResult Subscribe(string subverseName)
+        {
+            string loggedInUser = User.Identity.Name;
+
+            Whoaverse.Utils.User.SubscribeToSubverse(loggedInUser, subverseName);
+            return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
+        }
+
+        // POST: unsubscribe from a subverse
+        [Authorize]
+        public JsonResult UnSubscribe(string subverseName)
+        {
+            string loggedInUser = User.Identity.Name;
+
+            Whoaverse.Utils.User.UnSubscribeFromSubverse(loggedInUser, subverseName);
+            return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
         }
     }
 }

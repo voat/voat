@@ -15,6 +15,7 @@ All Rights Reserved.
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Whoaverse.Models;
 using Whoaverse.Utils;
@@ -191,6 +192,111 @@ namespace Whoaverse.Controllers
                 }
             }
             return Json("Voting ok", JsonRequestBehavior.AllowGet);
+        }
+
+        // POST: editsubmission
+        [Authorize]
+        [HttpPost]
+        public ActionResult EditSubmission(EditSubmission model)
+        {
+            var existingSubmission = db.Messages.Find(model.SubmissionId);
+
+            if (existingSubmission != null)
+            {
+                if (existingSubmission.Name.Trim() == User.Identity.Name)
+                {
+                    existingSubmission.MessageContent = model.SubmissionContent;
+                    existingSubmission.LastEditDate = System.DateTime.Now;
+                    db.SaveChanges();
+
+                    // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
+                    string formattedSubmission = Utils.Formatting.FormatMessage(model.SubmissionContent);
+                    return Json(new { response = formattedSubmission });
+                }
+                else
+                {
+                    return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+                }
+
+            }
+            else
+            {
+                return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        // POST: deletesubmission
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> DeleteSubmission(int submissionId)
+        {
+            Message submissionToDelete = db.Messages.Find(submissionId);
+
+            if (submissionToDelete != null)
+            {
+                if (submissionToDelete.Name == User.Identity.Name)
+                {
+                    submissionToDelete.Name = "deleted";
+
+                    if (submissionToDelete.Type == 1)
+                    {
+                        submissionToDelete.MessageContent = "deleted by author at " + System.DateTime.Now;
+                    }
+                    else
+                    {
+                        submissionToDelete.MessageContent = "http://whoaverse.com";
+                    }
+
+                    await db.SaveChangesAsync();
+                }
+                // delete submission if delete request is issued by subverse moderator
+                else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
+                {
+
+                    if (submissionToDelete.Type == 1)
+                    {
+                        // notify submission author that his submission has been deleted by a moderator
+                        Utils.MesssagingUtility.SendPrivateMessage(
+                            "Whoaverse",
+                            submissionToDelete.Name,
+                            "Your submission has been deleted by a moderator",
+                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.Id + ") has been deleted by: " +
+                            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + System.DateTime.Now + "  " + Environment.NewLine +
+                            "Original submission content was: " + Environment.NewLine +
+                            "---" + Environment.NewLine +
+                            "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
+                            "Submission content: " + submissionToDelete.MessageContent
+                            );
+
+                        submissionToDelete.MessageContent = "deleted by a moderator at " + System.DateTime.Now;
+                        submissionToDelete.Name = "deleted";
+                    }
+                    else
+                    {
+                        // notify submission author that his submission has been deleted by a moderator
+                        Utils.MesssagingUtility.SendPrivateMessage(
+                            "Whoaverse",
+                            submissionToDelete.Name,
+                            "Your submission has been deleted by a moderator",
+                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.Id + ") has been deleted by: " +
+                            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + System.DateTime.Now + "  " + Environment.NewLine +
+                            "Original submission content was: " + Environment.NewLine +
+                            "---" + Environment.NewLine +
+                            "Link description: " + submissionToDelete.Linkdescription + ", " + Environment.NewLine +
+                            "Link URL: " + submissionToDelete.MessageContent
+                            );
+
+                        submissionToDelete.MessageContent = "http://whoaverse.com";
+                        submissionToDelete.Name = "deleted";
+                    }
+
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            string url = this.Request.UrlReferrer.AbsolutePath;
+            return Redirect(url);
         }
     }
 

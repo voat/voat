@@ -196,14 +196,14 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "subscribe",
                 url: "subscribe/{subverseName}",
-                defaults: new { controller = "Home", action = "Subscribe" }
+                defaults: new { controller = "Subverses", action = "Subscribe" }
             );
 
             // unsubscribe
             routes.MapRoute(
                 name: "unsubscribe",
                 url: "unsubscribe/{subverseName}",
-                defaults: new { controller = "Home", action = "UnSubscribe" }
+                defaults: new { controller = "Subverses", action = "UnSubscribe" }
             );
 
             // vote
@@ -245,14 +245,14 @@ namespace Whoaverse
             routes.MapRoute(
                   "editsubmission",
                   "editsubmission/{id}",
-                  new { controller = "Home", action = "EditSubmission", id = UrlParameter.Optional }
+                  new { controller = "Submissions", action = "EditSubmission", id = UrlParameter.Optional }
              );
 
             // deletesubmission
             routes.MapRoute(
                   "deletesubmission",
                   "deletesubmission/{id}",
-                  new { controller = "Home", action = "DeleteSubmission", id = UrlParameter.Optional }
+                  new { controller = "Submissions", action = "DeleteSubmission", id = UrlParameter.Optional }
              );
 
             // submit
