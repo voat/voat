@@ -15,12 +15,10 @@ All Rights Reserved.
 using OpenGraph_Net;
 using PagedList;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.ServiceModel.Syndication;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -49,11 +47,6 @@ namespace Whoaverse.Controllers
             }
         }
 
-        public ActionResult HeavyLoad()
-        {
-            return View("~/Views/Errors/DbNotResponding.cshtml");
-        }
-
         // GET: list of subverses user moderates
         public ActionResult SubversesUserModerates(string userName)
         {
@@ -78,46 +71,41 @@ namespace Whoaverse.Controllers
         {
             if (ModelState.IsValid)
             {
-                try
+                MailAddress from = new MailAddress(claModel.Email);
+                MailAddress to = new MailAddress("legal@whoaverse.com");
+                StringBuilder sb = new StringBuilder();
+                MailMessage msg = new MailMessage(from, to);
+
+                msg.Subject = "New CLA Submission from " + claModel.FullName;
+
+                // format CLA email
+                sb.Append("Full name: " + claModel.FullName);
+                sb.Append(Environment.NewLine);
+                sb.Append("Email: " + claModel.Email);
+                sb.Append(Environment.NewLine);
+                sb.Append("Mailing address: " + claModel.MailingAddress);
+                sb.Append(Environment.NewLine);
+                sb.Append("City: " + claModel.City);
+                sb.Append(Environment.NewLine);
+                sb.Append("Country: " + claModel.Country);
+                sb.Append(Environment.NewLine);
+                sb.Append("Phone number: " + claModel.PhoneNumber);
+                sb.Append(Environment.NewLine);
+                sb.Append("Corporate contributor information: " + claModel.CorpContrInfo);
+                sb.Append(Environment.NewLine);
+                sb.Append("Electronic signature: " + claModel.ElectronicSignature);
+                sb.Append(Environment.NewLine);
+
+                msg.Body = sb.ToString();
+
+                // send the email with CLA data
+                if (EmailUtility.sendEmail(msg))
                 {
-                    SmtpClient smtp = new SmtpClient();
-                    MailAddress from = new MailAddress(claModel.Email);
-                    MailAddress to = new MailAddress("legal@whoaverse.com");
-                    StringBuilder sb = new StringBuilder();
-                    MailMessage msg = new MailMessage(from, to);
-
-                    msg.Subject = "New CLA Submission from " + claModel.FullName;
-                    msg.IsBodyHtml = false;
-                    smtp.Host = "whoaverse.com";
-                    smtp.Port = 25;
-
-                    // format CLA email
-                    sb.Append("Full name: " + claModel.FullName);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Email: " + claModel.Email);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Mailing address: " + claModel.MailingAddress);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("City: " + claModel.City);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Country: " + claModel.Country);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Phone number: " + claModel.PhoneNumber);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Corporate contributor information: " + claModel.CorpContrInfo);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Electronic signature: " + claModel.ElectronicSignature);
-                    sb.Append(Environment.NewLine);
-
-                    msg.Body = sb.ToString();
-
-                    // send the email with CLA data
-                    smtp.Send(msg);
                     msg.Dispose();
                     ViewBag.SelectedSubverse = string.Empty;
                     return View("~/Views/Legal/ClaSent.cshtml");
                 }
-                catch (Exception)
+                else
                 {
                     ViewBag.SelectedSubverse = string.Empty;
                     return View("~/Views/Legal/ClaFailed.cshtml");
@@ -208,7 +196,7 @@ namespace Whoaverse.Controllers
             comment.Likes = 0;
 
             if (ModelState.IsValid)
-            {              
+            {
                 // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
                 Message message = db.Messages.Find(comment.MessageId);
                 if (message != null && message.Anonymized || message.Subverses.anonymized_mode)
@@ -221,7 +209,7 @@ namespace Whoaverse.Controllers
                 {
                     db.Comments.Add(comment);
                     await db.SaveChangesAsync();
-                }                
+                }
 
                 // send comment reply notification to parent comment author if the comment is not a new root comment
                 if (comment.ParentId != null && comment.CommentContent != null)
@@ -251,7 +239,7 @@ namespace Whoaverse.Controllers
                                     else
                                     {
                                         commentReplyNotification.Sender = User.Identity.Name;
-                                    }                                    
+                                    }
                                     commentReplyNotification.Body = comment.CommentContent;
                                     commentReplyNotification.Subverse = commentMessage.Subverse;
                                     commentReplyNotification.Status = true;
@@ -305,7 +293,7 @@ namespace Whoaverse.Controllers
                                 else
                                 {
                                     postReplyNotification.Sender = User.Identity.Name;
-                                }                                
+                                }
 
                                 postReplyNotification.Body = comment.CommentContent;
                                 postReplyNotification.Subverse = commentMessage.Subverse;
@@ -557,7 +545,7 @@ namespace Whoaverse.Controllers
                 {
                     ViewBag.selectedSubverse = selectedsubverse;
                 }
-            }            
+            }
 
             return View();
         }
@@ -704,7 +692,7 @@ namespace Whoaverse.Controllers
                         // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
                         if (targetSubverse.anonymized_mode)
                         {
-                            message.Anonymized = true;                            
+                            message.Anonymized = true;
                         }
                         else
                         {
@@ -729,12 +717,12 @@ namespace Whoaverse.Controllers
                         // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
                         if (targetSubverse.anonymized_mode)
                         {
-                            message.Anonymized = true;                            
+                            message.Anonymized = true;
                         }
                         else
                         {
                             message.Name = User.Identity.Name;
-                        }                        
+                        }
                         // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
                         message.Date = System.DateTime.Now;
                         message.Likes = 1;
@@ -854,7 +842,7 @@ namespace Whoaverse.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Home");
+                return RedirectToAction("HeavyLoad", "Error");
             }
         }
 
@@ -920,7 +908,7 @@ namespace Whoaverse.Controllers
                 }
                 catch (Exception)
                 {
-                    return RedirectToAction("HeavyLoad", "Home");
+                    return RedirectToAction("HeavyLoad", "Error");
                 }
             }
             else
@@ -1067,110 +1055,5 @@ namespace Whoaverse.Controllers
             }
         }
 
-        // GET: rss/{subverseName}
-        public ActionResult Rss(string subverseName)
-        {
-            List<Message> submissions = new List<Message>();
-            Random rnd = new Random();
-
-            if (subverseName != null)
-            {
-                // return only frontpage submissions from a given subverse
-                Subverse subverse = db.Subverses.Find(subverseName);
-                if (subverse != null)
-                {
-                    submissions = (from message in db.Messages
-                                   where message.Name != "deleted" && message.Subverse == subverse.name
-                                   select message)
-                                   .OrderByDescending(s => s.Rank)
-                                   .Take(25)
-                                   .ToList();
-                }
-            }
-            else
-            {
-                // return site-wide frontpage submissions
-                submissions = (from message in db.Messages
-                               where message.Name != "deleted"
-                               join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                               select message)
-                               .OrderByDescending(s => s.Rank)
-                               .Take(25)
-                               .ToList();
-            }
-
-            SyndicationFeed feed = new SyndicationFeed("WhoaVerse", "The frontpage of the Universe", new Uri("http://www.whoaverse.com"));
-            feed.Language = "en-US";
-            feed.ImageUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Graphics/whoaverse_padded.png");
-
-            List<SyndicationItem> feedItems = new List<SyndicationItem>();
-
-            foreach (var submission in submissions)
-            {
-                var commentsUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse + "/comments/" + submission.Id);
-                var subverseUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse);
-
-                string thumbnailUrl = "";
-                string authorName = submission.Name;
-
-                if (submission.Type == 1)
-                {
-                    // message type submission
-                    if (submission.Anonymized || submission.Subverses.anonymized_mode)
-                    {
-                        authorName = submission.Id.ToString();
-                    }
-
-                    SyndicationItem item = new SyndicationItem(
-                    submission.Title,
-                    submission.MessageContent + "</br>" + "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
-                    commentsUrl,
-                    "Item ID",
-                    submission.Date);
-                    feedItems.Add(item);
-                }
-                else
-                {
-                    // link type submission
-                    var linkUrl = new Uri(submission.MessageContent);
-                    authorName = submission.Name;
-
-                    if (submission.Anonymized || submission.Subverses.anonymized_mode)
-                    {
-                        authorName = submission.Id.ToString();
-                    }
-
-                    // add a thumbnail if submission has one
-                    if (submission.Thumbnail != null)
-                    {
-                        thumbnailUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Thumbs/" + submission.Thumbnail).ToString();
-                        SyndicationItem item = new SyndicationItem(
-                                                submission.Linkdescription,
-                                                "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='" + submission.Linkdescription + "' alt='" + submission.Linkdescription + "' src='" + thumbnailUrl + "' /></a>" +
-                                                "</br>" +
-                                                "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>" +
-                                                " | <a href='" + linkUrl + "'>link</a>",
-                                                commentsUrl,
-                                                "Item ID",
-                                                submission.Date);
-
-                        feedItems.Add(item);
-                    }
-                    else
-                    {
-                        SyndicationItem item = new SyndicationItem(
-                                                submission.Linkdescription,
-                                                "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
-                                                commentsUrl,
-                                                "Item ID",
-                                                submission.Date);
-                        feedItems.Add(item);
-                    }
-                }
-            }
-
-            feed.Items = feedItems;
-            return new FeedResult(new Rss20FeedFormatter(feed));
-        }
     }
 }

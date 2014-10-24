@@ -12,10 +12,6 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -32,7 +28,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "rss",
                 url: "rss/{subverseName}",
-                defaults: new { controller = "Home", action = "Rss", subverseName = UrlParameter.Optional }                
+                defaults: new { controller = "RSS", action = "Rss", subverseName = UrlParameter.Optional }                
             ); 
 
             // /subverses/create
@@ -236,6 +232,13 @@ namespace Whoaverse
                   "deletecomment",
                   "deletecomment/{id}",
                   new { controller = "Home", action = "DeleteComment", id = UrlParameter.Optional }
+             );
+
+            // reportcomment
+            routes.MapRoute(
+                  "reportcomment",
+                  "reportcomment/{id}",
+                  new { controller = "Report", action = "ReportComment", id = UrlParameter.Optional }
              );
 
             // editsubmission

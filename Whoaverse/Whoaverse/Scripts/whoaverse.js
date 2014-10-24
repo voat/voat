@@ -609,15 +609,42 @@ function deletesubmission(submissionid) {
     $('body').load($(location).attr('href'));
 }
 
-// toggle are you sure question
-function toggle(commentid) {
-    $("#" + commentid).find('.option, .main').toggleClass("active");
+// toggle are you sure question for comment deletion
+function toggle(obj, commentid) {
+    $(obj).parent().parent().find('.option, .main').toggleClass("active");
+    return false;
+}
+
+// toggle are you sure question for comment report
+function togglereport(commentid) {
+    $("#" + commentid).find('.report').toggleClass("active");
+    return false;
+}
+
+// submit report and replace report button with a "thank you" to the user
+function reportcomment(obj, commentid) {
+    $(obj).parent().parent().find('.togglebutton').attr("onclick", "javascript:void(0)");
+    $(obj).parent().parent().find('.option, .main').toggleClass("active");
+    $(obj).parent().parent().find('.togglebutton').html("please wait...");
+
+    // submit report
+    $.ajax({
+        type: "POST",
+        url: "/reportcomment/" + commentid,
+        success: function () {
+            $(obj).parent().parent().find('.togglebutton').html("thank you!");
+        },
+        error: function () {
+            $(obj).parent().parent().find('.togglebutton').html("report failed");
+        }
+    });
+    
     return false;
 }
 
 // togle back are you sure question
-function toggleback(commentid) {
-    $("#" + commentid).find('.option, .error').toggleClass("active");
+function toggleback(obj) {
+    $(obj).parent().parent().find('.option, .error').toggleClass("active");
     return false;
 }
 

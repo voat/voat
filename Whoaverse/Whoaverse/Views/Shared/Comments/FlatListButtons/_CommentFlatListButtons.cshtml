@@ -49,7 +49,7 @@
             <li>
                 <a class="" href="javascript:void(0)" onclick="return reply(@commentId, @Model.CommentModel.MessageId)">reply</a>
             </li>
-            @*@Html.Partial("~/Views/Shared/Comments/FlatListButtons/_FlatListButtonReport.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })*@
+            @Html.Partial("~/Views/Shared/Comments/FlatListButtons/_FlatListButtonReport.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }
     }
 

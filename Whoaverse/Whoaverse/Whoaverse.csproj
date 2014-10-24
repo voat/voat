@@ -254,6 +254,8 @@
     <Compile Include="Controllers\MessagingController.cs" />
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\PartnerController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\RSSController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SubmissionsController.cs" />
     <Compile Include="Controllers\SubversesController.cs" />
@@ -376,6 +378,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\AntispamUtility.cs" />
     <Compile Include="Utils\BanningUtility.cs" />
+    <Compile Include="Utils\EmailUtility.cs" />
     <Compile Include="Utils\MesssagingUtility.cs" />
     <Compile Include="Utils\RSSUtility.cs" />
     <Compile Include="Utils\SessionTracker.cs" />

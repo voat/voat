@@ -47,44 +47,40 @@ namespace Whoaverse.Controllers
         {
             if (ModelState.IsValid)
             {
-                try
+                MailAddress from = new MailAddress(partnerModel.Email);
+                MailAddress to = new MailAddress("legal@whoaverse.com");
+                StringBuilder sb = new StringBuilder();
+                MailMessage msg = new MailMessage(from, to);
+
+                msg.Subject = "New Partner Intent registration from " + partnerModel.FullName;
+                msg.IsBodyHtml = false;
+
+                // format Partner Intent Email
+                sb.Append("Full name: " + partnerModel.FullName);
+                sb.Append(Environment.NewLine);
+                sb.Append("Email: " + partnerModel.Email);
+                sb.Append(Environment.NewLine);
+                sb.Append("Mailing address: " + partnerModel.MailingAddress);
+                sb.Append(Environment.NewLine);
+                sb.Append("City: " + partnerModel.City);
+                sb.Append(Environment.NewLine);
+                sb.Append("Country: " + partnerModel.Country);
+                sb.Append(Environment.NewLine);
+                sb.Append("Phone number: " + partnerModel.PhoneNumber);
+                sb.Append(Environment.NewLine);
+                sb.Append("Username: " + partnerModel.UserName);
+                sb.Append(Environment.NewLine);
+
+                msg.Body = sb.ToString();
+
+                // send the email with Partner Intent data
+                if (EmailUtility.sendEmail(msg))
                 {
-                    SmtpClient smtp = new SmtpClient();
-                    MailAddress from = new MailAddress(partnerModel.Email);
-                    MailAddress to = new MailAddress("legal@whoaverse.com");
-                    StringBuilder sb = new StringBuilder();
-                    MailMessage msg = new MailMessage(from, to);
-
-                    msg.Subject = "New Partner Intent registration from " + partnerModel.FullName;
-                    msg.IsBodyHtml = false;
-                    smtp.Host = "whoaverse.com";
-                    smtp.Port = 25;
-
-                    // format Partner Intent Email
-                    sb.Append("Full name: " + partnerModel.FullName);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Email: " + partnerModel.Email);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Mailing address: " + partnerModel.MailingAddress);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("City: " + partnerModel.City);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Country: " + partnerModel.Country);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Phone number: " + partnerModel.PhoneNumber);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Username: " + partnerModel.UserName);
-                    sb.Append(Environment.NewLine);
-
-                    msg.Body = sb.ToString();
-
-                    // send the email with Partner Intent data
-                    smtp.Send(msg);
                     msg.Dispose();
                     ViewBag.SelectedSubverse = string.Empty;
                     return View("~/Views/Partner/PartnerProgramIntentSent.cshtml");
                 }
-                catch (Exception)
+                else
                 {
                     ViewBag.SelectedSubverse = string.Empty;
                     return View("~/Views/Errors/Error.cshtml");

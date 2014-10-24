@@ -75,7 +75,7 @@ namespace Whoaverse.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Home");
+                return RedirectToAction("HeavyLoad", "Error");
             }
         }
 
@@ -129,7 +129,7 @@ namespace Whoaverse.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Home");
+                return RedirectToAction("HeavyLoad", "Error");
             }
         }
 
@@ -183,7 +183,7 @@ namespace Whoaverse.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Home");
+                return RedirectToAction("HeavyLoad", "Error");
             }
         }
 
@@ -227,7 +227,7 @@ namespace Whoaverse.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Home");
+                return RedirectToAction("HeavyLoad", "Error");
             }
         }
 
@@ -275,7 +275,7 @@ namespace Whoaverse.Controllers
                             }
                             catch (Exception)
                             {
-                                return RedirectToAction("HeavyLoad", "Home");
+                                return RedirectToAction("HeavyLoad", "Error");
                             }
                         }                        
                     }
@@ -321,7 +321,7 @@ namespace Whoaverse.Controllers
                             }
                             catch (Exception)
                             {
-                                return RedirectToAction("HeavyLoad", "Home");
+                                return RedirectToAction("HeavyLoad", "Error");
                             }
                         }                        
                     }

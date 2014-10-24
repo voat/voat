@@ -12,27 +12,31 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using System.Web.Mvc;
+using System;
+using System.Net.Mail;
 
-namespace Whoaverse.Controllers
+namespace Whoaverse.Utils
 {
-    public class ErrorController : Controller
+    public class EmailUtility
     {
-        public ViewResult NotFound()
+        // handle email sending
+        public static bool sendEmail(MailMessage message)
         {
-            ViewBag.SelectedSubverse = string.Empty;
-            //Response.StatusCode = 404;
-            return View("~/Views/Errors/Error_404.cshtml");
+            try
+            {
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = "whoaverse.com";
+                smtp.Port = 25;
+                message.IsBodyHtml = false;
+                smtp.Send(message);
+                message.Dispose();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public ActionResult CriticalError()
-        {
-            return View("~/Views/Errors/Error.cshtml");
-        }
-
-        public ActionResult HeavyLoad()
-        {
-            return View("~/Views/Errors/DbNotResponding.cshtml");
-        }
     }
 }
