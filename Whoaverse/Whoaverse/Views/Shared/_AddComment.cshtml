@@ -31,9 +31,11 @@
     @Html.Hidden("MessageId", messageId)
 
     @Html.TextAreaFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
-    <div>
-        @Html.ValidationMessageFor(model => model.CommentContent)
+    <div class="validation-summary-valid" data-valmsg-summary="true">
+        <ul>
+            <li id="errorMessage" style="display:none">Please enter a comment to submit.</li>
+        </ul>
     </div>
-    <input type="submit" value="Submit" class="btn-whoaverse-medium" />
+    <input type="button" id="submitbutton" value="Submit comment" class="btn-whoaverse-paging" onclick="postCommentAjax(this, @messageId, '@User.Identity.Name')">
     <div class="spacer"></div>
 }

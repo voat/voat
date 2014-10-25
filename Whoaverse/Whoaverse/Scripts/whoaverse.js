@@ -385,12 +385,12 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
                     "/ajaxhelpers/singlesubmissioncomment/"+messageId+"/"+userName,
                     null,
                     function (data) {
-                        $(".id-" + parentcommentid).append(data)
+                        $(".id-" + parentcommentid).append(data);
+
+                        // TODO: use prepend or append after element entry unvoted
+                        // $('#div_' + element_id)[0].scrollIntoView(true);
                     }
                  );
-
-                // TODO: scroll to the newly posted comment
-                // $('#div_' + element_id)[0].scrollIntoView(true);
             }
         });
 
@@ -398,7 +398,56 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
     } else {
         $form.find("#errorMessage").toggle(true);
     }
+}
 
+// post comment reply form through ajax
+function postCommentAjax(senderButton, messageId, userName) {
+    var $form = $(senderButton).parents('form');
+    $form.find("#errorMessage").toggle(false);
+
+    if ($form.find("#CommentContent").val().length > 0) {
+        $form.find("#submitbutton").val("Doing the magic...");
+        $form.find("#submitbutton").prop('disabled', true);
+
+        $.ajax({
+            type: "POST",
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            error: function (xhr, status, error) {
+                // submission failed, likely cause: user triggered anti-spam throttle
+                $form.find("#submitbutton").val("Submit comment");
+                $form.find("#submitbutton").prop('disabled', false);
+                $form.find("#errorMessage").html("You are doing that too fast. Please wait 2 minutes before trying again.");
+                $form.find("#errorMessage").toggle(true);
+            },
+
+            success: function (response) {
+                // load rendered comment that was just posted
+                var replyresult = $.get(
+                    "/ajaxhelpers/singlesubmissioncomment/" + messageId + "/" + userName,
+                    null,
+                    function (data) {
+                        // append rendered comment
+                        $(".sitetable.nestedlisting").prepend(data);
+
+                        // reset submit button
+                        $form.find("#submitbutton").val("Submit comment");
+                        $form.find("#submitbutton").prop('disabled', false);
+
+                        // reset textbox
+                        $form.find("#CommentContent").val("");
+
+                        // TODO: scroll to the newly posted comment
+                        // $('#div_' + element_id)[0].scrollIntoView(true);
+                    }
+                 );                
+            }
+        });
+
+        return false;
+    } else {
+        $form.find("#errorMessage").toggle(true);
+    }
 }
 
 // post private message reply form through ajax

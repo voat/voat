@@ -76,7 +76,15 @@ namespace Whoaverse.Controllers
                     {
                         comment.Name = comment.Id.ToString();
                     }
-                    return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
+                    if (comment.ParentId != null)
+                    {
+                        return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
+                    }
+                    else
+                    {
+                        ViewBag.rootComment = true;
+                        return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
+                    }
                 }
                 else
                 {
