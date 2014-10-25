@@ -20,6 +20,8 @@
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
     string sortingMode = Convert.ToString(ViewData["SortingMode"]);
 
+    bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
+
     // depth level limit of 10 test
     int counter = Convert.ToInt32(ViewData["Counter"]);
 
@@ -90,7 +92,7 @@
         {
             int commentScore = commentModel.Likes - commentModel.Dislikes;
 
-            if (Model.Anonymized || Model.Subverses.anonymized_mode)
+            if (Model.Anonymized || subverseAnonymized == true)
             {
                 <a href="#" class="author gray may-blank">@commentModel.Id</a>
             }
@@ -122,7 +124,7 @@
                 {
                     if (isOpModerator || isOpSubverseAdmin)
                     {
-                        if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                        if (Model.Anonymized || subverseAnonymized == true)
                         {
                             <a href="#" class="author moderator may-blank">@commentModel.Id</a>
                         }
@@ -134,7 +136,7 @@
                     }
                     else
                     {
-                        if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                        if (Model.Anonymized || subverseAnonymized == true)
                         {
                             <a href="#" class="author submitter may-blank">@commentModel.Id</a>
                         }
@@ -147,7 +149,7 @@
                 }
                 else if (isCommentAuthorModerator || isCommentAuthorSubverseAdmin)
                 {
-                    if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                    if (Model.Anonymized || subverseAnonymized == true)
                     {
                         <a href="#" class="author moderator may-blank">@commentModel.Id</a>
                     }
@@ -159,7 +161,7 @@
                 }
                 else
                 {
-                    if (Model.Anonymized || Model.Subverses.anonymized_mode)
+                    if (Model.Anonymized || subverseAnonymized == true)
                     {
                         <a href="#" class="author may-blank">@commentModel.Id</a>
                     }

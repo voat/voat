@@ -17,6 +17,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Whoaverse.Models;
+using System.Linq;
 using Whoaverse.Utils;
 
 namespace Whoaverse.Controllers
@@ -63,6 +64,7 @@ namespace Whoaverse.Controllers
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort)
         {
             var subverse = db.Subverses.Find(subversetoshow);
+            //'Boolean Equals(System.String, System.String, System.StringComparison)'            
 
             if (subverse != null)
             {

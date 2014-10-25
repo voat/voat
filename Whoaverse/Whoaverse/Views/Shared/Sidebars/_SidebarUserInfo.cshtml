@@ -33,7 +33,6 @@
                     <span class="bottommenu">(joined on: @Whoaverse.Utils.User.GetUserRegistrationDateTime(userName).ToShortDateString())</span>
                 </p>
             </div>
-
             <div class="titlebox footer rounded">
                 <h2 class="hover whoaversename">
                     Connect with @userName
@@ -44,7 +43,6 @@
                     </p>
                 </div>
             </div>
-
             <div class="titlebox footer rounded">
                 <h2 class="hover whoaversename">
                     Achievements and contributions
@@ -57,13 +55,11 @@
                         Comment contribution points: <b>@Karma.CommentKarma(userName)</b>
                     </p>
                 </div>
-
                 <div class="titlebox footer rounded">
                     <h2 class="hover whoaversename">
                         Badges and trophies
                     </h2>
                     <div class="bottom">
-
                         @if (Whoaverse.Utils.User.UserBadges(userName).Count > 0)
                         {
                             foreach (var badge in @Whoaverse.Utils.User.UserBadges(userName))
@@ -90,13 +86,14 @@
                         {
                             <p>This user currently has no badges.</p>
                         }
-
                     </div>
                 </div>
             </div>
-
-            @Html.Action("SubversesUserModerates", "Account", new { userName = userName })
-
+            @Html.Action("SubversesUserModerates", "Home", new { userName = userName })
+            @if (Whoaverse.Utils.User.PublicSubscriptionsEnabled(userName))
+            {
+                @Html.Action("SubversesUserIsSubscribedTo", "Home", new { userName = userName })
+            }            
         </div>
     </div>
 

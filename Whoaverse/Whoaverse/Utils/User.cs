@@ -618,6 +618,40 @@ namespace Whoaverse.Utils
             }
         }
 
+        // check if a given user wants to publicly display his subscriptions
+        public static bool PublicSubscriptionsEnabled(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var result = db.Userpreferences.Find(userName);
+                if (result != null)
+                {
+                    return result.Public_subscriptions;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        // check if a given user wants to replace default menu bar with subscriptions
+        public static bool Topmenu_From_Subscriptions(string userName)
+        {
+            using (whoaverseEntities db = new whoaverseEntities())
+            {
+                var result = db.Userpreferences.Find(userName);
+                if (result != null)
+                {
+                    return result.Topmenu_from_subscriptions;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         // STUB
         // check if a given user has used his daily posting quota
         public static bool UserDailyPostingQuotaUsed(string userName)

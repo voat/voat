@@ -31,5 +31,7 @@ namespace Whoaverse.Models
         public bool Clicking_mode { get; set; }
         public bool Enable_adult_content { get; set; }
         public bool Public_votes { get; set; }
+        public bool Public_subscriptions { get; set; }
+        public bool Topmenu_from_subscriptions { get; set; }
     }
 }

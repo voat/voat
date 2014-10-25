@@ -260,6 +260,8 @@
           <Property Name="Clicking_mode" Type="bit" Nullable="false" />
           <Property Name="Enable_adult_content" Type="bit" Nullable="false" />
           <Property Name="Public_votes" Type="bit" Nullable="false" />
+          <Property Name="Public_subscriptions" Type="bit" Nullable="false" />
+          <Property Name="Topmenu_from_subscriptions" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -864,6 +866,8 @@
           <Property Name="Clicking_mode" Type="Boolean" Nullable="false" DefaultValue="False" />
           <Property Name="Enable_adult_content" Type="Boolean" Nullable="false" DefaultValue="False" />
           <Property Name="Public_votes" Type="Boolean" Nullable="false" DefaultValue="False" />
+          <Property Name="Public_subscriptions" Type="Boolean" Nullable="false" />
+          <Property Name="Topmenu_from_subscriptions" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Subverseflairsetting">
           <Key>
@@ -1197,6 +1201,8 @@
           <EntitySetMapping Name="Userpreferences">
             <EntityTypeMapping TypeName="whoaverseModel.Userpreference">
               <MappingFragment StoreEntitySet="Userpreferences">
+                <ScalarProperty Name="Topmenu_from_subscriptions" ColumnName="Topmenu_from_subscriptions" />
+                <ScalarProperty Name="Public_subscriptions" ColumnName="Public_subscriptions" />
                 <ScalarProperty Name="Public_votes" ColumnName="Public_votes" />
                 <ScalarProperty Name="Enable_adult_content" ColumnName="Enable_adult_content" />
                 <ScalarProperty Name="Clicking_mode" ColumnName="Clicking_mode" />

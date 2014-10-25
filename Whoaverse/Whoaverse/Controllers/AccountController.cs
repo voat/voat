@@ -15,7 +15,6 @@ All Rights Reserved.
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
-using System.Linq;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -29,8 +28,6 @@ namespace Whoaverse.Controllers
     [Authorize]
     public class AccountController : AsyncController
     {
-        private whoaverseEntities db = new whoaverseEntities();
-
         public AccountController()
             : this(new UserManager<WhoaVerseUser>(new UserStore<WhoaVerseUser>(new ApplicationDbContext())))
         {
@@ -432,6 +429,7 @@ namespace Whoaverse.Controllers
             }
         }
 
+        // GET: /Account/UserPreferences
         [ChildActionOnly]
         public ActionResult UserPreferences()
         {
@@ -449,6 +447,8 @@ namespace Whoaverse.Controllers
                         tmpModel.Night_mode = userPreferences.Night_mode;
                         tmpModel.OpenLinksInNewTab = userPreferences.Clicking_mode;
                         tmpModel.Enable_adult_content = userPreferences.Enable_adult_content;
+                        tmpModel.Public_subscriptions = userPreferences.Public_subscriptions;
+                        tmpModel.Topmenu_from_subscriptions = userPreferences.Topmenu_from_subscriptions;
 
                         return PartialView("_UserPreferences", tmpModel);
                     }
@@ -470,7 +470,7 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content")] UserPreferencesViewModel model)
+        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions")] UserPreferencesViewModel model)
         {
             // save changes
             using (whoaverseEntities db = new whoaverseEntities())
@@ -483,7 +483,9 @@ namespace Whoaverse.Controllers
                     userPreferences.Disable_custom_css = (bool)model.Disable_custom_css;
                     userPreferences.Night_mode = (bool)model.Night_mode;
                     userPreferences.Clicking_mode = (bool)model.OpenLinksInNewTab;
-                    userPreferences.Enable_adult_content = (bool)model.Enable_adult_content;                    
+                    userPreferences.Enable_adult_content = (bool)model.Enable_adult_content;
+                    userPreferences.Public_subscriptions = (bool)model.Public_subscriptions;
+                    userPreferences.Topmenu_from_subscriptions = (bool)model.Topmenu_from_subscriptions;
 
                     await db.SaveChangesAsync();
                     // apply theme change
@@ -497,6 +499,8 @@ namespace Whoaverse.Controllers
                     tmpModel.Night_mode = (bool)model.Night_mode;
                     tmpModel.Clicking_mode = (bool)model.OpenLinksInNewTab;
                     tmpModel.Enable_adult_content = (bool)model.Enable_adult_content;
+                    tmpModel.Public_subscriptions = (bool)model.Public_subscriptions;
+                    tmpModel.Topmenu_from_subscriptions = (bool)model.Topmenu_from_subscriptions;
                     tmpModel.Username = User.Identity.Name;
                     db.Userpreferences.Add(tmpModel);                    
 
@@ -508,25 +512,6 @@ namespace Whoaverse.Controllers
 
             //return RedirectToAction("Manage", new { Message = "Your user preferences have been saved." });
             return RedirectToAction("Manage");
-        }
-
-        // GET: list of subverses user moderates
-        [ChildActionOnly]
-        public ActionResult SubversesUserModerates(string userName)
-        {
-            if (userName != null)
-            {
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", db.SubverseAdmins
-                .Where(x => x.Username == userName)
-                .Select(s => new SelectListItem { Value = s.SubverseName })
-                .OrderBy(s => s.Value)
-                .ToList()
-                .AsEnumerable());
-            }
-            else
-            {
-                return new EmptyResult();
-            }
         }
 
         #region Helpers

@@ -692,6 +692,8 @@
     <Content Include="Views\Shared\Comments\FlatListButtons\_CommentFlatListButtons.cshtml" />
     <Content Include="Views\Shared\Comments\FlatListButtons\_FlatListButtonDelete.cshtml" />
     <Content Include="Views\Shared\Comments\FlatListButtons\_FlatListButtonReport.cshtml" />
+    <Content Include="Views\Shared\Userprofile\_SidebarSubsUserIsSubscribedTo.cshtml" />
+    <Content Include="Views\Shared\_ListOfSubscribedToSubverses.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

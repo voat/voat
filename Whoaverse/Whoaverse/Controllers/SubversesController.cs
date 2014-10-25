@@ -34,7 +34,7 @@ namespace Whoaverse.Controllers
         // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments, string name, DateTime? date, DateTime? lastEditDate, int? submissionId, int? likes, int? dislikes, bool anonymized)
         {
-            Subverse subverse = db.Subverses.Find(selectedSubverse);            
+            Subverse subverse = db.Subverses.Find(selectedSubverse);
 
             if (subverse != null)
             {
@@ -55,9 +55,9 @@ namespace Whoaverse.Controllers
                     }
                     else
                     {
-                        ViewBag.name = name;                        
+                        ViewBag.name = name;
                     }
-                    
+
                     ViewBag.date = date;
                     ViewBag.lastEditDate = lastEditDate;
                     ViewBag.likes = likes;
@@ -206,7 +206,7 @@ namespace Whoaverse.Controllers
                     {
                         message.Name = User.Identity.Name;
                     }
-                    
+
                     db.Messages.Add(message);
                     await db.SaveChangesAsync();
 
@@ -462,7 +462,7 @@ namespace Whoaverse.Controllers
                             existingSubverse.label_submit_new_link = updatedModel.label_submit_new_link;
                             existingSubverse.label_sumit_new_selfpost = updatedModel.label_sumit_new_selfpost;
                             existingSubverse.submission_text = updatedModel.submission_text;
-                            existingSubverse.allow_default = updatedModel.allow_default;                            
+                            existingSubverse.allow_default = updatedModel.allow_default;
 
                             if (existingSubverse.anonymized_mode == true && updatedModel.anonymized_mode == false)
                             {
@@ -1501,6 +1501,18 @@ namespace Whoaverse.Controllers
             {
                 return new EmptyResult();
             }
+        }
+
+        [Authorize]
+        public ActionResult ListOfSubversesUserIsSubscribedTo()
+        {
+            // show custom list of subverses in top menu
+            var listOfSubverses = db.Subscriptions
+                .OrderBy(s => s.SubverseName)
+                .Where(s => s.Username == User.Identity.Name)
+                .ToList()
+                .AsEnumerable();
+            return PartialView("_ListOfSubscribedToSubverses", listOfSubverses);
         }
 
         // POST: subscribe to a subverse

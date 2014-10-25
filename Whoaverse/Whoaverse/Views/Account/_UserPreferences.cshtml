@@ -22,6 +22,14 @@
         @Html.CheckBoxFor(m => m.Enable_adult_content)
         @Html.LabelFor(m => m.Enable_adult_content)
     </div>
+    <div class="checkbox">
+        @Html.CheckBoxFor(m => m.Public_subscriptions)
+        @Html.LabelFor(m => m.Public_subscriptions)
+    </div>
+    <div class="checkbox">
+        @Html.CheckBoxFor(m => m.Topmenu_from_subscriptions)
+        @Html.LabelFor(m => m.Topmenu_from_subscriptions)
+    </div>
     <br />
     <input type="submit" value="Save" class="btn-whoaverse" />
 }

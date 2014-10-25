@@ -573,5 +573,42 @@ namespace Whoaverse.Controllers
             }
         }
 
+        // GET: list of subverses user moderates
+        public ActionResult SubversesUserModerates(string userName)
+        {
+            if (userName != null)
+            {
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", db.SubverseAdmins
+                .Where(x => x.Username == userName)
+                .Select(s => new SelectListItem { Value = s.SubverseName })
+                .OrderBy(s => s.Value)
+                .ToList()
+                .AsEnumerable());
+            }
+            else
+            {
+                return new EmptyResult();
+            }
+        }
+
+        // GET: list of subverses user is subscribed to
+        [ChildActionOnly]
+        public ActionResult SubversesUserIsSubscribedTo(string userName)
+        {
+            if (userName != null)
+            {
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", db.Subscriptions
+                .Where(x => x.Username == userName)
+                .Select(s => new SelectListItem { Value = s.SubverseName })
+                .OrderBy(s => s.Value)
+                .ToList()
+                .AsEnumerable());
+            }
+            else
+            {
+                return new EmptyResult();
+            }
+        }
+
     }
 }

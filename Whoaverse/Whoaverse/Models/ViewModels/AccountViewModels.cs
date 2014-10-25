@@ -72,6 +72,12 @@ namespace Whoaverse.Models
 
         [Display(Name = "Display NSFW content")]
         public bool Enable_adult_content { get; set; }
+
+        [Display(Name = "Publicly display my subscriptions on my profile")]
+        public bool Public_subscriptions { get; set; }
+
+        [Display(Name = "Replace top menu bar with my subscriptions")]
+        public bool Topmenu_from_subscriptions { get; set; }
     }
 
     public class LoginViewModel
