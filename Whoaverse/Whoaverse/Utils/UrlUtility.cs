@@ -12,6 +12,7 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using OpenGraph_Net;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,23 +46,33 @@ namespace Whoaverse.Utils
         {
             try
             {
-                HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(@remoteUri);
-                req.Timeout = 3000;
-                StreamReader SR = new StreamReader(req.GetResponse().GetResponseStream());
-
-                Char[] buffer = new Char[256];
-                int counter = SR.Read(buffer, 0, 256);
-                while (counter > 0)
+                OpenGraph graph = OpenGraph.ParseUrl(@remoteUri);
+                if (graph.Title != null && graph.Title.Length > 0)
                 {
-                    String outputData = new String(buffer, 0, counter);
-                    Match match = Regex.Match(outputData, @"<title>([^<]+)", RegexOptions.IgnoreCase);
-                    if (match.Success)
-                    {
-                        return match.Groups[1].Value;
-                    }
-                    counter = SR.Read(buffer, 0, 256);
+                    return graph.Title;
                 }
+                else
+                {
+                    HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(@remoteUri);
+                    req.Timeout = 3000;
+                    StreamReader SR = new StreamReader(req.GetResponse().GetResponseStream());
+
+                    Char[] buffer = new Char[256];
+                    int counter = SR.Read(buffer, 0, 256);
+                    while (counter > 0)
+                    {
+                        String outputData = new String(buffer, 0, counter);
+                        Match match = Regex.Match(outputData, @"<title>([^<]+)", RegexOptions.IgnoreCase);
+                        if (match.Success)
+                        {
+                            return match.Groups[1].Value;
+                        }
+                        counter = SR.Read(buffer, 0, 256);
+                    }
+                }
+                
                 return "We were unable to suggest a title.";
+
             }
             catch (Exception)
             {
