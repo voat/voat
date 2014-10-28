@@ -79,7 +79,7 @@ else if (!User.Identity.IsAuthenticated)
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
                 ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
-                @Html.Partial("_MessageSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
 
             //type 2 = link submission
@@ -99,7 +99,7 @@ else if (!User.Identity.IsAuthenticated)
                     ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
                 }
 
-                @Html.Partial("_LinkSubmissionDetails", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
         }
 

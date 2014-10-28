@@ -1,0 +1,47 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.Message
+
+@{
+    int commentCount = Convert.ToInt32(ViewData["commentCount"]);
+}
+
+<ul class="flat-list buttons">
+    <li class="first">
+        <a href="/v/@Model.Subverse/comments/@Model.Id" class="comments may-blank">@commentCount comments</a>
+    </li>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        if (User.Identity.Name == Model.Name)
+        {
+            <li>
+                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
+
+                @if (Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
+                {
+                    @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id }, { "submissionSubverse", Model.Subverse } })
+                    @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
+                }
+            </li>
+        }
+        else if (Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
+        {
+            <li>
+                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
+                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id }, { "submissionSubverse", Model.Subverse } })
+                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
+            </li>
+        }
+    }
+</ul>

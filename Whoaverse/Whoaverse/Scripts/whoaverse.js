@@ -643,7 +643,10 @@ function deletecommentsubmit(commentid) {
 }
 
 // submit submission deletion request
-function deletesubmission(submissionid) {
+function deletesubmission(senderButton, submissionid) {
+    var $form = $(senderButton).parents('form');
+    $form.find("#deletestatusmesssage").html("please wait...");
+
     var submissionobject = { "submissionid": submissionid };
 
     $.ajax({
@@ -654,7 +657,7 @@ function deletesubmission(submissionid) {
         datatype: "json"
     });
 
-    //reload body content with background page refresh
+    // reload body content with background page refresh
     $('body').load($(location).attr('href'));
 }
 
@@ -698,14 +701,14 @@ function toggleback(obj) {
 }
 
 // toggle are you sure question for submission deletion
-function togglesubmission(submissionid) {
-    $("#submissionid-" + submissionid).find('.option, .main').toggleClass("active");
+function togglesubmission(obj, submissionid) {
+    $(obj).parent().parent().find('.option, .main').toggleClass("active");
     return false;
 }
 
 // togle back are you sure question for submission deletion
-function togglesubmissionback(submissionid) {
-    $("#submissionid-" + submissionid).find('.option, .error').toggleClass("active");
+function togglesubmissionback(obj) {
+    $(obj).parent().parent().find('.option, .error').toggleClass("active");
     return false;
 }
 

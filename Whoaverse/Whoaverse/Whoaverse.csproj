@@ -597,8 +597,8 @@
     <Content Include="Views\Home\Comments.cshtml" />
     <Content Include="Views\Shared\_VotingIconsSubmission.cshtml" />
     <Content Include="Views\Shared\Submissions\_Submission.cshtml" />
-    <Content Include="Views\Shared\_MessageSubmissionDetails.cshtml" />
-    <Content Include="Views\Shared\_LinkSubmissionDetails.cshtml" />
+    <Content Include="Views\Shared\Submissions\_MessageSubmissionDetails.cshtml" />
+    <Content Include="Views\Shared\Submissions\_LinkSubmissionDetails.cshtml" />
     <Content Include="Views\Shared\Submissions\_SubmissionComment.cshtml" />
     <Content Include="Views\Home\UserProfile.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
@@ -689,11 +689,16 @@
     <Content Include="Views\Partner\PartnerProgramInformation.cshtml" />
     <Content Include="Views\Partner\PartnerIntentRegistration.cshtml" />
     <Content Include="Views\Partner\PartnerProgramIntentSent.cshtml" />
-    <Content Include="Views\Shared\Comments\FlatListButtons\_CommentFlatListButtons.cshtml" />
-    <Content Include="Views\Shared\Comments\FlatListButtons\_FlatListButtonDelete.cshtml" />
-    <Content Include="Views\Shared\Comments\FlatListButtons\_FlatListButtonReport.cshtml" />
+    <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CommentFlatListButtons.cshtml" />
+    <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonDelete.cshtml" />
+    <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonReport.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserIsSubscribedTo.cshtml" />
     <Content Include="Views\Shared\_ListOfSubscribedToSubverses.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_LSFLButtons.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonDelete.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonFlair.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_MSFLButtons.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

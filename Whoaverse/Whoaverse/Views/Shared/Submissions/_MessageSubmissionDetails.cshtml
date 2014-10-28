@@ -31,7 +31,7 @@
 <div id="siteTable" class="sitetable linklisting">
     <div id="submissionid-@Model.Id" class="submission odd link self id-@Model.Id" data-fullname="@Model.Id" data-ups="" data-downs="">
         <a name="submissionTop"></a>
-		<p class="parent"></p>
+        <p class="parent"></p>
         <span class="rank">1</span>
 
         @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
@@ -95,63 +95,7 @@
                 </div>
             }
 
-            <ul class="flat-list buttons">
-                <li class="first">
-                    <a href="/v/@Model.Subverse/comments/@Model.Id" class="comments may-blank">@commentCount comments</a>
-                </li>
-
-                @if (User.Identity.IsAuthenticated)
-                {
-                    if (User.Identity.Name == Model.Name)
-                    {
-                        <li>
-                            <a class="" href="#submissionTop" onclick="return editsubmission(@Model.Id)">edit</a>
-                        </li>
-                        <li>
-                            <form class="toggle del-button " action="#" method="get">
-                                <input class="active" name="executed" value="deleted" type="hidden">
-                                <span class="option main active">
-                                    <a href="javascript:void(0)" class="togglebutton" onclick="return togglesubmission(@Model.Id)">delete</a>
-                                </span>
-                                @if (Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
-                                {
-                                    <span class="option main active">
-                                        <a href="javascript:void(0)" class="togglebutton" onclick="return selectflair(@Model.Id, '@Model.Subverse')">flair</a>
-                                    </span>
-                                    <span class="option main active">
-                                        <a href="javascript:void(0)" class="togglebutton" onclick="return toggleSticky(@Model.Id)" id="togglesticky">toggle sticky</a>
-                                    </span>
-                                }
-                                <span class="option error">
-                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletesubmission(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglesubmissionback(@Model.Id)">no</a>
-                                </span>
-                            </form>
-                        </li>
-                    }
-                    else if (Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
-                    {
-                        <li>
-                            <form class="toggle del-button " action="#" method="get">
-                                <input class="active" name="executed" value="deleted" type="hidden">
-                                <span class="option main active">
-                                    <a href="javascript:void(0)" class="togglebutton" onclick="return togglesubmission(@Model.Id)">delete</a>
-                                </span>
-                                <span class="option main active">
-                                    <a href="javascript:void(0)" class="togglebutton" onclick="return selectflair(@Model.Id, '@Model.Subverse')">flair</a>
-                                </span>
-                                <span class="option main active">
-                                    <a href="javascript:void(0)" class="togglebutton" onclick="return toggleSticky(@Model.Id)" id="togglesticky">toggle sticky</a>
-                                </span>
-                                <span class="option error">
-                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletesubmission(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglesubmissionback(@Model.Id)">no</a>
-                                </span>
-                            </form>
-                        </li>
-                    }
-
-                }
-
-            </ul>
+            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_MSFLButtons.cshtml", Model, new ViewDataDictionary { { "commentCount", commentCount } })
 
         </div>
         <div class="child"></div>
