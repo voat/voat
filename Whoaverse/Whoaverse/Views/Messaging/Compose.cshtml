@@ -75,10 +75,10 @@
                                             };
                                         </script>
                                         <script type="text/javascript"
-                                                src="https://www.google.com/recaptcha/api/challenge?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-">
+                                                src="https://www.google.com/recaptcha/api/challenge?k=@System.Configuration.ConfigurationManager.AppSettings["recaptchaPublicKey"]">
                                         </script>
                                         <noscript>
-                                            <iframe src="https://www.google.com/recaptcha/api/noscript?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-"
+                                            <iframe src="https://www.google.com/recaptcha/api/noscript?k=@System.Configuration.ConfigurationManager.AppSettings["recaptchaPublicKey"]"
                                                     height="300" width="500" frameborder="0"></iframe><br>
                                             <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
                                             <input type="hidden" name="recaptcha_response_field"
@@ -95,10 +95,10 @@
                                             };
                                         </script>
                                         <script type="text/javascript"
-                                                src="http://www.google.com/recaptcha/api/challenge?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-">
+                                                src="http://www.google.com/recaptcha/api/challenge?k=@System.Configuration.ConfigurationManager.AppSettings["recaptchaPublicKey"]">
                                         </script>
                                         <noscript>
-                                            <iframe src="http://www.google.com/recaptcha/api/noscript?k=6LfHu_USAAAAAPa_PDZQPP2zQnhVs1secUolw2P-"
+                                            <iframe src="http://www.google.com/recaptcha/api/noscript?k=@System.Configuration.ConfigurationManager.AppSettings["recaptchaPublicKey"]"
                                                     height="300" width="500" frameborder="0"></iframe><br>
                                             <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
                                             <input type="hidden" name="recaptcha_response_field"
