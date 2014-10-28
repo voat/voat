@@ -185,55 +185,21 @@ namespace Whoaverse.Controllers
                         // check if target subverse has thumbnails setting enabled before generating a thumbnail
                         if (targetSubverse.enable_thumbnails == true)
                         {
+                            string extension = Path.GetExtension(message.MessageContent);
 
-                            // if domain is youtube, try generating a thumbnail for the video
-                            if (domain == "youtube.com")
+                            // this is a direct link to image
+                            if (extension != String.Empty && extension != null)
                             {
-                                try
+                                if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
                                 {
-                                    string thumbFileName = ThumbGenerator.GenerateThumbFromYoutubeVideo(message.MessageContent);
-                                    message.Thumbnail = thumbFileName;
-                                }
-                                catch (Exception)
-                                {
-                                    // thumnail generation failed, skip adding thumbnail
-                                }
-                            }
-                            else
-                            {
-                                string extension = Path.GetExtension(message.MessageContent);
-
-                                // this is a direct link to image
-                                if (extension != String.Empty && extension != null)
-                                {
-                                    if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
+                                    try
                                     {
-                                        try
-                                        {
-                                            string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
-                                            message.Thumbnail = thumbFileName;
-                                        }
-                                        catch (Exception)
-                                        {
-                                            // thumnail generation failed, skip adding thumbnail
-                                        }
+                                        string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
+                                        message.Thumbnail = thumbFileName;
                                     }
-                                    else
+                                    catch (Exception)
                                     {
-                                        // try generating a thumbnail by using the Open Graph Protocol
-                                        try
-                                        {
-                                            OpenGraph graph = OpenGraph.ParseUrl(message.MessageContent);
-                                            if (graph.Image != null)
-                                            {
-                                                string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(graph.Image.ToString());
-                                                message.Thumbnail = thumbFileName;
-                                            }
-                                        }
-                                        catch (Exception)
-                                        {
-                                            // thumnail generation failed, skip adding thumbnail
-                                        }
+                                        // thumnail generation failed, skip adding thumbnail
                                     }
                                 }
                                 else
@@ -252,6 +218,23 @@ namespace Whoaverse.Controllers
                                     {
                                         // thumnail generation failed, skip adding thumbnail
                                     }
+                                }
+                            }
+                            else
+                            {
+                                // try generating a thumbnail by using the Open Graph Protocol
+                                try
+                                {
+                                    OpenGraph graph = OpenGraph.ParseUrl(message.MessageContent);
+                                    if (graph.Image != null)
+                                    {
+                                        string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(graph.Image.ToString());
+                                        message.Thumbnail = thumbFileName;
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    // thumnail generation failed, skip adding thumbnail
                                 }
                             }
                         }

@@ -57,6 +57,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="Kaliko.ImageLibrary">
+      <HintPath>..\packages\ImageLibrary.2.0.0\lib\Kaliko.ImageLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="MarkdownDeep">
       <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
     </Reference>
@@ -477,7 +480,7 @@
     <Content Include="Graphics\mail-icon.png" />
     <Content Include="Graphics\nsfw-thumb.png" />
     <Content Include="Graphics\pattern-welcome.png" />
-    <Content Include="Graphics\Temp\paypal_donate.png" />
+    <Content Include="Graphics\Temp\button_60countries_185x70.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\whoaverse-404.png" />
     <Content Include="Graphics\whoaverse-bg.jpg" />
