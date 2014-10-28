@@ -61,7 +61,7 @@ namespace Whoaverse.Controllers
                 if (submissionId != null && submissionId.Subverses.name == subversetoshow)
                 {
                     // check if caller is subverse owner or moderator, if not, deny listing
-                    if (Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow) || Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                    if (Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow) || Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
                     {
                         var subverseLinkFlairs = db.Subverseflairsettings
                         .Where(n => n.Subversename == subversetoshow)
@@ -95,7 +95,7 @@ namespace Whoaverse.Controllers
         public string TitleFromUri()
         {
             string uri = Request.Params["uri"];
-            return Whoaverse.Utils.UrlUtility.GetTitleFromUri(uri);
+            return UrlUtility.GetTitleFromUri(uri);
         }
 
         // GET: subverse names containing search term (used for autocomplete on new submission views)

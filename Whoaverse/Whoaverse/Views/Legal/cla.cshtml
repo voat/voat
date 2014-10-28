@@ -10,6 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
+@using System.Configuration
 @model Whoaverse.Models.Cla
 
 @{
@@ -159,10 +160,10 @@
                             };
                     </script>
                     <script type="text/javascript"
-                            src="https://www.google.com/recaptcha/api/challenge?k=@System.Configuration.ConfigurationManager.AppSettings["recaptchaPublicKey"]">
+                            src="https://www.google.com/recaptcha/api/challenge?k=@ConfigurationManager.AppSettings["recaptchaPublicKey"]">
                     </script>
                     <noscript>
-                        <iframe src="https://www.google.com/recaptcha/api/noscript?k=@System.Configuration.ConfigurationManager.AppSettings["recaptchaPublicKey"]"
+                        <iframe src="https://www.google.com/recaptcha/api/noscript?k=@ConfigurationManager.AppSettings["recaptchaPublicKey"]"
                                 height="300" width="500" frameborder="0"></iframe><br>
                         <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
                         <input type="hidden" name="recaptcha_response_field"
@@ -179,10 +180,10 @@
                             };
                     </script>
                     <script type="text/javascript"
-                            src="http://www.google.com/recaptcha/api/challenge?k=@System.Configuration.ConfigurationManager.AppSettings["recaptchaPublicKey"]">
+                            src="http://www.google.com/recaptcha/api/challenge?k=@ConfigurationManager.AppSettings["recaptchaPublicKey"]">
                     </script>
                     <noscript>
-                        <iframe src="http://www.google.com/recaptcha/api/noscript?k=@System.Configuration.ConfigurationManager.AppSettings["recaptchaPublicKey"]"
+                        <iframe src="http://www.google.com/recaptcha/api/noscript?k=@ConfigurationManager.AppSettings["recaptchaPublicKey"]"
                                 height="300" width="500" frameborder="0"></iframe><br>
                         <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
                         <input type="hidden" name="recaptcha_response_field"

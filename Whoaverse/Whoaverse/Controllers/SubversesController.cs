@@ -158,12 +158,12 @@ namespace Whoaverse.Controllers
             }
 
             // verify recaptcha if user has less than 25 CCP
-            if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
+            if (Karma.CommentKarma(User.Identity.Name) < 25)
             {
                 // begin recaptcha check
                 bool isCaptchaCodeValid = false;
                 string CaptchaMessage = "";
-                isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
+                isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
 
                 if (!isCaptchaCodeValid)
                 {
@@ -182,10 +182,10 @@ namespace Whoaverse.Controllers
                     // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
                     if (targetSubverse.authorized_submitters_only)
                     {
-                        if (!Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
+                        if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
                         {
                             // user is not a moderator, check if user is an administrator
-                            if (!Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
+                            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
                             {
                                 ModelState.AddModelError("", "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
                                 return View();
@@ -195,7 +195,7 @@ namespace Whoaverse.Controllers
 
                     // accept submission and save it to the database
                     message.Subverse = targetSubverse.name;
-                    message.Date = System.DateTime.Now;
+                    message.Date = DateTime.Now;
                     // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
                     if (targetSubverse.anonymized_mode)
                     {
@@ -242,12 +242,12 @@ namespace Whoaverse.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 // verify recaptcha if user has less than 25 CCP
-                if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
+                if (Karma.CommentKarma(User.Identity.Name) < 25)
                 {
                     // begin recaptcha check
                     bool isCaptchaCodeValid = false;
                     string CaptchaMessage = "";
-                    isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
+                    isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
 
                     if (!isCaptchaCodeValid)
                     {
@@ -266,7 +266,7 @@ namespace Whoaverse.Controllers
                         subverse.title = "/v/" + subverseTmpModel.Name;
                         subverse.description = subverseTmpModel.Description;
                         subverse.sidebar = subverseTmpModel.Sidebar;
-                        subverse.creation_date = System.DateTime.Now;
+                        subverse.creation_date = DateTime.Now;
 
                         // setup default values
                         subverse.type = "link";
@@ -298,7 +298,7 @@ namespace Whoaverse.Controllers
                                     await db.SaveChangesAsync();
 
                                     //subscribe user to the newly created subverse
-                                    Whoaverse.Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
+                                    Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
 
                                     //go to newly created Subverse
                                     return RedirectToAction("Index", "Subverses", new { subversetoshow = subverse.name });
@@ -323,7 +323,7 @@ namespace Whoaverse.Controllers
                                 await db.SaveChangesAsync();
 
                                 //subscribe user to the newly created subverse
-                                Whoaverse.Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
+                                Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
 
                                 //go to newly created Subverse
                                 return RedirectToAction("Index", "Subverses", new { subversetoshow = subverse.name });
@@ -522,7 +522,7 @@ namespace Whoaverse.Controllers
             // register a new session for this subverse
             try
             {
-                string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
+                string currentSubverse = (string)RouteData.Values["subversetoshow"];
                 SessionTracker.Add(currentSubverse, Session.SessionID);
                 ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
             }
@@ -552,7 +552,7 @@ namespace Whoaverse.Controllers
                             // check if user wants to see NSFW content by reading user preference
                             if (User.Identity.IsAuthenticated)
                             {
-                                if (Whoaverse.Utils.User.AdultContentEnabled(User.Identity.Name))
+                                if (Utils.User.AdultContentEnabled(User.Identity.Name))
                                 {
                                     return View(submissions.ToPagedList(pageNumber, pageSize));
                                 }
@@ -565,7 +565,7 @@ namespace Whoaverse.Controllers
                             else
                             {
                                 // check if user wants to see NSFW content by reading NSFW cookie
-                                if (!this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                                if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                                 {
                                     return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
                                 }
@@ -599,7 +599,7 @@ namespace Whoaverse.Controllers
                     // check if user wants to see NSFW content by reading user preference
                     if (User.Identity.IsAuthenticated)
                     {
-                        if (Whoaverse.Utils.User.AdultContentEnabled(User.Identity.Name))
+                        if (Utils.User.AdultContentEnabled(User.Identity.Name))
                         {
                             // display adult content
                             return View(submissions.ToPagedList(pageNumber, pageSize));
@@ -617,7 +617,7 @@ namespace Whoaverse.Controllers
                     else
                     {
                         // check if user wants to see NSFW content by reading NSFW cookie
-                        if (!this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                        if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                         {
                             // filter adult content
                             var sfwsubmissions = db.Messages
@@ -773,7 +773,7 @@ namespace Whoaverse.Controllers
                     HttpCookie cookie = new HttpCookie("NSFWEnabled");
                     cookie.Value = "whoaverse nsfw warning cookie";
                     cookie.Expires = DateTime.Now.AddDays(1);
-                    this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+                    ControllerContext.HttpContext.Response.Cookies.Add(cookie);
 
                     // redirect to destination subverse
                     return RedirectToAction("Index", "Subverses", new { subversetoshow = destination });
@@ -813,7 +813,7 @@ namespace Whoaverse.Controllers
                 // register a new session for this subverse                
                 try
                 {
-                    string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
+                    string currentSubverse = (string)RouteData.Values["subversetoshow"];
                     SessionTracker.Add(currentSubverse, Session.SessionID);
                     ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
                 }
@@ -850,7 +850,7 @@ namespace Whoaverse.Controllers
                             if (User.Identity.IsAuthenticated)
                             {
                                 // check if user wants to see NSFW content by reading user preference
-                                if (Whoaverse.Utils.User.AdultContentEnabled(User.Identity.Name))
+                                if (Utils.User.AdultContentEnabled(User.Identity.Name))
                                 {
                                     return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                                 }
@@ -862,7 +862,7 @@ namespace Whoaverse.Controllers
                             else
                             {
                                 // check if user wants to see NSFW content by reading NSFW cookie
-                                if (!this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                                if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                                 {
                                     return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
                                 }
@@ -903,7 +903,7 @@ namespace Whoaverse.Controllers
                     // check if user wants to see NSFW content by reading user preference
                     if (User.Identity.IsAuthenticated)
                     {
-                        if (Whoaverse.Utils.User.AdultContentEnabled(User.Identity.Name))
+                        if (Utils.User.AdultContentEnabled(User.Identity.Name))
                         {
                             return View("Index", submissions.ToPagedList(pageNumber, pageSize));
                         }
@@ -930,7 +930,7 @@ namespace Whoaverse.Controllers
                     else
                     {
                         // check if user wants to see NSFW content by reading NSFW cookie
-                        if (!this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                        if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                         {
                             IQueryable<Message> sfwsubmissions;
 
@@ -1016,7 +1016,7 @@ namespace Whoaverse.Controllers
             if (subverseModel != null)
             {
                 // check if caller is subverse owner, if not, deny listing
-                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
                 {
                     var subverseModerators = db.SubverseAdmins
                     .Where(n => n.SubverseName == subversetoshow)
@@ -1052,7 +1052,7 @@ namespace Whoaverse.Controllers
             if (subverseModel != null)
             {
                 // check if caller is subverse owner, if not, deny listing
-                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
                 {
                     ViewBag.SubverseModel = subverseModel;
                     ViewBag.SubverseName = subversetoshow;
@@ -1092,7 +1092,7 @@ namespace Whoaverse.Controllers
                         if (currentlyModerating.Count < 11)
                         {
                             // check if caller is subverse owner, if not, deny posting
-                            if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
+                            if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
                             {
                                 // check that user is not already moderating given subverse
                                 var isAlreadyModerator = db.SubverseAdmins
@@ -1137,7 +1137,7 @@ namespace Whoaverse.Controllers
                     else
                     {
                         // check if caller is subverse owner, if not, deny posting
-                        if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
+                        if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
                         {
                             subverseAdmin.SubverseName = subverseModel.name;
                             db.SubverseAdmins.Add(subverseAdmin);
@@ -1253,7 +1253,7 @@ namespace Whoaverse.Controllers
                 if (subverse != null)
                 {
                     // check if caller has clearance to remove a moderator
-                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) && moderatorToBeRemoved.Username != User.Identity.Name)
+                    if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) && moderatorToBeRemoved.Username != User.Identity.Name)
                     {
                         // execute removal
                         SubverseAdmin subverseAdmin = await db.SubverseAdmins.FindAsync(id);
@@ -1287,7 +1287,7 @@ namespace Whoaverse.Controllers
             if (subverseModel != null)
             {
                 // check if caller is subverse owner, if not, deny listing
-                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
+                if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) || Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
                 {
                     var subverseFlairsettings = db.Subverseflairsettings
                     .Where(n => n.Subversename == subversetoshow)
@@ -1322,7 +1322,7 @@ namespace Whoaverse.Controllers
             if (subverseModel != null)
             {
                 // check if caller is subverse owner, if not, deny listing
-                if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
+                if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) || Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
                 {
                     ViewBag.SubverseModel = subverseModel;
                     ViewBag.SubverseName = subversetoshow;
@@ -1354,7 +1354,7 @@ namespace Whoaverse.Controllers
                 if (subverseModel != null)
                 {
                     // check if caller is subverse owner, if not, deny posting
-                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseFlairSetting.Subversename) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subverseFlairSetting.Subversename))
+                    if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseFlairSetting.Subversename) || Utils.User.IsUserSubverseModerator(User.Identity.Name, subverseFlairSetting.Subversename))
                     {
                         subverseFlairSetting.Subversename = subverseModel.name;
                         db.Subverseflairsettings.Add(subverseFlairSetting);
@@ -1412,7 +1412,7 @@ namespace Whoaverse.Controllers
                 if (subverse != null)
                 {
                     // check if caller has clearance to remove a link flair
-                    if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, subverse.name))
+                    if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) || Utils.User.IsUserSubverseModerator(User.Identity.Name, subverse.name))
                     {
                         // execute removal
                         Subverseflairsetting subverseFlairSetting = await db.Subverseflairsettings.FindAsync(id);
@@ -1521,7 +1521,7 @@ namespace Whoaverse.Controllers
         {
             string loggedInUser = User.Identity.Name;
 
-            Whoaverse.Utils.User.SubscribeToSubverse(loggedInUser, subverseName);
+            Utils.User.SubscribeToSubverse(loggedInUser, subverseName);
             return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
         }
 
@@ -1531,7 +1531,7 @@ namespace Whoaverse.Controllers
         {
             string loggedInUser = User.Identity.Name;
 
-            Whoaverse.Utils.User.UnSubscribeFromSubverse(loggedInUser, subverseName);
+            Utils.User.UnSubscribeFromSubverse(loggedInUser, subverseName);
             return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
         }
     }

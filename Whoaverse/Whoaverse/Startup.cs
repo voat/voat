@@ -1,7 +1,8 @@
 ﻿using Microsoft.Owin;
 using Owin;
+using Whoaverse;
 
-[assembly: OwinStartupAttribute(typeof(Whoaverse.Startup))]
+[assembly: OwinStartup(typeof(Startup))]
 namespace Whoaverse
 {
     public partial class Startup

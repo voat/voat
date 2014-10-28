@@ -10,8 +10,9 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model Whoaverse.Models.Message
+@model Message
 
+@using Whoaverse.Models.ViewModels
 @using Whoaverse.Utils;
 @using Whoaverse.Models;
 
@@ -30,7 +31,7 @@
     var singleComment = from c in Model.Comments where c.Id == commentId select c;
     var commentModel = singleComment.FirstOrDefault();
 
-    Whoaverse.Models.ViewModels.SubmissionViewModel submissionViewModel = new Whoaverse.Models.ViewModels.SubmissionViewModel();
+    SubmissionViewModel submissionViewModel = new SubmissionViewModel();
     submissionViewModel.CommentModel = commentModel;
     submissionViewModel.SubmissionModel = Model;
 
@@ -224,7 +225,7 @@
 
 @{
     //look for children comments to this root comment and display them
-    IEnumerable<Whoaverse.Models.Comment> childComments;
+    IEnumerable<Comment> childComments;
 
     if (sortingMode == "new")
     {

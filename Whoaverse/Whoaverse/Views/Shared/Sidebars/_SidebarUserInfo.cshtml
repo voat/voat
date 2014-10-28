@@ -62,7 +62,7 @@
                     <div class="bottom">
                         @if (Whoaverse.Utils.User.UserBadges(userName).Count > 0)
                         {
-                            foreach (var badge in @Whoaverse.Utils.User.UserBadges(userName))
+                            foreach (var badge in Whoaverse.Utils.User.UserBadges(userName))
                             {
                                 if (badge.Badge.BadgeGraphics != null)
                                 {

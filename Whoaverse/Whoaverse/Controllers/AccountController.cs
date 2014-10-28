@@ -99,7 +99,7 @@ namespace Whoaverse.Controllers
                 await SignInAsync(user, model.RememberMe);
 
                 // Read User Theme preference and set value to session variable
-                Session["UserTheme"] = Whoaverse.Utils.User.UserStylePreference(user.UserName);
+                Session["UserTheme"] = Utils.User.UserStylePreference(user.UserName);
                 return RedirectToLocal(returnUrl);
             }
 
@@ -132,7 +132,7 @@ namespace Whoaverse.Controllers
                 // begin recaptcha check
                 bool isCaptchaCodeValid = false;
                 string CaptchaMessage = "";
-                isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
+                isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
 
                 if (!isCaptchaCodeValid)
                 {
@@ -408,7 +408,7 @@ namespace Whoaverse.Controllers
                     AuthenticationManager.SignOut();
 
                     // execute delete action
-                    if (Whoaverse.Utils.User.DeleteUser(User.Identity.Name))
+                    if (Utils.User.DeleteUser(User.Identity.Name))
                     {
                         // deletion executed without errors 
                         return View("~/Views/Account/AccountDeleted.cshtml");
@@ -489,7 +489,7 @@ namespace Whoaverse.Controllers
 
                     await db.SaveChangesAsync();
                     // apply theme change
-                    Session["UserTheme"] = Whoaverse.Utils.User.UserStylePreference(User.Identity.Name);
+                    Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
                 }
                 else
                 {
@@ -506,7 +506,7 @@ namespace Whoaverse.Controllers
 
                     await db.SaveChangesAsync();
                     // apply theme change
-                    Session["UserTheme"] = Whoaverse.Utils.User.UserStylePreference(User.Identity.Name);
+                    Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
                 }
             }
 

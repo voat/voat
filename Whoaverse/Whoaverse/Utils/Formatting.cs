@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using MarkdownDeep;
 
 namespace Whoaverse.Utils
 {
@@ -23,7 +24,7 @@ namespace Whoaverse.Utils
     {
         
         public static string FormatMessage (String originalMessage){
-            MarkdownDeep.Markdown m = new MarkdownDeep.Markdown(); 
+            Markdown m = new Markdown(); 
   
             m.ExtraMode = true;
             m.SafeMode = true;

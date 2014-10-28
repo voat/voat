@@ -40,7 +40,7 @@ namespace Whoaverse.Controllers
                     // perform upvoting or resetting
                     VotingComments.UpvoteComment(commentId, loggedInUser);
                 }
-                else if (Whoaverse.Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                else if (Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
                 {
                     // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
                     VotingComments.UpvoteComment(commentId, loggedInUser);
@@ -103,7 +103,7 @@ namespace Whoaverse.Controllers
                 // register a new session for this subverse
                 try
                 {
-                    string currentSubverse = (string)this.RouteData.Values["subversetoshow"];
+                    string currentSubverse = (string)RouteData.Values["subversetoshow"];
                     SessionTracker.Add(currentSubverse, Session.SessionID);
                 }
                 catch (Exception)
@@ -134,7 +134,7 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind(Include = "Id,CommentContent,MessageId,ParentId")] Comment comment)
         {
-            comment.Date = System.DateTime.Now;
+            comment.Date = DateTime.Now;
             comment.Name = User.Identity.Name;
             comment.Votes = 0;
             comment.Likes = 0;
@@ -163,7 +163,7 @@ namespace Whoaverse.Controllers
                     if (parentComment != null)
                     {
                         // check if recipient exists
-                        if (Whoaverse.Utils.User.UserExists(parentComment.Name))
+                        if (Utils.User.UserExists(parentComment.Name))
                         {
                             // do not send notification if author is the same as comment author
                             if (parentComment.Name != User.Identity.Name)
@@ -187,7 +187,7 @@ namespace Whoaverse.Controllers
                                     commentReplyNotification.Body = comment.CommentContent;
                                     commentReplyNotification.Subverse = commentMessage.Subverse;
                                     commentReplyNotification.Status = true;
-                                    commentReplyNotification.Timestamp = System.DateTime.Now;
+                                    commentReplyNotification.Timestamp = DateTime.Now;
 
                                     // self = type 1, url = type 2
                                     if (parentComment.Message.Type == 1)
@@ -218,7 +218,7 @@ namespace Whoaverse.Controllers
                     if (commentMessage != null)
                     {
                         // check if recipient exists
-                        if (Whoaverse.Utils.User.UserExists(commentMessage.Name))
+                        if (Utils.User.UserExists(commentMessage.Name))
                         {
                             // do not send notification if author is the same as comment author
                             if (commentMessage.Name != User.Identity.Name)
@@ -242,7 +242,7 @@ namespace Whoaverse.Controllers
                                 postReplyNotification.Body = comment.CommentContent;
                                 postReplyNotification.Subverse = commentMessage.Subverse;
                                 postReplyNotification.Status = true;
-                                postReplyNotification.Timestamp = System.DateTime.Now;
+                                postReplyNotification.Timestamp = DateTime.Now;
 
                                 // self = type 1, url = type 2
                                 if (commentMessage.Type == 1)
@@ -266,7 +266,7 @@ namespace Whoaverse.Controllers
                     }
 
                 }
-                string url = this.Request.UrlReferrer.AbsolutePath;
+                string url = Request.UrlReferrer.AbsolutePath;
                 return Redirect(url);
             }
             else
@@ -295,11 +295,11 @@ namespace Whoaverse.Controllers
                 if (existingComment.Name.Trim() == User.Identity.Name)
                 {
                     existingComment.CommentContent = model.CommentContent;
-                    existingComment.LastEditDate = System.DateTime.Now;
+                    existingComment.LastEditDate = DateTime.Now;
                     db.SaveChanges();
 
                     //parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
-                    string formattedComment = Utils.Formatting.FormatMessage(model.CommentContent);
+                    string formattedComment = Formatting.FormatMessage(model.CommentContent);
                     return Json(new { response = formattedComment });
                 }
                 else
@@ -328,31 +328,31 @@ namespace Whoaverse.Controllers
                 if (commentToDelete.Name == User.Identity.Name)
                 {
                     commentToDelete.Name = "deleted";
-                    commentToDelete.CommentContent = "deleted by author at " + System.DateTime.Now;
+                    commentToDelete.CommentContent = "deleted by author at " + DateTime.Now;
                     await db.SaveChangesAsync();
                 }
                 // delete comment if delete request is issued by subverse moderator
-                else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
+                else if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
                 {
                     // notify comment author that his comment has been deleted by a moderator
-                    Utils.MesssagingUtility.SendPrivateMessage(
+                    MesssagingUtility.SendPrivateMessage(
                         "Whoaverse",
                         commentToDelete.Name,
                         "Your comment has been deleted by a moderator",
                         "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.MessageId + "/" + commentToDelete.Id + ") has been deleted by: " +
-                        "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " on: " + System.DateTime.Now + "  " + Environment.NewLine +
+                        "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " on: " + DateTime.Now + "  " + Environment.NewLine +
                         "Original comment content was: " + Environment.NewLine +
                         "---" + Environment.NewLine +
                         commentToDelete.CommentContent
                         );
 
                     commentToDelete.Name = "deleted";
-                    commentToDelete.CommentContent = "deleted by a moderator at " + System.DateTime.Now;
+                    commentToDelete.CommentContent = "deleted by a moderator at " + DateTime.Now;
                     await db.SaveChangesAsync();
                 }
             }
 
-            string url = this.Request.UrlReferrer.AbsolutePath;
+            string url = Request.UrlReferrer.AbsolutePath;
             return Redirect(url);
         }
     }

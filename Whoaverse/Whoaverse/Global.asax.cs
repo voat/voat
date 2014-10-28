@@ -8,7 +8,7 @@ using Whoaverse.Utils;
 
 namespace Whoaverse
 {
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : HttpApplication
     {
         protected void Application_Start()
         {
@@ -42,7 +42,7 @@ namespace Whoaverse
             if (User.Identity.IsAuthenticated)
             {
                 // read style preference
-                Session["UserTheme"] = Whoaverse.Utils.User.UserStylePreference(User.Identity.Name);
+                Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
             }
             else
             {

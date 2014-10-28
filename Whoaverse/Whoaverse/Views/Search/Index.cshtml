@@ -21,7 +21,7 @@
     int commentContributionPoints = 0;
     if (User.Identity.IsAuthenticated)
     {
-        commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
+        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
     } 
 }
 

@@ -1,4 +1,6 @@
-﻿using Kaliko.ImageLibrary;
+﻿using System.IO;
+using System.Web;
+using Kaliko.ImageLibrary;
 using System;
 using System.Drawing;
 using System.Net;
@@ -8,7 +10,7 @@ namespace Whoaverse.Utils
     public static class ThumbGenerator
     {
         //public folder where thumbs should be saved
-        private static string destinationPath = System.Web.HttpContext.Current.Server.MapPath("~/Thumbs");
+        private static string destinationPath = HttpContext.Current.Server.MapPath("~/Thumbs");
 
         // setup default thumb resolution
         private static int maxHeight = 70;
@@ -53,9 +55,9 @@ namespace Whoaverse.Utils
         // Check if a file exists at given location.
         private static bool FileExists(string fileName)
         {
-            var location = System.IO.Path.Combine(destinationPath, fileName);
+            var location = Path.Combine(destinationPath, fileName);
 
-            return (System.IO.File.Exists(location));
+            return (File.Exists(location));
         }
     }
 

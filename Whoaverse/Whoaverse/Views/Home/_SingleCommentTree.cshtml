@@ -10,6 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
+@using Whoaverse.Models
 @model Whoaverse.Models.Message
 
 @{
@@ -18,7 +19,7 @@
 
     string sortingMode = Convert.ToString(ViewData["SortingMode"]);
 
-    IEnumerable<Whoaverse.Models.Comment> firstComments;
+    IEnumerable<Comment> firstComments;
 
     if (sortingMode == "new")
     {

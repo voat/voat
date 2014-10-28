@@ -35,7 +35,7 @@ namespace Whoaverse.Utils
                     privateMessage.Recipient = recipient;
                     privateMessage.Subject = subject;
                     privateMessage.Body = body;
-                    privateMessage.Timestamp = System.DateTime.Now;
+                    privateMessage.Timestamp = DateTime.Now;
                     privateMessage.Status = true;
 
                     db.Privatemessages.Add(privateMessage);

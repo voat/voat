@@ -134,12 +134,12 @@ namespace Whoaverse.Controllers
             }
 
             // verify recaptcha if user has less than 25 CCP
-            if (Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name) < 25)
+            if (Karma.CommentKarma(User.Identity.Name) < 25)
             {
                 // begin recaptcha check
                 bool isCaptchaCodeValid = false;
                 string CaptchaMessage = "";
-                isCaptchaCodeValid = Whoaverse.Utils.ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
+                isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
 
                 if (!isCaptchaCodeValid)
                 {
@@ -158,10 +158,10 @@ namespace Whoaverse.Controllers
                     // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
                     if (targetSubverse.authorized_submitters_only)
                     {
-                        if (!Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
+                        if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
                         {
                             // user is not a moderator, check if user is an administrator
-                            if (!Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
+                            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
                             {
                                 ModelState.AddModelError("", "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
                                 return View();
@@ -173,10 +173,10 @@ namespace Whoaverse.Controllers
                     // generate a thumbnail if submission is a direct link to image or video
                     if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
                     {
-                        string domain = Whoaverse.Utils.UrlUtility.GetDomainFromUri(message.MessageContent);
+                        string domain = UrlUtility.GetDomainFromUri(message.MessageContent);
 
                         // check if hostname is banned before accepting submission
-                        if (Utils.BanningUtility.IsHostnameBanned(domain))
+                        if (BanningUtility.IsHostnameBanned(domain))
                         {
                             ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
                             return View();
@@ -252,7 +252,7 @@ namespace Whoaverse.Controllers
                         // accept submission and save it to the database
                         message.Subverse = targetSubverse.name;
                         // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                        message.Date = System.DateTime.Now;
+                        message.Date = DateTime.Now;
                         message.Likes = 1;
                         db.Messages.Add(message);
                         await db.SaveChangesAsync();
@@ -274,7 +274,7 @@ namespace Whoaverse.Controllers
                             message.Name = User.Identity.Name;
                         }
                         // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                        message.Date = System.DateTime.Now;
+                        message.Date = DateTime.Now;
                         message.Likes = 1;
                         db.Messages.Add(message);
                         await db.SaveChangesAsync();
@@ -317,7 +317,7 @@ namespace Whoaverse.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            if (Whoaverse.Utils.User.UserExists(id) && id != "deleted")
+            if (Utils.User.UserExists(id) && id != "deleted")
             {
                 // show comments
                 if (whattodisplay != null && whattodisplay == "comments")
@@ -368,7 +368,7 @@ namespace Whoaverse.Controllers
             {
                 // show only submissions from subverses that user is subscribed to if user is logged in
                 // also do a check so that user actually has subscriptions
-                if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
                     var submissions = (from m in db.Messages
                                        join s in db.Subscriptions on m.Subverse equals s.SubverseName
@@ -414,7 +414,7 @@ namespace Whoaverse.Controllers
 
                 // setup a cookie to find first time visitors and display welcome banner
                 string cookieName = "NotFirstTime";
-                if (this.ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                 {
                     // not a first time visitor
                     ViewBag.FirstTimeVisitor = false;
@@ -425,7 +425,7 @@ namespace Whoaverse.Controllers
                     HttpCookie cookie = new HttpCookie(cookieName);
                     cookie.Value = "whoaverse first time visitor identifier";
                     cookie.Expires = DateTime.Now.AddMonths(6);
-                    this.ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+                    ControllerContext.HttpContext.Response.Cookies.Add(cookie);
                     ViewBag.FirstTimeVisitor = true;
                 }
 
@@ -433,7 +433,7 @@ namespace Whoaverse.Controllers
                 {
                     // show only submissions from subverses that user is subscribed to if user is logged in
                     // also do a check so that user actually has subscriptions
-                    if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                    if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                     {
                         var submissions = (from m in db.Messages
                                            join s in db.Subscriptions on m.Subverse equals s.SubverseName

@@ -12,6 +12,7 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using System.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 
@@ -58,6 +59,6 @@ namespace Whoaverse.Models
     {
         public ApplicationDbContext() : base("whoaverseUsers") { }
 
-        public System.Data.Entity.DbSet<PartnerInformation> PartnerInformation { get; set; }
+        public DbSet<PartnerInformation> PartnerInformation { get; set; }
     }
 }

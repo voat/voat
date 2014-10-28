@@ -39,7 +39,7 @@ namespace Whoaverse.Controllers
                 if (submissionModel != null)
                 {
                     // check if caller is subverse moderator, if not, deny posting
-                    if (Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+                    if (Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
                     {
                         // find flair by id, apply it to submission
                         var flairModel = db.Subverseflairsettings.Find(flairId);
@@ -84,7 +84,7 @@ namespace Whoaverse.Controllers
                 if (submissionModel != null)
                 {
                     // check if caller is subverse moderator, if not, deny posting
-                    if (Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+                    if (Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
                     {
                         // clear flair and save submission
                         submissionModel.FlairCss = null;
@@ -119,7 +119,7 @@ namespace Whoaverse.Controllers
             if (submissionModel != null)
             {
                 // check if caller is subverse moderator, if not, deny change
-                if (Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+                if (Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
                 {
                     try
                     {
@@ -176,7 +176,7 @@ namespace Whoaverse.Controllers
                     // perform upvoting or resetting
                     Voting.UpvoteSubmission(messageId, loggedInUser);
                 }
-                else if (Whoaverse.Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                else if (Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
                 {
                     // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
                     Voting.UpvoteSubmission(messageId, loggedInUser);
@@ -206,11 +206,11 @@ namespace Whoaverse.Controllers
                 if (existingSubmission.Name.Trim() == User.Identity.Name)
                 {
                     existingSubmission.MessageContent = model.SubmissionContent;
-                    existingSubmission.LastEditDate = System.DateTime.Now;
+                    existingSubmission.LastEditDate = DateTime.Now;
                     db.SaveChanges();
 
                     // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
-                    string formattedSubmission = Utils.Formatting.FormatMessage(model.SubmissionContent);
+                    string formattedSubmission = Formatting.FormatMessage(model.SubmissionContent);
                     return Json(new { response = formattedSubmission });
                 }
                 else
@@ -241,7 +241,7 @@ namespace Whoaverse.Controllers
 
                     if (submissionToDelete.Type == 1)
                     {
-                        submissionToDelete.MessageContent = "deleted by author at " + System.DateTime.Now;
+                        submissionToDelete.MessageContent = "deleted by author at " + DateTime.Now;
                     }
                     else
                     {
@@ -251,36 +251,36 @@ namespace Whoaverse.Controllers
                     await db.SaveChangesAsync();
                 }
                 // delete submission if delete request is issued by subverse moderator
-                else if (Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
+                else if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
                 {
 
                     if (submissionToDelete.Type == 1)
                     {
                         // notify submission author that his submission has been deleted by a moderator
-                        Utils.MesssagingUtility.SendPrivateMessage(
+                        MesssagingUtility.SendPrivateMessage(
                             "Whoaverse",
                             submissionToDelete.Name,
                             "Your submission has been deleted by a moderator",
                             "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.Id + ") has been deleted by: " +
-                            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + System.DateTime.Now + "  " + Environment.NewLine +
+                            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + DateTime.Now + "  " + Environment.NewLine +
                             "Original submission content was: " + Environment.NewLine +
                             "---" + Environment.NewLine +
                             "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
                             "Submission content: " + submissionToDelete.MessageContent
                             );
 
-                        submissionToDelete.MessageContent = "deleted by a moderator at " + System.DateTime.Now;
+                        submissionToDelete.MessageContent = "deleted by a moderator at " + DateTime.Now;
                         submissionToDelete.Name = "deleted";
                     }
                     else
                     {
                         // notify submission author that his submission has been deleted by a moderator
-                        Utils.MesssagingUtility.SendPrivateMessage(
+                        MesssagingUtility.SendPrivateMessage(
                             "Whoaverse",
                             submissionToDelete.Name,
                             "Your submission has been deleted by a moderator",
                             "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.Id + ") has been deleted by: " +
-                            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + System.DateTime.Now + "  " + Environment.NewLine +
+                            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + DateTime.Now + "  " + Environment.NewLine +
                             "Original submission content was: " + Environment.NewLine +
                             "---" + Environment.NewLine +
                             "Link description: " + submissionToDelete.Linkdescription + ", " + Environment.NewLine +
@@ -295,7 +295,7 @@ namespace Whoaverse.Controllers
                 }
             }
 
-            string url = this.Request.UrlReferrer.AbsolutePath;
+            string url = Request.UrlReferrer.AbsolutePath;
             return Redirect(url);
         }
     }

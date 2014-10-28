@@ -34,7 +34,7 @@ namespace Whoaverse.Models
         public string CommentContent { get; set; }
 
         [Required(ErrorMessage = "Date is required.")]
-        public System.DateTime Date { get; set; }
+        public DateTime Date { get; set; }
 
         [Required(ErrorMessage = "MessageId is required.")]
         public int MessageId { get; set; }

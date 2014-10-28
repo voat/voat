@@ -10,6 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
+@using Whoaverse.Utils
 @model Whoaverse.Models.Message
 
 @{
@@ -18,7 +19,7 @@
     int commentContributionPoints = 0;
     if (User.Identity.IsAuthenticated)
     {
-        commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
+        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
     }
 }
 
@@ -77,7 +78,7 @@ else if (!User.Identity.IsAuthenticated)
             {
                 ViewBag.Title = Model.Title + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-                ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
+                ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
                 ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
                 @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
@@ -92,11 +93,11 @@ else if (!User.Identity.IsAuthenticated)
                 //check if submission has a thumb, otherwise point to site logo
                 if (Model.Thumbnail != null)
                 {
-                    ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Thumbs/" + @Model.Thumbnail;
+                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + "/Thumbs/" + @Model.Thumbnail;
                 }
                 else
                 {
-                    ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
+                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
                 }
 
                 @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })

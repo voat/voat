@@ -59,7 +59,7 @@ namespace Whoaverse.Models
         public Nullable<int> Exclude_sitewide_bans { get; set; }
         public Nullable<int> Traffic_stats_public { get; set; }
         public Nullable<int> Minutes_to_hide_comments { get; set; }        
-        public System.DateTime Creation_date { get; set; }
+        public DateTime Creation_date { get; set; }
         [Required(ErrorMessage = "Please describe what your subverse is about.")]
         public string Description { get; set; }
         public string Owner { get; set; }

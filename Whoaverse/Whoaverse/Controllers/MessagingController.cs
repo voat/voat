@@ -32,9 +32,9 @@ namespace Whoaverse.Controllers
         public ActionResult Inbox(int? page)
         {
             ViewBag.PmView = "inbox";
-            ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPrivateMessages = Whoaverse.Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+            ViewBag.UnreadCommentReplies = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
@@ -85,9 +85,9 @@ namespace Whoaverse.Controllers
         {
             ViewBag.PmView = "inbox";
 
-            ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPrivateMessages = Whoaverse.Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+            ViewBag.UnreadCommentReplies = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
@@ -139,9 +139,9 @@ namespace Whoaverse.Controllers
         {
             ViewBag.PmView = "inbox";
 
-            ViewBag.UnreadCommentReplies = Whoaverse.Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPostReplies = Whoaverse.Utils.User.UnreadPostRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPrivateMessages = Whoaverse.Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+            ViewBag.UnreadCommentReplies = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
             int pageSize = 25;
             int pageNumber = (page ?? 1);
@@ -260,10 +260,10 @@ namespace Whoaverse.Controllers
                 if (privateMessage.Recipient != null && privateMessage.Subject != null && privateMessage.Body != null)
                 {
                     // check if recipient exists
-                    if (Whoaverse.Utils.User.UserExists(privateMessage.Recipient))
+                    if (Utils.User.UserExists(privateMessage.Recipient))
                     {
                         // send the message
-                        privateMessage.Timestamp = System.DateTime.Now;
+                        privateMessage.Timestamp = DateTime.Now;
                         privateMessage.Sender = User.Identity.Name;
                         privateMessage.Status = true;
                         if (!Utils.User.IsUserBanned(User.Identity.Name))
@@ -305,10 +305,10 @@ namespace Whoaverse.Controllers
                 if (privateMessage.Recipient != null && privateMessage.Subject != null && privateMessage.Body != null)
                 {
                     // check if recipient exists
-                    if (Whoaverse.Utils.User.UserExists(privateMessage.Recipient))
+                    if (Utils.User.UserExists(privateMessage.Recipient))
                     {
                         // send the message
-                        privateMessage.Timestamp = System.DateTime.Now;
+                        privateMessage.Timestamp = DateTime.Now;
                         privateMessage.Sender = User.Identity.Name;
                         privateMessage.Status = true;
                         if (!Utils.User.IsUserBanned(User.Identity.Name))

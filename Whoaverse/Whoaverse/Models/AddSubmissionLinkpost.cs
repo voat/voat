@@ -25,7 +25,7 @@ namespace Whoaverse.Models
         public int Id { get; set; }
         public Nullable<short> Votes { get; set; }
         public string Name { get; set; }
-        public System.DateTime Date { get; set; }
+        public DateTime Date { get; set; }
         public int Type { get; set; }
 
         public Nullable<double> Rank { get; set; }

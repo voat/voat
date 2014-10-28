@@ -1,10 +1,11 @@
-﻿@model Whoaverse.Models.Message
+﻿@using Whoaverse.Utils
+@model Whoaverse.Models.Message
 
 @{
     int commentContributionPoints = 0;
     if (User.Identity.IsAuthenticated)
     {
-        commentContributionPoints = Whoaverse.Utils.Karma.CommentKarma(User.Identity.Name);
+        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
     }  
 }
 

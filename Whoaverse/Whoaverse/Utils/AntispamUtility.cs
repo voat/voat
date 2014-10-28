@@ -18,6 +18,7 @@ Copyright Rion Williams 2013
 
 using System;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -48,29 +49,29 @@ namespace Whoaverse.Utils
             // user is submitting a message
             if (filterContext.ActionParameters.ContainsKey("message"))
             {
-                Whoaverse.Models.Message incomingMessage = (Whoaverse.Models.Message)filterContext.ActionParameters["message"];
+                Message incomingMessage = (Message)filterContext.ActionParameters["message"];
                 var targetSubverse = incomingMessage.Subverse;
 
                 // check user LCP for target subverse
                 if (targetSubverse != null)
                 {
-                    var LCPForSubverse = Whoaverse.Utils.Karma.LinkKarmaForSubverse(loggedInUser, targetSubverse);
+                    var LCPForSubverse = Karma.LinkKarmaForSubverse(loggedInUser, targetSubverse);
                     if (LCPForSubverse >= 40)
                     {
                         // lower DelayRequest time
-                        this.DelayRequest = 10;
+                        DelayRequest = 10;
                     }
-                    else if (Whoaverse.Utils.User.IsUserSubverseModerator(loggedInUser, targetSubverse))
+                    else if (User.IsUserSubverseModerator(loggedInUser, targetSubverse))
                     {
                         // lower DelayRequest time
-                        this.DelayRequest = 10;
+                        DelayRequest = 10;
                     }
                 }
             }
             // user is submitting a comment
             else if (filterContext.ActionParameters.ContainsKey("comment"))
             {
-                Whoaverse.Models.Comment incomingComment = (Whoaverse.Models.Comment)filterContext.ActionParameters["comment"];
+                Comment incomingComment = (Comment)filterContext.ActionParameters["comment"];
 
                 using (whoaverseEntities db = new whoaverseEntities())
                 {
@@ -80,16 +81,16 @@ namespace Whoaverse.Utils
                         targetSubverseName = relatedMessage.Subverse;
 
                         // check user CCP for target subverse
-                        int CCPForSubverse = Whoaverse.Utils.Karma.CommentKarmaForSubverse(loggedInUser, targetSubverseName);
+                        int CCPForSubverse = Karma.CommentKarmaForSubverse(loggedInUser, targetSubverseName);
                         if (CCPForSubverse >= 40)
                         {
                             // lower DelayRequest time
-                            this.DelayRequest = 10;
+                            DelayRequest = 10;
                         }
-                        else if (Whoaverse.Utils.User.IsUserSubverseModerator(loggedInUser, targetSubverseName))
+                        else if (User.IsUserSubverseModerator(loggedInUser, targetSubverseName))
                         {
                             // lower DelayRequest time
-                            this.DelayRequest = 10;
+                            DelayRequest = 10;
                         }
                     }
                 }
@@ -175,7 +176,7 @@ namespace Whoaverse.Utils
         });
             byte[] formbytes = Encoding.ASCII.GetBytes(formData);
 
-            using (System.IO.Stream requestStream = request.GetRequestStream())
+            using (Stream requestStream = request.GetRequestStream())
             {
                 requestStream.Write(formbytes, 0, formbytes.Length);
             }
@@ -184,7 +185,7 @@ namespace Whoaverse.Utils
             {
                 using (WebResponse httpResponse = request.GetResponse())
                 {
-                    using (System.IO.TextReader readStream = new System.IO.StreamReader(httpResponse.GetResponseStream(), Encoding.UTF8))
+                    using (TextReader readStream = new StreamReader(httpResponse.GetResponseStream(), Encoding.UTF8))
                     {
                         result = readStream.ReadToEnd().Split(new string[] { "\n", @"\n" }, StringSplitOptions.RemoveEmptyEntries);
                         message = result[1];

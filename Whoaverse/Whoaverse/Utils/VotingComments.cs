@@ -11,7 +11,7 @@ namespace Whoaverse.Utils
         // submit comment upvote
         public static void UpvoteComment(int commentId, string userWhichUpvoted)
         {
-            int result = VotingComments.CheckIfVotedComment(userWhichUpvoted, commentId);
+            int result = CheckIfVotedComment(userWhichUpvoted, commentId);
 
             using (whoaverseEntities db = new whoaverseEntities())
             {
@@ -37,7 +37,7 @@ namespace Whoaverse.Utils
                             tmpVotingTracker.CommentId = commentId;
                             tmpVotingTracker.UserName = userWhichUpvoted;
                             tmpVotingTracker.VoteStatus = 1;
-                            tmpVotingTracker.Timestamp = System.DateTime.Now;
+                            tmpVotingTracker.Timestamp = DateTime.Now;
                             db.Commentvotingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
                         }
@@ -60,7 +60,7 @@ namespace Whoaverse.Utils
                             if (votingTracker != null)
                             {
                                 votingTracker.VoteStatus = 1;
-                                votingTracker.Timestamp = System.DateTime.Now;
+                                votingTracker.Timestamp = DateTime.Now;
                             }
                             db.SaveChanges();
                         }
@@ -87,7 +87,7 @@ namespace Whoaverse.Utils
         // submit submission downvote
         public static void DownvoteComment(int commentId, string userWhichDownvoted)
         {
-            int result = VotingComments.CheckIfVotedComment(userWhichDownvoted, commentId);
+            int result = CheckIfVotedComment(userWhichDownvoted, commentId);
 
             using (whoaverseEntities db = new whoaverseEntities())
             {
@@ -113,7 +113,7 @@ namespace Whoaverse.Utils
                             tmpVotingTracker.CommentId = commentId;
                             tmpVotingTracker.UserName = userWhichDownvoted;
                             tmpVotingTracker.VoteStatus = -1;
-                            tmpVotingTracker.Timestamp = System.DateTime.Now;
+                            tmpVotingTracker.Timestamp = DateTime.Now;
                             db.Commentvotingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
                         }
@@ -136,7 +136,7 @@ namespace Whoaverse.Utils
                             if (votingTracker != null)
                             {
                                 votingTracker.VoteStatus = -1;
-                                votingTracker.Timestamp = System.DateTime.Now;
+                                votingTracker.Timestamp = DateTime.Now;
                             }
                             db.SaveChanges();
                         }

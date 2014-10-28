@@ -32,6 +32,6 @@ namespace Whoaverse.Models
         public string PrivateMessageContent { get; set; }
 
         [Required(ErrorMessage = "Date is required.")]
-        public System.DateTime Date { get; set; }
+        public DateTime Date { get; set; }
     }
 }

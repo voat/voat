@@ -1,4 +1,5 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+﻿@using Whoaverse.Models
+@*This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
     available online at http://www.gnu.org/licenses/gpl.txt;
     you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
     
     var theme = Session["UserTheme"];
 
-    Whoaverse.Models.LoginViewModel loginViewModel = new Whoaverse.Models.LoginViewModel();
+    LoginViewModel loginViewModel = new LoginViewModel();
 
     string routeController = (string)ViewContext.RouteData.Values["controller"];
     string routeAction = (string)ViewContext.RouteData.Values["action"];
@@ -26,7 +27,7 @@
 
     ViewBag.Title = ViewBag.Title ?? "whoaverse: the frontpage of the universe";
     ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
-    ViewBag.Image = ViewBag.Image ?? System.Web.HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
+    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
     ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
 
     if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && ViewBag.PmView == null)

@@ -24,7 +24,7 @@ namespace Whoaverse.Models
         public CommentViewModel()
         {
 
-            this.ChildComments = new HashSet<Comment>();            
+            ChildComments = new HashSet<Comment>();            
 
         }
 
@@ -32,7 +32,7 @@ namespace Whoaverse.Models
         public int Id { get; set; }
         public Nullable<int> Votes { get; set; }
         public string Name { get; set; }
-        public System.DateTime Date { get; set; }
+        public DateTime Date { get; set; }
         public Nullable<int> MessageId { get; set; }
         public string CommentContent { get; set; }
         public int Likes { get; set; }

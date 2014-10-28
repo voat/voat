@@ -29,7 +29,7 @@ namespace Whoaverse.Models
         public string Name { get; set; }
 
         [Required]
-        public System.DateTime Date { get; set; }
+        public DateTime Date { get; set; }
 
         [Required]
         public int Type { get; set; }

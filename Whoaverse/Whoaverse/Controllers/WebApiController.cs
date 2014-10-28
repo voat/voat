@@ -19,6 +19,7 @@ using System.Net;
 using System.Web.Http;
 using Whoaverse.Models;
 using Whoaverse.Models.ApiModels;
+using Whoaverse.Utils;
 
 namespace Whoaverse.Controllers
 {
@@ -31,7 +32,7 @@ namespace Whoaverse.Controllers
         /// <summary>
         ///  This API returns a list of default subverses shown to guests.
         /// </summary>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public IEnumerable<string> DefaultSubverses()
         {
             var listOfDefaultSubverses = db.Defaultsubverses.OrderBy(s => s.position).ToList();
@@ -49,7 +50,7 @@ namespace Whoaverse.Controllers
         /// <summary>
         ///  This API returns a list of banned hostnames for link type submissions.
         /// </summary>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public IEnumerable<string> BannedHostnames()
         {
             var bannedHostnames = db.Banneddomains.OrderBy(s => s.Added_on).ToList();
@@ -67,7 +68,7 @@ namespace Whoaverse.Controllers
         /// <summary>
         ///  This API returns top 200 subverses ordered by subscriber count.
         /// </summary>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public IEnumerable<string> Top200Subverses()
         {
             var top200Subverses = db.Subverses.OrderByDescending(s => s.subscribers).ToList();
@@ -90,7 +91,7 @@ namespace Whoaverse.Controllers
         /// <summary>
         ///  This API returns 100 submissions which are currently shown on WhoaVerse frontpage.
         /// </summary>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public IEnumerable<ApiMessage> Frontpage()
         {
             // get only submissions from default subverses, order by rank
@@ -141,7 +142,7 @@ namespace Whoaverse.Controllers
         ///  This API returns 100 submissions which are currently shown on frontpage of a given subverse.
         /// </summary>
         /// <param name="subverse">The name of the subverse for which to fetch submissions.</param>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public IEnumerable<ApiMessage> SubverseFrontpage(string subverse)
         {
             // get only submissions from given subverses, order by rank
@@ -196,7 +197,7 @@ namespace Whoaverse.Controllers
         ///  This API returns a single submission for a given submission ID.
         /// </summary>
         /// <param name="id">The ID of submission to fetch.</param>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public ApiMessage SingleSubmission(int id)
         {
             Message submission = db.Messages.Find(id);
@@ -238,7 +239,7 @@ namespace Whoaverse.Controllers
         ///  This API returns a single comment for a given comment ID.
         /// </summary>
         /// <param name="id">The ID of comment to fetch.</param>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public ApiComment SingleComment(int id)
         {
             Comment comment = db.Comments.Find(id);
@@ -275,7 +276,7 @@ namespace Whoaverse.Controllers
         ///  This API returns the sidebar for a subverse.
         /// </summary>
         /// <param name="subverseName">The name of the subverse for which to fetch the sidebar.</param>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public ApiSubverseInfo SubverseInfo(string subverseName)
         {
             Subverse subverse = db.Subverses.Find(subverseName);
@@ -309,10 +310,10 @@ namespace Whoaverse.Controllers
         ///  This API returns basic information about a user.
         /// </summary>
         /// <param name="userName">The username for which to fetch basic information.</param>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public ApiUserInfo UserInfo(string userName)
         {
-            if (userName != "deleted" && !Whoaverse.Utils.User.UserExists(userName))
+            if (userName != "deleted" && !Utils.User.UserExists(userName))
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
@@ -337,8 +338,8 @@ namespace Whoaverse.Controllers
             }
 
             resultModel.Name = userName;
-            resultModel.CCP = Utils.Karma.CommentKarma(userName);
-            resultModel.LCP = Utils.Karma.LinkKarma(userName);
+            resultModel.CCP = Karma.CommentKarma(userName);
+            resultModel.LCP = Karma.LinkKarma(userName);
             resultModel.RegistrationDate = Utils.User.GetUserRegistrationDateTime(userName);
             resultModel.Badges = resultBadgesList;
 
@@ -350,7 +351,7 @@ namespace Whoaverse.Controllers
         ///  This API returns information about a badge.
         /// </summary>
         /// <param name="badgeId">The badge Id for which to fetch information.</param>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public ApiBadge BadgeInfo(string badgeId)
         {
             Badge badge = db.Badges.Find(badgeId);
@@ -375,7 +376,7 @@ namespace Whoaverse.Controllers
         ///  This API returns comments for a given submission id.
         /// </summary>
         /// <param name="submissionId">The submission Id for which to fetch comments.</param>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public IEnumerable<ApiComment> SubmissionComments(int submissionId) {
             Message submission = db.Messages.Find(submissionId);
 
