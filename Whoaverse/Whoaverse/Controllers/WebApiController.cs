@@ -36,7 +36,7 @@ namespace Whoaverse.Controllers
         {
             var listOfDefaultSubverses = _db.Defaultsubverses.OrderBy(s => s.position).ToList();
 
-            return listOfDefaultSubverses.Select(item => item.name).ToList();
+            return listOfDefaultSubverses.Select(item => item.name);
         }
 
         // GET api/bannedhostnames
@@ -48,7 +48,7 @@ namespace Whoaverse.Controllers
         {
             var bannedHostnames = _db.Banneddomains.OrderBy(s => s.Added_on).ToList();
 
-            return bannedHostnames.Select(item => "Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by).ToList();
+            return bannedHostnames.Select(item => "Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by);
         }
 
         // GET api/top200subverses
@@ -60,7 +60,7 @@ namespace Whoaverse.Controllers
         {
             var top200Subverses = _db.Subverses.OrderByDescending(s => s.subscribers).ToList();
 
-            return top200Subverses.Select(item => "Name: " + item.name + "," + "Description: " + item.description + "," + "Subscribers: " + item.subscribers + "," + "Created: " + item.creation_date).ToList();
+            return top200Subverses.Select(item => "Name: " + item.name + "," + "Description: " + item.description + "," + "Subscribers: " + item.subscribers + "," + "Created: " + item.creation_date);
         }
 
         // GET api/frontpage
