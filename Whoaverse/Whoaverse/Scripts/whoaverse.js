@@ -905,3 +905,36 @@ function toggleSticky(messageId) {
         }
     });
 }
+
+// a function to display a preview of submission without submitting it
+// I am pretty surprised at how my javascript functions have evolved over time, this one may actually be quite alright :)
+function showSubmissionPreview(senderButton) {
+    var rawSubmissionContent = $("#MessageContent").val();
+    if (!rawSubmissionContent.length>0) {
+        $("#submission-preview-area-container").html("Please enter a message in order to get a preview.");
+        $("#submission-preview-area").show();
+        return false;
+    }
+
+    $(senderButton).val("Please wait");
+
+    // get rendered submission and show it
+    var submissionModel = {
+        MessageContent: $("#MessageContent").val()
+    }
+
+    $.ajax({
+        url: '/ajaxhelpers/rendersubmission/',
+        type: 'post',
+        dataType: 'html',
+        success: function (data) {
+            $("#submission-preview-area-container").html(data);
+        },
+        data: submissionModel
+    });
+
+    // show the preview area
+    $("#submission-preview-area").show();
+    $(senderButton).val("Preview");
+    return false;
+}

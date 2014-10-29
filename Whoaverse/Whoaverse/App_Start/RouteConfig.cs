@@ -409,6 +409,13 @@ namespace Whoaverse
                 defaults: new { controller = "AjaxGateway", action = "MessageContent" }
             );
 
+            // ajaxhelpers/rendersubmission
+            routes.MapRoute(
+                name: "RenderSubmission",
+                url: "ajaxhelpers/rendersubmission",
+                defaults: new { controller = "AjaxGateway", action = "RenderSubmission" }
+            );
+
             // ajaxhelpers/linkflairselectdialog
             routes.MapRoute(
                 name: "LinkFlairSelectDialog",

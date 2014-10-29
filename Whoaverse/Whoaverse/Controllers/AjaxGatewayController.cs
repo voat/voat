@@ -92,5 +92,17 @@ namespace Whoaverse.Controllers
 
             return Json(resultList, JsonRequestBehavior.AllowGet);
         }
+
+        // GET: markdown format a submission and return rendered result
+        [Authorize]
+        [HttpPost]
+        public ActionResult RenderSubmission(Message submissionModel)
+        {
+            if (submissionModel != null)
+            {
+                return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", submissionModel);
+            }
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
     }
 }
