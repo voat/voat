@@ -17,5 +17,7 @@ namespace Whoaverse.Models
         public int Id { get; set; }
         public string SubverseName { get; set; }
         public string Username { get; set; }
+    
+        public virtual Subverse Subverse { get; set; }
     }
 }

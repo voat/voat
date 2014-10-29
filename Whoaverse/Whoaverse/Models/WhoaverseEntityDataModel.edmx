@@ -21,7 +21,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Hostname" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Added_by" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Added_on" Type="smalldatetime" Nullable="false" />
+          <Property Name="Added_on" Type="datetime" Nullable="false" />
           <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
         </EntityType>
         <EntityType Name="Bannedusers">
@@ -30,7 +30,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Date_banned" Type="smalldatetime" Nullable="false" />
+          <Property Name="Date_banned" Type="datetime" Nullable="false" />
           <Property Name="Reason" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Banned_by" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
@@ -46,7 +46,7 @@
           <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
           <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
           <Property Name="Status" Type="bit" Nullable="false" />
-          <Property Name="Timestamp" Type="smalldatetime" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
           <Property Name="Markedasunread" Type="bit" Nullable="false" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
@@ -58,8 +58,8 @@
           <Property Name="Votes" Type="int" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CommentContent" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Date" Type="smalldatetime" Nullable="false" />
-          <Property Name="LastEditDate" Type="smalldatetime" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="LastEditDate" Type="datetime" />
           <Property Name="MessageId" Type="int" />
           <Property Name="Likes" Type="bigint" Nullable="false" />
           <Property Name="Dislikes" Type="bigint" Nullable="false" />
@@ -74,7 +74,7 @@
           <Property Name="CommentId" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar(max)" />
           <Property Name="VoteStatus" Type="int" />
-          <Property Name="Timestamp" Type="smalldatetime" />
+          <Property Name="Timestamp" Type="datetime" />
         </EntityType>
         <EntityType Name="Defaultsubverses">
           <Key>
@@ -91,7 +91,7 @@
           <Property Name="Votes" Type="int" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="MessageContent" Type="nvarchar(max)" />
-          <Property Name="Date" Type="smalldatetime" Nullable="false" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
           <Property Name="Type" Type="int" Nullable="false" />
           <Property Name="Linkdescription" Type="nvarchar" MaxLength="200" />
           <Property Name="Title" Type="nvarchar" MaxLength="200" />
@@ -100,7 +100,7 @@
           <Property Name="Likes" Type="bigint" Nullable="false" />
           <Property Name="Dislikes" Type="bigint" Nullable="false" />
           <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
-          <Property Name="LastEditDate" Type="smalldatetime" />
+          <Property Name="LastEditDate" Type="datetime" />
           <Property Name="FlairLabel" Type="nvarchar" MaxLength="50" />
           <Property Name="FlairCss" Type="nvarchar" MaxLength="50" />
           <Property Name="Anonymized" Type="bit" Nullable="false" />
@@ -117,7 +117,7 @@
           <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
           <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
           <Property Name="Status" Type="bit" Nullable="false" />
-          <Property Name="Timestamp" Type="smalldatetime" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
           <Property Name="Markedasunread" Type="bit" Nullable="false" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
@@ -128,7 +128,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Timestamp" Type="smalldatetime" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
           <Property Name="Subject" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
           <Property Name="Status" Type="bit" Nullable="false" />
@@ -164,7 +164,7 @@
           <Property Name="Submission_id" Type="int" Nullable="false" />
           <Property Name="Subversename" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="Stickied_by" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Stickied_date" Type="smalldatetime" Nullable="false" />
+          <Property Name="Stickied_date" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Subscriptions">
           <Key>
@@ -183,7 +183,7 @@
           <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Power" Type="int" Nullable="false" />
           <Property Name="Added_by" Type="nvarchar" MaxLength="50" />
-          <Property Name="Added_on" Type="smalldatetime" />
+          <Property Name="Added_on" Type="datetime" />
         </EntityType>
         <EntityType Name="Subverseflairsettings">
           <Key>
@@ -216,7 +216,7 @@
           <Property Name="exclude_sitewide_bans" Type="bit" />
           <Property Name="traffic_stats_public" Type="bit" />
           <Property Name="minutes_to_hide_comments" Type="int" />
-          <Property Name="creation_date" Type="smalldatetime" Nullable="false" />
+          <Property Name="creation_date" Type="datetime" Nullable="false" />
           <Property Name="stylesheet" Type="nvarchar(max)" />
           <Property Name="subscribers" Type="int" />
           <Property Name="private_subverse" Type="bit" Nullable="false" />
@@ -235,7 +235,7 @@
           <Property Name="Interested_in_bitcoin_payout" Type="bit" Nullable="false" />
           <Property Name="Country" Type="nvarchar" MaxLength="50" />
           <Property Name="City" Type="nvarchar" MaxLength="50" />
-          <Property Name="Date_submitted" Type="smalldatetime" Nullable="false" />
+          <Property Name="Date_submitted" Type="datetime" Nullable="false" />
           <Property Name="Wants_to_be_contacted_at_service_launch" Type="bit" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Wants_to_subscribe_to_whoaverse_news" Type="bit" Nullable="false" />
@@ -247,7 +247,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="BadgeId" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Awarded" Type="smalldatetime" Nullable="false" />
+          <Property Name="Awarded" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Userpreferences">
           <Key>
@@ -271,7 +271,7 @@
           <Property Name="MessageId" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar(max)" />
           <Property Name="VoteStatus" Type="int" />
-          <Property Name="Timestamp" Type="smalldatetime" />
+          <Property Name="Timestamp" Type="datetime" />
         </EntityType>
         <Association Name="FK_Comments_Messages">
           <End Role="Messages" Type="Self.Messages" Multiplicity="0..1">
@@ -350,6 +350,20 @@
             </Principal>
             <Dependent Role="Stickiedsubmissions">
               <PropertyRef Name="Subversename" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subscriptions_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Subscriptions" Type="Self.Subscriptions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Subscriptions">
+              <PropertyRef Name="SubverseName" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -454,6 +468,10 @@
             <End Role="Subverses" EntitySet="Subverses" />
             <End Role="Stickiedsubmissions" EntitySet="Stickiedsubmissions" />
           </AssociationSet>
+          <AssociationSet Name="FK_Subscriptions_Subverses" Association="Self.FK_Subscriptions_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Subscriptions" EntitySet="Subscriptions" />
+          </AssociationSet>
           <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="Self.FK_SubverseAdmins_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
             <End Role="SubverseAdmins" EntitySet="SubverseAdmins" />
@@ -482,7 +500,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Votes" Type="Int32" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Date" Type="DateTime" Precision="0" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Precision="3" Nullable="false" />
           <Property Name="MessageId" Type="Int32" />
           <NavigationProperty Name="Message" Relationship="Self.FK_Comments_Messages" FromRole="Comments" ToRole="Messages" />
           <NavigationProperty Name="Commentvotingtrackers" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Comments" ToRole="Commentvotingtracker" />
@@ -490,7 +508,7 @@
           <Property Name="Likes" Type="Int16" Nullable="false" DefaultValue="1" />
           <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
           <Property Name="ParentId" Type="Int32" />
-          <Property Name="LastEditDate" Type="DateTime" Precision="0" />
+          <Property Name="LastEditDate" Type="DateTime" Precision="3" />
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
@@ -502,7 +520,7 @@
           <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="VoteStatus" Type="Int32" />
           <NavigationProperty Name="Comment" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Commentvotingtracker" ToRole="Comments" />
-          <Property Name="Timestamp" Type="DateTime" Precision="0" />
+          <Property Name="Timestamp" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Message">
           <Key>
@@ -511,7 +529,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Votes" Type="Int16" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Date" Type="DateTime" Precision="0" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Precision="3" Nullable="false" />
           <Property Name="Type" Type="Int32" Nullable="false" />
           <Property Name="Linkdescription" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Title" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
@@ -524,13 +542,11 @@
           <Property Name="Likes" Type="Int16" Nullable="false" DefaultValue="1" />
           <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
           <Property Name="Thumbnail" Type="String" MaxLength="40" FixedLength="true" Unicode="true" />
-          <Property Name="LastEditDate" Type="DateTime" Precision="0" />
+          <Property Name="LastEditDate" Type="DateTime" Precision="3" />
           <Property Name="FlairLabel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="FlairCss" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Stickiedsubmission" Relationship="whoaverseModel.FK_Stickiedsubmissions_Messages" FromRole="Message" ToRole="Stickiedsubmission" />
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Messages1" Relationship="whoaverseModel.FK_Messages_Messages" FromRole="Message" ToRole="Message1" />
-          <NavigationProperty Name="Message1" Relationship="whoaverseModel.FK_Messages_Messages" FromRole="Message1" ToRole="Message" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -541,7 +557,7 @@
           <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="VoteStatus" Type="Int32" />
           <NavigationProperty Name="Message" Relationship="Self.FK_Votingtracker_Messages" FromRole="Votingtracker" ToRole="Messages" />
-          <Property Name="Timestamp" Type="DateTime" Precision="0" />
+          <Property Name="Timestamp" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_Comments_Messages">
           <End Role="Messages" Type="Self.Message" Multiplicity="0..1" />
@@ -646,6 +662,10 @@
             <End Role="Message" EntitySet="Messages" />
             <End Role="Message1" EntitySet="Messages" />
           </AssociationSet>
+          <AssociationSet Name="FK_Subscriptions_Subverses" Association="whoaverseModel.FK_Subscriptions_Subverses">
+            <End Role="Subverse" EntitySet="Subverses" />
+            <End Role="Subscription" EntitySet="Subscriptions" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -669,7 +689,7 @@
           <Property Name="traffic_stats_public" Type="Boolean" DefaultValue="false" />
           <Property Name="minutes_to_hide_comments" Type="Int32" />
           <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subvers" ToRole="Message" />
-          <Property Name="creation_date" Type="DateTime" Precision="0" Nullable="false" />
+          <Property Name="creation_date" Type="DateTime" Precision="3" Nullable="false" />
           <NavigationProperty Name="Defaultsubvers" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="Defaultsubvers" />
           <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="SubverseAdmins" Relationship="whoaverseModel.FK_SubverseAdmins_Subverses" FromRole="Subverse" ToRole="SubverseAdmin" />
@@ -680,6 +700,7 @@
           <NavigationProperty Name="Stickiedsubmissions" Relationship="whoaverseModel.FK_Stickiedsubmissions_Subverses" FromRole="Subverse" ToRole="Stickiedsubmission" />
           <Property Name="authorized_submitters_only" Type="Boolean" Nullable="false" DefaultValue="false" />
           <Property Name="anonymized_mode" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Subscriptions" Relationship="whoaverseModel.FK_Subscriptions_Subverses" FromRole="Subverse" ToRole="Subscription" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
@@ -727,7 +748,7 @@
           <Property Name="Power" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_SubverseAdmins_Subverses" FromRole="SubverseAdmin" ToRole="Subverse" />
           <Property Name="Added_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Added_on" Type="DateTime" Precision="0" />
+          <Property Name="Added_on" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_SubverseAdmins_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
@@ -765,6 +786,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Subscriptions_Subverses" FromRole="Subscription" ToRole="Subverse" />
         </EntityType>
         <EntityType Name="Badge">
           <Key>
@@ -783,7 +805,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="BadgeId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Awarded" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Awarded" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Badge" Relationship="whoaverseModel.FK_Userbadges_Badges" FromRole="Userbadge" ToRole="Badge" />
         </EntityType>
         <Association Name="FK_Userbadges_Badges">
@@ -807,7 +829,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Hostname" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Added_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Added_on" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Added_on" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Reason" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Privatemessage">
@@ -817,7 +839,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Sender" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Recipient" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Subject" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Body" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
           <Property Name="Status" Type="Boolean" Nullable="false" />
@@ -834,7 +856,7 @@
           <Property Name="Sender" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Body" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
           <Property Name="Status" Type="Boolean" Nullable="false" />
-          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Markedasunread" Type="Boolean" Nullable="false" />
           <Property Name="Subject" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Subverse" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
@@ -851,7 +873,7 @@
           <Property Name="Subject" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Body" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
           <Property Name="Status" Type="Boolean" Nullable="false" />
-          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Markedasunread" Type="Boolean" Nullable="false" />
           <Property Name="Subverse" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
         </EntityType>
@@ -908,7 +930,7 @@
           <Property Name="Submission_id" Type="Int32" Nullable="false" />
           <Property Name="Subversename" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Stickied_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Stickied_date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Stickied_date" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Message" Relationship="whoaverseModel.FK_Stickiedsubmissions_Messages" FromRole="Stickiedsubmission" ToRole="Message" />
           <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Stickiedsubmissions_Subverses" FromRole="Stickiedsubmission" ToRole="Subverse" />
         </EntityType>
@@ -942,7 +964,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Date_banned" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Date_banned" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Reason" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Banned_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
@@ -958,7 +980,7 @@
           <Property Name="Interested_in_bitcoin_payout" Type="Boolean" Nullable="false" />
           <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Date_submitted" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Date_submitted" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Wants_to_be_contacted_at_service_launch" Type="Boolean" Nullable="false" />
           <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Wants_to_subscribe_to_whoaverse_news" Type="Boolean" Nullable="false" />
@@ -972,6 +994,20 @@
             </Principal>
             <Dependent Role="Message1">
               <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subscriptions_Subverses">
+          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whoaverseModel.Subscription" Role="Subscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverse">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Subscription">
+              <PropertyRef Name="SubverseName" />
             </Dependent>
           </ReferentialConstraint>
         </Association>

@@ -95,12 +95,10 @@ namespace Whoaverse.Controllers
                 ViewBag.action = "discussion";
             }
 
-            if (selectedsubverse != null)
+            if (selectedsubverse == null) return View();
+            if (!selectedsubverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
-                if (!selectedsubverse.Equals("all", StringComparison.OrdinalIgnoreCase))
-                {
-                    ViewBag.selectedSubverse = selectedsubverse;
-                }
+                ViewBag.selectedSubverse = selectedsubverse;
             }
 
             return View();

@@ -38,6 +38,7 @@
         <EntityTypeShape EntityType="whoaverseModel.Banneduser" Width="1.5" PointX="13.375" PointY="8.75" />
         <EntityTypeShape EntityType="whoaverseModel.Survey" Width="1.5" PointX="8.375" PointY="13.75" />
         <AssociationConnector Association="whoaverseModel.FK_Messages_Messages" />
+        <AssociationConnector Association="whoaverseModel.FK_Subscriptions_Subverses" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
