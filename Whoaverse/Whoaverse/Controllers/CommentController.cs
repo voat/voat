@@ -13,47 +13,47 @@ All Rights Reserved.
 */
 
 using System;
+using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Whoaverse.Models;
-using System.Linq;
 using Whoaverse.Utils;
 
 namespace Whoaverse.Controllers
 {
     public class CommentController : Controller
     {
-        private whoaverseEntities db = new whoaverseEntities();
-        Random rnd = new Random();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
+        readonly Random _rnd = new Random();
 
         // POST: votecomment/{commentId}/{typeOfVote}
         [Authorize]
         public JsonResult VoteComment(int commentId, int typeOfVote)
         {
-            string loggedInUser = User.Identity.Name;
+            var loggedInUser = User.Identity.Name;
 
-            if (typeOfVote == 1)
+            switch (typeOfVote)
             {
-                if (Karma.CommentKarma(loggedInUser) > 20)
-                {
-                    // perform upvoting or resetting
-                    VotingComments.UpvoteComment(commentId, loggedInUser);
-                }
-                else if (Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
-                {
-                    // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
-                    VotingComments.UpvoteComment(commentId, loggedInUser);
-                }
-            }
-            else if (typeOfVote == -1)
-            {
-                // ignore downvote if user comment karma is below certain treshold
-                if (Karma.CommentKarma(loggedInUser) > 100)
-                {
-                    // perform downvoting or resetting
-                    VotingComments.DownvoteComment(commentId, loggedInUser);
-                }
+                case 1:
+                    if (Karma.CommentKarma(loggedInUser) > 20)
+                    {
+                        // perform upvoting or resetting
+                        VotingComments.UpvoteComment(commentId, loggedInUser);
+                    }
+                    else if (Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                    {
+                        // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
+                        VotingComments.UpvoteComment(commentId, loggedInUser);
+                    }
+                    break;
+                case -1:
+                    if (Karma.CommentKarma(loggedInUser) > 100)
+                    {
+                        // perform downvoting or resetting
+                        VotingComments.DownvoteComment(commentId, loggedInUser);
+                    }
+                    break;
             }
 
             Response.StatusCode = 200;
@@ -63,8 +63,7 @@ namespace Whoaverse.Controllers
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort)
         {
-            var subverse = db.Subverses.Find(subversetoshow);
-            //'Boolean Equals(System.String, System.String, System.StringComparison)'            
+            var subverse = _db.Subverses.Find(subversetoshow);
 
             if (subverse != null)
             {
@@ -86,7 +85,7 @@ namespace Whoaverse.Controllers
                     return View("~/Views/Errors/Error.cshtml");
                 }
 
-                Message message = db.Messages.Find(id);
+                var message = _db.Messages.Find(id);
 
                 if (message == null)
                 {
@@ -103,7 +102,7 @@ namespace Whoaverse.Controllers
                 // register a new session for this subverse
                 try
                 {
-                    string currentSubverse = (string)RouteData.Values["subversetoshow"];
+                    var currentSubverse = (string)RouteData.Values["subversetoshow"];
                     SessionTracker.Add(currentSubverse, Session.SessionID);
                 }
                 catch (Exception)
@@ -113,10 +112,7 @@ namespace Whoaverse.Controllers
 
                 return View("~/Views/Home/Comments.cshtml", message);
             }
-            else
-            {
-                return View("~/Views/Errors/Error_404.cshtml");
-            }
+            return View("~/Views/Errors/Error_404.cshtml");
         }
 
         // GET: submitcomment
@@ -142,8 +138,8 @@ namespace Whoaverse.Controllers
             if (ModelState.IsValid)
             {
                 // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
-                Message message = db.Messages.Find(comment.MessageId);
-                if (message != null && message.Anonymized || message.Subverses.anonymized_mode)
+                var message = _db.Messages.Find(comment.MessageId);
+                if (message != null && (message.Anonymized || message.Subverses.anonymized_mode))
                 {
                     comment.Anonymized = true;
                 }
@@ -151,15 +147,15 @@ namespace Whoaverse.Controllers
                 // check if user is banned, don't save the comment if true
                 if (!Utils.User.IsUserBanned(User.Identity.Name))
                 {
-                    db.Comments.Add(comment);
-                    await db.SaveChangesAsync();
+                    _db.Comments.Add(comment);
+                    await _db.SaveChangesAsync();
                 }
 
                 // send comment reply notification to parent comment author if the comment is not a new root comment
                 if (comment.ParentId != null && comment.CommentContent != null)
                 {
                     // find the parent comment and its author
-                    var parentComment = db.Comments.Find(comment.ParentId);
+                    var parentComment = _db.Comments.Find(comment.ParentId);
                     if (parentComment != null)
                     {
                         // check if recipient exists
@@ -170,7 +166,7 @@ namespace Whoaverse.Controllers
                             {
                                 // send the message
                                 var commentReplyNotification = new Commentreplynotification();
-                                var commentMessage = db.Messages.Find(comment.MessageId);
+                                var commentMessage = _db.Messages.Find(comment.MessageId);
                                 if (commentMessage != null)
                                 {
                                     commentReplyNotification.CommentId = comment.Id;
@@ -178,7 +174,7 @@ namespace Whoaverse.Controllers
                                     commentReplyNotification.Recipient = parentComment.Name;
                                     if (parentComment.Message.Anonymized || parentComment.Message.Subverses.anonymized_mode)
                                     {
-                                        commentReplyNotification.Sender = rnd.Next(10000, 20000).ToString();
+                                        commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
                                     }
                                     else
                                     {
@@ -190,18 +186,11 @@ namespace Whoaverse.Controllers
                                     commentReplyNotification.Timestamp = DateTime.Now;
 
                                     // self = type 1, url = type 2
-                                    if (parentComment.Message.Type == 1)
-                                    {
-                                        commentReplyNotification.Subject = parentComment.Message.Title;
-                                    }
-                                    else
-                                    {
-                                        commentReplyNotification.Subject = parentComment.Message.Linkdescription;
-                                    }
+                                    commentReplyNotification.Subject = parentComment.Message.Type == 1 ? parentComment.Message.Title : parentComment.Message.Linkdescription;
 
-                                    db.Commentreplynotifications.Add(commentReplyNotification);
+                                    _db.Commentreplynotifications.Add(commentReplyNotification);
 
-                                    await db.SaveChangesAsync();
+                                    await _db.SaveChangesAsync();
                                 }
                                 else
                                 {
@@ -214,7 +203,7 @@ namespace Whoaverse.Controllers
                 else
                 {
                     // comment reply is sent to a root comment which has no parent id, trigger post reply notification
-                    var commentMessage = db.Messages.Find(comment.MessageId);
+                    var commentMessage = _db.Messages.Find(comment.MessageId);
                     if (commentMessage != null)
                     {
                         // check if recipient exists
@@ -232,7 +221,7 @@ namespace Whoaverse.Controllers
 
                                 if (commentMessage.Anonymized || commentMessage.Subverses.anonymized_mode)
                                 {
-                                    postReplyNotification.Sender = rnd.Next(10000, 20000).ToString();
+                                    postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
                                 }
                                 else
                                 {
@@ -245,18 +234,11 @@ namespace Whoaverse.Controllers
                                 postReplyNotification.Timestamp = DateTime.Now;
 
                                 // self = type 1, url = type 2
-                                if (commentMessage.Type == 1)
-                                {
-                                    postReplyNotification.Subject = commentMessage.Title;
-                                }
-                                else
-                                {
-                                    postReplyNotification.Subject = commentMessage.Linkdescription;
-                                }
+                                postReplyNotification.Subject = commentMessage.Type == 1 ? commentMessage.Title : commentMessage.Linkdescription;
 
-                                db.Postreplynotifications.Add(postReplyNotification);
+                                _db.Postreplynotifications.Add(postReplyNotification);
 
-                                await db.SaveChangesAsync();
+                                await _db.SaveChangesAsync();
                             }
                         }
                     }
@@ -266,19 +248,19 @@ namespace Whoaverse.Controllers
                     }
 
                 }
-                string url = Request.UrlReferrer.AbsolutePath;
-                return Redirect(url);
-            }
-            else
-            {
-                if (Request.IsAjaxRequest())
+                if (Request.UrlReferrer != null)
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    var url = Request.UrlReferrer.AbsolutePath;
+                    return Redirect(url);
                 }
-
-                ModelState.AddModelError(String.Empty, "Sorry, you are doing that too fast. Please try again in 2 minutes.");
-                return View("~/Views/Help/SpeedyGonzales.cshtml");
             }
+            if (Request.IsAjaxRequest())
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            ModelState.AddModelError(String.Empty, "Sorry, you are doing that too fast. Please try again in 2 minutes.");
+            return View("~/Views/Help/SpeedyGonzales.cshtml");
         }
 
         // POST: editcomment
@@ -288,7 +270,7 @@ namespace Whoaverse.Controllers
         [HttpPost]
         public ActionResult EditComment(EditComment model)
         {
-            var existingComment = db.Comments.Find(model.CommentId);
+            var existingComment = _db.Comments.Find(model.CommentId);
 
             if (existingComment != null)
             {
@@ -296,21 +278,15 @@ namespace Whoaverse.Controllers
                 {
                     existingComment.CommentContent = model.CommentContent;
                     existingComment.LastEditDate = DateTime.Now;
-                    db.SaveChanges();
+                    _db.SaveChanges();
 
                     //parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
-                    string formattedComment = Formatting.FormatMessage(model.CommentContent);
+                    var formattedComment = Formatting.FormatMessage(model.CommentContent);
                     return Json(new { response = formattedComment });
                 }
-                else
-                {
-                    return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
-                }
+                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
             }
-            else
-            {
-                return Json("Unauthorized edit or comment not found.", JsonRequestBehavior.AllowGet);
-            }
+            return Json("Unauthorized edit or comment not found.", JsonRequestBehavior.AllowGet);
         }
 
         // POST: deletecomment
@@ -318,18 +294,18 @@ namespace Whoaverse.Controllers
         [Authorize]
         public async Task<ActionResult> DeleteComment(int commentId)
         {
-            Comment commentToDelete = db.Comments.Find(commentId);
+            var commentToDelete = _db.Comments.Find(commentId);
 
             if (commentToDelete != null)
             {
-                string commentSubverse = commentToDelete.Message.Subverse;
+                var commentSubverse = commentToDelete.Message.Subverse;
 
                 // delete comment if the comment author is currently logged in user
                 if (commentToDelete.Name == User.Identity.Name)
                 {
                     commentToDelete.Name = "deleted";
                     commentToDelete.CommentContent = "deleted by author at " + DateTime.Now;
-                    await db.SaveChangesAsync();
+                    await _db.SaveChangesAsync();
                 }
                 // delete comment if delete request is issued by subverse moderator
                 else if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
@@ -348,11 +324,11 @@ namespace Whoaverse.Controllers
 
                     commentToDelete.Name = "deleted";
                     commentToDelete.CommentContent = "deleted by a moderator at " + DateTime.Now;
-                    await db.SaveChangesAsync();
+                    await _db.SaveChangesAsync();
                 }
             }
 
-            string url = Request.UrlReferrer.AbsolutePath;
+            var url = Request.UrlReferrer.AbsolutePath;
             return Redirect(url);
         }
     }
