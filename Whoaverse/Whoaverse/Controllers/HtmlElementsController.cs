@@ -12,90 +12,64 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using System.Globalization;
 using System.Net;
 using System.Web.Mvc;
 using Whoaverse.Models;
 using System.Linq;
-using System;
 
 namespace Whoaverse.Controllers
 {
     public class HtmlElementsController : Controller
     {
-        private whoaverseEntities db = new whoaverseEntities();
-        Random rnd = new Random();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // GET: CommentReplyForm
         public ActionResult CommentReplyForm(int? parentCommentId, int? messageId)
         {
-            if (parentCommentId != null && messageId != null)
-            {
-                ViewBag.MessageId = messageId;
-                ViewBag.ParentCommentId = parentCommentId;
-
-                return PartialView("~/Views/AjaxViews/_CommentReplyForm.cshtml");
-            }
-            else
-            {
+            if (parentCommentId == null || messageId == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }                  
+
+            ViewBag.MessageId = messageId;
+            ViewBag.ParentCommentId = parentCommentId;
+
+            return PartialView("~/Views/AjaxViews/_CommentReplyForm.cshtml");
         }
 
         // GET: PrivateMessageReplyForm
         public ActionResult PrivateMessageReplyForm(int? parentPrivateMessageId, string recipient, string subject)
         {
-            if (parentPrivateMessageId != null)
-            {
-                ViewBag.ParentPrivateMessageId = parentPrivateMessageId;
-                ViewBag.Recipient = recipient;
-                ViewBag.Subject = subject;
+            if (parentPrivateMessageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            ViewBag.ParentPrivateMessageId = parentPrivateMessageId;
+            ViewBag.Recipient = recipient;
+            ViewBag.Subject = subject;
 
-                return PartialView("~/Views/AjaxViews/_PrivateMessageReplyForm.cshtml");
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-        }       
+            return PartialView("~/Views/AjaxViews/_PrivateMessageReplyForm.cshtml");
+        }
 
         // GET: latest single submission comment for given user
         public ActionResult SingleMostRecentCommentByUser(string userName, int? messageId)
         {
-            if (userName != null && messageId != null)
-            {
-                var comment = db.Comments
-                        .Where(c => c.Name == userName && c.MessageId == messageId)
-                        .OrderByDescending(c => c.Id)
-                        .FirstOrDefault();
+            if (userName == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                ViewBag.CommentId = comment.Id;
+            var comment = _db.Comments
+                .Where(c => c.Name == userName && c.MessageId == messageId)
+                .OrderByDescending(c => c.Id)
+                .FirstOrDefault();
 
-                if (comment != null)
-                {
-                    if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
-                    {
-                        comment.Name = comment.Id.ToString();
-                    }
-                    if (comment.ParentId != null)
-                    {
-                        return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
-                    }
-                    else
-                    {
-                        ViewBag.rootComment = true;
-                        return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
-                    }
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }                
-            }
-            else
+            if (comment == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            ViewBag.CommentId = comment.Id;
+
+            if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                comment.Name = comment.Id.ToString(CultureInfo.InvariantCulture);
             }
+            if (comment.ParentId != null)
+            {
+                return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
+            }
+            ViewBag.rootComment = true;
+            return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
         }
-
     }
 }
