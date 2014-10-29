@@ -25,8 +25,7 @@ namespace Whoaverse.Controllers
 {
     public class WebApiController : ApiController
     {
-        private whoaverseEntities db = new whoaverseEntities();
-        Random rnd = new Random();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // GET api/defaultsubverses
         /// <summary>
@@ -35,15 +34,9 @@ namespace Whoaverse.Controllers
         [HttpGet]
         public IEnumerable<string> DefaultSubverses()
         {
-            var listOfDefaultSubverses = db.Defaultsubverses.OrderBy(s => s.position).ToList();
+            var listOfDefaultSubverses = _db.Defaultsubverses.OrderBy(s => s.position).ToList();
 
-            List<string> tmpList = new List<string>();
-            foreach (var item in listOfDefaultSubverses)
-            {
-                tmpList.Add(item.name);
-            }
-
-            return tmpList;
+            return listOfDefaultSubverses.Select(item => item.name).ToList();
         }
 
         // GET api/bannedhostnames
@@ -53,15 +46,9 @@ namespace Whoaverse.Controllers
         [HttpGet]
         public IEnumerable<string> BannedHostnames()
         {
-            var bannedHostnames = db.Banneddomains.OrderBy(s => s.Added_on).ToList();
+            var bannedHostnames = _db.Banneddomains.OrderBy(s => s.Added_on).ToList();
 
-            List<string> tmpList = new List<string>();
-            foreach (var item in bannedHostnames)
-            {
-                tmpList.Add("Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by);
-            }
-
-            return tmpList;
+            return bannedHostnames.Select(item => "Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by).ToList();
         }
 
         // GET api/top200subverses
@@ -71,20 +58,9 @@ namespace Whoaverse.Controllers
         [HttpGet]
         public IEnumerable<string> Top200Subverses()
         {
-            var top200Subverses = db.Subverses.OrderByDescending(s => s.subscribers).ToList();
+            var top200Subverses = _db.Subverses.OrderByDescending(s => s.subscribers).ToList();
 
-            List<string> resultList = new List<string>();
-            foreach (var item in top200Subverses)
-            {
-                resultList.Add(
-                    "Name: " + item.name + "," +
-                    "Description: " + item.description + "," +
-                    "Subscribers: " + item.subscribers + "," +
-                    "Created: " + item.creation_date
-                    );
-            }
-
-            return resultList;
+            return top200Subverses.Select(item => "Name: " + item.name + "," + "Description: " + item.description + "," + "Subscribers: " + item.subscribers + "," + "Created: " + item.creation_date).ToList();
         }
 
         // GET api/frontpage
@@ -95,28 +71,30 @@ namespace Whoaverse.Controllers
         public IEnumerable<ApiMessage> Frontpage()
         {
             // get only submissions from default subverses, order by rank
-            var frontpageSubmissions = (from message in db.Messages
+            var frontpageSubmissions = (from message in _db.Messages
                                         where message.Name != "deleted"
-                                        join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name                                        
+                                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name                                        
                                         select message)
                                         .OrderByDescending(s => s.Rank)
                                         .Take(100)
                                         .ToList();
 
-            List<ApiMessage> resultList = new List<ApiMessage>();
+            var resultList = new List<ApiMessage>();
 
             foreach (var item in frontpageSubmissions)
             {
-                ApiMessage resultModel = new ApiMessage();
+                var resultModel = new ApiMessage
+                {
+                    CommentCount = item.Comments.Count,
+                    Date = item.Date,
+                    Dislikes = item.Dislikes,
+                    Id = item.Id,
+                    LastEditDate = item.LastEditDate,
+                    Likes = item.Likes,
+                    Linkdescription = item.Linkdescription,
+                    MessageContent = item.MessageContent
+                };
 
-                resultModel.CommentCount = item.Comments.Count;
-                resultModel.Date = item.Date;
-                resultModel.Dislikes = item.Dislikes;
-                resultModel.Id = item.Id;
-                resultModel.LastEditDate = item.LastEditDate;
-                resultModel.Likes = item.Likes;
-                resultModel.Linkdescription = item.Linkdescription;
-                resultModel.MessageContent = item.MessageContent;
                 if (item.Anonymized || item.Subverses.anonymized_mode)
                 {
                     resultModel.Name = item.Id.ToString();
@@ -146,7 +124,7 @@ namespace Whoaverse.Controllers
         public IEnumerable<ApiMessage> SubverseFrontpage(string subverse)
         {
             // get only submissions from given subverses, order by rank
-            var frontpageSubmissions = (from message in db.Messages
+            var frontpageSubmissions = (from message in _db.Messages
                                         where message.Name != "deleted" && message.Subverse == subverse
                                         select message)
                                         .OrderByDescending(s => s.Rank)
@@ -158,20 +136,22 @@ namespace Whoaverse.Controllers
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            List<ApiMessage> resultList = new List<ApiMessage>();
+            var resultList = new List<ApiMessage>();
 
             foreach (var item in frontpageSubmissions)
             {
-                ApiMessage resultModel = new ApiMessage();
+                var resultModel = new ApiMessage
+                {
+                    CommentCount = item.Comments.Count,
+                    Date = item.Date,
+                    Dislikes = item.Dislikes,
+                    Id = item.Id,
+                    LastEditDate = item.LastEditDate,
+                    Likes = item.Likes,
+                    Linkdescription = item.Linkdescription,
+                    MessageContent = item.MessageContent
+                };
 
-                resultModel.CommentCount = item.Comments.Count;
-                resultModel.Date = item.Date;
-                resultModel.Dislikes = item.Dislikes;
-                resultModel.Id = item.Id;
-                resultModel.LastEditDate = item.LastEditDate;
-                resultModel.Likes = item.Likes;
-                resultModel.Linkdescription = item.Linkdescription;
-                resultModel.MessageContent = item.MessageContent;
                 if (item.Anonymized || item.Subverses.anonymized_mode)
                 {
                     resultModel.Name = item.Id.ToString();
@@ -200,21 +180,23 @@ namespace Whoaverse.Controllers
         [HttpGet]
         public ApiMessage SingleSubmission(int id)
         {
-            Message submission = db.Messages.Find(id);
+            var submission = _db.Messages.Find(id);
 
             if (submission == null)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            ApiMessage resultModel = new ApiMessage();
+            var resultModel = new ApiMessage
+            {
+                CommentCount = submission.Comments.Count,
+                Id = submission.Id,
+                Date = submission.Date,
+                LastEditDate = submission.LastEditDate,
+                Likes = submission.Likes,
+                Dislikes = submission.Dislikes
+            };
 
-            resultModel.CommentCount = submission.Comments.Count;
-            resultModel.Id = submission.Id;
-            resultModel.Date = submission.Date;
-            resultModel.LastEditDate = submission.LastEditDate;
-            resultModel.Likes = submission.Likes;
-            resultModel.Dislikes = submission.Dislikes;
             if (submission.Anonymized || submission.Subverses.anonymized_mode)
             {
                 resultModel.Name = submission.Id.ToString();
@@ -242,23 +224,25 @@ namespace Whoaverse.Controllers
         [HttpGet]
         public ApiComment SingleComment(int id)
         {
-            Comment comment = db.Comments.Find(id);
+            var comment = _db.Comments.Find(id);
 
             if (comment == null)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            ApiComment resultModel = new ApiComment();
+            var resultModel = new ApiComment
+            {
+                Id = comment.Id,
+                Date = comment.Date,
+                LastEditDate = comment.LastEditDate,
+                Likes = comment.Likes,
+                Dislikes = comment.Dislikes,
+                CommentContent = comment.CommentContent,
+                ParentId = comment.ParentId,
+                MessageId = comment.MessageId
+            };
 
-            resultModel.Id = comment.Id;
-            resultModel.Date = comment.Date;
-            resultModel.LastEditDate = comment.LastEditDate;
-            resultModel.Likes = comment.Likes;
-            resultModel.Dislikes = comment.Dislikes;
-            resultModel.CommentContent = comment.CommentContent;
-            resultModel.ParentId = comment.ParentId;
-            resultModel.MessageId = comment.MessageId;
             if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
             {
                 resultModel.Name = comment.Id.ToString();
@@ -279,7 +263,7 @@ namespace Whoaverse.Controllers
         [HttpGet]
         public ApiSubverseInfo SubverseInfo(string subverseName)
         {
-            Subverse subverse = db.Subverses.Find(subverseName);
+            var subverse = _db.Subverses.Find(subverseName);
 
             if (subverse == null)
             {
@@ -287,20 +271,19 @@ namespace Whoaverse.Controllers
             }
 
             // get subscriber count for selected subverse
-            int subscriberCount = db.Subscriptions.AsEnumerable()
-                                .Where(r => r.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
-                                .Count();
+            var subscriberCount = _db.Subscriptions.AsEnumerable().Count(r => r.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
 
-            ApiSubverseInfo resultModel = new ApiSubverseInfo();
-
-            resultModel.Name = subverse.name;
-            resultModel.CreationDate = subverse.creation_date;
-            resultModel.Description = subverse.description;
-            resultModel.RatedAdult = subverse.rated_adult;
-            resultModel.Sidebar = subverse.sidebar;
-            resultModel.SubscriberCount = subscriberCount;
-            resultModel.Title = subverse.title;
-            resultModel.Type = subverse.type;
+            var resultModel = new ApiSubverseInfo
+            {
+                Name = subverse.name,
+                CreationDate = subverse.creation_date,
+                Description = subverse.description,
+                RatedAdult = subverse.rated_adult,
+                Sidebar = subverse.sidebar,
+                SubscriberCount = subscriberCount,
+                Title = subverse.title,
+                Type = subverse.type
+            };
 
             return resultModel;
         }
@@ -323,19 +306,10 @@ namespace Whoaverse.Controllers
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            ApiUserInfo resultModel = new ApiUserInfo();
+            var resultModel = new ApiUserInfo();
 
-            List<Userbadge> userBadgesList = Utils.User.UserBadges(userName);
-            List<ApiUserBadge> resultBadgesList = new List<ApiUserBadge>();
-
-            foreach (var item in userBadgesList)
-            {
-                ApiUserBadge tmpBadge = new ApiUserBadge();
-                tmpBadge.Awarded = item.Awarded;
-                tmpBadge.BadgeName = item.Badge.BadgeName;
-
-                resultBadgesList.Add(tmpBadge);
-            }
+            var userBadgesList = Utils.User.UserBadges(userName);
+            var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge {Awarded = item.Awarded, BadgeName = item.Badge.BadgeName}).ToList();
 
             resultModel.Name = userName;
             resultModel.CCP = Karma.CommentKarma(userName);
@@ -354,19 +328,20 @@ namespace Whoaverse.Controllers
         [HttpGet]
         public ApiBadge BadgeInfo(string badgeId)
         {
-            Badge badge = db.Badges.Find(badgeId);
+            var badge = _db.Badges.Find(badgeId);
 
             if (badge == null)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            ApiBadge resultModel = new ApiBadge();
-
-            resultModel.BadgeId = badge.BadgeId;
-            resultModel.BadgeGraphics = badge.BadgeGraphics;
-            resultModel.Name = badge.BadgeName;
-            resultModel.Title = badge.BadgeTitle;
+            var resultModel = new ApiBadge
+            {
+                BadgeId = badge.BadgeId,
+                BadgeGraphics = badge.BadgeGraphics,
+                Name = badge.BadgeName,
+                Title = badge.BadgeTitle
+            };
 
             return resultModel;
         }
@@ -378,7 +353,7 @@ namespace Whoaverse.Controllers
         /// <param name="submissionId">The submission Id for which to fetch comments.</param>
         [HttpGet]
         public IEnumerable<ApiComment> SubmissionComments(int submissionId) {
-            Message submission = db.Messages.Find(submissionId);
+            var submission = _db.Messages.Find(submissionId);
 
             if (submission == null)
             {
@@ -391,26 +366,28 @@ namespace Whoaverse.Controllers
                                 orderby commentScore descending
                                 select f;
 
-            List<ApiComment> resultList = new List<ApiComment>();
+            var resultList = new List<ApiComment>();
 
             foreach (var firstComment in firstComments)
             {
                 //do not show deleted comments unless they have replies
-                if (firstComment.Name == "deleted" && submission.Comments.Where(A => A.ParentId == firstComment.Id).Count() == 0)
+                if (firstComment.Name == "deleted" && submission.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
                 {
                     continue;
                 }
 
-                ApiComment resultModel = new ApiComment();
+                var resultModel = new ApiComment
+                {
+                    Id = firstComment.Id,
+                    Date = firstComment.Date,
+                    Dislikes = firstComment.Dislikes,
+                    LastEditDate = firstComment.LastEditDate,
+                    Likes = firstComment.Likes,
+                    MessageId = firstComment.MessageId,
+                    ParentId = firstComment.ParentId,
+                    CommentContent = firstComment.CommentContent
+                };
 
-                resultModel.Id = firstComment.Id;
-                resultModel.Date = firstComment.Date;
-                resultModel.Dislikes = firstComment.Dislikes;
-                resultModel.LastEditDate = firstComment.LastEditDate;
-                resultModel.Likes = firstComment.Likes;
-                resultModel.MessageId = firstComment.MessageId;
-                resultModel.ParentId = firstComment.ParentId;
-                resultModel.CommentContent = firstComment.CommentContent;
                 if (firstComment.Message.Anonymized || firstComment.Message.Subverses.anonymized_mode)
                 {
                     resultModel.Name = firstComment.Id.ToString();
