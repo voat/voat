@@ -23,12 +23,12 @@ namespace Whoaverse.Controllers
 {
     public class AjaxGatewayController : Controller
     {
-        private whoaverseEntities db = new whoaverseEntities();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // GET: MessageContent
         public ActionResult MessageContent(int? messageId)
         {
-            var message = db.Messages.Find(messageId);
+            var message = _db.Messages.Find(messageId);
 
             if (message != null)
             {
@@ -36,16 +36,10 @@ namespace Whoaverse.Controllers
                 {
                     return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", message);
                 }
-                else
-                {
-                    message.MessageContent = "This message only has a title.";
-                    return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", message);
-                }
+                message.MessageContent = "This message only has a title.";
+                return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", message);
             }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
         // GET: subverse link flairs for selected subverse
@@ -53,68 +47,48 @@ namespace Whoaverse.Controllers
         public ActionResult SubverseLinkFlairs(string subversetoshow, int? messageId)
         {
             // get model for selected subverse
-            var subverseModel = db.Subverses.Find(subversetoshow);
+            var subverseModel = _db.Subverses.Find(subversetoshow);
 
-            if (subverseModel != null && messageId != null)
-            {
-                var submissionId = db.Messages.Find(messageId);
-                if (submissionId != null && submissionId.Subverses.name == subversetoshow)
-                {
-                    // check if caller is subverse owner or moderator, if not, deny listing
-                    if (Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow) || Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
-                    {
-                        var subverseLinkFlairs = db.Subverseflairsettings
-                        .Where(n => n.Subversename == subversetoshow)
-                        .Take(10)
-                        .ToList()
-                        .OrderBy(s => s.Id);
-
-                        ViewBag.SubmissionId = messageId;
-                        ViewBag.SubverseName = subversetoshow;
-
-                        return PartialView("~/Views/AjaxViews/_LinkFlairSelectDialog.cshtml", subverseLinkFlairs);
-                    }
-                    else
-                    {
-                        return new HttpUnauthorizedResult();
-                    }
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
-            else
-            {
+            if (subverseModel == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            var submissionId = _db.Messages.Find(messageId);
+            if (submissionId == null || submissionId.Subverses.name != subversetoshow)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            // check if caller is subverse owner or moderator, if not, deny listing
+            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow) &&
+                !Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+                return new HttpUnauthorizedResult();
+            var subverseLinkFlairs = _db.Subverseflairsettings
+                .Where(n => n.Subversename == subversetoshow)
+                .Take(10)
+                .ToList()
+                .OrderBy(s => s.Id);
+
+            ViewBag.SubmissionId = messageId;
+            ViewBag.SubverseName = subversetoshow;
+
+            return PartialView("~/Views/AjaxViews/_LinkFlairSelectDialog.cshtml", subverseLinkFlairs);
         }
 
         // GET: title from Uri
         [Authorize]
         public string TitleFromUri()
         {
-            string uri = Request.Params["uri"];
+            var uri = Request.Params["uri"];
             return UrlUtility.GetTitleFromUri(uri);
         }
 
         // GET: subverse names containing search term (used for autocomplete on new submission views)
         public JsonResult AutocompleteSubverseName(string term)
         {
-            List<string> resultList = new List<string>();
+            var resultList = new List<string>();
 
-            var subverseNameSuggestions = db.Subverses
+            var subverseNameSuggestions = _db.Subverses
                 .Where(s => s.name.ToLower().StartsWith(term))
                 .Take(10).ToArray();
 
             // jquery UI doesn't play nice with key value pairs so we have to build a simple string array
-            if (subverseNameSuggestions.Count() > 0)
-            {
-                foreach (var item in subverseNameSuggestions)
-                {
-                    resultList.Add(item.name);
-                }
-            }
+            if (!subverseNameSuggestions.Any()) return Json(resultList, JsonRequestBehavior.AllowGet);
+            resultList.AddRange(subverseNameSuggestions.Select(item => item.name));
 
             return Json(resultList, JsonRequestBehavior.AllowGet);
         }

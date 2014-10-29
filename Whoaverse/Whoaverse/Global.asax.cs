@@ -29,10 +29,15 @@ namespace Whoaverse
 
         protected void Application_Error(object sender, EventArgs e)
         {
-            Exception ex = Server.GetLastError();
+            var ex = Server.GetLastError();
             if (ex is HttpException && ((HttpException)ex).GetHttpCode() == 404)
             {
-                Response.Redirect("/error/notfound");
+                Response.RedirectToRoute(
+                    new
+                    {
+                        controller = "Error",
+                        action = "NotFound"
+                    });
             }
         }
 

@@ -212,7 +212,7 @@ namespace Whoaverse.Controllers
                             // try generating a thumbnail by using the Open Graph Protocol
                             try
                             {
-                                OpenGraph graph = OpenGraph.ParseUrl(message.MessageContent);
+                                var graph = OpenGraph.ParseUrl(message.MessageContent);
                                 if (graph.Image != null)
                                 {
                                     string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(graph.Image.ToString());
