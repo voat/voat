@@ -24,51 +24,33 @@ namespace Whoaverse.Controllers
 {
     public class SubmissionsController : Controller
     {
-        private whoaverseEntities db = new whoaverseEntities();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // POST: apply a link flair to given submission
         [Authorize]
         [HttpPost]
         public ActionResult ApplyLinkFlair(int? submissionId, int? flairId)
         {
-            if (submissionId != null && flairId != null)
-            {
-                // get model for selected submission
-                var submissionModel = db.Messages.Find(submissionId);
+            if (submissionId == null || flairId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                if (submissionModel != null)
-                {
-                    // check if caller is subverse moderator, if not, deny posting
-                    if (Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
-                    {
-                        // find flair by id, apply it to submission
-                        var flairModel = db.Subverseflairsettings.Find(flairId);
-                        if (flairModel != null && flairModel.Subversename == submissionModel.Subverse)
-                        {
-                            // apply flair and save submission
-                            submissionModel.FlairCss = flairModel.CssClass;
-                            submissionModel.FlairLabel = flairModel.Label;
-                            db.SaveChanges();
-                            return new HttpStatusCodeResult(HttpStatusCode.OK);
-                        }
+            var submissionModel = _db.Messages.Find(submissionId);
+            if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                        // flar model was not found, return badrequest httpstatuscode
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                    }
-                    else
-                    {
-                        return new HttpUnauthorizedResult();
-                    }
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            // check if caller is subverse moderator, if not, deny posting
+            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) &&
+                !Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+                return new HttpUnauthorizedResult();
+
+            // find flair by id, apply it to submission
+            var flairModel = _db.Subverseflairsettings.Find(flairId);
+            if (flairModel == null || flairModel.Subversename != submissionModel.Subverse) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            // apply flair and save submission
+            submissionModel.FlairCss = flairModel.CssClass;
+            submissionModel.FlairLabel = flairModel.Label;
+            _db.SaveChanges();
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         // POST: clear link flair from a given submission
@@ -76,36 +58,18 @@ namespace Whoaverse.Controllers
         [HttpPost]
         public ActionResult ClearLinkFlair(int? submissionId)
         {
-            if (submissionId != null)
-            {
-                // get model for selected submission
-                var submissionModel = db.Messages.Find(submissionId);
+            if (submissionId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            // get model for selected submission
+            var submissionModel = _db.Messages.Find(submissionId);
 
-                if (submissionModel != null)
-                {
-                    // check if caller is subverse moderator, if not, deny posting
-                    if (Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
-                    {
-                        // clear flair and save submission
-                        submissionModel.FlairCss = null;
-                        submissionModel.FlairLabel = null;
-                        db.SaveChanges();
-                        return new HttpStatusCodeResult(HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        return new HttpUnauthorizedResult();
-                    }
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            // check if caller is subverse moderator, if not, deny posting
+            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) && !Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse)) return new HttpUnauthorizedResult();
+            // clear flair and save submission
+            submissionModel.FlairCss = null;
+            submissionModel.FlairLabel = null;
+            _db.SaveChanges();
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         // POST: toggle sticky status of a submission
@@ -114,52 +78,44 @@ namespace Whoaverse.Controllers
         public ActionResult ToggleSticky(int submissionId)
         {
             // get model for selected submission
-            var submissionModel = db.Messages.Find(submissionId);
+            var submissionModel = _db.Messages.Find(submissionId);
 
-            if (submissionModel != null)
+            if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            // check if caller is subverse moderator, if not, deny change
+            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) &&
+                !Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+                return new HttpUnauthorizedResult();
+            try
             {
-                // check if caller is subverse moderator, if not, deny change
-                if (Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) || Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+                // find and clear current sticky if toggling
+                var existingSticky = _db.Stickiedsubmissions.FirstOrDefault(s => s.Submission_id == submissionId);
+                if (existingSticky != null)
                 {
-                    try
-                    {
-                        // find and clear current sticky if toggling
-                        var existingSticky = db.Stickiedsubmissions.Where(s => s.Submission_id == submissionId).FirstOrDefault();
-                        if (existingSticky != null)
-                        {
-                            db.Stickiedsubmissions.Remove(existingSticky);
-                            db.SaveChanges();
-                            return new HttpStatusCodeResult(HttpStatusCode.OK);
-                        }
-
-                        // remove all stickies for subverse matching submission subverse
-                        db.Stickiedsubmissions.RemoveRange(db.Stickiedsubmissions.Where(s => s.Subversename == submissionModel.Subverse));
-
-                        // set new submission as sticky
-                        var stickyModel = new Stickiedsubmission();
-                        stickyModel.Submission_id = submissionId;
-                        stickyModel.Stickied_by = User.Identity.Name;
-                        stickyModel.Stickied_date = DateTime.Now;
-                        stickyModel.Subversename = submissionModel.Subverse;
-
-                        db.Stickiedsubmissions.Add(stickyModel);
-                        db.SaveChanges();
-
-                        return new HttpStatusCodeResult(HttpStatusCode.OK);
-                    }
-                    catch (Exception)
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
-                    }
+                    _db.Stickiedsubmissions.Remove(existingSticky);
+                    _db.SaveChanges();
+                    return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
-                else
+
+                // remove all stickies for subverse matching submission subverse
+                _db.Stickiedsubmissions.RemoveRange(_db.Stickiedsubmissions.Where(s => s.Subversename == submissionModel.Subverse));
+
+                // set new submission as sticky
+                var stickyModel = new Stickiedsubmission
                 {
-                    return new HttpUnauthorizedResult();
-                }
+                    Submission_id = submissionId,
+                    Stickied_by = User.Identity.Name,
+                    Stickied_date = DateTime.Now,
+                    Subversename = submissionModel.Subverse
+                };
+
+                _db.Stickiedsubmissions.Add(stickyModel);
+                _db.SaveChanges();
+
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
             }
-            else
+            catch (Exception)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
             }
         }
 
@@ -167,29 +123,29 @@ namespace Whoaverse.Controllers
         [Authorize]
         public JsonResult Vote(int messageId, int typeOfVote)
         {
-            string loggedInUser = User.Identity.Name;
+            var loggedInUser = User.Identity.Name;
 
-            if (typeOfVote == 1)
+            switch (typeOfVote)
             {
-                if (Karma.CommentKarma(loggedInUser) > 20)
-                {
-                    // perform upvoting or resetting
-                    Voting.UpvoteSubmission(messageId, loggedInUser);
-                }
-                else if (Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
-                {
-                    // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
-                    Voting.UpvoteSubmission(messageId, loggedInUser);
-                }
-            }
-            else if (typeOfVote == -1)
-            {
-                // ignore downvote if user link karma is below certain treshold
-                if (Karma.CommentKarma(loggedInUser) > 100)
-                {
-                    // perform downvoting or resetting
-                    Voting.DownvoteSubmission(messageId, loggedInUser);
-                }
+                case 1:
+                    if (Karma.CommentKarma(loggedInUser) > 20)
+                    {
+                        // perform upvoting or resetting
+                        Voting.UpvoteSubmission(messageId, loggedInUser);
+                    }
+                    else if (Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                    {
+                        // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
+                        Voting.UpvoteSubmission(messageId, loggedInUser);
+                    }
+                    break;
+                case -1:
+                    if (Karma.CommentKarma(loggedInUser) > 100)
+                    {
+                        // perform downvoting or resetting
+                        Voting.DownvoteSubmission(messageId, loggedInUser);
+                    }
+                    break;
             }
             return Json("Voting ok", JsonRequestBehavior.AllowGet);
         }
@@ -199,31 +155,19 @@ namespace Whoaverse.Controllers
         [HttpPost]
         public ActionResult EditSubmission(EditSubmission model)
         {
-            var existingSubmission = db.Messages.Find(model.SubmissionId);
+            var existingSubmission = _db.Messages.Find(model.SubmissionId);
 
-            if (existingSubmission != null)
-            {
-                if (existingSubmission.Name.Trim() == User.Identity.Name)
-                {
-                    existingSubmission.MessageContent = model.SubmissionContent;
-                    existingSubmission.LastEditDate = DateTime.Now;
-                    db.SaveChanges();
-
-                    // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
-                    string formattedSubmission = Formatting.FormatMessage(model.SubmissionContent);
-                    return Json(new { response = formattedSubmission });
-                }
-                else
-                {
-                    return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
-                }
-
-            }
-            else
-            {
+            if (existingSubmission == null)
                 return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
-            }
+            if (existingSubmission.Name.Trim() != User.Identity.Name)
+                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+            existingSubmission.MessageContent = model.SubmissionContent;
+            existingSubmission.LastEditDate = DateTime.Now;
+            _db.SaveChanges();
 
+            // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
+            var formattedSubmission = Formatting.FormatMessage(model.SubmissionContent);
+            return Json(new { response = formattedSubmission });
         }
 
         // POST: deletesubmission
@@ -231,7 +175,7 @@ namespace Whoaverse.Controllers
         [Authorize]
         public async Task<ActionResult> DeleteSubmission(int submissionId)
         {
-            Message submissionToDelete = db.Messages.Find(submissionId);
+            var submissionToDelete = _db.Messages.Find(submissionId);
 
             if (submissionToDelete != null)
             {
@@ -248,7 +192,7 @@ namespace Whoaverse.Controllers
                         submissionToDelete.MessageContent = "http://whoaverse.com";
                     }
 
-                    await db.SaveChangesAsync();
+                    await _db.SaveChangesAsync();
                 }
                 // delete submission if delete request is issued by subverse moderator
                 else if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
@@ -291,7 +235,7 @@ namespace Whoaverse.Controllers
                         submissionToDelete.Name = "deleted";
                     }
 
-                    await db.SaveChangesAsync();
+                    await _db.SaveChangesAsync();
                 }
             }
 
