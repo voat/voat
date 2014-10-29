@@ -21,13 +21,13 @@ namespace Whoaverse.Controllers
 {
     public class DomainsController : Controller
     {
-        private whoaverseEntities db = new whoaverseEntities();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // GET: Domains
         // GET: all submissions which link to given domain
         public ActionResult Index(int? page, string domainname, string ext, string sortingmode)
         {
-            int pageSize = 25;
+            const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
             if (pageNumber < 1)
@@ -39,23 +39,15 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedDomain = domainname + "." + ext;
 
             //check if at least one submission for given domain was found, if not, send to a page not found error
-            var submissions = db.Messages
+            var submissions = _db.Messages
                         .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
                         .OrderByDescending(s => s.Rank)
                         .ThenByDescending(s => s.Date)
                         .Take(100)
                         .ToList();
 
-            if (submissions != null)
-            {
-                ViewBag.Title = "Showing all submissions which link to " + domainname;
-                return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-            }
-            else
-            {
-                ViewBag.SelectedSubverse = "404";
-                return View("~/Views/Errors/Subversenotfound.cshtml");
-            }
+            ViewBag.Title = "Showing all submissions which link to " + domainname;
+            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult @New(int? page, string domainname, string ext, string sortingmode)
@@ -63,41 +55,27 @@ namespace Whoaverse.Controllers
             //sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
 
-            if (sortingmode.Equals("new"))
+            if (!sortingmode.Equals("new")) return RedirectToAction("Index", "Home");
+            ViewBag.SelectedSubverse = "domains";
+            ViewBag.SelectedDomain = domainname + "." + ext;
+
+            const int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
             {
-                ViewBag.SelectedSubverse = "domains";
-                ViewBag.SelectedDomain = domainname + "." + ext;
-
-                int pageSize = 25;
-                int pageNumber = (page ?? 1);
-
-                if (pageNumber < 1)
-                {
-                    return View("~/Views/Errors/Error_404.cshtml");
-                }
-
-                //check if at least one submission for given domain was found, if not, send to a page not found error
-                var submissions = db.Messages
-                            .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
-                            .OrderByDescending(s => s.Date)
-                            .Take(100)
-                            .ToList();
-
-                if (submissions != null)
-                {
-                    ViewBag.Title = "Showing all newest submissions which link to " + domainname;
-                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-                }
-                else
-                {
-                    ViewBag.SelectedSubverse = "404";
-                    return View("~/Views/Errors/Subversenotfound.cshtml");
-                }
+                return View("~/Views/Errors/Error_404.cshtml");
             }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+
+            //check if at least one submission for given domain was found, if not, send to a page not found error
+            var submissions = _db.Messages
+                .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
+                .OrderByDescending(s => s.Date)
+                .Take(100)
+                .ToList();
+
+            ViewBag.Title = "Showing all newest submissions which link to " + domainname;
+            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
         }
     }
 }
