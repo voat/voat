@@ -16,7 +16,6 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -52,7 +51,7 @@ namespace Whoaverse.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                //deny access to registered users
+                // deny access to registered users
                 return RedirectToAction("Index", "Home");
             }
 
@@ -67,44 +66,41 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+            var user = await UserManager.FindAsync(model.UserName, model.Password);
+
+            if (user == null)
             {
-                var user = await UserManager.FindAsync(model.UserName, model.Password);
 
-                if (user == null)
+                // Check if correct username was entered with wrong password and increment failed attempts - lockout account
+                var tmpuser = await UserManager.FindByNameAsync(model.UserName);
+                if (tmpuser != null)
                 {
+                    await UserManager.AccessFailedAsync(tmpuser.Id);
 
-                    // Check if correct username was entered with wrong password and increment failed attempts - lockout account
-                    var tmpuser = await UserManager.FindByNameAsync(model.UserName);
-                    if (tmpuser != null)
+                    // Check if correct username was entered and see if account was locked out, notify
+                    if (await UserManager.IsLockedOutAsync(tmpuser.Id))
                     {
-                        await UserManager.AccessFailedAsync(tmpuser.Id);
-
-                        // Check if correct username was entered and see if account was locked out, notify
-                        if (await UserManager.IsLockedOutAsync(tmpuser.Id))
-                        {
-                            ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
-                            return View(model);
-                        }
+                        ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
+                        return View(model);
                     }
-
-                    ModelState.AddModelError("", "Invalid username or password.");
-                    return View(model);
                 }
 
-                // When token is verified correctly, clear the access failed count used for lockout
-                await UserManager.ResetAccessFailedCountAsync(user.Id);
-
-                // Sign in and continue
-                await SignInAsync(user, model.RememberMe);
-
-                // Read User Theme preference and set value to session variable
-                Session["UserTheme"] = Utils.User.UserStylePreference(user.UserName);
-                return RedirectToLocal(returnUrl);
+                ModelState.AddModelError("", "Invalid username or password.");
+                return View(model);
             }
 
+            // When token is verified correctly, clear the access failed count used for lockout
+            await UserManager.ResetAccessFailedCountAsync(user.Id);
+
+            // Sign in and continue
+            await SignInAsync(user, model.RememberMe);
+
+            // Read User Theme preference and set value to session variable
+            Session["UserTheme"] = Utils.User.UserStylePreference(user.UserName);
+            return RedirectToLocal(returnUrl);
+
             // If we got this far, something failed, redisplay form
-            return View(model);
         }
 
         // GET: /Account/Register
@@ -127,42 +123,34 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+            // begin recaptcha check
+            const string captchaMessage = "";
+            var isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(captchaMessage, Request);
+
+            if (!isCaptchaCodeValid)
             {
-                // begin recaptcha check
-                bool isCaptchaCodeValid = false;
-                string CaptchaMessage = "";
-                isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
+                ModelState.AddModelError("", "Incorrect recaptcha answer.");
+                return View();
+            }
+            // end recaptcha check
 
-                if (!isCaptchaCodeValid)
+            try
+            {
+                var user = new WhoaVerseUser {UserName = model.UserName, RegistrationDateTime = DateTime.Now};
+
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
                 {
-                    ModelState.AddModelError("", "Incorrect recaptcha answer.");
-                    return View();
+                    await SignInAsync(user, isPersistent: false);
+                    // redirect new users to Welcome actionresult
+                    return RedirectToAction("Welcome", "Home");
                 }
-                // end recaptcha check
-
-                try
-                {
-                    var user = new WhoaVerseUser() { UserName = model.UserName };
-
-                    user.RegistrationDateTime = DateTime.Now;
-
-                    var result = await UserManager.CreateAsync(user, model.Password);
-                    if (result.Succeeded)
-                    {
-                        await SignInAsync(user, isPersistent: false);
-                        // redirect new users to Welcome actionresult
-                        return RedirectToAction("Welcome", "Home");
-                    }
-                    else
-                    {
-                        AddErrors(result);
-                    }
-                }
-                catch (Exception)
-                {
-                    ModelState.AddModelError(string.Empty, "Something bad happened. You broke Whoaverse.");
-                }
+                AddErrors(result);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Something bad happened. You broke Whoaverse.");
             }
 
             // If we got this far, something failed, redisplay form
@@ -174,16 +162,8 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Disassociate(string loginProvider, string providerKey)
         {
-            ManageMessageId? message = null;
-            IdentityResult result = await UserManager.RemoveLoginAsync(User.Identity.GetUserId(), new UserLoginInfo(loginProvider, providerKey));
-            if (result.Succeeded)
-            {
-                message = ManageMessageId.RemoveLoginSuccess;
-            }
-            else
-            {
-                message = ManageMessageId.Error;
-            }
+            var result = await UserManager.RemoveLoginAsync(User.Identity.GetUserId(), new UserLoginInfo(loginProvider, providerKey));
+            ManageMessageId? message = result.Succeeded ? ManageMessageId.RemoveLoginSuccess : ManageMessageId.Error;
             return RedirectToAction("Manage", new { Message = message });
         }
 
@@ -208,46 +188,36 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
-            bool hasPassword = HasPassword();
+            var hasPassword = HasPassword();
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
 
             if (hasPassword)
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid) return View(model);
+                var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+                if (result.Succeeded)
                 {
-                    IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
-                    }
-                    else
-                    {
-                        AddErrors(result);
-                    }
+                    return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
                 }
+                AddErrors(result);
             }
             else
             {
                 // User does not have a password so remove any validation errors caused by a missing OldPassword field
-                ModelState state = ModelState["OldPassword"];
+                var state = ModelState["OldPassword"];
                 if (state != null)
                 {
                     state.Errors.Clear();
                 }
 
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid) return View(model);
+                var result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
+                if (result.Succeeded)
                 {
-                    IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
-                    if (result.Succeeded)
-                    {
-                       return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
-                    }
-                    else
-                    {
-                        AddErrors(result);
-                    }
+                    return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
                 }
+                AddErrors(result);
             }            
 
             // If we got this far, something failed, redisplay form
@@ -281,13 +251,10 @@ namespace Whoaverse.Controllers
                 await SignInAsync(user, isPersistent: false);
                 return RedirectToLocal(returnUrl);
             }
-            else
-            {
-                // If the user does not have an account, then prompt the user to create an account
-                ViewBag.ReturnUrl = returnUrl;
-                ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName });
-            }
+            // If the user does not have an account, then prompt the user to create an account
+            ViewBag.ReturnUrl = returnUrl;
+            ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
+            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName });
         }
 
         // POST: /Account/LinkLogin
@@ -334,7 +301,7 @@ namespace Whoaverse.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new WhoaVerseUser() { UserName = model.UserName };
+                var user = new WhoaVerseUser { UserName = model.UserName };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -376,7 +343,7 @@ namespace Whoaverse.Controllers
             {
                 var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
                 ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
-                return (ActionResult)PartialView("_RemoveAccountPartial", linkedAccounts);
+                return PartialView("_RemoveAccountPartial", linkedAccounts);
             }
             catch (Exception)
             {
@@ -401,32 +368,12 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteAccount(DeleteAccountViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    AuthenticationManager.SignOut();
+            if (!ModelState.IsValid) return View("~/Views/Errors/Error.cshtml");
+            if (!User.Identity.IsAuthenticated) return View("~/Views/Errors/Error.cshtml");
+            AuthenticationManager.SignOut();
 
-                    // execute delete action
-                    if (Utils.User.DeleteUser(User.Identity.Name))
-                    {
-                        // deletion executed without errors 
-                        return View("~/Views/Account/AccountDeleted.cshtml");
-                    }
-                    else
-                    {
-                        return View("~/Views/Errors/Error.cshtml");
-                    }
-                }
-                else
-                {
-                    return View("~/Views/Errors/Error.cshtml");
-                }
-            }
-            else
-            {
-                return View("~/Views/Errors/Error.cshtml");
-            }
+            // execute delete action
+            return View(Utils.User.DeleteUser(User.Identity.Name) ? "~/Views/Account/AccountDeleted.cshtml" : "~/Views/Errors/Error.cshtml");
         }
 
         // GET: /Account/UserPreferences
@@ -435,26 +382,28 @@ namespace Whoaverse.Controllers
         {
             try
             {
-                using (whoaverseEntities db = new whoaverseEntities())
+                using (var db = new whoaverseEntities())
                 {
                     var userPreferences = db.Userpreferences.Find(User.Identity.Name);
 
                     if (userPreferences != null)
                     {
                         // load existing preferences and return to view engine
-                        UserPreferencesViewModel tmpModel = new UserPreferencesViewModel();
-                        tmpModel.Disable_custom_css = userPreferences.Disable_custom_css;
-                        tmpModel.Night_mode = userPreferences.Night_mode;
-                        tmpModel.OpenLinksInNewTab = userPreferences.Clicking_mode;
-                        tmpModel.Enable_adult_content = userPreferences.Enable_adult_content;
-                        tmpModel.Public_subscriptions = userPreferences.Public_subscriptions;
-                        tmpModel.Topmenu_from_subscriptions = userPreferences.Topmenu_from_subscriptions;
+                        var tmpModel = new UserPreferencesViewModel
+                        {
+                            Disable_custom_css = userPreferences.Disable_custom_css,
+                            Night_mode = userPreferences.Night_mode,
+                            OpenLinksInNewTab = userPreferences.Clicking_mode,
+                            Enable_adult_content = userPreferences.Enable_adult_content,
+                            Public_subscriptions = userPreferences.Public_subscriptions,
+                            Topmenu_from_subscriptions = userPreferences.Topmenu_from_subscriptions
+                        };
 
                         return PartialView("_UserPreferences", tmpModel);
                     }
                     else
                     {
-                        UserPreferencesViewModel tmpModel = new UserPreferencesViewModel();
+                        var tmpModel = new UserPreferencesViewModel();
                         return PartialView("_UserPreferences", tmpModel);
                     }
                 }
@@ -473,19 +422,19 @@ namespace Whoaverse.Controllers
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions")] UserPreferencesViewModel model)
         {
             // save changes
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
                 var userPreferences = db.Userpreferences.Find(User.Identity.Name);
 
                 if (userPreferences != null)
                 {
                     // modify existing preferences
-                    userPreferences.Disable_custom_css = (bool)model.Disable_custom_css;
-                    userPreferences.Night_mode = (bool)model.Night_mode;
-                    userPreferences.Clicking_mode = (bool)model.OpenLinksInNewTab;
-                    userPreferences.Enable_adult_content = (bool)model.Enable_adult_content;
-                    userPreferences.Public_subscriptions = (bool)model.Public_subscriptions;
-                    userPreferences.Topmenu_from_subscriptions = (bool)model.Topmenu_from_subscriptions;
+                    userPreferences.Disable_custom_css = model.Disable_custom_css;
+                    userPreferences.Night_mode = model.Night_mode;
+                    userPreferences.Clicking_mode = model.OpenLinksInNewTab;
+                    userPreferences.Enable_adult_content = model.Enable_adult_content;
+                    userPreferences.Public_subscriptions = model.Public_subscriptions;
+                    userPreferences.Topmenu_from_subscriptions = model.Topmenu_from_subscriptions;
 
                     await db.SaveChangesAsync();
                     // apply theme change
@@ -494,14 +443,16 @@ namespace Whoaverse.Controllers
                 else
                 {
                     // create a new record for this user in userpreferences table
-                    Userpreference tmpModel = new Userpreference();
-                    tmpModel.Disable_custom_css = (bool)model.Disable_custom_css;
-                    tmpModel.Night_mode = (bool)model.Night_mode;
-                    tmpModel.Clicking_mode = (bool)model.OpenLinksInNewTab;
-                    tmpModel.Enable_adult_content = (bool)model.Enable_adult_content;
-                    tmpModel.Public_subscriptions = (bool)model.Public_subscriptions;
-                    tmpModel.Topmenu_from_subscriptions = (bool)model.Topmenu_from_subscriptions;
-                    tmpModel.Username = User.Identity.Name;
+                    var tmpModel = new Userpreference
+                    {
+                        Disable_custom_css = model.Disable_custom_css,
+                        Night_mode = model.Night_mode,
+                        Clicking_mode = model.OpenLinksInNewTab,
+                        Enable_adult_content = model.Enable_adult_content,
+                        Public_subscriptions = model.Public_subscriptions,
+                        Topmenu_from_subscriptions = model.Topmenu_from_subscriptions,
+                        Username = User.Identity.Name
+                    };
                     db.Userpreferences.Add(tmpModel);                    
 
                     await db.SaveChangesAsync();
@@ -530,7 +481,7 @@ namespace Whoaverse.Controllers
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
             var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-            AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
+            AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, identity);
         }
 
         private void AddErrors(IdentityResult result)
@@ -568,10 +519,7 @@ namespace Whoaverse.Controllers
             {
                 return Redirect(returnUrl);
             }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            return RedirectToAction("Index", "Home");
         }
 
         private class ChallengeResult : HttpUnauthorizedResult
@@ -594,7 +542,7 @@ namespace Whoaverse.Controllers
 
             public override void ExecuteResult(ControllerContext context)
             {
-                var properties = new AuthenticationProperties() { RedirectUri = RedirectUri };
+                var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
                 if (UserId != null)
                 {
                     properties.Dictionary[XsrfKey] = UserId;
