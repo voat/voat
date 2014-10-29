@@ -13,7 +13,6 @@ All Rights Reserved.
 */
 
 using System;
-using System.Web;
 using System.Text;
 using System.Web.Mvc;
 using System.Xml;
@@ -31,15 +30,15 @@ namespace Whoaverse.Utils
         public Encoding ContentEncoding { get; set; }
         public string ContentType { get; set; }
 
-        private readonly SyndicationFeedFormatter feed;
+        private readonly SyndicationFeedFormatter _feed;
         public SyndicationFeedFormatter Feed
         {
-            get { return feed; }
+            get { return _feed; }
         }
 
         public FeedResult(SyndicationFeedFormatter feed)
         {
-            this.feed = feed;
+            _feed = feed;
         }
 
         public override void ExecuteResult(ControllerContext context)
@@ -47,18 +46,18 @@ namespace Whoaverse.Utils
             if (context == null)
                 throw new ArgumentNullException("context");
 
-            HttpResponseBase response = context.HttpContext.Response;
+            var response = context.HttpContext.Response;
             response.ContentType = !string.IsNullOrEmpty(ContentType) ? ContentType : "application/rss+xml";
 
             if (ContentEncoding != null)
                 response.ContentEncoding = ContentEncoding;
 
-            if (feed != null)
-                using (var xmlWriter = new XmlTextWriter(response.Output))
-                {
-                    xmlWriter.Formatting = System.Xml.Formatting.Indented;
-                    feed.WriteTo(xmlWriter);
-                }
+            if (_feed == null) return;
+            using (var xmlWriter = new XmlTextWriter(response.Output))
+            {
+                xmlWriter.Formatting = System.Xml.Formatting.Indented;
+                _feed.WriteTo(xmlWriter);
+            }
         }
     }
 }

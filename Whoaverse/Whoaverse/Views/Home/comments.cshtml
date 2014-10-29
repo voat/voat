@@ -30,7 +30,7 @@
 </style>
 
 <style type="text/css">
-@if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
+@if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
 }
@@ -62,7 +62,7 @@ else if (!User.Identity.IsAuthenticated)
     }
     
 <style type="text/css">
-@if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCSSDisabledForUser(User.Identity.Name))
+@if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
 }

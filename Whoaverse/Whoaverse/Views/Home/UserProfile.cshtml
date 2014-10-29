@@ -35,7 +35,7 @@
             <div class="userstats-heading-1">Submission distribution</div>
             <div class="userstats-body">
                 @{
-                    var userStatsModel = Whoaverse.Utils.User.userStatsModel(@ViewBag.userid);
+                    var userStatsModel = Whoaverse.Utils.User.UserStatsModel(@ViewBag.userid);
 
                     if (userStatsModel.TopSubversesUserContributedTo.Count > 0)
                     {

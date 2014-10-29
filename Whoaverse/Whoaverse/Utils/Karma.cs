@@ -23,16 +23,16 @@ namespace Whoaverse.Utils
         // get link contribution points for a user
         public static int LinkKarma(string userName)
         {
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
 
                 try
                 {
-                    int likes = db.Messages
+                    var likes = db.Messages
                                                 .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
                                                 .Sum(r => (int)r.Likes);
 
-                    int dislikes = db.Messages
+                    var dislikes = db.Messages
                                         .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
                                         .Sum(r => (int)r.Dislikes);
 
@@ -40,7 +40,6 @@ namespace Whoaverse.Utils
                 }
                 catch (Exception)
                 {
-
                     return 0;
                 }
 
@@ -50,16 +49,16 @@ namespace Whoaverse.Utils
         // get link contribution points for a user from a given subverse
         public static int LinkKarmaForSubverse(string userName, string subverseName)
         {
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
                 try
                 {
-                    int likes = db.Messages
+                    var likes = db.Messages
                                                 .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
                                                 .Sum(r => (int)r.Likes);
 
 
-                    int dislikes = db.Messages
+                    var dislikes = db.Messages
                                         .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
                                         .Sum(r => (int)r.Dislikes);
 
@@ -75,15 +74,15 @@ namespace Whoaverse.Utils
         // get comment contribution points for a user
         public static int CommentKarma(string userName)
         {
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
                 try
                 {
-                    int sumOfLikes = db.Comments
+                    var sumOfLikes = db.Comments
                                                .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
                                                .Sum(r => (int)r.Likes);
 
-                    int sumOfdislikes = db.Comments
+                    var sumOfdislikes = db.Comments
                                         .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
                                         .Sum(r => (int)r.Dislikes);
 
@@ -101,7 +100,7 @@ namespace Whoaverse.Utils
         // get comment contribution points for a user from a given subverse
         public static int CommentKarmaForSubverse(string userName, string subverseName)
         {
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
                 try
                 {

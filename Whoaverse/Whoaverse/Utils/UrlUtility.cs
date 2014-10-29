@@ -14,13 +14,9 @@ All Rights Reserved.
 
 using OpenGraph_Net;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Whoaverse.Utils
 {
@@ -32,7 +28,7 @@ namespace Whoaverse.Utils
         {
             try
             {
-                Uri tmpUri = new Uri(completeUri);
+                var tmpUri = new Uri(completeUri);
                 return tmpUri.GetLeftPart(UriPartial.Authority).Replace("/www.", "/").Replace("http://", "").Replace("https://", "");      
             }
             catch (Exception)
@@ -46,31 +42,28 @@ namespace Whoaverse.Utils
         {
             try
             {
-                OpenGraph graph = OpenGraph.ParseUrl(@remoteUri);
-                if (graph.Title != null && graph.Title.Length > 0)
+                var graph = OpenGraph.ParseUrl(@remoteUri);
+                if (!string.IsNullOrEmpty(graph.Title))
                 {
                     return graph.Title;
                 }
-                else
-                {
-                    HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(@remoteUri);
-                    req.Timeout = 3000;
-                    StreamReader SR = new StreamReader(req.GetResponse().GetResponseStream());
+                var req = (HttpWebRequest)WebRequest.Create(@remoteUri);
+                req.Timeout = 3000;
+                var sr = new StreamReader(req.GetResponse().GetResponseStream());
 
-                    Char[] buffer = new Char[256];
-                    int counter = SR.Read(buffer, 0, 256);
-                    while (counter > 0)
+                var buffer = new Char[256];
+                var counter = sr.Read(buffer, 0, 256);
+                while (counter > 0)
+                {
+                    var outputData = new String(buffer, 0, counter);
+                    var match = Regex.Match(outputData, @"<title>([^<]+)", RegexOptions.IgnoreCase);
+                    if (match.Success)
                     {
-                        String outputData = new String(buffer, 0, counter);
-                        Match match = Regex.Match(outputData, @"<title>([^<]+)", RegexOptions.IgnoreCase);
-                        if (match.Success)
-                        {
-                            return match.Groups[1].Value;
-                        }
-                        counter = SR.Read(buffer, 0, 256);
+                        return match.Groups[1].Value;
                     }
+                    counter = sr.Read(buffer, 0, 256);
                 }
-                
+
                 return "We were unable to suggest a title.";
 
             }

@@ -18,37 +18,36 @@ namespace Whoaverse.Utils
 {
     public static class Submissions
     {
+        private const double Tolerance = 0.01;
+
         // calculate submission age in days, hours or minutes for use in views
         public static string CalcSubmissionAge(DateTime inPostingDateTime)
         {
-            DateTime currentDateTime = DateTime.Now;
-            TimeSpan duration = currentDateTime - inPostingDateTime;
+            var currentDateTime = DateTime.Now;
+            var duration = currentDateTime - inPostingDateTime;
 
-            double totalHours = duration.TotalHours;
+            var totalHours = duration.TotalHours;
 
             if (totalHours > 24)
             {
                 return Convert.ToInt32(duration.TotalDays) + " days";
             }
-            else if (totalHours < 24 && totalHours > 1 || totalHours == 1)
+            if (totalHours < 24 && totalHours > 1 || Math.Abs(totalHours - 1) < Tolerance)
             {
                 return Convert.ToInt32(duration.TotalHours) + " hours";
             }
-            else if (totalHours < 1)
+            if (totalHours < 1)
             {
                 return Convert.ToInt32(duration.TotalMinutes) + " minutes";
             }
-            else
-            {
-                return "No idea when this was posted...";
-            }
+            return "No idea when this was posted...";
         }
 
         // calculate submission age in hours from posting date for ranking purposes
         public static double CalcSubmissionAgeDouble(DateTime inPostingDateTime)
         {
-            DateTime currentDateTime = DateTime.Now;
-            TimeSpan duration = currentDateTime - inPostingDateTime;
+            var currentDateTime = DateTime.Now;
+            var duration = currentDateTime - inPostingDateTime;
 
             return duration.TotalHours;            
         }

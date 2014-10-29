@@ -13,9 +13,6 @@ All Rights Reserved.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Whoaverse.Models;
 
 namespace Whoaverse.Utils
@@ -25,18 +22,19 @@ namespace Whoaverse.Utils
         // a method to send a private message to a user, invoked by other methods
         public static bool SendPrivateMessage(string sender, string recipient, string subject, string body)
         {
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
                 try
                 {
-                    Privatemessage privateMessage = new Privatemessage();
-
-                    privateMessage.Sender = sender;
-                    privateMessage.Recipient = recipient;
-                    privateMessage.Subject = subject;
-                    privateMessage.Body = body;
-                    privateMessage.Timestamp = DateTime.Now;
-                    privateMessage.Status = true;
+                    var privateMessage = new Privatemessage
+                    {
+                        Sender = sender,
+                        Recipient = recipient,
+                        Subject = subject,
+                        Body = body,
+                        Timestamp = DateTime.Now,
+                        Status = true
+                    };
 
                     db.Privatemessages.Add(privateMessage);
                     db.SaveChanges();

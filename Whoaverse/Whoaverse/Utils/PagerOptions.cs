@@ -13,10 +13,6 @@ All Rights Reserved.
 */
 
 using PagedList.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace Whoaverse.Utils
 {
@@ -24,27 +20,27 @@ namespace Whoaverse.Utils
     public static class WhoaversePagerOptions
     {
 
-        private static PagedListRenderOptions plro = new PagedListRenderOptions();
+        private static readonly PagedListRenderOptions Plro = new PagedListRenderOptions();
 
         // custom paged list render options without pagination
         public static PagedListRenderOptions PagedListRenderOptions()
         {
-            plro.Display = PagedListDisplayMode.IfNeeded;
-            plro.DisplayLinkToLastPage = PagedListDisplayMode.Never;
-            plro.DisplayLinkToFirstPage = PagedListDisplayMode.Never;
-            plro.DisplayPageCountAndCurrentLocation = false;
-            plro.DisplayLinkToIndividualPages = false;
-            plro.DisplayLinkToNextPage = PagedListDisplayMode.IfNeeded;
-            plro.DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded;
-            plro.LinkToNextPageFormat = "next ›";
-            plro.LinkToPreviousPageFormat = "‹ prev";
-            plro.ContainerDivClasses = new[] { "pagination-container" };
-            plro.LiElementClasses = new[] { "btn-whoaverse-paging" };
-            plro.UlElementClasses = null;
-            plro.ClassToApplyToFirstListItemInPager = null;
-            plro.ClassToApplyToLastListItemInPager = null;
+            Plro.Display = PagedListDisplayMode.IfNeeded;
+            Plro.DisplayLinkToLastPage = PagedListDisplayMode.Never;
+            Plro.DisplayLinkToFirstPage = PagedListDisplayMode.Never;
+            Plro.DisplayPageCountAndCurrentLocation = false;
+            Plro.DisplayLinkToIndividualPages = false;
+            Plro.DisplayLinkToNextPage = PagedListDisplayMode.IfNeeded;
+            Plro.DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded;
+            Plro.LinkToNextPageFormat = "next ›";
+            Plro.LinkToPreviousPageFormat = "‹ prev";
+            Plro.ContainerDivClasses = new[] { "pagination-container" };
+            Plro.LiElementClasses = new[] { "btn-whoaverse-paging" };
+            Plro.UlElementClasses = null;
+            Plro.ClassToApplyToFirstListItemInPager = null;
+            Plro.ClassToApplyToLastListItemInPager = null;
 
-            return plro;
+            return Plro;
         }
 
     }

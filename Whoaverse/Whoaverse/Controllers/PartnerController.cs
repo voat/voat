@@ -73,7 +73,7 @@ namespace Whoaverse.Controllers
             msg.Body = sb.ToString();
 
             // send the email with Partner Intent data
-            if (EmailUtility.sendEmail(msg))
+            if (EmailUtility.SendEmail(msg))
             {
                 msg.Dispose();
                 ViewBag.SelectedSubverse = string.Empty;

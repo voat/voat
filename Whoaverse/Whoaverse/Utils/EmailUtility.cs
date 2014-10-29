@@ -20,13 +20,11 @@ namespace Whoaverse.Utils
     public class EmailUtility
     {
         // handle email sending
-        public static bool sendEmail(MailMessage message)
+        public static bool SendEmail(MailMessage message)
         {
             try
             {
-                SmtpClient smtp = new SmtpClient();
-                smtp.Host = "whoaverse.com";
-                smtp.Port = 25;
+                var smtp = new SmtpClient {Host = "whoaverse.com", Port = 25};
                 message.IsBodyHtml = false;
                 smtp.Send(message);
                 message.Dispose();

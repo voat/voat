@@ -10,33 +10,25 @@ namespace Whoaverse.Utils
     public static class ThumbGenerator
     {
         //public folder where thumbs should be saved
-        private static string destinationPath = HttpContext.Current.Server.MapPath("~/Thumbs");
+        private static readonly string DestinationPath = HttpContext.Current.Server.MapPath("~/Thumbs");
 
         // setup default thumb resolution
-        private static int maxHeight = 70;
-        private static int maxWidth = 70;
+        private const int MaxHeight = 70;
+        private const int MaxWidth = 70;
 
         // generate a thumbnail while removing transparency and preserving aspect ratio
         public static string GenerateThumbFromUrl(string sourceUrl)
         {
-            string randomFileName = GenerateRandomFilename();
+            var randomFileName = GenerateRandomFilename();
 
-            try
-            {
-                WebRequest request = WebRequest.Create(sourceUrl);
-                request.Timeout = 300;
-                WebResponse response = request.GetResponse();
+            var request = WebRequest.Create(sourceUrl);
+            request.Timeout = 300;
+            var response = request.GetResponse();
 
-                var originalImage = new KalikoImage(response.GetResponseStream());
-                originalImage.BackgroundColor = Color.Black;
-                originalImage.GetThumbnailImage(maxWidth, maxHeight, ThumbnailMethod.Pad).SaveJpg(@destinationPath + '\\' + randomFileName + ".jpg", 90);
+            var originalImage = new KalikoImage(response.GetResponseStream()) {BackgroundColor = Color.Black};
+            originalImage.GetThumbnailImage(MaxWidth, MaxHeight, ThumbnailMethod.Pad).SaveJpg(DestinationPath + '\\' + randomFileName + ".jpg", 90);
 
-                return randomFileName + ".jpg";
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return randomFileName + ".jpg";
         }
 
         // Generate a random filename and make sure that the file does not exist.        
@@ -55,7 +47,7 @@ namespace Whoaverse.Utils
         // Check if a file exists at given location.
         private static bool FileExists(string fileName)
         {
-            var location = Path.Combine(destinationPath, fileName);
+            var location = Path.Combine(DestinationPath, fileName);
 
             return (File.Exists(location));
         }

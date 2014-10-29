@@ -1,7 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*
+This source file is subject to version 3 of the GPL license, 
+that is bundled with this package in the file LICENSE, and is 
+available online at http://www.gnu.org/licenses/gpl.txt; 
+you may not use this file except in compliance with the License. 
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+the specific language governing rights and limitations under the License.
+
+All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All Rights Reserved.
+*/
+
+using System;
 using System.Linq;
-using System.Web;
 using Whoaverse.Models;
 
 namespace Whoaverse.Utils
@@ -28,16 +40,18 @@ namespace Whoaverse.Utils
                     // never voted before
                     case 0:
 
-                        if (comment != null && comment.Name != userWhichUpvoted)
+                        if (comment.Name != userWhichUpvoted)
                         {
                             comment.Likes++;
 
                             // register upvote
-                            Commentvotingtracker tmpVotingTracker = new Commentvotingtracker();
-                            tmpVotingTracker.CommentId = commentId;
-                            tmpVotingTracker.UserName = userWhichUpvoted;
-                            tmpVotingTracker.VoteStatus = 1;
-                            tmpVotingTracker.Timestamp = DateTime.Now;
+                            var tmpVotingTracker = new Commentvotingtracker
+                            {
+                                CommentId = commentId,
+                                UserName = userWhichUpvoted,
+                                VoteStatus = 1,
+                                Timestamp = DateTime.Now
+                            };
                             db.Commentvotingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
                         }
@@ -47,15 +61,13 @@ namespace Whoaverse.Utils
                     // downvoted before, turn downvote to upvote
                     case -1:
 
-                        if (comment != null && comment.Name != userWhichUpvoted)
+                        if (comment.Name != userWhichUpvoted)
                         {
                             comment.Likes++;
                             comment.Dislikes--;
 
                             // register Turn DownVote To UpVote
-                            var votingTracker = db.Commentvotingtrackers
-                                .Where(b => b.CommentId == commentId && b.UserName == userWhichUpvoted)
-                                .FirstOrDefault();
+                            var votingTracker = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userWhichUpvoted);
 
                             if (votingTracker != null)
                             {
@@ -70,13 +82,10 @@ namespace Whoaverse.Utils
                     // upvoted before, reset
                     case 1:
 
-                        if (comment != null)
-                        {
-                            comment.Likes--;
-                            db.SaveChanges();
+                        comment.Likes--;
+                        db.SaveChanges();
 
-                            ResetCommentVote(userWhichUpvoted, commentId);
-                        }
+                        ResetCommentVote(userWhichUpvoted, commentId);
 
                         break;
                 }
@@ -104,54 +113,49 @@ namespace Whoaverse.Utils
                     // never voted before
                     case 0:
 
-                        if (comment != null)
-                        {
-                            comment.Dislikes++;
+                    {
+                        comment.Dislikes++;
 
-                            // register downvote
-                            Commentvotingtracker tmpVotingTracker = new Commentvotingtracker();
-                            tmpVotingTracker.CommentId = commentId;
-                            tmpVotingTracker.UserName = userWhichDownvoted;
-                            tmpVotingTracker.VoteStatus = -1;
-                            tmpVotingTracker.Timestamp = DateTime.Now;
-                            db.Commentvotingtrackers.Add(tmpVotingTracker);
-                            db.SaveChanges();
-                        }
+                        // register downvote
+                        var tmpVotingTracker = new Commentvotingtracker
+                        {
+                            CommentId = commentId,
+                            UserName = userWhichDownvoted,
+                            VoteStatus = -1,
+                            Timestamp = DateTime.Now
+                        };
+                        db.Commentvotingtrackers.Add(tmpVotingTracker);
+                        db.SaveChanges();
+                    }
 
                         break;
 
                     // upvoted before, turn upvote to downvote
                     case 1:
 
-                        if (comment != null)
+                    {
+                        comment.Likes--;
+                        comment.Dislikes++;                            
+
+                        //register Turn DownVote To UpVote
+                        var votingTracker = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userWhichDownvoted);
+
+                        if (votingTracker != null)
                         {
-                            comment.Likes--;
-                            comment.Dislikes++;                            
-
-                            //register Turn DownVote To UpVote
-                            var votingTracker = db.Commentvotingtrackers
-                                .Where(b => b.CommentId == commentId && b.UserName == userWhichDownvoted)
-                                .FirstOrDefault();
-
-                            if (votingTracker != null)
-                            {
-                                votingTracker.VoteStatus = -1;
-                                votingTracker.Timestamp = DateTime.Now;
-                            }
-                            db.SaveChanges();
+                            votingTracker.VoteStatus = -1;
+                            votingTracker.Timestamp = DateTime.Now;
                         }
+                        db.SaveChanges();
+                    }
 
                         break;
 
                     // downvoted before, reset
                     case -1:
 
-                        if (comment != null)
-                        {
-                            comment.Dislikes--;
-                            db.SaveChanges();
-                            ResetCommentVote(userWhichDownvoted, commentId);
-                        }
+                        comment.Dislikes--;
+                        db.SaveChanges();
+                        ResetCommentVote(userWhichDownvoted, commentId);
 
                         break;
                 }
@@ -164,20 +168,11 @@ namespace Whoaverse.Utils
         {
             int intCheckResult = 0;
 
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
-                var checkResult = db.Commentvotingtrackers
-                                .Where(b => b.CommentId == commentId && b.UserName == userToCheck)
-                                .FirstOrDefault();
+                var checkResult = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userToCheck);
 
-                if (checkResult != null)
-                {
-                    intCheckResult = checkResult.VoteStatus.Value;
-                }
-                else
-                {
-                    intCheckResult = 0;
-                }
+                intCheckResult = checkResult != null ? checkResult.VoteStatus.Value : 0;
 
                 return intCheckResult;
             }
@@ -187,18 +182,14 @@ namespace Whoaverse.Utils
         // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetCommentVote(string userWhichVoted, int commentId)
         {
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
-                var votingTracker = db.Commentvotingtrackers
-                                .Where(b => b.CommentId == commentId && b.UserName == userWhichVoted)
-                                .FirstOrDefault();
+                var votingTracker = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userWhichVoted);
 
-                if (votingTracker != null)
-                {
-                    // delete vote history
-                    db.Commentvotingtrackers.Remove(votingTracker);
-                    db.SaveChanges();
-                }
+                if (votingTracker == null) return;
+                // delete vote history
+                db.Commentvotingtrackers.Remove(votingTracker);
+                db.SaveChanges();
             }
         }
     }

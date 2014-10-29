@@ -13,9 +13,6 @@ All Rights Reserved.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using MarkdownDeep;
 
 namespace Whoaverse.Utils
@@ -24,10 +21,7 @@ namespace Whoaverse.Utils
     {
         
         public static string FormatMessage (String originalMessage){
-            Markdown m = new Markdown(); 
-  
-            m.ExtraMode = true;
-            m.SafeMode = true;
+            var m = new Markdown {ExtraMode = true, SafeMode = true};
 
             return m.Transform(originalMessage);
         }
@@ -37,7 +31,7 @@ namespace Whoaverse.Utils
         {
             if (input == null || input.Length < length)
                 return input;
-            int iNextSpace = input.LastIndexOf(" ", length);
+            var iNextSpace = input.LastIndexOf(" ", length, StringComparison.Ordinal);
             return string.Format("{0}...", input.Substring(0, (iNextSpace > 0) ? iNextSpace : length).Trim());
         }
         

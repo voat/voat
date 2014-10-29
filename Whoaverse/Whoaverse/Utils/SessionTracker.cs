@@ -13,10 +13,8 @@ All Rights Reserved.
 */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Whoaverse.Models;
 using Whoaverse.Models.ViewModels;
 
@@ -25,14 +23,14 @@ namespace Whoaverse.Utils
     public static class SessionTracker
     {
         // remove a session
-        public static void Remove(string SessionIdToRemove)
+        public static void Remove(string sessionIdToRemove)
         {
             try
             {
-                using (whoaverseEntities db = new whoaverseEntities())
+                using (var db = new whoaverseEntities())
                 {
                     // remove all records for given session id
-                    db.Sessiontrackers.RemoveRange(db.Sessiontrackers.Where(s => s.SessionId == SessionIdToRemove));
+                    db.Sessiontrackers.RemoveRange(db.Sessiontrackers.Where(s => s.SessionId == sessionIdToRemove));
                     db.SaveChanges();
                 }
             }
@@ -47,7 +45,7 @@ namespace Whoaverse.Utils
         {
             try
             {
-                using (whoaverseEntities db = new whoaverseEntities())
+                using (var db = new whoaverseEntities())
                 {
                     db.Database.ExecuteSqlCommand("TRUNCATE TABLE SESSIONTRACKER");
                     db.SaveChanges();
@@ -64,17 +62,13 @@ namespace Whoaverse.Utils
         {
             try
             {
-                if (!SessionExists(sessionId, subverseName))
+                if (SessionExists(sessionId, subverseName)) return;
+                using (var db = new whoaverseEntities())
                 {
-                    using (whoaverseEntities db = new whoaverseEntities())
-                    {
-                        Sessiontracker newSession = new Sessiontracker();
-                        newSession.SessionId = sessionId;
-                        newSession.Subverse = subverseName;
-                        db.Sessiontrackers.Add(newSession);
-                        db.SaveChanges();
+                    var newSession = new Sessiontracker {SessionId = sessionId, Subverse = subverseName};
+                    db.Sessiontrackers.Add(newSession);
+                    db.SaveChanges();
 
-                    }
                 }
             }
             catch (Exception)
@@ -86,20 +80,13 @@ namespace Whoaverse.Utils
         // check if session exists
         public static bool SessionExists(string sessionId, string subverseName)
         {
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
                 var result = from sessions in db.Sessiontrackers
                              where sessions.Subverse.Equals(subverseName) && sessions.SessionId.Equals(sessionId)
                              select sessions;
 
-                if (result.Count() > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return result.Any();
             }
         }
 
@@ -108,20 +95,13 @@ namespace Whoaverse.Utils
         {
             try
             {
-                using (whoaverseEntities db = new whoaverseEntities())
+                using (var db = new whoaverseEntities())
                 {
                     var result = from sessions in db.Sessiontrackers
                                  where sessions.Subverse.Equals(subverseName)
                                  select sessions;
 
-                    if (result != null)
-                    {
-                        return result.Count();
-                    }
-                    else
-                    {
-                        return -1;
-                    }
+                    return result.Count();
                 }
             }
             catch (Exception)
@@ -135,11 +115,11 @@ namespace Whoaverse.Utils
         {
             try
             {
-                using (whoaverseEntities db = new whoaverseEntities())
+                using (var db = new whoaverseEntities())
                 {
                     var groups = db.Sessiontrackers
                                 .GroupBy(n => n.Subverse)
-                                .Select(n => new ActiveSubverseViewModel()
+                                .Select(n => new ActiveSubverseViewModel
                                 {
                                     Name = n.Key,
                                     UsersOnline = n.Count()

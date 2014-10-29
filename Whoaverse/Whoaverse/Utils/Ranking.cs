@@ -13,9 +13,6 @@ All Rights Reserved.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace Whoaverse.Utils
 {
@@ -24,16 +21,11 @@ namespace Whoaverse.Utils
         // re-rank a submission
         public static double CalculateNewRank(double currentRank, double submissionAge, double score)
         {
-            double penalty = 1;
+            const double penalty = 1;
 
-            double newRank = (Math.Pow((score - 1), 0.8)) / (Math.Pow((submissionAge + 2), 1.8)) * penalty;
+            var newRank = (Math.Pow((score - 1), 0.8)) / (Math.Pow((submissionAge + 2), 1.8)) * penalty;
 
-            if (double.IsNaN(newRank))
-            {
-                return 0;
-            }
-
-            return Math.Round(newRank, 7);
+            return double.IsNaN(newRank) ? 0 : Math.Round(newRank, 7);
         }
     }
 }

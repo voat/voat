@@ -63,7 +63,7 @@ namespace Whoaverse.Controllers
             msg.Body = sb.ToString();
 
             // send the email with CLA data
-            if (EmailUtility.sendEmail(msg))
+            if (EmailUtility.SendEmail(msg))
             {
                 msg.Dispose();
                 ViewBag.SelectedSubverse = string.Empty;
