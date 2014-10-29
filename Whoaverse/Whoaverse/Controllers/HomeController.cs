@@ -29,59 +29,48 @@ namespace Whoaverse.Controllers
 {
     public class HomeController : Controller
     {
-        private whoaverseEntities db = new whoaverseEntities();
-        Random rnd = new Random();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public ActionResult ClaSubmit(Cla claModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View();
+
+            var from = new MailAddress(claModel.Email);
+            var to = new MailAddress("legal@whoaverse.com");
+            var sb = new StringBuilder();
+            var msg = new MailMessage(@from, to) {Subject = "New CLA Submission from " + claModel.FullName};
+
+            // format CLA email
+            sb.Append("Full name: " + claModel.FullName);
+            sb.Append(Environment.NewLine);
+            sb.Append("Email: " + claModel.Email);
+            sb.Append(Environment.NewLine);
+            sb.Append("Mailing address: " + claModel.MailingAddress);
+            sb.Append(Environment.NewLine);
+            sb.Append("City: " + claModel.City);
+            sb.Append(Environment.NewLine);
+            sb.Append("Country: " + claModel.Country);
+            sb.Append(Environment.NewLine);
+            sb.Append("Phone number: " + claModel.PhoneNumber);
+            sb.Append(Environment.NewLine);
+            sb.Append("Corporate contributor information: " + claModel.CorpContrInfo);
+            sb.Append(Environment.NewLine);
+            sb.Append("Electronic signature: " + claModel.ElectronicSignature);
+            sb.Append(Environment.NewLine);
+
+            msg.Body = sb.ToString();
+
+            // send the email with CLA data
+            if (EmailUtility.sendEmail(msg))
             {
-                MailAddress from = new MailAddress(claModel.Email);
-                MailAddress to = new MailAddress("legal@whoaverse.com");
-                StringBuilder sb = new StringBuilder();
-                MailMessage msg = new MailMessage(from, to);
-
-                msg.Subject = "New CLA Submission from " + claModel.FullName;
-
-                // format CLA email
-                sb.Append("Full name: " + claModel.FullName);
-                sb.Append(Environment.NewLine);
-                sb.Append("Email: " + claModel.Email);
-                sb.Append(Environment.NewLine);
-                sb.Append("Mailing address: " + claModel.MailingAddress);
-                sb.Append(Environment.NewLine);
-                sb.Append("City: " + claModel.City);
-                sb.Append(Environment.NewLine);
-                sb.Append("Country: " + claModel.Country);
-                sb.Append(Environment.NewLine);
-                sb.Append("Phone number: " + claModel.PhoneNumber);
-                sb.Append(Environment.NewLine);
-                sb.Append("Corporate contributor information: " + claModel.CorpContrInfo);
-                sb.Append(Environment.NewLine);
-                sb.Append("Electronic signature: " + claModel.ElectronicSignature);
-                sb.Append(Environment.NewLine);
-
-                msg.Body = sb.ToString();
-
-                // send the email with CLA data
-                if (EmailUtility.sendEmail(msg))
-                {
-                    msg.Dispose();
-                    ViewBag.SelectedSubverse = string.Empty;
-                    return View("~/Views/Legal/ClaSent.cshtml");
-                }
-                else
-                {
-                    ViewBag.SelectedSubverse = string.Empty;
-                    return View("~/Views/Legal/ClaFailed.cshtml");
-                }
+                msg.Dispose();
+                ViewBag.SelectedSubverse = string.Empty;
+                return View("~/Views/Legal/ClaSent.cshtml");
             }
-            else
-            {
-                return View();
-            }
+            ViewBag.SelectedSubverse = string.Empty;
+            return View("~/Views/Legal/ClaFailed.cshtml");
         }
 
         // GET: submit
@@ -137,9 +126,8 @@ namespace Whoaverse.Controllers
             if (Karma.CommentKarma(User.Identity.Name) < 25)
             {
                 // begin recaptcha check
-                bool isCaptchaCodeValid = false;
-                string CaptchaMessage = "";
-                isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(CaptchaMessage, Request);
+                const string captchaMessage = "";
+                var isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(captchaMessage, Request);
 
                 if (!isCaptchaCodeValid)
                 {
@@ -149,75 +137,56 @@ namespace Whoaverse.Controllers
                 // end recaptcha check
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View();
+            // check if subverse exists
+            var targetSubverse = _db.Subverses.Find(message.Subverse.Trim());
+            if (targetSubverse != null && !message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
-                // check if subverse exists
-                var targetSubverse = db.Subverses.Find(message.Subverse.Trim());
-                if (targetSubverse != null && !message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
+                // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
+                if (targetSubverse.authorized_submitters_only)
                 {
-                    // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
-                    if (targetSubverse.authorized_submitters_only)
+                    if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
                     {
-                        if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
+                        // user is not a moderator, check if user is an administrator
+                        if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
                         {
-                            // user is not a moderator, check if user is an administrator
-                            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
-                            {
-                                ModelState.AddModelError("", "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
-                                return View();
-                            }
-                        }
-                    }
-
-                    // submission is a link post
-                    // generate a thumbnail if submission is a direct link to image or video
-                    if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
-                    {
-                        string domain = UrlUtility.GetDomainFromUri(message.MessageContent);
-
-                        // check if hostname is banned before accepting submission
-                        if (BanningUtility.IsHostnameBanned(domain))
-                        {
-                            ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
+                            ModelState.AddModelError("", "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
                             return View();
                         }
+                    }
+                }
 
-                        // check if target subverse has thumbnails setting enabled before generating a thumbnail
-                        if (targetSubverse.enable_thumbnails == true)
+                // submission is a link post
+                // generate a thumbnail if submission is a direct link to image or video
+                if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
+                {
+                    var domain = UrlUtility.GetDomainFromUri(message.MessageContent);
+
+                    // check if hostname is banned before accepting submission
+                    if (BanningUtility.IsHostnameBanned(domain))
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
+                        return View();
+                    }
+
+                    // check if target subverse has thumbnails setting enabled before generating a thumbnail
+                    if (targetSubverse.enable_thumbnails)
+                    {
+                        var extension = Path.GetExtension(message.MessageContent);
+
+                        // this is a direct link to image
+                        if (extension != String.Empty)
                         {
-                            string extension = Path.GetExtension(message.MessageContent);
-
-                            // this is a direct link to image
-                            if (extension != String.Empty && extension != null)
+                            if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
                             {
-                                if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
+                                try
                                 {
-                                    try
-                                    {
-                                        string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
-                                        message.Thumbnail = thumbFileName;
-                                    }
-                                    catch (Exception)
-                                    {
-                                        // thumnail generation failed, skip adding thumbnail
-                                    }
+                                    string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
+                                    message.Thumbnail = thumbFileName;
                                 }
-                                else
+                                catch (Exception)
                                 {
-                                    // try generating a thumbnail by using the Open Graph Protocol
-                                    try
-                                    {
-                                        OpenGraph graph = OpenGraph.ParseUrl(message.MessageContent);
-                                        if (graph.Image != null)
-                                        {
-                                            string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(graph.Image.ToString());
-                                            message.Thumbnail = thumbFileName;
-                                        }
-                                    }
-                                    catch (Exception)
-                                    {
-                                        // thumnail generation failed, skip adding thumbnail
-                                    }
+                                    // thumnail generation failed, skip adding thumbnail
                                 }
                             }
                             else
@@ -238,69 +207,79 @@ namespace Whoaverse.Controllers
                                 }
                             }
                         }
-
-                        // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                        if (targetSubverse.anonymized_mode)
-                        {
-                            message.Anonymized = true;
-                        }
                         else
                         {
-                            message.Name = User.Identity.Name;
+                            // try generating a thumbnail by using the Open Graph Protocol
+                            try
+                            {
+                                OpenGraph graph = OpenGraph.ParseUrl(message.MessageContent);
+                                if (graph.Image != null)
+                                {
+                                    string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(graph.Image.ToString());
+                                    message.Thumbnail = thumbFileName;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                // thumnail generation failed, skip adding thumbnail
+                            }
                         }
-
-                        // accept submission and save it to the database
-                        message.Subverse = targetSubverse.name;
-                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                        message.Date = DateTime.Now;
-                        message.Likes = 1;
-                        db.Messages.Add(message);
-                        await db.SaveChangesAsync();
-
                     }
-                    else if (message.Type == 1 && message.Title != null)
+
+                    // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                    if (targetSubverse.anonymized_mode)
                     {
-                        // submission is a self post
-                        // accept submission and save it to the database
-                        // trim trailing blanks from subverse name if a user mistakenly types them
-                        message.Subverse = targetSubverse.name;
-                        // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                        if (targetSubverse.anonymized_mode)
-                        {
-                            message.Anonymized = true;
-                        }
-                        else
-                        {
-                            message.Name = User.Identity.Name;
-                        }
-                        // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                        message.Date = DateTime.Now;
-                        message.Likes = 1;
-                        db.Messages.Add(message);
-                        await db.SaveChangesAsync();
+                        message.Anonymized = true;
+                    }
+                    else
+                    {
+                        message.Name = User.Identity.Name;
                     }
 
-                    return RedirectToRoute(
-                        "SubverseComments",
-                        new
-                        {
-                            controller = "Comment",
-                            action = "Comments",
-                            id = message.Id,
-                            subversetoshow = message.Subverse
-                        }
-                    );
+                    // accept submission and save it to the database
+                    message.Subverse = targetSubverse.name;
+                    // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                    message.Date = DateTime.Now;
+                    message.Likes = 1;
+                    _db.Messages.Add(message);
+                    await _db.SaveChangesAsync();
+
                 }
-                else
+                else if (message.Type == 1 && message.Title != null)
                 {
-                    ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
-                    return View();
+                    // submission is a self post
+                    // accept submission and save it to the database
+                    // trim trailing blanks from subverse name if a user mistakenly types them
+                    message.Subverse = targetSubverse.name;
+                    // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                    if (targetSubverse.anonymized_mode)
+                    {
+                        message.Anonymized = true;
+                    }
+                    else
+                    {
+                        message.Name = User.Identity.Name;
+                    }
+                    // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                    message.Date = DateTime.Now;
+                    message.Likes = 1;
+                    _db.Messages.Add(message);
+                    await _db.SaveChangesAsync();
                 }
+
+                return RedirectToRoute(
+                    "SubverseComments",
+                    new
+                    {
+                        controller = "Comment",
+                        action = "Comments",
+                        id = message.Id,
+                        subversetoshow = message.Subverse
+                    }
+                    );
             }
-            else
-            {
-                return View();
-            }
+            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
+            return View();
         }
 
         // GET: user/id
@@ -309,7 +288,7 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedSubverse = "user";
             ViewBag.whattodisplay = whattodisplay;
             ViewBag.userid = id;
-            int pageSize = 25;
+            const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
             if (pageNumber < 1)
@@ -317,38 +296,33 @@ namespace Whoaverse.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            if (Utils.User.UserExists(id) && id != "deleted")
+            if (!Utils.User.UserExists(id) || id == "deleted") return View("~/Views/Errors/Error_404.cshtml");
+
+            // show comments
+            if (whattodisplay != null && whattodisplay == "comments")
             {
-                // show comments
-                if (whattodisplay != null && whattodisplay == "comments")
-                {
-                    var userComments = from c in db.Comments.OrderByDescending(c => c.Date)
-                                       where (c.Name.Equals(id) && c.Message.Anonymized == false) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
-                                       select c;
-                    return View("UserComments", userComments.ToPagedList(pageNumber, pageSize));
-                }
-
-                // show submissions                        
-                if (whattodisplay != null && whattodisplay == "submissions")
-                {
-                    var userSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                          where (b.Name.Equals(id) && b.Anonymized == false) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
-                                          select b;
-                    return View("UserSubmitted", userSubmissions.ToPagedList(pageNumber, pageSize));
-                }
-
-                // default, show overview
-                ViewBag.whattodisplay = "overview";
-
-                var userDefaultSubmissions = from b in db.Messages.OrderByDescending(s => s.Date)
-                                             where b.Name.Equals(id) && b.Anonymized == false
-                                             select b;
-                return View("UserProfile", userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
+                var userComments = from c in _db.Comments.OrderByDescending(c => c.Date)
+                    where (c.Name.Equals(id) && c.Message.Anonymized == false) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
+                    select c;
+                return View("UserComments", userComments.ToPagedList(pageNumber, pageSize));
             }
-            else
+
+            // show submissions                        
+            if (whattodisplay != null && whattodisplay == "submissions")
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                var userSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
+                    where (b.Name.Equals(id) && b.Anonymized == false) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
+                    select b;
+                return View("UserSubmitted", userSubmissions.ToPagedList(pageNumber, pageSize));
             }
+
+            // default, show overview
+            ViewBag.whattodisplay = "overview";
+
+            var userDefaultSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
+                where b.Name.Equals(id) && b.Anonymized == false
+                select b;
+            return View("UserProfile", userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: /
@@ -356,7 +330,7 @@ namespace Whoaverse.Controllers
         {
             ViewBag.SelectedSubverse = "frontpage";
 
-            int pageSize = 25;
+            const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
             if (pageNumber < 1)
@@ -370,8 +344,8 @@ namespace Whoaverse.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
-                    var submissions = (from m in db.Messages
-                                       join s in db.Subscriptions on m.Subverse equals s.SubverseName
+                    var submissions = (from m in _db.Messages
+                                       join s in _db.Subscriptions on m.Subverse equals s.SubverseName
                                        where m.Name != "deleted" && s.Username == User.Identity.Name
                                        select m)
                                        .OrderByDescending(s => s.Rank);
@@ -381,9 +355,9 @@ namespace Whoaverse.Controllers
                 else
                 {
                     // get only submissions from default subverses, order by rank
-                    var submissions = (from message in db.Messages
+                    var submissions = (from message in _db.Messages
                                        where message.Name != "deleted"
-                                       join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                       join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                        select message)
                                        .OrderByDescending(s => s.Rank);
 
@@ -402,68 +376,65 @@ namespace Whoaverse.Controllers
             // sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
 
-            if (sortingmode.Equals("new"))
+            if (!sortingmode.Equals("new")) return RedirectToAction("Index", "Home");
+
+            const int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
             {
-                int pageSize = 25;
-                int pageNumber = (page ?? 1);
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
-                if (pageNumber < 1)
-                {
-                    return View("~/Views/Errors/Error_404.cshtml");
-                }
-
-                // setup a cookie to find first time visitors and display welcome banner
-                string cookieName = "NotFirstTime";
-                if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-                {
-                    // not a first time visitor
-                    ViewBag.FirstTimeVisitor = false;
-                }
-                else
-                {
-                    // add a cookie for first time visitors
-                    HttpCookie cookie = new HttpCookie(cookieName);
-                    cookie.Value = "whoaverse first time visitor identifier";
-                    cookie.Expires = DateTime.Now.AddMonths(6);
-                    ControllerContext.HttpContext.Response.Cookies.Add(cookie);
-                    ViewBag.FirstTimeVisitor = true;
-                }
-
-                try
-                {
-                    // show only submissions from subverses that user is subscribed to if user is logged in
-                    // also do a check so that user actually has subscriptions
-                    if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
-                    {
-                        var submissions = (from m in db.Messages
-                                           join s in db.Subscriptions on m.Subverse equals s.SubverseName
-                                           where m.Name != "deleted" && s.Username == User.Identity.Name
-                                           select m)
-                                           .OrderByDescending(s => s.Date);
-
-                        return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-                    }
-                    else
-                    {
-                        // get only submissions from default subverses, sort by date
-                        var submissions = (from message in db.Messages
-                                           where message.Name != "deleted"
-                                           join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                           select message)
-                                           .OrderByDescending(s => s.Date);
-
-                        return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-                    }
-
-                }
-                catch (Exception)
-                {
-                    return RedirectToAction("HeavyLoad", "Error");
-                }
+            // setup a cookie to find first time visitors and display welcome banner
+            const string cookieName = "NotFirstTime";
+            if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+            {
+                // not a first time visitor
+                ViewBag.FirstTimeVisitor = false;
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                // add a cookie for first time visitors
+                var cookie = new HttpCookie(cookieName)
+                {
+                    Value = "whoaverse first time visitor identifier",
+                    Expires = DateTime.Now.AddMonths(6)
+                };
+                ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+                ViewBag.FirstTimeVisitor = true;
+            }
+
+            try
+            {
+                // show only submissions from subverses that user is subscribed to if user is logged in
+                // also do a check so that user actually has subscriptions
+                if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                {
+                    var submissions = (from m in _db.Messages
+                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
+                        where m.Name != "deleted" && s.Username == User.Identity.Name
+                        select m)
+                        .OrderByDescending(s => s.Date);
+
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                }
+                else
+                {
+                    // get only submissions from default subverses, sort by date
+                    var submissions = (from message in _db.Messages
+                        where message.Name != "deleted"
+                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                        select message)
+                        .OrderByDescending(s => s.Date);
+
+                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                }
+
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Error");
             }
         }
 
@@ -472,17 +443,14 @@ namespace Whoaverse.Controllers
         {
             ViewBag.SelectedSubverse = string.Empty;
 
-            if (pagetoshow == "intro")
+            switch (pagetoshow)
             {
-                return View("~/Views/About/Intro.cshtml");
-            }
-            else if (pagetoshow == "contact")
-            {
-                return View("~/Views/About/Contact.cshtml");
-            }
-            else
-            {
-                return View("~/Views/About/About.cshtml");
+                case "intro":
+                    return View("~/Views/About/Intro.cshtml");
+                case "contact":
+                    return View("~/Views/About/Contact.cshtml");
+                default:
+                    return View("~/Views/About/About.cshtml");
             }
         }
 
@@ -505,25 +473,18 @@ namespace Whoaverse.Controllers
         {
             ViewBag.SelectedSubverse = string.Empty;
 
-            if (pagetoshow == "privacy")
+            switch (pagetoshow)
             {
-                return View("~/Views/Help/Privacy.cshtml");
-            }
-            if (pagetoshow == "useragreement")
-            {
-                return View("~/Views/Help/UserAgreement.cshtml");
-            }
-            if (pagetoshow == "markdown")
-            {
-                return View("~/Views/Help/Markdown.cshtml");
-            }
-            if (pagetoshow == "faq")
-            {
-                return View("~/Views/Help/Faq.cshtml");
-            }
-            else
-            {
-                return View("~/Views/Help/Index.cshtml");
+                case "privacy":
+                    return View("~/Views/Help/Privacy.cshtml");
+                case "useragreement":
+                    return View("~/Views/Help/UserAgreement.cshtml");
+                case "markdown":
+                    return View("~/Views/Help/Markdown.cshtml");
+                case "faq":
+                    return View("~/Views/Help/Faq.cshtml");
+                default:
+                    return View("~/Views/Help/Index.cshtml");
             }
         }
 
@@ -538,22 +499,17 @@ namespace Whoaverse.Controllers
         [ChildActionOnly]
         public ActionResult StickiedSubmission()
         {
-            var stickiedSubmissions = db.Stickiedsubmissions
-                .Where(s => s.Subversename == "announcements")
-                .FirstOrDefault();
+            var stickiedSubmissions = _db.Stickiedsubmissions.FirstOrDefault(s => s.Subversename == "announcements");
 
             if (stickiedSubmissions == null) return new EmptyResult();
 
-            Message stickiedSubmission = db.Messages.Find(stickiedSubmissions.Submission_id);
+            var stickiedSubmission = _db.Messages.Find(stickiedSubmissions.Submission_id);
 
             if (stickiedSubmission != null)
             {
                 return PartialView("~/Views/Subverses/_Stickied.cshtml", stickiedSubmission);
             }
-            else
-            {
-                return new EmptyResult();
-            }
+            return new EmptyResult();
         }
 
         // GET: list of subverses user moderates
@@ -561,17 +517,14 @@ namespace Whoaverse.Controllers
         {
             if (userName != null)
             {
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", db.SubverseAdmins
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", _db.SubverseAdmins
                 .Where(x => x.Username == userName)
                 .Select(s => new SelectListItem { Value = s.SubverseName })
                 .OrderBy(s => s.Value)
                 .ToList()
                 .AsEnumerable());
             }
-            else
-            {
-                return new EmptyResult();
-            }
+            return new EmptyResult();
         }
 
         // GET: list of subverses user is subscribed to
@@ -580,18 +533,14 @@ namespace Whoaverse.Controllers
         {
             if (userName != null)
             {
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", db.Subscriptions
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", _db.Subscriptions
                 .Where(x => x.Username == userName)
                 .Select(s => new SelectListItem { Value = s.SubverseName })
                 .OrderBy(s => s.Value)
                 .ToList()
                 .AsEnumerable());
             }
-            else
-            {
-                return new EmptyResult();
-            }
+            return new EmptyResult();
         }
-
     }
 }
