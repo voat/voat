@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
@@ -24,7 +25,7 @@ namespace Whoaverse.Controllers
 {
     public class ReportController : Controller
     {
-        private whoaverseEntities db = new whoaverseEntities();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // POST: reportcomment
         [HttpPost]
@@ -32,25 +33,27 @@ namespace Whoaverse.Controllers
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public ActionResult ReportComment(int id)
         {
-            Comment commentToReport = db.Comments.Find(id);
+            var commentToReport = _db.Comments.Find(id);
 
             if (commentToReport != null)
             {
                 // prepare report headers
-                string commentSubverse = commentToReport.Message.Subverse;
-                string reportTimeStamp = DateTime.Now.ToString();
+                var commentSubverse = commentToReport.Message.Subverse;
+                var reportTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
 
                 // send the report
                 try
                 {
-                    SmtpClient smtp = new SmtpClient();
-                    MailAddress from = new MailAddress("abuse@whoaverse.com");
-                    MailAddress to = new MailAddress("legal@whoaverse.com");
-                    StringBuilder sb = new StringBuilder();
-                    MailMessage msg = new MailMessage(from, to);
+                    var smtp = new SmtpClient();
+                    var from = new MailAddress("abuse@whoaverse.com");
+                    var to = new MailAddress("legal@whoaverse.com");
+                    var sb = new StringBuilder();
+                    var msg = new MailMessage(from, to)
+                    {
+                        Subject = "New comment report from " + User.Identity.Name,
+                        IsBodyHtml = false
+                    };
 
-                    msg.Subject = "New comment report from " + User.Identity.Name;
-                    msg.IsBodyHtml = false;
                     smtp.Host = "whoaverse.com";
                     smtp.Port = 25;
 

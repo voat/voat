@@ -34,8 +34,7 @@ namespace Whoaverse.Controllers
         [Authorize]
         public ActionResult PartnerIntentRegistration()
         {
-            PartnerIntent model = new PartnerIntent();
-            model.UserName = User.Identity.Name;
+            var model = new PartnerIntent {UserName = User.Identity.Name};
             return View(model);
         }
 
@@ -45,51 +44,43 @@ namespace Whoaverse.Controllers
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public ActionResult PartnerIntentRegistration(PartnerIntent partnerModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View();
+            var from = new MailAddress(partnerModel.Email);
+            var to = new MailAddress("legal@whoaverse.com");
+            var sb = new StringBuilder();
+            var msg = new MailMessage(@from, to)
             {
-                MailAddress from = new MailAddress(partnerModel.Email);
-                MailAddress to = new MailAddress("legal@whoaverse.com");
-                StringBuilder sb = new StringBuilder();
-                MailMessage msg = new MailMessage(from, to);
+                Subject = "New Partner Intent registration from " + partnerModel.FullName,
+                IsBodyHtml = false
+            };
 
-                msg.Subject = "New Partner Intent registration from " + partnerModel.FullName;
-                msg.IsBodyHtml = false;
+            // format Partner Intent Email
+            sb.Append("Full name: " + partnerModel.FullName);
+            sb.Append(Environment.NewLine);
+            sb.Append("Email: " + partnerModel.Email);
+            sb.Append(Environment.NewLine);
+            sb.Append("Mailing address: " + partnerModel.MailingAddress);
+            sb.Append(Environment.NewLine);
+            sb.Append("City: " + partnerModel.City);
+            sb.Append(Environment.NewLine);
+            sb.Append("Country: " + partnerModel.Country);
+            sb.Append(Environment.NewLine);
+            sb.Append("Phone number: " + partnerModel.PhoneNumber);
+            sb.Append(Environment.NewLine);
+            sb.Append("Username: " + partnerModel.UserName);
+            sb.Append(Environment.NewLine);
 
-                // format Partner Intent Email
-                sb.Append("Full name: " + partnerModel.FullName);
-                sb.Append(Environment.NewLine);
-                sb.Append("Email: " + partnerModel.Email);
-                sb.Append(Environment.NewLine);
-                sb.Append("Mailing address: " + partnerModel.MailingAddress);
-                sb.Append(Environment.NewLine);
-                sb.Append("City: " + partnerModel.City);
-                sb.Append(Environment.NewLine);
-                sb.Append("Country: " + partnerModel.Country);
-                sb.Append(Environment.NewLine);
-                sb.Append("Phone number: " + partnerModel.PhoneNumber);
-                sb.Append(Environment.NewLine);
-                sb.Append("Username: " + partnerModel.UserName);
-                sb.Append(Environment.NewLine);
+            msg.Body = sb.ToString();
 
-                msg.Body = sb.ToString();
-
-                // send the email with Partner Intent data
-                if (EmailUtility.sendEmail(msg))
-                {
-                    msg.Dispose();
-                    ViewBag.SelectedSubverse = string.Empty;
-                    return View("~/Views/Partner/PartnerProgramIntentSent.cshtml");
-                }
-                else
-                {
-                    ViewBag.SelectedSubverse = string.Empty;
-                    return View("~/Views/Errors/Error.cshtml");
-                }
-            }
-            else
+            // send the email with Partner Intent data
+            if (EmailUtility.sendEmail(msg))
             {
-                return View();
+                msg.Dispose();
+                ViewBag.SelectedSubverse = string.Empty;
+                return View("~/Views/Partner/PartnerProgramIntentSent.cshtml");
             }
+            ViewBag.SelectedSubverse = string.Empty;
+            return View("~/Views/Errors/Error.cshtml");
         }
     }
 }
