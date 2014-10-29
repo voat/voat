@@ -12,6 +12,7 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using System.Collections.Generic;
 using PagedList;
 using System;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace Whoaverse.Controllers
 {
     public class MessagingController : Controller
     {
-        private whoaverseEntities db = new whoaverseEntities();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // GET: Inbox
         [Authorize]
@@ -36,7 +37,7 @@ namespace Whoaverse.Controllers
             ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
             ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
-            int pageSize = 25;
+            const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
             if (pageNumber < 1)
@@ -47,31 +48,32 @@ namespace Whoaverse.Controllers
             // get logged in username and fetch received messages
             try
             {
-                var privateMessages = db.Privatemessages
+                var privateMessages = _db.Privatemessages
                     .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(s => s.Timestamp)
                     .ThenBy(s => s.Sender)
                     .ToList().AsEnumerable();
 
-                if (privateMessages.Count() > 0)
+                var singleMessages = privateMessages as IList<Privatemessage> ?? privateMessages.ToList();
+                if (singleMessages.Any())
                 {
-                    var unreadPrivateMessages = privateMessages
-                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+                    var unreadPrivateMessages = singleMessages
+                        .Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPrivateMessages.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singleMessage in privateMessages)
+                        foreach (var singleMessage in singleMessages)
                         {
                             singleMessage.Status = false;
-                            db.SaveChanges();
+                            _db.SaveChanges();
                         }
                     }
                 }
 
-                ViewBag.InboxCount = privateMessages.Count();
-                return View(privateMessages.ToPagedList(pageNumber, pageSize));
+                ViewBag.InboxCount = singleMessages.Count();
+                return View(singleMessages.ToPagedList(pageNumber, pageSize));
             }
             catch (Exception)
             {
@@ -89,7 +91,7 @@ namespace Whoaverse.Controllers
             ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
             ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
-            int pageSize = 25;
+            const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
             if (pageNumber < 1)
@@ -100,31 +102,32 @@ namespace Whoaverse.Controllers
             // get logged in username and fetch received comment replies
             try
             {
-                var commentReplies = db.Commentreplynotifications
+                var commentReplies = _db.Commentreplynotifications
                     .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(s => s.Timestamp)
                     .ThenBy(s => s.Sender)
                     .ToList().AsEnumerable();
 
-                if (commentReplies.Count() > 0)
+                var singleCommentReplies = commentReplies as IList<Commentreplynotification> ?? commentReplies.ToList();
+                if (singleCommentReplies.Any())
                 {
-                    var unreadCommentReplies = commentReplies
-                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+                    var unreadCommentReplies = singleCommentReplies
+                        .Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadCommentReplies.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singleCommentReply in commentReplies)
+                        foreach (var singleCommentReply in singleCommentReplies)
                         {
                             singleCommentReply.Status = false;
-                            db.SaveChanges();
+                            _db.SaveChanges();
                         }
                     }
                 }
 
-                ViewBag.CommentRepliesCount = commentReplies.Count();
-                return View(commentReplies.ToPagedList(pageNumber, pageSize));
+                ViewBag.CommentRepliesCount = singleCommentReplies.Count();
+                return View(singleCommentReplies.ToPagedList(pageNumber, pageSize));
 
             }
             catch (Exception)
@@ -143,7 +146,7 @@ namespace Whoaverse.Controllers
             ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
             ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
-            int pageSize = 25;
+            const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
             if (pageNumber < 1)
@@ -154,31 +157,32 @@ namespace Whoaverse.Controllers
             // get logged in username and fetch received comment replies
             try
             {
-                var postReplies = db.Postreplynotifications
+                var postReplies = _db.Postreplynotifications
                     .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(s => s.Timestamp)
                     .ThenBy(s => s.Sender)
                     .ToList().AsEnumerable();
 
-                if (postReplies.Count() > 0)
+                var singlePostReplies = postReplies as IList<Postreplynotification> ?? postReplies.ToList();
+                if (singlePostReplies.Any())
                 {
-                    var unreadPostReplies = postReplies
-                        .Where(s => s.Status == true && s.Markedasunread == false).ToList();
+                    var unreadPostReplies = singlePostReplies
+                        .Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPostReplies.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singlePostReply in postReplies)
+                        foreach (var singlePostReply in singlePostReplies)
                         {
                             singlePostReply.Status = false;
-                            db.SaveChanges();
+                            _db.SaveChanges();
                         }
                     }
                 }
 
-                ViewBag.PostRepliesCount = postReplies.Count();
-                return View(postReplies.ToPagedList(pageNumber, pageSize));
+                ViewBag.PostRepliesCount = singlePostReplies.Count();
+                return View(singlePostReplies.ToPagedList(pageNumber, pageSize));
 
             }
             catch (Exception)
@@ -204,7 +208,7 @@ namespace Whoaverse.Controllers
         {
             ViewBag.PmView = "sent";
 
-            int pageSize = 25;
+            const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
             if (pageNumber < 1)
@@ -215,14 +219,15 @@ namespace Whoaverse.Controllers
             // get logged in username and fetch sent messages
             try
             {
-                var privateMessages = db.Privatemessages
+                var privateMessages = _db.Privatemessages
                     .Where(s => s.Sender.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(s => s.Timestamp)
                     .ThenBy(s => s.Recipient)
                     .ToList().AsEnumerable();
 
-                ViewBag.OutboxCount = privateMessages.Count();
-                return View(privateMessages.ToPagedList(pageNumber, pageSize));
+                var privatemessages = privateMessages as IList<Privatemessage> ?? privateMessages.ToList();
+                ViewBag.OutboxCount = privatemessages.Count();
+                return View(privatemessages.ToPagedList(pageNumber, pageSize));
 
             }
             catch (Exception)
@@ -236,12 +241,12 @@ namespace Whoaverse.Controllers
         public ActionResult Compose()
         {
             ViewBag.PmView = "compose";
-            
-            string recipient = Request.Params["recipient"];
+
+            var recipient = Request.Params["recipient"];
 
             if (recipient != null)
             {
-                ViewBag.recipient = recipient;                   
+                ViewBag.recipient = recipient;
             }
 
             // return compose view
@@ -255,42 +260,33 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Compose([Bind(Include = "Id,Recipient,Subject,Body")] Privatemessage privateMessage)
         {
-            if (ModelState.IsValid)
-            {
-                if (privateMessage.Recipient != null && privateMessage.Subject != null && privateMessage.Body != null)
-                {
-                    // check if recipient exists
-                    if (Utils.User.UserExists(privateMessage.Recipient))
-                    {
-                        // send the message
-                        privateMessage.Timestamp = DateTime.Now;
-                        privateMessage.Sender = User.Identity.Name;
-                        privateMessage.Status = true;
-                        if (!Utils.User.IsUserBanned(User.Identity.Name))
-                        {
-                            db.Privatemessages.Add(privateMessage);
-                            try
-                            {
-                                await db.SaveChangesAsync();
-                            }
-                            catch (Exception)
-                            {
-                                return RedirectToAction("HeavyLoad", "Error");
-                            }
-                        }                        
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "Sorry, there is no recipient with that username.");
-                        return View();
-                    }
-                }
+            if (!ModelState.IsValid) return View();
+            if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
                 return RedirectToAction("Sent", "Messaging");
+            // check if recipient exists
+            if (Utils.User.UserExists(privateMessage.Recipient))
+            {
+                // send the message
+                privateMessage.Timestamp = DateTime.Now;
+                privateMessage.Sender = User.Identity.Name;
+                privateMessage.Status = true;
+                if (Utils.User.IsUserBanned(User.Identity.Name)) return RedirectToAction("Sent", "Messaging");
+                _db.Privatemessages.Add(privateMessage);
+                try
+                {
+                    await _db.SaveChangesAsync();
+                }
+                catch (Exception)
+                {
+                    return RedirectToAction("HeavyLoad", "Error");
+                }
             }
             else
             {
+                ModelState.AddModelError(string.Empty, "Sorry, there is no recipient with that username.");
                 return View();
             }
+            return RedirectToAction("Sent", "Messaging");
         }
 
         // POST: Send new private message or reply
@@ -300,44 +296,34 @@ namespace Whoaverse.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SendPrivateMessage([Bind(Include = "Id,Recipient,Subject,Body")] Privatemessage privateMessage)
         {
-            if (ModelState.IsValid)
-            {
-                if (privateMessage.Recipient != null && privateMessage.Subject != null && privateMessage.Body != null)
-                {
-                    // check if recipient exists
-                    if (Utils.User.UserExists(privateMessage.Recipient))
-                    {
-                        // send the message
-                        privateMessage.Timestamp = DateTime.Now;
-                        privateMessage.Sender = User.Identity.Name;
-                        privateMessage.Status = true;
-                        if (!Utils.User.IsUserBanned(User.Identity.Name))
-                        {
-                            db.Privatemessages.Add(privateMessage);
-
-                            try
-                            {
-                                await db.SaveChangesAsync();
-                            }
-                            catch (Exception)
-                            {
-                                return RedirectToAction("HeavyLoad", "Error");
-                            }
-                        }                        
-                    }
-                    else
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-                    }
-                }
-
+            if (!ModelState.IsValid) return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
+            // check if recipient exists
+            if (Utils.User.UserExists(privateMessage.Recipient))
+            {
+                // send the message
+                privateMessage.Timestamp = DateTime.Now;
+                privateMessage.Sender = User.Identity.Name;
+                privateMessage.Status = true;
+                if (Utils.User.IsUserBanned(User.Identity.Name)) return new HttpStatusCodeResult(HttpStatusCode.OK);
+                _db.Privatemessages.Add(privateMessage);
 
+                try
+                {
+                    await _db.SaveChangesAsync();
+                }
+                catch (Exception)
+                {
+                    return RedirectToAction("HeavyLoad", "Error");
+                }
             }
             else
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         [Authorize]
@@ -346,25 +332,21 @@ namespace Whoaverse.Controllers
         public JsonResult DeletePrivateMessage(int privateMessageId)
         {
             // check that the message is owned by logged in user executing delete action
-            string loggedInUser = User.Identity.Name;
+            var loggedInUser = User.Identity.Name;
 
-            var privateMessageToDelete = db.Privatemessages
-                        .Where(s => s.Recipient.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId).FirstOrDefault();
+            var privateMessageToDelete = _db.Privatemessages.FirstOrDefault(s => s.Recipient.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId);
 
             if (privateMessageToDelete != null)
             {
                 // delete the message
-                Privatemessage privateMessage = db.Privatemessages.Find(privateMessageId);
-                db.Privatemessages.Remove(privateMessage);
-                db.SaveChangesAsync();
+                var privateMessage = _db.Privatemessages.Find(privateMessageId);
+                _db.Privatemessages.Remove(privateMessage);
+                _db.SaveChangesAsync();
                 Response.StatusCode = 200;
                 return Json("Message deleted.", JsonRequestBehavior.AllowGet);
             }
-            else
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json("Bad request.", JsonRequestBehavior.AllowGet);
-            }
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json("Bad request.", JsonRequestBehavior.AllowGet);
         }
 
         [Authorize]
@@ -373,25 +355,21 @@ namespace Whoaverse.Controllers
         public JsonResult DeletePrivateMessageFromSent(int privateMessageId)
         {
             // check that the message is owned by logged in user executing delete action
-            string loggedInUser = User.Identity.Name;
+            var loggedInUser = User.Identity.Name;
 
-            var privateMessageToDelete = db.Privatemessages
-                        .Where(s => s.Sender.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId).FirstOrDefault();
+            var privateMessageToDelete = _db.Privatemessages.FirstOrDefault(s => s.Sender.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId);
 
             if (privateMessageToDelete != null)
             {
                 // delete the message
-                Privatemessage privateMessage = db.Privatemessages.Find(privateMessageId);
-                db.Privatemessages.Remove(privateMessage);
-                db.SaveChangesAsync();
+                var privateMessage = _db.Privatemessages.Find(privateMessageId);
+                _db.Privatemessages.Remove(privateMessage);
+                _db.SaveChangesAsync();
                 Response.StatusCode = 200;
                 return Json("Message deleted.", JsonRequestBehavior.AllowGet);
             }
-            else
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json("Bad request.", JsonRequestBehavior.AllowGet);
-            }
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json("Bad request.", JsonRequestBehavior.AllowGet);
         }
 
     }
