@@ -10,13 +10,9 @@ the specific language governing rights and limitations under the License.
 
 All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
- */
+*/
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace Whoaverse.Models
 {
@@ -45,7 +41,5 @@ namespace Whoaverse.Models
 
         [Required(ErrorMessage = "Type \"I AGREE\" to accept the terms above.")]
         public string ElectronicSignature { get; set; }
-
-
     }
 }
