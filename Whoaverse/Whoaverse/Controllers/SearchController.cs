@@ -24,106 +24,19 @@ namespace Whoaverse.Controllers
 {
     public class SearchController : Controller
     {
-        private whoaverseEntities db = new whoaverseEntities();
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         [PreventSpam]
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
-            if (q != null && q.Length >= 3)
+            if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //limit the search to selected subverse
+            if (l != null && sub != null)
             {
-                //limit the search to selected subverse
-                if (l != null && sub != null)
-                {
-                    //ViewBag.SelectedSubverse = string.Empty;
-                    ViewBag.SearchTerm = q;
-
-                    int pageSize = 25;
-                    int pageNumber = (page ?? 1);
-
-                    if (pageNumber < 1)
-                    {
-                        return View("~/Views/Errors/Error_404.cshtml");
-                    }
-
-                    //show search results, default sorting by rank and date
-                    var linkSubmissions = db.Messages
-                        .Where(x => x.Name != "deleted" & x.Subverse == sub & x.Linkdescription.ToLower().Contains(q))
-                        .OrderByDescending(s => s.Rank)
-                        .ThenByDescending(s => s.Date).Take(100).ToList();
-
-                    var selfSubmissionsTitle = db.Messages
-                        .Where(x => x.Name != "deleted" & x.Subverse == sub & x.Title.ToLower().Contains(q))
-                        .OrderByDescending(s => s.Rank)
-                        .ThenByDescending(s => s.Date).Take(100).ToList();
-
-                    var selfSubmissionsMessageContent = db.Messages
-                        .Where(x => x.Name != "deleted" & x.Subverse == sub & x.MessageContent.ToLower().Contains(q))
-                        .OrderByDescending(s => s.Rank)
-                        .ThenByDescending(s => s.Date).Take(100).ToList();
-
-                    var results = linkSubmissions.Concat(selfSubmissionsTitle);
-                    results = results.Concat(selfSubmissionsMessageContent);
-
-                    ViewBag.Title = "search results";
-
-                    return View("~/Views/Search/Index.cshtml", results.ToPagedList(pageNumber, pageSize));
-                }
-                else
-                {
-                    ViewBag.SelectedSubverse = string.Empty;
-                    ViewBag.SearchTerm = q;
-
-                    int pageSize = 25;
-                    int pageNumber = (page ?? 1);
-
-                    if (pageNumber < 1)
-                    {
-                        return View("~/Views/Errors/Error_404.cshtml");
-                    }
-
-                    //show search results, default sorting by rank and date
-                    var linkSubmissions = db.Messages
-                        .Where(x => x.Name != "deleted" & x.Linkdescription.ToLower().Contains(q))
-                        .OrderByDescending(s => s.Rank)
-                        .ThenByDescending(s => s.Date).Take(100).ToList();
-
-                    var selfSubmissionsTitle = db.Messages
-                        .Where(x => x.Name != "deleted" & x.Title.ToLower().Contains(q))
-                        .OrderByDescending(s => s.Rank)
-                        .ThenByDescending(s => s.Date).Take(100).ToList();
-
-                    var selfSubmissionsMessageContent = db.Messages
-                        .Where(x => x.Name != "deleted" & x.MessageContent.ToLower().Contains(q))
-                        .OrderByDescending(s => s.Rank)
-                        .ThenByDescending(s => s.Date).Take(100).ToList();
-
-                    var results = linkSubmissions.Concat(selfSubmissionsTitle);
-                    results = results.Concat(selfSubmissionsMessageContent);
-
-                    ViewBag.Title = "search results";
-
-                    return View("~/Views/Search/Index.cshtml", results.ToPagedList(pageNumber, pageSize));
-                }
-
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-        }
-
-        [PreventSpam]
-        public ActionResult FindSubverse(int? page, string d, string q)
-        {
-            if (q != null && q.Length >= 3)
-            {
-                IEnumerable<Subverse> results;
-
-                ViewBag.SelectedSubverse = string.Empty;
+                //ViewBag.SelectedSubverse = string.Empty;
                 ViewBag.SearchTerm = q;
 
-                int pageSize = 25;
+                const int pageSize = 25;
                 int pageNumber = (page ?? 1);
 
                 if (pageNumber < 1)
@@ -131,32 +44,104 @@ namespace Whoaverse.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
 
-                // find a subverse by name and/or description, sort search results by number of subscribers
-                var subversesByName = db.Subverses
-                    .Where(s => s.name.ToLower().Contains(q))
-                    .OrderByDescending(s => s.subscribers).ToList();
+                //show search results, default sorting by rank and date
+                var linkSubmissions = _db.Messages
+                    .Where(x => x.Name != "deleted" & x.Subverse == sub & x.Linkdescription.ToLower().Contains(q))
+                    .OrderByDescending(s => s.Rank)
+                    .ThenByDescending(s => s.Date).Take(100).ToList();
 
-                if (d != null)
-                {
-                    var subversesByDescription = db.Subverses
-                    .Where(s => s.description.ToLower().Contains(q))
-                    .OrderByDescending(s => s.subscribers).ToList();
-                    results = subversesByName.Concat(subversesByDescription);
-                }
-                else
-                {
-                    results = subversesByName;
-                }
+                var selfSubmissionsTitle = _db.Messages
+                    .Where(x => x.Name != "deleted" & x.Subverse == sub & x.Title.ToLower().Contains(q))
+                    .OrderByDescending(s => s.Rank)
+                    .ThenByDescending(s => s.Date).Take(100).ToList();
 
-                ViewBag.Title = "Search results";
+                var selfSubmissionsMessageContent = _db.Messages
+                    .Where(x => x.Name != "deleted" & x.Subverse == sub & x.MessageContent.ToLower().Contains(q))
+                    .OrderByDescending(s => s.Rank)
+                    .ThenByDescending(s => s.Date).Take(100).ToList();
 
-                return View("~/Views/Search/FindSubverseSearchResult.cshtml", results.ToPagedList(pageNumber, pageSize));
+                var results = linkSubmissions.Concat(selfSubmissionsTitle);
+                results = results.Concat(selfSubmissionsMessageContent);
+
+                ViewBag.Title = "search results";
+
+                return View("~/Views/Search/Index.cshtml", results.ToPagedList(pageNumber, pageSize));
             }
             else
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                ViewBag.SelectedSubverse = string.Empty;
+                ViewBag.SearchTerm = q;
+
+                const int pageSize = 25;
+                int pageNumber = (page ?? 1);
+
+                if (pageNumber < 1)
+                {
+                    return View("~/Views/Errors/Error_404.cshtml");
+                }
+
+                //show search results, default sorting by rank and date
+                var linkSubmissions = _db.Messages
+                    .Where(x => x.Name != "deleted" & x.Linkdescription.ToLower().Contains(q))
+                    .OrderByDescending(s => s.Rank)
+                    .ThenByDescending(s => s.Date).Take(100).ToList();
+
+                var selfSubmissionsTitle = _db.Messages
+                    .Where(x => x.Name != "deleted" & x.Title.ToLower().Contains(q))
+                    .OrderByDescending(s => s.Rank)
+                    .ThenByDescending(s => s.Date).Take(100).ToList();
+
+                var selfSubmissionsMessageContent = _db.Messages
+                    .Where(x => x.Name != "deleted" & x.MessageContent.ToLower().Contains(q))
+                    .OrderByDescending(s => s.Rank)
+                    .ThenByDescending(s => s.Date).Take(100).ToList();
+
+                var results = linkSubmissions.Concat(selfSubmissionsTitle);
+                results = results.Concat(selfSubmissionsMessageContent);
+
+                ViewBag.Title = "search results";
+
+                return View("~/Views/Search/Index.cshtml", results.ToPagedList(pageNumber, pageSize));
+            }
+        }
+
+        [PreventSpam]
+        public ActionResult FindSubverse(int? page, string d, string q)
+        {
+            if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            IEnumerable<Subverse> results;
+
+            ViewBag.SelectedSubverse = string.Empty;
+            ViewBag.SearchTerm = q;
+
+            const int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
             }
 
+            // find a subverse by name and/or description, sort search results by number of subscribers
+            var subversesByName = _db.Subverses
+                .Where(s => s.name.ToLower().Contains(q))
+                .OrderByDescending(s => s.subscribers).ToList();
+
+            if (d != null)
+            {
+                var subversesByDescription = _db.Subverses
+                    .Where(s => s.description.ToLower().Contains(q))
+                    .OrderByDescending(s => s.subscribers).ToList();
+                results = subversesByName.Concat(subversesByDescription);
+            }
+            else
+            {
+                results = subversesByName;
+            }
+
+            ViewBag.Title = "Search results";
+
+            return View("~/Views/Search/FindSubverseSearchResult.cshtml", results.ToPagedList(pageNumber, pageSize));
         }
     }
 }
