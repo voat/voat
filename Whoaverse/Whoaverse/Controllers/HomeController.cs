@@ -285,7 +285,6 @@ namespace Whoaverse.Controllers
         {
             ViewBag.SelectedSubverse = "user";
             ViewBag.whattodisplay = whattodisplay;
-            ViewBag.userid = id;
             const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
@@ -295,6 +294,8 @@ namespace Whoaverse.Controllers
             }
 
             if (!Utils.User.UserExists(id) || id == "deleted") return View("~/Views/Errors/Error_404.cshtml");
+
+            ViewBag.userid = Utils.User.OriginalUsername(id);
 
             // show comments
             if (whattodisplay != null && whattodisplay == "comments")
