@@ -1,30 +1,22 @@
 ﻿@*This source file is subject to version 3 of the GPL license,
-that is bundled with this package in the file LICENSE, and is
-available online at http://www.gnu.org/licenses/gpl.txt;
-you may not use this file except in compliance with the License.
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
-All Rights Reserved.*@
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
 
 
 @model Whoaverse.Models.LoginViewModel
 
-@{
-    ViewBag.Title = "Log in";
-}
-
 <div id="container">
     <div id="about-main" role="main">
-
         <div class="row nomargin">
             <div class="well">
-
-                <h1>@ViewBag.Title.</h1>
-
                 <section id="loginForm">
                     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                     {
@@ -63,12 +55,11 @@ All Rights Reserved.*@
                                 <input type="submit" value="Log in" class="btn-whoaverse" />
                             </div>
                         </div>
-                        <p>
-                            @Html.ActionLink("Register", "Register") if you don't have an account. You know you want to ;)
-                        </p>
+                        <div class="modal-footer">
+                            <h2>@Html.ActionLink("Register", "Register") if you don't have an account. Registration takes 10 seconds and <b>we don't ask for your email</b>. How cool is that?</h2>
+                        </div>
                     }
                 </section>
-
             </div>
             @section Scripts {
                 @Scripts.Render("~/bundles/jqueryval")

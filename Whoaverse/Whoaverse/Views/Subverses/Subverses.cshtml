@@ -18,6 +18,7 @@
     ViewBag.Title = "subverses";
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
+    var mostActiveSubverses = SessionTracker.MostActiveSubverses();
 
     if (sortingMode != "new")
     {
@@ -38,13 +39,45 @@
 </style>
 
 <div id="container">
-    <div role="main">
+    <div class="side">
+        <div class="spacer">
+            <div class="sidecontentbox collapsible" id="moderation_tools">
+                <div class="alert-h1">
+                    Subverses with most online users right now:
+                </div>
+                <ul style="display: block;" class="content">
+                    <li>
+                        <ul class="flat-vert icon-menu hover">
+                            <li>
+                                @foreach (var subverse in mostActiveSubverses)
+                                {
+                                    <p>
+                                        <a href="/v/@subverse.Name" class="subverse">/v/@subverse.Name</a>, users online: @subverse.UsersOnline.
+                                    </p>
+                                }
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="spacer">
+            <div class="sidebox create">
+                <a href="/subverses/create" class="btn-whoaverse btn-block">
+                    Create your own subverse
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="content" role="main">
 
         @if (sortingMode != "new")
         {
             <div class="alert-notice">
                 <p>Showing top 200 subverses ordered by number of subscribers.</p>
             </div>
+
         }
         else
         {

@@ -10,12 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@using Whoaverse.Utils;
 @using Whoaverse.Models.ViewModels
-
-@{
-    var mostActiveSubverses = SessionTracker.MostActiveSubverses();
-}
 
 <div class="side">
 
@@ -46,27 +41,12 @@
         </div>
     </div>
     <div class="spacer">
-        <div class="sidecontentbox collapsible" id="moderation_tools">
-            <div class="alert-h1">
-                Subverses with most online users right now
-            </div>
-            <ul style="display: block;" class="content">
-                <li>
-                    <ul class="flat-vert icon-menu hover">
-                        <li>
-                            @foreach (var subverse in mostActiveSubverses)
-                            {
-                                <p>
-                                    <a href="/v/@subverse.Name" class="subverse">/v/@subverse.Name</a>, users online: @subverse.UsersOnline.
-                                </p>
-                            }
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+        <div class="sidebox">
+            <a href="/subverses" class="btn-whoaverse btn-block">
+                Explore WhoaVerse
+            </a>
         </div>
     </div>
-
     <div class="spacer">
         <div class="alert-h1">
             WhoaVerse
@@ -89,9 +69,7 @@
 
     <div class="spacer">
         <div class="centered">
-            <a href="http://www.doctorswithoutborders.org?source=ACA140000000">
-                <img src="~/Graphics/Temp/button_60countries_185x70.png" width="185" height="70" border="none" alt="Support Doctors Without Borders" />
-            </a>
+            <iframe src="https://rcm-na.amazon-adsystem.com/e/cm?t=whoa0e-20&o=1&p=286&l=bn1&mode=electronics&browse=172282&fc1=000000&lt1=_blank&lc1=3366FF&bg1=FFFFFF&f=ifr" marginwidth="0" marginheight="0" width="200" height="200" border="0" frameborder="0" style="border:none;" scrolling="no"></iframe>
         </div>
     </div>
 </div>

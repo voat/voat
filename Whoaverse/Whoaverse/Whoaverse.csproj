@@ -480,7 +480,6 @@
     <Content Include="Graphics\mail-icon.png" />
     <Content Include="Graphics\nsfw-thumb.png" />
     <Content Include="Graphics\pattern-welcome.png" />
-    <Content Include="Graphics\Temp\button_60countries_185x70.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\whoaverse-404.png" />
     <Content Include="Graphics\whoaverse-bg.jpg" />
