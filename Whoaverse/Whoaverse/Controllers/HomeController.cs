@@ -12,10 +12,8 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using OpenGraph_Net;
 using PagedList;
 using System;
-using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -40,7 +38,7 @@ namespace Whoaverse.Controllers
             var from = new MailAddress(claModel.Email);
             var to = new MailAddress("legal@whoaverse.com");
             var sb = new StringBuilder();
-            var msg = new MailMessage(@from, to) {Subject = "New CLA Submission from " + claModel.FullName};
+            var msg = new MailMessage(@from, to) { Subject = "New CLA Submission from " + claModel.FullName };
 
             // format CLA email
             sb.Append("Full name: " + claModel.FullName);
@@ -170,58 +168,8 @@ namespace Whoaverse.Controllers
                     // check if target subverse has thumbnails setting enabled before generating a thumbnail
                     if (targetSubverse.enable_thumbnails)
                     {
-                        var extension = Path.GetExtension(message.MessageContent);
-
-                        // this is a direct link to image
-                        if (extension != String.Empty)
-                        {
-                            if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
-                            {
-                                try
-                                {
-                                    string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(message.MessageContent);
-                                    message.Thumbnail = thumbFileName;
-                                }
-                                catch (Exception)
-                                {
-                                    // thumnail generation failed, skip adding thumbnail
-                                }
-                            }
-                            else
-                            {
-                                // try generating a thumbnail by using the Open Graph Protocol
-                                try
-                                {
-                                    OpenGraph graph = OpenGraph.ParseUrl(message.MessageContent);
-                                    if (graph.Image != null)
-                                    {
-                                        string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(graph.Image.ToString());
-                                        message.Thumbnail = thumbFileName;
-                                    }
-                                }
-                                catch (Exception)
-                                {
-                                    // thumnail generation failed, skip adding thumbnail
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // try generating a thumbnail by using the Open Graph Protocol
-                            try
-                            {
-                                var graph = OpenGraph.ParseUrl(message.MessageContent);
-                                if (graph.Image != null)
-                                {
-                                    string thumbFileName = ThumbGenerator.GenerateThumbFromUrl(graph.Image.ToString());
-                                    message.Thumbnail = thumbFileName;
-                                }
-                            }
-                            catch (Exception)
-                            {
-                                // thumnail generation failed, skip adding thumbnail
-                            }
-                        }
+                        // try to generate and assign a thumbnail to submission model
+                        message.Thumbnail = ThumbGenerator.ThumbnailFromSubmissionModel(message);
                     }
 
                     // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
@@ -241,7 +189,6 @@ namespace Whoaverse.Controllers
                     message.Likes = 1;
                     _db.Messages.Add(message);
                     await _db.SaveChangesAsync();
-
                 }
                 else if (message.Type == 1 && message.Title != null)
                 {
@@ -301,8 +248,8 @@ namespace Whoaverse.Controllers
             if (whattodisplay != null && whattodisplay == "comments")
             {
                 var userComments = from c in _db.Comments.OrderByDescending(c => c.Date)
-                    where (c.Name.Equals(id) && c.Message.Anonymized == false) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
-                    select c;
+                                   where (c.Name.Equals(id) && c.Message.Anonymized == false) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
+                                   select c;
                 return View("UserComments", userComments.ToPagedList(pageNumber, pageSize));
             }
 
@@ -310,8 +257,8 @@ namespace Whoaverse.Controllers
             if (whattodisplay != null && whattodisplay == "submissions")
             {
                 var userSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
-                    where (b.Name.Equals(id) && b.Anonymized == false) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
-                    select b;
+                                      where (b.Name.Equals(id) && b.Anonymized == false) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
+                                      select b;
                 return View("UserSubmitted", userSubmissions.ToPagedList(pageNumber, pageSize));
             }
 
@@ -319,8 +266,8 @@ namespace Whoaverse.Controllers
             ViewBag.whattodisplay = "overview";
 
             var userDefaultSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
-                where b.Name.Equals(id) && b.Anonymized == false
-                select b;
+                                         where b.Name.Equals(id) && b.Anonymized == false
+                                         select b;
             return View("UserProfile", userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
         }
 
@@ -411,9 +358,9 @@ namespace Whoaverse.Controllers
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
                     var submissions = (from m in _db.Messages
-                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
-                        where m.Name != "deleted" && s.Username == User.Identity.Name
-                        select m)
+                                       join s in _db.Subscriptions on m.Subverse equals s.SubverseName
+                                       where m.Name != "deleted" && s.Username == User.Identity.Name
+                                       select m)
                         .OrderByDescending(s => s.Date);
 
                     return View("Index", submissions.ToPagedList(pageNumber, pageSize));
@@ -422,9 +369,9 @@ namespace Whoaverse.Controllers
                 {
                     // get only submissions from default subverses, sort by date
                     var submissions = (from message in _db.Messages
-                        where message.Name != "deleted"
-                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                        select message)
+                                       where message.Name != "deleted"
+                                       join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                       select message)
                         .OrderByDescending(s => s.Date);
 
                     return View("Index", submissions.ToPagedList(pageNumber, pageSize));
