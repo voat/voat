@@ -13,7 +13,7 @@
 @model PagedList.IPagedList<Whoaverse.Models.Message>
 
 @{
-    ViewBag.Title = "Profile overview for " + @ViewBag.userid;
+    ViewBag.Title = "Profile overview for " + @ViewBag.userid.ToString().ToLower();
 
     int currentPageNumber = Model.PageNumber;
     int counterCont = (currentPageNumber - 1) * 25;
@@ -30,7 +30,7 @@
     @Html.Partial("~/Views/Shared/Sidebars/_SidebarUserInfo.cshtml")
 
     <div class="content" role="main">
-        <div class="alert-title">Profile overview for @ViewBag.userid.</div>
+        <div class="alert-title">Profile overview for @ViewBag.userid.ToString().ToLower().</div>
         <div class="userstats">
             <div class="userstats-heading-1">Submission distribution</div>
             <div class="userstats-body">
@@ -157,7 +157,7 @@
                                             @{
                             string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
                                             }
-                                            <b>@ViewBag.userid</b> wrote: @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                                            <b>@ViewBag.userid.ToString().ToLower()</b> wrote: @Html.Raw(@Formatting.FormatMessage(trimmedComment))
                                         </div>
                                     </div>
                                     <ul class="flat-list buttons">
