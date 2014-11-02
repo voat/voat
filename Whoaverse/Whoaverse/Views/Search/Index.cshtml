@@ -10,13 +10,26 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Whoaverse.Models.Message>
+@model PaginatedList<Whoaverse.Models.Message>
 
+@using System.Globalization
 @using Whoaverse.Utils;
 
 @{
-    string searchTerm = ViewBag.SearchTerm;
-    string selectedSubverse = ViewBag.SelectedSubverse;
+    string searchTerm = "";
+    string selectedSubverse = "";
+    
+    if (!String.IsNullOrEmpty(Request.QueryString["q"]))
+    {
+        searchTerm = Request.QueryString["q"].ToString(CultureInfo.InvariantCulture);
+    }
+
+    if (!String.IsNullOrEmpty(Request.QueryString["sub"]))
+    {
+        selectedSubverse = Request.QueryString["sub"].ToString(CultureInfo.InvariantCulture);
+    }
+    
+    bool limitSearchToSubverse = Request.QueryString["l"].AsBool();
 
     int commentContributionPoints = 0;
     if (User.Identity.IsAuthenticated)
@@ -25,8 +38,6 @@
     } 
 }
 
-@using PagedList.Mvc;
-
 <style type="text/css">
     body > .content .link .rank {
         width: 3.2ex;
@@ -34,21 +45,19 @@
 </style>
 
 <div id="container">
-    <div class="content" role="main">
+    <div role="main">
+        
+        @Html.ActionLink("< Go back to frontpage", "Index", "Home")
 
-        <div class="searchresults" style="display: block;">
-            Here are your search results:
+        <div class="alert alert-info">
+            <p>Here are your search results for the term "@searchTerm", we found <b>@Model.TotalCount</b> matches:</p>
         </div>
-
-        <br />
-        <br />
 
         <div class="sitetable linklisting">
 
             @{
-                //(current page number -1)*25
-                int currentPageNumber = Model.PageNumber;
-                int counterCont = (currentPageNumber - 1) * 25;
+                int currentPageNumber = Model.PageIndex;
+                int counterCont = (currentPageNumber) * 25;
 
                 int counter = counterCont + 1;
                 string submissionClass = "";
@@ -82,9 +91,22 @@
 
         </div>
 
-        @if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action("", new { page, q = searchTerm, sub = selectedSubverse }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", "Search", new { page = (Model.PageIndex - 1), q = searchTerm, sub = selectedSubverse, l = limitSearchToSubverse }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", "Search", new { page = (Model.PageIndex + 1), q = searchTerm, sub = selectedSubverse, l = limitSearchToSubverse }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
+        </div>
     </div>
 </div>

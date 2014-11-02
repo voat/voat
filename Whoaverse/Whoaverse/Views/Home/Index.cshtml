@@ -10,7 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Whoaverse.Models.Message>
+@model PaginatedList<Whoaverse.Models.Message>
 
 @{
     ViewBag.Title = "whoaverse: the frontpage of the universe";
@@ -34,8 +34,6 @@
         urlaction = "New";
     }
 }
-
-@using PagedList.Mvc;
 @using Whoaverse.Utils;
 
 <style type="text/css">
@@ -58,8 +56,8 @@
 
             @{
                 //(current page number -1)*25
-                int currentPageNumber = Model.PageNumber;
-                int counterCont = (currentPageNumber - 1) * 25;
+                int currentPageNumber = Model.PageIndex;
+                int counterCont = (currentPageNumber) * 25;
 
                 int counter = counterCont + 1;
                 string submissionClass = "";
@@ -102,12 +100,25 @@
                 <div class="horizontal-line"></div>
                 counter++;
             }
+            
+            <div class="pagination-container">
+                <ul>
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="btn-whoaverse-paging">
+                            @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                        </li>
+                    }
 
-            @if (Model.PageCount > 1)
-            {
-                @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-                <a href="/random">or try a random subverse</a>
-            }
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="btn-whoaverse-paging">
+                            @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                        </li>
+                    }
+                </ul>
+            </div>
+            <a href="/random">or try a random subverse</a>
 
         </div>
 

@@ -43,7 +43,14 @@ namespace Whoaverse
                 name: "Search",
                 url: "search",
                 defaults: new { controller = "Search", action = "SearchResults" }
-            );                        
+            );
+
+            // search
+            routes.MapRoute(
+                name: "FindSubverse",
+                url: "search/findsubverse",
+                defaults: new { controller = "Search", action = "FindSubverse" }
+            );
 
             // /subverses
             routes.MapRoute(
@@ -54,7 +61,7 @@ namespace Whoaverse
 
             // /subverses/search
             routes.MapRoute(
-                name: "SubversesSearch",
+                name: "SearchSubverseForm",
                 url: "subverses/search",
                 defaults: new { controller = "Subverses", action = "Search" }
             );
@@ -82,7 +89,7 @@ namespace Whoaverse
 
             // /subverses/new
             routes.MapRoute(
-                name: "SubversesNew",
+                name: "NewestSubverses",
                 url: "subverses/{sortingmode}",
                 defaults: new { controller = "Subverses", action = "NewestSubverses" }
             );            
@@ -96,7 +103,7 @@ namespace Whoaverse
 
             // user/someuserhere/thingtoshow
             routes.MapRoute(
-                name: "userprofilefilter",
+                name: "UserProfile",
                 url: "user/{id}/{whattodisplay}",
                 defaults: new { controller = "Home", action = "UserProfile", whattodisplay = UrlParameter.Optional }
             );
@@ -285,9 +292,16 @@ namespace Whoaverse
 
             // /new
             routes.MapRoute(
-                name: "FrontpageLatestPosts",
+                name: "New",
                 url: "{sortingmode}",
                 defaults: new { controller = "Home", action = "New" }
+            );
+
+            // /
+            routes.MapRoute(
+                name: "Index",
+                url: "",
+                defaults: new { controller = "Home", action = "Index" }
             );
 
             // v/subversetoedit/about/edit
@@ -350,7 +364,7 @@ namespace Whoaverse
             routes.MapRoute(
                 name: "SubverseIndex",
                 url: "v/{subversetoshow}",
-                defaults: new { controller = "Subverses", action = "Index" }
+                defaults: new { controller = "Subverses", action = "SubverseIndex" }
             );
 
             // domains/domainname.com
@@ -376,7 +390,7 @@ namespace Whoaverse
 
             // v/subversetoshow/sortingmode
             routes.MapRoute(
-                name: "SubverseLatestPosts",
+                name: "SortedSubverseFrontpage",
                 url: "v/{subversetoshow}/{sortingmode}",
                 defaults: new { controller = "Subverses", action = "SortedSubverseFrontpage" }
             );

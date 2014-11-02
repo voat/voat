@@ -10,13 +10,11 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Whoaverse.Models.Comment>
+@model PaginatedList<Whoaverse.Models.Comment>
 
 @{
     ViewBag.Title = "Comment history for " + @ViewBag.userid;
 }
-
-@using PagedList.Mvc;
 @using Whoaverse.Utils;
 
 <div id="container">
@@ -28,10 +26,23 @@
             @Html.Partial("Userprofile/_UserProfileComment", submission)
         }
 
-        @if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", "UserProfile", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", "UserProfile", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
+        </div>
 
     </div>
 </div>

@@ -12,10 +12,10 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using PagedList;
 using System.Linq;
 using System.Web.Mvc;
 using Whoaverse.Models;
+using Whoaverse.Utils;
 
 namespace Whoaverse.Controllers
 {
@@ -28,9 +28,9 @@ namespace Whoaverse.Controllers
         public ActionResult Index(int? page, string domainname, string ext, string sortingmode)
         {
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
@@ -38,16 +38,17 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedSubverse = "domains";
             ViewBag.SelectedDomain = domainname + "." + ext;
 
-            //check if at least one submission for given domain was found, if not, send to a page not found error
-            var submissions = _db.Messages
-                        .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
-                        .OrderByDescending(s => s.Rank)
-                        .ThenByDescending(s => s.Date)
-                        .Take(100)
-                        .ToList();
+            // check if at least one submission for given domain was found, if not, send to a page not found error
+            IQueryable<Message> submissions = _db.Messages
+                .Where(
+                    x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
+                .OrderByDescending(s => s.Rank)
+                .ThenByDescending(s => s.Date);
+
+            var paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
 
             ViewBag.Title = "Showing all submissions which link to " + domainname;
-            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+            return View("Index", paginatedSubmissions);
         }
 
         public ActionResult @New(int? page, string domainname, string ext, string sortingmode)
@@ -60,22 +61,22 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedDomain = domainname + "." + ext;
 
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
             //check if at least one submission for given domain was found, if not, send to a page not found error
-            var submissions = _db.Messages
+            IQueryable<Message> submissions = _db.Messages
                 .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
-                .OrderByDescending(s => s.Date)
-                .Take(100)
-                .ToList();
+                .OrderByDescending(s => s.Date);
+
+            var paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
 
             ViewBag.Title = "Showing all newest submissions which link to " + domainname;
-            return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+            return View("Index", paginatedSubmissions);
         }
     }
 }

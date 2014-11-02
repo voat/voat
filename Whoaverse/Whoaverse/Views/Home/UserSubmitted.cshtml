@@ -10,18 +10,15 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Whoaverse.Models.Message>
+@model PaginatedList<Whoaverse.Models.Message>
 
 @{
     ViewBag.Title = "Submission history for " + @ViewBag.userid;
-    //(current page number -1)*25
-    int currentPageNumber = Model.PageNumber;
-    int counterCont = (currentPageNumber - 1) * 25;
+    int currentPageNumber = Model.PageIndex;
+    int counterCont = (currentPageNumber) * 25;
     int counter = counterCont + 1;
     string submissionClass = "";
 }
-
-@using PagedList.Mvc;
 @using Whoaverse.Utils;
 
 <div id="container">
@@ -49,10 +46,23 @@
             <div class="horizontal-line"></div>
         }
 
-        @if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action("UserProfile", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", "UserProfile", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", "UserProfile", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
+        </div>
 
     </div>
 </div>

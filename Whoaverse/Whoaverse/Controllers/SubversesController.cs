@@ -12,7 +12,6 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using PagedList;
 using System;
 using System.Linq;
 using System.Net;
@@ -30,13 +29,17 @@ namespace Whoaverse.Controllers
         private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // GET: sidebar for selected subverse
-        public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments, string name, DateTime? date, DateTime? lastEditDate, int? submissionId, int? likes, int? dislikes, bool anonymized)
+        public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments,
+            string name, DateTime? date, DateTime? lastEditDate, int? submissionId, int? likes, int? dislikes,
+            bool anonymized)
         {
             var subverse = _db.Subverses.Find(selectedSubverse);
 
             if (subverse == null) return new EmptyResult();
             // get subscriber count for selected subverse
-            var subscriberCount = _db.Subscriptions.AsEnumerable().Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
+            var subscriberCount =
+                _db.Subscriptions.AsEnumerable()
+                    .Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
 
             ViewBag.SubscriberCount = subscriberCount;
             ViewBag.SelectedSubverse = selectedSubverse;
@@ -78,7 +81,9 @@ namespace Whoaverse.Controllers
 
             if (subverse == null) return new EmptyResult();
             // get subscriber count for selected subverse
-            var subscriberCount = _db.Subscriptions.AsEnumerable().Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
+            var subscriberCount =
+                _db.Subscriptions.AsEnumerable()
+                    .Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
 
             ViewBag.SubscriberCount = subscriberCount;
             ViewBag.SelectedSubverse = selectedSubverse;
@@ -109,7 +114,9 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateSubverse([Bind(Include = "Name, Title, Description, Type, Sidebar, Creation_date, Owner")] AddSubverse subverseTmpModel)
+        public async Task<ActionResult> CreateSubverse(
+            [Bind(Include = "Name, Title, Description, Type, Sidebar, Creation_date, Owner")] AddSubverse
+                subverseTmpModel)
         {
             if (!User.Identity.IsAuthenticated) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // verify recaptcha if user has less than 25 CCP
@@ -171,12 +178,13 @@ namespace Whoaverse.Controllers
                         Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
 
                         //go to newly created Subverse
-                        return RedirectToAction("Index", "Subverses", new { subversetoshow = subverse.name });
+                        return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverse.name });
                     }
                     ModelState.AddModelError(string.Empty, "Sorry, you can not own more than 10 subverses.");
                     return View();
                 }
-                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
+                ModelState.AddModelError(string.Empty,
+                    "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
                 return View();
             }
             catch (Exception)
@@ -205,7 +213,9 @@ namespace Whoaverse.Controllers
             }
 
             // check that the user requesting to edit subverse settings is subverse owner!
-            var subAdmin = _db.SubverseAdmins.FirstOrDefault(x => x.SubverseName == subversetoshow && x.Username == User.Identity.Name && x.Power <= 2);
+            var subAdmin =
+                _db.SubverseAdmins.FirstOrDefault(
+                    x => x.SubverseName == subversetoshow && x.Username == User.Identity.Name && x.Power <= 2);
 
             if (subAdmin == null) return RedirectToAction("Index", "Home");
             // map existing data to view model for editing and pass it to frontend
@@ -236,7 +246,8 @@ namespace Whoaverse.Controllers
         // POST: Eddit a Subverse
         // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
-        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
+        [PreventSpam(DelayRequest = 30,
+        ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseSettings(Subverse updatedModel)
         {
@@ -250,7 +261,9 @@ namespace Whoaverse.Controllers
                 {
                     // check if user requesting edit is authorized to do so for current subverse
                     // check that the user requesting to edit subverse settings is subverse owner!
-                    var subAdmin = _db.SubverseAdmins.FirstOrDefault(x => x.SubverseName == updatedModel.name && x.Username == User.Identity.Name && x.Power <= 2);
+                    var subAdmin =
+                        _db.SubverseAdmins.FirstOrDefault(
+                            x => x.SubverseName == updatedModel.name && x.Username == User.Identity.Name && x.Power <= 2);
 
                     if (subAdmin == null) return new EmptyResult();
                     // TODO investigate if EntityState is applicable here and use that instead
@@ -290,7 +303,8 @@ namespace Whoaverse.Controllers
 
                     if (existingSubverse.anonymized_mode && updatedModel.anonymized_mode == false)
                     {
-                        ModelState.AddModelError(string.Empty, "Sorry, this subverse is permanently locked to anonymized mode.");
+                        ModelState.AddModelError(string.Empty,
+                            "Sorry, this subverse is permanently locked to anonymized mode.");
                         return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
                     }
 
@@ -299,7 +313,7 @@ namespace Whoaverse.Controllers
                     await _db.SaveChangesAsync();
 
                     // go back to this subverse
-                    return RedirectToAction("Index", "Subverses", new { subversetoshow = updatedModel.name });
+                    return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.name });
                     // user was not authorized to commit the changes, drop attempt
                 }
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
@@ -313,17 +327,16 @@ namespace Whoaverse.Controllers
         }
 
         // GET: show a subverse index
-        public ActionResult Index(int? page, string subversetoshow)
+        public ActionResult SubverseIndex(int? page, string subversetoshow)
         {
+            const string cookieName = "NSFWEnabled";
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
-
-            const string cookieName = "NSFWEnabled";
 
             if (subversetoshow == null)
             {
@@ -344,7 +357,6 @@ namespace Whoaverse.Controllers
 
             try
             {
-                IOrderedQueryable<Message> submissions;
                 if (!subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
                 {
                     // check if subverse exists, if not, send to a page not found error
@@ -354,64 +366,65 @@ namespace Whoaverse.Controllers
                         ViewBag.SelectedSubverse = subverse.name;
                         ViewBag.Title = subverse.description;
 
-                        submissions = _db.Messages
-                            .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
-                            .OrderByDescending(s => s.Rank);
+                        var paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
 
                         // check if subverse is rated adult, show a NSFW warning page before entering
-                        if (!subverse.rated_adult) return View(submissions.ToPagedList(pageNumber, pageSize));
+                        if (!subverse.rated_adult) return View(paginatedSubmissions);
+
                         // check if user wants to see NSFW content by reading user preference
                         if (User.Identity.IsAuthenticated)
                         {
                             if (Utils.User.AdultContentEnabled(User.Identity.Name))
                             {
-                                return View(submissions.ToPagedList(pageNumber, pageSize));
+                                return View(paginatedSubmissions);
                             }
+
                             // display a view explaining that account preference is set to NO NSFW and why this subverse can not be shown
                             return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
                         }
+
                         // check if user wants to see NSFW content by reading NSFW cookie
                         if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                         {
                             return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
                         }
-                        return View(submissions.ToPagedList(pageNumber, pageSize));
+                        return View(paginatedSubmissions);
                     }
                     ViewBag.SelectedSubverse = "404";
                     return View("~/Views/Errors/Subversenotfound.cshtml");
                 }
+
                 // selected subverse is ALL, show submissions from all subverses, sorted by rank
                 ViewBag.SelectedSubverse = "all";
                 ViewBag.Title = "all subverses";
 
-                submissions = _db.Messages
-                    .Where(x => x.Name != "deleted")
-                    .OrderByDescending(s => s.Rank);
-
                 // check if user wants to see NSFW content by reading user preference
-                IOrderedQueryable<Message> sfwsubmissions;
+                PaginatedList<Message> paginatedSfwSubmissions;
+                
+
                 if (User.Identity.IsAuthenticated)
                 {
                     if (Utils.User.AdultContentEnabled(User.Identity.Name))
                     {
-                        return View(submissions.ToPagedList(pageNumber, pageSize));
+                        var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                        return View(paginatedSubmissionsFromAllSubverses);
                     }
-                    // filter adult content
-                    sfwsubmissions = _db.Messages
-                        .Where(x => x.Name != "deleted" && x.Subverses.rated_adult == false)
-                        .OrderByDescending(s => s.Rank);
 
-                    return View(sfwsubmissions.ToPagedList(pageNumber, pageSize));
+                    // return only sfw submissions
+                    paginatedSfwSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize); 
+                    return View(paginatedSfwSubmissions);
                 }
+
                 // check if user wants to see NSFW content by reading NSFW cookie
                 if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-                    return View(submissions.ToPagedList(pageNumber, pageSize));
-                // filter adult content
-                sfwsubmissions = _db.Messages
-                    .Where(x => x.Name != "deleted" && x.Subverses.rated_adult == false)
-                    .OrderByDescending(s => s.Rank);
+                {
+                    var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                    return View(paginatedSubmissionsFromAllSubverses);
+                }
 
-                return View(sfwsubmissions.ToPagedList(pageNumber, pageSize));
+                // return only sfw submissions
+                paginatedSfwSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                return View(paginatedSfwSubmissions);
             }
             catch (Exception)
             {
@@ -419,13 +432,49 @@ namespace Whoaverse.Controllers
             }
         }
 
+        public ActionResult SortedSubverseFrontpage(int? page, string subversetoshow, string sortingmode)
+        {
+            // sortingmode: new, contraversial, hot, etc
+            ViewBag.SortingMode = sortingmode;
+            ViewBag.SelectedSubverse = subversetoshow;
+            ViewBag.Title = subversetoshow;
+
+            if (!sortingmode.Equals("new") && !sortingmode.Equals("top")) return RedirectToAction("Index", "Home");
+
+            int pageNumber = (page ?? 0);
+            if (pageNumber < 0)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            // register a new session for this subverse                
+            try
+            {
+                var currentSubverse = (string)RouteData.Values["subversetoshow"];
+                SessionTracker.Add(currentSubverse, Session.SessionID);
+                ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
+            }
+            catch (Exception)
+            {
+                ViewBag.OnlineUsers = -1;
+            }
+
+            if (!subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
+            {
+                return HandleSortedSubverse(page, subversetoshow, sortingmode);
+            }
+
+            // selected subverse is ALL, show submissions from all subverses, sorted by date
+            return HandleSortedSubverseAll(page, sortingmode);
+        }
+
         public ActionResult Subverses(int? page)
         {
             ViewBag.SelectedSubverse = "subverses";
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
@@ -436,7 +485,9 @@ namespace Whoaverse.Controllers
                 var subverses = _db.Subverses
                     .OrderByDescending(s => s.subscribers);
 
-                return View(subverses.ToPagedList(pageNumber, pageSize));
+                var paginatedSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
+
+                return View(paginatedSubverses);
             }
             catch (Exception)
             {
@@ -459,29 +510,31 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedSubverse = "subverses";
             ViewBag.SubversesView = "subscribed";
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
             // get a list of subcribed subverses with details and order by subverse names, ascending
-            var subscribedSubverses = from c in _db.Subverses
-                                      join a in _db.Subscriptions
-                                      on c.name equals a.SubverseName
-                                      where a.Username.Equals(User.Identity.Name)
-                                      orderby a.SubverseName ascending
-                                      select new SubverseDetailsViewModel
-                                      {
-                                          Name = c.name,
-                                          Title = c.title,
-                                          Description = c.description,
-                                          Creation_date = c.creation_date,
-                                          Subscribers = c.subscribers
-                                      };
+            IQueryable<SubverseDetailsViewModel> subscribedSubverses = from c in _db.Subverses
+                                                                       join a in _db.Subscriptions
+                                                                       on c.name equals a.SubverseName
+                                                                       where a.Username.Equals(User.Identity.Name)
+                                                                       orderby a.SubverseName ascending
+                                                                       select new SubverseDetailsViewModel
+                                                                       {
+                                                                           Name = c.name,
+                                                                           Title = c.title,
+                                                                           Description = c.description,
+                                                                           Creation_date = c.creation_date,
+                                                                           Subscribers = c.subscribers
+                                                                       };
 
-            return View("SubscribedSubverses", subscribedSubverses.ToPagedList(pageNumber, pageSize));
+            var paginatedSubscribedSubverses = new PaginatedList<SubverseDetailsViewModel>(subscribedSubverses, page ?? 0, pageSize);
+
+            return View("SubscribedSubverses", paginatedSubscribedSubverses);
         }
 
         // GET: sidebar for selected subverse
@@ -505,9 +558,9 @@ namespace Whoaverse.Controllers
             ViewBag.SortingMode = sortingmode;
 
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
@@ -516,7 +569,9 @@ namespace Whoaverse.Controllers
                 .Where(s => s.description != null && s.sidebar != null)
                 .OrderByDescending(s => s.creation_date);
 
-            return View("~/Views/Subverses/Subverses.cshtml", subverses.ToPagedList(pageNumber, pageSize));
+            var paginatedNewestSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
+
+            return View("~/Views/Subverses/Subverses.cshtml", paginatedNewestSubverses);
         }
 
         [OutputCache(VaryByParam = "none", Duration = 3600)]
@@ -548,139 +603,10 @@ namespace Whoaverse.Controllers
                 ControllerContext.HttpContext.Response.Cookies.Add(cookie);
 
                 // redirect to destination subverse
-                return RedirectToAction("Index", "Subverses", new { subversetoshow = destination });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = destination });
             }
             ViewBag.Destination = destination;
             return View("~/Views/Subverses/AdultContentWarning.cshtml");
-        }
-
-        public ActionResult SortedSubverseFrontpage(int? page, string subversetoshow, string sortingmode)
-        {
-            //sortingmode: new, contraversial, hot, etc
-            ViewBag.SortingMode = sortingmode;
-            ViewBag.SelectedSubverse = subversetoshow;
-
-            const string cookieName = "NSFWEnabled";
-
-            if (!sortingmode.Equals("new") && !sortingmode.Equals("top")) return RedirectToAction("Index", "Home");
-            const int pageSize = 25;
-            int pageNumber = (page ?? 1);
-
-            if (pageNumber < 1)
-            {
-                return View("~/Views/Errors/Error_404.cshtml");
-            }
-
-            ViewBag.Title = subversetoshow;
-
-            // register a new session for this subverse                
-            try
-            {
-                var currentSubverse = (string)RouteData.Values["subversetoshow"];
-                SessionTracker.Add(currentSubverse, Session.SessionID);
-                ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
-            }
-            catch (Exception)
-            {
-                ViewBag.OnlineUsers = -1;
-            }
-
-            IQueryable<Message> submissions;
-            if (!subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
-            {
-                // check if subverse exists, if not, send to a page not found error
-                var subverse = _db.Subverses.Find(subversetoshow);
-                if (subverse == null) return View("~/Views/Errors/Subversenotfound.cshtml");
-                ViewBag.Title = subverse.description;
-
-                if (sortingmode.Equals("new"))
-                {
-                    submissions = _db.Messages
-                        .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
-                        .OrderByDescending(s => s.Date);
-                }
-                else
-                {
-                    submissions = _db.Messages
-                        .Where(x => x.Subverse == subversetoshow && x.Name != "deleted")
-                        .OrderByDescending(s => s.Likes - s.Dislikes);
-                }
-
-                if (subverse.rated_adult != true)
-                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-                if (User.Identity.IsAuthenticated)
-                {
-                    // check if user wants to see NSFW content by reading user preference
-                    if (Utils.User.AdultContentEnabled(User.Identity.Name))
-                    {
-                        return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-                    }
-                    return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
-                }
-                // check if user wants to see NSFW content by reading NSFW cookie
-                if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-                {
-                    return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
-                }
-                return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-            }
-            // selected subverse is ALL, show submissions from all subverses, sorted by date
-
-            if (sortingmode.Equals("new"))
-            {
-                submissions = _db.Messages
-                    .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true)
-                    .OrderByDescending(s => s.Date);
-            }
-            else
-            {
-                submissions = _db.Messages
-                    .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true)
-                    .OrderByDescending(s => s.Likes - s.Dislikes);
-            }
-
-            // check if user wants to see NSFW content by reading user preference
-            IQueryable<Message> sfwsubmissions;
-            if (User.Identity.IsAuthenticated)
-            {
-                if (Utils.User.AdultContentEnabled(User.Identity.Name))
-                {
-                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-                }
-
-                if (sortingmode.Equals("new"))
-                {
-                    sfwsubmissions = _db.Messages
-                        .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
-                        .OrderByDescending(s => s.Date);
-                }
-                else
-                {
-                    sfwsubmissions = _db.Messages
-                        .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
-                        .OrderByDescending(s => s.Likes - s.Dislikes);
-                }
-
-                return View("Index", sfwsubmissions.ToPagedList(pageNumber, pageSize));
-            }
-            // check if user wants to see NSFW content by reading NSFW cookie
-            if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-                return View("Index", submissions.ToPagedList(pageNumber, pageSize));
-
-            if (sortingmode.Equals("new"))
-            {
-                sfwsubmissions = _db.Messages
-                    .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
-                    .OrderByDescending(s => s.Date);
-            }
-            else
-            {
-                sfwsubmissions = _db.Messages
-                    .Where(x => x.Name != "deleted" && x.Subverses.private_subverse != true && x.Subverses.rated_adult == false)
-                    .OrderByDescending(s => s.Likes - s.Dislikes);
-            }
-
-            return View("Index", sfwsubmissions.ToPagedList(pageNumber, pageSize));
         }
 
         // fetch a random subbverse with x subscribers and x submissions
@@ -715,7 +641,7 @@ namespace Whoaverse.Controllers
                     }
                 } while (submissionCount == 0);
 
-                return RedirectToAction("Index", "Subverses", new { subversetoshow = randomSubverse.name });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = randomSubverse.name });
             }
             catch (Exception)
             {
@@ -877,7 +803,7 @@ namespace Whoaverse.Controllers
             // execute removal                    
             _db.SubverseAdmins.Remove(moderatorToBeRemoved);
             await _db.SaveChangesAsync();
-            return RedirectToAction("Index", "Subverses", new { subversetoshow = subversetoresignfrom });
+            return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subversetoresignfrom });
         }
 
         // POST: remove a moderator from given subverse
@@ -1101,5 +1027,197 @@ namespace Whoaverse.Controllers
             Utils.User.UnSubscribeFromSubverse(loggedInUser, subverseName);
             return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
         }
+
+        [ChildActionOnly]
+        private ActionResult HandleSortedSubverse(int? page, string subversetoshow, string sortingmode)
+        {
+            ViewBag.SortingMode = sortingmode;
+            ViewBag.SelectedSubverse = subversetoshow;
+            const string cookieName = "NSFWEnabled";
+
+            if (!sortingmode.Equals("new") && !sortingmode.Equals("top")) return RedirectToAction("Index", "Home");
+            const int pageSize = 25;
+            int pageNumber = (page ?? 0);
+            if (pageNumber < 0)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            ViewBag.Title = subversetoshow;
+
+            // check if subverse exists, if not, send to a page not found error
+            var subverse = _db.Subverses.Find(subversetoshow);
+            if (subverse == null) return View("~/Views/Errors/Subversenotfound.cshtml");
+            ViewBag.Title = subverse.description;
+
+            // subverse is adult rated, check if user wants to see NSFW content
+            PaginatedList<Message> paginatedSubmissionsByRank;
+            if (subverse.rated_adult)
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    // check if user wants to see NSFW content by reading user preference
+                    if (Utils.User.AdultContentEnabled(User.Identity.Name))
+                    {
+                        if (sortingmode.Equals("new"))
+                        {
+                            var paginatedSubmissionsByDate =
+                                new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByDate(subversetoshow), page ?? 0,
+                                    pageSize);
+                            return View("SubverseIndex", paginatedSubmissionsByDate);
+                        }
+
+                        if (sortingmode.Equals("top"))
+                        {
+                            var paginatedSubmissionsByDate =
+                                new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByTop(subversetoshow), page ?? 0,
+                                    pageSize);
+                            return View("SubverseIndex", paginatedSubmissionsByDate);
+                        }
+
+                        // default sorting mode by rank
+                        paginatedSubmissionsByRank = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByRank(subversetoshow), page ?? 0,
+                            pageSize);
+                        return View("SubverseIndex", paginatedSubmissionsByRank);
+                    }
+                    return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
+                }
+                else
+                {
+                    // check if user wants to see NSFW content by reading NSFW cookie
+                    if (!HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                    {
+                        return RedirectToAction("AdultContentWarning", "Subverses",
+                            new { destination = subverse.name, nsfwok = false });
+                    }
+                    else
+                    {
+                        if (sortingmode.Equals("new"))
+                        {
+                            var paginatedSubmissionsByDate =
+                                new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByDate(subversetoshow), page ?? 0,
+                                    pageSize);
+                            return View("SubverseIndex", paginatedSubmissionsByDate);
+                        }
+
+                        if (sortingmode.Equals("top"))
+                        {
+                            var paginatedSubmissionsByDate =
+                                new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByTop(subversetoshow), page ?? 0,
+                                    pageSize);
+                            return View("SubverseIndex", paginatedSubmissionsByDate);
+                        }
+
+                        // default sorting mode by rank
+                        paginatedSubmissionsByRank = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
+                        return View("SubverseIndex", paginatedSubmissionsByRank);
+                    }
+                }
+            }
+
+            // subverse is safe for work
+            if (sortingmode.Equals("new"))
+            {
+                var paginatedSubmissionsByDate =
+                    new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
+                return View("SubverseIndex", paginatedSubmissionsByDate);
+            }
+
+            if (sortingmode.Equals("top"))
+            {
+                var paginatedSubmissionsByDate =
+                    new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
+                return View("SubverseIndex", paginatedSubmissionsByDate);
+            }
+
+            // default sorting mode by rank
+            paginatedSubmissionsByRank = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
+            return View("SubverseIndex", paginatedSubmissionsByRank);
+        }
+
+        [ChildActionOnly]
+        private ActionResult HandleSortedSubverseAll(int? page, string sortingmode)
+        {
+            const string cookieName = "NSFWEnabled";
+            const int pageSize = 25;
+
+            PaginatedList<Message> paginatedSubmissions;
+            if (User.Identity.IsAuthenticated)
+            {
+                // check if user wants to see NSFW content by reading user preference
+                if (Utils.User.AdultContentEnabled(User.Identity.Name))
+                {
+                    if (sortingmode.Equals("new"))
+                    {
+                        paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                        return View("SubverseIndex", paginatedSubmissions);
+                    }
+
+                    if (sortingmode.Equals("top"))
+                    {
+                        paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                        return View("SubverseIndex", paginatedSubmissions);
+                    }
+
+                    // default sorting mode by rank
+                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissions);
+
+                }
+
+                // user does not want to see NSFW content
+                if (sortingmode.Equals("new"))
+                {
+                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissions);
+                }
+                if (sortingmode.Equals("top"))
+                {
+                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissions);
+                }
+                // default sorting mode by rank
+                paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                return View("SubverseIndex", paginatedSubmissions);
+
+            }
+
+            // check if user wants to see NSFW content by reading NSFW cookie
+            if (!HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+            {
+                if (sortingmode.Equals("new"))
+                {
+                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissions);
+                }
+                if (sortingmode.Equals("top"))
+                {
+                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissions);
+                }
+
+                // default sorting mode by rank
+                paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                return View("SubverseIndex", paginatedSubmissions);
+            }
+
+            if (sortingmode.Equals("new"))
+            {
+                paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                return View("SubverseIndex", paginatedSubmissions);
+            }
+            if (sortingmode.Equals("top"))
+            {
+                paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                return View("SubverseIndex", paginatedSubmissions);
+            }
+
+            // default sorting mode by rank
+            paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+            return View("SubverseIndex", paginatedSubmissions);
+
+        }
+        
     }
+
 }

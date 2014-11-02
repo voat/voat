@@ -543,22 +543,5 @@
             </summary>
             <param name="submissionId">The submission Id for which to fetch comments.</param>
         </member>
-        <member name="M:Whoaverse.Utils.ThumbGenerator.Save(System.Drawing.Bitmap,System.Int32,System.Int32,System.Int32,System.String)">
-            <summary>
-            Method to resize, convert and save the image.
-            </summary>
-            <param name="image">Bitmap image.</param>
-            <param name="maxWidth">resize width.</param>
-            <param name="maxHeight">resize height.</param>
-            <param name="quality">quality setting value.</param>
-            <param name="filePath">file path.</param> 
-        </member>
-        <member name="M:Whoaverse.Utils.ThumbGenerator.GetEncoderInfo(System.Drawing.Imaging.ImageFormat)">
-            <summary>
-            Method to get encoder infor for given image format.
-            </summary>
-            <param name="format">Image format</param>
-            <returns>image codec info.</returns>
-        </member>
     </members>
 </doc>

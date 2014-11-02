@@ -12,7 +12,6 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using PagedList;
 using System;
 using System.Linq;
 using System.Net.Mail;
@@ -233,9 +232,9 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedSubverse = "user";
             ViewBag.whattodisplay = whattodisplay;
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
@@ -250,7 +249,10 @@ namespace Whoaverse.Controllers
                 var userComments = from c in _db.Comments.OrderByDescending(c => c.Date)
                                    where (c.Name.Equals(id) && c.Message.Anonymized == false) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
                                    select c;
-                return View("UserComments", userComments.ToPagedList(pageNumber, pageSize));
+
+                PaginatedList<Comment> paginatedUserComments = new PaginatedList<Comment>(userComments, page ?? 0, pageSize);
+
+                return View("UserComments", paginatedUserComments);
             }
 
             // show submissions                        
@@ -259,7 +261,11 @@ namespace Whoaverse.Controllers
                 var userSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
                                       where (b.Name.Equals(id) && b.Anonymized == false) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
                                       select b;
-                return View("UserSubmitted", userSubmissions.ToPagedList(pageNumber, pageSize));
+
+                PaginatedList<Message> paginatedUserSubmissions = new PaginatedList<Message>(userSubmissions, page ?? 0, pageSize);
+
+
+                return View("UserSubmitted", paginatedUserSubmissions);
             }
 
             // default, show overview
@@ -268,7 +274,11 @@ namespace Whoaverse.Controllers
             var userDefaultSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
                                          where b.Name.Equals(id) && b.Anonymized == false
                                          select b;
-            return View("UserProfile", userDefaultSubmissions.ToPagedList(pageNumber, pageSize));
+
+            PaginatedList<Message> paginatedUserDefaultSubmissions = new PaginatedList<Message>(userDefaultSubmissions, page ?? 0, pageSize);
+
+
+            return View("UserProfile", paginatedUserDefaultSubmissions);
         }
 
         // GET: /
@@ -277,9 +287,9 @@ namespace Whoaverse.Controllers
             ViewBag.SelectedSubverse = "frontpage";
 
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
@@ -290,24 +300,28 @@ namespace Whoaverse.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
-                    var submissions = (from m in _db.Messages
-                                       join s in _db.Subscriptions on m.Subverse equals s.SubverseName
-                                       where m.Name != "deleted" && s.Username == User.Identity.Name
-                                       select m)
-                                       .OrderByDescending(s => s.Rank);
+                    IQueryable<Message> submissions = (from m in _db.Messages
+                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
+                        where m.Name != "deleted" && s.Username == User.Identity.Name
+                        select m)
+                        .OrderByDescending(s => s.Rank);
 
-                    return View(submissions.ToPagedList(pageNumber, pageSize));
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
+
+                    return View(paginatedSubmissions);
                 }
                 else
                 {
                     // get only submissions from default subverses, order by rank
-                    var submissions = (from message in _db.Messages
-                                       where message.Name != "deleted"
-                                       join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                       select message)
-                                       .OrderByDescending(s => s.Rank);
+                    IQueryable<Message> submissions = (from message in _db.Messages
+                        where message.Name != "deleted"
+                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                        select message)
+                        .OrderByDescending(s => s.Rank);
 
-                    return View(submissions.ToPagedList(pageNumber, pageSize));
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
+
+                    return View(paginatedSubmissions);
                 }
             }
             catch (Exception)
@@ -325,9 +339,9 @@ namespace Whoaverse.Controllers
             if (!sortingmode.Equals("new")) return RedirectToAction("Index", "Home");
 
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
@@ -357,24 +371,28 @@ namespace Whoaverse.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
-                    var submissions = (from m in _db.Messages
-                                       join s in _db.Subscriptions on m.Subverse equals s.SubverseName
-                                       where m.Name != "deleted" && s.Username == User.Identity.Name
-                                       select m)
+                    IQueryable<Message> submissions = (from m in _db.Messages
+                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
+                        where m.Name != "deleted" && s.Username == User.Identity.Name
+                        select m)
                         .OrderByDescending(s => s.Date);
 
-                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
+
+                    return View("Index", paginatedSubmissions);
                 }
                 else
                 {
                     // get only submissions from default subverses, sort by date
-                    var submissions = (from message in _db.Messages
-                                       where message.Name != "deleted"
-                                       join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                       select message)
+                    IQueryable<Message> submissions = (from message in _db.Messages
+                        where message.Name != "deleted"
+                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                        select message)
                         .OrderByDescending(s => s.Date);
 
-                    return View("Index", submissions.ToPagedList(pageNumber, pageSize));
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
+
+                    return View("Index", paginatedSubmissions);
                 }
 
             }

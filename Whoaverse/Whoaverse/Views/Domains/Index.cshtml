@@ -10,21 +10,21 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Whoaverse.Models.Message>
+@model PaginatedList<Whoaverse.Models.Message>
 
 @{
-    ViewBag.Title = "whoaverse: the frontpage of the universe";
+    ViewBag.Title = "WhoaVerse: the frontpage of the universe";
 
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
 
     if (sortingMode != "new")
     {
-        urlaction = "Index";
+        urlaction = "DomainIndex";
     }
     else
     {
-        urlaction = "New";
+        urlaction = "DomainIndexSorted";
     }
 
     int commentContributionPoints = 0;
@@ -33,8 +33,6 @@
         commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
     }  
 }
-
-@using PagedList.Mvc;
 @using Whoaverse.Utils;
 
 <style type="text/css">
@@ -67,8 +65,7 @@
             @Html.Action("StickiedSubmission", "Home")
 
             @{
-                //(current page number -1)*25
-                int currentPageNumber = Model.PageNumber;
+                int currentPageNumber = Model.PageIndex;
                 int counterCont = (currentPageNumber - 1) * 25;
 
                 int counter = counterCont + 1;
@@ -101,11 +98,24 @@
                 counter++;
             }
 
-            @if (Model.PageCount > 1)
-            {
-                @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-                <a href="/random">or try a random subverse</a>
-            }
+            <div class="pagination-container">
+                <ul>
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="btn-whoaverse-paging">
+                            @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                        </li>
+                    }
+
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="btn-whoaverse-paging">
+                            @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                        </li>
+                    }
+                </ul>
+            </div>
+            <a href="/random">or try a random subverse</a>
 
         </div>
 

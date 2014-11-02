@@ -10,24 +10,22 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Whoaverse.Models.Subverse>
+@model PaginatedList<Whoaverse.Models.Subverse>
 
+@using System.Globalization
 @using Whoaverse.Utils;
 
 @{
     ViewBag.Title = "subverses";
-    string sortingMode = ViewBag.SortingMode;
-    string searchTerm = Request.QueryString["q"].ToString();
-    bool includeDescriptions = Request.QueryString["d"].AsBool();
-    string urlAction = "";
+    string searchTerm = "";
 
-    if (searchTerm != null)
+    if (!String.IsNullOrEmpty(Request.QueryString["q"]))
     {
-        urlAction = "?q=" + searchTerm;
+        searchTerm = Request.QueryString["q"].ToString(CultureInfo.InvariantCulture);
     }
+    
+    bool includeDescriptions = Request.QueryString["d"].AsBool();
 }
-
-@using PagedList.Mvc;
 
 <style type="text/css">
     body > .content .link .rank {
@@ -43,7 +41,7 @@
             @Html.ActionLink("< Go back to frontpage", "Index", "Home")
 
             <div class="alert alert-info">
-                <p>Here are your search results for the term "@searchTerm", we found <b>@Model.TotalItemCount</b> matches:</p>
+                <p>Here are your search results for the term "@searchTerm", we found <b>@Model.TotalCount</b> matches:</p>
             </div>
 
             <div class="sitetable linklisting">
@@ -62,10 +60,23 @@
             @Html.ActionLink("Go back and try again with a different term?", "Search", "Subverses")
         }
 
-        @if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action("FindSubverse", new { q = searchTerm, d = includeDescriptions, page }), WhoaversePagerOptions.PagedListRenderOptions());
-        }
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", "FindSubverse", new { page = (Model.PageIndex - 1), q = searchTerm, d = includeDescriptions }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", "FindSubverse", new { page = (Model.PageIndex + 1), q = searchTerm, d = includeDescriptions }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
+        </div>
 
     </div>
 </div>

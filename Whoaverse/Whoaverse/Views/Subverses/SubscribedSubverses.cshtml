@@ -10,7 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Whoaverse.Models.ViewModels.SubverseDetailsViewModel>
+@model PaginatedList<Whoaverse.Models.ViewModels.SubverseDetailsViewModel>
 
 @using Whoaverse.Utils;
 
@@ -25,7 +25,7 @@
     }
     if (ViewBag.SubversesView == "subscribed")
     {
-        urlaction = "Subscribed";
+        urlaction = "SubscribedSubverses";
     }
     else
     {
@@ -57,10 +57,23 @@
 
         </div>
 
-        @if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
+        </div>
 
     </div>
 </div>

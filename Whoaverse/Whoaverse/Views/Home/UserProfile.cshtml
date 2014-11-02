@@ -10,19 +10,18 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Whoaverse.Models.Message>
+@model PaginatedList<Whoaverse.Models.Message>
 
 @{
     ViewBag.Title = "Profile overview for " + @ViewBag.userid;
 
-    int currentPageNumber = Model.PageNumber;
-    int counterCont = (currentPageNumber - 1) * 25;
+    int currentPageNumber = Model.PageIndex;
+    int counterCont = (currentPageNumber) * 25;
 
     int counter = counterCont + 1;
     string submissionClass = "";
 }
 
-@using PagedList.Mvc;
 @using Whoaverse.Utils;
 
 <div id="container">

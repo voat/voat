@@ -10,7 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Whoaverse.Models.Message>
+@model PaginatedList<Whoaverse.Models.Message>
 
 @using Whoaverse.Utils;
 
@@ -36,12 +36,10 @@
             urlaction = "SortedSubverseFrontpage";
             break;
         default:
-            urlaction = "Index";
+            urlaction = "SubverseIndex";
             break;
     }
 }
-
-@using PagedList.Mvc;
 
 <style type="text/css">
     body > .content .link .rank {
@@ -73,9 +71,8 @@ else if (!User.Identity.IsAuthenticated)
             @Html.Action("StickiedSubmission", "Subverses", new { subverseName = selectedSubverse })
 
             @{
-                //(current page number -1)*25
-                int currentPageNumber = Model.PageNumber;
-                int counterCont = (currentPageNumber - 1) * 25;
+                int currentPageNumber = Model.PageIndex;
+                int counterCont = (currentPageNumber) * 25;
 
                 int counter = counterCont + 1;
                 string submissionClass = "";
@@ -126,10 +123,23 @@ else if (!User.Identity.IsAuthenticated)
 
         </div>
 
-        @if (Model.PageCount > 1)
-        {
-            @Html.PagedListPager(Model, page => Url.Action(urlaction, new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-        }
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
+        </div>
 
     </div>
 </div>

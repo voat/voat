@@ -256,6 +256,8 @@
     <Compile Include="Controllers\HtmlElementsController.cs" />
     <Compile Include="Controllers\MessagingController.cs" />
     <Compile Include="Controllers\NavController.cs" />
+    <Compile Include="Utils\DataAccessLayer.cs" />
+    <Compile Include="Utils\PaginatedList.cs" />
     <Compile Include="Controllers\PartnerController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\RSSController.cs" />
@@ -616,7 +618,7 @@
     <Content Include="Views\Errors\Error_404.cshtml" />
     <Content Include="Views\Home\UserComments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
-    <Content Include="Views\Subverses\Index.cshtml" />
+    <Content Include="Views\Subverses\SubverseIndex.cshtml" />
     <Content Include="Views\Legal\Cla.cshtml" />
     <Content Include="Views\Legal\ClaSent.cshtml" />
     <Content Include="Views\Legal\ClaFailed.cshtml" />
