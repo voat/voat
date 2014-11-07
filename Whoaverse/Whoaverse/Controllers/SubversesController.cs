@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -364,7 +365,7 @@ namespace Whoaverse.Controllers
                         ViewBag.SelectedSubverse = subverse.name;
                         ViewBag.Title = subverse.description;
 
-                        var paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
+                        var paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
 
                         // check if subverse is rated adult, show a NSFW warning page before entering
                         if (!subverse.rated_adult) return View(paginatedSubmissions);
@@ -403,24 +404,24 @@ namespace Whoaverse.Controllers
                 {
                     if (Utils.User.AdultContentEnabled(User.Identity.Name))
                     {
-                        var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                        var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                         return View(paginatedSubmissionsFromAllSubverses);
                     }
 
                     // return only sfw submissions
-                    paginatedSfwSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize); 
+                    paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize); 
                     return View(paginatedSfwSubmissions);
                 }
 
                 // check if user wants to see NSFW content by reading NSFW cookie
                 if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                 {
-                    var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                    var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                     return View(paginatedSubmissionsFromAllSubverses);
                 }
 
                 // return only sfw submissions
-                paginatedSfwSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                 return View(paginatedSfwSubmissions);
             }
             catch (Exception)
@@ -1059,7 +1060,7 @@ namespace Whoaverse.Controllers
                         if (sortingmode.Equals("new"))
                         {
                             var paginatedSubmissionsByDate =
-                                new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByDate(subversetoshow), page ?? 0,
+                                new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0,
                                     pageSize);
                             return View("SubverseIndex", paginatedSubmissionsByDate);
                         }
@@ -1067,13 +1068,13 @@ namespace Whoaverse.Controllers
                         if (sortingmode.Equals("top"))
                         {
                             var paginatedSubmissionsByDate =
-                                new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByTop(subversetoshow), page ?? 0,
+                                new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0,
                                     pageSize);
                             return View("SubverseIndex", paginatedSubmissionsByDate);
                         }
 
                         // default sorting mode by rank
-                        paginatedSubmissionsByRank = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByRank(subversetoshow), page ?? 0,
+                        paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0,
                             pageSize);
                         return View("SubverseIndex", paginatedSubmissionsByRank);
                     }
@@ -1092,7 +1093,7 @@ namespace Whoaverse.Controllers
                         if (sortingmode.Equals("new"))
                         {
                             var paginatedSubmissionsByDate =
-                                new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByDate(subversetoshow), page ?? 0,
+                                new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0,
                                     pageSize);
                             return View("SubverseIndex", paginatedSubmissionsByDate);
                         }
@@ -1100,13 +1101,13 @@ namespace Whoaverse.Controllers
                         if (sortingmode.Equals("top"))
                         {
                             var paginatedSubmissionsByDate =
-                                new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByTop(subversetoshow), page ?? 0,
+                                new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0,
                                     pageSize);
                             return View("SubverseIndex", paginatedSubmissionsByDate);
                         }
 
                         // default sorting mode by rank
-                        paginatedSubmissionsByRank = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
+                        paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissionsByRank);
                     }
                 }
@@ -1116,19 +1117,19 @@ namespace Whoaverse.Controllers
             if (sortingmode.Equals("new"))
             {
                 var paginatedSubmissionsByDate =
-                    new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
+                    new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissionsByDate);
             }
 
             if (sortingmode.Equals("top"))
             {
                 var paginatedSubmissionsByDate =
-                    new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
+                    new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissionsByDate);
             }
 
             // default sorting mode by rank
-            paginatedSubmissionsByRank = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
+            paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
             return View("SubverseIndex", paginatedSubmissionsByRank);
         }
 
@@ -1146,18 +1147,18 @@ namespace Whoaverse.Controllers
                 {
                     if (sortingmode.Equals("new"))
                     {
-                        paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                        paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissions);
                     }
 
                     if (sortingmode.Equals("top"))
                     {
-                        paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                        paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissions);
                     }
 
                     // default sorting mode by rank
-                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                    paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
 
                 }
@@ -1165,16 +1166,16 @@ namespace Whoaverse.Controllers
                 // user does not want to see NSFW content
                 if (sortingmode.Equals("new"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
                 if (sortingmode.Equals("top"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
                 // default sorting mode by rank
-                paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
 
             }
@@ -1184,37 +1185,135 @@ namespace Whoaverse.Controllers
             {
                 if (sortingmode.Equals("new"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
                 if (sortingmode.Equals("top"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
 
                 // default sorting mode by rank
-                paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
 
             if (sortingmode.Equals("new"))
             {
-                paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
             if (sortingmode.Equals("top"))
             {
-                paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
 
             // default sorting mode by rank
-            paginatedSubmissions = new PaginatedList<Message>(DataAccessLayer.SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+            paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
             return View("SubverseIndex", paginatedSubmissions);
 
         }
-        
+
+
+        #region sfw submissions from all subverses
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByDate()
+        {
+            IQueryable<Message> sfwSubmissionsFromAllSubversesByDate = (from message in _db.Messages
+                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false
+                                                                        select message
+                                                                        ).OrderByDescending(s => s.Date).AsNoTracking();
+
+            return sfwSubmissionsFromAllSubversesByDate;
+        }
+
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByRank()
+        {
+            IQueryable<Message> sfwSubmissionsFromAllSubversesByRank = (from message in _db.Messages
+                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false && message.Rank > 0.00009
+                                                                        select message).OrderByDescending(s => s.Rank).AsNoTracking();
+
+            return sfwSubmissionsFromAllSubversesByRank;
+        }
+
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByTop()
+        {
+            IQueryable<Message> sfwSubmissionsFromAllSubversesByTop = (from message in _db.Messages
+                                                                       join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                       where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false
+                                                                       select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
+
+
+            return sfwSubmissionsFromAllSubversesByTop;
+        }
+        #endregion
+
+        #region unfiltered submissions from all subverses
+        private IQueryable<Message> SubmissionsFromAllSubversesByDate()
+        {
+            IQueryable<Message> submissionsFromAllSubversesByDate = (from message in _db.Messages
+                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                     where message.Name != "deleted" && subverse.private_subverse != true
+                                                                     select message).OrderByDescending(s => s.Date).AsNoTracking();
+
+            return submissionsFromAllSubversesByDate;
+        }
+
+        private IQueryable<Message> SubmissionsFromAllSubversesByRank()
+        {
+            IQueryable<Message> submissionsFromAllSubversesByRank = (from message in _db.Messages
+                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                     where message.Name != "deleted" && subverse.private_subverse != true && message.Rank > 0.00009
+                                                                     select message).OrderByDescending(s => s.Rank).AsNoTracking();
+
+            return submissionsFromAllSubversesByRank;
+        }
+
+        private IQueryable<Message> SubmissionsFromAllSubversesByTop()
+        {
+            IQueryable<Message> submissionsFromAllSubversesByTop = (from message in _db.Messages
+                                                                    join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                    where message.Name != "deleted" && subverse.private_subverse != true
+                                                                    select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
+
+            return submissionsFromAllSubversesByTop;
+        }
+        #endregion
+
+        #region submissions from a single subverse
+        private IQueryable<Message> SubmissionsFromASubverseByDate(string subverseName)
+        {
+            IQueryable<Message> submissionsFromASubverseByDate = (from message in _db.Messages
+                                                                  join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                  where message.Name != "deleted" && message.Subverse == subverseName
+                                                                  select message).OrderByDescending(s => s.Date).AsNoTracking();
+
+            return submissionsFromASubverseByDate;
+        }
+
+        private IQueryable<Message> SubmissionsFromASubverseByRank(string subverseName)
+        {
+            IQueryable<Message> submissionsFromASubverseByRank = (from message in _db.Messages
+                                                                  join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                  where message.Name != "deleted" && message.Subverse == subverseName && message.Rank > 0.00009
+                                                                  select message).OrderByDescending(s => s.Rank).AsNoTracking();
+
+            return submissionsFromASubverseByRank;
+        }
+
+        private IQueryable<Message> SubmissionsFromASubverseByTop(string subverseName)
+        {
+            IQueryable<Message> submissionsFromASubverseByTop = (from message in _db.Messages
+                                                                 join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                 where message.Name != "deleted" && message.Subverse == subverseName
+                                                                 select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
+
+            return submissionsFromASubverseByTop;
+        }
+        #endregion
     }
 
 }
