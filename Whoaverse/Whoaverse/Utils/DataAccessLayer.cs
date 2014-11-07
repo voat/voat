@@ -21,12 +21,14 @@ namespace Whoaverse.Utils
     {
         private static readonly whoaverseEntities Db = new whoaverseEntities();
 
+        #region sfw submissions from all subverses
         public static IQueryable<Message> SfwSubmissionsFromAllSubversesByDate()
         {
             IQueryable<Message> sfwSubmissionsFromAllSubversesByDate = (from message in Db.Messages
                                                                         join subverse in Db.Subverses on message.Subverse equals subverse.name
                                                                         where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false
-                                                                        select message).OrderByDescending(s => s.Date);
+                                                                        select message
+                                                                        ).AsQueryable().OrderByDescending(s => s.Date);
 
             return sfwSubmissionsFromAllSubversesByDate;
         }
@@ -35,8 +37,8 @@ namespace Whoaverse.Utils
         {
             IQueryable<Message> sfwSubmissionsFromAllSubversesByRank = (from message in Db.Messages
                                                                         join subverse in Db.Subverses on message.Subverse equals subverse.name
-                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false
-                                                                        select message).OrderByDescending(s => s.Rank);
+                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false && message.Rank > 0.00009
+                                                                        select message).AsQueryable().OrderByDescending(s => s.Rank);
 
             return sfwSubmissionsFromAllSubversesByRank;
         }
@@ -46,18 +48,20 @@ namespace Whoaverse.Utils
             IQueryable<Message> sfwSubmissionsFromAllSubversesByTop = (from message in Db.Messages
                                                                        join subverse in Db.Subverses on message.Subverse equals subverse.name
                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false
-                                                                       select message).OrderByDescending(s => s.Likes - s.Dislikes);
+                                                                       select message).AsQueryable().OrderByDescending(s => s.Likes - s.Dislikes);
 
 
             return sfwSubmissionsFromAllSubversesByTop;
         }
+        #endregion
 
+        #region unfiltered submissions from all subverses
         public static IQueryable<Message> SubmissionsFromAllSubversesByDate()
         {
             IQueryable<Message> submissionsFromAllSubversesByDate = (from message in Db.Messages
                                                                      join subverse in Db.Subverses on message.Subverse equals subverse.name
                                                                      where message.Name != "deleted" && subverse.private_subverse != true
-                                                                     select message).OrderByDescending(s => s.Date);
+                                                                     select message).AsQueryable().OrderByDescending(s => s.Date);
 
             return submissionsFromAllSubversesByDate;
         }
@@ -66,8 +70,8 @@ namespace Whoaverse.Utils
         {
             IQueryable<Message> submissionsFromAllSubversesByRank = (from message in Db.Messages
                                                                      join subverse in Db.Subverses on message.Subverse equals subverse.name
-                                                                     where message.Name != "deleted" && subverse.private_subverse != true
-                                                                     select message).OrderByDescending(s => s.Rank);
+                                                                     where message.Name != "deleted" && subverse.private_subverse != true && message.Rank > 0.00009
+                                                                     select message).AsQueryable().OrderByDescending(s => s.Rank);
 
             return submissionsFromAllSubversesByRank;
         }
@@ -77,17 +81,19 @@ namespace Whoaverse.Utils
             IQueryable<Message> submissionsFromAllSubversesByTop = (from message in Db.Messages
                                                                     join subverse in Db.Subverses on message.Subverse equals subverse.name
                                                                     where message.Name != "deleted" && subverse.private_subverse != true
-                                                                    select message).OrderByDescending(s => s.Likes - s.Dislikes);
+                                                                    select message).AsQueryable().OrderByDescending(s => s.Likes - s.Dislikes);
 
             return submissionsFromAllSubversesByTop;
         }
+        #endregion
 
+        #region submissions from a single subverse
         public static IQueryable<Message> SubmissionsFromASubverseByDate(string subverseName)
         {
             IQueryable<Message> submissionsFromASubverseByDate = (from message in Db.Messages
                                                                   join subverse in Db.Subverses on message.Subverse equals subverse.name
                                                                   where message.Name != "deleted" && message.Subverse == subverseName
-                                                                  select message).OrderByDescending(s => s.Date);
+                                                                  select message).AsQueryable().OrderByDescending(s => s.Date);
 
             return submissionsFromASubverseByDate;
         }
@@ -96,8 +102,8 @@ namespace Whoaverse.Utils
         {
             IQueryable<Message> submissionsFromASubverseByRank = (from message in Db.Messages
                                                                   join subverse in Db.Subverses on message.Subverse equals subverse.name
-                                                                  where message.Name != "deleted" && message.Subverse == subverseName
-                                                                  select message).OrderByDescending(s => s.Rank);
+                                                                  where message.Name != "deleted" && message.Subverse == subverseName && message.Rank > 0.00009
+                                                                  select message).AsQueryable().OrderByDescending(s => s.Rank);
 
             return submissionsFromASubverseByRank;
         }
@@ -107,9 +113,10 @@ namespace Whoaverse.Utils
             IQueryable<Message> submissionsFromASubverseByTop = (from message in Db.Messages
                                                                  join subverse in Db.Subverses on message.Subverse equals subverse.name
                                                                  where message.Name != "deleted" && message.Subverse == subverseName
-                                                                 select message).OrderByDescending(s => s.Likes - s.Dislikes);
+                                                                 select message).AsQueryable().OrderByDescending(s => s.Likes - s.Dislikes);
 
             return submissionsFromASubverseByTop;
         }
+        #endregion
     }
 }

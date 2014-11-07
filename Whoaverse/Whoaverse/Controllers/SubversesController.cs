@@ -38,8 +38,7 @@ namespace Whoaverse.Controllers
             if (subverse == null) return new EmptyResult();
             // get subscriber count for selected subverse
             var subscriberCount =
-                _db.Subscriptions.AsEnumerable()
-                    .Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
+                _db.Subscriptions.Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
 
             ViewBag.SubscriberCount = subscriberCount;
             ViewBag.SelectedSubverse = selectedSubverse;
@@ -82,8 +81,7 @@ namespace Whoaverse.Controllers
             if (subverse == null) return new EmptyResult();
             // get subscriber count for selected subverse
             var subscriberCount =
-                _db.Subscriptions.AsEnumerable()
-                    .Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
+                _db.Subscriptions.Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
 
             ViewBag.SubscriberCount = subscriberCount;
             ViewBag.SelectedSubverse = selectedSubverse;
@@ -400,7 +398,6 @@ namespace Whoaverse.Controllers
 
                 // check if user wants to see NSFW content by reading user preference
                 PaginatedList<Message> paginatedSfwSubmissions;
-                
 
                 if (User.Identity.IsAuthenticated)
                 {
@@ -987,7 +984,7 @@ namespace Whoaverse.Controllers
         {
             try
             {
-                var listOfSubverses = _db.Defaultsubverses.OrderBy(s => s.position).ToList().AsEnumerable();
+                var listOfSubverses = _db.Defaultsubverses.OrderBy(s => s.position).ToList();
                 return PartialView("_ListOfDefaultSubverses", listOfSubverses);
             }
             catch (Exception)
@@ -1182,7 +1179,7 @@ namespace Whoaverse.Controllers
 
             }
 
-            // check if user wants to see NSFW content by reading NSFW cookie
+            // guest users: check if user wants to see NSFW content by reading NSFW cookie
             if (!HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
             {
                 if (sortingmode.Equals("new"))
