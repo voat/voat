@@ -12,6 +12,8 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
+using System.Drawing;
+using System.Drawing.Imaging;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
@@ -20,6 +22,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Whoaverse.Models;
+using Whoaverse.Models.ViewModels;
 using Whoaverse.Utils;
 
 namespace Whoaverse.Controllers
@@ -137,7 +140,7 @@ namespace Whoaverse.Controllers
 
             try
             {
-                var user = new WhoaVerseUser {UserName = model.UserName, RegistrationDateTime = DateTime.Now};
+                var user = new WhoaVerseUser { UserName = model.UserName, RegistrationDateTime = DateTime.Now };
 
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -177,6 +180,8 @@ namespace Whoaverse.Controllers
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
                 : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
                 : message == ManageMessageId.Error ? "An error has occurred."
+                : message == ManageMessageId.InvalidFileFormat ? "Please upload a .jpg or .png image."
+                : message == ManageMessageId.UploadedFileToolarge ? "Uploaded file is too large. Current limit is 300 kb."
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
@@ -218,7 +223,7 @@ namespace Whoaverse.Controllers
                     return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
                 }
                 AddErrors(result);
-            }            
+            }
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -376,6 +381,122 @@ namespace Whoaverse.Controllers
             return View(Utils.User.DeleteUser(User.Identity.Name) ? "~/Views/Account/AccountDeleted.cshtml" : "~/Views/Errors/Error.cshtml");
         }
 
+        // GET: /Account/UserPreferencesAbout
+        [ChildActionOnly]
+        public ActionResult UserPreferencesAbout()
+        {
+            try
+            {
+                using (var db = new whoaverseEntities())
+                {
+                    var userPreferences = db.Userpreferences.Find(User.Identity.Name);
+
+                    if (userPreferences != null)
+                    {
+                        // load existing preferences and return to view engine
+                        var tmpModel = new UserAboutViewModel()
+                        {
+                            Shortbio = userPreferences.Shortbio,
+                            Avatar = userPreferences.Avatar
+                        };
+
+                        return PartialView("_UserPreferencesAbout", tmpModel);
+                    }
+                    else
+                    {
+                        var tmpModel = new UserAboutViewModel();
+                        return PartialView("_UserPreferencesAbout", tmpModel);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return new EmptyResult();
+            }
+        }
+
+        // POST: /Account/UserPreferences
+        [Authorize]
+        [HttpPost]
+        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Shortbio, Avatarfile")] UserAboutViewModel model)
+        {
+            // save changes
+            using (var db = new whoaverseEntities())
+            {
+                var userPreferences = db.Userpreferences.Find(User.Identity.Name);
+                var tmpModel = new Userpreference();
+
+                if (userPreferences == null)
+                {
+                    // create a new record for this user in userpreferences table
+                    tmpModel.Shortbio = model.Shortbio;
+                    tmpModel.Username = User.Identity.Name;
+                };
+
+                if (model.Avatarfile != null && model.Avatarfile.ContentLength > 0)
+                {
+                    // check uploaded file size is < 300000 bytes (300 kilobytes)
+                    if (model.Avatarfile.ContentLength < 300000)
+                    {
+                        try
+                        {
+                            using (var img = Image.FromStream(model.Avatarfile.InputStream))
+                            {
+                                if (img.RawFormat.Equals(ImageFormat.Jpeg) || img.RawFormat.Equals(ImageFormat.Png))
+                                {
+                                    // resize uploaded file
+                                    ThumbGenerator.GenerateAvatar(img, User.Identity.Name, model.Avatarfile.ContentType);
+                                    if (userPreferences == null)
+                                    {
+                                        tmpModel.Avatar = User.Identity.Name + ".jpg";
+                                    }
+                                    else
+                                    {
+                                        userPreferences.Avatar = User.Identity.Name + ".jpg";
+                                    }
+                                }
+                                else
+                                {
+                                    // uploaded file was invalid
+                                    ModelState.AddModelError("", "Uploaded file is not recognized as an image.");
+                                    return RedirectToAction("Manage", new { Message = ManageMessageId.InvalidFileFormat });
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // uploaded file was invalid
+                            ModelState.AddModelError("", "Uploaded file is not recognized as an image.");
+                            return RedirectToAction("Manage", new { Message = ManageMessageId.InvalidFileFormat });
+                        }
+                    }
+                    else
+                    {
+                        // refuse to save the file and explain why
+                        ModelState.AddModelError("", "Uploaded image may not exceed 300 kb, please upload a smaller image.");
+                        return RedirectToAction("Manage", new { Message = ManageMessageId.UploadedFileToolarge });
+                    }
+                }
+
+                if (userPreferences == null)
+                {
+                    db.Userpreferences.Add(tmpModel);
+                    await db.SaveChangesAsync();
+                }
+                else
+                {
+                    userPreferences.Shortbio = model.Shortbio;
+                    userPreferences.Username = User.Identity.Name;
+                    await db.SaveChangesAsync();
+                }
+
+            }
+
+            return RedirectToAction("Manage");
+        }
+
         // GET: /Account/UserPreferences
         [ChildActionOnly]
         public ActionResult UserPreferences()
@@ -419,7 +540,7 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions")] UserPreferencesViewModel model)
+        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
             // save changes
             using (var db = new whoaverseEntities())
@@ -453,7 +574,7 @@ namespace Whoaverse.Controllers
                         Topmenu_from_subscriptions = model.Topmenu_from_subscriptions,
                         Username = User.Identity.Name
                     };
-                    db.Userpreferences.Add(tmpModel);                    
+                    db.Userpreferences.Add(tmpModel);
 
                     await db.SaveChangesAsync();
                     // apply theme change
@@ -510,7 +631,9 @@ namespace Whoaverse.Controllers
             ChangePasswordAndRecoveryInfoSuccess,
             SetPasswordAndRecoveryInfoSuccess,
             ChangeRecoveryInfoSuccess,
-            Error
+            Error,
+            InvalidFileFormat,
+            UploadedFileToolarge
         }
 
         private ActionResult RedirectToLocal(string returnUrl)

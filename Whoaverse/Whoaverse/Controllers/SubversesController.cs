@@ -999,10 +999,9 @@ namespace Whoaverse.Controllers
         {
             // show custom list of subverses in top menu
             var listOfSubverses = _db.Subscriptions
-                .OrderBy(s => s.SubverseName)
                 .Where(s => s.Username == User.Identity.Name)
-                .ToList()
-                .AsEnumerable();
+                .OrderBy(s => s.SubverseName);
+
             return PartialView("_ListOfSubscribedToSubverses", listOfSubverses);
         }
 
@@ -1298,7 +1297,7 @@ namespace Whoaverse.Controllers
         {
             IQueryable<Message> submissionsFromASubverseByRank = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                  where message.Name != "deleted" && message.Subverse == subverseName && message.Rank > 0.00009
+                                                                  where message.Name != "deleted" && message.Subverse == subverseName
                                                                   select message).OrderByDescending(s => s.Rank).AsNoTracking();
 
             return submissionsFromASubverseByRank;

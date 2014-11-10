@@ -12,14 +12,7 @@
 
 @model Whoaverse.Models.Message
 
-@using Whoaverse.Utils;
-
 @{
-    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
-
-    DateTime submissionDate = Model.Date;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);    
-
     //type 2 = urls
     if (Model.Type == 2)
     {
@@ -30,5 +23,4 @@
     {
         @Html.Partial("~/Views/Shared/Submissions/_SubmissionSelf.cshtml", Model)
     }
-
 }

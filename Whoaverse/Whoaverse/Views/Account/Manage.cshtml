@@ -9,9 +9,6 @@
 
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
-
-@using Whoaverse.Models;
-@using Microsoft.AspNet.Identity;
 @{
     ViewBag.Title = "Manage Account";
 }
@@ -25,11 +22,22 @@
         <div class="row nomargin">
             <div class="well col-md-12">
                 <div class="alert-title">Your public profile</div>
-                <p class="h6"><a href="/user/@User.Identity.Name">Click here</a> to view your public profile.</p>
+                
+                @if (ViewBag.StatusMessage != String.Empty)
+                {
+                    <p class="alert alert-danger">@ViewBag.StatusMessage</p>
+                }
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <section id="userPreferences">
+                        @Html.Action("UserPreferencesAbout")
+                    </section>
+                }
                 <div class="alert-title">User preferences</div>
                 <h2>You can use this form to customize your WhoaVerse experience.</h2>
 
-                @if (ViewBag.HasLocalPassword)
+                @if (User.Identity.IsAuthenticated)
                 {
                     <section id="userPreferences">
                         @Html.Action("UserPreferences")
@@ -42,7 +50,7 @@
 
                 <p class="text-success">@ViewBag.StatusMessage</p>
 
-                @if (ViewBag.HasLocalPassword)
+                @if (User.Identity.IsAuthenticated)
                 {
                     @Html.Partial("_ChangeAccountSettings")
                 }
@@ -55,7 +63,7 @@
                 <h2>You can use this form to permanently delete your account.</h2>
                 <br />
 
-                @if (ViewBag.HasLocalPassword)
+                @if (User.Identity.IsAuthenticated)
                 {
                     @Html.Partial("_DeleteAccount")
                 }

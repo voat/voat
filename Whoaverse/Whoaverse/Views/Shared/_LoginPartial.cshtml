@@ -23,24 +23,23 @@
         @Html.AntiForgeryToken()
         <div id="header-account">
             <div class="logged-in">
-            <span class="user">@Html.ActionLink(User.Identity.Name, "UserProfile", "Home", routeValues: new { Id = User.Identity.Name, whattodisplay = String.Empty }, htmlAttributes: new { title = "Profile" })&nbsp;(<span class="userkarma" title="submission contribution points">@linkKarma</span>|<span class="userkarma" title="comment contribution points">@commentKarma</span>)</span>
-            <span class="separator">|</span>
-            <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</span>
-            <span class="separator">|</span>
-            @if (Whoaverse.Utils.User.UserHasNewMessages(User.Identity.Name))
-            {
-                <a title="you have new messages" href="/messaging/inbox" class="havemail" id="mail">messages</a>
-            }
-            else
-            {
-                <a title="no new messages" href="/messaging/inbox" class="nohavemail" id="mail">messages</a>
-            }            
-            <span class="separator">|</span>
-            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+                <span class="user">@Html.ActionLink(User.Identity.Name, "UserProfile", "Home", routeValues: new { Id = User.Identity.Name, whattodisplay = String.Empty }, htmlAttributes: new { title = "Profile" })&nbsp;(<span class="userkarma" title="submission contribution points">@linkKarma</span>|<span class="userkarma" title="comment contribution points">@commentKarma</span>)</span>
+                <span class="separator">|</span>
+                <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</span>
+                <span class="separator">|</span>
+                @if (Whoaverse.Utils.User.UserHasNewMessages(User.Identity.Name))
+                {
+                    <a title="you have new messages" href="/messaging/inbox" class="havemail" id="mail">messages</a>
+                }
+                else
+                {
+                    <a title="no new messages" href="/messaging/inbox" class="nohavemail" id="mail">messages</a>
+                }
+                <span class="separator">|</span>
+                <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
             </div>
         </div>
     }
-
 }
 else
 {
@@ -48,7 +47,7 @@ else
     {
         <div id="header-account">
             <div class="logged-out">
-            <span class="user">want to join? <a href="#" onclick="mustLogin();" class="login-required">login</a> or <a href="/account/register">register</a> in seconds</span>
+                <span class="user">want to join? <a href="#" onclick="mustLogin();" class="login-required">login</a> or <a href="/account/register">register</a> in seconds</span>
             </div>
         </div>
     }
@@ -56,7 +55,7 @@ else
     {
         <div id="header-account">
             <div class="logged-out">
-            <span class="user" onclick="mustLogin();"><a href="#" class="login-required">login or register</a></span>
+                <span class="user" onclick="mustLogin();"><a href="#" class="login-required">login or register</a></span>
             </div>
         </div>
     }

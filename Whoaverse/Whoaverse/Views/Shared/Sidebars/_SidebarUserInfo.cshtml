@@ -24,77 +24,90 @@
 
     <div class="side">
         <div class="titlebox footer rounded">
+            <div class="thumbnail may-blank user-avatar">
+                @if (Whoaverse.Utils.User.HasAvatar(userName) != null)
+                {
+                    <img src="~/Storage/Avatars/@(userName).jpg" alt="" class="user-avatar">
+                }
+                else
+                {
+                    <img src="~/Graphics/thumb-placeholder.png" alt="" class="user-avatar">
+                }
+            </div>
+            &rdquo;
+            <span class="user-quote">
+                @Whoaverse.Utils.User.UserShortbio(userName)
+            </span>
+            &rdquo;
+        </div>
+        <div class="bottom">
+            <p class="h6">
+                Member for: <b>@Submissions.CalcSubmissionAge(userRegistrationDateTime)</b><br />
+                <span class="bottommenu">(joined on: @Whoaverse.Utils.User.GetUserRegistrationDateTime(userName).ToShortDateString())</span>
+            </p>
+            <a href="#" class="btn-whoaverse-paging disabled">
+                Follow
+            </a>
+            <a href="#" class="btn-whoaverse-paging disabled">
+                Block
+            </a>
+            <a href="#" class="btn-whoaverse-paging disabled">
+                Report
+            </a>
+            <a href="/messaging/compose?recipient=@userName" class="btn-whoaverse-paging">
+                Send a message
+            </a>
+        </div>
+        <div class="titlebox footer rounded">
             <h2 class="hover whoaversename">
-                Profile for @userName
+                Achievements and contributions
             </h2>
             <div class="bottom">
                 <p class="h6">
-                    Member for: <b>@Submissions.CalcSubmissionAge(userRegistrationDateTime)</b><br />
-                    <span class="bottommenu">(joined on: @Whoaverse.Utils.User.GetUserRegistrationDateTime(userName).ToShortDateString())</span>
+                    Submission contribution points: <b>@Karma.LinkKarma(userName)</b>
+                </p>
+                <p class="h6">
+                    Comment contribution points: <b>@Karma.CommentKarma(userName)</b>
                 </p>
             </div>
             <div class="titlebox footer rounded">
                 <h2 class="hover whoaversename">
-                    Connect with @userName
+                    Badges and trophies
                 </h2>
                 <div class="bottom">
-                    <p class="h6">
-                        <a href="/messaging/compose?recipient=@userName">Send @userName a private message.</a>
-                    </p>
-                </div>
-            </div>
-            <div class="titlebox footer rounded">
-                <h2 class="hover whoaversename">
-                    Achievements and contributions
-                </h2>
-                <div class="bottom">
-                    <p class="h6">
-                        Submission contribution points: <b>@Karma.LinkKarma(userName)</b>
-                    </p>
-                    <p class="h6">
-                        Comment contribution points: <b>@Karma.CommentKarma(userName)</b>
-                    </p>
-                </div>
-                <div class="titlebox footer rounded">
-                    <h2 class="hover whoaversename">
-                        Badges and trophies
-                    </h2>
-                    <div class="bottom">
-                        @if (Whoaverse.Utils.User.UserBadges(userName).Count > 0)
+                    @if (Whoaverse.Utils.User.UserBadges(userName).Count > 0)
+                    {
+                        foreach (var badge in Whoaverse.Utils.User.UserBadges(userName))
                         {
-                            foreach (var badge in Whoaverse.Utils.User.UserBadges(userName))
+                            if (badge.Badge.BadgeGraphics != null)
                             {
-                                if (badge.Badge.BadgeGraphics != null)
-                                {
-                                    <img style="cursor: help" src="~/Graphics/Badges/@badge.Badge.BadgeGraphics" data-toggle="popover" data-trigger="focus" title="@badge.Badge.BadgeName" data-content="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()" />
-                                }
-                                else
-                                {
-                                    <p class="sidebar-badge" title="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()">@badge.Badge.BadgeName</p>
-                                }
+                                <img style="cursor: help" src="~/Graphics/Badges/@badge.Badge.BadgeGraphics" data-toggle="popover" data-trigger="focus" title="@badge.Badge.BadgeName" data-content="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()" />
                             }
-                            if (userRegistrationDateTime < new DateTime(2015, 01, 15))
+                            else
                             {
-                                <img style="cursor: help" src="~/Graphics/Badges/alpha_user.png" data-toggle="popover" data-trigger="focus" title="Early adopter" data-content="Alpha tester, joined WhoaVerse during its alpha testing phase" />
+                                <p class="sidebar-badge" title="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()">@badge.Badge.BadgeName</p>
                             }
                         }
-                        else if (userRegistrationDateTime < new DateTime(2015, 01, 15))
+                        if (userRegistrationDateTime < new DateTime(2015, 01, 15))
                         {
                             <img style="cursor: help" src="~/Graphics/Badges/alpha_user.png" data-toggle="popover" data-trigger="focus" title="Early adopter" data-content="Alpha tester, joined WhoaVerse during its alpha testing phase" />
                         }
-                        else
-                        {
-                            <p>This user currently has no badges.</p>
-                        }
-                    </div>
+                    }
+                    else if (userRegistrationDateTime < new DateTime(2015, 01, 15))
+                    {
+                        <img style="cursor: help" src="~/Graphics/Badges/alpha_user.png" data-toggle="popover" data-trigger="focus" title="Early adopter" data-content="Alpha tester, joined WhoaVerse during its alpha testing phase" />
+                    }
+                    else
+                    {
+                        <p>This user currently has no badges.</p>
+                    }
                 </div>
             </div>
-            @Html.Action("SubversesUserModerates", "Home", new { userName = userName })
-            @if (Whoaverse.Utils.User.PublicSubscriptionsEnabled(userName))
-            {
-                @Html.Action("SubversesUserIsSubscribedTo", "Home", new { userName = userName })
-            }            
         </div>
+        @Html.Action("SubversesUserModerates", "Home", new { userName = userName })
+        @if (Whoaverse.Utils.User.PublicSubscriptionsEnabled(userName))
+        {
+            @Html.Action("SubversesUserIsSubscribedTo", "Home", new { userName = userName })
+        }
     </div>
-
 }

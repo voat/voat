@@ -12,10 +12,10 @@ All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
 All Rights Reserved.
 */
 
-using System;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
 
-namespace Whoaverse.Models
+namespace Whoaverse.Models.ViewModels
 {
     public class ExternalLoginConfirmationViewModel
     {
@@ -78,6 +78,18 @@ namespace Whoaverse.Models
 
         [Display(Name = "Replace top menu bar with my subscriptions")]
         public bool Topmenu_from_subscriptions { get; set; }
+    }
+
+    public class UserAboutViewModel
+    {
+        [Display(Name = "Short profile bio")]
+        [StringLength(100, ErrorMessage = "The short profile bio is limited to 100 characters.")]
+        public string Shortbio { get; set; }
+
+        public string Avatar { get; set; }
+
+        [Display(Name = "Avatar")]
+        public HttpPostedFileBase Avatarfile { get; set; }
     }
 
     public class LoginViewModel

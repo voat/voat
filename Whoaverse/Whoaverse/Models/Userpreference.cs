@@ -33,5 +33,7 @@ namespace Whoaverse.Models
         public bool Public_votes { get; set; }
         public bool Public_subscriptions { get; set; }
         public bool Topmenu_from_subscriptions { get; set; }
+        public string Shortbio { get; set; }
+        public string Avatar { get; set; }
     }
 }

@@ -16,6 +16,7 @@
     ViewBag.Title = "whoaverse: the frontpage of the universe";
 
     int commentContributionPoints = 0;
+
     if (User.Identity.IsAuthenticated)
     {
         commentContributionPoints = Karma.CommentKarma(User.Identity.Name);

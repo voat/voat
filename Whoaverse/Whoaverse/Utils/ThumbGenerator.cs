@@ -1,4 +1,5 @@
-﻿using Kaliko.ImageLibrary;
+﻿using System.Drawing.Imaging;
+using Kaliko.ImageLibrary;
 using OpenGraph_Net;
 using System;
 using System.Drawing;
@@ -11,7 +12,7 @@ namespace Whoaverse.Utils
 {
     public static class ThumbGenerator
     {
-        //public folder where thumbs should be saved
+        // public folder where thumbs should be saved
         private static readonly string DestinationPath = HttpContext.Current.Server.MapPath("~/Thumbs");
 
         // setup default thumb resolution
@@ -27,10 +28,28 @@ namespace Whoaverse.Utils
             request.Timeout = 300;
             var response = request.GetResponse();
 
-            var originalImage = new KalikoImage(response.GetResponseStream()) {BackgroundColor = Color.Black};
+            var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
             originalImage.GetThumbnailImage(MaxWidth, MaxHeight, ThumbnailMethod.Pad).SaveJpg(DestinationPath + '\\' + randomFileName + ".jpg", 90);
 
             return randomFileName + ".jpg";
+        }
+        
+        public static bool GenerateAvatar(Image inputImage, string userName, string mimetype)
+        {
+            try
+            {
+                string DestinationPath = HttpContext.Current.Server.MapPath("~/Storage/Avatars");
+
+                var originalImage = new KalikoImage(inputImage);
+
+                originalImage.GetThumbnailImage(MaxWidth, MaxHeight, ThumbnailMethod.Pad).SaveJpg(DestinationPath + '\\' + userName + ".jpg", 90);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         // Generate a random filename and make sure that the file does not exist.        
@@ -74,7 +93,7 @@ namespace Whoaverse.Utils
                         return null;
                     }
                 }
-                
+
                 // try generating a thumbnail by using the Open Graph Protocol
                 try
                 {
@@ -98,7 +117,7 @@ namespace Whoaverse.Utils
             try
             {
                 var graph = OpenGraph.ParseUrl(submissionModel.MessageContent);
-                
+
                 // open graph failed to find og:image element, abort thumbnail generation
                 if (graph.Image == null) return null;
 

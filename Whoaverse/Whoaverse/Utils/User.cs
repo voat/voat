@@ -191,7 +191,7 @@ namespace Whoaverse.Utils
         {
             using (var db = new whoaverseEntities())
             {
-                return db.Subscriptions.Count(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                return db.Subscriptions.Count(s => s.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
             }
         }
 
@@ -231,35 +231,11 @@ namespace Whoaverse.Utils
         {
             using (var db = new whoaverseEntities())
             {
-                var privateMessages = db.Privatemessages
-                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(s => s.Timestamp)
-                        .ThenBy(s => s.Sender)
-                        .ToList();
+                var unreadPrivateMessagesCount = db.Privatemessages.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
+                var unreadCommentRepliesCount = db.Commentreplynotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
+                var unreadPostRepliesCount = db.Postreplynotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
 
-                var commentReplies = db.Commentreplynotifications
-                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(s => s.Timestamp)
-                        .ThenBy(s => s.Sender)
-                        .ToList();
-
-                var postReplies = db.Postreplynotifications
-                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(s => s.Timestamp)
-                        .ThenBy(s => s.Sender)
-                        .ToList();
-
-                if (!privateMessages.Any() && !commentReplies.Any() && !postReplies.Any()) return false;
-                var unreadPrivateMessages = privateMessages
-                    .Where(s => s.Status && s.Markedasunread == false).ToList();
-
-                var unreadCommentReplies = commentReplies
-                    .Where(s => s.Status && s.Markedasunread == false).ToList();
-
-                var unreadPostReplies = postReplies
-                    .Where(s => s.Status && s.Markedasunread == false).ToList();
-
-                return unreadPrivateMessages.Count > 0 || unreadCommentReplies.Count > 0 || unreadPostReplies.Count > 0;
+                return unreadPrivateMessagesCount > 0 || unreadCommentRepliesCount > 0 || unreadPostRepliesCount > 0;
             }
         }
 
@@ -503,6 +479,30 @@ namespace Whoaverse.Utils
             {
                 var result = db.Userpreferences.Find(userName);
                 return result != null && result.Topmenu_from_subscriptions;
+            }
+        }
+
+        // get short bio for a given user
+        public static string UserShortbio(string userName)
+        {
+            const string placeHolderMessage = "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.";
+
+            using (var db = new whoaverseEntities())
+            {
+                var result = db.Userpreferences.Find(userName);
+                if (result == null) return placeHolderMessage;
+
+                return result.Shortbio ?? placeHolderMessage;
+            }
+        }
+
+        // get avatar for a given user
+        public static string HasAvatar(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var result = db.Userpreferences.Find(userName);
+                return result == null ? null : result.Avatar;
             }
         }
 
