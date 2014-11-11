@@ -30,15 +30,7 @@ namespace Whoaverse.Utils
                 var bannedHostname = db.Banneddomains
                             .Where(r => r.Hostname.Equals(hostname, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-                if (bannedHostname != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-                
+                return bannedHostname != null;
             }
         }
 
