@@ -44,20 +44,16 @@ namespace Whoaverse.Controllers
                 // send the report
                 try
                 {
-                    var smtp = new SmtpClient();
                     var from = new MailAddress("abuse@whoaverse.com");
                     var to = new MailAddress("legal@whoaverse.com");
-                    var sb = new StringBuilder();
                     var msg = new MailMessage(from, to)
                     {
                         Subject = "New comment report from " + User.Identity.Name,
                         IsBodyHtml = false
                     };
 
-                    smtp.Host = "whoaverse.com";
-                    smtp.Port = 25;
-
-                    // format Partner Intent Email
+                    // format report email
+                    var sb = new StringBuilder();
                     sb.Append("Comment Id: " + id);
                     sb.Append(Environment.NewLine);
                     sb.Append("Subverse: " + commentSubverse);
@@ -69,9 +65,7 @@ namespace Whoaverse.Controllers
 
                     msg.Body = sb.ToString();
 
-                    // send the email with Partner Intent data
-                    smtp.Send(msg);
-                    msg.Dispose();
+                    EmailUtility.SendEmail(msg);
                 }
                 catch (Exception)
                 {
