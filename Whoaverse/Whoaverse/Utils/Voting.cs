@@ -21,25 +21,19 @@ namespace Whoaverse.Utils
 {
     public static class Voting
     {
-        private static readonly whoaverseEntities Db = new whoaverseEntities();
-
         // returns -1:downvoted, 1:upvoted, 0:not voted
         public static int CheckIfVoted(string userToCheck, int messageId)
         {
-            int intCheckResult = 0;
-
-            var checkResult = Db.Votingtrackers.Where(u => u.UserName == userToCheck && u.MessageId == messageId).AsNoTracking().FirstOrDefault();
-
-            if (checkResult != null)
+            using (var db = new whoaverseEntities())
             {
-                intCheckResult = checkResult.VoteStatus.Value;
-            }
-            else
-            {
-                intCheckResult = 0;
-            }
+                var checkResult = db.Votingtrackers.Where(u => u.UserName == userToCheck && u.MessageId == messageId)
+                        .AsNoTracking()
+                        .FirstOrDefault();
 
-            return intCheckResult;
+                int intCheckResult = checkResult != null ? checkResult.VoteStatus.Value : 0;
+
+                return intCheckResult;
+            }
         }
 
         // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
