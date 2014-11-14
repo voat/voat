@@ -378,7 +378,7 @@ namespace Whoaverse.Utils
             using (var db = new whoaverseEntities())
             {
                 // 5 subverses user submitted to most
-                var subverses = db.Messages.Where(a => a.Name == userName)
+                var subverses = db.Messages.Where(a => a.Name == userName && !a.Anonymized)
                          .GroupBy(a => new { a.Name, a.Subverse })
                          .Select(g => new SubverseStats { SubverseName = g.Key.Subverse, Count = g.Count() })
                          .OrderByDescending(s => s.Count)
@@ -397,7 +397,7 @@ namespace Whoaverse.Utils
                 // get 3 highest rated comments
                 var highestRatedComments = db.Comments
                     .Include("Message")
-                    .Where(a => a.Name == userName)
+                    .Where(a => a.Name == userName && !a.Anonymized)
                     .OrderByDescending(s => s.Likes - s.Dislikes)
                     .Take(3)
                     .ToList();
@@ -405,7 +405,7 @@ namespace Whoaverse.Utils
                 // get 3 lowest rated comments
                 var lowestRatedComments = db.Comments
                     .Include("Message")
-                    .Where(a => a.Name == userName)
+                    .Where(a => a.Name == userName && !a.Anonymized)
                     .OrderBy(s => s.Likes - s.Dislikes)
                     .Take(3)
                     .ToList();
@@ -414,13 +414,13 @@ namespace Whoaverse.Utils
                 var messageSubmissionsCount = db.Messages.Count(a => a.Name == userName && a.Type == 1);
 
                 // get 5 highest rated submissions
-                var highestRatedSubmissions = db.Messages.Where(a => a.Name == userName)
+                var highestRatedSubmissions = db.Messages.Where(a => a.Name == userName && !a.Anonymized)
                     .OrderByDescending(s => s.Likes - s.Dislikes)
                     .Take(5)
                     .ToList();
 
                 // get 5 lowest rated submissions
-                var lowestRatedSubmissions = db.Messages.Where(a => a.Name == userName)
+                var lowestRatedSubmissions = db.Messages.Where(a => a.Name == userName && !a.Anonymized)
                     .OrderBy(s => s.Likes - s.Dislikes)
                     .Take(5)
                     .ToList();
