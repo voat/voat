@@ -28,26 +28,10 @@
 @Html.AntiForgeryToken()
 
 <div id="container">
+    <a href="/messaging/inbox/" class="btn-whoaverse-paging disabled">Private messages [@ViewBag.UnreadPrivateMessages]</a>
+    <a href="/messaging/commentreplies/" class="btn-whoaverse-paging">Comment replies [@ViewBag.UnreadCommentReplies]</a>
+    <a href="/messaging/postreplies/" class="btn-whoaverse-paging">Post replies [@ViewBag.UnreadPostReplies]</a>
     <div id="about-main" class="" role="main">
-
-        <div class="menuarea">
-            <div class="spacer">
-                <ul class="flat-list hover">
-                    <li class="selected">
-                        <a href="/messaging/inbox/" class="choice">Private messages [@ViewBag.UnreadPrivateMessages]</a>
-                    </li>
-                    <li>
-                        <span class="separator">|</span>
-                        <a href="/messaging/commentreplies/" class="choice">Comment replies [@ViewBag.UnreadCommentReplies]</a>
-                    </li>
-                    <li>
-                        <span class="separator">|</span>
-                        <a href="/messaging/postreplies/" class="choice">Post replies [@ViewBag.UnreadPostReplies]</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
         <div class="md single-notification">
 
             @if (Model.Count > 0)

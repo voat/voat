@@ -483,9 +483,9 @@
     <Content Include="Graphics\pattern-welcome.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\whoaverse-404.png" />
-    <Content Include="Graphics\whoaverse-bg.jpg" />
     <Content Include="Graphics\whoaverse-mascot.png" />
     <Content Include="Graphics\whoaverse.png" />
+    <Content Include="Graphics\whoaverse_flower.png" />
     <Content Include="Graphics\whoaverse_32x32.png" />
     <Content Include="Graphics\whoaverse_mascot_head.png" />
     <Content Include="Graphics\whoaverse_padded.png" />
