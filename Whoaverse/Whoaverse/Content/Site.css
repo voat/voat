@@ -2100,6 +2100,10 @@ body.with-listing-chooser.explore-page #header .pagename {
         font-weight: bold;
     }
 
+    .md img {
+        display: none;
+    }
+
     .md ol, .md ul {
         margin: 10px 2em;
     }

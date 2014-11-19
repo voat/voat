@@ -703,7 +703,6 @@
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_MSFLButtons.cshtml" />
     <Content Include="Views\Account\_UserPreferencesAbout.cshtml" />
-    <Content Include="Scripts\whoaverse.comment-image-handler.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

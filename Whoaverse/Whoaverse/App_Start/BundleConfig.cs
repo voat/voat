@@ -26,8 +26,7 @@ namespace Whoaverse
                         "~/Scripts/jquery-ui-{version}.js",
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*",
-                        "~/Scripts/whoaverse.js",
-                        "~/Scripts/whoaverse.comment-image-handler.js"
+                        "~/Scripts/whoaverse.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(

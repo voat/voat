@@ -10,4 +10,3 @@
 /// <reference path="respond.js" />
 /// <reference path="respond.matchmedia.addlistener.js" />
 /// <reference path="whoaverse.js" />
-/// <reference path="whoaverse.comment-image-handler.js" />
