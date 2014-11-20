@@ -26,6 +26,7 @@ namespace Whoaverse
                         "~/Scripts/jquery-ui-{version}.js",
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*",
+                        "~/Scripts/whoaverse.ui.js",
                         "~/Scripts/whoaverse.js"
                         ));
 

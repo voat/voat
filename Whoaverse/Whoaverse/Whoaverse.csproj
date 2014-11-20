@@ -570,6 +570,7 @@
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\whoaverse.js" />
+    <Content Include="Scripts\whoaverse.ui.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="sitemap.xml" />
     <Content Include="Thumbs\Placeholder.txt" />

@@ -9454,3 +9454,7 @@ body.with-listing-chooser {
         font-size: small;
         font-style: italic;
     }
+
+.async-img img { 
+    display: block !important;
+}
