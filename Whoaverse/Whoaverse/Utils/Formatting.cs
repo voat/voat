@@ -21,7 +21,11 @@ namespace Whoaverse.Utils
     {
         
         public static string FormatMessage (String originalMessage){
-            var m = new Markdown {ExtraMode = true, SafeMode = true};
+            var m = new Markdown
+            {
+                ExtraMode = true, 
+                SafeMode = true
+            };
 
             return m.Transform(originalMessage);
         }

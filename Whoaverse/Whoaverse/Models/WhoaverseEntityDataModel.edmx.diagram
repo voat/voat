@@ -39,6 +39,8 @@
         <EntityTypeShape EntityType="whoaverseModel.Survey" Width="1.5" PointX="8.375" PointY="13.75" />
         <AssociationConnector Association="whoaverseModel.FK_Messages_Messages" />
         <AssociationConnector Association="whoaverseModel.FK_Subscriptions_Subverses" />
+        <EntityTypeShape EntityType="whoaverseModel.Featuredsub" Width="1.5" PointX="3.625" PointY="18.75" />
+        <AssociationConnector Association="whoaverseModel.FK_Featuredsubs_Subverses" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

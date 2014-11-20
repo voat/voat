@@ -30,6 +30,7 @@ namespace Whoaverse.Models
             this.Subverseflairsettings = new HashSet<Subverseflairsetting>();
             this.Stickiedsubmissions = new HashSet<Stickiedsubmission>();
             this.Subscriptions = new HashSet<Subscription>();
+            this.Featuredsubs = new HashSet<Featuredsub>();
         }
     
         public string name { get; set; }
@@ -63,5 +64,6 @@ namespace Whoaverse.Models
         public virtual ICollection<Subverseflairsetting> Subverseflairsettings { get; set; }
         public virtual ICollection<Stickiedsubmission> Stickiedsubmissions { get; set; }
         public virtual ICollection<Subscription> Subscriptions { get; set; }
+        public virtual ICollection<Featuredsub> Featuredsubs { get; set; }
     }
 }

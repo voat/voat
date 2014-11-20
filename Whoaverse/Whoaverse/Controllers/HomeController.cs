@@ -506,5 +506,15 @@ namespace Whoaverse.Controllers
             }
             return new EmptyResult();
         }
+
+        public ActionResult FeaturedSub()
+        {
+            var featuredSub = _db.Featuredsubs.OrderByDescending(s=>s.Featured_on).FirstOrDefault();
+
+            if (featuredSub == null) return new EmptyResult();
+
+            return PartialView("~/Views/Subverses/_FeaturedSub.cshtml", featuredSub);
+
+        }
     }
 }

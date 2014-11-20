@@ -83,6 +83,15 @@
           <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="position" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="Featuredsubs">
+          <Key>
+            <PropertyRef Name="Feature_id" />
+          </Key>
+          <Property Name="Feature_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Subname" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Featured_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Featured_on" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Messages">
           <Key>
             <PropertyRef Name="Id" />
@@ -317,6 +326,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Featuredsubs_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1" />
+          <End Role="Featuredsubs" Type="Self.Featuredsubs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Featuredsubs">
+              <PropertyRef Name="Subname" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Messages_Subverses">
           <End Role="Subverses" Type="Self.Subverses" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -431,6 +452,7 @@
           <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Featuredsubs" EntityType="Self.Featuredsubs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Postreplynotifications" EntityType="Self.Postreplynotifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Privatemessages" EntityType="Self.Privatemessages" Schema="dbo" store:Type="Tables" />
@@ -457,6 +479,10 @@
           <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="Self.FK_Defaultsubverses_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
             <End Role="Defaultsubverses" EntitySet="Defaultsubverses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Featuredsubs_Subverses" Association="Self.FK_Featuredsubs_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Featuredsubs" EntitySet="Featuredsubs" />
           </AssociationSet>
           <AssociationSet Name="FK_Messages_Subverses" Association="Self.FK_Messages_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
@@ -668,6 +694,11 @@
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Subscription" EntitySet="Subscriptions" />
           </AssociationSet>
+          <EntitySet Name="Featuredsubs" EntityType="whoaverseModel.Featuredsub" />
+          <AssociationSet Name="FK_Featuredsubs_Subverses" Association="whoaverseModel.FK_Featuredsubs_Subverses">
+            <End Role="Subverse" EntitySet="Subverses" />
+            <End Role="Featuredsub" EntitySet="Featuredsubs" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -703,6 +734,7 @@
           <Property Name="authorized_submitters_only" Type="Boolean" Nullable="false" DefaultValue="false" />
           <Property Name="anonymized_mode" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Subscriptions" Relationship="whoaverseModel.FK_Subscriptions_Subverses" FromRole="Subverse" ToRole="Subscription" />
+          <NavigationProperty Name="Featuredsubs" Relationship="whoaverseModel.FK_Featuredsubs_Subverses" FromRole="Subverse" ToRole="Featuredsub" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
@@ -1015,6 +1047,28 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Featuredsub">
+          <Key>
+            <PropertyRef Name="Feature_id" />
+          </Key>
+          <Property Name="Feature_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Subname" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Featured_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Featured_on" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Featuredsubs_Subverses" FromRole="Featuredsub" ToRole="Subverse" />
+        </EntityType>
+        <Association Name="FK_Featuredsubs_Subverses">
+          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1" />
+          <End Type="whoaverseModel.Featuredsub" Role="Featuredsub" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverse">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Featuredsub">
+              <PropertyRef Name="Subname" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1309,6 +1363,16 @@
                 <ScalarProperty Name="Interested_in_commenting" ColumnName="Interested_in_commenting" />
                 <ScalarProperty Name="Interested_in_content_creation" ColumnName="Interested_in_content_creation" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Featuredsubs">
+            <EntityTypeMapping TypeName="whoaverseModel.Featuredsub">
+              <MappingFragment StoreEntitySet="Featuredsubs">
+                <ScalarProperty Name="Featured_on" ColumnName="Featured_on" />
+                <ScalarProperty Name="Featured_by" ColumnName="Featured_by" />
+                <ScalarProperty Name="Subname" ColumnName="Subname" />
+                <ScalarProperty Name="Feature_id" ColumnName="Feature_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
