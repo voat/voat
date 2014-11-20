@@ -47,6 +47,20 @@ UI.Common = {
     },
     isCommentPage: function () {
         return /\/comments\//i.test(window.location.href);
+    },
+    fileExtension: function (path, includeDot) {
+        if (path) {
+            try {
+                var ext = /\.+\w+$/i.exec(path);
+                if (ext && ext.length > 0) {
+                    return (includeDot) ? ext[0] : ext[0].replace('.', '');
+
+                }
+            } catch (ex) {
+                return "";
+            }
+        }
+        return "";
     }
 }
 
@@ -229,7 +243,7 @@ UI.CommentImageHandlerSettings = (function () {
             element.text(rawText + " (loading)");
         },
         onLoaded: function (element, rawText) {
-            element.text(rawText + " (img)");
+            element.text(rawText.concat(" (", UI.Common.fileExtension(element.prop("href")) ,")"));
         },
         //TODO: Settings that need implemented
         maxFileSizeInKB: 2048
