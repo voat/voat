@@ -1,0 +1,39 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.Featuredsub
+
+@using Whoaverse.Utils;
+
+@{
+    string commentsUrl = "/v/" + Model.Subverse;
+
+    DateTime submissionDate = Model.Featured_on;
+    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+
+    <div class="alert-featuredsub">
+        <div class="submission even link stickied">
+            <div class="entry unvoted">
+                <p class="title">
+                    <span class="featuredsub">featured sub</span>
+                    <a class="title may-blank" href="/v/@Model.Subname" tabindex="1" title="@Model.Subverse.description">@Model.Subverse.title: @Model.Subverse.description</a>
+                </p>
+
+                <p class="tagline">
+                    a community for @Submissions.CalcSubmissionAge(Model.Subverse.creation_date), featured <time title="@Model.Featured_on" datetime="@Model.Featured_on">@postAge</time> ago by <a href="/user/@Model.Featured_by" class="author may-blank">@Model.Featured_by</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="horizontal-line"></div>*@
+}

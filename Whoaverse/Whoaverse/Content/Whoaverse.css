@@ -118,6 +118,18 @@ label {
     font-size: 12px;
 }
 
+.alert-featuredsub {
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    padding: 5px;
+    margin-bottom: 0px;
+    background: none repeat scroll 0% 0% #F6F6F6;
+    border-width: 8px 1px 1px;
+    border-color: #5BACDE #F6F6F6 #DCDCDC;
+    color: #5A5A5A;
+    font-size: 12px;
+}
+
 .alert-title {
     border-bottom: 2px solid;
     padding: 2px;
@@ -572,10 +584,15 @@ a.btn-whoaverse {
         pointer-events: none;
         opacity: 0.65;
         box-shadow: none;
+        color: #FFF;
     }
 
     .btn-whoaverse-paging a {
-        color: #FFF;
+        color: #FFF !important;
+    }
+
+    .btn-whoaverse-paging:visited {
+        color: #FFF !important;
     }
 
 .btn-whoaverse-medium {
@@ -1722,6 +1739,27 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     line-height: 11px;
     margin-right: 3px;
     max-width: 60px;
+    min-width: 48px;
+    overflow: hidden;
+    padding: 2px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Featured sub */
+
+.featuredsub {
+    background: #5BACDE;
+    border: 1px solid #5BACDE;
+    border-radius: 2px;
+    color: #FFF;
+    display: inline-block;
+    font-family: inherit;
+    font-size: 10px;
+    letter-spacing: 1px;
+    line-height: 11px;
+    margin-right: 3px;
+    max-width: 80px;
     min-width: 48px;
     overflow: hidden;
     padding: 2px;

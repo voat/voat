@@ -11,15 +11,15 @@
     All Rights Reserved.*@
 
 @{
-    ViewBag.Title = "Warning: This subverse is Not Safe For Work";
     string destination = ViewBag.Destination;
+    ViewBag.Title = "Warning: The subverse " + destination + " is Not Safe For Work";
 }
 
 <div id="container">
     <div >
         <div class="centered">
             <h1 class="red">Warning!</h1>
-            <h1>The content of this subverse is Not Safe For Work!</h1>
+            <h1>The subverse @destination has content which is Not Safe For Work!</h1>
             <h1>You must be at least 18 years old in order to view this content.</h1>
             <h1 class="red">Are you over 18 and want to see adult rated content?</h1>
             <p>

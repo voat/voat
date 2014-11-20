@@ -21,7 +21,11 @@ namespace Whoaverse.Utils
     {
         
         public static string FormatMessage (String originalMessage){
-            var m = new Markdown {ExtraMode = true, SafeMode = true};
+            var m = new Markdown
+            {
+                ExtraMode = true, 
+                SafeMode = true
+            };
 
             m.NewWindowForExternalLinks = Whoaverse.Utils.User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name);
 

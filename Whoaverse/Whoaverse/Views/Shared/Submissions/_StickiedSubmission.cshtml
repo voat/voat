@@ -15,12 +15,9 @@
 @using Whoaverse.Utils;
 
 @{
-    Random rnd = new Random();
-    Nullable<short> voteCount = Model.Votes;
-
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
-    var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
+    var commentCount = Model.Comments.Count(c => c.Name != "deleted");
 
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
