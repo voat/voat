@@ -108,6 +108,17 @@ label {
     font-size: 12px;
 }
 
+.alert-featuredsub {
+    border-top: 1px solid;
+    padding: 5px;
+    margin-bottom: 0px;
+    background: none repeat scroll 0% 0% #292929;
+    border-width: 8px 1px 1px;
+    border-color: #5BACDE #222 #222;
+    color: #DFDFDF;
+    font-size: 12px;
+}
+
 .alert-title {
     border-bottom: 2px solid;
     padding: 2px;
@@ -1765,8 +1776,8 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 /* Featured sub */
 
 .featuredsub {
-    background: #B44747;
-    border: 1px solid #9D3131;
+    background: #5BACDE;
+    border: 1px solid #5BACDE;
     border-radius: 2px;
     color: #FFF;
     display: inline-block;

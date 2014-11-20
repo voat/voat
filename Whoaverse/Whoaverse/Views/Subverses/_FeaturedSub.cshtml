@@ -20,19 +20,20 @@
     DateTime submissionDate = Model.Featured_on;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
 
-    <div class="submission even link stickied">
-        <div class="entry unvoted">
-            <p class="title">
-                <span class="featuredsub">featured sub</span>
-                <a class="title may-blank" href="/v/@Model.Subname" tabindex="1" title="@Model.Subverse.description">@Model.Subverse.title: @Model.Subverse.description</a>
-            </p>
+    <div class="alert-featuredsub">
+        <div class="submission even link stickied">
+            <div class="entry unvoted">
+                <p class="title">
+                    <span class="featuredsub">featured sub</span>
+                    <a class="title may-blank" href="/v/@Model.Subname" tabindex="1" title="@Model.Subverse.description">@Model.Subverse.title: @Model.Subverse.description</a>
+                </p>
 
-            <p class="tagline">
-                a community for @Submissions.CalcSubmissionAge(Model.Subverse.creation_date), featured <time title="@Model.Featured_on" datetime="@Model.Featured_on">@postAge</time> ago by <a href="/user/@Model.Featured_by" class="author may-blank">@Model.Featured_by</a>
-            </p>
+                <p class="tagline">
+                    a community for @Submissions.CalcSubmissionAge(Model.Subverse.creation_date), featured <time title="@Model.Featured_on" datetime="@Model.Featured_on">@postAge</time> ago by <a href="/user/@Model.Featured_by" class="author may-blank">@Model.Featured_by</a>
+                </p>
+            </div>
         </div>
     </div>
 
-    <div class="horizontal-line"></div>
-
+    @*<div class="horizontal-line"></div>*@
 }
