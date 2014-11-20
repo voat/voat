@@ -389,6 +389,10 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
 
                         // TODO: use prepend or append after element entry unvoted
                         // $('#div_' + element_id)[0].scrollIntoView(true);
+
+                        //notify UI framework of DOM insertion async
+                        window.setTimeout(function () { UI.Notifications.raise("DOM", $(".id-" + parentcommentid).last("div")); }, 10);
+
                     }
                  );
             }
@@ -436,6 +440,9 @@ function postCommentAjax(senderButton, messageId, userName) {
 
                         // reset textbox
                         $form.find("#CommentContent").val("");
+
+                        //notify UI framework of DOM insertion async
+                        window.setTimeout(function () { UI.Notifications.raise("DOM", $(".sitetable.nestedlisting").first()); }, 10);
 
                         // TODO: scroll to the newly posted comment
                         // $('#div_' + element_id)[0].scrollIntoView(true);
