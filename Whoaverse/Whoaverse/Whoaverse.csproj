@@ -265,9 +265,9 @@
     <Compile Include="Controllers\SubversesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WebApiController.cs" />
-	<Compile Include="Models\Featuredsub.cs">
-	  <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
-	</Compile>
+    <Compile Include="Models\Featuredsub.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -408,8 +408,9 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\PagedList.css" />
-	<Content Include="Graphics\whoaverse-ad.png" />
-	<Content Include="Views\Subverses\_FeaturedSub.cshtml" />
+    <Content Include="Graphics\whoaverse-ad.png" />
+    <Content Include="Graphics\whoaverse-image-problem.png" />
+    <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
     <Content Include="Content\PagedList.min.css">
       <DependentUpon>PagedList.css</DependentUpon>
     </Content>
@@ -489,7 +490,7 @@
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\whoaverse-404.png" />
     <Content Include="Graphics\whoaverse-mascot.png" />
-    <Content Include="Graphics\whoaverse.png" />    
+    <Content Include="Graphics\whoaverse.png" />
     <Content Include="Graphics\whoaverse_32x32.png" />
     <Content Include="Graphics\whoaverse_mascot_head.png" />
     <Content Include="Graphics\whoaverse_padded.png" />
