@@ -1,4 +1,4 @@
-﻿//Whoaverse UI JS framework - Version 0.1 - 11/13/2014
+﻿//Whoaverse UI JS framework - Version 0.2 - 11/20/2014
 //Tested only with the latest version of IE, FF, & Chrome
 
 var UI = window.UI || {};
@@ -116,16 +116,11 @@ UI.CommentImageHandler = (function () {
     }
     function load(target, autoLoading) {
 
-
         var anchorText = target.text();
 
         if (UI.CommentImageHandlerSettings.onLoading) {
             UI.CommentImageHandlerSettings.onLoading(target, target.text());
         }
-
-        //var href = target.prop('href');
-        //target.off('click', clickRoutine);
-        //target.prop('href', '#'); //kill link while loading
 
         var img = new Image();
         img.onerror = function () {
@@ -213,11 +208,6 @@ UI.CommentImageHandler = (function () {
                 UI.CommentImageHandlerSettings.toggleFunction(displayDiv, true);
             }
 
-            ////re-enable events
-            //target.on('click', clickRoutine);
-            //target.prop('href', href);
-
-
             if (autoLoading && UI.CommentImageHandlerSettings.autoShow) {
                target.click();
             }
@@ -280,8 +270,8 @@ UI.CommentImageHandlerSettings = (function () {
         onLoaded: function (element, rawText) {
             element.text(rawText.concat(' (', UI.Common.fileExtension(element.prop('href')) ,')'));
         },
-        errorImageUrl: '~/Graphics/whoaverse-image-problem.png', //only relative path is supported right now.
-        maxFullSizeWidth: 650, //in pixels, needs to be numeric
+        errorImageUrl: '~/Graphics/missing_image.png', //only relative path is supported right now.
+        maxFullSizeWidth: 600, //in pixels, needs to be numeric
         //TODO: Settings that need implemented
         maxFileSizeInKB: 2048
     }
