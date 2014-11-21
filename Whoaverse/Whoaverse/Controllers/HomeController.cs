@@ -306,7 +306,9 @@ namespace Whoaverse.Controllers
                         select m)
                         .OrderByDescending(s => s.Rank);
 
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
+                    var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
+
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissionsWithoutStickies, page ?? 0, pageSize);
 
                     return View(paginatedSubmissions);
                 }
@@ -319,7 +321,9 @@ namespace Whoaverse.Controllers
                         select message)
                         .OrderByDescending(s => s.Rank);
 
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
+                    var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
+
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissionsWithoutStickies, page ?? 0, pageSize);
 
                     return View(paginatedSubmissions);
                 }
