@@ -1,4 +1,4 @@
-﻿@using Whoaverse.Models
+﻿@using System.Configuration
 @using Whoaverse.Models.ViewModels
 @*This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -26,10 +26,10 @@
     string sortingMode = ViewBag.SortingMode;
     string selectedUser = ViewBag.userid;
 
-    ViewBag.Title = ViewBag.Title ?? "whoaverse: the frontpage of the universe";
+    ViewBag.Title = ViewBag.Title ?? ConfigurationManager.AppSettings["siteSlogan"];
+    ViewBag.Description = ViewBag.Description ?? ConfigurationManager.AppSettings["siteSlogan"];
     ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
     ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
-    ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
 
     if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && ViewBag.PmView == null)
     {
@@ -60,7 +60,7 @@
     }
     else
     {
-        <meta name="description" content="Whoaverse: the next front page of the internet" />
+        <meta name="description" content="@ConfigurationManager.AppSettings["siteSlogan"]" />
     }
     @if (ViewBag.Keywords != null)
     {
@@ -68,7 +68,7 @@
     }
     else
     {
-        <meta name="keywords" content="whoaverse, whoaverse.com, vote, submit, comment" />
+        <meta name="keywords" content="@ConfigurationManager.AppSettings["siteKeywords"]" />
     }
 
     <title>@ViewBag.Title</title>
@@ -76,7 +76,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="@ViewBag.Url" />
     <meta property="og:image" content="@ViewBag.Image" />
-    <meta property="og:site_name" content="whoaverse" />
+    <meta property="og:site_name" content="@ConfigurationManager.AppSettings["siteName"]" />
     <meta property="og:description" content="@ViewBag.Description" />
 
     @if (theme != null)
@@ -107,7 +107,6 @@
         ga('create', 'UA-49743834-1', 'whoaverse.com');
         ga('require', 'displayfeatures');
         ga('send', 'pageview');
-
     </script>
 
     <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
@@ -210,7 +209,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="notenoughccplabel">Hi! It looks like you are new around here. Welcome to WhoaVerse!</h4>
+                    <h4 class="modal-title" id="notenoughccplabel">Hi! It looks like you are new around here. Welcome to @ConfigurationManager.AppSettings["siteName"]!</h4>
                 </div>
                 <div class="modal-body">
                     In order to be able to downvote comments or submissions you need to have at least 100 comment contribution points.
@@ -235,7 +234,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="notenoughccpupvotelabel">Hi! It looks like you are new around here. Welcome to WhoaVerse!</h4>
+                    <h4 class="modal-title" id="notenoughccpupvotelabel">Hi! It looks like you are new around here. Welcome to @ConfigurationManager.AppSettings["siteName"]!</h4>
                 </div>
                 <div class="modal-body">
                     In order to be able to upvote comments or submissions without limitations, you need to have at least 20 comment contribution points.

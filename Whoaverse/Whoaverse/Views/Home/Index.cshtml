@@ -13,7 +13,7 @@
 @model PaginatedList<Whoaverse.Models.Message>
 
 @{
-    ViewBag.Title = "whoaverse: the frontpage of the universe";
+    ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
 
     int commentContributionPoints = 0;
 
@@ -34,6 +34,7 @@
         urlaction = "New";
     }
 }
+@using System.Configuration
 @using Whoaverse.Utils;
 
 <style type="text/css">

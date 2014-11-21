@@ -10,6 +10,7 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
+@using System.Configuration
 @using Whoaverse.Utils
 @model Whoaverse.Models.Message
 
@@ -79,7 +80,7 @@ else if (!User.Identity.IsAuthenticated)
                 ViewBag.Title = Model.Title + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
-                ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
+                ViewBag.Description = ViewBag.Description ?? ConfigurationManager.AppSettings["siteSlogan"];
                 @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
 
@@ -88,7 +89,7 @@ else if (!User.Identity.IsAuthenticated)
             {
                 ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-                ViewBag.Description = ViewBag.Description ?? "whoaverse: the frontpage of the universe";
+                ViewBag.Description = ViewBag.Description ?? ConfigurationManager.AppSettings["siteSlogan"];
 
                 //check if submission has a thumb, otherwise point to site logo
                 if (Model.Thumbnail != null)
