@@ -27,6 +27,8 @@ namespace Whoaverse.Utils
                 SafeMode = true
             };
 
+            m.NewWindowForExternalLinks = Whoaverse.Utils.User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name);
+
             return m.Transform(originalMessage);
         }
 
