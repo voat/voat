@@ -1,4 +1,4 @@
-﻿//Whoaverse UI JS framework - Version 0.2 - 11/20/2014
+﻿//Whoaverse UI JS framework - Version 0.3 - 11/21/2014
 //Tested only with the latest version of IE, FF, & Chrome
 
 var UI = window.UI || {};
@@ -122,6 +122,10 @@ UI.CommentImageHandler = (function () {
             UI.CommentImageHandlerSettings.onLoading(target, target.text());
         }
 
+        //remove handler while loading
+        target.off();
+        target.on('click', function (e) { e.preventDefault(); }); //disable the link until loaded, prevent rapid clickers
+
         var img = new Image();
         img.onerror = function () {
             //can't determine what kind of error... could be 404, could be a working non-image source, etc.
@@ -156,7 +160,15 @@ UI.CommentImageHandler = (function () {
             } else {
                 height = this.height;
             }
-
+            if (img.src != UI.CommentImageHandlerSettings.errorImageUrl) {
+                //append info attributes
+                var desc = 'Native '.concat(width.toString(), ' x ', height.toString());
+                var infoSpan = $('<span/>', { class: 'tagline' }).text(desc + ' ');
+                var link = $('<a/>', { class: 'async-img-direct', target: '_blank', href: target.prop('href') }).text('Open');
+                target.prop('title', desc);
+                displayDiv.append(infoSpan);
+                infoSpan.append(link);
+            }
             //I HAVE NO IDEA WHY I HAVE TO DO THIS TO REMOVE THE width/height attributes of the image tag itself
             i.css('width', width);
             i.css('height', height);
@@ -198,6 +210,10 @@ UI.CommentImageHandler = (function () {
             }
 
             target.data('loaded', true);
+
+            //remove handler while loading
+            target.off();
+            target.on('click', clickRoutine);
 
             if (UI.CommentImageHandlerSettings.onLoaded) {
                 UI.CommentImageHandlerSettings.onLoaded(target, anchorText);
@@ -258,7 +274,7 @@ UI.CommentImageHandlerSettings = (function () {
     return {
         autoLoad: true, //this setting will preload all image links
         autoShow: false, //if true then the click routine is run during event hookup
-        selector: '.usertext-body > .md a', //elements to find image anchor tags
+        selector: '.usertext-body > .md a:not(.async-img-direct)', //elements to find image anchor tags
         filter: /^([^\?]+(\.(jpg|jpeg|gif|giff|png)))$/i, //regex for href links to load
         maxSize: 250,
         toggleFunction: function (element, display) { //element (obj) to show/hide, display (bool) show/hide
