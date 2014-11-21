@@ -391,7 +391,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
                         // $('#div_' + element_id)[0].scrollIntoView(true);
 
                         //notify UI framework of DOM insertion async
-                        window.setTimeout(function () { UI.Notifications.raise("DOM", $(".id-" + parentcommentid).last("div")); }, 10);
+                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentcommentid).last('div')); });
 
                     }
                  );
@@ -442,7 +442,7 @@ function postCommentAjax(senderButton, messageId, userName) {
                         $form.find("#CommentContent").val("");
 
                         //notify UI framework of DOM insertion async
-                        window.setTimeout(function () { UI.Notifications.raise("DOM", $(".sitetable.nestedlisting").first()); }, 10);
+                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
 
                         // TODO: scroll to the newly posted comment
                         // $('#div_' + element_id)[0].scrollIntoView(true);
@@ -600,6 +600,9 @@ function editcommentsubmit(commentid) {
         datatype: "json",
         success: function (data) {
             $("#" + commentid).find('.md').html(data.response);
+            //notify UI framework of DOM insertion async
+            window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)) });
+
         }
     });
 
