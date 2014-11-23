@@ -133,6 +133,7 @@ namespace Whoaverse.Controllers
             }
 
             if (!ModelState.IsValid) return View();
+
             // check if subverse exists
             var targetSubverse = _db.Subverses.Find(message.Subverse.Trim());
             if (targetSubverse != null && !message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
@@ -162,6 +163,29 @@ namespace Whoaverse.Controllers
                     {
                         ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
                         return View();
+                    }
+
+                    // check if same link was submitted before and deny submission
+
+                    var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(message.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse == message.Subverse);
+
+                    // submission is a repost, discard it and inform the user
+                    if (existingSubmission != null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, this link has already been submitted by someone else.");
+
+                        // todo: offer the option to repost after informing the user about it
+                        return RedirectToRoute(
+                        "SubverseComments",
+                            new
+                            {
+                                controller = "Comment",
+                                action = "Comments",
+                                id = existingSubmission.Id,
+                                subversetoshow = existingSubmission.Subverse
+                            }
+                        );
+
                     }
 
                     // check if target subverse has thumbnails setting enabled before generating a thumbnail
@@ -301,9 +325,9 @@ namespace Whoaverse.Controllers
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
                     IQueryable<Message> submissions = (from m in _db.Messages
-                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
-                        where m.Name != "deleted" && s.Username == User.Identity.Name
-                        select m)
+                                                       join s in _db.Subscriptions on m.Subverse equals s.SubverseName
+                                                       where m.Name != "deleted" && s.Username == User.Identity.Name
+                                                       select m)
                         .OrderByDescending(s => s.Rank);
 
                     var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
@@ -316,9 +340,9 @@ namespace Whoaverse.Controllers
                 {
                     // get only submissions from default subverses, order by rank
                     IQueryable<Message> submissions = (from message in _db.Messages
-                        where message.Name != "deleted"
-                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                        select message)
+                                                       where message.Name != "deleted"
+                                                       join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                                       select message)
                         .OrderByDescending(s => s.Rank);
 
                     var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
@@ -376,9 +400,9 @@ namespace Whoaverse.Controllers
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
                     IQueryable<Message> submissions = (from m in _db.Messages
-                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
-                        where m.Name != "deleted" && s.Username == User.Identity.Name
-                        select m)
+                                                       join s in _db.Subscriptions on m.Subverse equals s.SubverseName
+                                                       where m.Name != "deleted" && s.Username == User.Identity.Name
+                                                       select m)
                         .OrderByDescending(s => s.Date);
 
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
@@ -389,9 +413,9 @@ namespace Whoaverse.Controllers
                 {
                     // get only submissions from default subverses, sort by date
                     IQueryable<Message> submissions = (from message in _db.Messages
-                        where message.Name != "deleted"
-                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                        select message)
+                                                       where message.Name != "deleted"
+                                                       join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                                       select message)
                         .OrderByDescending(s => s.Date);
 
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
@@ -415,8 +439,6 @@ namespace Whoaverse.Controllers
             {
                 case "intro":
                     return View("~/Views/About/Intro.cshtml");
-                case "contact":
-                    return View("~/Views/About/Contact.cshtml");
                 default:
                     return View("~/Views/About/About.cshtml");
             }
@@ -513,7 +535,7 @@ namespace Whoaverse.Controllers
 
         public ActionResult FeaturedSub()
         {
-            var featuredSub = _db.Featuredsubs.OrderByDescending(s=>s.Featured_on).FirstOrDefault();
+            var featuredSub = _db.Featuredsubs.OrderByDescending(s => s.Featured_on).FirstOrDefault();
 
             if (featuredSub == null) return new EmptyResult();
 
