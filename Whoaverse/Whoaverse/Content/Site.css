@@ -9458,3 +9458,22 @@ body.with-listing-chooser {
 .async-img img { 
     display: block !important;
 }
+.async-img-type {
+    background: #f2f2f2;
+    border: 1px solid #e4e4e4;
+    color: #828282;
+
+    border-radius: 2px;
+    display: inline-block;
+    font-family: inherit;
+    font-size: 8px;
+    line-height: 11px;
+    margin-left: 3px;
+    padding: 1px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align:text-top;
+    align-content:center;
+    text-transform:uppercase;
+}
+
