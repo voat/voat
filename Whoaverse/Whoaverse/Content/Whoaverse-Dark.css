@@ -2660,3 +2660,9 @@ textarea.form-control {
             width: 260px;
         }
 }
+.async-img-type {
+    background: #606060; 
+    border: 1px solid #606060; 
+    color: #c2c2c2; 
+
+}

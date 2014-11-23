@@ -117,7 +117,7 @@ UI.CommentImageHandler = (function () {
     function load(target, autoLoading) {
 
         var anchorText = target.text();
-
+        
         if (UI.CommentImageHandlerSettings.onLoading) {
             UI.CommentImageHandlerSettings.onLoading(target, target.text());
         }
@@ -160,15 +160,15 @@ UI.CommentImageHandler = (function () {
             } else {
                 height = this.height;
             }
-            if (img.src != UI.CommentImageHandlerSettings.errorImageUrl) {
-                //append info attributes
-                var desc = 'Native '.concat(width.toString(), ' x ', height.toString());
-                var infoSpan = $('<span/>', { class: 'tagline' }).text(desc + ' ');
-                var link = $('<a/>', { class: 'async-img-direct', target: '_blank', href: target.prop('href') }).text('Open');
-                target.prop('title', desc);
-                displayDiv.append(infoSpan);
-                infoSpan.append(link);
-            }
+
+            //append info attributes
+            var desc = UI.Common.fileExtension(target.prop('href')).toUpperCase().concat(' · ', width.toString(), ' x ', height.toString());
+            var infoSpan = $('<span/>', { class: 'tagline' }).text(desc + ' ');
+            var link = $('<a/>', { class: 'async-img-direct', target: '_blank', href: target.prop('href') }).text('Open');
+            target.prop('title', desc);
+            displayDiv.append(infoSpan);
+            infoSpan.append(link);
+            
             //I HAVE NO IDEA WHY I HAVE TO DO THIS TO REMOVE THE width/height attributes of the image tag itself
             i.css('width', width);
             i.css('height', height);
@@ -284,7 +284,7 @@ UI.CommentImageHandlerSettings = (function () {
             element.text(rawText + ' (loading)');
         },
         onLoaded: function (element, rawText) {
-            element.text(rawText.concat(' (', UI.Common.fileExtension(element.prop('href')) ,')'));
+            element.html(rawText.concat('<span class=\'async-img-type\'>', UI.Common.fileExtension(element.prop('href')).toUpperCase(), '</span>'));
         },
         errorImageUrl: '~/Graphics/missing_image.png', //only relative path is supported right now.
         maxFullSizeWidth: 600, //in pixels, needs to be numeric
