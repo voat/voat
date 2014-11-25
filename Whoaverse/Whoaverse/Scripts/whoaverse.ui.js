@@ -1,4 +1,4 @@
-﻿//Whoaverse UI JS framework - Version 0.3 - 11/21/2014
+﻿//Whoaverse UI JS framework - Version 0.4 - 11/24/2014
 //Tested only with the latest version of IE, FF, & Chrome
 
 var UI = window.UI || {};
@@ -42,6 +42,10 @@ UI.Notifications = (function () {
 })();
 
 UI.Common = {
+    debug: false,
+    availableWidth: function (container) {
+        return $(container).innerWidth();
+    },
     isMobile: function () {
         return false; //TODO: determine what conditions qualify for a 'mobile' view
     },
@@ -54,7 +58,6 @@ UI.Common = {
                 var ext = /\.+\w+$/i.exec(path);
                 if (ext && ext.length > 0) {
                     return (includeDot) ? ext[0] : ext[0].replace('.', '');
-
                 }
             } catch (ex) {
                 return '';
@@ -62,22 +65,25 @@ UI.Common = {
         }
         return '';
     },
-    domainRoot: function () {
+    getDomainName: function(url, includeSub, removeWWW){
+        //TODO:
+        return "notdone.com";
+    },
+    currentDomainRoot: function () {
         return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
     },
     resolveUrl: function (relativePath) {
-
         if (relativePath) {
             if (relativePath.indexOf('http') == 0 || relativePath.indexOf('ftp') == 0) {
                 return relativePath;
             } else {
                 if (relativePath.indexOf('~/') == 0) {
-                    return UI.Common.domainRoot().concat('/', relativePath.replace('~/', ''));
+                    return UI.Common.currentDomainRoot().concat('/', relativePath.replace('~/', ''));
                 } else if (relativePath.indexOf('/') == 0) {
-                    return UI.Common.domainRoot().concat(relativePath);
+                    return UI.Common.currentDomainRoot().concat(relativePath);
                 } 
 
-                return UI.Common.domainRoot().concat('/', relativePath);
+                return UI.Common.currentDomainRoot().concat('/', relativePath);
             }
         }
 
@@ -88,59 +94,114 @@ UI.Common = {
 UI.LinkHandler = {
     //This will be the object that converts /u/name -> <a href='/user/name'>/u/name</a> and /v/sub -> <a href='/v/sub'>/v/sub</a>
 }
-
-UI.CommentImageHandler = (function () {
+UI.ExpandoManager = (function () {
 
     UI.Notifications.subscribe('DOM', function (context) {
-        UI.CommentImageHandler.execute(context);
+        UI.ExpandoManager.execute(context);
     });
-    function clickRoutine(event) {
-        event.preventDefault();
 
-        var target = $(this);
+    var expandoDictionary = []; //This is a dictionary i.e. {key:'value', group:[obj Expando, obj Expando, etc.]} 
 
-        if (!target.data('showing')) {
-            //show
-            if (target.data('loaded')) {
-                target.data('showing', true);
-                UI.CommentImageHandlerSettings.toggleFunction(target.next(), true);
+    return {
+        addExpando: function (selector, expandos) {
+
+            var find = expandoDictionary.filter(function (x) {
+                if (x.selector == selector) {
+                    return x;
+                }
+            });
+
+            if (find.length > 0) {
+                if (expandos instanceof Array) {
+                    find[0].group = find[0].group.concat(expandos);
+                } else {
+                    find[0].group.push(expandos);
+                }
             } else {
-                //load
-                load(target, false);
+                if (expandos instanceof Array) {
+                    expandoDictionary.push({ 'selector': selector, 'group': expandos });
+                } else {
+                    expandoDictionary.push({ 'selector': selector, 'group': [expandos] });
+                }
             }
-        } else {
-            //hide
-            UI.CommentImageHandlerSettings.toggleFunction(target.next(), false);
-            target.data('showing', false);
+
+        },
+        reset: function () {
+            expandoDictionary = [];
+        },
+        execute: function (container) {
+            if (expandoDictionary && expandoDictionary.length > 0) {
+
+                expandoDictionary.forEach(function (selectorGroup) {
+                    var c = (container == undefined ? $(selectorGroup.selector) : $(selectorGroup.selector, container));
+                    if (c.length > 0) {
+                        selectorGroup.group.forEach(function (expando) {
+                            c.filter(function () {
+                                var r = expando.filter.test(this.href);
+                                return r;
+                            }).each(function (i, x) {
+                                expando.process(x);
+                            });
+                        });
+                    }
+                });
+
+            }
         }
     }
-    function load(target, autoLoading) {
+
+})();
+
+//base expando class
+var LinkExpando = function (hrefFilter) {
+    this.filter = hrefFilter;
+};
+LinkExpando.prototype = {
+    process: function (target) {
+        //no-op - this is a base class
+        if (UI.Common.debug) {
+            alert("Class LinkExpando.process(target) method must be overridden in derived class.")
+        }
+    },
+    setDirectLink: function (parentControl, description, url){
+        var infoSpan = $('<span/>', { class: 'tagline' }).html(description + ' ').append($('<a/>', { class: 'link-expando-direct', target: '_blank', href: url }).text('Open'));
+        parentControl.append(infoSpan);
+    },
+    getFilter: function(){
+        return this.filter;
+    }
+};
+
+var ImageLinkExpando = function () {
+    LinkExpando.call(this, /^([^\?]+(\.(jpg|jpeg|gif|giff|png)))$/i);
+    this.load = function(target, autoLoading) {
 
         var anchorText = target.text();
-        
-        if (UI.CommentImageHandlerSettings.onLoading) {
-            UI.CommentImageHandlerSettings.onLoading(target, target.text());
+
+        if (UI.ImageExpandoSettings.onLoading) {
+            UI.ImageExpandoSettings.onLoading(target, target.text());
         }
 
         //remove handler while loading
         target.off();
         target.on('click', function (e) { e.preventDefault(); }); //disable the link until loaded, prevent rapid clickers
+        var me = this;
 
         var img = new Image();
         img.onerror = function () {
             //can't determine what kind of error... could be 404, could be a working non-image source, etc.
-            img.src = UI.Common.resolveUrl(UI.CommentImageHandlerSettings.errorImageUrl);
+            img.src = UI.Common.resolveUrl(UI.ImageExpandoSettings.errorImageUrl);
         }
         img.onload = function () {
 
             if (!this.complete) {
                 return;
             }
-            
+
             var parent = target.parent();
 
             var displayDiv = $('<div/>', {
-                class: 'async-img',
+                class: 'link-expando',
                 style: 'display:none;'
             }).insertAfter(target);
 
@@ -161,38 +222,36 @@ UI.CommentImageHandler = (function () {
                 height = this.height;
             }
 
-            //append info attributes
             var desc = UI.Common.fileExtension(target.prop('href')).toUpperCase().concat(' · ', width.toString(), ' x ', height.toString());
-            var infoSpan = $('<span/>', { class: 'tagline' }).text(desc + ' ');
-            var link = $('<a/>', { class: 'async-img-direct', target: '_blank', href: target.prop('href') }).text('Open');
+
+            me.setDirectLink(displayDiv, desc, target.prop('href'));
             target.prop('title', desc);
-            displayDiv.append(infoSpan);
-            infoSpan.append(link);
-            
+
+
             //I HAVE NO IDEA WHY I HAVE TO DO THIS TO REMOVE THE width/height attributes of the image tag itself
             i.css('width', width);
             i.css('height', height);
             this.removeAttribute('width');
             this.removeAttribute('height');
 
-            if (width > UI.CommentImageHandlerSettings.maxSize || height > UI.CommentImageHandlerSettings.maxSize) {
+            if (width > UI.ImageExpandoSettings.maxSize || height > UI.ImageExpandoSettings.maxSize) {
                 if (width >= height) {
-                    i.css('width', UI.CommentImageHandlerSettings.maxSize);
+                    i.css('width', UI.ImageExpandoSettings.maxSize);
                     i.css('height', 'auto');
 
-                    i.data('origWidth', UI.CommentImageHandlerSettings.maxSize);
+                    i.data('origWidth', UI.ImageExpandoSettings.maxSize);
                     i.data('origHeight', 'auto');
 
                 } else {
                     i.css('width', 'auto');
-                    i.css('height', UI.CommentImageHandlerSettings.maxSize);
+                    i.css('height', UI.ImageExpandoSettings.maxSize);
 
                     i.data('origWidth', 'auto');
-                    i.data('origHeight', UI.CommentImageHandlerSettings.maxSize);
+                    i.data('origHeight', UI.ImageExpandoSettings.maxSize);
                 }
                 i.data('inFullMode', false);
 
-                i.data('maxWidth', Math.min(width, UI.CommentImageHandlerSettings.maxFullSizeWidth)); //trying to fix the extra large image thing
+                i.data('maxWidth', Math.min(width, UI.Common.availableWidth(target.parent())));
 
                 displayDiv.click(function () {
                     var childImg = $(this).children('img');
@@ -211,92 +270,204 @@ UI.CommentImageHandler = (function () {
 
             target.data('loaded', true);
 
-            //remove handler while loading
+            //reestablish handler
             target.off();
-            target.on('click', clickRoutine);
+            target.on('click', me.clickRoutine);
 
-            if (UI.CommentImageHandlerSettings.onLoaded) {
-                UI.CommentImageHandlerSettings.onLoaded(target, anchorText);
+            if (UI.ImageExpandoSettings.onLoaded) {
+                UI.ImageExpandoSettings.onLoaded(target, anchorText);
             }
 
             if (!autoLoading) {
                 target.data('showing', true);
-                UI.CommentImageHandlerSettings.toggleFunction(displayDiv, true);
+                UI.ImageExpandoSettings.toggleFunction(displayDiv, true);
             }
 
-            if (autoLoading && UI.CommentImageHandlerSettings.autoShow) {
-               target.click();
+            if (autoLoading && UI.ImageExpandoSettings.autoShow) {
+                target.click();
             }
         };
         img.src = target.prop('href');
     }
+    this.clickRoutine = function(event) {
+        event.preventDefault();
 
-    return {
+        var target = $(this);
 
-        bind: function (element) {
-
-            $(element).data('showing', false);
-
-            //this will be fixed later - the ajax nodes were getting hooked multiple times and I just haven't isolated this yet so lets just set a flag for if this element has been hooked before.
-            if ($(element).data('hooked') == true) {
-                return;
+        if (!target.data('showing')) {
+            //show
+            if (target.data('loaded')) {
+                target.data('showing', true);
+                UI.ImageExpandoSettings.toggleFunction(target.next(), true);
+            } else {
+                //load
+                load(target, false);
             }
-
-            $(element).on('click', clickRoutine);
-            
-            $(element).data('hooked', true);
-            
-            if (UI.CommentImageHandlerSettings.autoLoad) {
-                load($(element), true);
-            } else if (UI.CommentImageHandlerSettings.autoShow) {
-                $(element).click();
-            }
-
-        },
-
-        execute: function (container) {
-            //no need to process if not on comments page
-            if (!UI.Common.isCommentPage()) {
-                return;
-            }
-
-            var settings = UI.CommentImageHandlerSettings;
-            var c = (container == undefined ? $(settings.selector) : $(settings.selector, container));
-
-            c.filter(function () { return settings.filter.test(this.href) }).each(function (i, x) {
-                UI.CommentImageHandler.bind(x); 
-            });
+        } else {
+            //hide
+            UI.ImageExpandoSettings.toggleFunction(target.next(), false);
+            target.data('showing', false);
         }
     }
-})();
 
-UI.CommentImageHandlerSettings = (function () {
+}
+ImageLinkExpando.prototype = new LinkExpando();
+ImageLinkExpando.prototype.constructor = LinkExpando;
+ImageLinkExpando.prototype.process = function (target) {
+    $(target).data('showing', false);
+
+    //TODO: Fix this hacktastic hack
+    if ($(target).data('hooked') == true) {
+        return;
+    }
+
+    $(target).on('click', this.clickRoutine);
+
+    $(target).data('hooked', true);
+
+    if (UI.ImageExpandoSettings.autoLoad) {
+        this.load($(target), true);
+    } else if (UI.ImageExpandoSettings.autoShow) {
+        $(target).click();
+    }
+};
+
+/* IFrameEmbedder */
+var IFrameEmbedderExpando = function (urlRegEx) {
+    LinkExpando.call(this, urlRegEx);
+    this.defaultRatio = 0.5625;
+    this.hook = function (target, description, iFrameSettings) {
+
+        if ($(target).data('hooked') == true) {
+            return;
+        }
+        $(target).data('hooked', true);
+
+        var id = undefined;
+        try {
+            id = this.filter.exec(target.prop('href'))[1];
+            if (!id || id == undefined) {
+                return; //bail, we have a problem
+            }
+        } catch (ex) {
+            return; //bail, we have a problem
+        }
+
+        var displayDiv = $('<div/>', {
+            class: 'link-expando',
+            style: 'display:none;'
+        }).insertAfter(target);
+
+        //<iframe width="560" height="315" src="//www.youtube.com/embed/JUDSeb2zHQ0" frameborder="0" allowfullscreen></iframe>
+        iFrameSettings.src = this.getSrcUrl(id);
+        var iFrame = $('<iframe/>', iFrameSettings);
+
+        displayDiv.html(iFrame);
+
+        this.setDirectLink(displayDiv, description, target.prop('href'));
+        target.prop('title', description);
+
+        target.on('click', function (e) { e.preventDefault(); target.next().slideToggle(); });
+        target.html(target.text().concat('<span class=\'link-expando-type\'>', description, '</span>'));
+
+    }
+}
+IFrameEmbedderExpando.prototype = new LinkExpando();
+IFrameEmbedderExpando.prototype.constructor = LinkExpando;
+
+/* YouTube */
+var YouTubeExpando = function(){
+    IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+    this.getSrcUrl = function (id) { return '//www.youtube.com/embed/' + id; };
+};
+YouTubeExpando.prototype = new IFrameEmbedderExpando();
+YouTubeExpando.prototype.constructor = IFrameEmbedderExpando;
+YouTubeExpando.prototype.process = function (target) {
+    var width = Math.min(560, UI.Common.availableWidth($(target).parent()));
+
+    this.hook($(target), 'YouTube', {
+        width: width.toString(),
+        height: (width * this.defaultRatio).toString(),
+        frameborder: '0',
+        allowfullscreen: true
+    });
+};
+
+/* Imgur Album */
+var ImgurAlbumExpando = function () {
+    IFrameEmbedderExpando.call(this, /imgur\.com\/a\/(\w+)\/?/i);
+    this.getSrcUrl = function (id) { return '//imgur.com/a/' + id + '/embed'; };
+};
+ImgurAlbumExpando.prototype = new IFrameEmbedderExpando();
+ImgurAlbumExpando.prototype.constructor = IFrameEmbedderExpando;
+ImgurAlbumExpando.prototype.process = function (target) {
+    var width = Math.min(560, UI.Common.availableWidth($(target).parent()));
+
+    //<iframe class="imgur-album" width="100%" height="550" frameborder="0" src="//imgur.com/a/aEBi9/embed"></iframe>
+    this.hook($(target), "Imgur Album", {
+        width: width.toString(),
+        height: (width * .8).toString(),
+        frameborder: '0'
+    });
+};
+/* VIMEO */
+var VimeoExpando = function () {
+    IFrameEmbedderExpando.call(this, /vimeo\.com\/[\w\/]*\/(\d{8,})\/?/i);
+    this.getSrcUrl = function (id) { return '//player.vimeo.com/video/' + id; };
+};
+VimeoExpando.prototype = new IFrameEmbedderExpando();
+VimeoExpando.prototype.constructor = IFrameEmbedderExpando;
+VimeoExpando.prototype.process = function (target) {
+
+    var width = Math.min(560, UI.Common.availableWidth($(target).parent()));
+
+    //<iframe src="//player.vimeo.com/video/111431415" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    this.hook($(target), 'Vimeo', {
+        width: width.toString(),
+        height: (width * this.defaultRatio),
+        frameborder: '0',
+        webkitallowfullscreen: 1,
+        mozallowfullscreen: 1,
+        allowfullscreen: 1
+    });
+};
+
+
+UI.ImageExpandoSettings = (function () {
     return {
         autoLoad: true, //this setting will preload all image links
         autoShow: false, //if true then the click routine is run during event hookup
-        selector: '.usertext-body > .md a:not(.async-img-direct)', //elements to find image anchor tags
-        filter: /^([^\?]+(\.(jpg|jpeg|gif|giff|png)))$/i, //regex for href links to load
         maxSize: 250,
         toggleFunction: function (element, display) { //element (obj) to show/hide, display (bool) show/hide
             element.slideToggle();
         },
         onLoading: function (element, rawText) {
-            element.text(rawText + ' (loading)');
+            element.html(rawText.concat('<span class=\'link-expando-type\'>loading</span>'));
         },
         onLoaded: function (element, rawText) {
-            element.html(rawText.concat('<span class=\'async-img-type\'>', UI.Common.fileExtension(element.prop('href')).toUpperCase(), '</span>'));
+            element.html(rawText.concat('<span class=\'link-expando-type\'>', UI.Common.fileExtension(element.prop('href')).toUpperCase(), '</span>'));
         },
-        errorImageUrl: '~/Graphics/missing_image.png', //only relative path is supported right now.
-        maxFullSizeWidth: 600, //in pixels, needs to be numeric
-        //TODO: Settings that need implemented
-        maxFileSizeInKB: 2048
+        errorImageUrl: '~/Graphics/missing_image.png' //only relative path is supported right now.
     }
 })();
 
 
 $(document).ready(function () {
 
-    UI.CommentImageHandler.execute();
+    UI.Common.debug = false;
+
+    UI.ExpandoManager.addExpando('.usertext-body > .md a:not(.link-expando-direct)',
+        [
+            new ImageLinkExpando(),
+            new YouTubeExpando(),
+            new ImgurAlbumExpando(),
+            new VimeoExpando()
+        ]);
+
+    if (UI.Common.isCommentPage()) {
+        UI.ExpandoManager.execute();
+    }
+
 });
 
 

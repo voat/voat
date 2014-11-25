@@ -9455,10 +9455,14 @@ body.with-listing-chooser {
         font-style: italic;
     }
 
-.async-img img { 
+.link-expando img { 
     display: block !important;
 }
-.async-img-type {
+.link-expando span { 
+    display: block !important;
+}
+
+.link-expando-type {
     background: #f2f2f2;
     border: 1px solid #e4e4e4;
     color: #828282;
@@ -9474,6 +9478,5 @@ body.with-listing-chooser {
     white-space: nowrap;
     vertical-align:text-top;
     align-content:center;
-    text-transform:uppercase;
 }
 
