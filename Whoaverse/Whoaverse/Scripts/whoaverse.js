@@ -543,6 +543,7 @@ function editmessagesubmit(submissionid) {
         datatype: "json",
         success: function (data) {
             $("#submissionid-" + submissionid).find('.md').html(data.response);
+            window.setTimeout(function () { UI.Notifications.raise('DOM', $("#submissionid-" + submissionid)) });
         }
     });
 
@@ -786,7 +787,8 @@ function loadSelfText(obj, messageId) {
         "/ajaxhelpers/messagecontent/" + messageId,
         null,
         function (data) {
-            $(obj).parent().find(".expando").nextAll().find(".md").html(data)
+            $(obj).parent().find(".expando").nextAll().find(".md").html(data);
+            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent().find(".expando").nextAll()); });
         }
      );
 
