@@ -423,6 +423,13 @@ namespace Whoaverse
                 defaults: new { controller = "AjaxGateway", action = "MessageContent" }
             );
 
+            // ajaxhelpers/videoplayer
+            routes.MapRoute(
+                name: "VideoPlayer",
+                url: "ajaxhelpers/videoplayer/{messageId}",
+                defaults: new { controller = "AjaxGateway", action = "VideoPlayer" }
+            );
+
             // ajaxhelpers/rendersubmission
             routes.MapRoute(
                 name: "RenderSubmission",

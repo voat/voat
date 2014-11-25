@@ -16,7 +16,6 @@
 
 @{
     var commentCount = Model.Comments.Count(c => c.Name != "deleted");
-    Random rnd = new Random();
     bool anonymizedSubverse = false;
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];

@@ -797,6 +797,28 @@ function loadSelfText(obj, messageId) {
     $(obj).parent().find(".expando").next().next().next().toggle();
 }
 
+// a function to embed a video via expando
+function loadVideoPlayer(obj, messageId) {
+
+    $(obj).toggleClass("collapsed");
+    $(obj).toggleClass("expanded");
+
+    // fetch message content and append under class md
+    var messageContent = $.get(
+        "/ajaxhelpers/videoplayer/" + messageId,
+        null,
+        function (data) {
+            $(obj).parent().find(".expando").nextAll().find(".videoplayer").html(data);
+            window.setTimeout(function() {
+                 UI.Notifications.raise('DOM', $(obj).parent().find(".expando").nextAll());
+            });
+        }
+     );
+
+    //note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
+    $(obj).parent().find(".expando").next().next().next().toggle();
+}
+
 // function to post delete private message request to messaging controller and remove deleted message DOM
 function deletePrivateMessage(obj, privateMessageId) {
     var privateMessageObject = { "privateMessageId": privateMessageId };

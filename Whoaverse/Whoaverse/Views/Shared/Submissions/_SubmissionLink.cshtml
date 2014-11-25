@@ -28,7 +28,7 @@
     }
 
     var commentCount = Model.Comments.Count(c => c.Name != "deleted");
-    
+
     if (Model.Subverses != null)
     {
         ratedAdult = Model.Subverses.rated_adult;
@@ -107,6 +107,14 @@
             }
             else
             {
+                if (submissionDomain == "youtube.com" || submissionDomain == "youtu.be" || submissionDomain == "vimeo.com")
+                {
+                    <!-- EXPERIMENTAL VIDEO EXPANDO BUTTON START -->
+                    <div class="expando-button collapsed selftext" onclick="loadVideoPlayer(this, @Model.Id)"></div>
+                    <div class="expando" style="display: none;" id="@Model.Id"></div>
+                    <!-- EXPERIMENTAL VIDEO EXPANDO BUTTON END -->
+                }
+
                 if (Model.Anonymized || anonymizedSubverse)
                 {
                     <p class="tagline">
@@ -145,7 +153,13 @@
                 </li>
             </ul>
             <div class="expando" style="display: none">
-                <span class="error">loading...</span>
+                <form style="" novalidate="novalidate" class="usertext" action="#">
+                    <div class="usertext-body may-blank-within">
+                        <div class="videoplayer">
+                            Loading magic stuff...
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     }
