@@ -48,5 +48,6 @@ namespace Whoaverse.Models
         public virtual DbSet<Banneduser> Bannedusers { get; set; }
         public virtual DbSet<Survey> Surveys { get; set; }
         public virtual DbSet<Featuredsub> Featuredsubs { get; set; }
+        public virtual DbSet<Viewstatistic> Viewstatistics { get; set; }
     }
 }

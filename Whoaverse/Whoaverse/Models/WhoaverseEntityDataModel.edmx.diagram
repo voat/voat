@@ -41,6 +41,8 @@
         <AssociationConnector Association="whoaverseModel.FK_Subscriptions_Subverses" />
         <EntityTypeShape EntityType="whoaverseModel.Featuredsub" Width="1.5" PointX="3.625" PointY="18.75" />
         <AssociationConnector Association="whoaverseModel.FK_Featuredsubs_Subverses" />
+        <EntityTypeShape EntityType="whoaverseModel.Viewstatistic" Width="1.5" PointX="5.875" PointY="16.75" />
+        <AssociationConnector Association="whoaverseModel.FK_Viewstatistics_Messages" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

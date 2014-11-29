@@ -32,7 +32,7 @@ namespace Whoaverse.Controllers
         // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments,
             string name, DateTime? date, DateTime? lastEditDate, int? submissionId, int? likes, int? dislikes,
-            bool anonymized)
+            bool anonymized, int? views)
         {
             var subverse = _db.Subverses.Find(selectedSubverse);
 
@@ -60,6 +60,7 @@ namespace Whoaverse.Controllers
             ViewBag.likes = likes;
             ViewBag.dislikes = dislikes;
             ViewBag.anonymized_mode = subverse.anonymized_mode;
+            ViewBag.views = views;
 
             try
             {
@@ -409,7 +410,7 @@ namespace Whoaverse.Controllers
                     }
 
                     // return only sfw submissions
-                    paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize); 
+                    paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                     return View(paginatedSfwSubmissions);
                 }
 

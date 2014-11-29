@@ -21,6 +21,7 @@ namespace Whoaverse.Models
             this.Dislikes = 0;
             this.Comments = new HashSet<Comment>();
             this.Votingtrackers = new HashSet<Votingtracker>();
+            this.Viewstatistics = new HashSet<Viewstatistic>();
         }
     
         public int Id { get; set; }
@@ -40,10 +41,12 @@ namespace Whoaverse.Models
         public string FlairLabel { get; set; }
         public string FlairCss { get; set; }
         public bool Anonymized { get; set; }
+        public double Views { get; set; }
     
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Votingtracker> Votingtrackers { get; set; }
         public virtual Subverse Subverses { get; set; }
         public virtual Stickiedsubmission Stickiedsubmission { get; set; }
+        public virtual ICollection<Viewstatistic> Viewstatistics { get; set; }
     }
 }

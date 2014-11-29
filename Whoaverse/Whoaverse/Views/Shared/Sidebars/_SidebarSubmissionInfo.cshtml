@@ -14,8 +14,7 @@
     double percentageOfLove;
     double totalVotes = ViewBag.dislikes + ViewBag.likes;
     double difference = ViewBag.Likes - ViewBag.dislikes;
-
-    Random rnd = new Random();
+    double views = ViewBag.views;
 
     bool? anonymized = ViewBag.anonymized;
 
@@ -74,6 +73,14 @@
                     </p>
                 }
 
+            </div>
+            <div class="alert-h2">
+                Traffic stats
+            </div>
+            <div class="submission-score-box">
+                <p class="h6">
+                    <span class="user">Views</span>: <b>@views</b>
+                </p>
             </div>
             <div class="alert-h2">
                 Score

@@ -113,6 +113,7 @@
           <Property Name="FlairLabel" Type="nvarchar" MaxLength="50" />
           <Property Name="FlairCss" Type="nvarchar" MaxLength="50" />
           <Property Name="Anonymized" Type="bit" Nullable="false" />
+          <Property Name="Views" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="Postreplynotifications">
           <Key>
@@ -274,6 +275,14 @@
           <Property Name="Shortbio" Type="nvarchar" MaxLength="100" />
           <Property Name="Avatar" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="Viewstatistics">
+          <Key>
+            <PropertyRef Name="submissionId" />
+            <PropertyRef Name="viewerId" />
+          </Key>
+          <Property Name="submissionId" Type="int" Nullable="false" />
+          <Property Name="viewerId" Type="nvarchar" MaxLength="90" Nullable="false" />
+        </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
             <PropertyRef Name="Id" />
@@ -432,6 +441,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Viewstatistics_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Viewstatistics" Type="Self.Viewstatistics" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Viewstatistics">
+              <PropertyRef Name="submissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Votingtracker_Messages">
           <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
           <End Role="Votingtracker" Type="Self.Votingtracker" Multiplicity="*" />
@@ -467,6 +490,7 @@
           <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userbadges" EntityType="Self.Userbadges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userpreferences" EntityType="Self.Userpreferences" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Viewstatistics" EntityType="Self.Viewstatistics" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Votingtracker" EntityType="Self.Votingtracker" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Comments_Messages" Association="Self.FK_Comments_Messages">
             <End Role="Messages" EntitySet="Messages" />
@@ -511,6 +535,10 @@
           <AssociationSet Name="FK_Userbadges_Badges" Association="Self.FK_Userbadges_Badges">
             <End Role="Badges" EntitySet="Badges" />
             <End Role="Userbadges" EntitySet="Userbadges" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Viewstatistics_Messages" Association="Self.FK_Viewstatistics_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Viewstatistics" EntitySet="Viewstatistics" />
           </AssociationSet>
           <AssociationSet Name="FK_Votingtracker_Messages" Association="Self.FK_Votingtracker_Messages">
             <End Role="Messages" EntitySet="Messages" />
@@ -575,6 +603,8 @@
           <Property Name="FlairCss" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Stickiedsubmission" Relationship="whoaverseModel.FK_Stickiedsubmissions_Messages" FromRole="Message" ToRole="Stickiedsubmission" />
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
+          <Property Name="Views" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Viewstatistics" Relationship="whoaverseModel.FK_Viewstatistics_Messages" FromRole="Message" ToRole="Viewstatistic" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -698,6 +728,11 @@
           <AssociationSet Name="FK_Featuredsubs_Subverses" Association="whoaverseModel.FK_Featuredsubs_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Featuredsub" EntitySet="Featuredsubs" />
+          </AssociationSet>
+          <EntitySet Name="Viewstatistics" EntityType="whoaverseModel.Viewstatistic" />
+          <AssociationSet Name="FK_Viewstatistics_Messages" Association="whoaverseModel.FK_Viewstatistics_Messages">
+            <End Role="Message" EntitySet="Messages" />
+            <End Role="Viewstatistic" EntitySet="Viewstatistics" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
@@ -1069,6 +1104,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Viewstatistic">
+          <Key>
+            <PropertyRef Name="submissionId" />
+            <PropertyRef Name="viewerId" />
+          </Key>
+          <Property Name="submissionId" Type="Int32" Nullable="false" />
+          <Property Name="viewerId" Type="String" Nullable="false" MaxLength="90" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Message" Relationship="whoaverseModel.FK_Viewstatistics_Messages" FromRole="Viewstatistic" ToRole="Message" />
+        </EntityType>
+        <Association Name="FK_Viewstatistics_Messages">
+          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whoaverseModel.Viewstatistic" Role="Viewstatistic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Message">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Viewstatistic">
+              <PropertyRef Name="submissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1106,6 +1164,7 @@
           <EntitySetMapping Name="Messages">
             <EntityTypeMapping TypeName="whoaverseModel.Message">
               <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="Views" ColumnName="Views" />
                 <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
                 <ScalarProperty Name="FlairCss" ColumnName="FlairCss" />
                 <ScalarProperty Name="FlairLabel" ColumnName="FlairLabel" />
@@ -1373,6 +1432,14 @@
                 <ScalarProperty Name="Featured_by" ColumnName="Featured_by" />
                 <ScalarProperty Name="Subname" ColumnName="Subname" />
                 <ScalarProperty Name="Feature_id" ColumnName="Feature_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Viewstatistics">
+            <EntityTypeMapping TypeName="whoaverseModel.Viewstatistic">
+              <MappingFragment StoreEntitySet="Viewstatistics">
+                <ScalarProperty Name="viewerId" ColumnName="viewerId" />
+                <ScalarProperty Name="submissionId" ColumnName="submissionId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

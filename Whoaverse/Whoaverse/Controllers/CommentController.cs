@@ -14,8 +14,10 @@ All Rights Reserved.
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Whoaverse.Models;
 using Whoaverse.Utils;
@@ -109,6 +111,35 @@ namespace Whoaverse.Controllers
                 {
                     //
                 }
+
+                // check if this is a new view and register it
+                string clientIpAddress = String.Empty;
+
+                if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
+                {
+                    clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                }
+                else if (Request.UserHostAddress.Length != 0)
+                {
+                    clientIpAddress = Request.UserHostAddress;
+                }
+
+                if (clientIpAddress == String.Empty) return View("~/Views/Home/Comments.cshtml", message);
+
+                // generate salted hash of client IP address
+                string ipHash = IpHash.CreateHash(clientIpAddress);
+
+                // check if this hash is present for this submission id in viewstatistics table
+                var existingView = _db.Viewstatistics.Find(message.Id, ipHash);
+
+                // this hash is already registered, display the submission and don't register the view
+                if (existingView != null) return View("~/Views/Home/Comments.cshtml", message);
+
+                // this is a new view, register it for this submission
+                var view = new Viewstatistic { submissionId = message.Id, viewerId = ipHash };
+                _db.Viewstatistics.Add(view);
+                message.Views++;
+                _db.SaveChanges();
 
                 return View("~/Views/Home/Comments.cshtml", message);
             }

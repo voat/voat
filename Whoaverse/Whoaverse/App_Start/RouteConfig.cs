@@ -487,11 +487,11 @@ namespace Whoaverse
             );
 
             // p/partnerintent
-            routes.MapRoute(
-                name: "PartnerProgramIntent",
-                url: "p/apply",
-                defaults: new { controller = "Partner", action = "PartnerIntentRegistration" }
-            );
+            //routes.MapRoute(
+            //    name: "PartnerProgramIntent",
+            //    url: "p/apply",
+            //    defaults: new { controller = "Partner", action = "PartnerIntentRegistration" }
+            //);
             
             // default route
             routes.MapRoute(
