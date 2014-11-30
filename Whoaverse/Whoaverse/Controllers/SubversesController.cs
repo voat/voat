@@ -573,6 +573,29 @@ namespace Whoaverse.Controllers
             return View("~/Views/Subverses/Subverses.cshtml", paginatedNewestSubverses);
         }
 
+        // show subverses ordered by last received submission
+        public ViewResult ActiveSubverses(int? page)
+        {
+            ViewBag.SelectedSubverse = "subverses";
+            ViewBag.SortingMode = "active";
+
+            const int pageSize = 25;
+            int pageNumber = (page ?? 0);
+
+            if (pageNumber < 0)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            var subverses = _db.Subverses
+                .Where(s => s.description != null && s.sidebar != null && s.last_submission_received != null)
+                .OrderByDescending(s => s.last_submission_received);
+
+            var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
+
+            return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
+        }
+
         [OutputCache(VaryByParam = "none", Duration = 3600)]
         public ActionResult Subversenotfound()
         {

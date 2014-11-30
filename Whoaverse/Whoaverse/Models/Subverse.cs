@@ -57,6 +57,7 @@ namespace Whoaverse.Models
         public bool private_subverse { get; set; }
         public bool authorized_submitters_only { get; set; }
         public bool anonymized_mode { get; set; }
+        public Nullable<System.DateTime> last_submission_received { get; set; }
     
         public virtual ICollection<Message> Messages { get; set; }
         public virtual Defaultsubverse Defaultsubvers { get; set; }

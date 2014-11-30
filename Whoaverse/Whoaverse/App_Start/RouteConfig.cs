@@ -73,6 +73,13 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "SubversesSubscribed" }
             );
 
+            // /subverses/active
+            routes.MapRoute(
+                name: "ActiveSubverses",
+                url: "subverses/active",
+                defaults: new { controller = "Subverses", action = "ActiveSubverses" }
+            ); 
+
             // /subverses/adultcontent
             routes.MapRoute(
                 name: "AdultContentWarning",
@@ -80,7 +87,7 @@ namespace Whoaverse
                 defaults: new { controller = "Subverses", action = "AdultContentWarning" }
             );
 
-            // /subverses/adultcontent
+            // /subverses/adultcontentfiltered
             routes.MapRoute(
                 name: "AdultContentFiltered",
                 url: "subverses/adultcontentfiltered",
@@ -92,7 +99,7 @@ namespace Whoaverse
                 name: "NewestSubverses",
                 url: "subverses/{sortingmode}",
                 defaults: new { controller = "Subverses", action = "NewestSubverses" }
-            );            
+            );
 
             // comments/4
             routes.MapRoute(

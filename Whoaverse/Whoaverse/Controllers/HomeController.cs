@@ -211,6 +211,9 @@ namespace Whoaverse.Controllers
                     message.Date = DateTime.Now;
                     message.Likes = 1;
                     _db.Messages.Add(message);
+
+                    // update last submission received date for target subverse
+                    targetSubverse.last_submission_received = DateTime.Now;
                     await _db.SaveChangesAsync();
                 }
                 else if (message.Type == 1 && message.Title != null)
@@ -232,6 +235,8 @@ namespace Whoaverse.Controllers
                     message.Date = DateTime.Now;
                     message.Likes = 1;
                     _db.Messages.Add(message);
+                    // update last submission received date for target subverse
+                    targetSubverse.last_submission_received = DateTime.Now;
                     await _db.SaveChangesAsync();
                 }
 

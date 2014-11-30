@@ -12,6 +12,7 @@
 
 @{
     var classHot = "";
+    var classActive = "";
     var classNew = "";
     var classSearch = "";
     var classSubscribed = "";
@@ -23,12 +24,21 @@
     {
         case "new":
             classNew = "selected";
+            classActive = "disabled";
+            classHot = "disabled";
+            classSubscribed = "disabled";
+            classSearch = "disabled";
+            break;
+        case "active":
+            classActive = "selected";
+            classNew = "disabled";
             classHot = "disabled";
             classSubscribed = "disabled";
             classSearch = "disabled";
             break;
         case "search":
             classSearch = "selected";
+            classActive = "disabled";
             classNew = "disabled";
             classHot = "disabled";
             classSubscribed = "disabled";
@@ -36,6 +46,7 @@
         default:
             classHot = "selected";
             classNew = "disabled";
+            classActive = "disabled";
             classSearch = "disabled";
             classSubscribed = "disabled";
             break;
@@ -64,6 +75,7 @@
 
 <ul class="tabmenu">
     <li class="@classHot"><a href="/subverses">Popular</a></li>
+    <li class="@classActive"><a href="/subverses/active">Active</a></li>
     <li class="@classNew"><a href="/subverses/new">New</a></li>
     <li class="@classSubscribed"><a href="/subverses/subscribed">Subscribed</a></li>
     <li class="@classSearch"><a href="/subverses/search">Search</a></li>

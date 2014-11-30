@@ -15,22 +15,27 @@
 @using Whoaverse.Utils;
 
 @{
-    ViewBag.Title = "subverses";
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
     var mostActiveSubverses = SessionTracker.MostActiveSubverses();
 
-    if (sortingMode != "new")
+    switch (sortingMode)
     {
-        urlaction = "Subverses";
+        case "new":
+            ViewBag.Title = "Newest subverses";
+            urlaction = "NewestSubverses";
+            break;
+        case "active":
+            ViewBag.Title = "Active subverses";
+            urlaction = "ActiveSubverses";
+            break;
+        default:
+            ViewBag.Title = "Most popular subverses";
+            urlaction = "Subverses";
+            break;
     }
-    else
-    {
-        urlaction = "NewestSubverses";
-    }
-}
 
-@using PagedList.Mvc;
+}
 
 <style type="text/css">
     body > .content .link .rank {
@@ -72,18 +77,23 @@
 
     <div class="content" role="main">
 
-        @if (sortingMode != "new")
+        @switch (sortingMode)
         {
+            case "new":
+                <div class="alert-notice">
+                    <p>Showing the most recently registered subverses.</p>
+                </div>
+                break;
+            case "active":
             <div class="alert-notice">
-                <p>Showing top 200 subverses ordered by number of subscribers.</p>
+                <p>Showing subverses ordered by posting activity.</p>
             </div>
-
-        }
-        else
-        {
+                break;
+            default:
             <div class="alert-notice">
-                <p>Showing 200 most recently registered subverses.</p>
+                <p>Showing subverses ordered by number of subscribers.</p>
             </div>
+                break;
         }
 
         <div class="sitetable linklisting">

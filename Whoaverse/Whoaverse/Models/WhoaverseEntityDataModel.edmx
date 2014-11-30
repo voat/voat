@@ -232,6 +232,7 @@
           <Property Name="private_subverse" Type="bit" Nullable="false" />
           <Property Name="authorized_submitters_only" Type="bit" Nullable="false" />
           <Property Name="anonymized_mode" Type="bit" Nullable="false" />
+          <Property Name="last_submission_received" Type="datetime" />
         </EntityType>
         <EntityType Name="Survey">
           <Key>
@@ -770,6 +771,7 @@
           <Property Name="anonymized_mode" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Subscriptions" Relationship="whoaverseModel.FK_Subscriptions_Subverses" FromRole="Subverse" ToRole="Subscription" />
           <NavigationProperty Name="Featuredsubs" Relationship="whoaverseModel.FK_Featuredsubs_Subverses" FromRole="Subverse" ToRole="Featuredsub" />
+          <Property Name="last_submission_received" Type="DateTime" Precision="3" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
@@ -1199,6 +1201,7 @@
           <EntitySetMapping Name="Subverses">
             <EntityTypeMapping TypeName="whoaverseModel.Subverse">
               <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="last_submission_received" ColumnName="last_submission_received" />
                 <ScalarProperty Name="anonymized_mode" ColumnName="anonymized_mode" />
                 <ScalarProperty Name="authorized_submitters_only" ColumnName="authorized_submitters_only" />
                 <ScalarProperty Name="private_subverse" ColumnName="private_subverse" />
