@@ -14,7 +14,7 @@
 
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
-    
+
     var theme = Session["UserTheme"];
 
     LoginViewModel loginViewModel = new LoginViewModel();
@@ -45,7 +45,7 @@
         {
             selectedSubverse = "/domains/" + ViewBag.SelectedDomain + "/";
         }
-    }    
+    }
 }
 
 <!DOCTYPE html>
@@ -83,7 +83,7 @@
     {
         if (theme == "light")
         {
-            @Styles.Render("~/Content/Light")           
+            @Styles.Render("~/Content/Light")
         }
         else
         {
@@ -101,7 +101,7 @@
             i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
                 (i[r].q = i[r].q || []).push(arguments)
             }, i[r].l = 1 * new Date(); a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
         })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
         ga('create', 'UA-49743834-1', 'whoaverse.com');
@@ -169,7 +169,7 @@
                 }
 
                 @Html.Partial("_LoginPartial")
-                
+
             </div>
         </div>
     </div>
@@ -257,20 +257,52 @@
 
     @Html.Partial("_Footer")
 
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
     @if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
     {
         HttpCookie cookie = new HttpCookie("NotFirstTime");
         cookie.Value = "whoaverse first time visitor identifier";
         HttpContext.Current.Response.Cookies.Add(cookie);
 
+        <!-- First time visitor welcome -->
+        <div class="modal fade" id="firsttimevisitorwelcome" tabindex="-1" role="dialog" aria-labelledby="firsttimevisitorwelcomelabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="notenoughccplabel">Hi!</h4>
+                    </div>
+                    <div class="modal-body">
+                        <strong>It looks like you are new. Welcome to @ConfigurationManager.AppSettings["siteName"]!</strong>
+                        <br /><br />
+                        @ConfigurationManager.AppSettings["siteName"] is a media aggregator where content is submitted, organized, moderated and voted on (ranked) by the users.
+                        <br /><br />
+                        Users can earn money (a percentage of our ad-revenue share) for the content they submit.
+                        <br /><br />
+                        <a href="/about/intro">Click here</a> if you would like to take a quick tour.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-whoaverse" data-dismiss="modal">Ok, got it!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End First time visitor welcome -->
+
+        if (!User.Identity.IsAuthenticated)
+        {
+            <script type="text/javascript">
+                firstTimeVisitorWelcome();
+            </script>
+        }
+
         <div class="eppnotice">
             <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
             Cookies help us deliver our services. By using our services, you agree to our use of cookies.
         </div>
     }
-
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
 
 </body>
 

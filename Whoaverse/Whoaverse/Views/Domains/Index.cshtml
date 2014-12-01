@@ -45,16 +45,6 @@
 <div id="container">
     @{
         @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
-        if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
-        {
-            <div class="infobar welcome" style="display: block;">
-                <h1>@ConfigurationManager.AppSettings["siteName"] is a website about everything</h1>
-                <div class="button-row">
-                    <h2>where you shape the content by voting</h2>
-                    <a href="/about/intro">learn more ›</a>
-                </div>
-            </div>
-        }
     }
 
     <div class="content" role="main">
