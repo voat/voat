@@ -280,24 +280,24 @@
                         @ConfigurationManager.AppSettings["siteName"] is a media aggregator where content is submitted, organized, moderated and voted on (ranked) by the users.
                         <br /><br />
                         Users can earn money (a percentage of our ad-revenue share) for the content they submit.
-                        <br /><br />
-                        <a href="/about/intro">Click here</a> if you would like to take a quick tour.
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-whoaverse" data-dismiss="modal">Ok, got it!</button>
+                        <a class="btn btn-whoaverse" href="/account/register" role="button">Get an account</a>
+                        <a class="btn btn-whoaverse" href="/about/intro" role="button">Take a tour</a>
+                        <button type="button" class="btn btn-whoaverse" data-dismiss="modal">Not now</button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- End First time visitor welcome -->
-
+      
         if (!User.Identity.IsAuthenticated)
         {
             <script type="text/javascript">
                 firstTimeVisitorWelcome();
             </script>
         }
-
+        <!-- End First time visitor welcome -->
+        
         <div class="eppnotice">
             <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
             Cookies help us deliver our services. By using our services, you agree to our use of cookies.
