@@ -13,6 +13,8 @@ All Rights Reserved.
 */
 
 using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -20,6 +22,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Whoaverse.Models;
+using Whoaverse.Models.ViewModels;
 using Whoaverse.Utils;
 
 namespace Whoaverse.Controllers
@@ -356,6 +359,78 @@ namespace Whoaverse.Controllers
 
                     return View(paginatedSubmissions);
                 }
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Error");
+            }
+        }
+
+        // GET: /v2
+        public ActionResult IndexV2(int? page)
+        {
+            ViewBag.SelectedSubverse = "frontpage";
+            var frontPageResultModel = new SetFrontpageViewModel();
+            var submissions = new List<SetSubmission>();
+
+            try
+            {
+                // show user sets
+                // get names of each set that user is subscribed to
+                // for each set name, get list of subverses that define the set
+                // for each subverse, get top ranked submissions
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userSetSubscriptions =
+                        _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name)
+                            .Include(x => x.Userset);
+
+                    foreach (var set in userSetSubscriptions)
+                    {
+                        foreach (var subverse in set.Userset.Usersetdefinitions)
+                        {
+                            // get top ranked submissions
+                            Subverse currentSubverse = subverse.Subvers;
+                            Userset currentSet = subverse.Userset;
+
+                            if (currentSubverse != null)
+                            {
+                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 1));
+                            }
+                        }
+                    }
+
+                    frontPageResultModel.UserSets = userSetSubscriptions;
+                    frontPageResultModel.SubmissionsList = submissions;
+
+                    return View(frontPageResultModel);
+                }
+
+                // show default sets
+                // get names of default sets
+                // for each set name, get list of subverses
+                // for each subverse, get top ranked submissions
+                var defaultSets = _db.Defaultsets.ToList();
+
+                foreach (var set in defaultSets)
+                {
+                    foreach (var subverse in set.Defaultsetsetups)
+                    {
+                        // get top ranked submissions
+                        Subverse currentSubverse = subverse.Subvers;
+                        Defaultset currentSet = set;
+
+                        if (currentSubverse != null)
+                        {
+                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 1));
+                        }
+                    }
+                }
+
+                frontPageResultModel.DefaultSets = defaultSets;
+                frontPageResultModel.SubmissionsList = submissions;
+
+                return View(frontPageResultModel);
             }
             catch (Exception)
             {

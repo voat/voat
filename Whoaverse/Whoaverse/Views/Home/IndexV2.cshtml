@@ -1,0 +1,113 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All Rights Reserved.*@
+
+@model Whoaverse.Models.ViewModels.SetFrontpageViewModel
+
+@{
+    ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
+
+    int commentContributionPoints = 0;
+    int counter = 1;
+
+    if (User.Identity.IsAuthenticated)
+    {
+        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
+    }
+}
+@using System.Configuration
+@using Whoaverse.Utils;
+
+<script>
+    $(function () {
+        $(".set-container").draggable({ axis: "y", handle: ".dragHandle", revert: true });
+    });
+</script>
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+
+    .set-container .dragHandle {
+        cursor: move;
+    }
+</style>
+
+<div id="container">
+
+    @{
+        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
+    }
+
+    <div class="content" role="main">
+
+        @if (!User.Identity.IsAuthenticated)
+        {
+            @Html.Partial("~/Views/Shared/_defaultsets.cshtml");
+        }
+        else
+        {
+            <div class="sitetable">
+                @foreach (var set in Model.UserSets.OrderBy(s => s.Order))
+                {
+                    var currentSet = set.Userset.Name;
+
+                    <div class="set-container">
+                        @Html.Partial("_SetTitle", new ViewDataDictionary { { "setTitle", currentSet } })
+
+                        @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
+                        {
+                            // get only submissions which belong to currently selected set
+                            //type 2 = link
+                            //type 1 = message
+                            string submissionClass = "";
+                            if (submission.Type == 1)
+                            {
+                                submissionClass = "self";
+                            }
+                            else
+                            {
+                                submissionClass = "";
+                            }
+
+                            string classEvenOrOdd = "";
+                            if (counter % 2 == 0)
+                            {
+                                //is even
+                                classEvenOrOdd = "even";
+                            }
+                            else
+                            {
+                                //is odd
+                                classEvenOrOdd = "odd";
+                            }
+
+                            <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+                                <p class="parent"></p>
+                                <span class="rank">@counter</span>
+
+                                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+
+                                <div class="child"></div>
+                                <div class="clearleft"><!--IE6fix--></div>
+                            </div>
+                            <div class="horizontal-line"></div>
+                            counter++;
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</div>

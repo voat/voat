@@ -12,6 +12,9 @@
 
 @model Whoaverse.Models.ViewModels.SearchViewModel
 
+<div class="alert-h1">
+    Search WhoaVerse
+</div>
 <div class="spacer">
 
     @using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))

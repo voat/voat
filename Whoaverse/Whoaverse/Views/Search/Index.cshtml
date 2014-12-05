@@ -13,12 +13,13 @@
 @model PaginatedList<Whoaverse.Models.Message>
 
 @using System.Globalization
+@using Whoaverse.Models.ViewModels
 @using Whoaverse.Utils;
 
 @{
     string searchTerm = "";
     string selectedSubverse = "";
-    
+
     if (!String.IsNullOrEmpty(Request.QueryString["q"]))
     {
         searchTerm = Request.QueryString["q"].ToString(CultureInfo.InvariantCulture);
@@ -28,14 +29,14 @@
     {
         selectedSubverse = Request.QueryString["sub"].ToString(CultureInfo.InvariantCulture);
     }
-    
+
     bool limitSearchToSubverse = Request.QueryString["l"].AsBool();
 
     int commentContributionPoints = 0;
     if (User.Identity.IsAuthenticated)
     {
         commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
-    } 
+    }
 }
 
 <style type="text/css">
@@ -44,13 +45,20 @@
     }
 </style>
 
+
 <div id="container">
-    <div role="main">
-        
+    <div class="side">
+        @{
+            @Html.Partial("_SearchMinimal", new SearchViewModel())
+        }
+    </div>
+
+    <div class="content" role="main">
+
         @Html.ActionLink("< Go back to frontpage", "Index", "Home")
 
         <div class="alert alert-info">
-            <p>Here are your search results for the term "@searchTerm", we found <b>@Model.TotalCount</b> matches:</p>
+            <p>Here are your search results for the term "<b>@searchTerm</b>", we found <b>@Model.TotalCount</b> matches:</p>
         </div>
 
         <div class="sitetable linklisting">
@@ -80,7 +88,7 @@
                     <p class="parent"></p>
                     <span class="rank">@counter</span>
 
-                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })                    
+                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                     <div class="child"></div>

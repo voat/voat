@@ -31,6 +31,8 @@ namespace Whoaverse.Models
             this.Stickiedsubmissions = new HashSet<Stickiedsubmission>();
             this.Subscriptions = new HashSet<Subscription>();
             this.Featuredsubs = new HashSet<Featuredsub>();
+            this.Defaultsetsetups = new HashSet<Defaultsetsetup>();
+            this.Usersetdefinitions = new HashSet<Usersetdefinition>();
         }
     
         public string name { get; set; }
@@ -66,5 +68,7 @@ namespace Whoaverse.Models
         public virtual ICollection<Stickiedsubmission> Stickiedsubmissions { get; set; }
         public virtual ICollection<Subscription> Subscriptions { get; set; }
         public virtual ICollection<Featuredsub> Featuredsubs { get; set; }
+        public virtual ICollection<Defaultsetsetup> Defaultsetsetups { get; set; }
+        public virtual ICollection<Usersetdefinition> Usersetdefinitions { get; set; }
     }
 }

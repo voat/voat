@@ -29,6 +29,13 @@ namespace Whoaverse
                 name: "rss",
                 url: "rss/{subverseName}",
                 defaults: new { controller = "RSS", action = "RSS", subverseName = UrlParameter.Optional }                
+            );
+
+            // /v2
+            routes.MapRoute(
+                name: "v2",
+                url: "v2",
+                defaults: new { controller = "Home", action = "IndexV2" }
             ); 
 
             // /subverses/create
