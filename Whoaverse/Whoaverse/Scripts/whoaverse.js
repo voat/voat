@@ -810,7 +810,7 @@ function loadVideoPlayer(obj, messageId) {
         function (data) {
             $(obj).parent().find(".expando").nextAll().find(".videoplayer").html(data);
             window.setTimeout(function() {
-                 UI.Notifications.raise('DOM', $(obj).parent().find(".expando").nextAll());
+                UI.Notifications.raise('iFrameLoaded', $(obj).parent().find(".expando").nextAll().find(".videoplayer"));
             });
         }
      );
