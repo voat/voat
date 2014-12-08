@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -114,13 +115,14 @@ namespace Whoaverse.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateSubverse(
-            [Bind(Include = "Name, Title, Description, Type, Sidebar, Creation_date, Owner")] AddSubverse
-                subverseTmpModel)
+        public async Task<ActionResult> CreateSubverse([Bind(Include = "Name, Title, Description, Type, Sidebar, Creation_date, Owner")] AddSubverse subverseTmpModel)
         {
             if (!User.Identity.IsAuthenticated) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            // verify recaptcha if user has less than 25 CCP
-            if (Karma.CommentKarma(User.Identity.Name) < 25)
+            int minimumCcp = Convert.ToInt32(ConfigurationManager.AppSettings["minimumCcp"]);
+            int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
+
+            // verify recaptcha if user has less than minimum required CCP
+            if (Karma.CommentKarma(User.Identity.Name) < minimumCcp)
             {
                 // begin recaptcha check
                 const string captchaMessage = "";
@@ -154,17 +156,17 @@ namespace Whoaverse.Controllers
                 // check if subverse exists before attempting to create it
                 if (_db.Subverses.Find(subverse.name) == null)
                 {
-                    // only allow users with less than 10 subverses to create a subverse
+                    // only allow users with less than maximum allowed subverses to create a subverse
                     var amountOfOwnedSubverses = _db.SubverseAdmins
                         .Where(s => s.Username == User.Identity.Name && s.Power == 1)
                         .ToList();
 
-                    if (amountOfOwnedSubverses.Count < 11)
+                    if (amountOfOwnedSubverses.Count <= maximumOwnedSubs)
                     {
                         _db.Subverses.Add(subverse);
                         await _db.SaveChangesAsync();
 
-                        //register user as the owner of the newly created subverse
+                        // register user as the owner of the newly created subverse
                         var tmpSubverseAdmin = new SubverseAdmin
                         {
                             SubverseName = subverse.name,
@@ -174,13 +176,13 @@ namespace Whoaverse.Controllers
                         _db.SubverseAdmins.Add(tmpSubverseAdmin);
                         await _db.SaveChangesAsync();
 
-                        //subscribe user to the newly created subverse
+                        // subscribe user to the newly created subverse
                         Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
 
-                        //go to newly created Subverse
+                        // go to newly created Subverse
                         return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverse.name });
                     }
-                    ModelState.AddModelError(string.Empty, "Sorry, you can not own more than 10 subverses.");
+                    ModelState.AddModelError(string.Empty, "Sorry, you can not own more than " + maximumOwnedSubs + " subverses.");
                     return View();
                 }
                 ModelState.AddModelError(string.Empty,
@@ -719,20 +721,25 @@ namespace Whoaverse.Controllers
         public ActionResult AddModerator([Bind(Include = "Id,SubverseName,Username,Power")] SubverseAdmin subverseAdmin)
         {
             if (!ModelState.IsValid) return View(subverseAdmin);
+
             // get model for selected subverse
             var subverseModel = _db.Subverses.Find(subverseAdmin.SubverseName);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
+
             // check if the user being added is not already a moderator of 10 subverses
             var currentlyModerating = _db.SubverseAdmins
                 .Where(a => a.Username == subverseAdmin.Username).ToList();
 
             SubverseModeratorViewModel tmpModel;
-            if (currentlyModerating.Count < 11)
+            if (currentlyModerating.Count <= maximumOwnedSubs)
             {
                 // check if caller is subverse owner, if not, deny posting
                 if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
                     return RedirectToAction("Index", "Home");
+
                 // check that user is not already moderating given subverse
                 var isAlreadyModerator = _db.SubverseAdmins.FirstOrDefault(a => a.Username == subverseAdmin.Username && a.SubverseName == subverseAdmin.SubverseName);
 
@@ -754,7 +761,7 @@ namespace Whoaverse.Controllers
                 ViewBag.SelectedSubverse = string.Empty;
                 return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
             }
-            ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating a maximum of 10 subverses.");
+            ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating a maximum of " + maximumOwnedSubs + " subverses.");
             tmpModel = new SubverseModeratorViewModel
             {
                 Username = subverseAdmin.Username,
