@@ -1,4 +1,4 @@
-﻿//Whoaverse UI JS framework - Version 0.5beta - 12/08/2014
+﻿//Whoaverse UI JS framework - Version 0.6beta - 12/09/2014
 //Tested only with the latest version of IE, FF, & Chrome
 
 var UI = window.UI || {};
@@ -71,6 +71,9 @@ UI.Common = {
     },
     currentDomainRoot: function () {
         return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+    },
+    currentProtocol: function () {
+        return location.protocol;
     },
     resolveUrl: function (relativePath) {
         if (relativePath) {
@@ -233,7 +236,7 @@ LinkExpando.setDirectLink = function (parentControl, description, url){
     parentControl.append(infoSpan);
 }
 LinkExpando.setTag = function (target, tagText) {
-    if (!target.data('text')) {
+    if (target.data('text') === undefined) {
         target.data('text', target.text());
     }
     if (tagText) {
@@ -493,8 +496,6 @@ var GfyCatLinkExpando = function () {
 
             e.preventDefault();
             var target = $(this);
-
-
             if (!LinkExpando.isLoaded(target)) {
                 LinkExpando.setTag(target, "loading");
                 me.getSourceInfo(LinkExpando.dataProp(target, 'id'), 
@@ -531,10 +532,10 @@ var GfyCatLinkExpando = function () {
 
                     },
                     function (result) {
-                        //bail
-                        LinkExpando.setTag(target, 'Error');
-                        target.off('click');
-                    }
+                         //bail
+                         LinkExpando.setTag(target, 'Error');
+                         target.off('click');
+                     }
                 );
             }
             target.next().slideToggle();
@@ -544,12 +545,15 @@ var GfyCatLinkExpando = function () {
 
     }
     this.getSourceInfo = function (id, fnCallback, fnErrorHandler) {
-
-        $.ajax({
-            url:'http://gfycat.com/cajax/get/' + id, 
-            type: 'GET'
-        }).done(fnCallback).fail(fnErrorHandler);
-
+       
+        try {
+            $.ajax({
+                url: UI.Common.currentProtocol() + '//gfycat.com/cajax/get/' + id,
+                type: 'GET'
+            }).done(fnCallback).fail(fnErrorHandler);
+        } catch (e) {
+            fnErrorHandler();
+        }
     }
 
 }
