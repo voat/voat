@@ -1,4 +1,4 @@
-﻿//Whoaverse UI JS framework - Version 0.6beta - 12/09/2014
+﻿//Whoaverse UI JS framework - Version 0.7beta - 12/09/2014
 //Tested only with the latest version of IE, FF, & Chrome
 
 var UI = window.UI || {};
@@ -51,6 +51,9 @@ UI.Common = {
     },
     isCommentPage: function () {
         return /\/comments\//i.test(window.location.href);
+    },
+    isMessagePage: function () {
+        return /\/messaging\//i.test(window.location.href);
     },
     fileExtension: function (path, includeDot) {
         if (path) {
@@ -319,7 +322,6 @@ ImageLinkExpando.onClick = function(event) {
         LinkExpando.isVisible(target, false);
     }
 }
-
 ImageLinkExpando.loadImage = function (target, href, autoLoading) {
 
         LinkExpando.setTag(target, "loading");
@@ -442,11 +444,24 @@ var VideoLinkExpando = (function () {
     return function (urlRegEx) {
         LinkExpando.call(this, urlRegEx);
 
-        this.isMP4Supported = function () { return vid.canPlayType && vid.canPlayType('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');};
-        this.isWEBMSupported = function () { return vid.canPlayType && vid.canPlayType('video/webm; codecs="vp8,vorbis"');};
-        this.isVideoSupported = function () { return this.isMP4Supported() || this.isWEBMSupported(); };
+        this.isMP4Supported = function () {
+            return this.isSupported('video/mp4', 'avc1.42E01E,mp4a.40.2');
+        };
+        this.isWEBMSupported = function () {
+            return this.isSupported('video/webm', 'vp8.0,vorbis');
+        };
+        this.isSupported = function (type, codec) {
+            if (vid.canPlayType) {
+                var result = vid.canPlayType(type + ';' + (codec ? ' codecs="' + codec + '"' : ''));
+                return ['probably', 'maybe'].indexOf(result) >= 0;
+            }
+            return false;
+        };
+        this.isVideoSupported = function () {
+            return this.isMP4Supported() || this.isWEBMSupported();
+        };
         this.embedVideo = function (target, videoProps, sources, description) {
-
+            
             var item = $('<video/>', videoProps);
 
             UI.Common.resizeTarget(item, false, target.parent());
@@ -464,6 +479,9 @@ var VideoLinkExpando = (function () {
                 style: 'display:none;'
             }).append(item).insertAfter(target);
 
+            //$('video', target.next()).on('abort stalled suspend error', function () {
+            //    TODO: Fail gracefully
+            //});
 
             LinkExpando.setTag(target, description);
             LinkExpando.setDirectLink(displayDiv, description, target.prop('href'));
@@ -479,8 +497,8 @@ var VideoLinkExpando = (function () {
 VideoLinkExpando.prototype = new ImageLinkExpando();
 VideoLinkExpando.prototype.constructor = VideoLinkExpando;
 
-var GfyCatLinkExpando = function () {
-    LinkExpando.call(this, /gfycat\.com\/([^"&?\/\.]*)/i);
+var GfycatExpando = function () {
+    LinkExpando.call(this, /gfycat\.com\/([A-Z]{1}[a-z]+[A-Z]{1}[a-z]+[A-Z]{1}[a-z]+)/);
     this.hook = function (target) {
 
         if (LinkExpando.isHooked(target)) {
@@ -498,8 +516,18 @@ var GfyCatLinkExpando = function () {
             var target = $(this);
             if (!LinkExpando.isLoaded(target)) {
                 LinkExpando.setTag(target, "loading");
+                function fnError(result) {
+                    //bail
+                    LinkExpando.setTag(target, 'Error');
+                    target.off('click');
+                }
                 me.getSourceInfo(LinkExpando.dataProp(target, 'id'), 
                     function (result) {
+
+                        if (!result.gfyItem) {
+                            fnError();
+                            return;
+                        }
 
                         if (me.isVideoSupported()) {
                             //vid
@@ -511,15 +539,15 @@ var GfyCatLinkExpando = function () {
                                     'loop': 1
                                 },
                                 [{
-                                    'id': 'mp4source',
+                                    'id': 'mp4gfycat',
                                     'src': result.gfyItem.mp4Url,
                                     'type': 'video/mp4'
                                 },
                                 {
-                                    'id': 'webmsource',
+                                    'id': 'webmgfycat',
                                     'src': result.gfyItem.webm,
                                     'type': 'video/webm'
-                                }], 'GfyCat Video'
+                                }], 'Gfycat Video'
                             );
 
                             LinkExpando.isLoaded(target, true);
@@ -531,17 +559,13 @@ var GfyCatLinkExpando = function () {
                         }
 
                     },
-                    function (result) {
-                         //bail
-                         LinkExpando.setTag(target, 'Error');
-                         target.off('click');
-                     }
+                    fnError
                 );
             }
             target.next().slideToggle();
 
         });
-        LinkExpando.setTag($(target), "GfyCat");
+        LinkExpando.setTag($(target), "Gfycat");
 
     }
     this.getSourceInfo = function (id, fnCallback, fnErrorHandler) {
@@ -557,13 +581,13 @@ var GfyCatLinkExpando = function () {
     }
 
 }
-GfyCatLinkExpando.prototype = new VideoLinkExpando();
-GfyCatLinkExpando.prototype.constructor = GfyCatLinkExpando;
-GfyCatLinkExpando.prototype.process = function (target) {
+GfycatExpando.prototype = new VideoLinkExpando();
+GfycatExpando.prototype.constructor = GfycatExpando;
+GfycatExpando.prototype.process = function (target) {
     this.hook($(target));
 }
 
-var ImgurGifvLinkExpando = function () {
+var ImgurGifvExpando = function () {
 
     LinkExpando.call(this, /i\.imgur\.com\/([^"&?\/\.]*)\.gifv/i);
     this.getSrcUrl = function(id, extension) {
@@ -616,21 +640,18 @@ var ImgurGifvLinkExpando = function () {
                     //kill it, it looks like imgur removes .gif files
                     target.off('click');
                     LinkExpando.setTag(target);
-                    //ImageLinkExpando.loadImage(target, me.getSrcUrl(id, '.gif'));
                 }
-
             }
             target.next().slideToggle();
-
         });
         LinkExpando.setTag($(target), "Imgur Gifv");
 
     }
 
 }
-ImgurGifvLinkExpando.prototype = new VideoLinkExpando();
-ImgurGifvLinkExpando.prototype.constructor = ImgurGifvLinkExpando;
-ImgurGifvLinkExpando.prototype.process = function (target) {
+ImgurGifvExpando.prototype = new VideoLinkExpando();
+ImgurGifvExpando.prototype.constructor = ImgurGifvExpando;
+ImgurGifvExpando.prototype.process = function (target) {
     this.hook($(target));
 }
 
@@ -752,7 +773,6 @@ SoundCloudExpando.prototype = new IFrameEmbedderExpando();
 SoundCloudExpando.prototype.constructor = SoundCloudExpando;
 SoundCloudExpando.prototype.process = function (target) {
     //TODO
-    var width = Math.min(560, UI.Common.availableWidth($(target).parent()));
     //<iframe width="100%" height="450" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/179814178&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>
   
 };
@@ -772,17 +792,18 @@ $(document).ready(function () {
 
     UI.Common.debug = false;
 
-    UI.ExpandoManager.addExpando('.usertext-body > .md a:not(.link-expando-direct)',
+    UI.ExpandoManager.addExpando('.usertext-body > .md a:not(.link-expando-direct), .panel-message-body a:not(.link-expando-direct)',
         [
             new ImageLinkExpando(),
             new YouTubeExpando(),
-            new ImgurAlbumExpando(),
             new VimeoExpando(),
-            new ImgurGifvLinkExpando(),
-            new GfyCatLinkExpando()
+            new GfycatExpando(),
+            //new SoundCloudExpando,
+            new ImgurAlbumExpando(),          
+            new ImgurGifvExpando()
         ]);
 
-    if (UI.Common.isCommentPage()) {
+    if (UI.Common.isCommentPage() || UI.Common.isMessagePage()) {
         UI.ExpandoManager.execute();
     }
 
