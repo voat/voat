@@ -5,6 +5,8 @@ namespace Whoaverse.Models.ViewModels
 {
     public class SetFrontpageViewModel
     {
+        public bool HasSetSubscriptions { get; set; }
+
         // list of default sets
         public List<Defaultset> DefaultSets { get; set; }
 

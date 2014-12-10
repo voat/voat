@@ -379,7 +379,7 @@ namespace Whoaverse.Controllers
                 // get names of each set that user is subscribed to
                 // for each set name, get list of subverses that define the set
                 // for each subverse, get top ranked submissions
-                if (User.Identity.IsAuthenticated)
+                if (User.Identity.IsAuthenticated && Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
                 {
                     var userSetSubscriptions =
                         _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name)
@@ -400,37 +400,41 @@ namespace Whoaverse.Controllers
                         }
                     }
 
+                    frontPageResultModel.HasSetSubscriptions = true;
                     frontPageResultModel.UserSets = userSetSubscriptions;
                     frontPageResultModel.SubmissionsList = submissions;
 
                     return View(frontPageResultModel);
                 }
-
-                // show default sets
-                // get names of default sets
-                // for each set name, get list of subverses
-                // for each subverse, get top ranked submissions
-                var defaultSets = _db.Defaultsets.ToList();
-
-                foreach (var set in defaultSets)
+                else
                 {
-                    foreach (var subverse in set.Defaultsetsetups)
-                    {
-                        // get top ranked submissions
-                        Subverse currentSubverse = subverse.Subvers;
-                        Defaultset currentSet = set;
+                    // show default sets
+                    // get names of default sets
+                    // for each set name, get list of subverses
+                    // for each subverse, get top ranked submissions
+                    var defaultSets = _db.Defaultsets.ToList();
 
-                        if (currentSubverse != null)
+                    foreach (var set in defaultSets)
+                    {
+                        foreach (var subverse in set.Defaultsetsetups)
                         {
-                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 1));
+                            // get top ranked submissions
+                            Subverse currentSubverse = subverse.Subvers;
+                            Defaultset currentSet = set;
+
+                            if (currentSubverse != null)
+                            {
+                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 1));
+                            }
                         }
                     }
+
+                    frontPageResultModel.HasSetSubscriptions = false;
+                    frontPageResultModel.DefaultSets = defaultSets;
+                    frontPageResultModel.SubmissionsList = submissions;
+
+                    return View(frontPageResultModel);
                 }
-
-                frontPageResultModel.DefaultSets = defaultSets;
-                frontPageResultModel.SubmissionsList = submissions;
-
-                return View(frontPageResultModel);
             }
             catch (Exception)
             {

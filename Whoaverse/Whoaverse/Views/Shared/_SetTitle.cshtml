@@ -10,32 +10,67 @@
     All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
     All Rights Reserved.*@
 
-<div class="set-title dragHandle">
-    <p class="title dragHandle">
-        <span class="settitlelabel">
-            @ViewData["setTitle"]
-        </span>
-        <span class="settitlesortinglabel">
-            hot
-        </span>
-        <span class="settitlesortinglabel">
-            new
-        </span>
-        <span class="label label-default" style="float: right; margin-right: 2px">
-            <a href="#">x</a>
-        </span>
-        <span class="label label-default" style="float: right; margin-right: 2px">
-            <a href="#">↖</a>
-        </span>
-        <span class="label label-default" style="float: right; margin-right: 2px">
-            <a href="#">↘</a>
-        </span>
-        <span class="label label-default" style="float: right; margin-right: 2px">
-            <a href="#">edit</a>
-        </span>
-        <span class="label label-default" style="float: right; margin-right: 2px">
-            <a href="/v/@ViewData["setTitle"]">more »</a>
-        </span>
-    </p>
-</div>
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="set-title dragHandle">
+        <p class="title dragHandle">
+            <span class="settitlelabel" style="cursor: pointer">
+                @ViewData["setTitle"]
+            </span>
+            <span class="settitlesortinglabel" style="cursor: pointer" onclick="sortSetByHot();">
+                hot
+            </span>
+            <span class="settitlesortinglabel" style="cursor: pointer" onclick="sortSetByNew();">
+                new
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="removeSet();">
+                x
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="moveSetUp();">
+                ↖
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="moveSetDown();">
+                ↘
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="editSet();">
+                edit
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px">
+                more »
+            </span>
+        </p>
+    </div>
+}
+else
+{
+    <div class="set-title dragHandle">
+        <p class="title dragHandle">
+            <span class="settitlelabel" style="cursor: pointer">
+                @ViewData["setTitle"]
+            </span>
+            <span class="settitlesortinglabel" style="cursor: pointer" onclick="sortSetByHot();">
+                hot
+            </span>
+            <span class="settitlesortinglabel" style="cursor: pointer" onclick="sortSetByNew();">
+                new
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="removeSet();">
+                x
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="moveSetUp();">
+                ↖
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="moveSetDown();">
+                ↘
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="mustLogin();">
+                edit
+            </span>
+            <span class="label label-default" style="float: right; margin-right: 2px">
+                more »
+            </span>
+        </p>
+    </div>
+}
+
 

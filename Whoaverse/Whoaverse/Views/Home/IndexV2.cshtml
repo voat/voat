@@ -23,12 +23,13 @@
         commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
     }
 }
+
 @using System.Configuration
 @using Whoaverse.Utils;
 
 <script>
     $(function () {
-        $(".set-container").draggable({ axis: "y", handle: ".dragHandle", revert: true });
+        $(".set-container").draggable({ axis: "y", handle: ".dragHandle", revert: true, disabled: true });
     });
 </script>
 
@@ -38,7 +39,7 @@
     }
 
     .set-container .dragHandle {
-        cursor: move;
+        cursor: default;
     }
 </style>
 
@@ -50,11 +51,7 @@
 
     <div class="content" role="main">
 
-        @if (!User.Identity.IsAuthenticated)
-        {
-            @Html.Partial("~/Views/Shared/_defaultsets.cshtml");
-        }
-        else
+        @if (User.Identity.IsAuthenticated && Model.HasSetSubscriptions)
         {
             <div class="sitetable">
                 @foreach (var set in Model.UserSets.OrderBy(s => s.Order))
@@ -108,6 +105,9 @@
                 }
             </div>
         }
-
+        else
+        {
+            @Html.Partial("~/Views/Shared/_defaultsets.cshtml");
+        }
     </div>
 </div>

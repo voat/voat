@@ -195,6 +195,15 @@ namespace Whoaverse.Utils
             }
         }
 
+        // return sets subscription count for a given user
+        public static int SetsSubscriptionCount(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                return db.Usersetsubscriptions.Count(s => s.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
         // return a list of subverses user is subscribed to
         public static List<SubverseDetailsViewModel> UserSubscriptions(string userName)
         {
