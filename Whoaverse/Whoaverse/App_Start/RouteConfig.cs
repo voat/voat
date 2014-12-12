@@ -36,6 +36,13 @@ namespace Whoaverse
                 name: "v2",
                 url: "v2",
                 defaults: new { controller = "Home", action = "IndexV2" }
+            );
+
+            // /s/setname
+            routes.MapRoute(
+                name: "single default set",
+                url: "s/{defaultSetName}",
+                defaults: new { controller = "Sets", action = "SingleDefaultSet" }
             ); 
 
             // /subverses/create

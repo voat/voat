@@ -395,14 +395,14 @@ namespace Whoaverse.Controllers
 
                             if (currentSubverse != null)
                             {
-                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 1));
+                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 2));
                             }
                         }
                     }
 
                     frontPageResultModel.HasSetSubscriptions = true;
                     frontPageResultModel.UserSets = userSetSubscriptions;
-                    frontPageResultModel.SubmissionsList = submissions;
+                    frontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
                     return View(frontPageResultModel);
                 }
@@ -424,14 +424,15 @@ namespace Whoaverse.Controllers
 
                             if (currentSubverse != null)
                             {
-                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 1));
+                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 2));
                             }
                         }
                     }
 
                     frontPageResultModel.HasSetSubscriptions = false;
                     frontPageResultModel.DefaultSets = defaultSets;
-                    frontPageResultModel.SubmissionsList = submissions;
+
+                    frontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
                     return View(frontPageResultModel);
                 }

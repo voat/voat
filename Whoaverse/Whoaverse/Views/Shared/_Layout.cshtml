@@ -29,7 +29,7 @@
     ViewBag.Title = ViewBag.Title ?? ConfigurationManager.AppSettings["siteSlogan"];
     ViewBag.Description = ViewBag.Description ?? ConfigurationManager.AppSettings["siteSlogan"];
     ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
-    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "/Graphics/whoaverse_padded.png";
+    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + "/Graphics/whoaverse_padded.png";
 
     if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && ViewBag.PmView == null)
     {

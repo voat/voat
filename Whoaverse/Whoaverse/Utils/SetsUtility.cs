@@ -13,10 +13,8 @@ All Rights Reserved.
 */
 
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using Whoaverse.Models;
 
 namespace Whoaverse.Utils
@@ -26,7 +24,7 @@ namespace Whoaverse.Utils
         public static IQueryable<SetSubmission> TopRankedSubmissionsFromASub(string subverseName, DbSet<Message> messagesDbSet, string setName, int desiredResults)
         {
             var topRankedSubmissions = (from message in messagesDbSet
-                                        where message.Name != "deleted" && message.Subverse == subverseName
+                                        where message.Name != "deleted" && message.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase) 
                                         select new SetSubmission
                                         {
                                             Id = message.Id,
@@ -53,7 +51,7 @@ namespace Whoaverse.Utils
                                             Stickiedsubmission = message.Stickiedsubmission,
                                             Viewstatistics = message.Viewstatistics,
                                             ParentSet = setName
-                                        }).OrderByDescending(s => s.Rank).Take(1);
+                                        }).OrderByDescending(s => s.Rank).Take(desiredResults);
 
             return topRankedSubmissions;
         }

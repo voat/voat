@@ -59,7 +59,7 @@
                     var currentSet = set.Userset.Name;
 
                     <div class="set-container">
-                        @Html.Partial("_SetTitle", new ViewDataDictionary { { "setTitle", currentSet } })
+                        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet } })
 
                         @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
                         {
@@ -107,7 +107,7 @@
         }
         else
         {
-            @Html.Partial("~/Views/Shared/_defaultsets.cshtml");
+            @Html.Partial("~/Views/Sets/_defaultsets.cshtml");
         }
     </div>
 </div>

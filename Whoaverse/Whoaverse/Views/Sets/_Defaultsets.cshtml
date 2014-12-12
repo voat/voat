@@ -23,7 +23,7 @@
         var currentSet = set.Name;
 
         <div class="set-container">
-            @Html.Partial("_SetTitle", new ViewDataDictionary { { "setTitle", currentSet } })
+            @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet } })
 
             @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
             {

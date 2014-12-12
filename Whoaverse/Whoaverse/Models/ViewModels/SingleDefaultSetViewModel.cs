@@ -13,21 +13,15 @@ All Rights Reserved.
 */
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Whoaverse.Models.ViewModels
 {
-    public class SetFrontpageViewModel
+    public class SingleDefaultSetViewModel
     {
-        public bool HasSetSubscriptions { get; set; }
+        // set name
+        public string Name { get; set; }
 
-        // list of default sets
-        public List<Defaultset> DefaultSets { get; set; }
-
-        // list of user subscribed sets
-        public IQueryable<Usersetsubscription> UserSets { get; set; }
-
-        // list of top submissions from all sets
+        // list of top submissions from single default set
         public List<SetSubmission> SubmissionsList { get; set; }
     }
 }
