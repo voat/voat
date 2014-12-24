@@ -9480,3 +9480,11 @@ body.with-listing-chooser {
     align-content:center;
 }
 
+@font-face {
+	font-family: Symbola-Emoji;
+	src: url('../fonts/Symbola-Emoji.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Symbola-Emoji.woff') format('woff'),
+		url('../fonts/Symbola-Emoji.ttf') format('truetype');
+	/* Emoji unicode blocks */
+	unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+2600-26FF;
+}
