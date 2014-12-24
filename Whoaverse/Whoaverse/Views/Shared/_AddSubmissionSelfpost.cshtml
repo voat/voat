@@ -74,7 +74,126 @@
         <div class="form-group">
             @Html.Label("Message (optional)", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.TextAreaFor(m => m.MessageContent, new { @class = "form-control" })
+                <!-- Markdown Editor -->
+				<div class="markdownEditor">
+					<!-- Markdown Editor Table Creator Sub Menu -->
+					<div class="markdownEditorSubMenu" style="display: none;">
+						<input type="hidden" name="cols" id="numCols" value="1">
+						<input type="hidden" name="rows" id="numRows" value="1">
+						<a class="markdownEditorImgButton" style="background-position: 0px -32px;" alt="more_column" title="More Columns" onClick="incColumns($(this.parentElement).find('#numCols')[0],$(this.parentElement).find('#numColsDisplay')[0]);"></a>
+						<a class="markdownEditorImgButton" style="background-position: -32px -32px;" alt="less_column" title="Less Columns" onClick="decColumns($(this.parentElement).find('#numCols')[0],$(this.parentElement).find('#numColsDisplay')[0]);"></a>
+						<a class="markdownEditorImgButton" style="background-position: -64px -32px;" alt="more_rows" title="More Rows" onClick="incRows($(this.parentElement).find('#numRows')[0],$(this.parentElement).find('#numRowsDisplay')[0]);"></a>
+						<a class="markdownEditorImgButton" style="background-position: -96px -32px;" alt="less_rows" title="Less Rows" onClick="decRows($(this.parentElement).find('#numRows')[0],$(this.parentElement).find('#numRowsDisplay')[0]);"></a>
+						<a class="markdownEditorTextButton" alt="create" title="Create Table" onClick="createTable($(this.parentElement.parentElement.parentElement).find('textarea')[0],this.parentElement.children[0].value,this.parentElement.children[1].value);">Create <span id="numColsDisplay">1</span>x<span id="numRowsDisplay">1</span> table</a>
+					</div>
+					<!-- Markdown Editor Headings Sub Menu -->
+					<div class="markdownEditorSubMenu" style="display: none;">
+						<a class="markdownEditorImgButton" style="background-position: -0px -48px;" alt="h1" title="Heading Level 1" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n#','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -32px -48px;" alt="h2" title="Heading Level 2" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n##','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -64px -48px;" alt="h3" title="Heading Level 3" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n###','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -96px -48px;" alt="h4" title="Heading Level 4" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n####','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -128px -48px;" alt="h5" title="Heading Level 5" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n#####','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -160px -48px;" alt="h6" title="Heading Level 6" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n######','');"></a>
+					</div>
+					<!-- Markdown Editor Emoji Sub Menu -->
+					<div class="markdownEditorSubMenu" style="display: none;">
+						<a class="markdownEditorTextButton" alt="emoji" title="Grinning Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😀</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Grinning Face With Smiling Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😁','');">😁</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Tears Of Joy" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😂','');">😂</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Face With Open Mouth" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😃','');">😃</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Face With Open Mouth And Smiling Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😄','');">😄</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Face With Open Mouth And Cold Sweat" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😅','');">😅</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Face With Open Mouth And Tightly-closed Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😆','');">😆</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Face With Halo" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😇','');">😇</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Face With Horns" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😈','');">😈</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Winking Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😉','');">😉</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Face With Smiling Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😊','');">😊</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face Savouring Delicious Food" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😋','');">😋</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Relieved Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😌','');">😌</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Face With Heart-shaped Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😍','');">😍</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Face With Sunglasses" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😎','');">😎</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smirking Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😏','');">😏</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Neutral Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😐</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Expressionless Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😑</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Unamused Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😒</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Cold Sweat" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😓</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Pensive Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😔</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Confused Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😕</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Confounded Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😖</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Kissing Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😗</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face Throwing A Kiss" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😘</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Kissing Face With Smiling Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😙</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Kissing Face With Closed Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😚</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Stuck-out Tongue" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😛</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Stuck-out Tongue And Winking Eye" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😜</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Stuck-out Tongue And Tightly-closed Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😝</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Disappointed Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😞</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Worried Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😟</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Angry Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😠</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Pouting Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😡</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Crying Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😢</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Persevering Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😣</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Look Of Triumph" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😤</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Disappointed But Relieved Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😥</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Frowning Face With Open Mouth" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😦</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Anguished Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😧</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Fearful Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😨</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Weary Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😩</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Sleepy Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😪</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Tired Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😫</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Grimacing Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😬</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Loudly Crying Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😭</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Open Mouth" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😮</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Hushed Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😯</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Open Mouth And Cold Sweat" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😰</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face Screaming In Fear" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😱</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Astonished Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😲</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Flushed Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😳</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Sleeping Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😴</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Dizzy Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😵</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face Without Mouth" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😶</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Medical Mask" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😷</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Grinning Cat Face With Smiling Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😸</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Cat Face With Tears Of Joy" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😹</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Cat Face With Open Mouth" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😺</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Smiling Cat Face With Heart-shaped Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😻</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Cat Face With Wry Smile" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😼</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Kissing Cat Face With Closed Eyes" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😽</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Pouting Cat Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😾</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Crying Cat Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">😿</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Weary Cat Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙀</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Slightly Frowning Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'🙁','');">🙁</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Slightly Smiling Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'🙂','');">🙂</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With No Good Gesture" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙅</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Face With Ok Gesture" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙆</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Person Bowing Deeply" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙇</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="See-no-evil Monkey" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙈</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Hear-no-evil Monkey" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙉</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Speak-no-evil Monkey" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙊</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Happy Person Raising One Hand" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙋</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Person Raising Both Hands In Celebration" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙌</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Person Frowning" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙍</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Person With Pouting Face" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙎</a>
+						<a class="markdownEditorTextButton" alt="emoji" title="Person With Folded Hands" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'😀','');">🙏</a>
+					</div>
+					<!-- Markdown Editor Main Menu -->
+					<div class="markdownEditorMainMenu">
+						<a class="markdownEditorImgButton" style="background-position: 0px 0px;" alt="bold" title="Bold" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'**','**');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -32px 0px;" alt="italic" title="Italic" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'*','*');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -64px 0px;" alt="link" title="Link" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'[',']('+prompt('Enter the URL: ', '')+')');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -96px 0px;" alt="quote" title="Quote" onClick="addTagsToEachSelectedTextLine($(this.parentElement.parentElement.parentElement).find('textarea')[0],'>','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -128px 0px;" alt="code" title="Code" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'~~~\n','\n~~~');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -160px 0px;" alt="ul" title="Bullet List" onClick="addTagsToEachSelectedTextLine($(this.parentElement.parentElement.parentElement).find('textarea')[0],'* ','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -192px 0px;" alt="ol" title="Number List" onClick="addTagsToEachSelectedTextLine($(this.parentElement.parentElement.parentElement).find('textarea')[0],'1. ','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -224px 0px;" alt="br" title="Large Paragraph Spacing" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n\n&amp;nbsp;\n\n','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -0px -16px;" alt="hr" title="Horizontal Rule" onClick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n\n----------\n\n','');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -32px -16px;" alt="table" title="Table" onClick="$(this.parentElement.parentElement.children[0]).toggle('medium');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -64px -16px;" alt="heading" title="Headings" onClick="$(this.parentElement.parentElement.children[1]).toggle('medium');"></a>
+						<a class="markdownEditorImgButton" style="background-position: -96px -16px;" alt="emoji" title="Emoji" onClick="$(this.parentElement.parentElement.children[2]).toggle('medium');"></a>
+					</div>
+				</div>
+				<!-- Editing textarea -->
+				@Html.TextAreaFor(m => m.MessageContent, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.MessageContent)
             </div>
         </div>
