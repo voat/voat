@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
 using System.Xml.XPath;
-using Whoaverse.Areas.HelpPage.ModelDescriptions;
+using Voat.Areas.HelpPage.ModelDescriptions;
 
-namespace Whoaverse.Areas.HelpPage
+namespace Voat.Areas.HelpPage
 {
     /// <summary>
     /// A custom <see cref="IDocumentationProvider"/> that reads the API documentation from an XML documentation file.

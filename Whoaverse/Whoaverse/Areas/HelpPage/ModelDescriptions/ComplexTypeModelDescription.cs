@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace Whoaverse.Areas.HelpPage.ModelDescriptions
+namespace Voat.Areas.HelpPage.ModelDescriptions
 {
     public class ComplexTypeModelDescription : ModelDescription
     {

@@ -1,12 +1,10 @@
-@using System.Web.Http
 @using System.Web.Http.Controllers
 @using System.Web.Http.Description
 @using System.Collections.ObjectModel
-@using Whoaverse.Areas.HelpPage.Models
 @model Collection<ApiDescription>
 
 @{
-    ViewBag.Title = "WhoaVerse developer center - Web API documentation";
+    ViewBag.Title = "Voat developer center - Web API documentation";
 
     // Group APIs by controller
     ILookup<HttpControllerDescriptor, ApiDescription> apiGroups = Model.ToLookup(api => api.ActionDescriptor.ControllerDescriptor);
@@ -25,7 +23,7 @@
         <div class="content-wrapper">
             <h2>Introduction</h2>
             <p>
-                Welcome to WhoaVerse API help center.<br />
+                Welcome to Voat API help center.<br />
                 Current IP throttling policy for all APIs is: perSecond: 1, perMinute: 20, perHour: 200, perDay: 1500, perWeek: 3000.<br />
                 Throttling policy will be fine-tuned based on our resource pool.
             </p>
@@ -52,7 +50,7 @@
                 Use of this site constitutes acceptance of our <a href="~/help/useragreement">User Agreement</a> and <a href="~/help/privacy">Privacy Policy</a>.
             </p>
             <p class="bottommenu">
-                &copy; @DateTime.Now.Year WhoaVerse LLC. All rights reserved. WhoaVerse and the WhoaVerse Mascot are registered trademarks of WhoaVerse LLC.
+                &copy; @DateTime.Now.Year Voat GmbH. All rights reserved. Voat and the Voat Mascot are registered trademarks of Voat GmbH.
             </p>
         </div>
     </div>

@@ -7,12 +7,12 @@
     WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
     the specific language governing rights and limitations under the License.
 
-    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Whoaverse.Models.Message
+@model Voat.Models.Message
 
-@using Whoaverse.Utils;
+@using Voat.Utils;
 
 @{
     int score = (Model.Likes - Model.Dislikes);
@@ -52,7 +52,7 @@
 
             @if (commentContributionPoints < 20)
             {
-                if (Whoaverse.Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                if (Voat.Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
                 {
                     <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
                 }

@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
@@ -17,11 +17,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
-using Whoaverse.Models;
-using Whoaverse.Models.ApiModels;
-using Whoaverse.Utils;
+using Voat.Models;
+using Voat.Models.ApiModels;
+using Voat.Utils;
 
-namespace Whoaverse.Controllers
+namespace Voat.Controllers
 {
     public class WebApiController : ApiController
     {
@@ -65,7 +65,7 @@ namespace Whoaverse.Controllers
 
         // GET api/frontpage
         /// <summary>
-        ///  This API returns 100 submissions which are currently shown on WhoaVerse frontpage.
+        ///  This API returns 100 submissions which are currently shown on Voat frontpage.
         /// </summary>
         [HttpGet]
         public IEnumerable<ApiMessage> Frontpage()

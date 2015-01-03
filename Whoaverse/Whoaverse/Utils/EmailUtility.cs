@@ -8,14 +8,14 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
 using System;
 using System.Net.Mail;
 
-namespace Whoaverse.Utils
+namespace Voat.Utils
 {
     public class EmailUtility
     {
@@ -24,7 +24,7 @@ namespace Whoaverse.Utils
         {
             try
             {
-                var smtp = new SmtpClient {Host = "whoaverse.com", Port = 25};
+                var smtp = new SmtpClient {Host = "voat.co", Port = 25};
                 message.IsBodyHtml = false;
                 smtp.Send(message);
                 message.Dispose();

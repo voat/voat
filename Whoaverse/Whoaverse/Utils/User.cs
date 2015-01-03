@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
@@ -17,10 +17,10 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Whoaverse.Models;
-using Whoaverse.Models.ViewModels;
+using Voat.Models;
+using Voat.Models.ViewModels;
 
-namespace Whoaverse.Utils
+namespace Voat.Utils
 {
     public static class User
     {
@@ -93,7 +93,7 @@ namespace Whoaverse.Utils
                             {
                                 s.Name = "deleted";
                                 s.Linkdescription = "deleted by user";
-                                s.MessageContent = "http://whoaverse.com";
+                                s.MessageContent = "http://voat.co";
                             }
                         }
                         db.SaveChangesAsync();
@@ -192,15 +192,6 @@ namespace Whoaverse.Utils
             using (var db = new whoaverseEntities())
             {
                 return db.Subscriptions.Count(s => s.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
-            }
-        }
-
-        // return sets subscription count for a given user
-        public static int SetsSubscriptionCount(string userName)
-        {
-            using (var db = new whoaverseEntities())
-            {
-                return db.Usersetsubscriptions.Count(s => s.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
             }
         }
 
@@ -512,6 +503,35 @@ namespace Whoaverse.Utils
             {
                 var result = db.Userpreferences.Find(userName);
                 return result == null ? null : result.Avatar;
+            }
+        }
+
+        // check if a given user is subscribed to a given set
+        public static bool IsUserSubscribedToSet(string userName, string setName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var result = db.Usersetsubscriptions.FirstOrDefault(s => s.Userset.Name == setName && s.Username == userName);
+                return result != null;
+            }
+        }
+
+        // check if a given user is owner of a given set
+        public static bool IsUserSetOwner(string userName, string setName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var result = db.Usersets.FirstOrDefault(s => s.Name == setName && s.Created_by == userName);
+                return result != null;
+            }
+        }
+
+        // return sets subscription count for a given user
+        public static int SetsSubscriptionCount(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                return db.Usersetsubscriptions.Count(s => s.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
             }
         }
 

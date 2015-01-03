@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
@@ -21,11 +21,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Whoaverse.Models;
-using Whoaverse.Models.ViewModels;
-using Whoaverse.Utils;
+using Voat.Models;
+using Voat.Models.ViewModels;
+using Voat.Utils;
 
-namespace Whoaverse.Controllers
+namespace Voat.Controllers
 {
     public class HomeController : Controller
     {
@@ -381,22 +381,18 @@ namespace Whoaverse.Controllers
                 // for each subverse, get top ranked submissions
                 if (User.Identity.IsAuthenticated && Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
                 {
-                    var userSetSubscriptions =
-                        _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name)
-                            .Include(x => x.Userset);
+                    //var userSetSubscriptions = _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name).Include(x => x.Userset);
+                    var userSetSubscriptions = _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name);
 
                     foreach (var set in userSetSubscriptions)
                     {
-                        foreach (var subverse in set.Userset.Usersetdefinitions)
+                        Usersetsubscription setId = set;
+                        var userSetDefinition = _db.Usersetdefinitions.Where(st => st.Set_id == setId.Set_id);
+
+                        foreach (var subverse in userSetDefinition)
                         {
                             // get top ranked submissions
-                            Subverse currentSubverse = subverse.Subvers;
-                            Userset currentSet = subverse.Userset;
-
-                            if (currentSubverse != null)
-                            {
-                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 2));
-                            }
+                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, subverse.Userset.Name, 2));
                         }
                     }
 
@@ -416,16 +412,13 @@ namespace Whoaverse.Controllers
 
                     foreach (var set in defaultSets)
                     {
-                        foreach (var subverse in set.Defaultsetsetups)
+                        Defaultset setId = set;
+                        var defaultSetDefinition = _db.Defaultsetsetups.Where(st => st.Set_id == setId.Set_id);
+
+                        foreach (var subverse in defaultSetDefinition)
                         {
                             // get top ranked submissions
-                            Subverse currentSubverse = subverse.Subvers;
-                            Defaultset currentSet = set;
-
-                            if (currentSubverse != null)
-                            {
-                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, currentSet.Name, 2));
-                            }
+                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Messages, set.Name, 2));
                         }
                     }
 

@@ -8,14 +8,14 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace Whoaverse
+namespace Voat
 {
     public class RouteConfig
     {
@@ -141,6 +141,13 @@ namespace Whoaverse
                 name: "usershortroute",
                 url: "u/{id}",
                 defaults: new { controller = "Home", action = "UserProfile" }
+            );
+
+            // /mysets
+            routes.MapRoute(
+                name: "UserSets",
+                url: "mysets",
+                defaults: new { controller = "Sets", action = "UserSets" }
             );
 
             // inbox

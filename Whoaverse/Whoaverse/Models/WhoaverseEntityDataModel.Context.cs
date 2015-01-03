@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Whoaverse.Models
+namespace Voat.Models
 {
     using System;
     using System.Data.Entity;

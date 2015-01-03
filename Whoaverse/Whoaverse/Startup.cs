@@ -1,9 +1,9 @@
 ﻿using Microsoft.Owin;
 using Owin;
-using Whoaverse;
+using Voat;
 
 [assembly: OwinStartup(typeof(Startup))]
-namespace Whoaverse
+namespace Voat
 {
     public partial class Startup
     {

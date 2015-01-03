@@ -4,7 +4,7 @@ using Microsoft.Owin.Security.Cookies;
 using Owin;
 using System;
 
-namespace Whoaverse
+namespace Voat
 {
     public partial class Startup
     {

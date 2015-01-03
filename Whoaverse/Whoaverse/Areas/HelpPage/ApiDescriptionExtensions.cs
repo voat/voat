@@ -3,7 +3,7 @@ using System.Text;
 using System.Web;
 using System.Web.Http.Description;
 
-namespace Whoaverse.Areas.HelpPage
+namespace Voat.Areas.HelpPage
 {
     public static class ApiDescriptionExtensions
     {

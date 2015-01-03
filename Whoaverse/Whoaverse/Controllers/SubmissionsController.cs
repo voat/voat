@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
@@ -17,10 +17,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Whoaverse.Models;
-using Whoaverse.Utils;
+using Voat.Models;
+using Voat.Utils;
 
-namespace Whoaverse.Controllers
+namespace Voat.Controllers
 {
     public class SubmissionsController : Controller
     {
@@ -189,7 +189,7 @@ namespace Whoaverse.Controllers
                     }
                     else
                     {
-                        submissionToDelete.MessageContent = "http://whoaverse.com";
+                        submissionToDelete.MessageContent = "http://voat.co";
                     }
 
                     await _db.SaveChangesAsync();
@@ -231,7 +231,7 @@ namespace Whoaverse.Controllers
                             "Link URL: " + submissionToDelete.MessageContent
                             );
 
-                        submissionToDelete.MessageContent = "http://whoaverse.com";
+                        submissionToDelete.MessageContent = "http://voat.co";
                         submissionToDelete.Name = "deleted";
                     }
 
