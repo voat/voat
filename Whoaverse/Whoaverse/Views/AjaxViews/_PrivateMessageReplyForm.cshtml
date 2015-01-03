@@ -28,7 +28,10 @@
 
         <div class="row">
             <div class="col-md-5">
-                <textarea class="commenttextarea" cols="20" id="Body" name="Body" data-val="true" data-val-length="Message text is limited to 4.000 characters." data-val-length-max="4000" data-val-required="Message text is required. Please fill this field." rows="3"></textarea>
+                <!-- Markdown Editor -->
+				@Html.Partial("~/Views/Shared/_MarkdownEditor.cshtml")
+				<!-- Editing textarea -->
+				<textarea class="commenttextarea" cols="20" id="Body" name="Body" data-val="true" data-val-length="Message text is limited to 4.000 characters." data-val-length-max="4000" data-val-required="Message text is required. Please fill this field." rows="3"></textarea>
                 <span class="field-validation-valid" data-valmsg-for="Body" data-valmsg-replace="true"></span>
             </div>
         </div>

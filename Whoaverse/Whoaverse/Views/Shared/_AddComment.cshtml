@@ -27,6 +27,10 @@
     @Html.ValidationSummary(true)
 
     <!-- Setup default values -->
+	
+	<!-- Markdown Editor -->
+	@Html.Partial("~/Views/Shared/_MarkdownEditor.cshtml")
+	<!-- Editing textarea -->	
 
     @Html.Hidden("MessageId", messageId)
 

@@ -55,7 +55,10 @@
                         <div class="form-group">
                             @Html.Label("Message body", htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-9">
-                                @Html.TextAreaFor(m => m.Body, 8, 1, new { @class = "form-control" })
+                                <!-- Markdown Editor -->
+								@Html.Partial("~/Views/Shared/_MarkdownEditor.cshtml")
+								<!-- Editing textarea -->
+								@Html.TextAreaFor(m => m.Body, 8, 1, new { @class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.Body)
                             </div>
                         </div>
