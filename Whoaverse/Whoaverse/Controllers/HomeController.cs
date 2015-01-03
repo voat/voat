@@ -14,7 +14,6 @@ All Rights Reserved.
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -123,7 +122,6 @@ namespace Voat.Controllers
             // verify recaptcha if user has less than 25 CCP
             if (Karma.CommentKarma(User.Identity.Name) < 25)
             {
-                // begin recaptcha check
                 const string captchaMessage = "";
                 var isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(captchaMessage, Request);
 
@@ -132,7 +130,6 @@ namespace Voat.Controllers
                     ModelState.AddModelError("", "Incorrect recaptcha answer.");
                     return View();
                 }
-                // end recaptcha check
             }
 
             if (!ModelState.IsValid) return View();
@@ -169,7 +166,6 @@ namespace Voat.Controllers
                     }
 
                     // check if same link was submitted before and deny submission
-
                     var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(message.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse == message.Subverse);
 
                     // submission is a repost, discard it and inform the user
@@ -188,7 +184,6 @@ namespace Voat.Controllers
                                 subversetoshow = existingSubmission.Subverse
                             }
                         );
-
                     }
 
                     // check if target subverse has thumbnails setting enabled before generating a thumbnail
