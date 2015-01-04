@@ -273,6 +273,7 @@
     <Compile Include="Models\Usersetsubscription.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
@@ -734,6 +735,7 @@
     <Content Include="Views\Sets\MySets.cshtml" />
     <Content Include="Views\Sets\_SubscribedSetDetails.cshtml" />
     <Content Include="Views\Sets\_PopularSets.cshtml" />
+    <Content Include="Views\Sets\SingleSetView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

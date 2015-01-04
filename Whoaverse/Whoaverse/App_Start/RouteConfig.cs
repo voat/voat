@@ -38,11 +38,18 @@ namespace Voat
                 defaults: new { controller = "Home", action = "IndexV2" }
             );
 
-            // /s/setname
+            // /s/defaultsetname
             routes.MapRoute(
                 name: "single default set",
                 url: "s/{defaultSetName}",
                 defaults: new { controller = "Sets", action = "SingleDefaultSet" }
+            );
+
+            // /s/setname/action
+            routes.MapRoute(
+                name: "single set",
+                url: "s/{setName}/{command}",
+                defaults: new { controller = "Sets", action = "SingleSet" }
             ); 
 
             // /subverses/create

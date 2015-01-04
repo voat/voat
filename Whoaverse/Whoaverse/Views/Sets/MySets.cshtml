@@ -20,15 +20,18 @@
 @using Voat.Models.ViewModels
 
 <div id="container">
-    <div role="main">
+    @{
+        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
+    }
+    <div class="content" role="main">
 
-        <div class="sitetable linklisting">
+
+        <div class="sitetable">
+            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return createSet()">create a new set</button>
 
             @if (Voat.Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
             {
-                <div class="alert-notice">
-                    <p>Here are the sets you are subscribed to:</p>
-                </div>
+                <div class="alert-title">Your set subscriptions</div>
 
                 foreach (var set in Model)
                 {
@@ -51,7 +54,7 @@
                 <div class="alert-notice">
                     <p>You are not subscribed to any sets. Here are 40 most popular sets:</p>
                 </div>
-                
+
                 Html.RenderAction("PopularSets", "Sets");
             }
         </div>
@@ -73,6 +76,5 @@
                 }
             </ul>
         </div>
-
     </div>
 </div>

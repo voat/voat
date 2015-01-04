@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utils;
@@ -65,6 +66,47 @@ namespace Voat.Controllers
             }
         }
 
+        // GET: /s/setname/edit
+        public ActionResult SingleSet(string setName, string command)
+        {
+            try
+            {
+                switch (command)
+                {
+                    // show a single set editor if action=edit
+                    case "edit":
+                        var set = _db.Usersets.FirstOrDefault(s => s.Name == setName);
+
+                        if (set != null)
+                        {
+                            // get list of subverses for the set
+                            var setSubversesList = _db.Usersetdefinitions.Where(sd => sd.Set_id == set.Set_id).ToList();
+
+                            // populate viewmodel for the set
+                            var setViewModel = new SingleSetViewModel()
+                            {
+                                Name = set.Name,
+                                SubversesList = setSubversesList,
+                                Id = set.Set_id,
+                                Created = set.Created_on,
+                                Subscribers = set.Subscribers
+                            };
+
+                            return View("~/Views/Sets/SingleSetView.cshtml", setViewModel);
+                        }
+                        return RedirectToAction("SetNotFound", "Error");
+
+                    default:
+                        return RedirectToAction("SetNotFound", "Error");
+                }
+
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Error");
+            }
+        }
+
         // POST: /s/reorder/setname
         [Authorize]
         [HttpPost]
@@ -95,7 +137,7 @@ namespace Voat.Controllers
             }
 
             // load user sets for logged in user
-            IQueryable<Usersetsubscription> userSets = _db.Usersetsubscriptions.Where(s => s.Username.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)).OrderBy(s=>s.Userset.Name);
+            IQueryable<Usersetsubscription> userSets = _db.Usersetsubscriptions.Where(s => s.Username.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.Userset.Name);
 
             var paginatedUserSetSubscriptions = new PaginatedList<Usersetsubscription>(userSets, page ?? 0, pageSize);
 
@@ -105,7 +147,7 @@ namespace Voat.Controllers
         [ChildActionOnly]
         public PartialViewResult PopularSets()
         {
-            var popularSets = _db.Usersets.Where(s=>s.Public).OrderByDescending(s => s.Subscribers).Take(40);
+            var popularSets = _db.Usersets.Where(s => s.Public).OrderByDescending(s => s.Subscribers).Take(40);
 
             return PartialView("~/Views/Sets/_PopularSets.cshtml", popularSets);
         }
