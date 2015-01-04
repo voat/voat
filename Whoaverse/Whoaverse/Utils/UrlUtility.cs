@@ -12,6 +12,7 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
+using System.Web;
 using OpenGraph_Net;
 using System;
 using System.IO;
@@ -45,8 +46,11 @@ namespace Voat.Utils
                 var graph = OpenGraph.ParseUrl(@remoteUri);
                 if (!string.IsNullOrEmpty(graph.Title))
                 {
-                    return graph.Title;
+                    var tmpStringWriter = new StringWriter();
+                    HttpUtility.HtmlDecode(graph.Title, tmpStringWriter);
+                    return tmpStringWriter.ToString();
                 }
+
                 var req = (HttpWebRequest)WebRequest.Create(@remoteUri);
                 req.Timeout = 3000;
                 var sr = new StreamReader(req.GetResponse().GetResponseStream());
@@ -59,7 +63,9 @@ namespace Voat.Utils
                     var match = Regex.Match(outputData, @"<title>([^<]+)", RegexOptions.IgnoreCase);
                     if (match.Success)
                     {
-                        return match.Groups[1].Value;
+                        var tmpStringWriter = new StringWriter();
+                        HttpUtility.HtmlDecode(match.Groups[1].Value, tmpStringWriter);
+                        return tmpStringWriter.ToString();
                     }
                     counter = sr.Read(buffer, 0, 256);
                 }
