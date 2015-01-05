@@ -278,6 +278,7 @@
     <Compile Include="Models\Viewstatistic.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\PaginatedList.cs" />
     <Compile Include="Controllers\PartnerController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
@@ -431,9 +432,11 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\markdownEditor.css" />
     <Content Include="Content\PagedList.css" />
     <Content Include="Graphics\missing_image.png" />
     <Content Include="Graphics\whoaverse-ad.png" />
+    <Content Include="Scripts\markdownEditor.js" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
     <Content Include="Content\PagedList.min.css">
       <DependentUpon>PagedList.css</DependentUpon>
@@ -730,6 +733,7 @@
     <Content Include="Views\Sets\_SingleDefaultset.cshtml" />
     <Content Include="Views\Sets\Index.cshtml" />
     <Content Include="Views\Sets\_Defaultsets.cshtml" />
+    <Content Include="Views\Shared\_MarkdownEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -35,7 +35,7 @@
                 <div class="form-group">
                     @Html.Label("Sidebar text, accepts Markup formatting", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.TextAreaFor(model => model.Sidebar, new { @class = "form-control", rows = "5" })
+                        @Html.MarkdownEditorFor(model => model.Sidebar, new { @class = "form-control", rows = "5" })
                         @Html.ValidationMessageFor(model => model.Sidebar, "", new { @class = "text-danger" })
                     </div>
                 </div>

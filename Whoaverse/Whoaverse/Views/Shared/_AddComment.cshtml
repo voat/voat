@@ -30,7 +30,8 @@
 
     @Html.Hidden("MessageId", messageId)
 
-    @Html.TextAreaFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
+    @Html.MarkdownEditorFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
+    
     <div class="validation-summary-valid" data-valmsg-summary="true">
         <ul>
             <li id="errorMessage" style="display:none">Please enter a comment to submit.</li>

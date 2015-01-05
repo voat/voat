@@ -27,7 +27,8 @@ namespace Whoaverse
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*",
                         "~/Scripts/whoaverse.ui.js",
-                        "~/Scripts/whoaverse.js"
+                        "~/Scripts/whoaverse.js",
+                        "~/Scripts/markdownEditor.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
@@ -49,14 +50,16 @@ namespace Whoaverse
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css",
                       "~/Content/Whoaverse.css",
-                      "~/Content/PagedList.css"
+                      "~/Content/PagedList.css",
+                      "~/Content/markdownEditor.css"
                       ));
 
             bundles.Add(new StyleBundle("~/Content/dark").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css",
                       "~/Content/Whoaverse-Dark.css",
-                      "~/Content/PagedList.css"
+                      "~/Content/PagedList.css",
+                      "~/Content/markdownEditor.css"
                       ));
         }
     }
