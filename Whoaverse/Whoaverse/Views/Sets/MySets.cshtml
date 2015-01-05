@@ -1,0 +1,80 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model Voat.Utils.PaginatedList<Voat.Models.Usersetsubscription>
+
+@{
+    ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
+}
+
+@using System.Configuration
+@using Voat.Models.ViewModels
+
+<div id="container">
+    @{
+        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
+    }
+    <div class="content" role="main">
+
+
+        <div class="sitetable">
+            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return createSet()">create a new set</button>
+
+            @if (Voat.Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
+            {
+                <div class="alert-title">Your set subscriptions</div>
+
+                foreach (var set in Model)
+                {
+                    var viewModel = new SetDetailsViewModel
+                    {
+                        CreatedBy = set.Userset.Created_by,
+                        CreationDate = set.Userset.Created_on,
+                        Description = set.Userset.Description,
+                        Id = set.Userset.Set_id,
+                        Name = set.Userset.Name,
+                        Public = set.Userset.Public,
+                        Subscribers = set.Userset.Subscribers
+                    };
+
+                    @Html.Partial("_SubscribedSetDetails", viewModel)
+                }
+            }
+            else
+            {
+                <div class="alert-notice">
+                    <p>You are not subscribed to any sets. Here are 40 most popular sets:</p>
+                </div>
+
+                Html.RenderAction("PopularSets", "Sets");
+            }
+        </div>
+
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", "Index", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", "Index", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

@@ -7,12 +7,12 @@
     WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
     the specific language governing rights and limitations under the License.
 
-    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Whoaverse.Models.Message>
+@model PaginatedList<Voat.Models.Message>
 
-@using Whoaverse.Utils;
+@using Voat.Utils;
 
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
@@ -54,7 +54,7 @@
     }
 
     <style type="text/css">
-@if (User.Identity.IsAuthenticated && !Whoaverse.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
+@if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
 }

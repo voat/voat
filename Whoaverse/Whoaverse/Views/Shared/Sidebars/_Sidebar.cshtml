@@ -7,13 +7,13 @@
     WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
     the specific language governing rights and limitations under the License.
 
-    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Whoaverse.Models.Subverse
+@model Voat.Models.Subverse
 
-@using Whoaverse.Utils;
-@using Whoaverse.Models.ViewModels;
+@using Voat.Utils;
+@using Voat.Models.ViewModels;
 
 @{
     string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
@@ -52,7 +52,7 @@
 
             @if (User.Identity.IsAuthenticated)
             {
-                if (Whoaverse.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
+                if (Voat.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
                 {
                     <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
                 }
@@ -74,7 +74,7 @@
                 <span class="number">~@ViewBag.OnlineUsers</span>
                 <span class="word">users here now</span>
             </p>
-            @if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
+            @if (User.Identity.IsAuthenticated && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
             {
                 <div class="leavemoderator">you are a moderator of this subverse. (<a href="/v/@Model.name/about/moderators/resign">change</a>)</div>
             }
@@ -120,7 +120,7 @@
                 <h1 class="alert-h1">ANNOUNCEMENTS</h1>
             </div>
             <div class="sidecontentbox content">
-                <p>Did you know you could earn money by writing quality comments, sharing links or stories to WhoaVerse? <a href="/v/announcements/comments/30925">Click here</a> to find out how you can monetize your content on this website.</p>
+                <p>Did you know you could earn money by writing quality comments, sharing links or stories to Voat? <a href="/v/announcements/comments/30925">Click here</a> to find out how you can monetize your content on this website.</p>
             </div>
         </div>
     </div>
@@ -147,7 +147,7 @@
             </div>
         </div>
     }
-    else if (User.Identity.IsAuthenticated && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
+    else if (User.Identity.IsAuthenticated && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
     {
         <div class="spacer">
 
@@ -171,8 +171,8 @@
     
     <div class="spacer">
         <div class="centered">
-            <a title="Oh look, a flower!" href="/p/partnerprogram">
-                <img src="~/Graphics/whoaverse-ad.png" alt="Oh look, a flower!" height="174" width="276">
+            <a title="V2 is awesome!" href="/v2">
+                <img src="~/Graphics/v2_ad.png" alt="Oh look, a flower!" height="108" width="276">
             </a>
         </div>
     </div>

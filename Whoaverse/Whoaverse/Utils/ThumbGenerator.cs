@@ -1,14 +1,13 @@
-﻿using System.Drawing.Imaging;
-using Kaliko.ImageLibrary;
+﻿using Kaliko.ImageLibrary;
 using OpenGraph_Net;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Web;
-using Message = Whoaverse.Models.Message;
+using Message = Voat.Models.Message;
 
-namespace Whoaverse.Utils
+namespace Voat.Utils
 {
     public static class ThumbGenerator
     {

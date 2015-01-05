@@ -54,9 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Whoaverse\Whoaverse.csproj">
+    <ProjectReference Include="..\Whoaverse\Voat.csproj">
       <Project>{1d1f318c-eb40-4e3b-96eb-e9ab0d66de30}</Project>
-      <Name>Whoaverse</Name>
+      <Name>Voat</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

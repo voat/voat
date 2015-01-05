@@ -8,21 +8,19 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Whoaverse.Models;
-using Whoaverse.Utils;
+using Voat.Models;
+using Voat.Utils;
 
-namespace Whoaverse.Controllers
+namespace Voat.Controllers
 {
     public class CommentController : Controller
     {
@@ -297,23 +295,27 @@ namespace Whoaverse.Controllers
         // POST: editcomment
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize]
         [HttpPost]
-        public ActionResult EditComment(EditComment model)
+        [Authorize]
+        [PreventSpam(DelayRequest = 120, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        public async Task<ActionResult> EditComment([Bind(Include = "CommentId, CommentContent")] EditComment model)
         {
+            if (!ModelState.IsValid) return Json("HTML is not allowed.", JsonRequestBehavior.AllowGet);
+
             var existingComment = _db.Comments.Find(model.CommentId);
 
             if (existingComment != null)
             {
                 if (existingComment.Name.Trim() == User.Identity.Name)
                 {
-                    existingComment.CommentContent = model.CommentContent;
+                    var escapedCommentContent = WebUtility.HtmlEncode(model.CommentContent);
+                    existingComment.CommentContent = escapedCommentContent;
                     existingComment.LastEditDate = DateTime.Now;
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
 
-                    //parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
+                    // parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
                     var formattedComment = Formatting.FormatMessage(model.CommentContent);
-                    return Json(new { response = formattedComment });
+                    return Json(new {response = formattedComment});
                 }
                 return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
             }

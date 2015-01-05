@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Whoaverse.Areas.HelpPage.ModelDescriptions
+namespace Voat.Areas.HelpPage.ModelDescriptions
 {
     public class ParameterDescription
     {

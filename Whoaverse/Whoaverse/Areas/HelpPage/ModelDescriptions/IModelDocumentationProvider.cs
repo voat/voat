@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Whoaverse.Areas.HelpPage.ModelDescriptions
+namespace Voat.Areas.HelpPage.ModelDescriptions
 {
     public interface IModelDocumentationProvider
     {

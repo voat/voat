@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whoaverse", "Whoaverse\Whoaverse.csproj", "{1D1F318C-EB40-4E3B-96EB-E9AB0D66DE30}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Voat", "Whoaverse\Voat.csproj", "{1D1F318C-EB40-4E3B-96EB-E9AB0D66DE30}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{218EEACE-623C-4D8C-A87A-E4AD4DDD5EAD}"
 EndProject

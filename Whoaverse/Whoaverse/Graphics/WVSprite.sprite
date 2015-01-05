@@ -23,22 +23,12 @@
   <!--The order of the <file> elements determines the order of the images in the sprite.-->
   <files>
     <file>/Graphics/whoaverse_padded.png</file>
-    <file>/Graphics/arrow-downvote.png</file>
-    <file>/Graphics/arrow-downvoted.png</file>
-    <file>/Graphics/arrow-upvote.png</file>
-    <file>/Graphics/arrow-upvoted.png</file>
-    <file>/Graphics/expand-selfpost-hover.png</file>
-    <file>/Graphics/expand-selfpost.png</file>
     <file>/Graphics/mail-icon.png</file>
     <file>/Graphics/nsfw-thumb.png</file>
-    <file>/Graphics/pattern-welcome.png</file>
     <file>/Graphics/thumb-placeholder.png</file>
     <file>/Graphics/whoaverse-404.png</file>
-    <file>/Graphics/whoaverse-bg.jpg</file>
     <file>/Graphics/whoaverse-mascot.png</file>
     <file>/Graphics/whoaverse.png</file>
     <file>/Graphics/group_edit.png</file>
-    <file>/Graphics/expanded-selfpost-hover.png</file>
-    <file>/Graphics/expanded-selfpost.png</file>
   </files>
 </sprite>

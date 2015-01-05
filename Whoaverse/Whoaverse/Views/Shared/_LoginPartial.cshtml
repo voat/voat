@@ -7,11 +7,11 @@
     WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
     the specific language governing rights and limitations under the License.
 
-    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
 @using Microsoft.AspNet.Identity;
-@using Whoaverse.Utils;
+@using Voat.Utils;
 
 @if (Request.IsAuthenticated)
 {
@@ -27,7 +27,7 @@
                 <span class="separator">|</span>
                 <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</span>
                 <span class="separator">|</span>
-                @if (Whoaverse.Utils.User.UserHasNewMessages(User.Identity.Name))
+                @if (Voat.Utils.User.UserHasNewMessages(User.Identity.Name))
                 {
                     <a title="you have new messages" href="/messaging/inbox" class="havemail" id="mail">messages</a>
                 }

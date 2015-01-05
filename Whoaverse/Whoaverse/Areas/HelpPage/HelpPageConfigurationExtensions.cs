@@ -11,10 +11,10 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
-using Whoaverse.Areas.HelpPage.ModelDescriptions;
-using Whoaverse.Areas.HelpPage.Models;
+using Voat.Areas.HelpPage.ModelDescriptions;
+using Voat.Areas.HelpPage.Models;
 
-namespace Whoaverse.Areas.HelpPage
+namespace Voat.Areas.HelpPage
 {
     public static class HelpPageConfigurationExtensions
     {

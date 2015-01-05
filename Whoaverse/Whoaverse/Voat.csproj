@@ -11,8 +11,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Whoaverse</RootNamespace>
-    <AssemblyName>Whoaverse</AssemblyName>
+    <RootNamespace>Voat</RootNamespace>
+    <AssemblyName>Voat</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
@@ -263,6 +263,7 @@
     <Compile Include="Models\Defaultsetsetup.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\Userset.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -272,6 +273,7 @@
     <Compile Include="Models\Usersetsubscription.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
@@ -435,7 +437,7 @@
     <Content Include="Content\markdownEditor.css" />
     <Content Include="Content\PagedList.css" />
     <Content Include="Graphics\missing_image.png" />
-    <Content Include="Graphics\whoaverse-ad.png" />
+    <Content Include="Graphics\v2_ad.png" />
     <Content Include="Scripts\markdownEditor.js" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
     <Content Include="Content\PagedList.min.css">
@@ -570,7 +572,7 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
-    <None Include="Properties\PublishProfiles\whoaverse.com - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <Content Include="robots.txt" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -733,6 +735,11 @@
     <Content Include="Views\Sets\_SingleDefaultset.cshtml" />
     <Content Include="Views\Sets\Index.cshtml" />
     <Content Include="Views\Sets\_Defaultsets.cshtml" />
+    <Content Include="Views\Sets\MySets.cshtml" />
+    <Content Include="Views\Sets\_SubscribedSetDetails.cshtml" />
+    <Content Include="Views\Sets\_PopularSets.cshtml" />
+    <Content Include="Views\Sets\SingleSetView.cshtml" />
+
     <Content Include="Views\Shared\_MarkdownEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>

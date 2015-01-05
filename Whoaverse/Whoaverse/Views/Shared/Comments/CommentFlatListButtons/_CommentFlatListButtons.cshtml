@@ -7,10 +7,10 @@
     WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
     the specific language governing rights and limitations under the License.
 
-    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Whoaverse.Models.ViewModels.SubmissionViewModel
+@model Voat.Models.ViewModels.SubmissionViewModel
 
 @{
     string commentAuthor = Model.CommentModel.Name;
@@ -35,11 +35,11 @@
 
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }
-        else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.CommentModel.Message.Subverse))
+        else if (commentAuthor != "deleted" && Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.CommentModel.Message.Subverse))
         {
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }
-        else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.CommentModel.Message.Subverse))
+        else if (commentAuthor != "deleted" && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.CommentModel.Message.Subverse))
         {
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }

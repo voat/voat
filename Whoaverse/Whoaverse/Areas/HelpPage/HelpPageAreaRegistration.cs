@@ -1,7 +1,7 @@
 using System.Web.Http;
 using System.Web.Mvc;
 
-namespace Whoaverse.Areas.HelpPage
+namespace Voat.Areas.HelpPage
 {
     public class HelpPageAreaRegistration : AreaRegistration
     {

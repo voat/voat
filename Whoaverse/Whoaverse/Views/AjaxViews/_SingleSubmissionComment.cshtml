@@ -7,13 +7,13 @@
     WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
     the specific language governing rights and limitations under the License.
 
-    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
 @model Comment
 
-@using Whoaverse.Utils;
-@using Whoaverse.Models;
+@using Voat.Utils;
+@using Voat.Models;
 
 @{
     Random rnd = new Random();
@@ -35,10 +35,10 @@
     //apply class style if OP is the Comment Author
     opName = opName.Trim();
     commentAuthor = commentAuthor.Trim();
-    bool isOpModerator = Whoaverse.Utils.User.IsUserSubverseModerator(opName, Model.Message.Subverse);
-    bool isOpSubverseAdmin = Whoaverse.Utils.User.IsUserSubverseAdmin(opName, Model.Message.Subverse);
-    bool isCommentAuthorModerator = Whoaverse.Utils.User.IsUserSubverseModerator(commentAuthor, Model.Message.Subverse);
-    bool isCommehtAuthorSubverseAdmin = Whoaverse.Utils.User.IsUserSubverseAdmin(commentAuthor, Model.Message.Subverse);
+    bool isOpModerator = Voat.Utils.User.IsUserSubverseModerator(opName, Model.Message.Subverse);
+    bool isOpSubverseAdmin = Voat.Utils.User.IsUserSubverseAdmin(opName, Model.Message.Subverse);
+    bool isCommentAuthorModerator = Voat.Utils.User.IsUserSubverseModerator(commentAuthor, Model.Message.Subverse);
+    bool isCommehtAuthorSubverseAdmin = Voat.Utils.User.IsUserSubverseAdmin(commentAuthor, Model.Message.Subverse);
 
     bool? isRootComment = ViewBag.rootComment;
     string commentType = "";
@@ -236,7 +236,7 @@
                             </form>
                         </li>
                     }
-                    else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse))
+                    else if (commentAuthor != "deleted" && Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse))
                     {
                         <li>
                             <form class="toggle del-button " action="#" method="get">
@@ -250,7 +250,7 @@
                             </form>
                         </li>
                     }
-                    else if (commentAuthor != "deleted" && Whoaverse.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
+                    else if (commentAuthor != "deleted" && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
                     {
                         <li>
                             <form class="toggle del-button " action="#" method="get">

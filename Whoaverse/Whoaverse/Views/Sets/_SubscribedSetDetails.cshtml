@@ -1,0 +1,53 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model Voat.Models.ViewModels.SetDetailsViewModel
+
+@using Voat.Utils;
+
+@{
+    string subverseAge = Submissions.CalcSubmissionAge(Model.CreationDate);
+}
+
+<div class="midcol">
+    @if (Voat.Utils.User.IsUserSubscribedToSet(User.Identity.Name, Model.Name))
+    {
+        <button type="button" onclick="return setUnsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
+    }
+    else
+    {
+        <button type="button" onclick="return setSubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default">subscribe</button>
+    }
+    
+    @if (Voat.Utils.User.IsUserSetOwner(User.Identity.Name, Model.Name))
+    {
+        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return setModify(this, '@Model.Name')">modify</button>
+    }
+</div>
+
+<div class="entry">
+    <p class="titlerow">
+        <a href="/s/@Model.Name" class="h4">@Model.Name</a>
+    </p>
+    <div class="well well-lg subversedescriptionbox">
+        <div class="md">
+            <p class="subversedescriptionboxcontent">@Model.Description</p>
+
+        </div>
+    </div>
+    <p class="">
+        <span class="">
+            <span id="subscribercount" class="number">@Model.Subscribers</span>
+            <span class="word">subscribers, set is @subverseAge old</span>
+        </span>
+    </p>
+</div>

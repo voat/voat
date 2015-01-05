@@ -1,5 +1,5 @@
 /*  ============================================================================
-    Minity Dark CSS stylesheet for Whoaverse (http://whoaverse.com/)
+    Minity Dark CSS stylesheet for Voat (http://voat.co/)
     Designed by Nurdoidz
     
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
@@ -109,11 +109,11 @@ label {
 }
 
 .alert-featuredsub {
-    border-top: 1px solid;
+    border-top: 4px solid;
     padding: 5px;
     margin-bottom: 0px;
     background: none repeat scroll 0% 0% #292929;
-    border-width: 8px 1px 1px;
+    border-width: 4px 1px 1px;
     border-color: #5BACDE #222 #222;
     color: #DFDFDF;
     font-size: 12px;
@@ -369,7 +369,7 @@ input, button, select, textarea {
     border: 1px solid #222;
     border-radius: 3px;
     display: block;
-    margin: 10px 5px;
+    margin: 10px 0px;
     padding: 2px 10px;
     text-align: left;
 }

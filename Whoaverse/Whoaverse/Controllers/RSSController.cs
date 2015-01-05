@@ -4,10 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
-using Whoaverse.Models;
-using Whoaverse.Utils;
+using Voat.Models;
+using Voat.Utils;
 
-namespace Whoaverse.Controllers
+namespace Voat.Controllers
 {
     public class RssController : Controller
     {
@@ -44,7 +44,7 @@ namespace Whoaverse.Controllers
                                .ToList();
             }
 
-            var feed = new SyndicationFeed("WhoaVerse", "The frontpage of the Universe", new Uri("http://www.whoaverse.com"))
+            var feed = new SyndicationFeed("Voat", "Have your say", new Uri("http://www.voat.co"))
             {
                 Language = "en-US",
                 ImageUrl =

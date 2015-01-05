@@ -8,17 +8,18 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
+using System.Web;
 using OpenGraph_Net;
 using System;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 
-namespace Whoaverse.Utils
+namespace Voat.Utils
 {
     public static class UrlUtility
     {
@@ -33,7 +34,7 @@ namespace Whoaverse.Utils
             }
             catch (Exception)
             {
-                return "http://whoaverse.com";
+                return "http://voat.co";
             }                  
         }
 
@@ -45,8 +46,11 @@ namespace Whoaverse.Utils
                 var graph = OpenGraph.ParseUrl(@remoteUri);
                 if (!string.IsNullOrEmpty(graph.Title))
                 {
-                    return graph.Title;
+                    var tmpStringWriter = new StringWriter();
+                    HttpUtility.HtmlDecode(graph.Title, tmpStringWriter);
+                    return tmpStringWriter.ToString();
                 }
+
                 var req = (HttpWebRequest)WebRequest.Create(@remoteUri);
                 req.Timeout = 3000;
                 var sr = new StreamReader(req.GetResponse().GetResponseStream());
@@ -59,7 +63,9 @@ namespace Whoaverse.Utils
                     var match = Regex.Match(outputData, @"<title>([^<]+)", RegexOptions.IgnoreCase);
                     if (match.Success)
                     {
-                        return match.Groups[1].Value;
+                        var tmpStringWriter = new StringWriter();
+                        HttpUtility.HtmlDecode(match.Groups[1].Value, tmpStringWriter);
+                        return tmpStringWriter.ToString();
                     }
                     counter = sr.Read(buffer, 0, 256);
                 }

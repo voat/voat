@@ -7,10 +7,10 @@
     WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
     the specific language governing rights and limitations under the License.
 
-    All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model IEnumerable<Whoaverse.Models.Defaultsubverse>
+@model IEnumerable<Voat.Models.Defaultsubverse>
 
 @{
     object routeDataObject = new object();
@@ -45,6 +45,12 @@
         <div class="sr-list">
             <ul class="whoaSubscriptionMenu flat-list sr-bar hover">
                 @Html.Partial("_SubscriptionsHoverMenu")
+            </ul>
+            <ul class="flat-list sr-bar hover">
+                <li class="setsmenu">
+                    <span class="separator">-</span>
+                    <a href="/mysets">my sets</a>
+                </li>
             </ul>
             <ul class="flat-list sr-bar hover">
                 <li class="@selectedFrontpageClass">

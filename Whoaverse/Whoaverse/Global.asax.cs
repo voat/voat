@@ -4,9 +4,9 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using Whoaverse.Utils;
+using Voat.Utils;
 
-namespace Whoaverse
+namespace Voat
 {
     public class MvcApplication : HttpApplication
     {
@@ -69,5 +69,6 @@ namespace Whoaverse
                 //
             }
         }
+        
     }
 }

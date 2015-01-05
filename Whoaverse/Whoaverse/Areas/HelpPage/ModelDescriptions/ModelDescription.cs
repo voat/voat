@@ -1,6 +1,6 @@
 using System;
 
-namespace Whoaverse.Areas.HelpPage.ModelDescriptions
+namespace Voat.Areas.HelpPage.ModelDescriptions
 {
     /// <summary>
     /// Describes a type model.

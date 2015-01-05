@@ -1,10 +1,10 @@
 using System;
 using System.Web.Http;
 using System.Web.Mvc;
-using Whoaverse.Areas.HelpPage.ModelDescriptions;
-using Whoaverse.Areas.HelpPage.Models;
+using Voat.Areas.HelpPage.ModelDescriptions;
+using Voat.Areas.HelpPage.Models;
 
-namespace Whoaverse.Areas.HelpPage.Controllers
+namespace Voat.Areas.HelpPage.Controllers
 {
     /// <summary>
     /// The controller that will handle requests for the help page.
