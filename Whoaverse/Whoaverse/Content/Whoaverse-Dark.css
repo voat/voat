@@ -2713,3 +2713,6 @@ textarea.form-control {
     color: #c2c2c2; 
 
 }
+.markdownEditorImgButton, .markdownEditorTextButton { 
+    background-color: #606060 !important;
+}
