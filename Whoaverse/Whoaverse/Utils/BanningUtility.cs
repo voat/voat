@@ -16,9 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Whoaverse.Models;
+using Voat.Models;
 
-namespace Whoaverse.Utils
+namespace Voat.Utils
 {
     public class BanningUtility
     {

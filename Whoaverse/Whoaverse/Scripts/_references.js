@@ -11,3 +11,4 @@
 /// <reference path="respond.matchmedia.addlistener.js" />
 /// <reference path="whoaverse.js" />
 /// <reference path="whoaverse.ui.js" />
+/// <reference path="markdowneditor.js" />

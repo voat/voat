@@ -74,7 +74,7 @@
         <div class="form-group">
             @Html.Label("Message (optional)", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.TextAreaFor(m => m.MessageContent, new { @class = "form-control" })
+                @Html.MarkdownEditorFor(m => m.MessageContent, new { @class = "form-control", rows="5" })
                 @Html.ValidationMessageFor(model => model.MessageContent)
             </div>
         </div>
