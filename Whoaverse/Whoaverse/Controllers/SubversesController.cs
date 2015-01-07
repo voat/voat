@@ -1264,7 +1264,7 @@ namespace Voat.Controllers
             IQueryable<Message> sfwSubmissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                         where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false && message.Rank > 0.00009
-                                                                        select message).OrderByDescending(s => s.Rank).AsNoTracking();
+                                                                        select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByRank;
         }
@@ -1297,7 +1297,7 @@ namespace Voat.Controllers
             IQueryable<Message> submissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                      where message.Name != "deleted" && subverse.private_subverse != true && message.Rank > 0.00009
-                                                                     select message).OrderByDescending(s => s.Rank).AsNoTracking();
+                                                                     select message).OrderByDescending(s => s.Rank).ThenByDescending(s=>s.Date).AsNoTracking();
 
             return submissionsFromAllSubversesByRank;
         }
@@ -1329,7 +1329,7 @@ namespace Voat.Controllers
             IQueryable<Message> submissionsFromASubverseByRank = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                   where message.Name != "deleted" && message.Subverse == subverseName
-                                                                  select message).OrderByDescending(s => s.Rank).AsNoTracking();
+                                                                  select message).OrderByDescending(s => s.Rank).ThenByDescending(s=>s.Date).AsNoTracking();
 
             return submissionsFromASubverseByRank;
         }

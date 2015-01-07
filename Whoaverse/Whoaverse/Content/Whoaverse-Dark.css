@@ -2433,6 +2433,10 @@ textarea.form-control {
     text-align: center;
 }
 
+.pmreplyform {
+    width: 100%;
+}
+
 /* ! 404 Error
 -------------------------------------------------------------------------------- */
 
