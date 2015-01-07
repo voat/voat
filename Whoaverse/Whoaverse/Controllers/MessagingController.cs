@@ -261,10 +261,10 @@ namespace Voat.Controllers
         public async Task<ActionResult> Compose([Bind(Include = "Id,Recipient,Subject,Body")] Privatemessage privateMessage)
         {
             if (!ModelState.IsValid) return View();
-            if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
-                return RedirectToAction("Sent", "Messaging");
+            if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null) return RedirectToAction("Sent", "Messaging");
+            
             // check if recipient exists
-            if (Utils.User.UserExists(privateMessage.Recipient))
+            if (Utils.User.UserExists(privateMessage.Recipient) && !Utils.User.IsUserBanned(User.Identity.Name))
             {
                 // send the message
                 privateMessage.Timestamp = DateTime.Now;
