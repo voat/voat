@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
@@ -400,9 +401,9 @@ namespace Voat.Controllers
                 ViewBag.SelectedSubverse = "all";
                 ViewBag.Title = "all subverses";
 
-                // check if user wants to see NSFW content by reading user preference
                 PaginatedList<Message> paginatedSfwSubmissions;
 
+                // check if user wants to see NSFW content by reading user preference
                 if (User.Identity.IsAuthenticated)
                 {
                     if (Utils.User.AdultContentEnabled(User.Identity.Name))
@@ -1253,6 +1254,7 @@ namespace Voat.Controllers
             IQueryable<Message> sfwSubmissionsFromAllSubversesByDate = (from message in _db.Messages
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                         where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false
+                                                                        where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name) 
                                                                         select message
                                                                         ).OrderByDescending(s => s.Date).AsNoTracking();
 
@@ -1264,6 +1266,7 @@ namespace Voat.Controllers
             IQueryable<Message> sfwSubmissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                         where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false && message.Rank > 0.00009
+                                                                        where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name) 
                                                                         select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByRank;
@@ -1274,6 +1277,7 @@ namespace Voat.Controllers
             IQueryable<Message> sfwSubmissionsFromAllSubversesByTop = (from message in _db.Messages
                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false
+                                                                       where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name) 
                                                                        select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
 
 
@@ -1287,6 +1291,7 @@ namespace Voat.Controllers
             IQueryable<Message> submissionsFromAllSubversesByDate = (from message in _db.Messages
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                      where message.Name != "deleted" && subverse.private_subverse != true
+                                                                     where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)   
                                                                      select message).OrderByDescending(s => s.Date).AsNoTracking();
 
             return submissionsFromAllSubversesByDate;
@@ -1297,7 +1302,8 @@ namespace Voat.Controllers
             IQueryable<Message> submissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                      where message.Name != "deleted" && subverse.private_subverse != true && message.Rank > 0.00009
-                                                                     select message).OrderByDescending(s => s.Rank).ThenByDescending(s=>s.Date).AsNoTracking();
+                                                                     where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name) 
+                                                                     select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
             return submissionsFromAllSubversesByRank;
         }
@@ -1307,6 +1313,7 @@ namespace Voat.Controllers
             IQueryable<Message> submissionsFromAllSubversesByTop = (from message in _db.Messages
                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                     where message.Name != "deleted" && subverse.private_subverse != true
+                                                                    where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name) 
                                                                     select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
 
             return submissionsFromAllSubversesByTop;
@@ -1319,6 +1326,7 @@ namespace Voat.Controllers
             IQueryable<Message> submissionsFromASubverseByDate = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                   where message.Name != "deleted" && message.Subverse == subverseName
+                                                                  where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name) 
                                                                   select message).OrderByDescending(s => s.Date).AsNoTracking();
 
             return submissionsFromASubverseByDate;
@@ -1329,7 +1337,8 @@ namespace Voat.Controllers
             IQueryable<Message> submissionsFromASubverseByRank = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                   where message.Name != "deleted" && message.Subverse == subverseName
-                                                                  select message).OrderByDescending(s => s.Rank).ThenByDescending(s=>s.Date).AsNoTracking();
+                                                                  where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name) 
+                                                                  select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
             return submissionsFromASubverseByRank;
         }
@@ -1339,6 +1348,7 @@ namespace Voat.Controllers
             IQueryable<Message> submissionsFromASubverseByTop = (from message in _db.Messages
                                                                  join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                  where message.Name != "deleted" && message.Subverse == subverseName
+                                                                 where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name) 
                                                                  select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
 
             return submissionsFromASubverseByTop;
