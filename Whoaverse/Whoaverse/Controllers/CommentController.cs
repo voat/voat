@@ -173,110 +173,111 @@ namespace Voat.Controllers
                     comment.Anonymized = true;
                 }
 
-                // check if user is banned, don't save the comment if true
+                // check if author is banned, don't save the comment or send notifications if true
                 if (!Utils.User.IsUserBanned(User.Identity.Name))
                 {
                     _db.Comments.Add(comment);
                     await _db.SaveChangesAsync();
-                }
 
-                // send comment reply notification to parent comment author if the comment is not a new root comment
-                if (comment.ParentId != null && comment.CommentContent != null)
-                {
-                    // find the parent comment and its author
-                    var parentComment = _db.Comments.Find(comment.ParentId);
-                    if (parentComment != null)
+                    // send comment reply notification to parent comment author if the comment is not a new root comment
+                    if (comment.ParentId != null && comment.CommentContent != null)
                     {
-                        // check if recipient exists
-                        if (Utils.User.UserExists(parentComment.Name))
+                        // find the parent comment and its author
+                        var parentComment = _db.Comments.Find(comment.ParentId);
+                        if (parentComment != null)
                         {
-                            // do not send notification if author is the same as comment author
-                            if (parentComment.Name != User.Identity.Name)
+                            // check if recipient exists
+                            if (Utils.User.UserExists(parentComment.Name))
                             {
-                                // send the message
-                                var commentReplyNotification = new Commentreplynotification();
-                                var commentMessage = _db.Messages.Find(comment.MessageId);
-                                if (commentMessage != null)
+                                // do not send notification if author is the same as comment author
+                                if (parentComment.Name != User.Identity.Name)
                                 {
-                                    commentReplyNotification.CommentId = comment.Id;
-                                    commentReplyNotification.SubmissionId = commentMessage.Id;
-                                    commentReplyNotification.Recipient = parentComment.Name;
-                                    if (parentComment.Message.Anonymized || parentComment.Message.Subverses.anonymized_mode)
+                                    // send the message
+                                    var commentReplyNotification = new Commentreplynotification();
+                                    var commentMessage = _db.Messages.Find(comment.MessageId);
+                                    if (commentMessage != null)
                                     {
-                                        commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                                        commentReplyNotification.CommentId = comment.Id;
+                                        commentReplyNotification.SubmissionId = commentMessage.Id;
+                                        commentReplyNotification.Recipient = parentComment.Name;
+                                        if (parentComment.Message.Anonymized || parentComment.Message.Subverses.anonymized_mode)
+                                        {
+                                            commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                                        }
+                                        else
+                                        {
+                                            commentReplyNotification.Sender = User.Identity.Name;
+                                        }
+                                        commentReplyNotification.Body = comment.CommentContent;
+                                        commentReplyNotification.Subverse = commentMessage.Subverse;
+                                        commentReplyNotification.Status = true;
+                                        commentReplyNotification.Timestamp = DateTime.Now;
+
+                                        // self = type 1, url = type 2
+                                        commentReplyNotification.Subject = parentComment.Message.Type == 1 ? parentComment.Message.Title : parentComment.Message.Linkdescription;
+
+                                        _db.Commentreplynotifications.Add(commentReplyNotification);
+
+                                        await _db.SaveChangesAsync();
                                     }
                                     else
                                     {
-                                        commentReplyNotification.Sender = User.Identity.Name;
+                                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                                     }
-                                    commentReplyNotification.Body = comment.CommentContent;
-                                    commentReplyNotification.Subverse = commentMessage.Subverse;
-                                    commentReplyNotification.Status = true;
-                                    commentReplyNotification.Timestamp = DateTime.Now;
-
-                                    // self = type 1, url = type 2
-                                    commentReplyNotification.Subject = parentComment.Message.Type == 1 ? parentComment.Message.Title : parentComment.Message.Linkdescription;
-
-                                    _db.Commentreplynotifications.Add(commentReplyNotification);
-
-                                    await _db.SaveChangesAsync();
                                 }
-                                else
-                                {
-                                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // comment reply is sent to a root comment which has no parent id, trigger post reply notification
-                    var commentMessage = _db.Messages.Find(comment.MessageId);
-                    if (commentMessage != null)
-                    {
-                        // check if recipient exists
-                        if (Utils.User.UserExists(commentMessage.Name))
-                        {
-                            // do not send notification if author is the same as comment author
-                            if (commentMessage.Name != User.Identity.Name)
-                            {
-                                // send the message
-                                var postReplyNotification = new Postreplynotification();
-
-                                postReplyNotification.CommentId = comment.Id;
-                                postReplyNotification.SubmissionId = commentMessage.Id;
-                                postReplyNotification.Recipient = commentMessage.Name;
-
-                                if (commentMessage.Anonymized || commentMessage.Subverses.anonymized_mode)
-                                {
-                                    postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                                }
-                                else
-                                {
-                                    postReplyNotification.Sender = User.Identity.Name;
-                                }
-
-                                postReplyNotification.Body = comment.CommentContent;
-                                postReplyNotification.Subverse = commentMessage.Subverse;
-                                postReplyNotification.Status = true;
-                                postReplyNotification.Timestamp = DateTime.Now;
-
-                                // self = type 1, url = type 2
-                                postReplyNotification.Subject = commentMessage.Type == 1 ? commentMessage.Title : commentMessage.Linkdescription;
-
-                                _db.Postreplynotifications.Add(postReplyNotification);
-
-                                await _db.SaveChangesAsync();
                             }
                         }
                     }
                     else
                     {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                    }
+                        // comment reply is sent to a root comment which has no parent id, trigger post reply notification
+                        var commentMessage = _db.Messages.Find(comment.MessageId);
+                        if (commentMessage != null)
+                        {
+                            // check if recipient exists
+                            if (Utils.User.UserExists(commentMessage.Name))
+                            {
+                                // do not send notification if author is the same as comment author
+                                if (commentMessage.Name != User.Identity.Name)
+                                {
+                                    // send the message
+                                    var postReplyNotification = new Postreplynotification();
 
+                                    postReplyNotification.CommentId = comment.Id;
+                                    postReplyNotification.SubmissionId = commentMessage.Id;
+                                    postReplyNotification.Recipient = commentMessage.Name;
+
+                                    if (commentMessage.Anonymized || commentMessage.Subverses.anonymized_mode)
+                                    {
+                                        postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                                    }
+                                    else
+                                    {
+                                        postReplyNotification.Sender = User.Identity.Name;
+                                    }
+
+                                    postReplyNotification.Body = comment.CommentContent;
+                                    postReplyNotification.Subverse = commentMessage.Subverse;
+                                    postReplyNotification.Status = true;
+                                    postReplyNotification.Timestamp = DateTime.Now;
+
+                                    // self = type 1, url = type 2
+                                    postReplyNotification.Subject = commentMessage.Type == 1 ? commentMessage.Title : commentMessage.Linkdescription;
+
+                                    _db.Postreplynotifications.Add(postReplyNotification);
+
+                                    await _db.SaveChangesAsync();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                        }
+
+                    }
                 }
+                
                 if (Request.UrlReferrer != null)
                 {
                     var url = Request.UrlReferrer.AbsolutePath;
