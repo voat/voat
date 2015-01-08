@@ -188,3 +188,13 @@ function createTable(textComponent, numColumns, numRows) {
         alert('Error: Unable to create table! Invalid number of columns/rows.');
     }
 }
+
+function addHyperlink(textComponent) {
+    //this will be replaced with a custom dialog in future versions
+    var url = prompt('Enter the URL: ', '');
+    if (url != "" && url !== null) {
+        addTagsToSelectedText(textComponent, '[Title Here','](' + url + ')');
+    }
+    textComponent.focus();
+}
+
