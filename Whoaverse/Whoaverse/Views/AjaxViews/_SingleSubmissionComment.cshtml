@@ -199,6 +199,7 @@
 
                 <div class="usertext-edit" style="width: 775px; display: none;">
                     <div>
+                        @Html.Partial("_MarkdownEditor")
                         <textarea aria-invalid="false" class="form-control valid" cols="20" id="CommentContent" name="CommentContent" rows="2" data-rule-required="true" data-msg-required="The comment can not be empty.">@Model.CommentContent</textarea>
                         <span data-valmsg-replace="false" data-valmsg-for="CommentContent" class="field-validation-error"></span>
                         <div class="usertext-buttons">

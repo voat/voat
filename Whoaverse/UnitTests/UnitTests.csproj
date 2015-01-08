@@ -54,13 +54,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Whoaverse\Voat.csproj">
-      <Project>{1d1f318c-eb40-4e3b-96eb-e9ab0d66de30}</Project>
-      <Name>Voat</Name>
-    </ProjectReference>
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <ProjectReference Include="..\Whoaverse\Voat.csproj">
+      <Project>{ee5bf3b8-2f79-4d6c-83b0-cacc1cba48ba}</Project>
+      <Name>Voat</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

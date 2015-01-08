@@ -1,17 +1,4 @@
-﻿body { 
-    font: 11px Arial, Android Emoji, Apple Color Emoji, Segoe UI Emoji, Segoe UI, EmojiSymbols, Symbola, Symbola-Emoji, sans-serif; 
-} 
-
-@font-face { 
-    font-family: Symbola-Emoji; 
-    src: url('../fonts/Symbola-Emoji.eot?#iefix') format('embedded-opentype'), 
-    url('../fonts/Symbola-Emoji.woff') format('woff'), 
-    url('../fonts/Symbola-Emoji.ttf') format('truetype'); 
-    /* Emoji unicode blocks */ 
-	unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+2600-26FF; 
-}
- 
-/* Markdown Editor */
+﻿/* Markdown Editor */
 .markdownEditor{
     display:none;
 	max-width: 100%;
@@ -38,7 +25,7 @@
 	height: 16px;
 	width: 32px;
 	vertical-align: middle;
-	background-color: whitesmoke!important;
+	background-color: whitesmoke;
 	background-image: url('../Graphics/editorSprite.png');
 	border: 1px solid grey;
 	box-sizing: content-box;
@@ -46,12 +33,9 @@
 }
 .markdownEditorTextButton{
 	display: inline-block;
-	margin-top: 2px;
-	margin-bottom: 2px;
-	margin-left: 1px;
-	margin-right: 1px;
-	padding: 2px;
-	max-height: 16px;
+	margin: 1px;
+	padding: 0px 2px 1px 2px;
+	
 	min-width: 32px;
 	vertical-align: middle;
 	background-color: whitesmoke;
