@@ -13,7 +13,6 @@
 @model PagedList.IPagedList<Voat.Models.Commentreplynotification>
 
 @using PagedList.Mvc;
-@using Voat.Utils;
 
 @{
     ViewBag.Title = "Inbox - comment replies";
@@ -50,7 +49,7 @@
                     {
                         statusClass = "";
                     }
-                    <div id="messageContainer-@message.Id">
+                    <div id="commentContainer-@message.CommentId">
                         <div class="panel panel-default">
                             <div class="panel panel-heading @statusClass">
                                 From: <a href="/u/@message.Sender">@message.Sender</a> | Sent: @message.Timestamp
@@ -70,11 +69,7 @@
                             </li>
                             <li>|</li>
                             <li>
-                                <a class="btn-whoaverse-paging" href="#">Mark as unread [not implemented]</a>
-                            </li>
-                            <li>|</li>
-                            <li>
-                                <a class="btn-whoaverse-paging" href="javascript:void(0)" onclick="return replyToPrivateMessage(this, @message.Id)">Reply [not implemented]</a>
+                                <a class="btn-whoaverse-paging" id="replyCommentNotification" href="javascript:void(0)" onclick="return replyToCommentNotification(@message.CommentId, @message.SubmissionId)">Reply</a>
                             </li>
                         </ul>
                         <br /><br />

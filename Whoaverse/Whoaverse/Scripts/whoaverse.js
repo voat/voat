@@ -321,7 +321,7 @@ function reply(parentcommentid, messageid) {
         "/ajaxhelpers/commentreplyform/" + parentcommentid + "/" + messageid,
         null,
         function (data) {
-            $("#" + parentcommentid).append(data)
+            $("#" + parentcommentid).append(data);
         }
      );
 
@@ -334,7 +334,7 @@ function reply(parentcommentid, messageid) {
 
 // append a private message reply form to calling area
 function replyprivatemessage(parentprivatemessageid, recipient, subject) {
-    //exit function if the form is already being shown
+    // exit function if the form is already being shown
     if ($("#privatemessagereplyform-" + parentprivatemessageid).exists()) {
         return;
     }
@@ -345,7 +345,7 @@ function replyprivatemessage(parentprivatemessageid, recipient, subject) {
         "/ajaxhelpers/privatemessagereplyform/" + parentprivatemessageid + "?recipient=" + recipient + "&subject=" + subject,
         null,
         function (data) {
-            $("#messageContainer-" + parentprivatemessageid).append(data)
+            $("#messageContainer-" + parentprivatemessageid).append(data);
         }
      );
 
@@ -357,6 +357,30 @@ function replyprivatemessage(parentprivatemessageid, recipient, subject) {
 
     // TODO
     // showRecaptcha('recaptchaContainer');
+}
+
+// append a comment reply form to calling area (used in comment reply notification view)
+function replyToCommentNotification(commentId, submissionId) {
+    // exit function if the form is already being shown
+    if ($("#commentreplyform-" + commentId).exists()) {
+        return;
+    }
+
+    var token = $("input[name='__RequestVerificationToken']").val();
+
+    var replyform = $.get(
+        "/ajaxhelpers/commentreplyform/" + commentId + "/" + submissionId,
+        null,
+        function (data) {
+            $("#commentContainer-" + commentId).append(data);
+        }
+     );
+
+    var form = $('#commentreplyform-' + commentId)
+            .removeData("validator") /* added by the raw jquery.validate plugin */
+            .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
+
+    $.validator.unobtrusive.parse(form);
 }
 
 // post comment reply form through ajax

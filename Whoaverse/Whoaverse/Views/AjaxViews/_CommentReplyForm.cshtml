@@ -28,7 +28,7 @@
         <input id="MessageId" name="MessageId" value="@messageId" type="hidden">
 
         <div class="row">
-            <div class="col-md-5">
+            <div class="pmreplyform col-md-5">
                 @Html.Partial("_MarkdownEditor")
                 <textarea class="commenttextarea" cols="20" id="CommentContent" name="CommentContent" data-val="true" data-val-length="Comment text is limited to 10.000 characters." data-val-length-max="10000" data-val-required="Comment text is required. Please fill this field." rows="3"></textarea>
                 <span class="field-validation-valid" data-valmsg-for="CommentContent" data-valmsg-replace="true"></span>
@@ -44,6 +44,7 @@
         <input type="button" id="submitbutton" value="Submit reply" class="btn-whoaverse-paging" onclick="postCommentReplyAjax(this, @messageId, '@User.Identity.Name', @parentCommentId)">
         <button class="btn-whoaverse-paging" onclick="removereplyform(@parentCommentId);" type="button">Cancel</button>
         <br>
+        <br />
     </form>    
 
 </div>
