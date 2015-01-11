@@ -22,7 +22,7 @@
   </settings>
   <!--The order of the <file> elements determines the order of the images in the sprite.-->
   <files>
-    <file>/Graphics/whoaverse_padded.png</file>
+    <file>/Graphics/voat_je_suis_charlie.png</file>
     <file>/Graphics/mail-icon.png</file>
     <file>/Graphics/nsfw-thumb.png</file>
     <file>/Graphics/thumb-placeholder.png</file>

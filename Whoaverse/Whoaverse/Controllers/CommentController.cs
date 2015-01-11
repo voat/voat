@@ -157,7 +157,7 @@ namespace Voat.Controllers
         [Authorize]
         [PreventSpam(DelayRequest = 120, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SubmitComment([Bind(Include = "Id,CommentContent,MessageId,ParentId")] Comment comment)
+        public async Task<ActionResult> SubmitComment([Bind(Include = "Id, CommentContent, MessageId, ParentId")] Comment comment)
         {
             comment.Date = DateTime.Now;
             comment.Name = User.Identity.Name;

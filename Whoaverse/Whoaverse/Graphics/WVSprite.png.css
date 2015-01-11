@@ -1,111 +1,51 @@
 ﻿/*
 This is an example of how to use the image sprite in your own CSS files
 */
-.Graphics-whoaverse_padded {
+.Graphics-voat_je_suis_charlie {
 /* You may have to set 'display: block' */
 	width: 125px;
 	height: 44px;
-	background: url('/Graphics/WVSprite.png') 0 0;
-}
-.Graphics-arrow-downvote {
-/* You may have to set 'display: block' */
-	width: 18px;
-	height: 19px;
-	background: url('/Graphics/WVSprite.png') 0 -44px;
-}
-.Graphics-arrow-downvoted {
-/* You may have to set 'display: block' */
-	width: 18px;
-	height: 19px;
-	background: url('/Graphics/WVSprite.png') 0 -63px;
-}
-.Graphics-arrow-upvote {
-/* You may have to set 'display: block' */
-	width: 18px;
-	height: 19px;
-	background: url('/Graphics/WVSprite.png') 0 -82px;
-}
-.Graphics-arrow-upvoted {
-/* You may have to set 'display: block' */
-	width: 18px;
-	height: 19px;
-	background: url('/Graphics/WVSprite.png') 0 -101px;
-}
-.Graphics-expand-selfpost-hover {
-/* You may have to set 'display: block' */
-	width: 23px;
-	height: 23px;
-	background: url('/Graphics/WVSprite.png') 0 -120px;
-}
-.Graphics-expand-selfpost {
-/* You may have to set 'display: block' */
-	width: 23px;
-	height: 23px;
-	background: url('/Graphics/WVSprite.png') 0 -143px;
+	background: url('/Graphics/WVSprite.png') -1px -1px;
 }
 .Graphics-mail-icon {
 /* You may have to set 'display: block' */
 	width: 15px;
 	height: 10px;
-	background: url('/Graphics/WVSprite.png') 0 -166px;
+	background: url('/Graphics/WVSprite.png') -1px -46px;
 }
 .Graphics-nsfw-thumb {
 /* You may have to set 'display: block' */
 	width: 70px;
 	height: 70px;
-	background: url('/Graphics/WVSprite.png') 0 -176px;
-}
-.Graphics-pattern-welcome {
-/* You may have to set 'display: block' */
-	width: 128px;
-	height: 128px;
-	background: url('/Graphics/WVSprite.png') 0 -246px;
+	background: url('/Graphics/WVSprite.png') -1px -57px;
 }
 .Graphics-thumb-placeholder {
 /* You may have to set 'display: block' */
 	width: 70px;
 	height: 70px;
-	background: url('/Graphics/WVSprite.png') 0 -374px;
+	background: url('/Graphics/WVSprite.png') -1px -128px;
 }
 .Graphics-whoaverse-404 {
 /* You may have to set 'display: block' */
 	width: 450px;
 	height: 405px;
-	background: url('/Graphics/WVSprite.png') 0 -444px;
-}
-.Graphics-whoaverse-bg {
-/* You may have to set 'display: block' */
-	width: 1920px;
-	height: 250px;
-	background: url('/Graphics/WVSprite.png') 0 -849px;
+	background: url('/Graphics/WVSprite.png') -1px -199px;
 }
 .Graphics-whoaverse-mascot {
 /* You may have to set 'display: block' */
 	width: 400px;
 	height: 404px;
-	background: url('/Graphics/WVSprite.png') 0 -1099px;
+	background: url('/Graphics/WVSprite.png') -1px -605px;
 }
 .Graphics-whoaverse {
 /* You may have to set 'display: block' */
 	width: 120px;
 	height: 43px;
-	background: url('/Graphics/WVSprite.png') 0 -1503px;
+	background: url('/Graphics/WVSprite.png') -1px -1010px;
 }
 .Graphics-group_edit {
 /* You may have to set 'display: block' */
 	width: 16px;
 	height: 16px;
-	background: url('/Graphics/WVSprite.png') 0 -1546px;
-}
-.Graphics-expanded-selfpost-hover {
-/* You may have to set 'display: block' */
-	width: 23px;
-	height: 23px;
-	background: url('/Graphics/WVSprite.png') 0 -1562px;
-}
-.Graphics-expanded-selfpost {
-/* You may have to set 'display: block' */
-	width: 23px;
-	height: 23px;
-	background: url('/Graphics/WVSprite.png') 0 -1585px;
+	background: url('/Graphics/WVSprite.png') -1px -1054px;
 }

@@ -48,23 +48,21 @@ namespace Voat.Controllers
             // get logged in username and fetch received messages
             try
             {
-                var privateMessages = _db.Privatemessages
+                IQueryable<Privatemessage> privateMessages = _db.Privatemessages
                     .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(s => s.Timestamp)
-                    .ThenBy(s => s.Sender)
-                    .ToList().AsEnumerable();
+                    .ThenBy(s => s.Sender);
 
-                var singleMessages = privateMessages as IList<Privatemessage> ?? privateMessages.ToList();
-                if (singleMessages.Any())
+                if (privateMessages.Any())
                 {
-                    var unreadPrivateMessages = singleMessages
+                    var unreadPrivateMessages = privateMessages
                         .Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPrivateMessages.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singleMessage in singleMessages)
+                        foreach (var singleMessage in privateMessages.ToList())
                         {
                             singleMessage.Status = false;
                             _db.SaveChanges();
@@ -72,8 +70,8 @@ namespace Voat.Controllers
                     }
                 }
 
-                ViewBag.InboxCount = singleMessages.Count();
-                return View(singleMessages.ToPagedList(pageNumber, pageSize));
+                ViewBag.InboxCount = privateMessages.Count();
+                return View(privateMessages.ToPagedList(pageNumber, pageSize));
             }
             catch (Exception)
             {
@@ -102,23 +100,20 @@ namespace Voat.Controllers
             // get logged in username and fetch received comment replies
             try
             {
-                var commentReplies = _db.Commentreplynotifications
+                IQueryable<Commentreplynotification> commentReplies = _db.Commentreplynotifications
                     .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(s => s.Timestamp)
-                    .ThenBy(s => s.Sender)
-                    .ToList().AsEnumerable();
+                    .ThenBy(s => s.Sender);
 
-                var singleCommentReplies = commentReplies as IList<Commentreplynotification> ?? commentReplies.ToList();
-                if (singleCommentReplies.Any())
+                if (commentReplies.Any())
                 {
-                    var unreadCommentReplies = singleCommentReplies
-                        .Where(s => s.Status && s.Markedasunread == false).ToList();
+                    var unreadCommentReplies = commentReplies.Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadCommentReplies.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singleCommentReply in singleCommentReplies)
+                        foreach (var singleCommentReply in commentReplies.ToList())
                         {
                             singleCommentReply.Status = false;
                             _db.SaveChanges();
@@ -126,8 +121,8 @@ namespace Voat.Controllers
                     }
                 }
 
-                ViewBag.CommentRepliesCount = singleCommentReplies.Count();
-                return View(singleCommentReplies.ToPagedList(pageNumber, pageSize));
+                ViewBag.CommentRepliesCount = commentReplies.Count();
+                return View(commentReplies.ToPagedList(pageNumber, pageSize));
 
             }
             catch (Exception)
@@ -157,23 +152,21 @@ namespace Voat.Controllers
             // get logged in username and fetch received comment replies
             try
             {
-                var postReplies = _db.Postreplynotifications
+                IQueryable<Postreplynotification> postReplies = _db.Postreplynotifications
                     .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(s => s.Timestamp)
-                    .ThenBy(s => s.Sender)
-                    .ToList().AsEnumerable();
+                    .ThenBy(s => s.Sender);
 
-                var singlePostReplies = postReplies as IList<Postreplynotification> ?? postReplies.ToList();
-                if (singlePostReplies.Any())
+                if (postReplies.Any())
                 {
-                    var unreadPostReplies = singlePostReplies
+                    var unreadPostReplies = postReplies
                         .Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPostReplies.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singlePostReply in singlePostReplies)
+                        foreach (var singlePostReply in postReplies.ToList())
                         {
                             singlePostReply.Status = false;
                             _db.SaveChanges();
@@ -181,8 +174,8 @@ namespace Voat.Controllers
                     }
                 }
 
-                ViewBag.PostRepliesCount = singlePostReplies.Count();
-                return View(singlePostReplies.ToPagedList(pageNumber, pageSize));
+                ViewBag.PostRepliesCount = postReplies.Count();
+                return View(postReplies.ToPagedList(pageNumber, pageSize));
 
             }
             catch (Exception)

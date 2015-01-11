@@ -436,9 +436,11 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\markdownEditor.css" />
     <Content Include="Content\PagedList.css" />
+    <Content Include="Graphics\black_ribbon.png" />
     <Content Include="Graphics\editorSprite.png" />
     <Content Include="Graphics\missing_image.png" />
     <Content Include="Graphics\v2_ad.png" />
+    <Content Include="Graphics\voat_je_suis_charlie.png" />
     <Content Include="Scripts\markdownEditor.js" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
     <Content Include="Content\PagedList.min.css">
@@ -514,7 +516,6 @@
     <Content Include="Graphics\whoaverse.png" />
     <Content Include="Graphics\whoaverse_32x32.png" />
     <Content Include="Graphics\whoaverse_mascot_head.png" />
-    <Content Include="Graphics\whoaverse_padded.png" />
     <EntityDeploy Include="Models\WhoaverseEntityDataModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>WhoaverseEntityDataModel.Designer.cs</LastGenOutput>
@@ -598,7 +599,9 @@
     <Content Include="Scripts\whoaverse.js" />
     <Content Include="Scripts\whoaverse.ui.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="sitemap.xml" />
+    <Content Include="sitemap.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Thumbs\Placeholder.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
