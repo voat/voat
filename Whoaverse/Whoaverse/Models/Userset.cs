@@ -27,6 +27,7 @@ namespace Voat.Models
         public System.DateTime Created_on { get; set; }
         public bool Public { get; set; }
         public int Subscribers { get; set; }
+        public bool Default { get; set; }
     
         public virtual ICollection<Usersetdefinition> Usersetdefinitions { get; set; }
         public virtual ICollection<Usersetsubscription> Usersetsubscriptions { get; set; }

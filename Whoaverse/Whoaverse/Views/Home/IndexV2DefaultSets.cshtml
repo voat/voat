@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Models.ViewModels.SetFrontpageViewModel
+@model Voat.Models.ViewModels.DefaultSetFrontpageViewModel
 
 @{
     ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
@@ -41,12 +41,12 @@
     <div class="content" role="main">
 
             <div class="sitetable">
-                @foreach (var set in Model.UserSets.OrderBy(s => s.Order))
+                @foreach (var set in Model.DefaultSets.OrderBy(s => s.Order))
                 {
-                    var currentSet = set.Userset.Name;
+                    var currentSet = set.Name;
 
                     <div class="set-container">
-                        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.Set_id } })
+                        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.Set_id }, { "defaultSet", true } })
 
                         @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
                         {

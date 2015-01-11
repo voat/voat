@@ -10,12 +10,26 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
+@{
+    var setUrl = "";
+    
+    if (ViewData["defaultSet"] != null)
+    {
+        setUrl = "/s/" + ViewData["setId"];
+    }
+    else
+    {
+        setUrl = "/set/" + ViewData["setId"];
+    }
+}
+    
+
 @if (User.Identity.IsAuthenticated)
 {
     <div class="set-title dragHandle">
         <p class="title dragHandle">
             <span class="settitlelabel">
-                <a href="/s/@ViewData["setTitle"]">@ViewData["setTitle"]</a>
+                <a href="@setUrl">@ViewData["setTitle"]</a>
             </span>
             <span class="settitlesortinglabel" style="cursor: pointer" onclick="sortSetByHot();">
                 hot
@@ -33,7 +47,7 @@
                 ↘
             </span>
             <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer">
-                <a href="/s/@ViewData["setTitle"]/edit">edit</a>
+                <a href="@setUrl/edit">edit</a>
             </span>
             <span class="label label-default" style="float: right; margin-right: 2px">
                 more »
@@ -46,7 +60,7 @@ else
     <div class="set-title dragHandle">
         <p class="title dragHandle">
             <span class="settitlelabel">
-                <a href="/s/@ViewData["setTitle"]">@ViewData["setTitle"]</a>
+                <a href="@setUrl">@ViewData["setTitle"]</a>
             </span>
             <span class="settitlesortinglabel" style="cursor: pointer" onclick="sortSetByHot();">
                 hot

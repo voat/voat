@@ -12,22 +12,19 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Voat.Models.ViewModels
 {
-    public class SetDetailsViewModel
+    public class DefaultSetFrontpageViewModel
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string CreatedBy { get; set; }
-        public DateTime CreationDate { get; set; }
-        public bool Public { get; set; }
-        public int? Subscribers { get; set; }
+        public bool HasSetSubscriptions { get; set; }
 
-        // list of subverses which define the set
-        public List<Usersetdefinition> SubversesList { get; set; }
+        // list of default sets
+        public List<Defaultset> DefaultSets { get; set; }
+
+        // list of top submissions from all sets
+        public List<SetSubmission> SubmissionsList { get; set; }
     }
 }

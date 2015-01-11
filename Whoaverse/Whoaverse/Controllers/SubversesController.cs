@@ -470,6 +470,7 @@ namespace Voat.Controllers
             return HandleSortedSubverseAll(page, sortingmode);
         }
 
+        // GET: show a list of subverses
         public ActionResult Subverses(int? page)
         {
             ViewBag.SelectedSubverse = "subverses";

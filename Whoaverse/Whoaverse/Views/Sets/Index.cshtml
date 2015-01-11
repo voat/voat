@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Models.ViewModels.SingleDefaultSetViewModel
+@model Voat.Models.ViewModels.SingleSetViewModel
 
 @{
     ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
@@ -20,21 +20,10 @@
 }
 
 @using System.Configuration
-@using Voat.Utils;
-
-<script>
-    $(function () {
-        $(".set-container").draggable({ axis: "y", handle: ".dragHandle", revert: true, disabled: true });
-    });
-</script>
 
 <style type="text/css">
     body > .content .link .rank {
         width: 3.2ex;
-    }
-
-    .set-container .dragHandle {
-        cursor: default;
     }
 </style>
 
@@ -42,6 +31,6 @@
     @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
 
     <div class="content" role="main">
-        @Html.Partial("~/Views/Sets/_SingleDefaultSet.cshtml")
+        @Html.Partial("~/Views/Sets/_SingleSet.cshtml")
     </div>
 </div>

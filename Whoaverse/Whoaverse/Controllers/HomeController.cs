@@ -365,18 +365,18 @@ namespace Voat.Controllers
         public ActionResult IndexV2(int? page)
         {
             ViewBag.SelectedSubverse = "frontpage";
-            var frontPageResultModel = new SetFrontpageViewModel();
             var submissions = new List<SetSubmission>();
 
             try
             {
+                var frontPageResultModel = new SetFrontpageViewModel();
+
                 // show user sets
                 // get names of each set that user is subscribed to
                 // for each set name, get list of subverses that define the set
                 // for each subverse, get top ranked submissions
                 if (User.Identity.IsAuthenticated && Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
                 {
-                    //var userSetSubscriptions = _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name).Include(x => x.Userset);
                     var userSetSubscriptions = _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name);
 
                     foreach (var set in userSetSubscriptions)
@@ -397,33 +397,31 @@ namespace Voat.Controllers
 
                     return View(frontPageResultModel);
                 }
-                else
+
+                // show default sets since user has no set subscriptions
+                // get names of default sets
+                // for each set name, get list of subverses
+                // for each subverse, get top ranked submissions
+                var defaultSets = _db.Defaultsets.ToList();
+                var defaultFrontPageResultModel = new DefaultSetFrontpageViewModel();
+
+                foreach (var set in defaultSets)
                 {
-                    // show default sets
-                    // get names of default sets
-                    // for each set name, get list of subverses
-                    // for each subverse, get top ranked submissions
-                    var defaultSets = _db.Defaultsets.ToList();
+                    Defaultset setId = set;
+                    var defaultSetDefinition = _db.Defaultsetsetups.Where(st => st.Set_id == setId.Set_id);
 
-                    foreach (var set in defaultSets)
+                    foreach (var subverse in defaultSetDefinition)
                     {
-                        Defaultset setId = set;
-                        var defaultSetDefinition = _db.Defaultsetsetups.Where(st => st.Set_id == setId.Set_id);
-
-                        foreach (var subverse in defaultSetDefinition)
-                        {
-                            // get top ranked submissions
-                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Messages, set.Name, 2));
-                        }
+                        // get top ranked submissions
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Messages, set.Name, 2));
                     }
-
-                    frontPageResultModel.HasSetSubscriptions = false;
-                    frontPageResultModel.DefaultSets = defaultSets;
-
-                    frontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
-
-                    return View(frontPageResultModel);
                 }
+
+                defaultFrontPageResultModel.HasSetSubscriptions = false;
+                defaultFrontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
+                defaultFrontPageResultModel.DefaultSets = defaultSets;
+
+                return View("~/Views/Home/IndexV2DefaultSets.cshtml", defaultFrontPageResultModel);
             }
             catch (Exception)
             {

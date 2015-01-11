@@ -273,6 +273,7 @@
     <Compile Include="Models\Usersetsubscription.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\DefaultSetFrontpageViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
@@ -436,7 +437,6 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\markdownEditor.css" />
     <Content Include="Content\PagedList.css" />
-    <Content Include="Graphics\black_ribbon.png" />
     <Content Include="Graphics\editorSprite.png" />
     <Content Include="Graphics\missing_image.png" />
     <Content Include="Graphics\v2_ad.png" />
@@ -736,14 +736,16 @@
     <Content Include="Views\AjaxViews\_VideoPlayer.cshtml" />
     <Content Include="Views\Home\IndexV2.cshtml" />
     <Content Include="Views\Sets\_SetTitle.cshtml" />
-    <Content Include="Views\Sets\_SingleDefaultset.cshtml" />
+    <Content Include="Views\Sets\_SingleSet.cshtml" />
     <Content Include="Views\Sets\Index.cshtml" />
-    <Content Include="Views\Sets\_Defaultsets.cshtml" />
     <Content Include="Views\Sets\MySets.cshtml" />
     <Content Include="Views\Sets\_SubscribedSetDetails.cshtml" />
     <Content Include="Views\Sets\_PopularSets.cshtml" />
     <Content Include="Views\Sets\SingleSetView.cshtml" />
     <Content Include="Views\Shared\_MarkdownEditor.cshtml" />
+    <Content Include="Views\Sets\Sets.cshtml" />
+    <Content Include="Views\Sets\_SetDetails.cshtml" />
+    <Content Include="Views\Home\IndexV2DefaultSets.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

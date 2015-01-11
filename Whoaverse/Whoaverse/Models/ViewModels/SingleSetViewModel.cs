@@ -33,5 +33,8 @@ namespace Voat.Models.ViewModels
 
         // list of subverses which define the set
         public List<Usersetdefinition> SubversesList { get; set; }
+
+        // list of top submissions from single set
+        public List<SetSubmission> SubmissionsList { get; set; }
     }
 }

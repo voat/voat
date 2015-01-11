@@ -10,8 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@using Voat.Utils
-@model Voat.Models.ViewModels.SingleDefaultSetViewModel
+@model Voat.Models.ViewModels.SingleSetViewModel
 
 @{
     int commentContributionPoints = 0;
@@ -26,13 +25,13 @@
 <div class="sitetable">
 
     <div class="set-container">
-        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", Model.Name } })
+        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", Model.Name }, { "setId", Model.Id } })
 
         @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet.Equals(Model.Name, StringComparison.OrdinalIgnoreCase)))
         {
             // get only submissions which belong to currently selected set
-            //type 2 = link
-            //type 1 = message
+            // type 2 = link
+            // type 1 = message
             string submissionClass = "";
             if (submission.Type == 1)
             {

@@ -315,6 +315,7 @@
           <Property Name="Created_on" Type="datetime" Nullable="false" />
           <Property Name="Public" Type="bit" Nullable="false" />
           <Property Name="Subscribers" Type="int" Nullable="false" />
+          <Property Name="Default" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Usersetsubscriptions">
           <Key>
@@ -1374,6 +1375,7 @@
           <Property Name="Subscribers" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Usersetdefinitions" Relationship="whoaverseModel.FK_Usersetdefinitions_Usersets" FromRole="Userset" ToRole="Usersetdefinition" />
           <NavigationProperty Name="Usersetsubscriptions" Relationship="whoaverseModel.FK_Usersetsubscriptions_Usersets" FromRole="Userset" ToRole="Usersetsubscription" />
+          <Property Name="Default" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Usersetsubscription">
           <Key>
@@ -1778,6 +1780,7 @@
           <EntitySetMapping Name="Usersets">
             <EntityTypeMapping TypeName="whoaverseModel.Userset">
               <MappingFragment StoreEntitySet="Usersets">
+                <ScalarProperty Name="Default" ColumnName="Default" />
                 <ScalarProperty Name="Subscribers" ColumnName="Subscribers" />
                 <ScalarProperty Name="Public" ColumnName="Public" />
                 <ScalarProperty Name="Created_on" ColumnName="Created_on" />
