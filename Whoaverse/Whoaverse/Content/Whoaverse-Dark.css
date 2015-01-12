@@ -5,6 +5,10 @@
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
+.submission {
+    border-bottom: 1px solid #272727;
+}
+
 body {
     background: #292929;
     color: #DFDFDF;

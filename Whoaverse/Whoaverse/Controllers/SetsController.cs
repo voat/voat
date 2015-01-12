@@ -122,7 +122,6 @@ namespace Voat.Controllers
                                     singleSetResultModel.Id = set.Set_id;
                                 }
 
-
                             singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
                             return View("~/Views/Sets/Index.cshtml", singleSetResultModel);
