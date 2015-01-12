@@ -5,21 +5,21 @@
 <div class="markdownEditor">
     <!-- Markdown Editor Headings Sub Menu -->
     <div class="markdownEditorSubMenu" style="display: none;">
-        <a class="markdownEditorImgButton" style="background-position: -0px -48px;" alt="h1" title="Heading Level 1" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n#','');"></a>
-        <a class="markdownEditorImgButton" style="background-position: -32px -48px;" alt="h2" title="Heading Level 2" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n##','');"></a>
-        <a class="markdownEditorImgButton" style="background-position: -64px -48px;" alt="h3" title="Heading Level 3" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n###','');"></a>
-        <a class="markdownEditorImgButton" style="background-position: -96px -48px;" alt="h4" title="Heading Level 4" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n####','');"></a>
-        <a class="markdownEditorImgButton" style="background-position: -128px -48px;" alt="h5" title="Heading Level 5" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n#####','');"></a>
-        <a class="markdownEditorImgButton" style="background-position: -160px -48px;" alt="h6" title="Heading Level 6" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n######','');"></a>
+        <a class="markdownEditorImgButton" style="background-position: -0px -32px;" alt="h1" title="Heading Level 1" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n#','');"></a>
+        <a class="markdownEditorImgButton" style="background-position: -32px -32px;" alt="h2" title="Heading Level 2" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n##','');"></a>
+        <a class="markdownEditorImgButton" style="background-position: -64px -32px;" alt="h3" title="Heading Level 3" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n###','');"></a>
+        <a class="markdownEditorImgButton" style="background-position: -96px -32px;" alt="h4" title="Heading Level 4" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n####','');"></a>
+        <a class="markdownEditorImgButton" style="background-position: -128px -32px;" alt="h5" title="Heading Level 5" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n#####','');"></a>
+        <a class="markdownEditorImgButton" style="background-position: -160px -32px;" alt="h6" title="Heading Level 6" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n######','');"></a>
     </div>
     <!-- Markdown Editor Table Creator Sub Menu -->
     <div class="markdownEditorSubMenu" style="display: none;">
         <input type="hidden" name="cols" id="numCols" value="1">
         <input type="hidden" name="rows" id="numRows" value="1">
-        <a class="markdownEditorImgButton" style="background-position: 0px -32px;" alt="more_column" title="More Columns" onclick="incColumns($(this.parentElement).find('#numCols')[0],$(this.parentElement).find('#numColsDisplay')[0]);"></a>
-        <a class="markdownEditorImgButton" style="background-position: -32px -32px;" alt="less_column" title="Less Columns" onclick="decColumns($(this.parentElement).find('#numCols')[0],$(this.parentElement).find('#numColsDisplay')[0]);"></a>
-        <a class="markdownEditorImgButton" style="background-position: -64px -32px;" alt="more_rows" title="More Rows" onclick="incRows($(this.parentElement).find('#numRows')[0],$(this.parentElement).find('#numRowsDisplay')[0]);"></a>
-        <a class="markdownEditorImgButton" style="background-position: -96px -32px;" alt="less_rows" title="Less Rows" onclick="decRows($(this.parentElement).find('#numRows')[0],$(this.parentElement).find('#numRowsDisplay')[0]);"></a>
+        <a class="markdownEditorImgButton" style="background-position: 0px -48px;" alt="more_column" title="More Columns" onclick="incColumns($(this.parentElement).find('#numCols')[0],$(this.parentElement).find('#numColsDisplay')[0]);"></a>
+        <a class="markdownEditorImgButton" style="background-position: -32px -48px;" alt="less_column" title="Less Columns" onclick="decColumns($(this.parentElement).find('#numCols')[0],$(this.parentElement).find('#numColsDisplay')[0]);"></a>
+        <a class="markdownEditorImgButton" style="background-position: -64px -48px;" alt="more_rows" title="More Rows" onclick="incRows($(this.parentElement).find('#numRows')[0],$(this.parentElement).find('#numRowsDisplay')[0]);"></a>
+        <a class="markdownEditorImgButton" style="background-position: -96px -48px;" alt="less_rows" title="Less Rows" onclick="decRows($(this.parentElement).find('#numRows')[0],$(this.parentElement).find('#numRowsDisplay')[0]);"></a>
         <a class="markdownEditorTextButton" alt="create" title="Create Table" onclick="createTable($(this.parentElement.parentElement.parentElement).find('textarea')[0],this.parentElement.children[0].value,this.parentElement.children[1].value);">Create <span id="numColsDisplay">1</span>x<span id="numRowsDisplay">1</span> table</a>
     </div>
     <!-- Markdown Editor Main Menu -->
@@ -33,7 +33,7 @@
         <a class="markdownEditorImgButton" style="background-position: -192px 0px;" alt="ol" title="Number List" onclick="addTagsToEachSelectedTextLine($(this.parentElement.parentElement.parentElement).find('textarea')[0],'1. ','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -224px 0px;" alt="br" title="Large Paragraph Spacing" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n\n&amp;nbsp;\n\n','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -0px -16px;" alt="hr" title="Horizontal Rule" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n\n----------\n\n','');"></a>
-        <a class="markdownEditorImgButton" style="background-position: -64px -16px;" alt="heading" title="Headings" onclick="$(this.parentElement.parentElement.children[1]).toggle('medium');"></a>
-        <a class="markdownEditorImgButton" style="background-position: -32px -16px;" alt="table" title="Table" onclick="$(this.parentElement.parentElement.children[0]).toggle('medium');"></a>
+        <a class="markdownEditorImgButton" style="background-position: -32px -16px;" alt="heading" title="Headings" onclick="$(this.parentElement.parentElement.children[1]).toggle('medium');"></a>
+        <a class="markdownEditorImgButton" style="background-position: -64px -16px;" alt="table" title="Table" onclick="$(this.parentElement.parentElement.children[0]).toggle('medium');"></a>
     </div>
 </div>
