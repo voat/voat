@@ -478,7 +478,7 @@
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Graphics\editorSprite.png" />
+    <Content Include="Graphics\markdownEditorSprite.png" />
     <Content Include="Graphics\missing_image.png" />
     <Content Include="Graphics\v2_ad.png" />
     <Content Include="Graphics\voat_je_suis_charlie.png" />

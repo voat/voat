@@ -36,8 +36,8 @@ $(document).ready(function () {
 
     $('.whoaSubscriptionMenu > li').bind('mouseover', openSubMenu);
     $('.whoaSubscriptionMenu > li').bind('mouseout', closeSubMenu);
-    function openSubMenu() { $(this).find('ul').css('visibility', 'visible'); };
-    function closeSubMenu() { $(this).find('ul').css('visibility', 'hidden'); };
+    function openSubMenu() { $(this).find('ul').css('visibility', 'visible'); }
+    function closeSubMenu() { $(this).find('ul').css('visibility', 'hidden'); }
 
     $('#Subverse').autocomplete(
         {
@@ -46,7 +46,7 @@ $(document).ready(function () {
 });
 
 function click_voting() {
-    $(this).toggleClass("arrow upmod login-required")
+    $(this).toggleClass("arrow upmod login-required");
 }
 
 function mustLogin() {
@@ -76,34 +76,34 @@ function voteUpSubmission(submissionid) {
 
     //ADD LIKE IF UNVOTED
     if ($(".id-" + submissionid).children(".midcol").is(".unvoted")) {
-        $(".id-" + submissionid).children(".midcol").toggleClass("likes", true) //add class likes
-        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
+        $(".id-" + submissionid).children(".midcol").toggleClass("likes", true); //add class likes
+        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
         //add upvoted arrow
-        $(".id-" + submissionid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true) //set upvote arrow to upvoted
-        $(".id-" + submissionid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false) //remove upvote arrow
+        $(".id-" + submissionid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //set upvote arrow to upvoted
+        $(".id-" + submissionid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false); //remove upvote arrow
         //increment score likes counter        
         scoreLikes++;
         $(".id-" + submissionid).find('.score.likes').html(scoreLikes);
     } else if ($(".id-" + submissionid).children(".midcol").is(".likes")) {
         //REMOVE LIKE IF LIKED
-        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", true) //add class unvoted
-        $(".id-" + submissionid).children(".midcol").toggleClass("likes", false) //remove class dislikes
+        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", true); //add class unvoted
+        $(".id-" + submissionid).children(".midcol").toggleClass("likes", false); //remove class dislikes
         //remove upvoted arrow
-        $(".id-" + submissionid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true) //set arrow to upvote
-        $(".id-" + submissionid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false) //remove upvoted arrow
+        $(".id-" + submissionid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set arrow to upvote
+        $(".id-" + submissionid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
         //decrement score likes counter
         scoreLikes--;
         $(".id-" + submissionid).find('.score.likes').html(scoreLikes);
         $(".id-" + submissionid).find('.score.unvoted').html(scoreLikes);
     } else if ($(".id-" + submissionid).children(".midcol").is(".dislikes")) {
         //ADD LIKE IF DISLIKED
-        $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", false) //remove class dislikes
-        $(".id-" + submissionid).children(".midcol").toggleClass("likes", true) //add class likes
-        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted        
+        $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", false); //remove class dislikes
+        $(".id-" + submissionid).children(".midcol").toggleClass("likes", true); //add class likes
+        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted        
         //remove downvoted arrow
-        $(".id-" + submissionid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true) //set downvoted arrow to downvote
-        $(".id-" + submissionid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false) //remove downvoted arrow
-        $(".id-" + submissionid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true) //add upvoted arrow
+        $(".id-" + submissionid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set downvoted arrow to downvote
+        $(".id-" + submissionid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
+        $(".id-" + submissionid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //add upvoted arrow
         //increment score dislikes counter
         scoreDislikes--;
         scoreLikes++;
@@ -123,34 +123,34 @@ function voteDownSubmission(submissionid) {
 
     //ADD DISLIKE IF UNVOTED
     if ($(".id-" + submissionid).children(".midcol").is(".unvoted")) {
-        $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", true) //add class dislikes
-        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
+        $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", true); //add class dislikes
+        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
         //add downvoted arrow
-        $(".id-" + submissionid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true) //set downvote arrow to downvoted
-        $(".id-" + submissionid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false) //remove downvote arrow
+        $(".id-" + submissionid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //set downvote arrow to downvoted
+        $(".id-" + submissionid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false); //remove downvote arrow
         //increment score dislikes counter
         scoreDislikes++;
         $(".id-" + submissionid).find('.score.dislikes').html(scoreDislikes);
     } else if ($(".id-" + submissionid).children(".midcol").is(".dislikes")) {
         //REMOVE DISLIKE IF DISLIKED
-        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", true) //add class unvoted
-        $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", false) //remove class dislikes
+        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", true); //add class unvoted
+        $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", false); //remove class dislikes
         //remove downvoted arrow
-        $(".id-" + submissionid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true) //set arrow to downvote
-        $(".id-" + submissionid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false) //remove downvoted arrow
+        $(".id-" + submissionid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set arrow to downvote
+        $(".id-" + submissionid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
         //decrement score dislikes counter
         scoreDislikes--;
         $(".id-" + submissionid).find('.score.dislikes').html(scoreDislikes);
         $(".id-" + submissionid).find('.score.unvoted').html(scoreLikes);
     } else if ($(".id-" + submissionid).children(".midcol").is(".likes")) {
         //ADD DISLIKE IF LIKED
-        $(".id-" + submissionid).children(".midcol").toggleClass("likes", false) //remove class likes
-        $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", true) //add class dislikes
-        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
+        $(".id-" + submissionid).children(".midcol").toggleClass("likes", false); //remove class likes
+        $(".id-" + submissionid).children(".midcol").toggleClass("dislikes", true); //add class dislikes
+        $(".id-" + submissionid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
         //remove upvoted arrow
-        $(".id-" + submissionid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true) //set upvoted arrow to upvote
-        $(".id-" + submissionid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false) //remove upvoted arrow
-        $(".id-" + submissionid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true) //add downvoted arrow
+        $(".id-" + submissionid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set upvoted arrow to upvote
+        $(".id-" + submissionid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
+        $(".id-" + submissionid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //add downvoted arrow
         //increment score dislikes counter
         scoreDislikes++;
         scoreLikes--;
@@ -189,11 +189,11 @@ function voteUpComment(commentid) {
 
     // ADD LIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
-        $(".id-" + commentid).children(".midcol").toggleClass("likes", true) //add class likes
-        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
+        $(".id-" + commentid).children(".midcol").toggleClass("likes", true); //add class likes
+        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
         // add upvoted arrow
-        $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true) //set upvote arrow to upvoted
-        $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false) //remove upvote arrow
+        $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //set upvote arrow to upvoted
+        $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false); //remove upvote arrow
         // increment comment points counter and update DOM element
         scoreLikes++;
         $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);
@@ -201,11 +201,11 @@ function voteUpComment(commentid) {
         $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".likes")) {
         // REMOVE LIKE IF LIKED
-        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", true) //add class unvoted
-        $(".id-" + commentid).children(".midcol").toggleClass("likes", false) //remove class dislikes
+        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", true); //add class unvoted
+        $(".id-" + commentid).children(".midcol").toggleClass("likes", false); //remove class dislikes
         // remove upvoted arrow
-        $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true) //set arrow to upvote
-        $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false) //remove upvoted arrow
+        $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set arrow to upvote
+        $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
         // decrement comment points counter and update DOM element
         scoreLikes--;
         $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);
@@ -213,13 +213,13 @@ function voteUpComment(commentid) {
         $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".dislikes")) {
         // ADD LIKE IF DISLIKED
-        $(".id-" + commentid).children(".midcol").toggleClass("dislikes", false) //remove class dislikes
-        $(".id-" + commentid).children(".midcol").toggleClass("likes", true) //add class likes
-        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
+        $(".id-" + commentid).children(".midcol").toggleClass("dislikes", false); //remove class dislikes
+        $(".id-" + commentid).children(".midcol").toggleClass("likes", true); //add class likes
+        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
         // remove downvoted arrow
-        $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true) //set downvoted arrow to downvote
-        $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false) //remove downvoted arrow
-        $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true) //add upvoted arrow
+        $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set downvoted arrow to downvote
+        $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
+        $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //add upvoted arrow
         // increment/decrement comment points counters and update DOM element
         scoreLikes++;
         scoreDislikes++; // this will always be a negative number        
@@ -240,11 +240,11 @@ function voteDownComment(commentid) {
 
     // ADD DISLIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
-        $(".id-" + commentid).children(".midcol").toggleClass("dislikes", true) //add class dislikes
-        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
+        $(".id-" + commentid).children(".midcol").toggleClass("dislikes", true); //add class dislikes
+        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
         // add downvoted arrow
-        $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true) //set downvote arrow to downvoted
-        $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false) //remove downvote arrow
+        $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //set downvote arrow to downvoted
+        $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false); //remove downvote arrow
         // increment comment points counter and update DOM element        
         scoreDislikes--;
         $(".id-" + commentid).find('.post_downvotes').filter(":first").html(scoreDislikes);
@@ -252,11 +252,11 @@ function voteDownComment(commentid) {
         $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes + scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".dislikes")) {
         // REMOVE DISLIKE IF DISLIKED
-        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", true) //add class unvoted
-        $(".id-" + commentid).children(".midcol").toggleClass("dislikes", false) //remove class dislikes
+        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", true); //add class unvoted
+        $(".id-" + commentid).children(".midcol").toggleClass("dislikes", false); //remove class dislikes
         // remove downvoted arrow
-        $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true) //set arrow to downvote
-        $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false) //remove downvoted arrow
+        $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set arrow to downvote
+        $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
         // decrement comment points counter and update DOM element
         scoreDislikes++;
         $(".id-" + commentid).find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
@@ -264,13 +264,13 @@ function voteDownComment(commentid) {
         $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".likes")) {
         // ADD DISLIKE IF LIKED
-        $(".id-" + commentid).children(".midcol").toggleClass("likes", false) //remove class likes
-        $(".id-" + commentid).children(".midcol").toggleClass("dislikes", true) //add class dislikes
-        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false) //remove class unvoted
+        $(".id-" + commentid).children(".midcol").toggleClass("likes", false); //remove class likes
+        $(".id-" + commentid).children(".midcol").toggleClass("dislikes", true); //add class dislikes
+        $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
         // remove upvoted arrow
-        $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true) //set upvoted arrow to upvote
-        $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false) //remove upvoted arrow
-        $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true) //add downvoted arrow
+        $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set upvoted arrow to upvote
+        $(".id-" + commentid).children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
+        $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //add downvoted arrow
         // increment/decrement comment points counters and update DOM element
         scoreLikes--;
         scoreDislikes--; // this will always be a negative number
@@ -571,7 +571,7 @@ function editmessagesubmit(submissionid) {
         datatype: "json",
         success: function (data) {
             $("#submissionid-" + submissionid).find('.md').html(data.response);
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $("#submissionid-" + submissionid)) });
+            window.setTimeout(function () { UI.Notifications.raise('DOM', $("#submissionid-" + submissionid)); });
         }
     });
 
@@ -630,7 +630,7 @@ function editcommentsubmit(commentid) {
         success: function (data) {
             $("#" + commentid).find('.md').html(data.response);
             //notify UI framework of DOM insertion async
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)) });
+            window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)); });
 
         }
     });
@@ -752,9 +752,9 @@ function togglesubmissionback(obj) {
 }
 
 // check if an object exists
-$.fn.exists = function () {
+$.fn.exists = function() {
     return this.length !== 0;
-}
+};
 
 // subscribe to subverse
 function subscribe(obj, subverseName) {
@@ -997,10 +997,10 @@ function suggestTitle() {
         "/ajaxhelpers/titlefromuri?uri=" + uri,
         null,
         function (data) {
-            $("#Linkdescription").val(data)
+            $("#Linkdescription").val(data);
         }).fail(function () {
-            $("#Linkdescription").val("We were unable to suggest a title.")
-        });
+        $("#Linkdescription").val("We were unable to suggest a title.");
+    });
 }
 
 // a function to toggle sticky mode for a submission
@@ -1032,7 +1032,7 @@ function showSubmissionPreview(senderButton) {
     // get rendered submission and show it
     var submissionModel = {
         MessageContent: $("#MessageContent").val()
-    }
+    };
 
     $.ajax({
         url: '/ajaxhelpers/rendersubmission/',
