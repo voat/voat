@@ -193,7 +193,12 @@ function addHyperlink(textComponent) {
     //this will be replaced with a custom dialog in future versions
     var url = prompt('Enter the URL: ', '');
     if (url != "" && url !== null) {
-        addTagsToSelectedText(textComponent, '[Title Here','](' + url + ')');
+		if (getSelectionArray(textComponent[1] == ""){
+			//No text selected, add "Title Here" to help user understand the markdown
+			addTagsToSelectedText(textComponent, '[Title Here','](' + url + ')');
+		} else {
+			addTagsToSelectedText(textComponent, '[','](' + url + ')');
+		}
     }
     textComponent.focus();
 }
