@@ -138,6 +138,16 @@ namespace Voat.Utils
             }
         }
 
+        // check if given user is subscribed to a given set
+        public static bool IsUserSetSubscriber(string userName, int setId)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var setSubscriber = db.Usersetsubscriptions.FirstOrDefault(n => n.Set_id == setId && n.Username == userName);
+                return setSubscriber != null;
+            }
+        }
+
         // subscribe to a subverse
         public static void SubscribeToSubverse(string userName, string subverse)
         {
@@ -548,6 +558,55 @@ namespace Voat.Utils
             // dailyPostingQuota = 100;
 
             // check how many submission user made today
+        }
+
+        // subscribe to a set
+        public static void SubscribeToSet(string userName, int setId)
+        {
+            // do nothing if user is already subscribed
+            if (IsUserSetSubscriber(userName, setId)) return;
+
+            using (var db = new whoaverseEntities())
+            {
+                // add a new set subscription
+                var newSubscription = new Usersetsubscription { Username = userName, Set_id = setId };
+                db.Usersetsubscriptions.Add(newSubscription);
+
+                // record new set subscription in sets table subscribers field
+                var tmpUserSet = db.Usersets.Find(setId);
+
+                if (tmpUserSet != null)
+                {
+                    tmpUserSet.Subscribers++;
+                }
+
+                db.SaveChanges();
+            }
+        }
+
+        // unsubscribe from a set
+        public static void UnSubscribeFromSet(string userName, int setId)
+        {
+            // do nothing if user is not subscribed to given set
+            if (!IsUserSetSubscriber(userName, setId)) return;
+
+            using (var db = new whoaverseEntities())
+            {
+                var subscription = db.Usersetsubscriptions.FirstOrDefault(b => b.Username == userName && b.Set_id == setId);
+
+                // remove subscription record
+                db.Usersetsubscriptions.Remove(subscription);
+
+                // record new unsubscription in sets table subscribers field
+                var tmpUserset = db.Usersets.Find(setId);
+
+                if (tmpUserset != null)
+                {
+                    tmpUserset.Subscribers--;
+                }
+
+                db.SaveChanges();
+            }
         }
     }
 }

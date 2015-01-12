@@ -756,7 +756,7 @@ $.fn.exists = function () {
     return this.length !== 0;
 }
 
-// subscribe button
+// subscribe to subverse
 function subscribe(obj, subverseName) {
     $(obj).attr("onclick", "unsubscribe(this)");
     $(obj).html("unsubscribe");
@@ -765,13 +765,62 @@ function subscribe(obj, subverseName) {
     submitSubscribeRequest(subverseName);
 }
 
-// unsubscribe button
+// unsubscribe from subverse
 function unsubscribe(obj, subverseName) {
     $(obj).attr("onclick", "subscribe(this)");
     $(obj).html("subscribe");
 
     // call the actual unsubscribe API
     submitUnSubscribeRequest(subverseName);
+}
+
+// subscribe to set
+function subscribeToSet(obj, setId) {
+    $(obj).attr("onclick", "unsubscribe(this)");
+    $(obj).html("unsubscribe");
+
+    // call the actual subscribe API
+    submitSetSubscribeRequest(setId);
+}
+
+// unsubscribe from set
+function unsubscribeFromSet(obj, setId) {
+    $(obj).attr("onclick", "subscribe(this)");
+    $(obj).html("subscribe");
+
+    // call the actual unsubscribe API
+    submitSetUnSubscribeRequest(setId);
+}
+
+
+function submitSetSubscribeRequest(setId) {
+    $.ajax({
+        type: "POST",
+        url: "/subscribetoset/" + setId,
+        success: function () {
+            var numberOfSubscribers = +($('#subscribercount').html());
+            numberOfSubscribers++;
+            $('#subscribercount').html(numberOfSubscribers);
+        },
+        error: function () {
+            alert('Something went wrong while sending a set subscription request.');
+        }
+    });
+}
+
+function submitSetUnSubscribeRequest(setId) {
+    $.ajax({
+        type: "POST",
+        url: "/unsubscribefromset/" + setId,
+        success: function () {
+            var numberOfSubscribers = +($('#subscriberCount').html());
+            numberOfSubscribers--;
+            $('#subscriberCount').html(numberOfSubscribers);
+        },
+        error: function () {
+            alert('Something went wrong while sending unsubscription request.');
+        }
+    });
 }
 
 function submitSubscribeRequest(subverseName) {
@@ -820,8 +869,8 @@ function loadSelfText(obj, messageId) {
         }
      );
 
-    //toggle message content display
-    //note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
+    // toggle message content display
+    // note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
     $(obj).parent().find(".expando").next().next().next().toggle();
 }
 
@@ -843,7 +892,7 @@ function loadVideoPlayer(obj, messageId) {
         }
      );
 
-    //note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
+    // note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
     $(obj).parent().find(".expando").next().next().next().toggle();
 }
 

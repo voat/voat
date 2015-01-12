@@ -257,5 +257,25 @@ namespace Voat.Controllers
 
             return PartialView("~/Views/Sets/_PopularSets.cshtml", popularSets);
         }
+
+        // POST: subscribe to a set
+        [Authorize]
+        public JsonResult Subscribe(int setId)
+        {
+            var loggedInUser = User.Identity.Name;
+
+            Utils.User.SubscribeToSet(loggedInUser, setId);
+            return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
+        }
+
+        // POST: unsubscribe from a set
+        [Authorize]
+        public JsonResult UnSubscribe(int setId)
+        {
+            var loggedInUser = User.Identity.Name;
+
+            Utils.User.UnSubscribeFromSet(loggedInUser, setId);
+            return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
+        }
     }
 }

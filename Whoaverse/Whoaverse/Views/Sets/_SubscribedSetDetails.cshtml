@@ -19,11 +19,11 @@
 <div class="midcol">
     @if (Voat.Utils.User.IsUserSubscribedToSet(User.Identity.Name, Model.Name))
     {
-        <button type="button" onclick="return setUnsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
+        <button type="button" onclick="return unsubscribeFromSet(this, '@Model.Id')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
     }
     else
     {
-        <button type="button" onclick="return setSubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default">subscribe</button>
+        <button type="button" onclick="return subscribeToSet(this, '@Model.Id')" class="btn-whoaverse-paging btn-xs btn-default">subscribe</button>
     }
 
     @if (Voat.Utils.User.IsUserSetOwner(User.Identity.Name, Model.Name))

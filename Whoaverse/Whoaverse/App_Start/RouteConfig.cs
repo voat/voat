@@ -248,11 +248,25 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "Subscribe" }
             );
 
+            // subscribe to set
+            routes.MapRoute(
+                name: "subscribetoset",
+                url: "subscribetoset/{setId}",
+                defaults: new { controller = "Sets", action = "Subscribe" }
+            );
+
             // unsubscribe
             routes.MapRoute(
                 name: "unsubscribe",
                 url: "unsubscribe/{subverseName}",
                 defaults: new { controller = "Subverses", action = "UnSubscribe" }
+            );
+
+            // unsubscribe from set
+            routes.MapRoute(
+                name: "unsubscribefromset",
+                url: "unsubscribefromset/{setId}",
+                defaults: new { controller = "Sets", action = "UnSubscribe" }
             );
 
             // vote
