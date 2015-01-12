@@ -26,7 +26,7 @@
 	width: 32px;
 	vertical-align: middle;
 	background-color: whitesmoke;
-	background-image: url('../Graphics/editorSprite.png');
+	background-image: url('../Graphics/markdownEditorSprite.png');
 	border: 1px solid grey;
 	box-sizing: content-box;
 	cursor: pointer;
