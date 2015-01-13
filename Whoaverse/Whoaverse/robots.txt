@@ -8,13 +8,9 @@ Disallow: /*.json-compact
 Disallow: /*.json-html
 Disallow: /*.mobile
 Disallow: /*.compact
-Disallow: /*.xml
 Disallow: /*.rss
 Disallow: /*.i
 Disallow: /*.embed
-Disallow: /*/comments/*?*sort=
-Disallow: /v/*/comments/*/*/c*
-Disallow: /comments/*/*/c*
 Disallow: /v/*/submit
 Disallow: /message/compose*
 Disallow: /api

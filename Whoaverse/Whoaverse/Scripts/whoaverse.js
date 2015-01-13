@@ -12,11 +12,7 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
-/*
- * This code is bad. Bad code is bad. Bad code! Okay...
- * I am a beginner when it comes to JavaScript and jQuery, so please, feel free to refactor this as much as you can!
- * - Atko
- */
+// Please feel free to refactor this code, I wrote most of it when I first started playing with JavaScript
 
 $(document).ready(function () {
     // activate bootsrap popovers
@@ -792,7 +788,6 @@ function unsubscribeFromSet(obj, setId) {
     submitSetUnSubscribeRequest(setId);
 }
 
-
 function submitSetSubscribeRequest(setId) {
     $.ajax({
         type: "POST",
@@ -1018,7 +1013,6 @@ function toggleSticky(messageId) {
 }
 
 // a function to display a preview of submission without submitting it
-// I am pretty surprised at how my javascript functions have evolved over time, this one may actually be quite alright :)
 function showSubmissionPreview(senderButton) {
     var rawSubmissionContent = $("#MessageContent").val();
     if (!rawSubmissionContent.length>0) {
@@ -1049,3 +1043,4 @@ function showSubmissionPreview(senderButton) {
     $(senderButton).val("Preview");
     return false;
 }
+

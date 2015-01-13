@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Microsoft.AspNet.SignalR;
 using Voat.Models;
 using Voat.Utils;
 
@@ -28,7 +29,7 @@ namespace Voat.Controllers
         readonly Random _rnd = new Random();
 
         // POST: votecomment/{commentId}/{typeOfVote}
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         public JsonResult VoteComment(int commentId, int typeOfVote)
         {
             var loggedInUser = User.Identity.Name;
@@ -154,7 +155,7 @@ namespace Voat.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         [PreventSpam(DelayRequest = 120, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind(Include = "Id, CommentContent, MessageId, ParentId")] Comment comment)
@@ -219,6 +220,9 @@ namespace Voat.Controllers
                                         _db.Commentreplynotifications.Add(commentReplyNotification);
 
                                         await _db.SaveChangesAsync();
+                                        // send SignalR realtime notification to recipient
+                                        var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                                        hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending();
                                     }
                                     else
                                     {
@@ -267,6 +271,10 @@ namespace Voat.Controllers
                                     _db.Postreplynotifications.Add(postReplyNotification);
 
                                     await _db.SaveChangesAsync();
+
+                                    // send SignalR realtime notification to recipient
+                                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                                    hubContext.Clients.User(postReplyNotification.Recipient).setNotificationsPending();
                                 }
                             }
                         }
@@ -297,7 +305,7 @@ namespace Voat.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         [PreventSpam(DelayRequest = 120, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> EditComment([Bind(Include = "CommentId, CommentContent")] EditComment model)
         {
@@ -325,7 +333,7 @@ namespace Voat.Controllers
 
         // POST: deletecomment
         [HttpPost]
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         public async Task<ActionResult> DeleteComment(int commentId)
         {
             var commentToDelete = _db.Comments.Find(commentId);
