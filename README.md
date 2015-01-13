@@ -18,6 +18,7 @@ The following 3rd party libraries/extensions are used:
 - jQuery (http://jquery.com/)
 - Entity Framework (https://entityframework.codeplex.com/)
 - WebApiThrottle (https://github.com/stefanprodan/WebApiThrottle)
+- SignalR (https://github.com/SignalR/SignalR)
 
 ### Installation instructions
 Follow these steps to get up and running:
