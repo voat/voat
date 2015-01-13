@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System.Collections.Generic;
+using Microsoft.AspNet.SignalR;
 using PagedList;
 using System;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace Voat.Controllers
         private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // GET: Inbox
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         public ActionResult Inbox(int? page)
         {
             ViewBag.PmView = "inbox";
@@ -80,7 +81,7 @@ namespace Voat.Controllers
         }
 
         // GET: InboxCommentReplies
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         public ActionResult InboxCommentReplies(int? page)
         {
             ViewBag.PmView = "inbox";
@@ -132,7 +133,7 @@ namespace Voat.Controllers
         }
 
         // GET: InboxPostReplies
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         public ActionResult InboxPostReplies(int? page)
         {
             ViewBag.PmView = "inbox";
@@ -185,7 +186,7 @@ namespace Voat.Controllers
         }
 
         // GET: InboxUserMentions
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         public ActionResult InboxUserMentions()
         {
             ViewBag.PmView = "inboxusermentions";
@@ -196,7 +197,7 @@ namespace Voat.Controllers
         }
 
         // GET: Sent
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         public ActionResult Sent(int? page)
         {
             ViewBag.PmView = "sent";
@@ -230,7 +231,7 @@ namespace Voat.Controllers
         }
 
         // GET: Compose
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         public ActionResult Compose()
         {
             ViewBag.PmView = "compose";
@@ -247,7 +248,7 @@ namespace Voat.Controllers
         }
 
         // POST: Compose
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
@@ -268,6 +269,9 @@ namespace Voat.Controllers
                 try
                 {
                     await _db.SaveChangesAsync();
+                    // send SignalR realtime notification to recipient
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    hubContext.Clients.User(privateMessage.Recipient).setNotificationsPending();
                 }
                 catch (Exception)
                 {
@@ -283,7 +287,7 @@ namespace Voat.Controllers
         }
 
         // POST: Send new private message or reply
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
@@ -305,6 +309,9 @@ namespace Voat.Controllers
                 try
                 {
                     await _db.SaveChangesAsync();
+                    // send SignalR realtime notification to recipient
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    hubContext.Clients.User(privateMessage.Recipient).setNotificationsPending();
                 }
                 catch (Exception)
                 {
@@ -319,7 +326,7 @@ namespace Voat.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessage(int privateMessageId)
@@ -342,7 +349,7 @@ namespace Voat.Controllers
             return Json("Bad request.", JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize]
+        [System.Web.Mvc.Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessageFromSent(int privateMessageId)
