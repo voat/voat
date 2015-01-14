@@ -220,9 +220,13 @@ namespace Voat.Controllers
                                         _db.Commentreplynotifications.Add(commentReplyNotification);
 
                                         await _db.SaveChangesAsync();
+
+                                        // get count of unread notifications
+                                        int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
+
                                         // send SignalR realtime notification to recipient
                                         var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                                        hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending();
+                                        hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
                                     }
                                     else
                                     {
@@ -272,9 +276,12 @@ namespace Voat.Controllers
 
                                     await _db.SaveChangesAsync();
 
+                                    // get count of unread notifications
+                                    int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(postReplyNotification.Recipient);
+
                                     // send SignalR realtime notification to recipient
                                     var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                                    hubContext.Clients.User(postReplyNotification.Recipient).setNotificationsPending();
+                                    hubContext.Clients.User(postReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
                                 }
                             }
                         }

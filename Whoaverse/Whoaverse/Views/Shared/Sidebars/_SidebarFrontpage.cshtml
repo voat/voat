@@ -54,6 +54,18 @@
             </a>
         </div>
     </div>
+
+    <div class="spacer">
+        <div class="alert-h1">
+            Most viewed in the past 24 hours
+        </div>
+        <div>
+            @{
+                Html.RenderAction("TopViewedSubmissions24Hours", "Subverses");
+            }
+        </div>
+    </div>
+
     <div class="spacer">
         <div class="alert-h1">
             Voat
@@ -81,7 +93,7 @@
             </a>
         </div>
     </div>
-    
+
     <div class="spacer">
         <div class="alert-h1">
             Voat realtime feature test
@@ -96,5 +108,5 @@
             </div>
         </div>
     </div>
-    
+
 </div>

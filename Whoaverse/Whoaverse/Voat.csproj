@@ -756,6 +756,7 @@
     <Content Include="Views\Sets\Sets.cshtml" />
     <Content Include="Views\Sets\_SetDetails.cshtml" />
     <Content Include="Views\Home\IndexV2DefaultSets.cshtml" />
+    <Content Include="Views\Shared\_MostViewedSubmissions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -306,6 +306,21 @@ namespace Voat.Utils
             }
         }
 
+        // get total unread notifications count for a given user
+        public static int UnreadTotalNotificationsCount(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                int totalCount = 0;
+                int unreadPrivateMessagesCount = db.Privatemessages.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
+                int unreadPostRepliesCount = db.Postreplynotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
+                int unreadCommentRepliesCount = db.Commentreplynotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
+
+                totalCount = totalCount + unreadPrivateMessagesCount + unreadPostRepliesCount + unreadCommentRepliesCount;
+                return totalCount;
+            }
+        }
+
         // check if a given user does not want to see custom CSS styles
         public static bool CustomCssDisabledForUser(string userName)
         {

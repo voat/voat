@@ -5,6 +5,23 @@
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
+.notification-container {
+    position: relative;
+    width: 16px;
+    height: 16px;
+}
+
+.notification-counter {   
+    position: absolute;
+    top: -6px;
+    left: 10px;
+    background-color: #51B2EE;
+    color: #fff;
+    border-radius: 3px;
+    padding: 1px 3px;
+    font: 8px Verdana;
+}
+
 .submission {
     border-bottom: 1px solid #272727;
 }
@@ -1696,6 +1713,7 @@ ul.content {
     margin-right: 12px;
     overflow: hidden;
     width: 2px;
+    cursor: help;
 }
 
 .scorebar-likes {
