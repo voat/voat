@@ -27,9 +27,15 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-        if (User.Identity.Name == commentAuthor)
-        {
+        if (User.Identity.Name != "deleted" && User.Identity.Name != commentAuthor)
+		{
             <li>
+                <a class="" href="javascript:void(0)" onclick="$(this.parentElement.parentElement.parentElement).find('#sourceDisplay')[0].slideToggle();">source</a>
+            </li>
+		}
+		if (User.Identity.Name == commentAuthor)
+        {
+			<li>
                 <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @Model.CommentModel.MessageId)">edit</a>
             </li>
 

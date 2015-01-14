@@ -94,6 +94,7 @@
                     </form>
 
                 </div>
+				<textarea id="sourceDisplay" readonly="" class="form-control valid" style="display: none;">@Model.MessageContent</textarea>
             }
 
             @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_MSFLButtons.cshtml", Model, new ViewDataDictionary { { "commentCount", commentCount } })

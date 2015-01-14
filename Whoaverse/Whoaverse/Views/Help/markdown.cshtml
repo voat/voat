@@ -33,16 +33,32 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>*italics*</td>
-                            <td><i>italics</i></td>
-                        </tr>
-                        <tr>
                             <td>**bold**</td>
                             <td><b>bold</b></td>
                         </tr>
                         <tr>
+                            <td>*italics*</td>
+                            <td><i>italics</i></td>
+                        </tr>
+                        <tr>
                             <td>[Yay, a Google!](http://google.com)</td>
                             <td><a href="http://google.com">Yay, a Google!</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                > Quoting is awesome.<br />
+                                > Yes, quoting is awesome.<br />
+                            </td>
+                            <td>
+                                <blockquote class="small">
+                                    <p>
+                                        Quoting is awesome.
+                                    </p>
+                                    <p>
+                                        Yes, quoting is awesome.
+                                    </p>
+                                </blockquote>
+                            </td>
                         </tr>
                         <tr>
                             <td>
@@ -54,6 +70,50 @@
                                 <pre><code>Code block</code></pre>
                             </td>
                         </tr>
+						<tr>
+							<td>
+								* Anna<br />
+								* Bob<br />
+								* Charlie
+							</td>
+							<td>
+								<ul style="list-style-type: disc;">
+									<li>Anna</li>
+									<li>Bob</li>
+									<li>Charlie</li>
+								</ul>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								1. Make a comment<br />
+								2. Use Markdown<br />
+								3. ???<br />
+								4. Profit
+							</td>
+							<td>
+								<ol style="list-style-type: decimal;">
+									<li>Make a comment</li>
+									<li>Use Markdown</li>
+									<li>???</li>
+									<li>Profit</li>
+								</ol>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Paragraph 1<br />
+								<br />
+								----------<br />
+								<br />
+								Paragraph 2
+							</td>
+							<td>
+								<p>Paragraph 1</p>
+								<hr>
+								<p>Paragraph 2</p>
+							</td>
+						</tr>
                         <tr>
                             <td>
                                 Fruit    |Color<br />
@@ -85,22 +145,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                        </tr>
-                        <tr>
-                            <td>
-                                > Quoting is awesome.<br />
-                                > Yes, quoting is awesome.<br />
-                            </td>
-                            <td>
-                                <blockquote class="small">
-                                    <p>
-                                        Quoting is awesome.
-                                    </p>
-                                    <p>
-                                        Yes, quoting is awesome.
-                                    </p>
-                                </blockquote>
-                            </td>
                         </tr>
                     </tbody>
                 </table>
