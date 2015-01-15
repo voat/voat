@@ -1044,3 +1044,14 @@ function showSubmissionPreview(senderButton) {
     return false;
 }
 
+// a function that toggles the visibility of the comment/submission source textarea
+function toggleSource(senderButton){
+	//toggle textarea visibility
+	$(senderButton.parentElement.parentElement.parentElement).find('#sourceDisplay').slideToggle();
+	//change label name according to current state
+	if (senderButton.text == "source"){
+		senderButton.text = "hide source";
+	} else {
+		senderButton.text = "source";
+	}
+}
