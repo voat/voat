@@ -23,7 +23,7 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-		if (User.Identity.Name != "deleted" && User.Identity.Name != Model.Name)
+		if (Model.Name != "deleted" && User.Identity.Name != Model.Name)
 		{
 			<li>
                 <a class="" href="javascript:void(0)" onclick="$(this.parentElement.parentElement.parentElement).find('#sourceDisplay').slideToggle();">source</a>

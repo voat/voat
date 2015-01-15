@@ -27,7 +27,7 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-        if (User.Identity.Name != "deleted" && User.Identity.Name != commentAuthor)
+        if (commentAuthor != "deleted" && User.Identity.Name != commentAuthor)
 		{
             <li>
                 <a class="" href="javascript:void(0)" onclick="$(this.parentElement.parentElement.parentElement).find('#sourceDisplay').slideToggle();">source</a>
