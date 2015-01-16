@@ -22,13 +22,6 @@
         // Reference the auto-generated proxy for the hub.
         var chat = $.connection.messagingHub;
 
-        // Create a function that the hub can call back to display messages.
-        chat.client.addNewMessageToPage = function (name, message) {
-            // Add the message to the page.
-            $('#discussion').append('<li><strong>' + htmlEncode(name)
-                + '</strong>: ' + htmlEncode(message) + '</li>');
-        };
-
         // Hub accessed function to inform the user about new pending notifications
         chat.client.setNotificationsPending = function (count) {
             // set mail icon
@@ -47,12 +40,7 @@
 
         // Start the connection.
         $.connection.hub.start().done(function () {
-            $('#sendmessage').click(function () {
-                // Call the Send method on the hub.
-                chat.server.send($('#displayname').val(), $('#message').val());
-                // Clear text box and reset focus for next comment.
-                $('#message').val('').focus();
-            });
+            //
         });
     });
 
