@@ -43,6 +43,12 @@
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
     string opName = Model.Name;
     string commentAuthor = commentModel.Name;
+	
+	DateTime lastEditDate = commentModel.LastEditDate;
+	string editedPostAge = "at some point in time";
+	if (lastEditDate != null){
+		editedPostAge = Submissions.CalcSubmissionAge(lastEditDate);
+	}
 
     string collapsedComment = "";
     string uncollapsedComment = "";
@@ -110,7 +116,11 @@
         {
             <span class="userattrs">[deleted]</span>
         }
-        <time title="@commentModel.Date" datetime="@commentModel.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return showcomment(@commentId)">(show children)</a>
+        <time title="@commentModel.Date" datetime="@commentModel.Date">@postAge</time>&#32;ago&nbsp;
+		if (lastEditDate != null){
+			(last edited <time title="@commentModel.LastEditDate" datetime="@commentModel.LastEditDate">@editedPostAge</time>&#32;ago)
+		}
+		&nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return showcomment(@commentId)">(show children)</a>
     </div>
 
     <div class="noncollapsed" id="@commentId" style="@uncollapsedComment">
@@ -183,7 +193,10 @@
                 <span class="userattrs">[deleted]</span>
             }
 
-            <time title="@commentModel.Date" datetime="@commentModel.Date">@postAge</time>&#32;ago
+            <time title="@commentModel.Date" datetime="@commentModel.Date">@postAge</time>&#32;ago&nbsp;
+			if (lastEditDate != null){
+				(last edited <time title="@commentModel.LastEditDate" datetime="@commentModel.LastEditDate">@editedPostAge</time>&#32;ago)
+			}
         </p>
 
         <form class="usertext" onsubmit="return editcommentsubmit(@commentId)" id="commenteditform-@commentId" action="#">
