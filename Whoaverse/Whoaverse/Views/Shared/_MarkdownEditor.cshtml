@@ -6,7 +6,7 @@
     <!-- Markdown Editor Link Sub Menu -->
     <div class="markdownEditorSubMenu" id="linkSubMenu" style="display: none;">
         <input type="text" class="markdownEditorTextButton" id="url" placeholder="Enter the page url">
-		<a class="markdownEditorTextButton" alt="create" title="Create Link" onclick="addHyperlink($(this.parentElement.parentElement.parentElement).find('textarea')[0],$(this.parentElement).find('#url')[0].value);">Create link</a>
+		<a class="markdownEditorTextButton" alt="create" title="Create Link" onclick="addHyperlink($(this.parentElement.parentElement.parentElement).find('textarea')[0],$(this.parentElement).find('#url')[0].value);$(this.parentElement).toggle();">Create link</a>
     </div>
     <!-- Markdown Editor Headings Sub Menu -->
     <div class="markdownEditorSubMenu" id="headingsSubMenu" style="display: none;">
@@ -31,14 +31,14 @@
     <div class="markdownEditorMainMenu">
         <a class="markdownEditorImgButton" style="background-position: 0px 0px;" alt="bold" title="Bold" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'**','**');"></a>
         <a class="markdownEditorImgButton" style="background-position: -32px 0px;" alt="italic" title="Italic" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'*','*');"></a>
-        <a class="markdownEditorImgButton" style="background-position: -64px 0px;" alt="link" title="Link" onclick="$(this.parentElement.parentElement).find('#linkSubMenu').slideToggle();"></a>
+        <a class="markdownEditorImgButton" style="background-position: -64px 0px;" alt="link" title="Link" onclick="$(this.parentElement.parentElement).find('#linkSubMenu').toggle();"></a>
         <a class="markdownEditorImgButton" style="background-position: -96px 0px;" alt="quote" title="Quote" onclick="addTagsToEachSelectedTextLine($(this.parentElement.parentElement.parentElement).find('textarea')[0],'>','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -128px 0px;" alt="code" title="Code" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'~~~\n','\n~~~');"></a>
         <a class="markdownEditorImgButton" style="background-position: -160px 0px;" alt="ul" title="Bullet List" onclick="addTagsToEachSelectedTextLine($(this.parentElement.parentElement.parentElement).find('textarea')[0],'* ','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -192px 0px;" alt="ol" title="Number List" onclick="addTagsToEachSelectedTextLine($(this.parentElement.parentElement.parentElement).find('textarea')[0],'1. ','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -224px 0px;" alt="br" title="Large Paragraph Spacing" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n\n&amp;nbsp;\n\n','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -0px -16px;" alt="hr" title="Horizontal Rule" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n\n----------\n\n','');"></a>
-        <a class="markdownEditorImgButton" style="background-position: -32px -16px;" alt="heading" title="Headings" onclick="$(this.parentElement.parentElement).find('#headingsSubMenu').slideToggle();"></a>
-        <a class="markdownEditorImgButton" style="background-position: -64px -16px;" alt="table" title="Table" onclick="$(this.parentElement.parentElement).find('#tableCreatorSubMenu').slideToggle();"></a>
+        <a class="markdownEditorImgButton" style="background-position: -32px -16px;" alt="heading" title="Headings" onclick="$(this.parentElement.parentElement).find('#headingsSubMenu').toggle();"></a>
+        <a class="markdownEditorImgButton" style="background-position: -64px -16px;" alt="table" title="Table" onclick="$(this.parentElement.parentElement).find('#tableCreatorSubMenu').toggle();"></a>
     </div>
 </div>
