@@ -508,8 +508,6 @@ input, button, select, textarea {
     border: 1px dotted #D3D3D3;
     color: #5D5D5D;
     font-size: 13px;
-    font-style: italic;
-    font-weight: bold;
     margin: 10px;
     padding: 5px;
 }

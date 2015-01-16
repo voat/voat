@@ -44,7 +44,7 @@
             {
                 var currentSet = set.Userset.Name;
 
-                <div class="set-container">
+                <div class="set-container" id="set-@set.Id-container">
                     @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.Set_id } })
 
                     @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
@@ -76,7 +76,7 @@
 
                         <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
                             <p class="parent"></p>
-                            <span class="rank">@counter</span>
+                            @*<span class="rank">@counter</span>*@
 
                             @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
                             @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
@@ -87,7 +87,7 @@
                         counter++;
                     }
                 </div>
-                <a href="#" class="btn-whoaverse btn-block">
+                <a href="javascript:void(0)" onclick="loadMoreSetItems(this, @set.Id)" class="btn-whoaverse btn-block">
                     load more &#9660;
                 </a>
             }

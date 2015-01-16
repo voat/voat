@@ -14,9 +14,7 @@
 
 @{
     ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
-
-    int commentContributionPoints = 0;
-    int counter = 1;
+    var isDefault = ViewBag.DefaultSet ?? false;
 }
 
 @using System.Configuration
@@ -29,8 +27,14 @@
 
 <div id="container">
     @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
-
     <div class="content" role="main">
-        @Html.Partial("~/Views/Sets/_SingleSet.cshtml")
+        @if (isDefault)
+        {
+            @Html.Partial("~/Views/Sets/_SingleSet.cshtml", Model, new ViewDataDictionary { { "defaultSet", true } })
+        }
+        else
+        {
+            @Html.Partial("~/Views/Sets/_SingleSet.cshtml", Model, new ViewDataDictionary { { "defaultSet", false } })
+        }
     </div>
 </div>

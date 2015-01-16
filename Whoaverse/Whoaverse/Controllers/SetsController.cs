@@ -51,7 +51,7 @@ namespace Voat.Controllers
                     foreach (var subverse in defaultSetDefinition)
                     {
                         // get top ranked submissions
-                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, set.Name, 2));
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, set.Name, 2, 0));
                     }
                 }
 
@@ -66,77 +66,119 @@ namespace Voat.Controllers
             }
         }
 
-        // GET: /set/setid/action
-        public ActionResult SingleSet(int setId, string command)
+        // GET: /set/setid
+        // show single set frontpage
+        public ActionResult SingleSet(int setId, int? page)
         {
+            const int pageSize = 25;
+            int recordsToSkip = (page ?? 0);
             try
             {
-                switch (command)
+                // get list of subverses for the set
+                // for each subverse, get top ranked submissions
+                var set = _db.Usersets.FirstOrDefault(ds => ds.Set_id == setId);
+
+                if (set == null) return RedirectToAction("NotFound", "Error");
+
+                ViewBag.SelectedSubverse = set.Name;
+                var singleSetResultModel = new SingleSetViewModel();
+                var submissions = new List<SetSubmission>();
+
+                foreach (var subverse in set.Usersetdefinitions)
                 {
-                    // show a single set editor if action=edit
-                    case "edit":
-                        var setToEdit = _db.Usersets.FirstOrDefault(s => s.Set_id == setId);
+                    // get 5 top ranked submissions for current subverse
+                    Subverse currentSubverse = subverse.Subvers;
 
-                        if (setToEdit != null)
-                        {
-                            // get list of subverses for the set
-                            var setSubversesList = _db.Usersetdefinitions.Where(s => s.Set_id == setToEdit.Set_id).ToList();
-
-                            // populate viewmodel for the set
-                            var setViewModel = new SingleSetViewModel()
-                            {
-                                Name = setToEdit.Name,
-                                SubversesList = setSubversesList,
-                                Id = setToEdit.Set_id,
-                                Created = setToEdit.Created_on,
-                                Subscribers = setToEdit.Subscribers
-                            };
-
-                            return View("~/Views/Sets/SingleSetView.cshtml", setViewModel);
-                        }
-                        return RedirectToAction("SetNotFound", "Error");
-
-                    default:
-                        ViewBag.SelectedSubverse = "single set index";
-                        var singleSetResultModel = new SingleSetViewModel();
-                        var submissions = new List<SetSubmission>();
-
-                        try
-                        {
-                            // show a single set
-                            // get list of subverses for the set
-                            // for each subverse, get top ranked submissions
-                            var set = _db.Usersets.FirstOrDefault(ds => ds.Set_id == setId);
-
-                            if (set != null)
-                                foreach (var subverse in set.Usersetdefinitions)
-                                {
-                                    // get top ranked submissions
-                                    Subverse currentSubverse = subverse.Subvers;
-
-                                    if (currentSubverse != null)
-                                    {
-                                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 5));
-                                    }
-                                    singleSetResultModel.Name = set.Name;
-                                    singleSetResultModel.Id = set.Set_id;
-                                }
-
-                            singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
-
-                            return View("~/Views/Sets/Index.cshtml", singleSetResultModel);
-                        }
-                        catch (Exception)
-                        {
-                            return RedirectToAction("HeavyLoad", "Error");
-                        }
+                    if (currentSubverse != null)
+                    {
+                        // skip parameter could be passed here
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 5, recordsToSkip * pageSize));
+                    }
+                    singleSetResultModel.Name = set.Name;
+                    singleSetResultModel.Id = set.Set_id;
                 }
 
+                singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
+
+                return View("~/Views/Sets/Index.cshtml", singleSetResultModel);
             }
             catch (Exception)
             {
                 return RedirectToAction("HeavyLoad", "Error");
             }
+        }
+
+        // GET: /set/setid
+        // show single set frontpage page
+        public ActionResult SingleSetPage(int setId, int page)
+        {
+            const int pageSize = 25;
+            try
+            {
+                // get list of subverses for the set
+                // for each subverse, get top ranked submissions
+                var set = _db.Usersets.FirstOrDefault(ds => ds.Set_id == setId);
+
+                if (set == null) return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+                ViewBag.SelectedSubverse = set.Name;
+                var singleSetResultModel = new SingleSetViewModel();
+                var submissions = new List<SetSubmission>();
+
+                foreach (var subverse in set.Usersetdefinitions)
+                {
+                    // get 5 top ranked submissions for current subverse
+                    Subverse currentSubverse = subverse.Subvers;
+
+                    if (currentSubverse != null)
+                    {
+                        // skip parameter could be passed here
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 2, page * pageSize));
+                    }
+                    singleSetResultModel.Name = set.Name;
+                    singleSetResultModel.Id = set.Set_id;
+                }
+
+                singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date));
+
+                if (submissions.Any())
+                {
+                    ViewBag.Page = page;
+                    return PartialView("~/Views/Sets/_SingleSetPage.cshtml", singleSetResultModel);
+                }
+
+                // no more entries found
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Error");
+            }
+        }
+
+        // GET: /set/setid/edit
+        public ActionResult EditSet(int setId)
+        {
+            var setToEdit = _db.Usersets.FirstOrDefault(s => s.Set_id == setId);
+
+            if (setToEdit != null)
+            {
+                // get list of subverses for the set
+                var setSubversesList = _db.Usersetdefinitions.Where(s => s.Set_id == setToEdit.Set_id).ToList();
+
+                // populate viewmodel for the set
+                var setViewModel = new SingleSetViewModel()
+                {
+                    Name = setToEdit.Name,
+                    SubversesList = setSubversesList,
+                    Id = setToEdit.Set_id,
+                    Created = setToEdit.Created_on,
+                    Subscribers = setToEdit.Subscribers
+                };
+
+                return View("~/Views/Sets/SingleSetView.cshtml", setViewModel);
+            }
+            return RedirectToAction("SetNotFound", "Error");
         }
 
         // GET: /set/defaultsetid
@@ -163,7 +205,7 @@ namespace Voat.Controllers
 
                             if (currentSubverse != null)
                             {
-                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 5));
+                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 5, 0));
                             }
                             singleSetResultModel.Name = set.Name;
                             singleSetResultModel.Id = set.Set_id;
@@ -172,6 +214,7 @@ namespace Voat.Controllers
 
                     singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
+                    ViewBag.DefaultSet = true;
                     return View("~/Views/Sets/Index.cshtml", singleSetResultModel);
                 }
                 catch (Exception)
@@ -184,6 +227,54 @@ namespace Voat.Controllers
             {
                 return RedirectToAction("HeavyLoad", "Error");
             }
+        }
+
+        // GET: /set/defaultsetid/page
+        public ActionResult SingleDefaultSetPage(int setId, int page)
+        {
+            const int pageSize = 25;
+            try
+            {
+                ViewBag.SelectedSubverse = "single default set index";
+                var singleSetResultModel = new SingleSetViewModel();
+                var submissions = new List<SetSubmission>();
+
+                // show a single default set page
+                // get list of subverses for the set
+                // for each subverse, get top ranked submissions
+                var set = _db.Defaultsets.FirstOrDefault(ds => ds.Set_id == setId);
+
+                if (set != null)
+                    foreach (var subverse in set.Defaultsetsetups)
+                    {
+                        // get top ranked submissions
+                        Subverse currentSubverse = subverse.Subvers;
+
+                        if (currentSubverse != null)
+                        {
+                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 2, page * pageSize));
+                        }
+                        singleSetResultModel.Name = set.Name;
+                        singleSetResultModel.Id = set.Set_id;
+                    }
+
+
+                singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date));
+
+                if (submissions.Any())
+                {
+                    ViewBag.Page = page;
+                    return PartialView("~/Views/Sets/_SingleSetPage.cshtml", singleSetResultModel);
+                }
+
+                // no more entries found
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Error");
+            }
+
         }
 
         // POST: /s/reorder/setname
@@ -203,6 +294,7 @@ namespace Voat.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
+        // GET: /sets
         public ActionResult Sets(int? page)
         {
             ViewBag.SelectedSubverse = "sets";
@@ -249,6 +341,7 @@ namespace Voat.Controllers
             return View("~/Views/Sets/MySets.cshtml", paginatedUserSetSubscriptions);
         }
 
+        // GET: 40 most popular sets by subscribers
         [ChildActionOnly]
         public PartialViewResult PopularSets()
         {

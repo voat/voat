@@ -388,7 +388,7 @@ namespace Voat.Controllers
                         foreach (var subverse in userSetDefinition)
                         {
                             // get top ranked submissions
-                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, subverse.Userset.Name, 2));
+                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, subverse.Userset.Name, 2, 0));
                         }
                     }
 
@@ -414,7 +414,7 @@ namespace Voat.Controllers
                     foreach (var subverse in defaultSetDefinition)
                     {
                         // get top ranked submissions
-                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Messages, set.Name, 2));
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Messages, set.Name, 2, 0));
                     }
                 }
 

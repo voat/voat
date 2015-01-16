@@ -157,21 +157,9 @@ function voteDownSubmission(submissionid) {
 }
 
 function submitUpVote(messageid) {
-    //DEBUG
-    //alert('Now entered JS function submitUpvote');
-
     $.ajax({
         type: "POST",
         url: "/vote/" + messageid + "/1"
-        //success: function () {
-        //    alert('Voting was sucessful!');
-        //},
-        //error: function () {
-        //    alert('Something went wrong.');
-        //},
-        //complete: function () {
-        //    alert('Ajax call completed.');
-        //}
     });
 }
 
@@ -383,7 +371,7 @@ function replyToCommentNotification(commentId, submissionId) {
 function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
-    
+
     if ($form.find("#CommentContent").val().length > 0) {
         $form.find("#submitbutton").val("Please wait...");
         $form.find("#submitbutton").prop('disabled', true);
@@ -406,7 +394,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
 
                 // load rendered comment that was just posted and append it
                 var replyresult = $.get(
-                    "/ajaxhelpers/singlesubmissioncomment/"+messageId+"/"+userName,
+                    "/ajaxhelpers/singlesubmissioncomment/" + messageId + "/" + userName,
                     null,
                     function (data) {
                         $(".id-" + parentcommentid).append(data);
@@ -471,7 +459,7 @@ function postCommentAjax(senderButton, messageId, userName) {
                         // TODO: scroll to the newly posted comment
                         // $('#div_' + element_id)[0].scrollIntoView(true);
                     }
-                 );                
+                 );
             }
         });
 
@@ -725,7 +713,7 @@ function reportcomment(obj, commentid) {
             $(obj).parent().parent().find('.togglebutton').html("report failed");
         }
     });
-    
+
     return false;
 }
 
@@ -748,7 +736,7 @@ function togglesubmissionback(obj) {
 }
 
 // check if an object exists
-$.fn.exists = function() {
+$.fn.exists = function () {
     return this.length !== 0;
 };
 
@@ -881,7 +869,7 @@ function loadVideoPlayer(obj, messageId) {
         null,
         function (data) {
             $(obj).parent().find(".expando").nextAll().find(".videoplayer").html(data);
-            window.setTimeout(function() {
+            window.setTimeout(function () {
                 UI.Notifications.raise('iFrameLoaded', $(obj).parent().find(".expando").nextAll().find(".videoplayer"));
             });
         }
@@ -994,8 +982,8 @@ function suggestTitle() {
         function (data) {
             $("#Linkdescription").val(data);
         }).fail(function () {
-        $("#Linkdescription").val("We were unable to suggest a title.");
-    });
+            $("#Linkdescription").val("We were unable to suggest a title.");
+        });
 }
 
 // a function to toggle sticky mode for a submission
@@ -1015,7 +1003,7 @@ function toggleSticky(messageId) {
 // a function to display a preview of submission without submitting it
 function showSubmissionPreview(senderButton) {
     var rawSubmissionContent = $("#MessageContent").val();
-    if (!rawSubmissionContent.length>0) {
+    if (!rawSubmissionContent.length > 0) {
         $("#submission-preview-area-container").html("Please enter a message in order to get a preview.");
         $("#submission-preview-area").show();
         return false;
@@ -1044,3 +1032,52 @@ function showSubmissionPreview(senderButton) {
     return false;
 }
 
+// a function to fetch 1 page for a set and append to the bottom of the given set
+function loadMoreSetItems(obj, setId) {
+
+    // try to see if this request is a subsequent request
+    var currentPage = $("#set-" + setId + "-page").html();
+    if (currentPage == null) {
+        currentPage = 1;
+    } else {
+        currentPage++;
+    }
+
+    $.ajax({
+        url: "/set/" + setId + "/" + currentPage + "/",
+        success: function (data) {
+            $("#set-" + setId + "-page").remove();
+            $(obj).before(data);
+        },
+        error: function () {
+            {
+                $(obj).html("That's it. There was nothing else to show.");
+            }
+        }
+    });
+}
+
+// a function to fetch 1 page for a default set and append to the bottom of the given set
+function loadMoreDefaultSetItems(obj, setId) {
+
+    // try to see if this request is a subsequent request
+    var currentPage = $("#set-" + setId + "-page").html();
+    if (currentPage == null) {
+        currentPage = 1;
+    } else {
+        currentPage++;
+    }
+
+    $.ajax({
+        url: "/s/" + setId + "/" + currentPage + "/",
+        success: function (data) {
+            $("#set-" + setId + "-page").remove();
+            $(obj).before(data);
+        },
+        error: function () {
+            {
+                $(obj).html("That's it. There was nothing else to show.");
+            }
+        }
+    });
+}

@@ -74,7 +74,7 @@
     <title>@ViewBag.Title</title>
     <meta property="og:title" content="@ViewBag.Title" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="@ViewBag.Url" />
+    <meta property="og:url" content="@Request.Url.ToString()" />
     <meta property="og:image" content="@ViewBag.Image" />
     <meta property="og:site_name" content="@ConfigurationManager.AppSettings["siteName"]" />
     <meta property="og:description" content="@ViewBag.Description" />

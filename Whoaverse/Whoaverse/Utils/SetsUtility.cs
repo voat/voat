@@ -20,8 +20,11 @@ namespace Voat.Utils
 {
     public static class SetsUtility
     {
-        public static IQueryable<SetSubmission> TopRankedSubmissionsFromASub(string subverseName, DbSet<Message> messagesDbSet, string setName, int desiredResults)
+        public static IQueryable<SetSubmission> TopRankedSubmissionsFromASub(string subverseName, DbSet<Message> messagesDbSet, string setName, int desiredResults, int? skip)
         {
+            int recordsToSkip = (skip ?? 0);
+
+            // skip could be used here
             var topRankedSubmissions = (from message in messagesDbSet
                                         where message.Name != "deleted" && message.Subverse == subverseName
                                         select new SetSubmission
@@ -50,7 +53,7 @@ namespace Voat.Utils
                                             Stickiedsubmission = message.Stickiedsubmission,
                                             Viewstatistics = message.Viewstatistics,
                                             ParentSet = setName
-                                        }).OrderByDescending(s => s.Rank).Take(desiredResults);
+                                        }).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).Skip(recordsToSkip).Take(desiredResults).AsNoTracking();
 
             return topRankedSubmissions;
         }
@@ -85,7 +88,7 @@ namespace Voat.Utils
                                             Stickiedsubmission = message.Stickiedsubmission,
                                             Viewstatistics = message.Viewstatistics,
                                             ParentSet = setName
-                                        }).OrderByDescending(s => s.Date).Take(desiredResults);
+                                        }).OrderByDescending(s => s.Date).Take(desiredResults).AsNoTracking();
 
             return topRankedSubmissions;
         }

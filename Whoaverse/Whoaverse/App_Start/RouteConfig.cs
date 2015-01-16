@@ -40,16 +40,37 @@ namespace Voat
 
             // /s/defaultsetname
             routes.MapRoute(
-                name: "single default set",
+                name: "SingleDefaultSet",
                 url: "s/{setId}",
                 defaults: new { controller = "Sets", action = "SingleDefaultSet" }
             );
 
-            // /s/setname/action
+            // /s/defaultsetname/page
             routes.MapRoute(
-                name: "single user set",
-                url: "set/{setId}/{command}",
-                defaults: new { controller = "Sets", action = "SingleSet", command = UrlParameter.Optional }
+                name: "SingleDefaultSetPage",
+                url: "s/{setId}/{page}",
+                defaults: new { controller = "Sets", action = "SingleDefaultSetPage" }
+            );
+
+            // /set/setname
+            routes.MapRoute(
+                name: "SingleUserSet",
+                url: "set/{setId}",
+                defaults: new { controller = "Sets", action = "SingleSet" }
+            );
+
+            // /set/setname/page
+            routes.MapRoute(
+                name: "SingleUserSetPage",
+                url: "set/{setId}/{page}",
+                defaults: new { controller = "Sets", action = "SingleSetPage" }
+            );
+
+            // /set/setname/edit
+            routes.MapRoute(
+                name: "EditSet",
+                url: "set/{setId}/edit",
+                defaults: new { controller = "Sets", action = "EditSet" }
             ); 
 
             // /subverses/create

@@ -36,6 +36,9 @@
                 $('#mail').removeClass('nohavemail').addClass('havemail');
             };
             $('#mail').prop('title', 'your have ' + count + ' unread notifications');
+
+            // show mail counter
+            $('#mailcounter').show();
             $('#mailcounter').html(count);
 
             // set browser title
@@ -84,7 +87,10 @@
                 }
                 else
                 {
-                    <a title="no new messages" href="/messaging/inbox" class="nohavemail" id="mail">messages</a>
+                    <span class="notification-container">
+                        <a title="no new messages" href="/messaging/inbox" class="nohavemail" id="mail">messages</a>
+                        <span class="notification-counter" id="mailcounter" style="display:none"></span>
+                    </span>
                 }
                 <span class="separator">|</span>
                 <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>

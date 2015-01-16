@@ -20,11 +20,12 @@
     {
         commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
     }
+
+    bool isDefault = Convert.ToBoolean(ViewData["defaultSet"]);
 }
 
 <div class="sitetable">
-
-    <div class="set-container">
+    <div class="set-container" id="set-@Model.Id-container">
         @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", Model.Name }, { "setId", Model.Id } })
 
         @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet.Equals(Model.Name, StringComparison.OrdinalIgnoreCase)))
@@ -56,7 +57,7 @@
 
             <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
                 <p class="parent"></p>
-                <span class="rank">@counter</span>
+                @*<span class="rank">@counter</span>*@
 
                 @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
                 @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
@@ -66,9 +67,18 @@
             </div>
             counter++;
         }
-        <a href="#" class="btn-whoaverse btn-block">
-            load more &#9660;
-        </a>
+        @if (isDefault)
+        {
+            <a href="javascript:void(0)" onclick="loadMoreDefaultSetItems(this, @Model.Id)" class="btn-whoaverse btn-block">
+                load more &#9660;
+            </a>
+        }
+        else
+        {
+            <a href="javascript:void(0)" onclick="loadMoreSetItems(this, @Model.Id)" class="btn-whoaverse btn-block">
+                load more &#9660;
+            </a>
+        }
     </div>
 
 </div>
