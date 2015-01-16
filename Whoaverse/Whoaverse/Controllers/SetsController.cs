@@ -112,7 +112,7 @@ namespace Voat.Controllers
         // show single set frontpage page
         public ActionResult SingleSetPage(int setId, int page)
         {
-            const int pageSize = 25;
+            const int pageSize = 2;
             try
             {
                 // get list of subverses for the set
@@ -133,7 +133,7 @@ namespace Voat.Controllers
                     if (currentSubverse != null)
                     {
                         // skip parameter could be passed here
-                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 2, page * pageSize));
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, pageSize, page * pageSize));
                     }
                     singleSetResultModel.Name = set.Name;
                     singleSetResultModel.Id = set.Set_id;
@@ -232,7 +232,7 @@ namespace Voat.Controllers
         // GET: /set/defaultsetid/page
         public ActionResult SingleDefaultSetPage(int setId, int page)
         {
-            const int pageSize = 25;
+            const int pageSize = 2;
             try
             {
                 ViewBag.SelectedSubverse = "single default set index";
@@ -252,7 +252,7 @@ namespace Voat.Controllers
 
                         if (currentSubverse != null)
                         {
-                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 2, page * pageSize));
+                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, pageSize, page * pageSize));
                         }
                         singleSetResultModel.Name = set.Name;
                         singleSetResultModel.Id = set.Set_id;

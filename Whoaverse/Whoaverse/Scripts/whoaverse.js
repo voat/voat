@@ -1034,6 +1034,7 @@ function showSubmissionPreview(senderButton) {
 
 // a function to fetch 1 page for a set and append to the bottom of the given set
 function loadMoreSetItems(obj, setId) {
+    $(obj).html("Sit tight...");
 
     // try to see if this request is a subsequent request
     var currentPage = $("#set-" + setId + "-page").html();
@@ -1048,6 +1049,7 @@ function loadMoreSetItems(obj, setId) {
         success: function (data) {
             $("#set-" + setId + "-page").remove();
             $(obj).before(data);
+            $(obj).html("load more &#9660;");
         },
         error: function () {
             {
@@ -1059,6 +1061,7 @@ function loadMoreSetItems(obj, setId) {
 
 // a function to fetch 1 page for a default set and append to the bottom of the given set
 function loadMoreDefaultSetItems(obj, setId) {
+    $(obj).html("Sit tight...");
 
     // try to see if this request is a subsequent request
     var currentPage = $("#set-" + setId + "-page").html();
@@ -1073,6 +1076,7 @@ function loadMoreDefaultSetItems(obj, setId) {
         success: function (data) {
             $("#set-" + setId + "-page").remove();
             $(obj).before(data);
+            $(obj).html("load more &#9660;");
         },
         error: function () {
             {
