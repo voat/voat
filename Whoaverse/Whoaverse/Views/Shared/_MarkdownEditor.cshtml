@@ -6,7 +6,7 @@
     <!-- Markdown Editor Link Sub Menu -->
     <div class="markdownEditorSubMenu" id="linkSubMenu" style="display: none;">
         <input type="text" class="markdownEditorTextButton" id="url" placeholder="Enter the page url">
-		<a class="markdownEditorTextButton" alt="create" title="Create Link" onclick="addHyperlink($(this.parentElement.parentElement.parentElement).find('textarea')[0],$(this.parentElement).find('#url')[0].value);">Create link</a>
+		<a class="markdownEditorTextButton" alt="create" title="Create Link" onclick="addHyperlink($(this.parentElement.parentElement.parentElement).find('textarea')[0],$(this.parentElement).find('#url')[0].value);$(this.parentElement).toggle();">Create link</a>
     </div>
     <!-- Markdown Editor Headings Sub Menu -->
     <div class="markdownEditorSubMenu" id="headingsSubMenu" style="display: none;">
