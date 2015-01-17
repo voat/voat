@@ -132,7 +132,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Submit" class="btn-whoaverse" />
-                <input type="button" value="Preview" class="btn-whoaverse" onclick="showSubmissionPreview(this)" />
+				<input type="button" value="Preview" class="btn-whoaverse" onclick="showMessagePreview(this,$(this.parentElement.parentElement.parentElement).find('#MessageContent'),$(this.parentElement.parentElement.parentElement).find('#submission-preview-area'))">
             </div>
         </div>
 
