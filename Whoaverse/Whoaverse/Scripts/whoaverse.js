@@ -1000,12 +1000,12 @@ function toggleSticky(messageId) {
     });
 }
 
-// a function to display a preview of submission without submitting it
-function showSubmissionPreview(senderButton) {
-    var rawSubmissionContent = $("#MessageContent").val();
+// a function to display a preview of a message without submitting it
+function showMessagePreview(senderButton, messageContent, previewArea) {
+    var rawSubmissionContent = $(messageContent).val();
     if (!rawSubmissionContent.length > 0) {
-        $("#submission-preview-area-container").html("Please enter a message in order to get a preview.");
-        $("#submission-preview-area").show();
+        $(previewArea).find("#submission-preview-area-container").html("Please enter a message in order to get a preview.");
+        $(previewArea).show();
         return false;
     }
 
@@ -1013,7 +1013,7 @@ function showSubmissionPreview(senderButton) {
 
     // get rendered submission and show it
     var submissionModel = {
-        MessageContent: $("#MessageContent").val()
+        MessageContent: $(messageContent).val()
     };
 
     $.ajax({
@@ -1021,13 +1021,13 @@ function showSubmissionPreview(senderButton) {
         type: 'post',
         dataType: 'html',
         success: function (data) {
-            $("#submission-preview-area-container").html(data);
+            $(previewArea).find("#submission-preview-area-container").html(data);
         },
         data: submissionModel
     });
 
     // show the preview area
-    $("#submission-preview-area").show();
+    $(previewArea).show();
     $(senderButton).val("Preview");
     return false;
 }
