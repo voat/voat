@@ -51,6 +51,17 @@ namespace Voat.Controllers
             return bannedHostnames.Select(item => "Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by);
         }
 
+        // GET api/ishostnamegloballybanned
+        /// <summary>
+        ///  This API checks if a hostname is globally banned for link type submissions.
+        /// </summary>
+        [HttpGet]
+        public bool IsHostnameGloballyBanned(string hostnameToCheck)
+        {
+            var hostname = _db.Banneddomains.FirstOrDefault(s => s.Hostname == hostnameToCheck);
+            return hostname != null;
+        }
+
         // GET api/top200subverses
         /// <summary>
         ///  This API returns top 200 subverses ordered by subscriber count.

@@ -56,7 +56,7 @@
 
                         <ul class="flat-list buttons">
                             <li>
-                                <a class="btn-whoaverse-paging" id="replyPrivateMessage" href="javascript:void(0)" onclick="return replyprivatemessage(@message.Id, '@message.Sender', '@message.Subject')">Reply</a>
+                                <a class="btn-whoaverse-paging" id="replyPrivateMessage" href="javascript:void(0)" onclick="return replyprivatemessage(@message.Id, '@message.Sender', '@Html.Encode(@message.Subject)')">Reply</a>
                             </li>
                             <li>|</li>
                             <li>
