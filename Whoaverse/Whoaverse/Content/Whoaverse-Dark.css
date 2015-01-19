@@ -1051,6 +1051,8 @@ pre, code {
     border-width: 1px;
     font-size: 12px;
     padding: 15px;
+	display: table;
+	width: 100%;
 }
 
 .panel-title {

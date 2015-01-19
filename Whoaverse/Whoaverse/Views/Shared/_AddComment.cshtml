@@ -37,7 +37,7 @@
             <li id="errorMessage" style="display:none">Please enter a comment to submit.</li>
         </ul>
     </div>
-    <input type="button" id="submitbutton" value="Submit comment" class="btn-whoaverse-paging" onclick="postCommentAjax(this, @messageId, '@User.Identity.Name')">
+    <input type="button" id="submitbutton" value="Submit comment" class="btn-whoaverse-paging" onclick="postCommentAjax(this, @messageId, '@User.Identity.Name');$(this.parentElement).find('#submission-preview-area').hide();">
 	<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement).find('#CommentContent'),$(this.parentElement).find('#submission-preview-area'))">
     <br><br>
 	<div class="panel panel-default" id="submission-preview-area" style="display: none">
