@@ -12,11 +12,7 @@
 
 @model Voat.Models.Featuredsub
 
-@using Voat.Utils;
-
 @{
-    string commentsUrl = "/v/" + Model.Subverse;
-
     DateTime submissionDate = Model.Featured_on;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
 

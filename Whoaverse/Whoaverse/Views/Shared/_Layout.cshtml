@@ -27,7 +27,7 @@
     string selectedUser = ViewBag.userid;
 
     ViewBag.Title = ViewBag.Title ?? ConfigurationManager.AppSettings["siteSlogan"];
-    ViewBag.Description = ViewBag.Description ?? ConfigurationManager.AppSettings["siteSlogan"];
+    ViewBag.Description = ViewBag.Description ?? ConfigurationManager.AppSettings["siteDescription"];
     ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
     ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + ConfigurationManager.AppSettings["siteLogo"];
 
@@ -53,6 +53,7 @@
 <head prefix="og: http://ogp.me/ns#">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta lang="en"/>
 
     @if (ViewBag.Description != null)
     {

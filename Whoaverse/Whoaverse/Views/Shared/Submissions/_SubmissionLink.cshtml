@@ -53,16 +53,16 @@
             {
                 if (Model.Linkdescription.ToLower().Contains("nsfw") && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
                 {
-                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
+                    <a class="thumbnail nsfw may-blank" href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else if (ratedAdult && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
                 {
-                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
+                    <a class="thumbnail nsfw may-blank" href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else
                 {
-                    <a class="thumbnail may-blank " href="@Model.MessageContent" target="@ahrefTarget">
-                        <img src="~/Thumbs/@Model.Thumbnail" alt="" />
+                    <a class="thumbnail may-blank" href="@Model.MessageContent" target="@ahrefTarget">
+                        <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
                     </a>
                 }
             }
@@ -70,16 +70,16 @@
             {
                 if (Model.Linkdescription.ToLower().Contains("nsfw"))
                 {
-                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
+                    <a class="thumbnail nsfw may-blank" href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else if (ratedAdult)
                 {
-                    <a class="thumbnail nsfw may-blank " href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
+                    <a class="thumbnail nsfw may-blank" href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else
                 {
-                    <a class="thumbnail may-blank " href="@Model.MessageContent" target="@ahrefTarget">
-                        <img src="~/Thumbs/@Model.Thumbnail" alt="" />
+                    <a class="thumbnail may-blank" href="@Model.MessageContent" target="@ahrefTarget">
+                        <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
                     </a>
                 }
             }
