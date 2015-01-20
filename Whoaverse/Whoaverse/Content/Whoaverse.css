@@ -1098,7 +1098,7 @@ pre, code {
 }
 
 /* ! Header : Top
-    -------------------------------------------------------------------------------- */
+-------------------------------------------------------------------------------- */
 
 #sr-header-area {
     background: #FFF;
@@ -1122,7 +1122,7 @@ pre, code {
 }
 
 /* ! Header : Top : Subverses list
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 #sr-bar li a {
     color: #818181;
@@ -1177,7 +1177,7 @@ pre, code {
     }
 
 /* ! Header : Top : Subverses list : Subscription menu
-            ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .whoaSubscriptionMenu {
     margin: 0;
@@ -1229,7 +1229,7 @@ pre, code {
                 }
 
 /* ! Header : Banner
-    ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 #header-container {
     background: #FFF;
@@ -1250,7 +1250,7 @@ pre, code {
 }
 
 /* ! Header : Banner : Logo
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 #header-img {
     margin: 7px 12px 10px;
@@ -1269,7 +1269,7 @@ pre, code {
     }
 
 /* ! Header : Banner : Page name
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .pagename {
     font-size: 16px;
@@ -1291,7 +1291,7 @@ pre, code {
         }
 
 /* ! Header : Banner : Tab menu
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .tabmenu {
     display: inline-block;
@@ -1303,7 +1303,7 @@ pre, code {
 }
 
     /* ! Header : Banner : Tab menu : Tab
-            ------------------------------------------------------------------------------------ */
+    ------------------------------------------------------------------------------------ */
 
     .tabmenu li {
         display: inline;
@@ -1322,7 +1322,7 @@ pre, code {
         }
 
         /* ! Header : Banner : Tab menu : Tab : Selected
-                ------------------------------------------------------------------------------------ */
+        ------------------------------------------------------------------------------------ */
 
         .tabmenu li.selected a {
             background: #FFF;
@@ -1340,7 +1340,7 @@ pre, code {
             }
 
         /* ! Header : Banner : Tab menu : Tab : Unselected
-                ------------------------------------------------------------------------------------ */
+        ------------------------------------------------------------------------------------ */
 
         .tabmenu li.disabled a {
             color: #555;
@@ -1358,14 +1358,14 @@ pre, code {
             }
 
 /* ! Header : Banner : Account
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 #header-account {
     font-size: 11px;
     padding: 0;
     position: absolute;
     right: 0;
-    top: 0;
+    bottom: 0;
 }
 
     #header-account a {
@@ -1387,7 +1387,7 @@ pre, code {
     background: #F6F6F6;
     border: 1px solid #DCDCDC;
     border-radius: 3px;
-    margin: 14px 0 0;
+    margin: 0 0 14px;
     padding: 5px;
 }
 
@@ -1395,7 +1395,7 @@ pre, code {
     background: #F6F6F6;
     border: 1px solid #DCDCDC;
     border-radius: 3px;
-    margin: 14px 0 0;
+    margin: 0 0 14px;
     padding: 5px;
 }
 
@@ -1471,14 +1471,14 @@ pre, code {
 }
 
 /* ! Sidebar : Search
-    ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .side .form-control {
     margin-bottom: 5px;
 }
 
 /* ! Sidebar : Submission info
-    ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .submissioninfo {
     border: 0;
@@ -1503,7 +1503,7 @@ pre, code {
 }
 
 /* ! Sidebar : Titlebox
-    ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .titlebox {
     font-size: 12px;
@@ -1529,7 +1529,7 @@ pre, code {
 }
 
 /* ! Sidebar : Titlebox : Page name
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .titlebox h1 {
     font-family: inherit;
@@ -1549,7 +1549,7 @@ pre, code {
         }
 
 /* ! Sidebar : Titlebox : Markdown
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .titlebox .md {
     font-size: 13px;
@@ -1557,7 +1557,7 @@ pre, code {
 }
 
 /* ! Sidebar : Titlebox : Admin tools
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .sidecontentbox .content {
     background: #FCFCFC;
@@ -1619,7 +1619,7 @@ ul.content {
 }
 
 /* ! Sitetable : Link
-    ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .link {
     margin: 0;
@@ -1637,7 +1637,7 @@ ul.content {
     }
 
     /* ! Sitetable : Link : Rank
-        ------------------------------------------------------------------------------------ */
+    ------------------------------------------------------------------------------------ */
 
     .link .rank {
         color: #CCC;
@@ -1650,7 +1650,7 @@ ul.content {
     }
 
     /* ! Sitetable : Link : Votes
-        ------------------------------------------------------------------------------------ */
+    ------------------------------------------------------------------------------------ */
 
     .link .midcol {
         font-size: 12px;
@@ -1713,7 +1713,7 @@ ul.content {
 }
 
 /* ! Sitetable : Link : Thumbnail
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .thumbnail {
     background: none;
@@ -1769,7 +1769,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
 /* ! Sitetable : Link : Title
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .link .title {
     color: #3A3A3A;
@@ -1863,7 +1863,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     }
 
 /* ! Sitetable : Link : Title : Domain
-            ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .domain {
     color: #666;
@@ -1888,7 +1888,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         }
 
 /* ! Sitetable : Link : Expando
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .expando-button {
     float: left;
@@ -1977,7 +1977,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
 /* ! Sitetable : Link : Flat list 
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .link .flat-list {
     display: block;
@@ -2004,7 +2004,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
             }
 
 /* ! Sitetable : Link : Markdown
-        ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .link .usertext .md {
     background: #FCFCFC;
@@ -2024,7 +2024,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     }
 
 /* ! Sitetable : Comments
-    ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 /* Sorting menu */
 
@@ -2067,7 +2067,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     }
 
     /* ! Sitetable : Comments : Tag line
-        ------------------------------------------------------------------------------------ */
+    ------------------------------------------------------------------------------------ */
 
     .comment .expand {
         color: #AAA;
@@ -2120,14 +2120,14 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     }
 
     /* ! Sitetable : Comments : Markdown
-        ------------------------------------------------------------------------------------ */
+    ------------------------------------------------------------------------------------ */
 
     .comment .md {
         font-size: 13px;
     }
 
     /* ! Sitetable : Comments : Form
-        ------------------------------------------------------------------------------------ */
+    ------------------------------------------------------------------------------------ */
 
     .comment .form-control {
         margin-bottom: 10px;
@@ -2138,7 +2138,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     }
 
 /* ! Sitetable : Pagination
-    ------------------------------------------------------------------------------------ */
+------------------------------------------------------------------------------------ */
 
 .pagination-container .btn-whoaverse-paging {
     margin: 6px 8px 6px 0;
@@ -2473,11 +2473,11 @@ textarea.form-control {
     }
 
     .logged-in {
-        margin: 0;
+        margin: 0 0 3px;
     }
 
     .logged-out {
-        margin: 0;
+        margin: 0 0 3px;
     }
 
     #header-banner {
@@ -2486,9 +2486,15 @@ textarea.form-control {
     }
 
     .tabmenu {
-        line-height: 63px;
-        padding-top: 11px;
+        font-size: 12px;
+        line-height: 40px;
+        position: absolute;
+        top: 0;
     }
+
+        .tabmenu li a {
+            padding: 4px 7px;
+        }
 }
 
 @media ( max-width: 870px ) {
@@ -2556,10 +2562,35 @@ textarea.form-control {
     .tabmenu {
         display: block;
         text-align: center;
+        line-height: 40px;
+        position: relative;
     }
 
     .link .title {
         font-size: 15px;
+    }
+
+    .tabmenu li.selected a {
+        background: #F8F8F8;
+        background: -webkit-linear-gradient( top,#F8F8F8,#F2F2F2 );
+        background: -moz-linear-gradient( top,#F8F8F8,#F2F2F2 );
+        background: -ms-linear-gradient( top,#F8F8F8,#F2F2F2 );
+        background: -o-linear-gradient( top,#F8F8F8,#F2F2F2 );
+        border: 1px solid #BABABA;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.35 );
+        color: #444;
+        font-weight: bold;
+    }
+
+    .tabmenu li.disabled a {
+        background: #FFF;
+        background: -webkit-linear-gradient( top,#FFF,#FBFBFB );
+        background: -moz-linear-gradient( top,#FFF,#FBFBFB );
+        background: -ms-linear-gradient( top,#FFF,#FBFBFB );
+        background: -o-linear-gradient( top,#FFF,#FBFBFB );
+        border: 1px solid #D0D0D0;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+        color: #444;
     }
 
     .comment .comment {
@@ -2687,22 +2718,9 @@ textarea.form-control {
     .comment .flat-list.buttons li a:hover {
         text-decoration: none;
     }
-
-    .tabmenu li {
-        margin: 0 1px 0 0;
-    }
-
-    .tabmenu li a {
-        padding: 7px;
-    }
 }
 
 @media ( max-width: 420px ) {
-    .tabmenu li a {
-        font-size: 12px;
-        padding: 6px 4px;
-    }
-
     .modal-dialog {
         width: 300px;
     }
