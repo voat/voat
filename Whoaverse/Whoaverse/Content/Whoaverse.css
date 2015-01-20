@@ -1420,16 +1420,16 @@ pre, code {
         background: url( /Graphics/Light-SpriteSheet.png );
         background-position: -18px 0;
         cursor: pointer;
-        height: 10px;
-        width: 15px;
+        height: 12px;
+        width: 18px;
     }
 
     #mail.nohavemail {
         background: url( /Graphics/Light-SpriteSheet.png );
         background-position: 0 0;
         cursor: pointer;
-        height: 10px;
-        width: 15px;
+        height: 12px;
+        width: 18px;
     }
 
 /* ! Container
