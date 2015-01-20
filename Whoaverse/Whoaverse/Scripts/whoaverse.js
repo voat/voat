@@ -1022,6 +1022,7 @@ function showMessagePreview(senderButton, messageContent, previewArea) {
         dataType: 'html',
         success: function (data) {
             $(previewArea).find("#submission-preview-area-container").html(data);
+			UI.ExpandoManager.execute();
         },
         data: submissionModel
     });

@@ -233,7 +233,7 @@
             </div>
 
         </form>
-		<textarea id="sourceDisplay" readonly="" class="form-control valid" style="display: none;">@WebUtility.HtmlDecode(commentModel.CommentContent)</textarea>
+		<textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@WebUtility.HtmlDecode(commentModel.CommentContent)</textarea>
         @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", submissionViewModel)
     </div>
 </div>
