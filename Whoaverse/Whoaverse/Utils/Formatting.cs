@@ -14,17 +14,26 @@ All Rights Reserved.
 
 using System;
 using MarkdownDeep;
+using Voat.Utils.Components;
 
 namespace Voat.Utils
 {
     public static class Formatting
     {
         
-        public static string FormatMessage (String originalMessage){
+        public static string FormatMessage(String originalMessage, bool processContent = true){
+
+            if (processContent) { 
+                originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
+            }
+
             var m = new Markdown
             {
                 ExtraMode = true, 
-                SafeMode = true
+                SafeMode = true,
+                //I don't know why this logic was removed but it's back.... (evil laugh)
+                NewWindowForExternalLinks = Utils.User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name),
+                NewWindowForLocalLinks = Utils.User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name)
             };
 
             return m.Transform(originalMessage);

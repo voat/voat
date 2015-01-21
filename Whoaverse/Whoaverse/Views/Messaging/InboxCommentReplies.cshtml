@@ -28,14 +28,16 @@
 @Html.AntiForgeryToken()
 
 <div id="container">
-    <a href="/messaging/inbox/" class="btn-whoaverse-paging">Private messages [@ViewBag.UnreadPrivateMessages]</a>
-    <a href="/messaging/commentreplies/" class="btn-whoaverse-paging disabled">Comment replies [@ViewBag.UnreadCommentReplies]</a>
-    <a href="/messaging/postreplies/" class="btn-whoaverse-paging">Post replies [@ViewBag.UnreadPostReplies]</a>
+    <h1>Comment & User Mention Notifications</h1>
+    <a href="/messaging/inbox/" class="btn-whoaverse-paging">Private Messages [@ViewBag.UnreadPrivateMessages]</a>
+    <a href="/messaging/commentreplies/" class="btn-whoaverse-paging">Comment Replies / User Mentions [@ViewBag.UnreadCommentReplies]</a>
+    <a href="/messaging/postreplies/" class="btn-whoaverse-paging">Post Replies [@ViewBag.UnreadPostReplies]</a>
     <div id="about-main" role="main">
         <div class="md single-notification">
 
             @if (Model.Count > 0)
             {
+               
                 <p>Displaying newest @Model.Count comment reply notifications. You have a total of @ViewBag.CommentRepliesCount comment reply notification(s).</p>
                 <hr />
 
@@ -69,7 +71,7 @@
                             </li>
                             <li>|</li>
                             <li>
-                                <a class="btn-whoaverse-paging" id="replyCommentNotification" href="javascript:void(0)" onclick="return replyToCommentNotification(@message.CommentId, @message.SubmissionId)">Reply</a>
+                                <a class="btn-whoaverse-paging @(message.CommentId <= 0 ? "disabled" : "")" id="replyCommentNotification" href="javascript:void(0)" onclick="return replyToCommentNotification(@message.CommentId, @message.SubmissionId)">Reply</a>
                             </li>
                         </ul>
                         <br /><br />

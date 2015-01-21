@@ -24,6 +24,7 @@ using Microsoft.AspNet.SignalR;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utils;
+using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
@@ -236,7 +237,17 @@ namespace Voat.Controllers
                     _db.Messages.Add(message);
                     // update last submission received date for target subverse
                     targetSubverse.last_submission_received = DateTime.Now;
+
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave)) {
+                        message.MessageContent = ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPreSave, message);
+                    }
+
                     await _db.SaveChangesAsync();
+
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave)) {
+                        ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPostSave, message);
+                    }
+
                 }
 
                 return RedirectToRoute(
