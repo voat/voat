@@ -37,6 +37,9 @@ namespace Voat.Utils.Components {
             return Filters.Exists(x => (stage & x.ProcessingStage) > 0);
         }
         public string Process(string content, ProcessingStage stage, object context) {
+            if (content == null) {
+                return content;
+            }
             string c = content;
             var inbound = Filters.FindAll(x => (stage & x.ProcessingStage) > 0).OrderByDescending(x => x.Priority).ToList();
             inbound.ForEach(y => c = y.Process(c, context));
