@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Voat.Utils.Components {
     public interface IReplacer {
-        string Replace(string Content, object state);
+        string Replace(string content, object state);
     }
 
     public class RegExReplacer : IReplacer {
@@ -21,11 +21,13 @@ namespace Voat.Utils.Components {
         }
         public RegExReplacer() {
         }
-        public string Replace(string Content, object state) {
+        public string Replace(string content, object state) {
             foreach (IReplacer ir in _replacers) {
-                Content = ir.Replace(Content, state);
+                if (content != null) {
+                    content = ir.Replace(content, state);
+                }
             }
-            return Content;
+            return content;
         }
     }
 
@@ -51,9 +53,12 @@ namespace Voat.Utils.Components {
             set { _stripwhitespacerepetitions = value; }
         }
 
-        public override string Replace(string Content, object state) {
+        public override string Replace(string content, object state) {
+            if (content == null) {
+                return content;
+            }
 
-            string val = base.Replace(Content, state);
+            string val = base.Replace(content, state);
             if (StripWhitespaceRepetitions) {
                 val = Regex.Replace(val, "\\s+", " ");
             }
@@ -86,8 +91,12 @@ namespace Voat.Utils.Components {
             get { return _replacementvalue; }
             set { _replacementvalue = value; }
         }
-        public virtual string Replace(string Content, object state) {
-            return Regex.Replace(Content, this.ReplacementRegEx, this.ReplacementValue);
+        public virtual string Replace(string content, object state) {
+            if (content == null) {
+                return content;
+            }
+
+            return Regex.Replace(content, this.ReplacementRegEx, this.ReplacementValue);
         }
 
         #endregion
@@ -119,6 +128,9 @@ namespace Voat.Utils.Components {
         }
 
         public virtual string Replace(string content, object state) {
+            if (content == null) {
+                return content;
+            }
             MatchCollection matches = Regex.Matches(content, RegEx);
             string result = content;
             int offset = 0;
@@ -142,8 +154,12 @@ namespace Voat.Utils.Components {
     public class DateReplacer : IReplacer {
         private string regex = @"\[[dD]{1}[aA]{1}[tT]{1}[eE]{1}:(?<format>[a-zA-Z_0-9\.-]+)\]";
 
-        public string Replace(string Content, object state) {
-            string val = Content.ToString();
+        public string Replace(string content, object state) {
+            if (content == null) {
+                return content;
+            }
+
+            string val = content.ToString();
             MatchCollection col = Regex.Matches(val, regex);
             if (col.Count > 0) {
                 foreach (Match match in col) {

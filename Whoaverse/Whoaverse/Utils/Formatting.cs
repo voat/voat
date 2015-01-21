@@ -23,7 +23,7 @@ namespace Voat.Utils
         
         public static string FormatMessage(String originalMessage, bool processContent = true){
 
-            if (processContent) { 
+            if (processContent && originalMessage != null) { 
                 originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
             }
 
