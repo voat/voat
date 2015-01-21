@@ -20,6 +20,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.SignalR;
 using Voat.Models;
 using Voat.Utils;
+using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
@@ -123,24 +124,29 @@ namespace Voat.Controllers
                     clientIpAddress = Request.UserHostAddress;
                 }
 
-                if (clientIpAddress == String.Empty) return View("~/Views/Home/Comments.cshtml", message);
 
-                // generate salted hash of client IP address
-                string ipHash = IpHash.CreateHash(clientIpAddress);
+                if (clientIpAddress != String.Empty) {
 
-                // check if this hash is present for this submission id in viewstatistics table
-                var existingView = _db.Viewstatistics.Find(message.Id, ipHash);
+                    // generate salted hash of client IP address
+                    string ipHash = IpHash.CreateHash(clientIpAddress);
 
-                // this hash is already registered, display the submission and don't register the view
-                if (existingView != null) return View("~/Views/Home/Comments.cshtml", message);
+                    // check if this hash is present for this submission id in viewstatistics table
+                    var existingView = _db.Viewstatistics.Find(message.Id, ipHash);
 
-                // this is a new view, register it for this submission
-                var view = new Viewstatistic { submissionId = message.Id, viewerId = ipHash };
-                _db.Viewstatistics.Add(view);
-                message.Views++;
-                _db.SaveChanges();
+                    // this hash doesn't already exist, register the view
+                    if (existingView == null) {
 
+                        // this is a new view, register it for this submission
+                        var view = new Viewstatistic { submissionId = message.Id, viewerId = ipHash };
+                        _db.Viewstatistics.Add(view);
+                        message.Views++;
+                        _db.SaveChanges();
+                    } 
+
+                }
+               
                 return View("~/Views/Home/Comments.cshtml", message);
+
             }
             return View("~/Views/Errors/Error_404.cshtml");
         }
@@ -178,119 +184,19 @@ namespace Voat.Controllers
                 if (!Utils.User.IsUserBanned(User.Identity.Name))
                 {
                     _db.Comments.Add(comment);
+
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave)) {
+                        comment.CommentContent = ContentProcessor.Instance.Process(comment.CommentContent, ProcessingStage.InboundPreSave, comment);
+                    }
+
                     await _db.SaveChangesAsync();
 
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave)) {
+                        ContentProcessor.Instance.Process(comment.CommentContent, ProcessingStage.InboundPostSave, comment);
+                    }
+
                     // send comment reply notification to parent comment author if the comment is not a new root comment
-                    if (comment.ParentId != null && comment.CommentContent != null)
-                    {
-                        // find the parent comment and its author
-                        var parentComment = _db.Comments.Find(comment.ParentId);
-                        if (parentComment != null)
-                        {
-                            // check if recipient exists
-                            if (Utils.User.UserExists(parentComment.Name))
-                            {
-                                // do not send notification if author is the same as comment author
-                                if (parentComment.Name != User.Identity.Name)
-                                {
-                                    // send the message
-                                    var commentReplyNotification = new Commentreplynotification();
-                                    var commentMessage = _db.Messages.Find(comment.MessageId);
-                                    if (commentMessage != null)
-                                    {
-                                        commentReplyNotification.CommentId = comment.Id;
-                                        commentReplyNotification.SubmissionId = commentMessage.Id;
-                                        commentReplyNotification.Recipient = parentComment.Name;
-                                        if (parentComment.Message.Anonymized || parentComment.Message.Subverses.anonymized_mode)
-                                        {
-                                            commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                                        }
-                                        else
-                                        {
-                                            commentReplyNotification.Sender = User.Identity.Name;
-                                        }
-                                        commentReplyNotification.Body = comment.CommentContent;
-                                        commentReplyNotification.Subverse = commentMessage.Subverse;
-                                        commentReplyNotification.Status = true;
-                                        commentReplyNotification.Timestamp = DateTime.Now;
-
-                                        // self = type 1, url = type 2
-                                        commentReplyNotification.Subject = parentComment.Message.Type == 1 ? parentComment.Message.Title : parentComment.Message.Linkdescription;
-
-                                        _db.Commentreplynotifications.Add(commentReplyNotification);
-
-                                        await _db.SaveChangesAsync();
-
-                                        // get count of unread notifications
-                                        int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
-
-                                        // send SignalR realtime notification to recipient
-                                        var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                                        hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
-                                    }
-                                    else
-                                    {
-                                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // comment reply is sent to a root comment which has no parent id, trigger post reply notification
-                        var commentMessage = _db.Messages.Find(comment.MessageId);
-                        if (commentMessage != null)
-                        {
-                            // check if recipient exists
-                            if (Utils.User.UserExists(commentMessage.Name))
-                            {
-                                // do not send notification if author is the same as comment author
-                                if (commentMessage.Name != User.Identity.Name)
-                                {
-                                    // send the message
-                                    var postReplyNotification = new Postreplynotification();
-
-                                    postReplyNotification.CommentId = comment.Id;
-                                    postReplyNotification.SubmissionId = commentMessage.Id;
-                                    postReplyNotification.Recipient = commentMessage.Name;
-
-                                    if (commentMessage.Anonymized || commentMessage.Subverses.anonymized_mode)
-                                    {
-                                        postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                                    }
-                                    else
-                                    {
-                                        postReplyNotification.Sender = User.Identity.Name;
-                                    }
-
-                                    postReplyNotification.Body = comment.CommentContent;
-                                    postReplyNotification.Subverse = commentMessage.Subverse;
-                                    postReplyNotification.Status = true;
-                                    postReplyNotification.Timestamp = DateTime.Now;
-
-                                    // self = type 1, url = type 2
-                                    postReplyNotification.Subject = commentMessage.Type == 1 ? commentMessage.Title : commentMessage.Linkdescription;
-
-                                    _db.Postreplynotifications.Add(postReplyNotification);
-
-                                    await _db.SaveChangesAsync();
-
-                                    // get count of unread notifications
-                                    int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(postReplyNotification.Recipient);
-
-                                    // send SignalR realtime notification to recipient
-                                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                                    hubContext.Clients.User(postReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                        }
-
-                    }
+                    await NotificationManager.SendCommentNotification(comment);
                 }
                 
                 if (Request.UrlReferrer != null)
@@ -308,6 +214,8 @@ namespace Voat.Controllers
             return View("~/Views/Help/SpeedyGonzales.cshtml");
         }
 
+       
+
         // POST: editcomment
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -324,10 +232,20 @@ namespace Voat.Controllers
             {
                 if (existingComment.Name.Trim() == User.Identity.Name)
                 {
-                    var escapedCommentContent = WebUtility.HtmlEncode(model.CommentContent);
-                    existingComment.CommentContent = escapedCommentContent;
+
                     existingComment.LastEditDate = DateTime.Now;
+                    var escapedCommentContent = WebUtility.HtmlEncode(existingComment.CommentContent);
+                    existingComment.CommentContent = escapedCommentContent;
+
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave)) {
+                        existingComment.CommentContent = ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPreSave, existingComment);
+                    }
+
                     await _db.SaveChangesAsync();
+
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave)) {
+                        ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPostSave, existingComment);
+                    }
 
                     // parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
                     var formattedComment = Formatting.FormatMessage(model.CommentContent);

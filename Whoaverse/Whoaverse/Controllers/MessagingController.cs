@@ -29,42 +29,68 @@ namespace Voat.Controllers
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
 
+        private void SetViewBagCounts() {
+            
+            int unreadCommentCount = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
+            int unreadPostCount = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
+            int unreadPMCount = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+
+            ViewBag.UnreadCommentReplies = unreadCommentCount;
+            ViewBag.UnreadPostReplies = unreadPostCount;
+            ViewBag.UnreadPrivateMessages = unreadPMCount;
+
+        }
+
         // GET: Inbox
         [System.Web.Mvc.Authorize]
         public ActionResult Inbox(int? page)
         {
+
+            int unreadCommentCount = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
+            int unreadPostCount = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
+            int unreadPMCount = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+
+            if (unreadPMCount > 0) {
+                return InboxPrivateMessages(page);
+            } else if (unreadCommentCount > 0) {
+                return InboxCommentReplies(page);
+            } else if (unreadPostCount > 0) {
+                return InboxPostReplies(page);
+            } else  {
+                return InboxPrivateMessages(page);
+            } 
+                        
+        }
+
+        // GET: Inbox
+        [System.Web.Mvc.Authorize]
+        public ActionResult InboxPrivateMessages(int? page) {
             ViewBag.PmView = "inbox";
-            ViewBag.UnreadCommentReplies = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+
+            SetViewBagCounts();
 
             const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            if (pageNumber < 1)
-            {
+            if (pageNumber < 1) {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
             // get logged in username and fetch received messages
-            try
-            {
+            try {
                 IQueryable<Privatemessage> privateMessages = _db.Privatemessages
                     .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(s => s.Timestamp)
                     .ThenBy(s => s.Sender);
 
-                if (privateMessages.Any())
-                {
+                if (privateMessages.Any()) {
                     var unreadPrivateMessages = privateMessages
                         .Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
-                    if (unreadPrivateMessages.Count > 0)
-                    {
+                    if (unreadPrivateMessages.Count > 0) {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singleMessage in privateMessages.ToList())
-                        {
+                        foreach (var singleMessage in privateMessages.ToList()) {
                             singleMessage.Status = false;
                             _db.SaveChanges();
                         }
@@ -72,13 +98,12 @@ namespace Voat.Controllers
                 }
 
                 ViewBag.InboxCount = privateMessages.Count();
-                return View(privateMessages.ToPagedList(pageNumber, pageSize));
-            }
-            catch (Exception)
-            {
+                return View("Inbox", privateMessages.ToPagedList(pageNumber, pageSize));
+            } catch (Exception) {
                 return RedirectToAction("HeavyLoad", "Error");
             }
         }
+
 
         // GET: InboxCommentReplies
         [System.Web.Mvc.Authorize]
@@ -86,9 +111,7 @@ namespace Voat.Controllers
         {
             ViewBag.PmView = "inbox";
 
-            ViewBag.UnreadCommentReplies = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+            SetViewBagCounts();
 
             const int pageSize = 25;
             int pageNumber = (page ?? 1);
@@ -123,7 +146,7 @@ namespace Voat.Controllers
                 }
 
                 ViewBag.CommentRepliesCount = commentReplies.Count();
-                return View(commentReplies.ToPagedList(pageNumber, pageSize));
+                return View("InboxCommentReplies", commentReplies.ToPagedList(pageNumber, pageSize));
 
             }
             catch (Exception)
@@ -138,9 +161,7 @@ namespace Voat.Controllers
         {
             ViewBag.PmView = "inbox";
 
-            ViewBag.UnreadCommentReplies = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+            SetViewBagCounts();
 
             const int pageSize = 25;
             int pageNumber = (page ?? 1);
@@ -176,7 +197,7 @@ namespace Voat.Controllers
                 }
 
                 ViewBag.PostRepliesCount = postReplies.Count();
-                return View(postReplies.ToPagedList(pageNumber, pageSize));
+                return View("InboxPostReplies", postReplies.ToPagedList(pageNumber, pageSize));
 
             }
             catch (Exception)
@@ -185,16 +206,7 @@ namespace Voat.Controllers
             }
         }
 
-        // GET: InboxUserMentions
-        [System.Web.Mvc.Authorize]
-        public ActionResult InboxUserMentions()
-        {
-            ViewBag.PmView = "inboxusermentions";
-            // get logged in username and fetch received user mentions
 
-            // return user mentions inbox view
-            return View();
-        }
 
         // GET: Sent
         [System.Web.Mvc.Authorize]
