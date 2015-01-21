@@ -234,7 +234,7 @@ namespace Voat.Controllers
                 {
 
                     existingComment.LastEditDate = DateTime.Now;
-                    var escapedCommentContent = WebUtility.HtmlEncode(existingComment.CommentContent);
+                    var escapedCommentContent = WebUtility.HtmlEncode(model.CommentContent);
                     existingComment.CommentContent = escapedCommentContent;
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave)) {
@@ -248,7 +248,7 @@ namespace Voat.Controllers
                     }
 
                     // parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
-                    var formattedComment = Formatting.FormatMessage(model.CommentContent);
+                    var formattedComment = Formatting.FormatMessage(existingComment.CommentContent);
                     return Json(new {response = formattedComment});
                 }
                 return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
