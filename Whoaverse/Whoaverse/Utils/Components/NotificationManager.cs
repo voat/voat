@@ -18,12 +18,14 @@ namespace Voat.Utils.Components {
                     return;
                 }
 
+                string recipient = User.OriginalUsername(user);
+
                 var commentReplyNotification = new Commentreplynotification();
                 using (var _db = new whoaverseEntities()) {
                     
                     commentReplyNotification.CommentId = comment.Id;
                     commentReplyNotification.SubmissionId = comment.Message.Id;
-                    commentReplyNotification.Recipient = user;
+                    commentReplyNotification.Recipient = recipient;
                     if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode) {
                         commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
                     } else {
@@ -56,12 +58,14 @@ namespace Voat.Utils.Components {
                     return;
                 }
 
+                string recipient = User.OriginalUsername(user);
+
                 var commentReplyNotification = new Commentreplynotification();
                 using (var _db = new whoaverseEntities()) {
 
                     //commentReplyNotification.CommentId = comment.Id;
                     commentReplyNotification.SubmissionId = message.Id;
-                    commentReplyNotification.Recipient = user;
+                    commentReplyNotification.Recipient = recipient;
                     if (message.Anonymized || message.Subverses.anonymized_mode) {
                         commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
                     } else {
