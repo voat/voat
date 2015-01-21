@@ -115,6 +115,23 @@ namespace Voat.Utils.Components {
             return replacer.Replace(content, context);
         }
     }
+
+    public class RedditLinkFilter : ContentFilter {
+        public RedditLinkFilter() {
+            ProcessingStage = ProcessingStage.Outbound;
+            Priority = 10;
+            IsReadOnly = false;
+
+        }
+        protected override string ProcessContent(string content, object context) {
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(@"(?<=\s{1,}|^)((/r/)(?'sub'[a-zA-Z0-9]+))",
+                delegate(Match m, object state) {
+                    return String.Format("[{0}](http://np.reddit.com{0})", m.Value);
+                }
+            );
+            return replacer.Replace(content, context);
+        }
+    }
      public class RawHyperlinkFilter : ContentFilter {
         public RawHyperlinkFilter() {
             ProcessingStage = ProcessingStage.Outbound;

@@ -221,7 +221,7 @@ namespace Voat.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [System.Web.Mvc.Authorize]
-        [PreventSpam(DelayRequest = 120, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> EditComment([Bind(Include = "CommentId, CommentContent")] EditComment model)
         {
             if (!ModelState.IsValid) return Json("HTML is not allowed.", JsonRequestBehavior.AllowGet);
