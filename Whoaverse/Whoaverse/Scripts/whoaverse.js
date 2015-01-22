@@ -306,6 +306,8 @@ function reply(parentcommentid, messageid) {
         null,
         function (data) {
             $("#" + parentcommentid).append(data);
+			//Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
+			$('#commentreplyform-' + parentcommentid).find('#CommentContent').focus();
         }
      );
 
