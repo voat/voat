@@ -510,10 +510,13 @@ function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
 function edit(parentcommentid, messageid) {
 
     //hide original text comment
-    $("#" + parentcommentid).find('.usertext-body').toggle(1);
+    $('#commentContent-' + parentcommentid).toggle(1);
 
     //show edit form
     $("#" + parentcommentid).find('.usertext-edit').toggle(1);
+	
+	//Focus the cursor on the edit comment form textarea, to prevent unnecessary use of the tab key
+	$('#commenteditform-' + parentcommentid).find('#CommentContent').focus();
 
     var form = $('#commenteditform-' + parentcommentid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
