@@ -12,14 +12,13 @@
 
 @model Voat.Models.Subverse
 
-@using Voat.Utils;
 @using Voat.Models.ViewModels;
 
 @{
     string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
     string subverseOwner = "Atko";
 
-    var subOwner = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 1).FirstOrDefault();
+    var subOwner = Model.SubverseAdmins.FirstOrDefault(n => n.SubverseName == Model.name && n.Power == 1);
 
     if (subOwner != null)
     {
