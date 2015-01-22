@@ -515,7 +515,7 @@ function edit(parentcommentid, messageid) {
     //show edit form
     $("#" + parentcommentid).find('.usertext-edit').toggle(1);
 	
-	//Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
+	//Focus the cursor on the edit comment form textarea, to prevent unnecessary use of the tab key
 	$('#commenteditform-' + parentcommentid).find('#CommentContent').focus();
 
     var form = $('#commenteditform-' + parentcommentid)
