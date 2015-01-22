@@ -141,7 +141,7 @@ namespace Voat.Utils.Components {
         }
 
         protected override string ProcessContent(string content, object context) {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(@"(?<!\(\s{0,})(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)(?<![\.\?\-_\,]|\s{1,})", 
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(@"(?<!\(\s{1,}|\[\s{1,})(?<=\s{1,}|^)(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=]*)(?<![\.\?\-_\,]|\s{1,})", 
                 delegate(Match m, object state) {
                     return String.Format("[{0}]({0})",m.Value);
                 }
