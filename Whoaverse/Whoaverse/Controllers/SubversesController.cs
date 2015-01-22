@@ -82,10 +82,11 @@ namespace Voat.Controllers
         {
             var subverse = _db.Subverses.Find(selectedSubverse);
 
+            // don't return a sidebar since subverse doesn't exist or is a system subverse
             if (subverse == null) return new EmptyResult();
+
             // get subscriber count for selected subverse
-            var subscriberCount =
-                _db.Subscriptions.Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
+            var subscriberCount = _db.Subscriptions.Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
 
             ViewBag.SubscriberCount = subscriberCount;
             ViewBag.SelectedSubverse = selectedSubverse;
@@ -100,7 +101,6 @@ namespace Voat.Controllers
             }
 
             return PartialView("~/Views/Shared/Sidebars/_Sidebar.cshtml", subverse);
-            //don't return a sidebar since subverse doesn't exist or is a system subverse
         }
 
         // GET: stylesheet for selected subverse
