@@ -510,7 +510,7 @@ function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
 function edit(parentcommentid, messageid) {
 
     //hide original text comment
-    $("#" + parentcommentid).find('.usertext-body').toggle(1);
+    $("#" + parentcommentid).find('#commentContent-' + messageid).toggle(1);
 
     //show edit form
     $("#" + parentcommentid).find('.usertext-edit').toggle(1);
