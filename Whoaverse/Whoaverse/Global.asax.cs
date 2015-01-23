@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -41,9 +42,11 @@ namespace Voat
             }
         }
 
-        // force SSL for every request
+        // force SSL for every request if enabled in Web.config
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {
+            if (!Convert.ToBoolean(ConfigurationManager.AppSettings["forceHTTPS"])) return;
+
             if (HttpContext.Current.Request.IsSecureConnection.Equals(false) && HttpContext.Current.Request.IsLocal.Equals(false))
             {
                 Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + HttpContext.Current.Request.RawUrl);
@@ -78,6 +81,5 @@ namespace Voat
                 //
             }
         }
-        
     }
 }
