@@ -485,12 +485,14 @@
     <Content Include="Graphics\markdownEditorSprite.png" />
     <Content Include="Graphics\missing_image.png" />
     <Content Include="Graphics\v2_ad.png" />
+    <Content Include="Graphics\voat32x32.png" />
     <Content Include="Graphics\voat_je_suis_charlie.png" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="oexchange.xrd" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />

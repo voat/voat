@@ -79,8 +79,8 @@ namespace Voat.Controllers
         public ActionResult Submit(string selectedsubverse)
         {
             string linkPost = Request.Params["linkpost"];
-            string linkDescription = Request.Params["linkdescription"];
-            string linkUrl = Request.Params["linkurl"];
+            string linkDescription = Request.Params["title"];
+            string linkUrl = Request.QueryString["url"];
 
             if (linkPost != null)
             {
@@ -103,6 +103,27 @@ namespace Voat.Controllers
             }
 
             return View();
+        }
+
+        // GET: submitlink
+        [System.Web.Mvc.Authorize]
+        public ActionResult SubmitLinkService(string selectedsubverse)
+        {
+            string linkDescription = Request.Params["title"];
+            string linkUrl = Request.QueryString["url"];
+
+            ViewBag.linkPost = "true";
+            ViewBag.action = "link";
+            ViewBag.linkDescription = linkDescription;
+            ViewBag.linkUrl = linkUrl;
+
+            if (selectedsubverse == null) return View("~/Views/Home/Submit.cshtml");
+            if (!selectedsubverse.Equals("all", StringComparison.OrdinalIgnoreCase))
+            {
+                ViewBag.selectedSubverse = selectedsubverse;
+            }
+
+            return View("~/Views/Home/Submit.cshtml");
         }
 
         // POST: submit
@@ -238,13 +259,15 @@ namespace Voat.Controllers
                     // update last submission received date for target subverse
                     targetSubverse.last_submission_received = DateTime.Now;
 
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave)) {
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                    {
                         message.MessageContent = ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPreSave, message);
                     }
 
                     await _db.SaveChangesAsync();
 
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave)) {
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+                    {
                         ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPostSave, message);
                     }
 

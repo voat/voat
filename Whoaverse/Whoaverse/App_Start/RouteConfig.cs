@@ -346,6 +346,13 @@ namespace Voat
                 defaults: new { controller = "Home", action = "Submit" }
             );
 
+            // submit link shortcut
+            routes.MapRoute(
+                name: "submitlinkservice",
+                url: "submitlink",
+                defaults: new { controller = "Home", action = "SubmitLinkService" }
+            );
+
             // v/selectedsubverse/submit
             routes.MapRoute(
                 name: "submitpost",

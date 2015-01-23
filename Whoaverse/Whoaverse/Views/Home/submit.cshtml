@@ -15,8 +15,6 @@
 @{
     ViewBag.Title = "subverse: submit";
 
-    string loggedinUser = User.Identity.Name;
-    DateTime today = DateTime.Now;
     string linkPost = Request.Params["linkpost"];
 
     string selectedSubverse = ViewBag.selectedSubverse;
@@ -34,7 +32,7 @@
 
 <div id="container">
     <div class="well">
-        @if (linkPost == "true")
+        @if (linkPost == "true" || ViewBag.linkPost == "true")
         {
             @Html.Partial("_AddSubmissionLinkpost")
         }
