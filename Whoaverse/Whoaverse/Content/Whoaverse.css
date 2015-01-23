@@ -137,8 +137,8 @@ label {
     border-top: 1px solid;
     padding: 15px;
     margin-bottom: 20px;
-    background: none repeat scroll 0% 0% #F6F6F6;
-    border-width: 8px 1px 1px;
+    background: #F6F6F6;
+    border-width: 5px 1px 1px;
     border-color: #5BACDE #F6F6F6 #F6F6F6;
     color: #5A5A5A;
     font-size: 12px;
@@ -159,9 +159,9 @@ label {
     border-top: 1px solid;
     border-bottom: 1px solid;
     padding: 5px;
-    margin-bottom: 0px;
-    background: none repeat scroll 0% 0% #F6F6F6;
-    border-width: 2px 1px 1px;
+    margin: 10px 0 0;
+    background: #F6F6F6;
+    border-width: 2px 0 1px;
     border-color: #5BACDE #F6F6F6 #DCDCDC;
     color: #5A5A5A;
     font-size: 12px;
@@ -212,7 +212,7 @@ label {
     border-bottom: 2px solid;
     padding: 2px;
     margin-bottom: 20px;
-    border-color: #5BACDE #4AABE7 #4AABE7;
+    border-color: #94D0F5;
     color: #404040;
     font-family: Arial, sans-serif;
     font-size: 18px;
@@ -222,7 +222,7 @@ label {
     border-bottom: 2px solid;
     padding: 2px;
     margin-bottom: 2px;
-    border-color: #5BACDE #4AABE7 #4AABE7;
+    border-color: #94D0F5;
     color: #404040;
     font-family: Arial, sans-serif;
     font-size: 12px;
@@ -231,7 +231,7 @@ label {
 .alert-h2 {
     border-bottom: 2px solid;
     margin-bottom: 2px;
-    border-color: #5BACDE #4AABE7 #4AABE7;
+    border-color: #94D0F5;
     color: #404040;
     font-family: Arial, sans-serif;
     font-size: 16px;
@@ -503,7 +503,7 @@ input, button, select, textarea {
     font-size: 13px;
     font-weight: bold;
     padding: 1px;
-    border-bottom: 2px solid #4AABE7;
+    border-bottom: 1px solid #94D0F5;
     margin: 5px;
 }
 
@@ -564,6 +564,12 @@ input, button, select, textarea {
     background-color: #FF4136;
     border-color: #FF1103;
     color: #FFF;
+}
+
+/* Profile sidebar */
+
+h2.whoaversename {
+    line-height: 1.8;
 }
 
 /* ! Body : Buttons
@@ -2248,7 +2254,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     border: 1px solid #DFDFDF;
     border-radius: 3px;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
-    color: #4C4C4C;
+    color: #444;
     display: inline-block;
     font-size: 12px;
     padding: 3px 6px;

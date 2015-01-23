@@ -127,9 +127,9 @@ label {
     border-top: 1px solid;
     padding: 15px;
     margin-bottom: 20px;
-    background: none repeat scroll 0% 0% #292929;
-    border-width: 8px 1px 1px;
-    border-color: #5BACDE #222 #222;
+    background: #292929;
+    border-width: 5px 1px 1px;
+    border-color: #6F64BA #222 #222;
     color: #DFDFDF;
     font-size: 12px;
 }
@@ -196,17 +196,17 @@ label {
     border-bottom: 2px solid;
     padding: 2px;
     margin-bottom: 20px;
-    border-color: #3D5E76;
+    border-color: #6F64BA;
     color: #DFDFDF;
     font-family: Arial, sans-serif;
     font-size: 18px;
 }
 
 .alert-h1 {
-    border-bottom: 2px solid;
+    border-bottom: 1px solid;
     padding: 2px;
     margin-bottom: 2px;
-    border-color: #3D5E76;
+    border-color: #6F64BA;
     color: #DFDFDF;
     font-family: Arial, sans-serif;
     font-size: 12px;
@@ -215,7 +215,7 @@ label {
 .alert-h2 {
     border-bottom: 2px solid;
     margin-bottom: 2px;
-    border-color: #3D5E76;
+    border-color: #6F64BA;
     color: #DFDFDF;
     font-family: Arial, sans-serif;
     font-size: 16px;
@@ -497,7 +497,7 @@ input, button, select, textarea {
 }
 
 .userstats-heading-1 {
-    border-bottom: 2px solid #4AABE7;
+    border-bottom: 1px solid #8263AE;
     color: #AAA;
     font-size: 13px;
     font-weight: bold;
@@ -564,6 +564,12 @@ input, button, select, textarea {
     background-color: #FF4136;
     border-color: #FF1103;
     color: #FFF;
+}
+
+/* Profile sidebar */
+
+h2.whoaversename {
+    line-height: 1.8;
 }
 
 /* ! Body : Buttons
