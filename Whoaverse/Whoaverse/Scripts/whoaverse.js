@@ -359,6 +359,8 @@ function replyToCommentNotification(commentId, submissionId) {
         null,
         function (data) {
             $("#commentContainer-" + commentId).append(data);
+			//Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
+			$('#commentreplyform-' + commentId).find('#CommentContent').focus();
         }
      );
 
