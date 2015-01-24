@@ -332,6 +332,8 @@ function replyprivatemessage(parentprivatemessageid, recipient, subject) {
         null,
         function (data) {
             $("#messageContainer-" + parentprivatemessageid).append(data);
+			//Focus the cursor on the private message reply form textarea, to prevent unnecessary use of the tab key
+			$('#privatemessagereplyform-' + parentprivatemessageid).find('#Body').focus();
         }
      );
 
@@ -359,6 +361,8 @@ function replyToCommentNotification(commentId, submissionId) {
         null,
         function (data) {
             $("#commentContainer-" + commentId).append(data);
+			//Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
+			$('#commentreplyform-' + commentId).find('#CommentContent').focus();
         }
      );
 
