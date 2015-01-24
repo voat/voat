@@ -160,9 +160,9 @@
 
             @if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
             {
-                HttpCookie cookie = new HttpCookie("NotFirstTime");
-                cookie.Value = "whoaverse first time visitor identifier";
-                HttpContext.Current.Response.Cookies.Add(cookie);
+                HttpCookie hc = new HttpCookie("NotFirstTime", "1");
+                hc.Expires = DateTime.Now.AddYears(1);
+                HttpContext.Current.Response.Cookies.Add(hc);
 
                 <div class="eppnotice">
                     <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>

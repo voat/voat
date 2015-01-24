@@ -490,12 +490,10 @@ namespace Voat.Controllers
             else
             {
                 // add a cookie for first time visitors
-                var cookie = new HttpCookie(cookieName)
-                {
-                    Value = "whoaverse first time visitor identifier",
-                    Expires = DateTime.Now.AddMonths(6)
-                };
-                ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+                HttpCookie hc = new HttpCookie("NotFirstTime", "1");
+                hc.Expires = DateTime.Now.AddYears(1);
+                System.Web.HttpContext.Current.Response.Cookies.Add(hc);
+
                 ViewBag.FirstTimeVisitor = true;
             }
 

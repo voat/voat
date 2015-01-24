@@ -25,7 +25,7 @@ namespace Voat
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
 
             // clear all sessions used for online users count
-            SessionTracker.RemoveAllSessions();
+            // SessionTracker.RemoveAllSessions();
         }
 
         protected void Application_Error(object sender, EventArgs e)

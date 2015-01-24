@@ -49,7 +49,7 @@ namespace Voat.Controllers
                 Language = "en-US",
                 ImageUrl =
                     new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority +
-                            "/Graphics/voat_je_suis_charlie.png")
+                            "/Graphics/voat-logo.png")
             };
 
             var feedItems = new List<SyndicationItem>();

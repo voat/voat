@@ -621,12 +621,9 @@ namespace Voat.Controllers
             if (nsfwok != null && nsfwok == true)
             {
                 // setup nswf cookie
-                var cookie = new HttpCookie("NSFWEnabled")
-                {
-                    Value = "whoaverse nsfw warning cookie",
-                    Expires = DateTime.Now.AddDays(1)
-                };
-                ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+                HttpCookie hc = new HttpCookie("NSFWEnabled", "1");
+                hc.Expires = DateTime.Now.AddYears(1);
+                System.Web.HttpContext.Current.Response.Cookies.Add(hc);
 
                 // redirect to destination subverse
                 return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = destination });
