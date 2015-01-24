@@ -52,14 +52,14 @@
     <div class="content" role="main">
 
         <div class="sitetable">
-
+            @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
             @Html.Action("FeaturedSub", "Home")
             @Html.Action("StickiedSubmission", "Home")
 
             @{
                 //(current page number -1)*25
                 int currentPageNumber = Model.PageIndex;
-                int counterCont = (currentPageNumber) * 25;
+                int counterCont = (currentPageNumber)*25;
 
                 int counter = counterCont + 1;
                 string submissionClass = "";
@@ -79,7 +79,7 @@
                 }
 
                 string classEvenOrOdd = "";
-                if (counter % 2 == 0)
+                if (counter%2 == 0)
                 {
                     //is even
                     classEvenOrOdd = "even";
@@ -94,7 +94,7 @@
                     <p class="parent"></p>
                     <span class="rank">@counter</span>
 
-                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary {{"CCP", commentContributionPoints}})
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                     <div class="child"></div>
@@ -108,14 +108,14 @@
                     @if (Model.HasPreviousPage)
                     {
                         <li class="btn-whoaverse-paging">
-                            @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                            @Html.RouteLink("‹ prev", urlaction, new {page = (Model.PageIndex - 1)}, new {rel = "prev"})
                         </li>
                     }
 
                     @if (Model.HasNextPage)
                     {
                         <li class="btn-whoaverse-paging">
-                            @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                            @Html.RouteLink("next ›", urlaction, new {page = (Model.PageIndex + 1)}, new {rel = "next"})
                         </li>
                     }
                 </ul>

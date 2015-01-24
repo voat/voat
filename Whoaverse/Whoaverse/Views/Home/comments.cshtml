@@ -72,7 +72,8 @@ else if (!User.Identity.IsAuthenticated)
 
     <div class="content" role="main">
 
-        <br /><br />
+        <br/><br/>
+        @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
 
         @{
             //type 1 = message submission

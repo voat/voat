@@ -58,15 +58,11 @@ function notEnoughCCPUpVote() {
 }
 
 function firstTimeVisitorWelcome() {
-    $('#firsttimevisitorwelcome').modal();
+    $('#firsttimevisitorwelcomemessage').toggle();
 }
 
 function voteUpSubmission(submissionid) {
-    //DEBUG alert('Received model.id in voteUpSubmission: ' + submissionid);
-
     submitUpVote(submissionid);
-
-    var scoreUnvoted = +($(".id-" + submissionid).find('.score.unvoted').html());
     var scoreLikes = +($(".id-" + submissionid).find('.score.likes').html());
     var scoreDislikes = +($(".id-" + submissionid).find('.score.dislikes').html());
 
@@ -110,12 +106,10 @@ function voteUpSubmission(submissionid) {
 }
 
 function voteDownSubmission(submissionid) {
-    //DEBUG alert('Received model.id in voteDownSubmission: ' + submissionid);
     submitDownVote(submissionid);
 
     var scoreDislikes = +($(".id-" + submissionid).find('.score.dislikes').html());
     var scoreLikes = +($(".id-" + submissionid).find('.score.likes').html());
-    var scoreUnvoted = +($(".id-" + submissionid).find('.score.unvoted').html());
 
     //ADD DISLIKE IF UNVOTED
     if ($(".id-" + submissionid).children(".midcol").is(".unvoted")) {
@@ -169,7 +163,6 @@ function voteUpComment(commentid) {
     // get current score
     var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
     var scoreDislikes = $(".id-" + commentid).find('.post_downvotes').filter(":first").html();
-    var scoreUnvoted = $(".id-" + commentid).find('.score.unvoted').filter(":first").html();
 
     // ADD LIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
@@ -220,7 +213,6 @@ function voteDownComment(commentid) {
     // get current score
     var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
     var scoreDislikes = $(".id-" + commentid).find('.post_downvotes').filter(":first").html();
-    var scoreUnvoted = $(".id-" + commentid).find('.score.unvoted').filter(":first").html();
 
     // ADD DISLIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {

@@ -269,29 +269,6 @@
         HttpContext.Current.Response.Cookies.Add(hc);
 
         <!-- First time visitor welcome -->
-        <div class="modal fade" id="firsttimevisitorwelcome" tabindex="-1" role="dialog" aria-labelledby="firsttimevisitorwelcomelabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title" id="notenoughccplabel">Hi!</h4>
-                    </div>
-                    <div class="modal-body">
-                        <strong>It looks like you are new. Welcome to @ConfigurationManager.AppSettings["siteName"]!</strong>
-                        <br /><br />
-                        @ConfigurationManager.AppSettings["siteName"] is a media aggregator where content is submitted, organized, moderated and voted on (ranked) by the users.
-                        <br /><br />
-                        Users can earn money (a percentage of our ad-revenue share) for the content they submit.
-                    </div>
-                    <div class="modal-footer">
-                        <a class="btn btn-whoaverse" href="/account/register" role="button">Get an account</a>
-                        <a class="btn btn-whoaverse" href="/about/intro" role="button">Take a tour</a>
-                        <button type="button" class="btn btn-whoaverse" data-dismiss="modal">Not now</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-      
         if (!User.Identity.IsAuthenticated)
         {
             <script type="text/javascript">
