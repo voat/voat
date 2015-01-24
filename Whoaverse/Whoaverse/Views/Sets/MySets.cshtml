@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Utils.PaginatedList<Voat.Models.Usersetsubscription>
+@model PaginatedList<Voat.Models.Usersetsubscription>
 
 @{
     ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
@@ -20,14 +20,30 @@
 @using Voat.Models.ViewModels
 
 <div id="container">
-    @{
-        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
-    }
+    <div class="side">
+        <div class="spacer">
+            <div class="sidebox create">
+                <a href="#" class="btn-whoaverse btn-block">
+                    Create a new set
+                </a>
+            </div>
+        </div>
+        <div class="spacer">
+            <div class="sidebox create">
+                <a href="#" class="btn-whoaverse btn-block">
+                    Manage your sets
+                </a>
+            </div>
+        </div>
+    </div>
     <div class="content" role="main">
 
-
         <div class="sitetable">
-            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return createSet()">create a new set</button>
+
+            <div class="alert alert-firsttimevisitorwelcome alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                This feature is under development. Feel free to look around but don't expect things to be working.
+            </div>
 
             @if (Voat.Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
             {

@@ -41,13 +41,17 @@
         <div class="spacer">
             <div class="sidebox create">
                 <a href="#" class="btn-whoaverse btn-block">
-                    Create your own set
+                    Create a new set
                 </a>
             </div>
         </div>
     </div>
 
     <div class="content" role="main">
+        <div class="alert alert-firsttimevisitorwelcome alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            This feature is under development. Feel free to look around but don't expect things to be working.
+        </div>
 
         @switch (sortingMode)
         {
@@ -57,13 +61,14 @@
                 </div>
                 break;
             default:
-            <div class="alert-notice">
-                <p>Displaying user created sets sorted by number of subscribers.</p>
-            </div>
+                <div class="alert-notice">
+                    <p>Here are user created sets sorted by number of subscribers.</p>
+                </div>
                 break;
         }
 
-        <div class="sitetable linklisting">
+        <div class="sitetable">
+
             @foreach (var set in Model)
             {
                 var setViewModel = new SetDetailsViewModel()
@@ -86,14 +91,14 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                        @Html.RouteLink("‹ prev", urlaction, new {page = (Model.PageIndex - 1)}, new {rel = "prev"})
                     </li>
                 }
 
                 @if (Model.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                        @Html.RouteLink("next ›", urlaction, new {page = (Model.PageIndex + 1)}, new {rel = "next"})
                     </li>
                 }
             </ul>
