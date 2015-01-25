@@ -2285,7 +2285,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     border: 1px solid #DFDFDF;
     border-radius: 3px;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
-    color: #444;
+    color: #444 !important;
     display: inline-block;
     font-size: 12px;
     padding: 3px 6px;
