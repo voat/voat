@@ -156,14 +156,35 @@ label {
 }
 
 .alert-firsttimevisitorwelcome {
-    background-color: #FFF;
-    border: 1px solid #94D0F5;
-    border-radius: 0;
-    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.1);
-    color: #5A5A5A;
+    background-color: #FDFDFD;
+    border: 1px solid #DCDCDC;
+    border-radius: 2px;
+    box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);
+    color: #505050;
     font-size: 12px;
     margin: 10px auto;
 }
+
+    .alert-firsttimevisitorwelcome > p {
+        margin: 0 0 10px;
+    }
+
+    a.btn-tour {
+        background: #4AABE7;
+        background: -webkit-linear-gradient( top,#54B5F1,#4AABE7 );
+        background: -moz-linear-gradient( top,#54B5F1,#4AABE7 );
+        background: -ms-linear-gradient( top,#54B5F1,#4AABE7 );
+        background: -o-linear-gradient( top,#54B5F1,#4AABE7 );
+        border: 1px solid #4C9FD2;
+        border-radius: 2px;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+        color: #FFF;
+        display: inline-block;
+        font-size: 12px;
+        margin-top: 10px;
+        padding: 3px 7px;
+        text-align: center;
+    }
 
 .set-title {
     border-top: 1px solid;
@@ -2365,6 +2386,10 @@ textarea.form-control {
     line-height: 150%;
     padding: 20px;
 }
+
+    .modal-body > p {
+        margin: 0 0 10px;
+    }
 
 .form-horizontal .form-group {
     margin-left: 0;

@@ -146,14 +146,35 @@ label {
 }
 
 .alert-firsttimevisitorwelcome {
-    background-color: #292929;
-    border: 1px solid #6F64BA;
-    border-radius: 0;
-    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.1);
+    background-color: #303030;
+    border: 1px solid #292929;
+    border-radius: 2px;
+    box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);
     color: #DFDFDF;
     font-size: 12px;
     margin: 10px auto;
 }
+
+    .alert-firsttimevisitorwelcome > p {
+        margin: 0 0 10px;
+    }
+
+    a.btn-tour {
+        background: #38434B;
+        background: -webkit-linear-gradient( top,#38434B,#353C44 );
+        background: -moz-linear-gradient( top,#38434B,#353C44 );
+        background: -ms-linear-gradient( top,#38434B,#353C44 );
+        background: -o-linear-gradient( top,#38434B,#353C44 );
+        border: 1px solid #242E39;
+        border-radius: 2px;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+        color: #FFF;
+        display: inline-block;
+        font-size: 12px;
+        margin-top: 10px;
+        padding: 3px 7px;
+        text-align: center;
+    }
 
 .set-title {
     border-top: 1px solid;
@@ -2388,6 +2409,10 @@ textarea.form-control {
     line-height: 150%;
     padding: 20px;
 }
+
+    .modal-body > p {
+        margin: 0 0 10px;
+    }
 
 .form-horizontal .form-group {
     margin-left: 0;
