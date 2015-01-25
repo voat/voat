@@ -46,29 +46,6 @@
 <div id="container">
     <div class="side">
         <div class="spacer">
-            <div class="sidecontentbox collapsible" id="moderation_tools">
-                <div class="alert-h1">
-                    Subverses with most online users right now:
-                </div>
-                <ul style="display: block;" class="content">
-                    <li>
-                        <ul class="flat-vert icon-menu hover">
-                            <li>
-                                @foreach (var subverse in mostActiveSubverses)
-                                {
-                                    <p>
-                                        <a href="/v/@subverse.Name" class="subverse">/v/@subverse.Name</a>, users online: @subverse.UsersOnline.
-                                    </p>
-                                }
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-                <span style="text-align: center;">*not showing private and adult rated subs</span>
-            </div>
-        </div>
-        
-        <div class="spacer">
             <div class="sidebox create">
                 <a href="/subverses/create" class="btn-whoaverse btn-block">
                     Create your own subverse
