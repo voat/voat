@@ -65,6 +65,7 @@
           <Property Name="Dislikes" Type="bigint" Nullable="false" />
           <Property Name="ParentId" Type="int" />
           <Property Name="Anonymized" Type="bit" Nullable="false" />
+          <Property Name="IsDistinguished" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -712,6 +713,7 @@
           <Property Name="ParentId" Type="Int32" />
           <Property Name="LastEditDate" Type="DateTime" Precision="3" />
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
+          <Property Name="IsDistinguished" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -1438,6 +1440,7 @@
           <EntitySetMapping Name="Comments">
             <EntityTypeMapping TypeName="whoaverseModel.Comment">
               <MappingFragment StoreEntitySet="Comments">
+                <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
                 <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
                 <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />

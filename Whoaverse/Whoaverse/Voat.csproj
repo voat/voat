@@ -764,6 +764,10 @@
     <Content Include="Views\Shared\_MostViewedSubmissions.cshtml" />
     <Content Include="Views\Sets\_SingleSetPage.cshtml" />
     <Content Include="Views\Welcome\_FirstTimeVisitorWelcome.cshtml" />
+    <Content Include="Views\Shared\UserDistinctions\_SubmitterModeratorDistinction.cshtml" />
+    <Content Include="Views\Shared\UserDistinctions\_SubmitterDistinction.cshtml" />
+    <Content Include="Views\Shared\UserDistinctions\_ModeratorDistinction.cshtml" />
+    <Content Include="Views\Shared\UserDistinctions\_UserDistinction.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

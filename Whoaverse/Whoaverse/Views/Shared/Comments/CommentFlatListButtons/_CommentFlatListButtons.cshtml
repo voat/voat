@@ -32,22 +32,32 @@
             <li>
                 <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
             </li>
-		}
-		if (User.Identity.Name == commentAuthor)
+        }
+
+        // if user is sub admin or sub mod but not comment author, show delete button
+        if (User.Identity.Name != commentAuthor)
+        {
+            if (Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.CommentModel.Message.Subverse) || Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.CommentModel.Message.Subverse))
+            {
+                @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
+            }
+        }
+
+        // if user is comment author, show edit and delete buttons
+        if (User.Identity.Name == commentAuthor)
         {
 			<li>
                 <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @Model.CommentModel.MessageId)">edit</a>
             </li>
+            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
 
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
-        }
-        else if (commentAuthor != "deleted" && Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.CommentModel.Message.Subverse))
-        {
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
-        }
-        else if (commentAuthor != "deleted" && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.CommentModel.Message.Subverse))
-        {
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
+            // if user is comment author but also sub mod or sub admin show distinguish button
+            if (Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.CommentModel.Message.Subverse) || Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.CommentModel.Message.Subverse))
+            {
+                <li>
+                    <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.CommentModel.Id, this)">distinguish</a>
+                </li>
+            }
         }
 
         if (commentAuthor != "deleted")

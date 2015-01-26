@@ -972,6 +972,24 @@ function clearflair(messageId) {
     });
 }
 
+// function to toggle distinguish flag for a given comment
+function distinguish(commentId, obj) {
+    $(obj).html("please wait...");
+
+    $.ajax({
+        type: "POST",
+        url: "/comments/distinguish/" + commentId,
+        success: function () {
+            $(obj).html("done");
+
+            // TODO: find the comment and add class "moderator" to give better distinguish feedback
+        },
+        error: function () {
+            $(obj).html("unable to comply");
+        }
+    });
+}
+
 // a function to suggest a title for given Uri
 function suggestTitle() {
     var uri = $("#MessageContent").val();

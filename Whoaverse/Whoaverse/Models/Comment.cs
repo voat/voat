@@ -32,6 +32,7 @@ namespace Voat.Models
         public Nullable<int> ParentId { get; set; }
         public Nullable<System.DateTime> LastEditDate { get; set; }
         public bool Anonymized { get; set; }
+        public bool IsDistinguished { get; set; }
     
         public virtual Message Message { get; set; }
         public virtual ICollection<Commentvotingtracker> Commentvotingtrackers { get; set; }

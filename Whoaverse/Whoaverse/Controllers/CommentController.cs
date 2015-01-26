@@ -125,7 +125,8 @@ namespace Voat.Controllers
                 }
 
 
-                if (clientIpAddress != String.Empty) {
+                if (clientIpAddress != String.Empty)
+                {
 
                     // generate salted hash of client IP address
                     string ipHash = IpHash.CreateHash(clientIpAddress);
@@ -134,17 +135,18 @@ namespace Voat.Controllers
                     var existingView = _db.Viewstatistics.Find(message.Id, ipHash);
 
                     // this hash doesn't already exist, register the view
-                    if (existingView == null) {
+                    if (existingView == null)
+                    {
 
                         // this is a new view, register it for this submission
                         var view = new Viewstatistic { submissionId = message.Id, viewerId = ipHash };
                         _db.Viewstatistics.Add(view);
                         message.Views++;
                         _db.SaveChanges();
-                    } 
+                    }
 
                 }
-               
+
                 return View("~/Views/Home/Comments.cshtml", message);
 
             }
@@ -185,20 +187,22 @@ namespace Voat.Controllers
                 {
                     _db.Comments.Add(comment);
 
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave)) {
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                    {
                         comment.CommentContent = ContentProcessor.Instance.Process(comment.CommentContent, ProcessingStage.InboundPreSave, comment);
                     }
 
                     await _db.SaveChangesAsync();
 
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave)) {
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+                    {
                         ContentProcessor.Instance.Process(comment.CommentContent, ProcessingStage.InboundPostSave, comment);
                     }
 
                     // send comment reply notification to parent comment author if the comment is not a new root comment
                     await NotificationManager.SendCommentNotification(comment);
                 }
-                
+
                 if (Request.UrlReferrer != null)
                 {
                     var url = Request.UrlReferrer.AbsolutePath;
@@ -213,8 +217,6 @@ namespace Voat.Controllers
             ModelState.AddModelError(String.Empty, "Sorry, you are doing that too fast. Please try again in 2 minutes.");
             return View("~/Views/Help/SpeedyGonzales.cshtml");
         }
-
-       
 
         // POST: editcomment
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -232,24 +234,25 @@ namespace Voat.Controllers
             {
                 if (existingComment.Name.Trim() == User.Identity.Name)
                 {
-
                     existingComment.LastEditDate = DateTime.Now;
                     var escapedCommentContent = WebUtility.HtmlEncode(model.CommentContent);
                     existingComment.CommentContent = escapedCommentContent;
 
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave)) {
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                    {
                         existingComment.CommentContent = ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPreSave, existingComment);
                     }
 
                     await _db.SaveChangesAsync();
 
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave)) {
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+                    {
                         ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPostSave, existingComment);
                     }
 
                     // parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
                     var formattedComment = Formatting.FormatMessage(existingComment.CommentContent);
-                    return Json(new {response = formattedComment});
+                    return Json(new { response = formattedComment });
                 }
                 return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
             }
@@ -297,6 +300,42 @@ namespace Voat.Controllers
 
             var url = Request.UrlReferrer.AbsolutePath;
             return Redirect(url);
+        }
+
+        // POST: comments/distinguish/{commentId}
+        [System.Web.Mvc.Authorize]
+        public JsonResult DistinguishComment(int commentId)
+        {
+            var commentToDistinguish = _db.Comments.Find(commentId);
+
+            if (commentToDistinguish != null)
+            {
+                // check to see if request came from comment author
+                if (User.Identity.Name == commentToDistinguish.Name)
+                {
+                    // check to see if comment author is also sub mod or sub admin for comment sub
+                    if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentToDistinguish.Message.Subverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, commentToDistinguish.Message.Subverse))
+                    {
+                        // mark the comment as distinguished and save to db
+                        if (commentToDistinguish.IsDistinguished)
+                        {
+                            commentToDistinguish.IsDistinguished = false;
+                        }
+                        else
+                        {
+                            commentToDistinguish.IsDistinguished = true;
+                        }
+
+                        _db.SaveChangesAsync();
+
+                        Response.StatusCode = 200;
+                        return Json("Distinguish flag changed.", JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json("Unauthorized distinguish attempt.", JsonRequestBehavior.AllowGet);
         }
     }
 }

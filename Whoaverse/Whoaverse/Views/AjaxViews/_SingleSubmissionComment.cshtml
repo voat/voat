@@ -12,14 +12,12 @@
 
 @model Comment
 
-@using Voat.Utils;
 @using Voat.Models;
 
 @{
-    Random rnd = new Random();
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
-    //check if thread should be hidden
+    // check if thread should be hidden
     bool parentIsHidden = Convert.ToBoolean(ViewData["parentIsHidden"]);
     bool childTohiddenParent = Convert.ToBoolean(ViewData["childTohiddenParent"]);
 
@@ -32,13 +30,9 @@
     string uncollapsedComment = "";
     string showIfParent = "";
 
-    //apply class style if OP is the Comment Author
+    // apply class style if OP is the Comment Author
     opName = opName.Trim();
     commentAuthor = commentAuthor.Trim();
-    bool isOpModerator = Voat.Utils.User.IsUserSubverseModerator(opName, Model.Message.Subverse);
-    bool isOpSubverseAdmin = Voat.Utils.User.IsUserSubverseAdmin(opName, Model.Message.Subverse);
-    bool isCommentAuthorModerator = Voat.Utils.User.IsUserSubverseModerator(commentAuthor, Model.Message.Subverse);
-    bool isCommehtAuthorSubverseAdmin = Voat.Utils.User.IsUserSubverseAdmin(commentAuthor, Model.Message.Subverse);
 
     bool? isRootComment = ViewBag.rootComment;
     string commentType = "";
@@ -51,7 +45,7 @@
         commentType = "child";
     }
 
-    //collapse comments with score of -5 or less
+    // collapse comments with score of -5 or less
     if (parentIsHidden)
     {
         collapsedComment = ""; //show collapsed comment
@@ -69,7 +63,6 @@
         uncollapsedComment = ""; //show uncollapsed comment
     }
 }
-
 
 <div class="@commentType id-@Model.Id comment" data-fullname="" data-ups="" data-downs="" style="">
     <!-- 1 submission comment -->
@@ -113,54 +106,22 @@
 
                     if (opName == commentAuthor)
                     {
-                        if (isOpModerator || isOpSubverseAdmin)
+                        if (Model.IsDistinguished)
                         {
-                            if (Model.Anonymized)
-                            {
-                                <a href="#" class="author moderator may-blank">@Model.Id</a>
-                            }
-                            else
-                            {
-                                <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>
-                            }
-                            <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>, <a class="moderator" title="moderator" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">M</a>]</span>
+                            @Html.Partial("~/Views/Shared/UserDistinctions/_SubmitterModeratorDistinction.cshtml", Model)
                         }
                         else
                         {
-                            if (Model.Anonymized)
-                            {
-                                <a href="#" class="author submitter may-blank">@Model.Id</a>
-                            }
-                            else
-                            {
-                                <a href="/user/@Model.Name" class="author submitter may-blank">@Model.Name</a>
-                            }
-                            <span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                            @Html.Partial("~/Views/Shared/UserDistinctions/_SubmitterDistinction.cshtml", Model)
                         }
                     }
-                    else if (isCommentAuthorModerator || isCommehtAuthorSubverseAdmin)
+                    else if (Model.IsDistinguished)
                     {
-                        if (Model.Anonymized)
-                        {
-                            <a href="#" class="author moderator may-blank">@Model.Id</a>
-                        }
-                        else
-                        {
-                            <a href="/user/@Model.Name" class="author moderator may-blank">@Model.Name</a>
-                        }
-                        <span class="userattrs">[<a class="moderator" title="moderator" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">M</a>]</span>
+                        @Html.Partial("~/Views/Shared/UserDistinctions/_ModeratorDistinction.cshtml", Model)
                     }
                     else
                     {
-                        if (Model.Anonymized)
-                        {
-                            <a href="#" class="author may-blank">@Model.Id</a>
-                        }
-                        else
-                        {
-                            <a href="/user/@Model.Name" class="author may-blank">@Model.Name</a>
-                        }
-                        <span class="userattrs"></span>
+                        @Html.Partial("~/Views/Shared/UserDistinctions/_UserDistinction.cshtml", Model)
                     }
 
                     <span class="score dislikes">@Model.Dislikes points</span>
@@ -218,8 +179,31 @@
                     </li>
                 }
 
-                @if (User.Identity.IsAuthenticated)
+                @if (User.Identity.IsAuthenticated && commentAuthor != "deleted")
                 {
+                    // if user is sub admin or sub mod but not comment author, show delete and distinguish buttons
+                    if (User.Identity.Name != commentAuthor)
+                    {
+                        if (Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse) || Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
+                        {
+                            <li>
+                                <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.Id, @Model.MessageId)">distinguish</a>
+                            </li>
+                            <li>
+                                <form class="toggle del-button " action="#" method="get">
+                                    <input class="active" name="executed" value="deleted" type="hidden">
+                                    <span class="option main active">
+                                        <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(this, @Model.Id)">delete</a>
+                                    </span>
+                                    <span class="option error">
+                                        are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
+                                    </span>
+                                </form>
+                            </li>
+                        }
+                    }
+
+                    // if user is comment author, show edit and delete buttons
                     if (User.Identity.Name == commentAuthor)
                     {
                         <li>
@@ -237,34 +221,7 @@
                             </form>
                         </li>
                     }
-                    else if (commentAuthor != "deleted" && Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse))
-                    {
-                        <li>
-                            <form class="toggle del-button " action="#" method="get">
-                                <input class="active" name="executed" value="deleted" type="hidden">
-                                <span class="option main active">
-                                    <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(this, @Model.Id)">delete</a>
-                                </span>
-                                <span class="option error">
-                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
-                                </span>
-                            </form>
-                        </li>
-                    }
-                    else if (commentAuthor != "deleted" && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
-                    {
-                        <li>
-                            <form class="toggle del-button " action="#" method="get">
-                                <input class="active" name="executed" value="deleted" type="hidden">
-                                <span class="option main active">
-                                    <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(this, @Model.Id)">delete</a>
-                                </span>
-                                <span class="option error">
-                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
-                                </span>
-                            </form>
-                        </li>
-                    }
+                    
                     if (Model.Name != "deleted")
                     {
                         <li>

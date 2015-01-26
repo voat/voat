@@ -157,6 +157,13 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "Comments" }
             );
 
+            // comments/distinguish/412
+            routes.MapRoute(
+                name: "distinguishcomment",
+                url: "comments/distinguish/{commentId}",
+                defaults: new { controller = "Comment", action = "DistinguishComment" }
+            );
+
             // user/someuserhere/thingtoshow
             routes.MapRoute(
                 name: "UserProfile",
