@@ -16,7 +16,7 @@ using System;
 
 namespace Voat.Models
 {
-    [Serializable]
+    //[Serializable]
     public class EditComment
     {
         public int CommentId { get; set; }

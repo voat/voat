@@ -13,11 +13,9 @@ All Rights Reserved.
 */
 
 using System;
-using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Microsoft.AspNet.SignalR;
 using Voat.Models;
 using Voat.Utils;
 using Voat.Utils.Components;
@@ -30,7 +28,7 @@ namespace Voat.Controllers
         readonly Random _rnd = new Random();
 
         // POST: votecomment/{commentId}/{typeOfVote}
-        [System.Web.Mvc.Authorize]
+        [Authorize]
         public JsonResult VoteComment(int commentId, int typeOfVote)
         {
             var loggedInUser = User.Identity.Name;
@@ -163,7 +161,7 @@ namespace Voat.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [System.Web.Mvc.Authorize]
+        [Authorize]
         [PreventSpam(DelayRequest = 120, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind(Include = "Id, CommentContent, MessageId, ParentId")] Comment comment)
@@ -222,46 +220,53 @@ namespace Voat.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [System.Web.Mvc.Authorize]
+        [Authorize]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> EditComment([Bind(Include = "CommentId, CommentContent")] EditComment model)
+        public async Task<ActionResult> EditComment([Bind(Include = "Id, CommentContent")] Comment model)
         {
-            if (!ModelState.IsValid) return Json("HTML is not allowed.", JsonRequestBehavior.AllowGet);
-
-            var existingComment = _db.Comments.Find(model.CommentId);
-
-            if (existingComment != null)
+            if (ModelState.IsValid)
             {
-                if (existingComment.Name.Trim() == User.Identity.Name)
+                var existingComment = _db.Comments.Find(model.Id);
+
+                if (existingComment != null)
                 {
-                    existingComment.LastEditDate = DateTime.Now;
-                    var escapedCommentContent = WebUtility.HtmlEncode(model.CommentContent);
-                    existingComment.CommentContent = escapedCommentContent;
-
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                    if (existingComment.Name.Trim() == User.Identity.Name)
                     {
-                        existingComment.CommentContent = ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPreSave, existingComment);
+                        existingComment.LastEditDate = DateTime.Now;
+                        var escapedCommentContent = WebUtility.HtmlEncode(model.CommentContent);
+                        existingComment.CommentContent = escapedCommentContent;
+
+                        if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                        {
+                            existingComment.CommentContent = ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPreSave, existingComment);
+                        }
+
+                        await _db.SaveChangesAsync();
+
+                        if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+                        {
+                            ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPostSave, existingComment);
+                        }
+
+                        // parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
+                        var formattedComment = Formatting.FormatMessage(WebUtility.HtmlDecode(existingComment.CommentContent));
+                        return Json(new { response = formattedComment });
                     }
-
-                    await _db.SaveChangesAsync();
-
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-                    {
-                        ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPostSave, existingComment);
-                    }
-
-                    // parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
-                    var formattedComment = Formatting.FormatMessage(existingComment.CommentContent);
-                    return Json(new { response = formattedComment });
+                    return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
                 }
-                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
             }
-            return Json("Unauthorized edit or comment not found.", JsonRequestBehavior.AllowGet);
+
+            if (Request.IsAjaxRequest())
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            return Json("Unauthorized edit or comment not found - comment ID was.", JsonRequestBehavior.AllowGet);
         }
 
         // POST: deletecomment
         [HttpPost]
-        [System.Web.Mvc.Authorize]
+        [Authorize]
         public async Task<ActionResult> DeleteComment(int commentId)
         {
             var commentToDelete = _db.Comments.Find(commentId);
@@ -303,7 +308,7 @@ namespace Voat.Controllers
         }
 
         // POST: comments/distinguish/{commentId}
-        [System.Web.Mvc.Authorize]
+        [Authorize]
         public JsonResult DistinguishComment(int commentId)
         {
             var commentToDistinguish = _db.Comments.Find(commentId);

@@ -172,7 +172,7 @@
             {
                 <div class="usertext-body may-blank-within" id="commentContent-@commentId">
                     <div class="md">
-                        @Html.Raw(@Formatting.FormatMessage(@commentModel.CommentContent))
+                        @Html.Raw(@Formatting.FormatMessage(WebUtility.HtmlDecode(commentModel.CommentContent)))
                     </div>
                 </div>
             }

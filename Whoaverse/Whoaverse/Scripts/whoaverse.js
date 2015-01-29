@@ -604,7 +604,7 @@ function hidecomment(commentid) {
 // submit edited comment and replace the old one with formatted response received by server
 function editcommentsubmit(commentid) {
     var commentcontent = $("#" + commentid).find('.form-control').val();
-    var commentobject = { "CommentId": commentid, "CommentContent": commentcontent };
+    var commentobject = { "Id": commentid, "CommentContent": commentcontent };
 
     $.ajax({
         type: "POST",
