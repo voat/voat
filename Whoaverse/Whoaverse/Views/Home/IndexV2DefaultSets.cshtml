@@ -41,12 +41,13 @@
     <div class="content" role="main">
 
         <div class="sitetable">
+            @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
             @foreach (var set in Model.DefaultSets.OrderBy(s => s.Order))
             {
                 var currentSet = set.Name;
 
                 <div class="set-container" id="set-@set.Set_id-container">
-                    @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.Set_id }, { "defaultSet", true } })
+                    @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary {{"setTitle", currentSet}, {"setId", set.Set_id}, {"defaultSet", true}})
 
                     @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
                     {
@@ -64,7 +65,7 @@
                         }
 
                         string classEvenOrOdd = "";
-                        if (counter % 2 == 0)
+                        if (counter%2 == 0)
                         {
                             //is even
                             classEvenOrOdd = "even";
@@ -79,7 +80,7 @@
                             <p class="parent"></p>
                             @*<span class="rank">@counter</span>*@
 
-                            @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                            @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary {{"CCP", commentContributionPoints}})
                             @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                             <div class="child"></div>
@@ -88,7 +89,7 @@
                         counter++;
                     }
                 </div>
-                <a href="javascript:void(0)" onclick="loadMoreDefaultSetItems(this, @set.Set_id)" class="btn-whoaverse btn-block">
+                <a href="javascript:void(0)" onclick=" loadMoreDefaultSetItems(this, @set.Set_id) " class="btn-whoaverse btn-block">
                     load more &#9660;
                 </a>
             }
