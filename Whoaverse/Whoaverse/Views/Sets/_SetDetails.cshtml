@@ -25,6 +25,12 @@
     {
         <button type="button" onclick="return subscribeToSet(this, '@Model.Id')" class="btn-whoaverse-paging btn-xs btn-default">subscribe</button>
     }
+    @if (Voat.Utils.User.IsUserSetOwner(User.Identity.Name, Model.Name))
+    {
+        <div class="btn-whoaverse-paging">
+            <a href="/set/@Model.Id/edit" rel="next">modify</a>
+        </div>
+    }
 </div>
 
 <div class="entry">
@@ -40,13 +46,22 @@
         <span class="">
             <span id="subscribercount" class="number">@Model.Subscribers</span>
             <span class="word">subscribers, created by <a href="/u/@Model.CreatedBy">@Model.CreatedBy</a>. Set is @subverseAge old.</span>
-            <span>
-                The set consists of following subverses:
-                @foreach (var subverse in Model.SubversesList)
-                {
-                    <a href="/v/@subverse.Subversename">@subverse.Subversename</a>
-                }
-            </span>
+            @if (Model.SubversesList.Count > 0)
+            {
+                <span>
+                    The set consists of following subverses:
+                    @foreach (var subverse in Model.SubversesList)
+                    {
+                        <a href="/v/@subverse.Subversename">@subverse.Subversename</a>
+                    }
+                </span>
+            }
+            else
+            {
+                <span>
+                    You did not add any subverses to this set.
+                </span>
+            }
         </span>
     </p>
 </div>

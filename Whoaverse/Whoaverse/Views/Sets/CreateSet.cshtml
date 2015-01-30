@@ -1,0 +1,83 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model Voat.Models.AddSet
+
+<div id="container">
+    <div class="content" role="main">
+    </div>
+
+    <div class="sitetable">
+        <div class="alert alert-firsttimevisitorwelcome alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            This feature is under development. Feel free to look around but don't expect things to be working.
+        </div>
+        <div class="alert alert-info">You are creating a new set. You are awesome!</div>
+
+        @{
+            ViewBag.Title = "Sets: create a new set";
+
+            using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <hr />
+                    @Html.ValidationSummary(true)
+
+                    @Html.Hidden("Public", "1")
+
+                    <div class="form-group">
+                        @Html.Label("Name", new { @class = "control-label col-md-2" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Name)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="control-label col-md-2"></div>
+                        <div class="col-md-9">
+                            <b>
+                                this is the name of your set, max 20 characters
+                            </b>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Description", new { @class = "control-label col-md-2" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Description)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="control-label col-md-2"></div>
+                        <div class="col-md-9">
+                            example:
+                            <b>
+                                News from biggest cities in Europe
+                            </b>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn-whoaverse" />
+                    </div>
+
+                </div>
+            }
+
+        }
+    </div>
+</div>

@@ -14,8 +14,10 @@ All Rights Reserved.
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Microsoft.Ajax.Utilities;
 using Voat.Models;
@@ -84,6 +86,16 @@ namespace Voat.Controllers
                 var singleSetResultModel = new SingleSetViewModel();
                 var submissions = new List<SetSubmission>();
 
+                // if subs in set count is < 1, don't display the page, instead, check if the user owns this set and give them a chance to add subs to the set
+                if (set.Usersetdefinitions.Count < 1)
+                {
+                    // check if the user owns this sub
+                    if (User.Identity.IsAuthenticated && User.Identity.Name == set.Created_by)
+                    {
+                        return RedirectToAction("EditSet", "Sets", new { setId = set.Set_id });
+                    }
+                }
+
                 foreach (var subverse in set.Usersetdefinitions)
                 {
                     // get 5 top ranked submissions for current subverse
@@ -108,8 +120,8 @@ namespace Voat.Controllers
             }
         }
 
-        // GET: /set/setid
-        // show single set frontpage page
+        // GET: /set/setId/page
+        // fetch x more items from a set
         public ActionResult SingleSetPage(int setId, int page)
         {
             const int pageSize = 2;
@@ -157,6 +169,7 @@ namespace Voat.Controllers
         }
 
         // GET: /set/setid/edit
+        [Authorize]
         public ActionResult EditSet(int setId)
         {
             var setToEdit = _db.Usersets.FirstOrDefault(s => s.Set_id == setId);
@@ -230,6 +243,7 @@ namespace Voat.Controllers
         }
 
         // GET: /set/defaultsetid/page
+        // fetch more x items from default set
         public ActionResult SingleDefaultSetPage(int setId, int page)
         {
             const int pageSize = 2;
@@ -308,7 +322,7 @@ namespace Voat.Controllers
 
             try
             {
-                // order by subscriber count (popularity)
+                // order by subscriber count (popularity), show only sets which are fully defined by their creators
                 var sets = _db.Usersets.Where(s => s.Usersetdefinitions.Any()).OrderByDescending(s => s.Subscribers);
 
                 var paginatedSets = new PaginatedList<Userset>(sets, page ?? 0, pageSize);
@@ -319,6 +333,68 @@ namespace Voat.Controllers
             {
                 return RedirectToAction("HeavyLoad", "Error");
             }
+        }
+
+        // GET: /sets/create
+        [Authorize]
+        public ActionResult CreateSet()
+        {
+            return View("~/Views/Sets/CreateSet.cshtml");
+        }
+
+        // POST: /sets/create
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> CreateSet([Bind(Include = "Name, Description")] AddSet setTmpModel)
+        {
+            if (!User.Identity.IsAuthenticated) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            int maximumOwnedSets = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSets"]);
+
+            // TODO
+            // ###############################################################################################
+            try
+            {
+                // abort if model is in invalid state
+                if (!ModelState.IsValid) return View();
+
+                // setup default values
+                var set = new Userset
+                {
+                    Name = setTmpModel.Name,
+                    Description = setTmpModel.Description,
+                    Created_on = DateTime.Now,
+                    Created_by = User.Identity.Name,
+                    Default = false,
+                    Public = true,
+                    Subscribers = 0
+                };
+
+                // only allow users with less than maximum allowed sets to create a set
+                var amountOfOwnedSets = _db.Usersets
+                    .Where(s => s.Created_by == User.Identity.Name)
+                    .ToList();
+
+                if (amountOfOwnedSets.Count <= maximumOwnedSets)
+                {
+                    _db.Usersets.Add(set);
+                    await _db.SaveChangesAsync();
+
+                    // subscribe user to the newly created set
+                    Utils.User.SubscribeToSet(User.Identity.Name, set.Set_id);
+
+                    // go to newly created Set
+                    return RedirectToAction("EditSet", "Sets", new { setId = set.Set_id });
+                }
+
+                ModelState.AddModelError(string.Empty, "Sorry, you can not own more than " + maximumOwnedSets + " sets.");
+                return View();
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Something bad happened.");
+                return View();
+            }
+            // ###############################################################################################
         }
 
         // GET: /mysets
@@ -339,6 +415,26 @@ namespace Voat.Controllers
             var paginatedUserSetSubscriptions = new PaginatedList<Usersetsubscription>(userSets, page ?? 0, pageSize);
 
             return View("~/Views/Sets/MySets.cshtml", paginatedUserSetSubscriptions);
+        }
+
+        // GET: /mysets/manage
+        [Authorize]
+        public ActionResult ManageUserSets(int? page)
+        {
+            const int pageSize = 25;
+            int pageNumber = (page ?? 0);
+
+            if (pageNumber < 0)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            // load user owned sets for logged in user
+            IQueryable<Userset> userSets = _db.Usersets.Where(s => s.Created_by.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.Name);
+
+            var paginatedUserSets = new PaginatedList<Userset>(userSets, page ?? 0, pageSize);
+
+            return View("~/Views/Sets/ManageMySets.cshtml", paginatedUserSets);
         }
 
         // GET: 40 most popular sets by subscribers

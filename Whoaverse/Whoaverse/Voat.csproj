@@ -264,6 +264,7 @@
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SetsController.cs" />
     <Compile Include="MessagingHub.cs" />
+    <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\Defaultset.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -768,6 +769,8 @@
     <Content Include="Views\Shared\UserDistinctions\_SubmitterDistinction.cshtml" />
     <Content Include="Views\Shared\UserDistinctions\_ModeratorDistinction.cshtml" />
     <Content Include="Views\Shared\UserDistinctions\_UserDistinction.cshtml" />
+    <Content Include="Views\Sets\CreateSet.cshtml" />
+    <Content Include="Views\Sets\ManageMySets.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

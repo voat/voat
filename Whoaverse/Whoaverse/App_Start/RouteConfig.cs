@@ -38,35 +38,35 @@ namespace Voat
                 defaults: new { controller = "Home", action = "IndexV2" }
             );
 
-            // /s/defaultsetname
+            // /s/defaultSetId
             routes.MapRoute(
                 name: "SingleDefaultSet",
                 url: "s/{setId}",
                 defaults: new { controller = "Sets", action = "SingleDefaultSet" }
             );
 
-            // /s/defaultsetname/page
+            // /s/defaultSetId/page
             routes.MapRoute(
                 name: "SingleDefaultSetPage",
                 url: "s/{setId}/{page}",
                 defaults: new { controller = "Sets", action = "SingleDefaultSetPage" }
             );
 
-            // /set/setname
+            // /set/setId
             routes.MapRoute(
                 name: "SingleUserSet",
                 url: "set/{setId}",
                 defaults: new { controller = "Sets", action = "SingleSet" }
             );
 
-            // /set/setname/edit
+            // /set/setId/edit
             routes.MapRoute(
                 name: "EditSet",
                 url: "set/{setId}/edit",
                 defaults: new { controller = "Sets", action = "EditSet" }
             ); 
 
-            // /set/setname/page
+            // /set/setId/page
             routes.MapRoute(
                 name: "SingleUserSetPage",
                 url: "set/{setId}/{page}",
@@ -80,14 +80,14 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "CreateSubverse" }
             );
 
-            // search
+            // /search
             routes.MapRoute(
                 name: "Search",
                 url: "search",
                 defaults: new { controller = "Search", action = "SearchResults" }
             );
 
-            // search
+            // /search/findsubverse
             routes.MapRoute(
                 name: "FindSubverse",
                 url: "search/findsubverse",
@@ -106,6 +106,13 @@ namespace Voat
                 name: "Sets",
                 url: "sets/",
                 defaults: new { controller = "Sets", action = "Sets" }
+            );
+
+            // /sets/create
+            routes.MapRoute(
+                name: "CreateSet",
+                url: "sets/create",
+                defaults: new { controller = "Sets", action = "CreateSet" }
             );
 
             // /subverses/search
@@ -190,6 +197,13 @@ namespace Voat
                 name: "UserSets",
                 url: "mysets",
                 defaults: new { controller = "Sets", action = "UserSets" }
+            );
+
+            // /mysets/manage
+            routes.MapRoute(
+                name: "UserSetsManage",
+                url: "mysets/manage",
+                defaults: new { controller = "Sets", action = "ManageUserSets" }
             );
 
             // inbox

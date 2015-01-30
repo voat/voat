@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Models.Usersetsubscription>
+@model PaginatedList<Voat.Models.Userset>
 
 @{
     ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
@@ -28,13 +28,6 @@
                 </a>
             </div>
         </div>
-        <div class="spacer">
-            <div class="sidebox create">
-                <a href="/mysets/manage" class="btn-whoaverse btn-block">
-                    Manage your sets
-                </a>
-            </div>
-        </div>
     </div>
     <div class="content" role="main">
 
@@ -45,34 +38,24 @@
                 This feature is under development. Feel free to look around but don't expect things to be working.
             </div>
 
-            @if (Voat.Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
-            {
-                <div class="alert-title">Your set subscriptions</div>
+                <div class="alert-title">Your sets</div>
 
-                foreach (var set in Model)
+                @foreach (var set in Model)
                 {
                     var viewModel = new SetDetailsViewModel
                     {
-                        CreatedBy = set.Userset.Created_by,
-                        CreationDate = set.Userset.Created_on,
-                        Description = set.Userset.Description,
-                        Id = set.Userset.Set_id,
-                        Name = set.Userset.Name,
-                        Public = set.Userset.Public,
-                        Subscribers = set.Userset.Subscribers
+                        CreatedBy = set.Created_by,
+                        CreationDate = set.Created_on,
+                        Description = set.Description,
+                        Id = set.Set_id,
+                        Name = set.Name,
+                        Public = set.Public,
+                        Subscribers = set.Subscribers,
+                        SubversesList = set.Usersetdefinitions.ToList()
                     };
 
-                    @Html.Partial("_SubscribedSetDetails", viewModel)
+                    @Html.Partial("_SetDetails", viewModel)
                 }
-            }
-            else
-            {
-                <div class="alert-notice">
-                    <p>You are not subscribed to any sets. Here are 40 most popular sets:</p>
-                </div>
-
-                Html.RenderAction("PopularSets", "Sets");
-            }
         </div>
 
         <div class="pagination-container">
