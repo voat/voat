@@ -12,10 +12,11 @@
 
 @model Voat.Models.ViewModels.SearchViewModel
 
-<div class="alert-h1">
-    Search Voat
-</div>
 <div class="spacer">
+
+    <div class="alert-h1">
+        Search Voat
+    </div>
 
     @using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
     {        

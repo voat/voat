@@ -282,6 +282,12 @@ label {
     font-weight: bold;
 }
 
+.spacersection .alert-h1 {
+    border-color: #DCDCDC;
+    border-width: 1px;
+    margin-bottom: 8px;
+}
+
 .alert-h2 {
     border-bottom: 2px solid;
     margin-bottom: 2px;
@@ -1520,6 +1526,13 @@ pre, code {
 
     .side .spacer {
         margin: 3px 0 10px;
+    }
+
+    .side .spacer.spacersection {
+        background: #FDFDFD;
+        border: 1px solid #DCDCDC;
+        border-radius: 2px;
+        padding: 8px;
     }
 
 .sidebox .spacer {
