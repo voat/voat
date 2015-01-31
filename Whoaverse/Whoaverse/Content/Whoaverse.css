@@ -187,57 +187,79 @@ label {
     }
 
 .set-title {
-    border-top: 1px solid;
-    border-bottom: 1px solid;
-    padding: 5px;
-    margin: 10px 0 0;
     background: #F6F6F6;
-    border-width: 2px 0 1px;
-    border-color: #5BACDE #F6F6F6 #DCDCDC;
-    color: #5A5A5A;
-    font-size: 12px;
+    border: 1px solid #DCDCDC;
+    margin: 10px 0 5px;
+    padding: 4px;
 }
 
 .settitlelabel {
-    background: #5BACDE;
-    border: 1px solid #5BACDE;
-    border-radius: 2px;
-    color: #FFF;
     display: inline-block;
-    font-family: inherit;
-    font-size: 10px;
-    letter-spacing: 1px;
-    line-height: 11px;
-    margin-right: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 4px;
+    margin-right: 7px;
     max-width: 80px;
-    min-width: 48px;
-    padding: 2px;
-    text-align: center;
     white-space: nowrap;
 }
 
 .settitlelabel > a {
-  color: #fff;
-  text-decoration: none;
-  cursor: pointer;
+    color: #727272;
+    text-decoration: none;
 }
 
+    .settitlelabel > a:hover {
+        color: #4AABE7;
+    }
+
 .settitlesortinglabel {
-    background: none repeat scroll 0% 0% rgba(177, 220, 246, 1);
-    border: 1px solid #5BACDE;
+    background: #FFF;
+    border: 1px solid #D0D0D0;
     border-radius: 2px;
-    color: #FFF;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.07 );
+    color: #666;
     display: inline-block;
-    font-family: inherit;
-    font-size: 10px;
-    letter-spacing: 1px;
-    line-height: 11px;
-    margin-right: 3px;
+    font-size: 11px;
+    line-height: 1;
+    margin-right: 2px;
     max-width: 80px;
-    padding: 2px;
+    padding: 4px 7px;
     text-align: center;
     white-space: nowrap;
 }
+
+    .settitlesortinglabel:hover {
+        border-color: #B6B6B6;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.2 );
+        color: #505050;
+    }
+
+.set-title .label {
+    background: #FFF;
+    border: 1px solid #D0D0D0;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.07 );
+    color: #666;
+    display: inline-block;
+    font-size: 11px;
+    line-height: 1;
+    padding: 4px;
+    text-align: center;
+}
+
+    .set-title .label:hover {
+        border-color: #B6B6B6;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.2 );
+        color: #505050;
+    }
+
+    .set-title .label a {
+        color: #4AABE7;
+    }
+
+        .set-title .label a:hover {
+            color: #4AABE7;
+        }
 
 .alert-title {
     border-bottom: 2px solid;
@@ -258,6 +280,12 @@ label {
     font-family: Arial, sans-serif;
     font-size: 12px;
     font-weight: bold;
+}
+
+.spacersection .alert-h1 {
+    border-color: #DCDCDC;
+    border-width: 1px;
+    margin-bottom: 8px;
 }
 
 .alert-h2 {
@@ -1498,6 +1526,13 @@ pre, code {
 
     .side .spacer {
         margin: 3px 0 10px;
+    }
+
+    .side .spacer.spacersection {
+        background: #FDFDFD;
+        border: 1px solid #DCDCDC;
+        border-radius: 2px;
+        padding: 8px;
     }
 
 .sidebox .spacer {
