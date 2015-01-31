@@ -243,8 +243,8 @@ label {
     border-bottom: 2px solid;
     padding: 2px;
     margin-bottom: 20px;
-    border-color: #94D0F5;
-    color: #404040;
+    border-color: #DDD;
+    color: #4AABE7;
     font-family: Arial, sans-serif;
     font-size: 18px;
 }
@@ -253,17 +253,18 @@ label {
     border-bottom: 2px solid;
     padding: 2px;
     margin-bottom: 2px;
-    border-color: #94D0F5;
-    color: #404040;
+    border-color: #DDD;
+    color: #4AABE7;
     font-family: Arial, sans-serif;
     font-size: 12px;
+    font-weight: bold;
 }
 
 .alert-h2 {
     border-bottom: 2px solid;
     margin-bottom: 2px;
-    border-color: #94D0F5;
-    color: #404040;
+    border-color: #DDD;
+    color: #4AABE7;
     font-family: Arial, sans-serif;
     font-size: 16px;
 }
@@ -530,11 +531,11 @@ input, button, select, textarea {
 }
 
 .userstats-heading-1 {
-    color: #535353;
+    color: #4AABE7;
     font-size: 13px;
     font-weight: bold;
     padding: 1px;
-    border-bottom: 1px solid #94D0F5;
+    border-bottom: 2px solid #DDD;
     margin: 5px;
 }
 
@@ -2106,12 +2107,12 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     /* ! Sitetable : Comments : Tag line
     ------------------------------------------------------------------------------------ */
 
-    .comment .expand {
+    .comment a.expand {
         color: #AAA;
         margin: 0 3px 0 0;
     }
 
-        .comment .expand:hover {
+        .comment a.expand:hover {
             color: #555;
             text-decoration: none;
         }
@@ -2666,7 +2667,7 @@ textarea.form-control {
     }
 
     .comment .arrow-downvote, .comment .arrow-downvoted {
-        margin-top: 3px;
+        margin-top: 12px;
     }
 
     .btn-whoaverse-medium {
