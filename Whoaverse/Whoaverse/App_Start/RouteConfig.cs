@@ -283,7 +283,7 @@ namespace Voat
                 defaults: new { controller = "Home", action = "Cla" }
             );
 
-            // subscribe
+            // subscribe to subverse
             routes.MapRoute(
                 name: "subscribe",
                 url: "subscribe/{subverseName}",
@@ -297,7 +297,7 @@ namespace Voat
                 defaults: new { controller = "Sets", action = "Subscribe" }
             );
 
-            // unsubscribe
+            // unsubscribe from subverse
             routes.MapRoute(
                 name: "unsubscribe",
                 url: "unsubscribe/{subverseName}",
@@ -309,6 +309,20 @@ namespace Voat
                 name: "unsubscribefromset",
                 url: "unsubscribefromset/{setId}",
                 defaults: new { controller = "Sets", action = "UnSubscribe" }
+            );
+
+            // add subverse to set
+            routes.MapRoute(
+                name: "addsubversetoset",
+                url: "sets/addsubverse/{setId}/{subverseName}",
+                defaults: new { controller = "Sets", action = "AddSubverseToSet" }
+            );
+
+            // remove subverse from set
+            routes.MapRoute(
+                name: "removesubversefromset",
+                url: "sets/removesubverse/{setId}/{subverseName}",
+                defaults: new { controller = "Sets", action = "RemoveSubverseFromSet" }
             );
 
             // vote
@@ -561,6 +575,13 @@ namespace Voat
                 name: "AutocompleteSubverseName",
                 url: "ajaxhelpers/autocompletesubversename",
                 defaults: new { controller = "AjaxGateway", action = "AutocompleteSubverseName" }
+            );
+
+            // ajaxhelpers/subverseinfo
+            routes.MapRoute(
+                name: "SetSubverseInfo",
+                url: "ajaxhelpers/setsubverseinfo/{setId}/{subverseName}",
+                defaults: new { controller = "AjaxGateway", action = "SubverseBasicInfo" }
             );
 
             // submissions/applylinkflair

@@ -746,68 +746,7 @@ function subscribe(obj, subverseName) {
     $(obj).attr("onclick", "unsubscribe(this)");
     $(obj).html("unsubscribe");
 
-    // call the actual subscribe API
-    submitSubscribeRequest(subverseName);
-}
-
-// unsubscribe from subverse
-function unsubscribe(obj, subverseName) {
-    $(obj).attr("onclick", "subscribe(this)");
-    $(obj).html("subscribe");
-
-    // call the actual unsubscribe API
-    submitUnSubscribeRequest(subverseName);
-}
-
-// subscribe to set
-function subscribeToSet(obj, setId) {
-    $(obj).attr("onclick", "unsubscribe(this)");
-    $(obj).html("unsubscribe");
-
-    // call the actual subscribe API
-    submitSetSubscribeRequest(setId);
-}
-
-// unsubscribe from set
-function unsubscribeFromSet(obj, setId) {
-    $(obj).attr("onclick", "subscribe(this)");
-    $(obj).html("subscribe");
-
-    // call the actual unsubscribe API
-    submitSetUnSubscribeRequest(setId);
-}
-
-function submitSetSubscribeRequest(setId) {
-    $.ajax({
-        type: "POST",
-        url: "/subscribetoset/" + setId,
-        success: function () {
-            var numberOfSubscribers = +($('#subscribercount').html());
-            numberOfSubscribers++;
-            $('#subscribercount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending a set subscription request.');
-        }
-    });
-}
-
-function submitSetUnSubscribeRequest(setId) {
-    $.ajax({
-        type: "POST",
-        url: "/unsubscribefromset/" + setId,
-        success: function () {
-            var numberOfSubscribers = +($('#subscriberCount').html());
-            numberOfSubscribers--;
-            $('#subscriberCount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending unsubscription request.');
-        }
-    });
-}
-
-function submitSubscribeRequest(subverseName) {
+    // call the subverse subscribe API
     $.ajax({
         type: "POST",
         url: "/subscribe/" + subverseName,
@@ -822,7 +761,12 @@ function submitSubscribeRequest(subverseName) {
     });
 }
 
-function submitUnSubscribeRequest(subverseName) {
+// unsubscribe from subverse
+function unsubscribe(obj, subverseName) {
+    $(obj).attr("onclick", "subscribe(this)");
+    $(obj).html("subscribe");
+
+    // call the subverse unsubscribe API
     $.ajax({
         type: "POST",
         url: "/unsubscribe/" + subverseName,
@@ -833,6 +777,89 @@ function submitUnSubscribeRequest(subverseName) {
         },
         error: function () {
             alert('Something went wrong while sending unsubscription request.');
+        }
+    });
+}
+
+// subscribe to set
+function subscribeToSet(obj, setId) {
+    $(obj).attr("onclick", "unsubscribe(this)");
+    $(obj).html("unsubscribe");
+
+    // call the set subscribe API
+    $.ajax({
+        type: "POST",
+        url: "/subscribetoset/" + setId,
+        success: function () {
+            var numberOfSubscribers = +($('#subscribercount').html());
+            numberOfSubscribers++;
+            $('#subscribercount').html(numberOfSubscribers);
+        },
+        error: function () {
+            alert('Something went wrong while sending a set subscription request.');
+        }
+    });
+}
+
+// unsubscribe from set
+function unsubscribeFromSet(obj, setId) {
+    $(obj).attr("onclick", "subscribe(this)");
+    $(obj).html("subscribe");
+
+    // call the unsubscribe API
+    $.ajax({
+        type: "POST",
+        url: "/unsubscribefromset/" + setId,
+        success: function () {
+            var numberOfSubscribers = +($('#subscriberCount').html());
+            numberOfSubscribers--;
+            $('#subscriberCount').html(numberOfSubscribers);
+        },
+        error: function () {
+            alert('Something went wrong while sending unsubscription request.');
+        }
+    });
+}
+
+// remove a subverse from a set
+function removeSubFromSet(obj, setId, subverseName) {
+    $(obj).html("Hold on...");
+
+    // call remove subverse from set API
+    $.ajax({
+        type: "POST",
+        url: "/sets/removesubverse/"+setId+"/"+subverseName,
+        success: function () {
+            // remove the remove button along with sub info
+            $("#subverse-" + subverseName).remove();
+        },
+        error: function () {
+            $(obj).html("Something went wrong.");
+        }
+    });
+}
+
+// add a subverse to a set
+function addSubToSet(obj, setId) {
+    $(obj).html("Hold on...");
+    var subverseName = $("#Subverse").val();
+
+    // call add subverse to set API
+    $.ajax({
+        type: "POST",
+        url: "/sets/addsubverse/" + setId + "/" + subverseName,
+        success: function () {
+            var subverseInfo = $.get(
+                "/ajaxhelpers/setsubverseinfo/" + setId + "/" + subverseName,
+                null,
+                function (data) {
+                    $("#subverselisting").append(data);
+                    $(obj).html("Add this subverse to set");
+                }
+             );
+        },
+        error: function () {
+            $(obj).html("Something went wrong.");
         }
     });
 }

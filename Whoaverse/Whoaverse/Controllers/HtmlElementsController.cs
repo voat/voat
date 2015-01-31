@@ -13,10 +13,10 @@ All Rights Reserved.
 */
 
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Voat.Models;
-using System.Linq;
 
 namespace Voat.Controllers
 {

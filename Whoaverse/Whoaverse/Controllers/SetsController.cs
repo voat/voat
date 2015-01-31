@@ -176,6 +176,9 @@ namespace Voat.Controllers
 
             if (setToEdit != null)
             {
+                // check if user owns the set and abort
+                if (!Utils.User.IsUserSetOwner(User.Identity.Name, setToEdit.Set_id)) return RedirectToAction("UnAuthorized", "Error");
+
                 // get list of subverses for the set
                 var setSubversesList = _db.Usersetdefinitions.Where(s => s.Set_id == setToEdit.Set_id).ToList();
 
@@ -189,9 +192,9 @@ namespace Voat.Controllers
                     Subscribers = setToEdit.Subscribers
                 };
 
-                return View("~/Views/Sets/SingleSetView.cshtml", setViewModel);
+                return View("~/Views/Sets/EditSet.cshtml", setViewModel);
             }
-            return RedirectToAction("SetNotFound", "Error");
+            return RedirectToAction("NotFound", "Error");
         }
 
         // GET: /set/defaultsetid
@@ -464,6 +467,70 @@ namespace Voat.Controllers
 
             Utils.User.UnSubscribeFromSet(loggedInUser, setId);
             return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
+        }
+
+        // POST: add a subverse to set
+        [Authorize]
+        public JsonResult AddSubverseToSet(string subverseName, int setId)
+        {
+            // check if set exists
+            var setToModify = _db.Usersets.Find(setId);
+            if (setToModify == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Set doesn't exist.", JsonRequestBehavior.AllowGet);
+            }
+
+            // check if user is set owner
+            if (!Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Unauthorized request.", JsonRequestBehavior.AllowGet);
+            }
+
+            // check if subverse is already a part of this set
+            if (setToModify.Usersetdefinitions.Any(sd => sd.Subversename.Equals(subverseName)))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("The subverse is already a part of this set.", JsonRequestBehavior.AllowGet);
+            }
+
+            // add subverse to set
+            Usersetdefinition newUsersetdefinition = new Usersetdefinition
+            {
+                Set_id = setId,
+                Subversename = subverseName
+            };
+            
+            _db.Usersetdefinitions.Add(newUsersetdefinition);
+            _db.SaveChangesAsync();
+
+            return Json("Add subverse to set request sucessful.", JsonRequestBehavior.AllowGet);
+        }
+
+        // POST: remove a subverse from set
+        [Authorize]
+        public JsonResult RemoveSubverseFromSet(string subverseName, int setId)
+        {
+            // check if user is set owner
+            if (!Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new List<string> { "Unauthorized request." });
+            }
+
+            // remove subverse from set
+            var setDefinitionToRemove = _db.Usersetdefinitions.FirstOrDefault(s => s.Set_id == setId && s.Subversename.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            if (setDefinitionToRemove != null)
+            {
+                _db.Usersetdefinitions.Remove(setDefinitionToRemove);
+                _db.SaveChangesAsync();
+                return Json("Add subverse to set request sucessful.", JsonRequestBehavior.AllowGet);
+            }
+
+            // expected subverse was not found in user set definition
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(new List<string> { "Bad request." });
         }
     }
 }

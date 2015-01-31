@@ -12,6 +12,7 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -121,6 +122,14 @@ namespace Voat.Controllers
                 return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", submissionModel);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        // GET: subverse basic info
+        public ActionResult SubverseBasicInfo(int setId, string subverseName)
+        {
+            var userSetDefinition = _db.Usersetdefinitions.FirstOrDefault(s => s.Set_id == setId && s.Subversename.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+
+            return PartialView("~/Views/AjaxViews/_SubverseInfo.cshtml", userSetDefinition);
         }
     }
 }

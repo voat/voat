@@ -533,7 +533,6 @@
     <Content Include="Graphics\Badges\css_guru.png" />
     <Content Include="Graphics\Badges\developer.png" />
     <Content Include="Graphics\Badges\donor.png" />
-    <Content Include="Graphics\Badges\supporter.png" />
     <Content Include="Graphics\Badges\tinkerer.png" />
     <Content Include="Graphics\Dark-SpriteSheet.png" />
     <Content Include="Graphics\feed-icon-14x14.png" />
@@ -757,7 +756,7 @@
     <Content Include="Views\Sets\MySets.cshtml" />
     <Content Include="Views\Sets\_SubscribedSetDetails.cshtml" />
     <Content Include="Views\Sets\_PopularSets.cshtml" />
-    <Content Include="Views\Sets\SingleSetView.cshtml" />
+    <Content Include="Views\Sets\EditSet.cshtml" />
     <Content Include="Views\Shared\_MarkdownEditor.cshtml" />
     <Content Include="Views\Sets\Sets.cshtml" />
     <Content Include="Views\Sets\_SetDetails.cshtml" />
@@ -771,6 +770,8 @@
     <Content Include="Views\Shared\UserDistinctions\_UserDistinction.cshtml" />
     <Content Include="Views\Sets\CreateSet.cshtml" />
     <Content Include="Views\Sets\ManageMySets.cshtml" />
+    <Content Include="Views\Errors\UnAuthorized.cshtml" />
+    <Content Include="Views\AjaxViews\_SubverseInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

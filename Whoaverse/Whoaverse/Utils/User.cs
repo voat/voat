@@ -542,11 +542,11 @@ namespace Voat.Utils
         }
 
         // check if a given user is owner of a given set
-        public static bool IsUserSetOwner(string userName, string setName)
+        public static bool IsUserSetOwner(string userName, int setId)
         {
             using (var db = new whoaverseEntities())
             {
-                var result = db.Usersets.FirstOrDefault(s => s.Name == setName && s.Created_by == userName);
+                var result = db.Usersets.FirstOrDefault(s => s.Set_id == setId && s.Created_by == userName);
                 return result != null;
             }
         }

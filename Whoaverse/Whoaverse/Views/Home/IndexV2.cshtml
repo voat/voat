@@ -41,7 +41,7 @@
     <div class="content" role="main">
         <div class="sitetable">
             @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
-            @foreach (var set in Model.UserSets.OrderBy(s => s.Order))
+            @foreach (var set in Model.UserSets.Where(s=>s.Userset.Usersetdefinitions.Any()).OrderBy(s => s.Order))
             {
                 var currentSet = set.Userset.Name;
 

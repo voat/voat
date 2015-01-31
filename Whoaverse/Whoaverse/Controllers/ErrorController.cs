@@ -34,5 +34,10 @@ namespace Voat.Controllers
         {
             return View("~/Views/Errors/DbNotResponding.cshtml");
         }
+
+        public ActionResult UnAuthorized()
+        {
+            return View("~/Views/Errors/UnAuthorized.cshtml");
+        }
     }
 }

@@ -20,7 +20,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.SignalR;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utils;
@@ -75,7 +74,7 @@ namespace Voat.Controllers
         }
 
         // GET: submit
-        [System.Web.Mvc.Authorize]
+        [Authorize]
         public ActionResult Submit(string selectedsubverse)
         {
             string linkPost = Request.Params["linkpost"];
@@ -106,7 +105,7 @@ namespace Voat.Controllers
         }
 
         // GET: submitlink
-        [System.Web.Mvc.Authorize]
+        [Authorize]
         public ActionResult SubmitLinkService(string selectedsubverse)
         {
             string linkDescription = Request.Params["title"];
@@ -130,7 +129,7 @@ namespace Voat.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [System.Web.Mvc.Authorize]
+        [Authorize]
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
@@ -433,7 +432,7 @@ namespace Voat.Controllers
                     return View(frontPageResultModel);
                 }
 
-                // show default sets since user has no set subscriptions
+                // show default sets since user is not logged in or has no set subscriptions
                 // get names of default sets
                 // for each set name, get list of subverses
                 // for each subverse, get top ranked submissions
