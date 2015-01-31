@@ -177,51 +177,81 @@ label {
     }
 
 .set-title {
-    border-top: 1px solid;
-    border-bottom: 1px solid;
-    padding: 5px;
-    margin-bottom: 0px;
-    background: none repeat scroll 0% 0% #494949;
-    border-width: 2px 1px 1px;
-    border-color: #5BACDE #F6F6F6 #272727;
-    color: #5A5A5A;
-    font-size: 12px;
+    background: #292929;
+    border: 1px solid #222;
+    margin: 10px 0 5px;
+    padding: 4px;
 }
 
 .settitlelabel {
-    background: #302F2F;
-    border: 1px solid #555;
-    color: #CCC;
-    border-radius: 2px;
     display: inline-block;
-    font-family: inherit;
-    font-size: 10px;
-    letter-spacing: 1px;
-    line-height: 11px;
-    margin-right: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 4px;
+    margin-right: 7px;
     max-width: 80px;
-    min-width: 48px;
-    padding: 2px;
+    white-space: nowrap;
+}
+
+.settitlelabel > a {
+    color: #C3C3C3;
+    text-decoration: none;
+}
+
+    .settitlelabel > a:hover {
+        color: #438BB7;
+    }
+
+.settitlesortinglabel {
+    background: #454545;
+    border: 1px solid #303030;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+    color: #DDD;
+    display: inline-block;
+    font-size: 11px;
+    line-height: 1;
+    margin-right: 2px;
+    max-width: 80px;
+    padding: 4px 7px;
     text-align: center;
     white-space: nowrap;
 }
 
-.settitlesortinglabel {
-    background: none repeat scroll 0% 0% #444;
-    border: 1px solid #555;
-    color: #CCC;
+    .settitlesortinglabel:hover {
+        background: #353C44;
+        border-color: #242E39;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
+        color: #FFF;
+    }
+
+.set-title .label {
+    background: #454545;
+    border: 1px solid #303030;
     border-radius: 2px;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+    color: #DDD;
     display: inline-block;
-    font-family: inherit;
-    font-size: 10px;
-    letter-spacing: 1px;
-    line-height: 11px;
-    margin-right: 3px;
-    max-width: 80px;
-    padding: 2px;
+    font-size: 11px;
+    line-height: 1;
+    padding: 4px;
     text-align: center;
-    white-space: nowrap;
 }
+
+    .set-title .label:hover {
+        background: #353C44;
+        border-color: #242E39;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
+        color: #FFF;
+    }
+
+    .set-title .label a {
+        color: #4399CD;
+    }
+
+        .set-title .label a:hover {
+            color: #4399CD;
+        }
 
 .alert-title {
     border-bottom: 2px solid;
