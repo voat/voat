@@ -48,11 +48,12 @@
 
         </div>
         <div id="addnewsubversetosetarea">
-            <div class="alert-h1">
+            <div class="alert-h2">
                 Add subverses to this set
             </div>
-            <input autocomplete="off" value="" class="form-control ui-autocomplete-input" data-val="true" data-val-length="Subverse name is limited to 20 characters." data-val-length-max="200" data-val-required="You must type a subverse to send the post to. Example: programming, videos, pics, funny." id="Subverse" name="Subverse" placeholder="Start typing to get suggestions" type="text">
-            <span>Example: news, sports, books</span>
+            @Html.TextBox("Subverse", null, new { @class = "form-control ui-autocomplete-input", @Value = ViewBag.selectedSubverse, id = "Subverse", @placeholder = "Start typing to get suggestions" })
+            <span><strong>Example:</strong> news, sports, books</span>
+            <p id="status" class="red" style="display:none"></p>
             <div class="">
                 <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return addSubToSet(this, '@Model.Id')">Add this subverse to set</button>
             </div>

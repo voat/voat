@@ -488,8 +488,16 @@ namespace Voat.Controllers
                 return Json("Unauthorized request.", JsonRequestBehavior.AllowGet);
             }
 
+            // check if subverse exists
+            var subverseToAdd = _db.Subverses.FirstOrDefault(s => s.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            if (subverseToAdd == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("The subverse does not exist.", JsonRequestBehavior.AllowGet);
+            }
+
             // check if subverse is already a part of this set
-            if (setToModify.Usersetdefinitions.Any(sd => sd.Subversename.Equals(subverseName)))
+            if (setToModify.Usersetdefinitions.Any(sd => sd.Subversename.Equals(subverseName, StringComparison.OrdinalIgnoreCase)))
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Json("The subverse is already a part of this set.", JsonRequestBehavior.AllowGet);
@@ -499,7 +507,7 @@ namespace Voat.Controllers
             Usersetdefinition newUsersetdefinition = new Usersetdefinition
             {
                 Set_id = setId,
-                Subversename = subverseName
+                Subversename = subverseToAdd.name
             };
             
             _db.Usersetdefinitions.Add(newUsersetdefinition);

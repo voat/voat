@@ -844,6 +844,13 @@ function addSubToSet(obj, setId) {
     $(obj).html("Hold on...");
     var subverseName = $("#Subverse").val();
 
+    if (!subverseName) {
+        $(obj).html("Add this subverse to set");
+        $("#status").html("please enter a subverse name to add");
+        $("#status").show();
+        return;
+    }
+
     // call add subverse to set API
     $.ajax({
         type: "POST",
@@ -854,12 +861,15 @@ function addSubToSet(obj, setId) {
                 null,
                 function (data) {
                     $("#subverselisting").append(data);
+                    $("#status").hide();
                     $(obj).html("Add this subverse to set");
                 }
              );
         },
         error: function () {
-            $(obj).html("Something went wrong.");
+            $("#status").html("Subverse probably does not exist.");
+            $("#status").show();
+            $(obj).html("Add this subverse to set");
         }
     });
 }
