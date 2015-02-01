@@ -12,14 +12,14 @@
 
 @model Voat.Models.ViewModels.SearchViewModel
 
-<div class="spacer">
+<div class="spacersection spacer">
 
     <div class="alert-h1">
         Search Voat
     </div>
 
     @using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
-    {        
+    {
         @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search voat" })
         @Html.ValidationMessage("q")
     }

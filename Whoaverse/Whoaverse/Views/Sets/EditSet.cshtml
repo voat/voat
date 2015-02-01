@@ -19,7 +19,14 @@
     <div class="content" role="main">
 
         <div class="sitetable" id="subverselisting">
-            <div class="alert-title">@Model.Name</div>
+            <div class="alert-title" id="setName" onclick=" changeSetName() ">
+                @Model.Name
+            </div>
+            <div class="alert-title" id="newSetName" style="display: none">
+                <input class="form-control" id="newSetNameEditBox" type="text" value="@Model.Name">
+                <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick=" return saveSetTitle(this, '@Model.Id' ) ">Save</button>
+                <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick=" return cancelSetTitleChange() ">Cancel</button>
+            </div>
 
             <div class="userstats">
                 <div class="userstats-heading-1">Set information</div>
@@ -60,4 +67,3 @@
         </div>
     </div>
 </div>
-

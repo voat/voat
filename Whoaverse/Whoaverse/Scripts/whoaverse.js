@@ -298,8 +298,8 @@ function reply(parentcommentid, messageid) {
         null,
         function (data) {
             $("#" + parentcommentid).append(data);
-			//Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
-			$('#commentreplyform-' + parentcommentid).find('#CommentContent').focus();
+            //Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
+            $('#commentreplyform-' + parentcommentid).find('#CommentContent').focus();
         }
      );
 
@@ -324,8 +324,8 @@ function replyprivatemessage(parentprivatemessageid, recipient, subject) {
         null,
         function (data) {
             $("#messageContainer-" + parentprivatemessageid).append(data);
-			//Focus the cursor on the private message reply form textarea, to prevent unnecessary use of the tab key
-			$('#privatemessagereplyform-' + parentprivatemessageid).find('#Body').focus();
+            //Focus the cursor on the private message reply form textarea, to prevent unnecessary use of the tab key
+            $('#privatemessagereplyform-' + parentprivatemessageid).find('#Body').focus();
         }
      );
 
@@ -353,8 +353,8 @@ function replyToCommentNotification(commentId, submissionId) {
         null,
         function (data) {
             $("#commentContainer-" + commentId).append(data);
-			//Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
-			$('#commentreplyform-' + commentId).find('#CommentContent').focus();
+            //Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
+            $('#commentreplyform-' + commentId).find('#CommentContent').focus();
         }
      );
 
@@ -510,9 +510,9 @@ function edit(parentcommentid, messageid) {
 
     //show edit form
     $("#" + parentcommentid).find('.usertext-edit').toggle(1);
-	
-	//Focus the cursor on the edit comment form textarea, to prevent unnecessary use of the tab key
-	$('#commenteditform-' + parentcommentid).find('#CommentContent').focus();
+
+    //Focus the cursor on the edit comment form textarea, to prevent unnecessary use of the tab key
+    $('#commenteditform-' + parentcommentid).find('#CommentContent').focus();
 
     var form = $('#commenteditform-' + parentcommentid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
@@ -828,7 +828,7 @@ function removeSubFromSet(obj, setId, subverseName) {
     // call remove subverse from set API
     $.ajax({
         type: "POST",
-        url: "/sets/removesubverse/"+setId+"/"+subverseName,
+        url: "/sets/removesubverse/" + setId + "/" + subverseName,
         success: function () {
             // remove the remove button along with sub info
             $("#subverse-" + subverseName).remove();
@@ -1078,7 +1078,7 @@ function showMessagePreview(senderButton, messageContent, previewArea) {
         dataType: 'html',
         success: function (data) {
             $(previewArea).find("#submission-preview-area-container").html(data);
-			UI.ExpandoManager.execute();
+            UI.ExpandoManager.execute();
         },
         data: submissionModel
     });
@@ -1144,13 +1144,61 @@ function loadMoreDefaultSetItems(obj, setId) {
 }
 
 // a function that toggles the visibility of the comment/submission source textarea
-function toggleSource(senderButton){
-	//toggle textarea visibility
-	$(senderButton.parentElement.parentElement.parentElement).find('#sourceDisplay').toggle();
-	//change label name according to current state
-	if (senderButton.text == "source"){
-		senderButton.text = "hide source";
-	} else {
-		senderButton.text = "source";
-	}
+function toggleSource(senderButton) {
+    //toggle textarea visibility
+    $(senderButton.parentElement.parentElement.parentElement).find('#sourceDisplay').toggle();
+    //change label name according to current state
+    if (senderButton.text == "source") {
+        senderButton.text = "hide source";
+    } else {
+        senderButton.text = "source";
+    }
 }
+
+// a function to change set title name
+function changeSetName() {
+    $('#setName').removeAttr("onclick");
+    $('#setName').hide();
+
+    // show textbox
+    $('#newSetName').show();
+    $('#newSetNameEditBox').focus();
+
+    $('#newSetNameEditBox').on('keypress', function (e) {
+        if (e.keyCode === 13) {
+            $('#setName').html($('#newSetNameEditBox').val());
+
+            $('#setName').bind('click', changeSetName);
+            $('#newSetName').hide();
+            $('#setName').show();
+        }
+    });
+}
+
+function cancelSetTitleChange() {
+    $('#setName').bind('click', changeSetName);
+    $('#newSetName').hide();
+    $('#setName').show();
+}
+
+function saveSetTitle(obj, setId) {
+    $(obj).html('Please wait...');
+
+    // TODO call save set title api
+    $.ajax({
+        type: "POST",
+        url: "/sets/modify/" + setId + "/" + $('#newSetNameEditBox').val(),
+        success: function () {
+            $('#setName').html($('#newSetNameEditBox').val());
+            $('#setName').bind('click', changeSetName);
+            $('#newSetName').hide();
+            $('#setName').show();
+
+            $(obj).html('Save');
+        },
+        error: function () {
+            $(obj).html('Max 20 characters');
+        }
+    });
+}
+

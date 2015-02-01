@@ -325,6 +325,13 @@ namespace Voat
                 defaults: new { controller = "Sets", action = "RemoveSubverseFromSet" }
             );
 
+            // change set name
+            routes.MapRoute(
+                name: "changesetinfo",
+                url: "sets/modify/{setId}/{newSetName}",
+                defaults: new { controller = "Sets", action = "ChangeSetInfo" }
+            );
+
             // vote
             routes.MapRoute(
                 name: "vote",

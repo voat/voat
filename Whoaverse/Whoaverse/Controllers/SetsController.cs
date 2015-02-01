@@ -451,6 +451,7 @@ namespace Voat.Controllers
 
         // POST: subscribe to a set
         [Authorize]
+        [HttpPost]
         public JsonResult Subscribe(int setId)
         {
             var loggedInUser = User.Identity.Name;
@@ -461,6 +462,7 @@ namespace Voat.Controllers
 
         // POST: unsubscribe from a set
         [Authorize]
+        [HttpPost]
         public JsonResult UnSubscribe(int setId)
         {
             var loggedInUser = User.Identity.Name;
@@ -471,6 +473,7 @@ namespace Voat.Controllers
 
         // POST: add a subverse to set
         [Authorize]
+        [HttpPost]
         public JsonResult AddSubverseToSet(string subverseName, int setId)
         {
             // check if set exists
@@ -518,6 +521,7 @@ namespace Voat.Controllers
 
         // POST: remove a subverse from set
         [Authorize]
+        [HttpPost]
         public JsonResult RemoveSubverseFromSet(string subverseName, int setId)
         {
             // check if user is set owner
@@ -537,6 +541,42 @@ namespace Voat.Controllers
             }
 
             // expected subverse was not found in user set definition
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(new List<string> { "Bad request." });
+        }
+
+        // POST: change set name and description
+        [Authorize]
+        [HttpPost]
+        public JsonResult ChangeSetInfo(int setId, string newSetName)
+        {
+            // check if user is set owner
+            if (!Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new List<string> { "Unauthorized request." });
+            }
+
+            // find the set to modify
+            var setToModify = _db.Usersets.Find(setId);
+
+            if (setToModify != null)
+            {
+                try
+                {
+                    setToModify.Name = newSetName;
+                    // TODO setToModify.Description = newSetDescription;
+
+                    _db.SaveChangesAsync();
+                    return Json("Set info change was sucessful.", JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception)
+                {
+                    //
+                }
+            }
+
+            // something went horribly wrong
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Json(new List<string> { "Bad request." });
         }
