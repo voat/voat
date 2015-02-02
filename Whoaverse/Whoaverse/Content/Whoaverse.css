@@ -84,6 +84,25 @@ label {
     border-bottom: 1px solid #E9E9E9;
 }
 
+/* Universal spoiler tags */
+.md a[href="#s"] {
+    visibility: hidden;
+    display: inline-block;
+}
+.md a[href="#s"]::after {
+    content: attr(title);
+    background: #E77777;
+    color: #E77777;
+    border: 1px solid #B44F4F;
+    padding: 2px;
+    visibility: visible;
+}
+.md a[href="#s"]:hover::after,
+.md a[href="#s"]:active::after {
+    color: #404040;
+    background: #FFE3E3;
+}
+
 /* Alerts */
 
 .alert {
@@ -988,10 +1007,6 @@ a.btn-whoaverse {
     max-width: 650px;
     overflow: auto;
 }
-
-    .md a:hover {
-        text-decoration: underline;
-    }
 
     .md blockquote {
         background: #F5F5F5;
