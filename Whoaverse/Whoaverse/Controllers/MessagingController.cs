@@ -31,6 +31,7 @@ namespace Voat.Controllers
 
         private void SetViewBagCounts() {
             
+            // set unread counts
             int unreadCommentCount = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
             int unreadPostCount = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
             int unreadPMCount = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
@@ -39,6 +40,14 @@ namespace Voat.Controllers
             ViewBag.UnreadPostReplies = unreadPostCount;
             ViewBag.UnreadPrivateMessages = unreadPMCount;
 
+            // set total counts
+            int totalCommentRepliesCount = Utils.User.CommentRepliesCount(User.Identity.Name);
+            int totalPostRepliesCount = Utils.User.PostRepliesCount(User.Identity.Name);
+            int totalPMCount = Utils.User.PrivateMessageCount(User.Identity.Name);
+
+            ViewBag.PostRepliesCount = totalPostRepliesCount;
+            ViewBag.CommentRepliesCount = totalCommentRepliesCount;
+            ViewBag.InboxCount = totalPMCount;
         }
 
         // GET: Inbox
@@ -90,7 +99,9 @@ namespace Voat.Controllers
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPrivateMessages.Count > 0) {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singleMessage in privateMessages.ToList()) {
+                        foreach (var singleMessage in unreadPrivateMessages.ToList())
+                        {
+                            // status: true = unread, false = read
                             singleMessage.Status = false;
                             _db.SaveChanges();
                         }
@@ -137,8 +148,9 @@ namespace Voat.Controllers
                     if (unreadCommentReplies.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singleCommentReply in commentReplies.ToList())
+                        foreach (var singleCommentReply in unreadCommentReplies.ToList())
                         {
+                            // status: true = unread, false = read
                             singleCommentReply.Status = false;
                             _db.SaveChanges();
                         }
@@ -188,8 +200,9 @@ namespace Voat.Controllers
                     if (unreadPostReplies.Count > 0)
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singlePostReply in postReplies.ToList())
+                        foreach (var singlePostReply in unreadPostReplies.ToList())
                         {
+                            // status: true = unread, false = read
                             singlePostReply.Status = false;
                             _db.SaveChanges();
                         }

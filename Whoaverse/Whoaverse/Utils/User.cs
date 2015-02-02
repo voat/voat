@@ -321,6 +321,39 @@ namespace Voat.Utils
             }
         }
 
+        // get total number of comment replies for a given user
+        public static int CommentRepliesCount(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var commentReplies = db.Commentreplynotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                if (!commentReplies.Any()) return 0;
+                return commentReplies.Any() ? commentReplies.Count() : 0;
+            }
+        }
+
+        // get total number of post replies for a given user
+        public static int PostRepliesCount(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var postReplies = db.Postreplynotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                if (!postReplies.Any()) return 0;
+                return postReplies.Any() ? postReplies.Count() : 0;
+            }
+        }
+
+        // get total number of private messages for a given user
+        public static int PrivateMessageCount(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var privateMessages = db.Privatemessages.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                if (!privateMessages.Any()) return 0;
+                return privateMessages.Any() ? privateMessages.Count() : 0;
+            }
+        }
+
         // check if a given user does not want to see custom CSS styles
         public static bool CustomCssDisabledForUser(string userName)
         {
