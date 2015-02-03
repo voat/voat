@@ -23,6 +23,10 @@
             ViewBag.Title = "Newest sets";
             urlaction = "NewestSets";
             break;
+        case "recommended":
+            ViewBag.Title = "Recommended sets";
+            urlaction = "RecommendedSets";
+            break;
         default:
             ViewBag.Title = "Most popular sets";
             urlaction = "Sets";
@@ -45,6 +49,20 @@
                 </a>
             </div>
         </div>
+        <div class="spacer">
+            <div class="sidebox create">
+                <a href="/sets/recommended" class="btn-whoaverse btn-block">
+                    Recommended sets
+                </a>
+            </div>
+        </div>
+        <div class="spacer">
+            <div class="sidebox create">
+                <a href="/sets" class="btn-whoaverse btn-block">
+                    Popular sets
+                </a>
+            </div>
+        </div>
     </div>
 
     <div class="content" role="main">
@@ -60,10 +78,15 @@
                     <p>Showing the most recently created sets.</p>
                 </div>
                 break;
+            case "recommended":
+            <div class="alert-notice">
+                <p>These sets have been hand-picked by Voat staff to bring you the best of Voat.</p>
+            </div>
+                break;
             default:
-                <div class="alert-notice">
-                    <p>Here are user created sets sorted by number of subscribers.</p>
-                </div>
+            <div class="alert-notice">
+                <p>Here are user created sets sorted by number of subscribers.</p>
+            </div>
                 break;
         }
 
@@ -91,14 +114,14 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", urlaction, new {page = (Model.PageIndex - 1)}, new {rel = "prev"})
+                        @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
                     </li>
                 }
 
                 @if (Model.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", urlaction, new {page = (Model.PageIndex + 1)}, new {rel = "next"})
+                        @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
                     </li>
                 }
             </ul>

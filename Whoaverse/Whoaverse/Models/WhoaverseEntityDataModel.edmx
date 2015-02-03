@@ -77,26 +77,6 @@
           <Property Name="VoteStatus" Type="int" />
           <Property Name="Timestamp" Type="datetime" />
         </EntityType>
-        <EntityType Name="Defaultsets">
-          <Key>
-            <PropertyRef Name="Set_id" />
-          </Key>
-          <Property Name="Set_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="Created_by" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Created_on" Type="datetime" Nullable="false" />
-          <Property Name="Public" Type="bit" Nullable="false" />
-          <Property Name="Order" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Defaultsetsetup">
-          <Key>
-            <PropertyRef Name="Setup_id" />
-          </Key>
-          <Property Name="Setup_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Set_id" Type="int" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-        </EntityType>
         <EntityType Name="Defaultsubverses">
           <Key>
             <PropertyRef Name="name" />
@@ -373,34 +353,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Defaultsetsetup_Defaultsets">
-          <End Role="Defaultsets" Type="Self.Defaultsets" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Defaultsetsetup" Type="Self.Defaultsetsetup" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Defaultsets">
-              <PropertyRef Name="Set_id" />
-            </Principal>
-            <Dependent Role="Defaultsetsetup">
-              <PropertyRef Name="Set_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Defaultsetsetup_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Defaultsetsetup" Type="Self.Defaultsetsetup" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="Defaultsetsetup">
-              <PropertyRef Name="Subverse" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Defaultsubverses_Subverses">
           <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -596,8 +548,6 @@
           <EntitySet Name="Commentreplynotifications" EntityType="Self.Commentreplynotifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Defaultsets" EntityType="Self.Defaultsets" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Defaultsetsetup" EntityType="Self.Defaultsetsetup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Featuredsubs" EntityType="Self.Featuredsubs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
@@ -626,14 +576,6 @@
           <AssociationSet Name="FK_Commentvotingtracker_Comments" Association="Self.FK_Commentvotingtracker_Comments">
             <End Role="Comments" EntitySet="Comments" />
             <End Role="Commentvotingtracker" EntitySet="Commentvotingtracker" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Defaultsetsetup_Defaultsets" Association="Self.FK_Defaultsetsetup_Defaultsets">
-            <End Role="Defaultsets" EntitySet="Defaultsets" />
-            <End Role="Defaultsetsetup" EntitySet="Defaultsetsetup" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Defaultsetsetup_Subverses" Association="Self.FK_Defaultsetsetup_Subverses">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="Defaultsetsetup" EntitySet="Defaultsetsetup" />
           </AssociationSet>
           <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="Self.FK_Defaultsubverses_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
@@ -882,16 +824,6 @@
             <End Role="Message" EntitySet="Messages" />
             <End Role="Viewstatistic" EntitySet="Viewstatistics" />
           </AssociationSet>
-          <EntitySet Name="Defaultsets" EntityType="whoaverseModel.Defaultset" />
-          <EntitySet Name="Defaultsetsetups" EntityType="whoaverseModel.Defaultsetsetup" />
-          <AssociationSet Name="FK_Defaultsetsetup_Defaultsets" Association="whoaverseModel.FK_Defaultsetsetup_Defaultsets">
-            <End Role="Defaultset" EntitySet="Defaultsets" />
-            <End Role="Defaultsetsetup" EntitySet="Defaultsetsetups" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Defaultsetsetup_Subverses" Association="whoaverseModel.FK_Defaultsetsetup_Subverses">
-            <End Role="Subverse" EntitySet="Subverses" />
-            <End Role="Defaultsetsetup" EntitySet="Defaultsetsetups" />
-          </AssociationSet>
           <EntitySet Name="Usersetdefinitions" EntityType="whoaverseModel.Usersetdefinition" />
           <EntitySet Name="Usersets" EntityType="whoaverseModel.Userset" />
           <EntitySet Name="Usersetsubscriptions" EntityType="whoaverseModel.Usersetsubscription" />
@@ -944,7 +876,6 @@
           <NavigationProperty Name="Subscriptions" Relationship="whoaverseModel.FK_Subscriptions_Subverses" FromRole="Subverse" ToRole="Subscription" />
           <NavigationProperty Name="Featuredsubs" Relationship="whoaverseModel.FK_Featuredsubs_Subverses" FromRole="Subverse" ToRole="Featuredsub" />
           <Property Name="last_submission_received" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Defaultsetsetups" Relationship="whoaverseModel.FK_Defaultsetsetup_Subverses" FromRole="Subverse" ToRole="Defaultsetsetup" />
           <NavigationProperty Name="Usersetdefinitions" Relationship="whoaverseModel.FK_Usersetdefinitions_Subverses" FromRole="Subverse" ToRole="Usersetdefinition" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
@@ -1300,57 +1231,6 @@
             </Principal>
             <Dependent Role="Viewstatistic">
               <PropertyRef Name="submissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="Defaultset">
-          <Key>
-            <PropertyRef Name="Set_id" />
-          </Key>
-          <Property Name="Set_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="Created_by" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Created_on" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Public" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Defaultsetsetups" Relationship="whoaverseModel.FK_Defaultsetsetup_Defaultsets" FromRole="Defaultset" ToRole="Defaultsetsetup" />
-          <Property Name="Order" Type="Int32" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Defaultsetsetup">
-          <Key>
-            <PropertyRef Name="Setup_id" />
-          </Key>
-          <Property Name="Setup_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Set_id" Type="Int32" Nullable="false" />
-          <Property Name="Subverse" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Defaultset" Relationship="whoaverseModel.FK_Defaultsetsetup_Defaultsets" FromRole="Defaultsetsetup" ToRole="Defaultset" />
-          <NavigationProperty Name="Subvers" Relationship="whoaverseModel.FK_Defaultsetsetup_Subverses" FromRole="Defaultsetsetup" ToRole="Subverse" />
-        </EntityType>
-        <Association Name="FK_Defaultsetsetup_Defaultsets">
-          <End Type="whoaverseModel.Defaultset" Role="Defaultset" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="whoaverseModel.Defaultsetsetup" Role="Defaultsetsetup" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Defaultset">
-              <PropertyRef Name="Set_id" />
-            </Principal>
-            <Dependent Role="Defaultsetsetup">
-              <PropertyRef Name="Set_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Defaultsetsetup_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="whoaverseModel.Defaultsetsetup" Role="Defaultsetsetup" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverse">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="Defaultsetsetup">
-              <PropertyRef Name="Subverse" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1746,28 +1626,6 @@
               <MappingFragment StoreEntitySet="Viewstatistics">
                 <ScalarProperty Name="viewerId" ColumnName="viewerId" />
                 <ScalarProperty Name="submissionId" ColumnName="submissionId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Defaultsets">
-            <EntityTypeMapping TypeName="whoaverseModel.Defaultset">
-              <MappingFragment StoreEntitySet="Defaultsets">
-                <ScalarProperty Name="Order" ColumnName="Order" />
-                <ScalarProperty Name="Public" ColumnName="Public" />
-                <ScalarProperty Name="Created_on" ColumnName="Created_on" />
-                <ScalarProperty Name="Created_by" ColumnName="Created_by" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Set_id" ColumnName="Set_id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Defaultsetsetups">
-            <EntityTypeMapping TypeName="whoaverseModel.Defaultsetsetup">
-              <MappingFragment StoreEntitySet="Defaultsetsetup">
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="Set_id" ColumnName="Set_id" />
-                <ScalarProperty Name="Setup_id" ColumnName="Setup_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -41,56 +41,116 @@
     <div class="content" role="main">
         <div class="sitetable">
             @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
-            @foreach (var set in Model.UserSets.Where(s=>s.Userset.Usersetdefinitions.Any()).OrderBy(s => s.Order))
+
+            @if (Model.UserSets != null)
             {
-                var currentSet = set.Userset.Name;
+                // show content from subscribed sets
+                foreach (var set in Model.UserSets.Where(s => s.Userset.Usersetdefinitions.Any()).OrderBy(s => s.Order))
+                {
+                    var currentSet = set.Userset.Name;
 
-                <div class="set-container" id="set-@set.Id-container">
-                    @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary {{"setTitle", currentSet}, {"setId", set.Set_id}})
+                    <div class="set-container" id="set-@set.Id-container">
+                        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.Set_id } })
 
-                    @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
-                    {
-                        // get only submissions which belong to currently selected set
-                        // type 2 = link
-                        // type 1 = message
-                        string submissionClass = "";
-                        if (submission.Type == 1)
+                        @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
                         {
-                            submissionClass = "self";
+                            // get only submissions which belong to currently selected set
+                            // type 2 = link
+                            // type 1 = message
+                            string submissionClass = "";
+                            if (submission.Type == 1)
+                            {
+                                submissionClass = "self";
+                            }
+                            else
+                            {
+                                submissionClass = "";
+                            }
+
+                            string classEvenOrOdd = "";
+                            if (counter % 2 == 0)
+                            {
+                                //is even
+                                classEvenOrOdd = "even";
+                            }
+                            else
+                            {
+                                //is odd
+                                classEvenOrOdd = "odd";
+                            }
+
+                            <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+                                <p class="parent"></p>
+                                @*<span class="rank">@counter</span>*@
+
+                                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+
+                                <div class="child"></div>
+                                <div class="clearleft"><!--IE6fix--></div>
+                            </div>
+                            counter++;
                         }
-                        else
+                    </div>
+                    <a href="javascript:void(0)" onclick='loadMoreSetItems(this,@set.Set_id)' class=" btn-whoaverse btn-block">
+                        load more &#9660;
+                    </a>
+                }
+            }
+            else
+            {
+                // show content from subscribed sets
+                foreach (var set in Model.DefaultSets.OrderBy(s => s.Name))
+                {
+                    var currentSet = set.Name;
+
+                    <div class="set-container" id="set-@set.Set_id-container">
+                        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.Set_id } })
+
+                        @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
                         {
-                            submissionClass = "";
+                            // get only submissions which belong to currently selected set
+                            // type 2 = link
+                            // type 1 = message
+                            string submissionClass = "";
+                            if (submission.Type == 1)
+                            {
+                                submissionClass = "self";
+                            }
+                            else
+                            {
+                                submissionClass = "";
+                            }
+
+                            string classEvenOrOdd = "";
+                            if (counter % 2 == 0)
+                            {
+                                //is even
+                                classEvenOrOdd = "even";
+                            }
+                            else
+                            {
+                                //is odd
+                                classEvenOrOdd = "odd";
+                            }
+
+                            <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+                                <p class="parent"></p>
+                                @*<span class="rank">@counter</span>*@
+
+                                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+
+                                <div class="child"></div>
+                                <div class="clearleft"><!--IE6fix--></div>
+                            </div>
+                            counter++;
                         }
-
-                        string classEvenOrOdd = "";
-                        if (counter%2 == 0)
-                        {
-                            //is even
-                            classEvenOrOdd = "even";
-                        }
-                        else
-                        {
-                            //is odd
-                            classEvenOrOdd = "odd";
-                        }
-
-                        <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
-                            <p class="parent"></p>
-                            @*<span class="rank">@counter</span>*@
-
-                            @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary {{"CCP", commentContributionPoints}})
-                            @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
-
-                            <div class="child"></div>
-                            <div class="clearleft"><!--IE6fix--></div>
-                        </div>
-                        counter++;
-                    }
-                </div>
-                <a href="javascript:void(0)" onclick=" loadMoreSetItems(this, @set.Set_id) " class="btn-whoaverse btn-block">
-                    load more &#9660;
-                </a>
+                    </div>
+                    <a href="javascript:void(0)" onclick='loadMoreSetItems(this, @set.Set_id)' class=" btn-whoaverse btn-block">
+                        load more &#9660;
+                    </a>
+                }
             }
 
         </div>

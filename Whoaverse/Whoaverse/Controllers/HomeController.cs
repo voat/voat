@@ -429,33 +429,34 @@ namespace Voat.Controllers
                     frontPageResultModel.UserSets = userSetSubscriptions;
                     frontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
-                    return View(frontPageResultModel);
+                    return View("~/Views/Home/IndexV2.cshtml", frontPageResultModel);
                 }
 
                 // show default sets since user is not logged in or has no set subscriptions
                 // get names of default sets
                 // for each set name, get list of subverses
                 // for each subverse, get top ranked submissions
-                var defaultSets = _db.Defaultsets.ToList();
-                var defaultFrontPageResultModel = new DefaultSetFrontpageViewModel();
+                var defaultSets = _db.Usersets.Where(ds => ds.Default && ds.Usersetdefinitions.Any());
+                var defaultFrontPageResultModel = new SetFrontpageViewModel();
 
                 foreach (var set in defaultSets)
                 {
-                    Defaultset setId = set;
-                    var defaultSetDefinition = _db.Defaultsetsetups.Where(st => st.Set_id == setId.Set_id);
+                    Userset setId = set;
+                    var defaultSetDefinition = _db.Usersetdefinitions.Where(st => st.Set_id == setId.Set_id);
 
                     foreach (var subverse in defaultSetDefinition)
                     {
                         // get top ranked submissions
-                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Messages, set.Name, 2, 0));
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, set.Name, 2, 0));
                     }
                 }
 
+                defaultFrontPageResultModel.DefaultSets = defaultSets;
                 defaultFrontPageResultModel.HasSetSubscriptions = false;
                 defaultFrontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
-                defaultFrontPageResultModel.DefaultSets = defaultSets;
 
-                return View("~/Views/Home/IndexV2DefaultSets.cshtml", defaultFrontPageResultModel);
+
+                return View("~/Views/Home/IndexV2.cshtml", defaultFrontPageResultModel);
             }
             catch (Exception)
             {

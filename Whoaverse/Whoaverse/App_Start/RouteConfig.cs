@@ -38,20 +38,6 @@ namespace Voat
                 defaults: new { controller = "Home", action = "IndexV2" }
             );
 
-            // /s/defaultSetId
-            routes.MapRoute(
-                name: "SingleDefaultSet",
-                url: "s/{setId}",
-                defaults: new { controller = "Sets", action = "SingleDefaultSet" }
-            );
-
-            // /s/defaultSetId/page
-            routes.MapRoute(
-                name: "SingleDefaultSetPage",
-                url: "s/{setId}/{page}",
-                defaults: new { controller = "Sets", action = "SingleDefaultSetPage" }
-            );
-
             // /set/setId
             routes.MapRoute(
                 name: "SingleUserSet",
@@ -106,6 +92,13 @@ namespace Voat
                 name: "Sets",
                 url: "sets/",
                 defaults: new { controller = "Sets", action = "Sets" }
+            );
+
+            // /sets/recommended
+            routes.MapRoute(
+                name: "RecommendedSets",
+                url: "sets/recommended",
+                defaults: new { controller = "Sets", action = "RecommendedSets" }
             );
 
             // /sets/create

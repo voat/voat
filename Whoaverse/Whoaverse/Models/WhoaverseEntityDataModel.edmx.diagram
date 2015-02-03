@@ -43,10 +43,6 @@
         <AssociationConnector Association="whoaverseModel.FK_Featuredsubs_Subverses" />
         <EntityTypeShape EntityType="whoaverseModel.Viewstatistic" Width="1.5" PointX="7.625" PointY="13.375" IsExpanded="true" />
         <AssociationConnector Association="whoaverseModel.FK_Viewstatistics_Messages" />
-        <EntityTypeShape EntityType="whoaverseModel.Defaultset" Width="1.5" PointX="5.5" PointY="17.625" />
-        <EntityTypeShape EntityType="whoaverseModel.Defaultsetsetup" Width="1.5" PointX="3.625" PointY="17.625" />
-        <AssociationConnector Association="whoaverseModel.FK_Defaultsetsetup_Defaultsets" />
-        <AssociationConnector Association="whoaverseModel.FK_Defaultsetsetup_Subverses" />
         <EntityTypeShape EntityType="whoaverseModel.Usersetdefinition" Width="1.625" PointX="4" PointY="21.25" />
         <EntityTypeShape EntityType="whoaverseModel.Userset" Width="1.875" PointX="6.25" PointY="21.25" />
         <EntityTypeShape EntityType="whoaverseModel.Usersetsubscription" Width="1.75" PointX="8.75" PointY="21.25" />

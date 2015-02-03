@@ -30,44 +30,6 @@ namespace Voat.Controllers
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
 
-        // GET: frontpage for default sets
-        public ActionResult DefaultSetsIndex()
-        {
-            ViewBag.SelectedSubverse = "frontpage";
-            var frontPageResultModel = new SetFrontpageViewModel();
-            var submissions = new List<SetSubmission>();
-
-            try
-            {
-                // show default sets
-                // get names of default sets
-                // for each set name, get list of subverses
-                // for each subverse, get top ranked submissions
-                var defaultSets = _db.Usersets.ToList();
-
-                foreach (var set in defaultSets)
-                {
-                    Userset setId = set;
-                    var defaultSetDefinition = _db.Usersetdefinitions.Where(st => st.Set_id == setId.Set_id);
-
-                    foreach (var subverse in defaultSetDefinition)
-                    {
-                        // get top ranked submissions
-                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, set.Name, 2, 0));
-                    }
-                }
-
-                frontPageResultModel.HasSetSubscriptions = false;
-                frontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
-
-                return View("~/Views/Home/IndexV2.cshtml", frontPageResultModel);
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("HeavyLoad", "Error");
-            }
-        }
-
         // GET: /set/setid
         // show single set frontpage
         public ActionResult SingleSet(int setId, int? page)
@@ -197,103 +159,6 @@ namespace Voat.Controllers
             return RedirectToAction("NotFound", "Error");
         }
 
-        // GET: /set/defaultsetid
-        public ActionResult SingleDefaultSet(int setId)
-        {
-            try
-            {
-                ViewBag.SelectedSubverse = "single default set index";
-                var singleSetResultModel = new SingleSetViewModel();
-                var submissions = new List<SetSubmission>();
-
-                try
-                {
-                    // show a single default set
-                    // get list of subverses for the set
-                    // for each subverse, get top ranked submissions
-                    var set = _db.Defaultsets.FirstOrDefault(ds => ds.Set_id == setId);
-
-                    if (set != null)
-                        foreach (var subverse in set.Defaultsetsetups)
-                        {
-                            // get top ranked submissions
-                            Subverse currentSubverse = subverse.Subvers;
-
-                            if (currentSubverse != null)
-                            {
-                                submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 5, 0));
-                            }
-                            singleSetResultModel.Name = set.Name;
-                            singleSetResultModel.Id = set.Set_id;
-                        }
-
-
-                    singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
-
-                    ViewBag.DefaultSet = true;
-                    return View("~/Views/Sets/Index.cshtml", singleSetResultModel);
-                }
-                catch (Exception)
-                {
-                    return RedirectToAction("HeavyLoad", "Error");
-                }
-
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("HeavyLoad", "Error");
-            }
-        }
-
-        // GET: /set/defaultsetid/page
-        // fetch more x items from default set
-        public ActionResult SingleDefaultSetPage(int setId, int page)
-        {
-            const int pageSize = 2;
-            try
-            {
-                ViewBag.SelectedSubverse = "single default set index";
-                var singleSetResultModel = new SingleSetViewModel();
-                var submissions = new List<SetSubmission>();
-
-                // show a single default set page
-                // get list of subverses for the set
-                // for each subverse, get top ranked submissions
-                var set = _db.Defaultsets.FirstOrDefault(ds => ds.Set_id == setId);
-
-                if (set != null)
-                    foreach (var subverse in set.Defaultsetsetups)
-                    {
-                        // get top ranked submissions
-                        Subverse currentSubverse = subverse.Subvers;
-
-                        if (currentSubverse != null)
-                        {
-                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, pageSize, page * pageSize));
-                        }
-                        singleSetResultModel.Name = set.Name;
-                        singleSetResultModel.Id = set.Set_id;
-                    }
-
-
-                singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date));
-
-                if (submissions.Any())
-                {
-                    ViewBag.Page = page;
-                    return PartialView("~/Views/Sets/_SingleSetPage.cshtml", singleSetResultModel);
-                }
-
-                // no more entries found
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("HeavyLoad", "Error");
-            }
-
-        }
-
         // POST: /s/reorder/setname
         [Authorize]
         [HttpPost]
@@ -314,7 +179,7 @@ namespace Voat.Controllers
         // GET: /sets
         public ActionResult Sets(int? page)
         {
-            ViewBag.SelectedSubverse = "sets";
+            ViewBag.SelectedSubverse = "Popular sets";
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
 
@@ -331,6 +196,35 @@ namespace Voat.Controllers
                 var paginatedSets = new PaginatedList<Userset>(sets, page ?? 0, pageSize);
 
                 return View(paginatedSets);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("HeavyLoad", "Error");
+            }
+        }
+
+        // GET: /sets/recommended
+        public ActionResult RecommendedSets(int? page)
+        {
+            ViewBag.SelectedSubverse = "recommended sets";
+            ViewBag.sortingmode = "recommended";
+
+            const int pageSize = 25;
+            int pageNumber = (page ?? 0);
+
+            if (pageNumber < 0)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            try
+            {
+                // order by subscriber count (popularity), show only sets which are fully defined
+                var sets = _db.Usersets.Where(s => s.Usersetdefinitions.Any() && s.Default).OrderByDescending(s => s.Subscribers);
+
+                var paginatedSets = new PaginatedList<Userset>(sets, page ?? 0, pageSize);
+
+                return View("~/Views/Sets/Sets.cshtml", paginatedSets);
             }
             catch (Exception)
             {

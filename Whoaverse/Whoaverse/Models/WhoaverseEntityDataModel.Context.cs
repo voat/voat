@@ -49,8 +49,6 @@ namespace Voat.Models
         public virtual DbSet<Survey> Surveys { get; set; }
         public virtual DbSet<Featuredsub> Featuredsubs { get; set; }
         public virtual DbSet<Viewstatistic> Viewstatistics { get; set; }
-        public virtual DbSet<Defaultset> Defaultsets { get; set; }
-        public virtual DbSet<Defaultsetsetup> Defaultsetsetups { get; set; }
         public virtual DbSet<Usersetdefinition> Usersetdefinitions { get; set; }
         public virtual DbSet<Userset> Usersets { get; set; }
         public virtual DbSet<Usersetsubscription> Usersetsubscriptions { get; set; }

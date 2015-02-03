@@ -22,7 +22,7 @@ namespace Voat.Models.ViewModels
         public bool HasSetSubscriptions { get; set; }
 
         // list of default sets
-        public List<Defaultset> DefaultSets { get; set; }
+        public IQueryable<Userset> DefaultSets { get; set; }
 
         // list of user subscribed sets
         public IQueryable<Usersetsubscription> UserSets { get; set; }
