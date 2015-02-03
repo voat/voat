@@ -747,7 +747,6 @@
     <Content Include="Views\Sets\_SingleSet.cshtml" />
     <Content Include="Views\Sets\Index.cshtml" />
     <Content Include="Views\Sets\MySets.cshtml" />
-    <Content Include="Views\Sets\_SubscribedSetDetails.cshtml" />
     <Content Include="Views\Sets\_PopularSets.cshtml" />
     <Content Include="Views\Sets\EditSet.cshtml" />
     <Content Include="Views\Shared\_MarkdownEditor.cshtml" />

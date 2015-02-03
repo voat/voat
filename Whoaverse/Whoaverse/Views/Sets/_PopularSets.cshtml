@@ -23,9 +23,10 @@
         Id = set.Set_id,
         Name = set.Name,
         Public = set.Public,
-        Subscribers = set.Subscribers
+        Subscribers = set.Subscribers,
+        SubversesList = set.Usersetdefinitions.ToList()
     };
 
-    @Html.Partial("_SubscribedSetDetails", viewModel)
+    @Html.Partial("_SetDetails", viewModel)
 }
 

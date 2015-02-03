@@ -66,11 +66,6 @@
     </div>
 
     <div class="content" role="main">
-        <div class="alert alert-firsttimevisitorwelcome alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            This feature is under development. Feel free to look around but don't expect things to be working.
-        </div>
-
         @switch (sortingMode)
         {
             case "new":
@@ -85,7 +80,7 @@
                 break;
             default:
             <div class="alert-notice">
-                <p>Here are user created sets sorted by number of subscribers.</p>
+                <p>Displaying user created sets sorted by popularity.</p>
             </div>
                 break;
         }

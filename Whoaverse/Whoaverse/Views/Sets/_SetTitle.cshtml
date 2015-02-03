@@ -11,18 +11,10 @@
     All Rights Reserved.*@
 
 @{
-    var setUrl = "";
-    
-    if (ViewData["defaultSet"] != null)
-    {
-        setUrl = "/s/" + ViewData["setId"];
-    }
-    else
-    {
-        setUrl = "/set/" + ViewData["setId"];
-    }
+    var setUrl = "/set/" + ViewData["setId"];
+    int setId = (int) ViewData["setId"];
 }
-    
+
 
 @if (User.Identity.IsAuthenticated)
 {
@@ -46,9 +38,12 @@
             <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="moveSetDown();">
                 ↧
             </span>
-            <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer">
-                <a href="@setUrl/edit">edit</a>
-            </span>
+            @if (Voat.Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            {
+                <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer">
+                    <a href="@setUrl/edit">edit</a>
+                </span>
+            }
         </p>
     </div>
 }
