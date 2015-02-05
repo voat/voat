@@ -25,6 +25,7 @@
     position: absolute;
     text-align: center;
     top: -6px;
+    pointer-events: none;
 }
 
 .submission {
@@ -86,8 +87,8 @@ label {
 
 /* Universal spoiler tags */
 .md a[href="#s"] {
-    visibility: hidden;
     display: inline-block;
+    color: inherit;
 }
 .md a[href="#s"]::after {
     content: attr(title);
@@ -96,6 +97,8 @@ label {
     border: 1px solid #562828;
     padding: 2px;
     visibility: visible;
+    margin-left: 5px;
+    cursor: default;
 }
 .md a[href="#s"]:hover::after,
 .md a[href="#s"]:active::after {
@@ -1517,6 +1520,16 @@ pre, code {
         text-decoration: underline;
     }
 
+#manage {
+    background: url( /Graphics/Dark-SpriteSheet.png );
+    background-position: -56px 0;
+    cursor: pointer;
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    text-indent: -9999px;
+}
+
 #mail {
     display: inline-block;
     overflow: hidden;
@@ -2591,16 +2604,21 @@ textarea.form-control {
 
     #header-account {
         font-size: 10px;
-        line-height: 80%;
+        line-height: 20px;
         padding: 6px;
     }
 
     .logged-in {
-        margin: 0 0 3px;
+        margin: 0;
     }
 
     .logged-out {
-        margin: 0 0 3px;
+        margin: 0;
+    }
+
+    #manage {
+        position: relative;
+        top: 2px;
     }
 
     #header-banner {
