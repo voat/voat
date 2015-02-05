@@ -87,8 +87,8 @@ label {
 
 /* Universal spoiler tags */
 .md a[href="#s"] {
-    visibility: hidden;
     display: inline-block;
+    color: inherit;
 }
 .md a[href="#s"]::after {
     content: attr(title);
@@ -97,6 +97,7 @@ label {
     border: 1px solid #562828;
     padding: 2px;
     visibility: visible;
+    margin-left: 5px;
 }
 .md a[href="#s"]:hover::after,
 .md a[href="#s"]:active::after {
