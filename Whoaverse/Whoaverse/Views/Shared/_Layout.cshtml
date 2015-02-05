@@ -211,14 +211,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="notenoughccplabel">Hi! It looks like you are new around here. Welcome to @ConfigurationManager.AppSettings["siteName"]!</h4>
+                    <h4 class="modal-title" id="notenoughccplabel">Hi! It looks like you are new around here</h4>
                 </div>
                 <div class="modal-body">
-                    <p>In order to be able to downvote comments or submissions you need to have at least 100 comment contribution points.</p>
-                    <p>Every time someone upvotes a comment that you wrote, you gain 1 comment contribution point.</p>
-                    <p>Your comment contribution points are shown in the upper right corner like so: (14|2).<br />
-                    The first number (in this case 14), represents submission contribution points (links that you have submitted or discussions that you started).<br />
-                    The second number, in this case 2, represents your comment contribution points.</p>
+                    <p>Welcome to @ConfigurationManager.AppSettings["siteName"]!</p>
+                    <p>In order to downvote comments or submissions you need to have at least 100 comment contribution points.</p>
+                    <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>
+                    <p>You currently have @Karma.CommentKarma(User.Identity.Name) comment contribution points.</p>
                     <p>Tip: a good way to earn more contribution points is to take part in discussions or say hi in /v/introductions.</p>
                     <p>This requirement was established as a measure to encourage new members to get involved and participate in discussions.</p>
                 </div>
@@ -235,15 +234,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="notenoughccpupvotelabel">Hi! It looks like you are new around here. Welcome to @ConfigurationManager.AppSettings["siteName"]!</h4>
+                    <h4 class="modal-title" id="notenoughccpupvotelabel">Hi! It looks like you are new around here.</h4>
                 </div>
                 <div class="modal-body">
+                    <p>Welcome to @ConfigurationManager.AppSettings["siteName"]!</p>
                     <p>In order to be able to upvote comments or submissions without limitations, you need to have at least 20 comment contribution points.</p>
-                    <p>You are currently limited to 10 upvotes per 24 hours.
-                    Every time someone upvotes a comment that you wrote, you gain 1 comment contribution point.</p>
-                    <p>Your comment contribution points are shown in the upper right corner like so: (14|2).<br />
-                    The first number (in this case 14), represents submission contribution points (links that you have submitted or discussions that you started).<br />
-                    The second number, in this case 2, represents your comment contribution points.</p>
+                    <p>You are currently limited to 10 upvotes per 24 hours.</p>
+                    <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>
+                    <p>You currently have @Karma.CommentKarma(User.Identity.Name) comment contribution points.</p>
                     <p>Tip: a good way to earn more contribution points is to take part in discussions or say hi in /v/introductions.</p>
                     <p>This requirement was established as a measure to encourage new members to get involved and participate in discussions.</p>
                 </div>
