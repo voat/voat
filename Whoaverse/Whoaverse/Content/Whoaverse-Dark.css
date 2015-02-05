@@ -2602,16 +2602,21 @@ textarea.form-control {
 
     #header-account {
         font-size: 10px;
-        line-height: 80%;
+        line-height: 20px;
         padding: 6px;
     }
 
     .logged-in {
-        margin: 0 0 3px;
+        margin: 0;
     }
 
     .logged-out {
-        margin: 0 0 3px;
+        margin: 0;
+    }
+
+    #manage {
+        position: relative;
+        top: 2px;
     }
 
     #header-banner {
