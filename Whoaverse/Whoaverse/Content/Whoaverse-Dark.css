@@ -98,6 +98,7 @@ label {
     padding: 2px;
     visibility: visible;
     margin-left: 5px;
+    cursor: default;
 }
 .md a[href="#s"]:hover::after,
 .md a[href="#s"]:active::after {
