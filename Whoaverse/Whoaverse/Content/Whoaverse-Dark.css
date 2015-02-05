@@ -25,6 +25,7 @@
     position: absolute;
     text-align: center;
     top: -6px;
+    pointer-events: none;
 }
 
 .submission {
