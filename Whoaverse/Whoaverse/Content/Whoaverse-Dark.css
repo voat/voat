@@ -1517,6 +1517,17 @@ pre, code {
         text-decoration: underline;
     }
 
+#manage {
+    background: url( /Graphics/Dark-SpriteSheet.png );
+    background-position: -56px 0;
+    cursor: pointer;
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    text-indent: -9999px;
+    overflow: hidden;
+}
+
 #mail {
     display: inline-block;
     overflow: hidden;
