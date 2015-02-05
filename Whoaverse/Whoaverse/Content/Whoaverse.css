@@ -1472,7 +1472,7 @@ pre, code {
     border: 1px solid #DCDCDC;
     border-radius: 3px;
     margin: 0 0 14px;
-    padding: 5px;
+    padding: 2px 6px 5px;
 }
 
 .logged-out {
@@ -1500,6 +1500,9 @@ pre, code {
     height: 16px;
     width: 16px;
     text-indent: -9999px;
+    overflow: hidden;
+    position: relative;
+    top: 4px;
 }
 
 #mail {
