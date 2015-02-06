@@ -40,10 +40,18 @@
         @Html.Hidden("Rank", 0)
 
         <div class="form-group">
+            @Html.Label("URL", new {@class = "control-label col-md-2"})
+            <div class="col-md-9">
+                @Html.TextBoxFor(m => m.MessageContent, new {@class = "form-control", Value = @linkUrl})
+                @Html.ValidationMessageFor(model => model.MessageContent)
+            </div>
+        </div>
+
+        <div class="form-group">
             @Html.Label("Title", new { @class = "control-label col-md-2" })
             <div class="col-md-9">
                 @Html.TextBoxFor(m => m.Linkdescription, new { @class = "form-control", Value = @linkDescription })
-                <a href="javascript:void(0)" onclick="return suggestTitle()">Suggest title (first enter the URL)</a>
+                <a href="javascript:void(0)" id="suggest-title" onclick="return suggestTitle()">Enter the URL above, then click here to suggest a title</a>
                 @Html.ValidationMessageFor(model => model.Linkdescription)
             </div>
         </div>
@@ -73,13 +81,7 @@
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.Label("URL", new { @class = "control-label col-md-2" })
-            <div class="col-md-9">
-                @Html.TextBoxFor(m => m.MessageContent, new { @class = "form-control", Value = @linkUrl })
-                @Html.ValidationMessageFor(model => model.MessageContent)
-            </div>
-        </div>
+        
 
         @if (Karma.CommentKarma(User.Identity.Name) < 25)
         {

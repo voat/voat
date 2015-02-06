@@ -90,10 +90,23 @@ namespace Voat.Controllers
 
         // GET: title from Uri
         [Authorize]
-        public string TitleFromUri()
+        public JsonResult TitleFromUri()
         {
             var uri = Request.Params["uri"];
-            return UrlUtility.GetTitleFromUri(uri);
+            string title = UrlUtility.GetTitleFromUri(uri);
+
+            if (title != null)
+            {
+                var resultList = new List<string>
+                {
+                    UrlUtility.GetTitleFromUri(uri)
+                };
+
+                return Json(resultList, JsonRequestBehavior.AllowGet);
+            }
+
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json("Bad request.", JsonRequestBehavior.AllowGet);
         }
 
         // GET: subverse names containing search term (used for autocomplete on new submission views)

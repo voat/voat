@@ -70,12 +70,12 @@ namespace Voat.Utils
                     counter = sr.Read(buffer, 0, 256);
                 }
 
-                return "We were unable to suggest a title.";
+                return null;
 
             }
             catch (Exception)
             {
-                return "We were unable to suggest a title.";
+                return null;
             }            
         }
 

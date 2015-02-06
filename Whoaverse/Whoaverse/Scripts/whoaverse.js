@@ -1029,16 +1029,23 @@ function distinguish(commentId, obj) {
 
 // a function to suggest a title for given Uri
 function suggestTitle() {
+    $("#suggest-title").off('click', suggestTitle);
+    $("#suggest-title").text('Please wait...');
+
     var uri = $("#MessageContent").val();
 
-    // request a title from uri to title service
+    // request a url title from title service
     var title = $.get(
         "/ajaxhelpers/titlefromuri?uri=" + uri,
         null,
         function (data) {
             $("#Linkdescription").val(data);
+            $("#suggest-title").text("Enter the URL above, then click here to suggest a title");
+            $("#suggest-title").on('click', suggestTitle);
         }).fail(function () {
             $("#Linkdescription").val("We were unable to suggest a title.");
+            $("#suggest-title").text("Enter the URL above, then click here to suggest a title");
+            $("#suggest-title").on('click', suggestTitle);
         });
 }
 
