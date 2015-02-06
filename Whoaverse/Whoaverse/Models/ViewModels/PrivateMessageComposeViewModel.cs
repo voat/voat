@@ -20,7 +20,7 @@ namespace Voat.Models.ViewModels
     {
         [RegularExpression("^[a-zA-Z0-9-_]+$", ErrorMessage="Please use only alphanumeric characters.")]
         [Required(ErrorMessage = "Please enter a username to send this message to.")]
-        [StringLength(20, ErrorMessage = "Username is limited to 20 characters.")]
+        [StringLength(23, ErrorMessage = "Username is limited to 23 characters.")]
         public string Recipient { get; set; }
         
         [Required(ErrorMessage = "Please enter a subject for this message.")]

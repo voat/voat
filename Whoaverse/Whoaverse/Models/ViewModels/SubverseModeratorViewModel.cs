@@ -20,7 +20,7 @@ namespace Voat.Models.ViewModels
     public class SubverseModeratorViewModel
     {
         [Required(ErrorMessage = "Please enter a username.")]
-        [StringLength(50, ErrorMessage = "Username is limited to 50 characters.")]
+        [StringLength(23, ErrorMessage = "Username is limited to 23 characters.")]
         public string Username { get; set; }
 
         public string SubverseName { get; set; }
