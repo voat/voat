@@ -14,10 +14,6 @@
 
 @{
     ViewBag.Title = "Submit a comment";
-
-    string loggedinUser = User.Identity.Name;
-    DateTime currentdatetime = DateTime.Now;
-
     int messageId = ViewBag.messageId;
 }
 
@@ -27,16 +23,16 @@
     @Html.ValidationSummary(true)
 
     <!-- Setup default values -->
-
     @Html.Hidden("MessageId", messageId)
 
     @Html.MarkdownEditorFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
-    
-    <div class="validation-summary-valid" data-valmsg-summary="true">
-        <ul>
-            <li id="errorMessage" style="display:none">Please enter a comment to submit.</li>
-        </ul>
+
+    <div>
+        <span class="field-validation-error" data-valmsg-for="Title" data-valmsg-replace="true">
+            <span class="" id="errorMessage" style="display: none">Please enter a comment to submit.</span>
+        </span>
     </div>
+
     <input type="button" id="submitbutton" value="Submit comment" class="btn-whoaverse-paging" onclick="postCommentAjax(this, @messageId, '@User.Identity.Name');$(this.parentElement).find('#submission-preview-area').hide();">
 	<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement).find('#CommentContent'),$(this.parentElement).find('#submission-preview-area'))">
     <br><br>

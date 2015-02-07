@@ -34,10 +34,10 @@
             </div>
         </div>
 
-        <div class="validation-summary-valid" data-valmsg-summary="true">
-            <ul>
-                <li id="errorMessage" style="display:none">Please enter a message to submit.</li>
-            </ul>
+        <div>
+            <span class="field-validation-error" data-valmsg-for="Title" data-valmsg-replace="true">
+                <span class="" id="errorMessage" style="display: none">Please enter a message to submit.</span>
+            </span>
         </div>
 
         <input type="button" id="submitbutton" value="Submit reply" class="btn-whoaverse-paging" onclick="postPrivateMessageReplyAjax(this, @parentPrivateMessageId)">
