@@ -188,7 +188,7 @@ namespace Voat.Controllers
                     }
 
                     // check if same link was submitted before and deny submission
-                    var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(message.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse == message.Subverse);
+                    var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(message.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(message.Subverse, StringComparison.OrdinalIgnoreCase));
 
                     // submission is a repost, discard it and inform the user
                     if (existingSubmission != null)
