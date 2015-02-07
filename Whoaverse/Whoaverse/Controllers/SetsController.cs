@@ -58,15 +58,34 @@ namespace Voat.Controllers
                     }
                 }
 
+                int subsInSet = set.Usersetdefinitions.Count();
+                int submissionsToGet = 5;
+
+                // there is at least 1 sub in the set
+                if (subsInSet == 1)
+                {
+                    submissionsToGet = 25;
+                }
+                // get only one submission from each sub if set contains 25 or more subverses
+                else if (subsInSet >= 25)
+                {
+                    submissionsToGet = 1;
+                }
+                // try to aim for 25 submissions
+                else
+                {
+                    submissionsToGet = (int)Math.Ceiling((double)25 / subsInSet);
+                }
+
                 foreach (var subverse in set.Usersetdefinitions)
                 {
-                    // get 5 top ranked submissions for current subverse
+                    // get top ranked submissions for current subverse
                     Subverse currentSubverse = subverse.Subverse;
 
                     if (currentSubverse != null)
                     {
                         // skip parameter could be passed here
-                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, 5, recordsToSkip * pageSize));
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, submissionsToGet, recordsToSkip * pageSize));
                     }
                     singleSetResultModel.Name = set.Name;
                     singleSetResultModel.Id = set.Set_id;
