@@ -325,6 +325,13 @@ namespace Voat
                 defaults: new { controller = "Sets", action = "ChangeSetInfo" }
             );
 
+            // delete a set
+            routes.MapRoute(
+                name: "deleteset",
+                url: "sets/delete/{setId}",
+                defaults: new { controller = "Sets", action = "DeleteSet" }
+            );
+
             // vote
             routes.MapRoute(
                 name: "vote",

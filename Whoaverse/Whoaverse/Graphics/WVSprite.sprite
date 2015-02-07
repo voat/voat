@@ -23,12 +23,9 @@
   <!--The order of the <file> elements determines the order of the images in the sprite.-->
   <files>
     <file>/Graphics/voat-logo.png</file>
-    <file>/Graphics/mail-icon.png</file>
     <file>/Graphics/nsfw-thumb.png</file>
     <file>/Graphics/thumb-placeholder.png</file>
     <file>/Graphics/whoaverse-404.png</file>
     <file>/Graphics/whoaverse-mascot.png</file>
-    <file>/Graphics/whoaverse.png</file>
-    <file>/Graphics/group_edit.png</file>
   </files>
 </sprite>

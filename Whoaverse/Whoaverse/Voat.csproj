@@ -479,6 +479,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Graphics\edit.png" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Graphics\markdownEditorSprite.png" />
     <Content Include="Graphics\missing_image.png" />
@@ -490,7 +491,22 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Graphics\WVSprite.png">
+      <DependentUpon>WVSprite.sprite</DependentUpon>
+    </Content>
+    <Content Include="Graphics\WVSprite.png.css">
+      <DependentUpon>WVSprite.png</DependentUpon>
+    </Content>
     <Content Include="oexchange.xrd" />
+    <Content Include="Graphics\WVSprite.png.map">
+      <DependentUpon>WVSprite.png</DependentUpon>
+    </Content>
+    <Content Include="Graphics\WVSprite.png.less">
+      <DependentUpon>WVSprite.png</DependentUpon>
+    </Content>
+    <Content Include="Graphics\WVSprite.png.scss">
+      <DependentUpon>WVSprite.png</DependentUpon>
+    </Content>
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -535,8 +551,6 @@
     <Content Include="Graphics\feed-icon-14x14.png" />
     <Content Include="Graphics\group_edit.png" />
     <Content Include="Graphics\Light-SpriteSheet.png" />
-    <Content Include="Graphics\mail-icon-hasmail.png" />
-    <Content Include="Graphics\mail-icon.png" />
     <Content Include="Graphics\nsfw-thumb.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\whoaverse-404.png" />
@@ -547,12 +561,6 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>WhoaverseEntityDataModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Graphics\WVSprite.png">
-      <DependentUpon>WVSprite.sprite</DependentUpon>
-    </Content>
-    <Content Include="Graphics\WVSprite.png.css">
-      <DependentUpon>WVSprite.png</DependentUpon>
-    </Content>
     <Content Include="Models\WhoaverseEntityDataModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>WhoaverseEntityDataModel.edmx</DependentUpon>
@@ -567,15 +575,6 @@
       <LastGenOutput>WhoaverseEntityDataModel.cs</LastGenOutput>
     </Content>
     <Content Include="Graphics\WVSprite.sprite" />
-    <Content Include="Graphics\WVSprite.png.map">
-      <DependentUpon>WVSprite.png</DependentUpon>
-    </Content>
-    <Content Include="Graphics\WVSprite.png.less">
-      <DependentUpon>WVSprite.png</DependentUpon>
-    </Content>
-    <Content Include="Graphics\WVSprite.png.scss">
-      <DependentUpon>WVSprite.png</DependentUpon>
-    </Content>
     <Content Include="Areas\HelpPage\Views\Help\Index.cshtml" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
     <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />

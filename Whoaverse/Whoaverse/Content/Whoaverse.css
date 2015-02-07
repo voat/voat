@@ -857,12 +857,6 @@ a.btn-whoaverse {
     width: 125px;
 }
 
-.group_edit {
-    background: url( /Graphics/WVSprite.png ) 0 -1546px;
-    height: 16px;
-    width: 16px;
-}
-
 .nsfw-thumb {
     background: url( /Graphics/WVSprite.png ) 0 -176px;
     height: 70px;
@@ -904,30 +898,6 @@ a.btn-whoaverse {
     height: 43px;
     width: 120px;
 }
-
-.expando-button.video.collapsed {
-    background-image: url( /Graphics/WVSprite.png );
-    background-position: -87px -584px;
-    background-repeat: no-repeat;
-}
-
-    .expando-button.video.collapsed:hover, .eb-vch {
-        background-image: url( /Graphics/WVSprite.png );
-        background-position: -58px -584px;
-        background-repeat: no-repeat;
-    }
-
-.expando-button.video.expanded, .eb-ve {
-    background-image: url( /Graphics/WVSprite.png );
-    background-position: -29px -613px;
-    background-repeat: no-repeat;
-}
-
-    .expando-button.video.expanded:hover, .eb-veh {
-        background-image: url( /Graphics/WVSprite.png );
-        background-position: 0 -613px;
-        background-repeat: no-repeat;
-    }
 
 /* ! Body : Voting Arrows
 ------------------------------------------------------------------------------------ */

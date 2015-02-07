@@ -88,6 +88,7 @@ namespace Voat.Controllers
                         submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, submissionsToGet, recordsToSkip * pageSize));
                     }
                     singleSetResultModel.Name = set.Name;
+                    singleSetResultModel.Description = set.Description;
                     singleSetResultModel.Id = set.Set_id;
                 }
 
@@ -129,6 +130,7 @@ namespace Voat.Controllers
                         submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, pageSize, page * pageSize));
                     }
                     singleSetResultModel.Name = set.Name;
+                    singleSetResultModel.Description = set.Description;
                     singleSetResultModel.Id = set.Set_id;
                 }
 
@@ -167,6 +169,7 @@ namespace Voat.Controllers
                 var setViewModel = new SingleSetViewModel()
                 {
                     Name = setToEdit.Name,
+                    Description = setToEdit.Description,
                     SubversesList = setSubversesList,
                     Id = setToEdit.Set_id,
                     Created = setToEdit.Created_on,
@@ -490,6 +493,32 @@ namespace Voat.Controllers
             }
 
             // something went horribly wrong
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(new List<string> { "Bad request." });
+        }
+
+        // POST: delete a set
+        [Authorize]
+        [HttpPost]
+        public JsonResult DeleteSet(int setId)
+        {
+            // check if user is set owner
+            if (!Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new List<string> { "Unauthorized request." });
+            }
+
+            // delete the set
+            var setToRemove = _db.Usersets.FirstOrDefault(s => s.Set_id == setId && s.Created_by.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+            if (setToRemove != null)
+            {
+                _db.Usersets.Remove(setToRemove);
+                _db.SaveChangesAsync();
+                return Json("Set has been deleted.", JsonRequestBehavior.AllowGet);
+            }
+
+            // expected set was not found in user sets
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Json(new List<string> { "Bad request." });
         }

@@ -8,53 +8,32 @@
       "offsetY": 1
     },
     {
-      "name": "/Graphics/mail-icon.png",
-      "width": 15,
-      "height": 10,
-      "offsetX": 1,
-      "offsetY": 46
-    },
-    {
       "name": "/Graphics/nsfw-thumb.png",
       "width": 70,
       "height": 70,
       "offsetX": 1,
-      "offsetY": 57
+      "offsetY": 46
     },
     {
       "name": "/Graphics/thumb-placeholder.png",
       "width": 70,
       "height": 70,
       "offsetX": 1,
-      "offsetY": 128
+      "offsetY": 117
     },
     {
       "name": "/Graphics/whoaverse-404.png",
       "width": 450,
       "height": 405,
       "offsetX": 1,
-      "offsetY": 199
+      "offsetY": 188
     },
     {
       "name": "/Graphics/whoaverse-mascot.png",
       "width": 400,
       "height": 404,
       "offsetX": 1,
-      "offsetY": 605
-    },
-    {
-      "name": "/Graphics/whoaverse.png",
-      "width": 120,
-      "height": 43,
-      "offsetX": 1,
-      "offsetY": 1010
-    },
-    {
-      "name": "/Graphics/group_edit.png",
-      "width": 16,
-      "height": 16,
-      "offsetX": 1,
-      "offsetY": 1054
+      "offsetY": 594
     }
   ]
 }

@@ -1164,7 +1164,6 @@ function cancelSetTitleChange() {
 function saveSetTitle(obj, setId) {
     $(obj).html('Please wait...');
 
-    // TODO call save set title api
     $.ajax({
         type: "POST",
         url: "/sets/modify/" + setId + "/" + $('#newSetNameEditBox').val(),
@@ -1182,3 +1181,32 @@ function saveSetTitle(obj, setId) {
     });
 }
 
+// a function to ask the user to confirm permanent set deletion request
+function deleteSet(obj, setId) {
+    $(obj).html("Are you sure?");
+    
+    $(obj).bind({
+        click: function () {
+            deleteSetExecute(obj, setId);
+        }
+    });
+
+    return false;
+}
+
+// a function to permanently delete a given set
+function deleteSetExecute(obj, setId) {
+    $(obj).html('Please wait...');
+
+    $.ajax({
+        type: "POST",
+        url: "/sets/delete/" + setId,
+        success: function () {
+            // remove the set from view
+            $("#set-" + setId).remove();
+        },
+        error: function () {
+            $(obj).html('Nope.');
+        }
+    });
+}

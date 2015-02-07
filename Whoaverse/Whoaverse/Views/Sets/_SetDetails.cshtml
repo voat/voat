@@ -16,58 +16,60 @@
     string subverseAge = Submissions.CalcSubmissionAge(Model.CreationDate);
 }
 
-<div class="midcol">
-    @if (User.Identity.IsAuthenticated)
-    {
-        if (Voat.Utils.User.IsUserSubscribedToSet(User.Identity.Name, Model.Name))
+<div id="set-@Model.Id">
+    <div class="midcol">
+        @if (User.Identity.IsAuthenticated)
         {
-            <button type="button" onclick="return unsubscribeFromSet(this, '@Model.Id')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
-        }
-        else
-        {
-            <button type="button" onclick="return subscribeToSet(this, '@Model.Id')" class="btn-whoaverse-paging btn-xs btn-default">subscribe</button>
-        }
-        if (Voat.Utils.User.IsUserSetOwner(User.Identity.Name, Model.Id))
-        {
-            <div class="btn-whoaverse-paging"><a href="/set/@Model.Id/edit" rel="next">modify</a></div>
-            <button type="button" onclick="return deleteSet(this, '@Model.Id')" class="btn-whoaverse-paging btn-xs btn-default disabled">delete</button>
-        }
-    }
-    else
-    {
-        <button type="button" onclick="return mustLogin()" class="btn-whoaverse-paging btn-xs btn-default">subscribe</button>
-    }
-</div>
-
-<div class="entry">
-    <p class="titlerow">
-        <a href="/set/@Model.Id" class="h4">@Model.Name</a>
-    </p>
-    <div class="well well-lg subversedescriptionbox">
-        <div class="md">
-            <p class="subversedescriptionboxcontent">@Model.Description</p>
-        </div>
-    </div>
-    <p class="">
-        <span class="">
-            <span id="subscribercount" class="number">@Model.Subscribers</span>
-            <span class="word">subscribers, created by <a href="/u/@Model.CreatedBy">@Model.CreatedBy</a>. Set is @subverseAge old.</span>
-            @if (Model.SubversesList.Count > 0)
+            if (Voat.Utils.User.IsUserSubscribedToSet(User.Identity.Name, Model.Name))
             {
-                <span>
-                    The set consists of following subverses:
-                    @foreach (var subverse in Model.SubversesList)
-                    {
-                        <a href="/v/@subverse.Subversename">@subverse.Subversename</a>
-                    }
-                </span>
+                <button type="button" onclick="return unsubscribeFromSet(this, '@Model.Id')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
             }
             else
             {
-                <span>
-                    You did not add any subverses to this set.
-                </span>
+                <button type="button" onclick="return subscribeToSet(this, '@Model.Id')" class="btn-whoaverse-paging btn-xs btn-default">subscribe</button>
             }
-        </span>
-    </p>
+            if (Voat.Utils.User.IsUserSetOwner(User.Identity.Name, Model.Id))
+            {
+                <div class="btn-whoaverse-paging"><a href="/set/@Model.Id/edit" rel="next">modify</a></div>
+                <button type="button" onclick="return deleteSet(this, '@Model.Id')" class="btn-whoaverse-paging btn-xs btn-default">delete</button>
+            }
+        }
+        else
+        {
+            <button type="button" onclick="return mustLogin()" class="btn-whoaverse-paging btn-xs btn-default">subscribe</button>
+        }
+    </div>
+
+    <div class="entry">
+        <p class="titlerow">
+            <a href="/set/@Model.Id" class="h4">@Model.Name</a>
+        </p>
+        <div class="well well-lg subversedescriptionbox">
+            <div class="md">
+                <p class="subversedescriptionboxcontent">@Model.Description</p>
+            </div>
+        </div>
+        <p class="">
+            <span class="">
+                <span id="subscribercount" class="number">@Model.Subscribers</span>
+                <span class="word">subscribers, created by <a href="/u/@Model.CreatedBy">@Model.CreatedBy</a>. Set is @subverseAge old.</span>
+                @if (Model.SubversesList.Count > 0)
+                {
+                    <span>
+                        The set consists of following subverses:
+                        @foreach (var subverse in Model.SubversesList)
+                        {
+                            <a href="/v/@subverse.Subversename">@subverse.Subversename</a>
+                        }
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        You did not add any subverses to this set.
+                    </span>
+                }
+            </span>
+        </p>
+    </div>
 </div>

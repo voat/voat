@@ -7,45 +7,27 @@
 	height: 44px;
 	background: url('/Graphics/WVSprite.png') -1px -1px;
 }
-@mixin sprite-Graphics-mail-icon() {
-/* You may have to set 'display: block' */
-	width: 15px;
-	height: 10px;
-	background: url('/Graphics/WVSprite.png') -1px -46px;
-}
 @mixin sprite-Graphics-nsfw-thumb() {
 /* You may have to set 'display: block' */
 	width: 70px;
 	height: 70px;
-	background: url('/Graphics/WVSprite.png') -1px -57px;
+	background: url('/Graphics/WVSprite.png') -1px -46px;
 }
 @mixin sprite-Graphics-thumb-placeholder() {
 /* You may have to set 'display: block' */
 	width: 70px;
 	height: 70px;
-	background: url('/Graphics/WVSprite.png') -1px -128px;
+	background: url('/Graphics/WVSprite.png') -1px -117px;
 }
 @mixin sprite-Graphics-whoaverse-404() {
 /* You may have to set 'display: block' */
 	width: 450px;
 	height: 405px;
-	background: url('/Graphics/WVSprite.png') -1px -199px;
+	background: url('/Graphics/WVSprite.png') -1px -188px;
 }
 @mixin sprite-Graphics-whoaverse-mascot() {
 /* You may have to set 'display: block' */
 	width: 400px;
 	height: 404px;
-	background: url('/Graphics/WVSprite.png') -1px -605px;
-}
-@mixin sprite-Graphics-whoaverse() {
-/* You may have to set 'display: block' */
-	width: 120px;
-	height: 43px;
-	background: url('/Graphics/WVSprite.png') -1px -1010px;
-}
-@mixin sprite-Graphics-group_edit() {
-/* You may have to set 'display: block' */
-	width: 16px;
-	height: 16px;
-	background: url('/Graphics/WVSprite.png') -1px -1054px;
+	background: url('/Graphics/WVSprite.png') -1px -594px;
 }

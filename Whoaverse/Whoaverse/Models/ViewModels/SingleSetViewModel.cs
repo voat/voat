@@ -22,6 +22,9 @@ namespace Voat.Models.ViewModels
         // set name
         public string Name { get; set; }
 
+        // set description
+        public string Description { get; set; }
+
         // set creation date
         public DateTime Created { get; set; }
 

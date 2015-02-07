@@ -21,6 +21,7 @@
         <div class="sitetable" id="subverselisting">
             <div class="alert-title" id="setName" title="Click to rename" style="cursor: help;" onclick=" changeSetName() ">
                 @Model.Name
+                <img src="/Graphics/edit.png" alt="RSS feed for this subverse">
             </div>
             <div class="alert-title" id="newSetName" style="display: none">
                 <input class="form-control" id="newSetNameEditBox" type="text" value="@Model.Name">
@@ -31,7 +32,8 @@
             <div class="userstats">
                 <div class="userstats-heading-1">Set information</div>
                 <div class="userstats-body">
-                    Created on: @Model.Created, Subscribers: @Model.Subscribers
+                    <p>Created on: @Model.Created, Subscribers: @Model.Subscribers</p>
+                    <p>Set description: @Model.Description</p>
                 </div>
             </div>
 
