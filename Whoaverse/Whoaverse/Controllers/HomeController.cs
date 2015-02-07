@@ -135,7 +135,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
         {
             // check if user is banned
-            if (Utils.User.IsUserBanned(message.Name))
+            if (Utils.User.IsUserGloballyBanned(message.Name) || Utils.User.IsUserBannedFromSubverse(User.Identity.Name, message.Subverse))
             {
                 ViewBag.SelectedSubverse = message.Subverse;
                 return View("~/Views/Home/Comments.cshtml", message);

@@ -196,6 +196,16 @@
           <Property Name="Added_by" Type="nvarchar" MaxLength="50" />
           <Property Name="Added_on" Type="datetime" />
         </EntityType>
+        <EntityType Name="SubverseBans">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BannedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BanAddedOn" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Subverseflairsettings">
           <Key>
             <PropertyRef Name="Id" />
@@ -445,6 +455,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SubverseBans_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1" />
+          <End Role="SubverseBans" Type="Self.SubverseBans" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="SubverseBans">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Subverseflairsettings_Subverses1">
           <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -559,6 +581,7 @@
           <EntitySet Name="Stickiedsubmissions" EntityType="Self.Stickiedsubmissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmins" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubverseBans" EntityType="Self.SubverseBans" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverseflairsettings" EntityType="Self.Subverseflairsettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
@@ -604,6 +627,10 @@
           <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="Self.FK_SubverseAdmins_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
             <End Role="SubverseAdmins" EntitySet="SubverseAdmins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubverseBans_Subverses" Association="Self.FK_SubverseBans_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="SubverseBans" EntitySet="SubverseBans" />
           </AssociationSet>
           <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="Self.FK_Subverseflairsettings_Subverses1">
             <End Role="Subverses" EntitySet="Subverses" />
@@ -684,7 +711,7 @@
           <NavigationProperty Name="Votingtrackers" Relationship="Self.FK_Votingtracker_Messages" FromRole="Messages" ToRole="Votingtracker" />
           <Property Name="MessageContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Subverses" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Message" ToRole="Subvers" />
+          <NavigationProperty Name="Subverses" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Message" ToRole="Subverse" />
           <Property Name="Likes" Type="Int16" Nullable="false" DefaultValue="1" />
           <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
           <Property Name="Thumbnail" Type="String" MaxLength="40" FixedLength="true" Unicode="true" />
@@ -762,7 +789,7 @@
           </AssociationSet>
           <EntitySet Name="Subverses" EntityType="whoaverseModel.Subverse" />
           <AssociationSet Name="FK_Messages_Subverses" Association="whoaverseModel.FK_Messages_Subverses">
-            <End Role="Subvers" EntitySet="Subverses" />
+            <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Message" EntitySet="Messages" />
           </AssociationSet>
           <EntitySet Name="Defaultsubverses" EntityType="whoaverseModel.Defaultsubverse" />
@@ -839,6 +866,11 @@
             <End Role="Userset" EntitySet="Usersets" />
             <End Role="Usersetsubscription" EntitySet="Usersetsubscriptions" />
           </AssociationSet>
+          <EntitySet Name="SubverseBans" EntityType="whoaverseModel.SubverseBan" />
+          <AssociationSet Name="FK_SubverseBans_Subverses" Association="whoaverseModel.FK_SubverseBans_Subverses">
+            <End Role="Subverse" EntitySet="Subverses" />
+            <End Role="SubverseBan" EntitySet="SubverseBans" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -861,7 +893,7 @@
           <Property Name="exclude_sitewide_bans" Type="Boolean" DefaultValue="false" />
           <Property Name="traffic_stats_public" Type="Boolean" DefaultValue="false" />
           <Property Name="minutes_to_hide_comments" Type="Int32" />
-          <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subvers" ToRole="Message" />
+          <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subverse" ToRole="Message" />
           <Property Name="creation_date" Type="DateTime" Precision="3" Nullable="false" />
           <NavigationProperty Name="Defaultsubvers" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="Defaultsubvers" />
           <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
@@ -877,14 +909,15 @@
           <NavigationProperty Name="Featuredsubs" Relationship="whoaverseModel.FK_Featuredsubs_Subverses" FromRole="Subverse" ToRole="Featuredsub" />
           <Property Name="last_submission_received" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Usersetdefinitions" Relationship="whoaverseModel.FK_Usersetdefinitions_Subverses" FromRole="Subverse" ToRole="Usersetdefinition" />
+          <NavigationProperty Name="SubverseBans" Relationship="whoaverseModel.FK_SubverseBans_Subverses" FromRole="Subverse" ToRole="SubverseBan" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subvers" Multiplicity="0..1">
+          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
           </End>
           <End Type="whoaverseModel.Message" Role="Message" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Subvers">
+            <Principal Role="Subverse">
               <PropertyRef Name="name" />
             </Principal>
             <Dependent Role="Message">
@@ -1241,7 +1274,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Set_id" Type="Int32" Nullable="false" />
           <Property Name="Subversename" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Subvers" Relationship="whoaverseModel.FK_Usersetdefinitions_Subverses" FromRole="Usersetdefinition" ToRole="Subverse" />
+          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Usersetdefinitions_Subverses" FromRole="Usersetdefinition" ToRole="Subverse" />
           <NavigationProperty Name="Userset" Relationship="whoaverseModel.FK_Usersetdefinitions_Usersets" FromRole="Usersetdefinition" ToRole="Userset" />
         </EntityType>
         <EntityType Name="Userset">
@@ -1308,6 +1341,29 @@
             </Principal>
             <Dependent Role="Usersetsubscription">
               <PropertyRef Name="Set_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="SubverseBan">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BannedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BanAddedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_SubverseBans_Subverses" FromRole="SubverseBan" ToRole="Subverse" />
+        </EntityType>
+        <Association Name="FK_SubverseBans_Subverses">
+          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1" />
+          <End Type="whoaverseModel.SubverseBan" Role="SubverseBan" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverse">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="SubverseBan">
+              <PropertyRef Name="SubverseName" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1658,6 +1714,17 @@
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="Order" ColumnName="Order" />
                 <ScalarProperty Name="Set_id" ColumnName="Set_id" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubverseBans">
+            <EntityTypeMapping TypeName="whoaverseModel.SubverseBan">
+              <MappingFragment StoreEntitySet="SubverseBans">
+                <ScalarProperty Name="BanAddedOn" ColumnName="BanAddedOn" />
+                <ScalarProperty Name="BannedBy" ColumnName="BannedBy" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

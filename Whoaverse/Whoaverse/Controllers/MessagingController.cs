@@ -283,13 +283,13 @@ namespace Voat.Controllers
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null) return RedirectToAction("Sent", "Messaging");
             
             // check if recipient exists
-            if (Utils.User.UserExists(privateMessage.Recipient) && !Utils.User.IsUserBanned(User.Identity.Name))
+            if (Utils.User.UserExists(privateMessage.Recipient) && !Utils.User.IsUserGloballyBanned(User.Identity.Name))
             {
                 // send the message
                 privateMessage.Timestamp = DateTime.Now;
                 privateMessage.Sender = User.Identity.Name;
                 privateMessage.Status = true;
-                if (Utils.User.IsUserBanned(User.Identity.Name)) return RedirectToAction("Sent", "Messaging");
+                if (Utils.User.IsUserGloballyBanned(User.Identity.Name)) return RedirectToAction("Sent", "Messaging");
                 _db.Privatemessages.Add(privateMessage);
                 try
                 {
@@ -332,7 +332,7 @@ namespace Voat.Controllers
                 privateMessage.Timestamp = DateTime.Now;
                 privateMessage.Sender = User.Identity.Name;
                 privateMessage.Status = true;
-                if (Utils.User.IsUserBanned(User.Identity.Name)) return new HttpStatusCodeResult(HttpStatusCode.OK);
+                if (Utils.User.IsUserGloballyBanned(User.Identity.Name)) return new HttpStatusCodeResult(HttpStatusCode.OK);
                 _db.Privatemessages.Add(privateMessage);
 
                 try

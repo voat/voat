@@ -181,7 +181,7 @@ namespace Voat.Controllers
                 }
 
                 // check if author is banned, don't save the comment or send notifications if true
-                if (!Utils.User.IsUserBanned(User.Identity.Name))
+                if (!Utils.User.IsUserGloballyBanned(User.Identity.Name) && !Utils.User.IsUserBannedFromSubverse(User.Identity.Name, message.Subverse))
                 {
                     _db.Comments.Add(comment);
 
@@ -212,7 +212,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            ModelState.AddModelError(String.Empty, "Sorry, you are doing that too fast. Please try again in 2 minutes.");
+            ModelState.AddModelError(String.Empty, "Sorry, you are either banned fromt this sub or doing that too fast. Please try again in 2 minutes.");
             return View("~/Views/Help/SpeedyGonzales.cshtml");
         }
 

@@ -265,6 +265,9 @@
     <Compile Include="Controllers\SetsController.cs" />
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
+    <Compile Include="Models\SubverseBan.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\Userset.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>

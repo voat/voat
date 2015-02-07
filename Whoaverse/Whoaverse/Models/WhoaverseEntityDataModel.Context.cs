@@ -52,5 +52,6 @@ namespace Voat.Models
         public virtual DbSet<Usersetdefinition> Usersetdefinitions { get; set; }
         public virtual DbSet<Userset> Usersets { get; set; }
         public virtual DbSet<Usersetsubscription> Usersetsubscriptions { get; set; }
+        public virtual DbSet<SubverseBan> SubverseBans { get; set; }
     }
 }

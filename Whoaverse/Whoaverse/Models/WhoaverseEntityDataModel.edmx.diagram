@@ -49,6 +49,8 @@
         <AssociationConnector Association="whoaverseModel.FK_Usersetdefinitions_Subverses" />
         <AssociationConnector Association="whoaverseModel.FK_Usersetdefinitions_Usersets" />
         <AssociationConnector Association="whoaverseModel.FK_Usersetsubscriptions_Usersets" />
+        <EntityTypeShape EntityType="whoaverseModel.SubverseBan" Width="1.5" PointX="3.625" PointY="17.625" />
+        <AssociationConnector Association="whoaverseModel.FK_SubverseBans_Subverses" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

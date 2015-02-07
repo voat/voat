@@ -32,6 +32,7 @@ namespace Voat.Models
             this.Subscriptions = new HashSet<Subscription>();
             this.Featuredsubs = new HashSet<Featuredsub>();
             this.Usersetdefinitions = new HashSet<Usersetdefinition>();
+            this.SubverseBans = new HashSet<SubverseBan>();
         }
     
         public string name { get; set; }
@@ -68,5 +69,6 @@ namespace Voat.Models
         public virtual ICollection<Subscription> Subscriptions { get; set; }
         public virtual ICollection<Featuredsub> Featuredsubs { get; set; }
         public virtual ICollection<Usersetdefinition> Usersetdefinitions { get; set; }
+        public virtual ICollection<SubverseBan> SubverseBans { get; set; }
     }
 }

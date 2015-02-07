@@ -61,7 +61,7 @@ namespace Voat.Controllers
                 foreach (var subverse in set.Usersetdefinitions)
                 {
                     // get 5 top ranked submissions for current subverse
-                    Subverse currentSubverse = subverse.Subvers;
+                    Subverse currentSubverse = subverse.Subverse;
 
                     if (currentSubverse != null)
                     {
@@ -102,7 +102,7 @@ namespace Voat.Controllers
                 foreach (var subverse in set.Usersetdefinitions)
                 {
                     // get 5 top ranked submissions for current subverse
-                    Subverse currentSubverse = subverse.Subvers;
+                    Subverse currentSubverse = subverse.Subverse;
 
                     if (currentSubverse != null)
                     {

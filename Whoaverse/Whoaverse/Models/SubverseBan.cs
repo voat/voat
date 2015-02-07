@@ -12,13 +12,14 @@ namespace Voat.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Usersetdefinition
+    public partial class SubverseBan
     {
         public int Id { get; set; }
-        public int Set_id { get; set; }
-        public string Subversename { get; set; }
+        public string SubverseName { get; set; }
+        public string Username { get; set; }
+        public string BannedBy { get; set; }
+        public System.DateTime BanAddedOn { get; set; }
     
         public virtual Subverse Subverse { get; set; }
-        public virtual Userset Userset { get; set; }
     }
 }

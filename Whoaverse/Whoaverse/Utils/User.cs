@@ -500,12 +500,22 @@ namespace Voat.Utils
             return userStatsModel;
         }
 
-        // check if a given user is banned
-        public static bool IsUserBanned(string userName)
+        // check if a given user is globally banned
+        public static bool IsUserGloballyBanned(string userName)
         {
             using (var db = new whoaverseEntities())
             {
                 var bannedUser = db.Bannedusers.FirstOrDefault(n => n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                return bannedUser != null;
+            }
+        }
+
+        // check if a given user is banned from a subverse
+        public static bool IsUserBannedFromSubverse(string userName, string subverseName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var bannedUser = db.SubverseBans.FirstOrDefault(n => n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
                 return bannedUser != null;
             }
         }
