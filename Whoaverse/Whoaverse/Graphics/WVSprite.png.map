@@ -2,8 +2,8 @@
   "images": [
     {
       "name": "/Graphics/voat-logo.png",
-      "width": 125,
-      "height": 44,
+      "width": 112,
+      "height": 31,
       "offsetX": 1,
       "offsetY": 1
     },
@@ -12,28 +12,28 @@
       "width": 70,
       "height": 70,
       "offsetX": 1,
-      "offsetY": 46
+      "offsetY": 33
     },
     {
       "name": "/Graphics/thumb-placeholder.png",
       "width": 70,
       "height": 70,
       "offsetX": 1,
-      "offsetY": 117
+      "offsetY": 104
     },
     {
       "name": "/Graphics/whoaverse-404.png",
       "width": 450,
       "height": 405,
       "offsetX": 1,
-      "offsetY": 188
+      "offsetY": 175
     },
     {
       "name": "/Graphics/whoaverse-mascot.png",
       "width": 400,
       "height": 404,
       "offsetX": 1,
-      "offsetY": 594
+      "offsetY": 581
     }
   ]
 }
