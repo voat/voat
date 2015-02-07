@@ -1,0 +1,44 @@
+﻿@model Voat.Models.ViewModels.SubverseBanViewModel
+
+@{
+    string subverseName = ViewBag.SubverseName;
+}
+
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+
+        <h1>User ban management interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+
+        <br />
+        <div class="alert alert-info">Use this area to add/edit/remove bans to your subverse.</div>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.Hidden("SubverseName", subverseName)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Username, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-4">
+                        @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Add" class="btn-whoaverse-medium" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div>
+            @Html.ActionLink("Back to ban list", "SubverseBans", new { subversetoshow = subverseName })
+        </div>
+    </div>
+</div>

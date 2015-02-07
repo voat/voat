@@ -458,6 +458,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "SubverseModerators" }
             );
 
+            // v/subversetoedit/about/bans
+            routes.MapRoute(
+                name: "subverseBans",
+                url: "v/{subversetoshow}/about/bans",
+                defaults: new { controller = "Subverses", action = "SubverseBans" }
+            );
+
             // v/subversetoedit/about/moderators/add
             routes.MapRoute(
                 name: "addSubverseModerator",
@@ -465,11 +472,25 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "AddModerator" }
             );
 
+            // v/subversetoedit/about/bans/add
+            routes.MapRoute(
+                name: "addSubverseBan",
+                url: "v/{subversetoshow}/about/bans/add",
+                defaults: new { controller = "Subverses", action = "AddBan" }
+            );
+
             // v/subversetoedit/about/moderators/delete
             routes.MapRoute(
                 name: "removeSubverseModerator",
                 url: "v/{subversetoshow}/about/moderators/delete/{id}",
                 defaults: new { controller = "Subverses", action = "RemoveModerator" }
+            );
+
+            // v/subversetoedit/about/bans/delete
+            routes.MapRoute(
+                name: "removeSubverseBan",
+                url: "v/{subversetoshow}/about/bans/delete/{id}",
+                defaults: new { controller = "Subverses", action = "RemoveBan" }
             );
 
             // v/subversetoedit/about/moderators/leave

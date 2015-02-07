@@ -282,6 +282,7 @@
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
+    <Compile Include="Models\ViewModels\SubverseBanViewModel.cs" />
     <Compile Include="Models\Viewstatistic.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -766,6 +767,9 @@
     <Content Include="Views\Sets\ManageMySets.cshtml" />
     <Content Include="Views\Errors\UnAuthorized.cshtml" />
     <Content Include="Views\AjaxViews\_SubverseInfo.cshtml" />
+    <Content Include="Views\Subverses\Admin\SubverseBans.cshtml" />
+    <Content Include="Views\Subverses\Admin\AddBan.cshtml" />
+    <Content Include="Views\Subverses\Admin\RemoveBan.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

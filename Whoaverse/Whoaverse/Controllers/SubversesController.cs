@@ -696,6 +696,31 @@ namespace Voat.Controllers
             return View("~/Views/Subverses/Admin/SubverseModerators.cshtml", subverseModerators);
         }
 
+        // GET: banned users for selected subverse
+        [Authorize]
+        public ActionResult SubverseBans(string subversetoshow)
+        {
+            // get model for selected subverse
+            var subverseModel = _db.Subverses.Find(subversetoshow);
+
+            if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            // check if caller is subverse owner, if not, deny listing
+            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+
+            var subverseBans = _db.SubverseBans
+                .Where(n => n.SubverseName == subversetoshow)
+                .Take(200)
+                .OrderBy(s => s.BanAddedOn)
+                .ToList();
+
+            ViewBag.SubverseModel = subverseModel;
+            ViewBag.SubverseName = subversetoshow;
+
+            ViewBag.SelectedSubverse = string.Empty;
+            return View("~/Views/Subverses/Admin/SubverseBans.cshtml", subverseBans);
+        }
+
         // GET: show add moderators view for selected subverse
         [Authorize]
         public ActionResult AddModerator(string subversetoshow)
@@ -711,6 +736,24 @@ namespace Voat.Controllers
             ViewBag.SubverseName = subversetoshow;
             ViewBag.SelectedSubverse = string.Empty;
             return View("~/Views/Subverses/Admin/AddModerator.cshtml");
+        }
+
+        // GET: show add ban view for selected subverse
+        [Authorize]
+        public ActionResult AddBan(string subversetoshow)
+        {
+            // get model for selected subverse
+            var subverseModel = _db.Subverses.Find(subversetoshow);
+
+            if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            // check if caller is subverse owner, if not, deny listing
+            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+
+            ViewBag.SubverseModel = subverseModel;
+            ViewBag.SubverseName = subversetoshow;
+            ViewBag.SelectedSubverse = string.Empty;
+            return View("~/Views/Subverses/Admin/AddBan.cshtml");
         }
 
         // POST: add a moderator to given subverse
@@ -772,6 +815,48 @@ namespace Voat.Controllers
             return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
         }
 
+        // POST: add a user ban to given subverse
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddBan([Bind(Include = "Id,SubverseName,Username")] SubverseBan subverseBan)
+        {
+            if (!ModelState.IsValid) return View(subverseBan);
+
+            // get model for selected subverse
+            var subverseModel = _db.Subverses.Find(subverseBan.SubverseName);
+
+            if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            // check if caller is subverse owner, if not, deny posting
+            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseBan.SubverseName)) return RedirectToAction("Index", "Home");
+
+            // check that user is not already banned in given subverse
+            var isAlreadyBanned = _db.SubverseBans.FirstOrDefault(a => a.Username == subverseBan.Username && a.SubverseName == subverseBan.SubverseName);
+
+            if (isAlreadyBanned == null)
+            {
+                subverseBan.SubverseName = subverseModel.name;
+                subverseBan.BannedBy = User.Identity.Name;
+                subverseBan.BanAddedOn = DateTime.Now;
+                _db.SubverseBans.Add(subverseBan);
+                _db.SaveChanges();
+
+                return RedirectToAction("SubverseBans");
+            }
+
+            ModelState.AddModelError(string.Empty, "Sorry, the user is already banned from this subverse.");
+            var tmpModel = new SubverseBanViewModel
+            {
+                Username = subverseBan.Username
+            };
+
+            ViewBag.SubverseModel = subverseModel;
+            ViewBag.SubverseName = subverseBan.SubverseName;
+            ViewBag.SelectedSubverse = string.Empty;
+            return View("~/Views/Subverses/Admin/AddBan.cshtml", tmpModel);
+        }
+
         // GET: show remove moderators view for selected subverse
         [Authorize]
         public ActionResult RemoveModerator(int? id)
@@ -791,6 +876,27 @@ namespace Voat.Controllers
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.SubverseName = subverseAdmin.SubverseName;
             return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subverseAdmin);
+        }
+
+        // GET: show remove ban view for selected subverse
+        [Authorize]
+        public ActionResult RemoveBan(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var subverseBan = _db.SubverseBans.Find(id);
+
+            if (subverseBan == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.SelectedSubverse = string.Empty;
+            ViewBag.SubverseName = subverseBan.SubverseName;
+            return View("~/Views/Subverses/Admin/RemoveBan.cshtml", subverseBan);
         }
 
         // GET: show resign as moderator view for selected subverse
@@ -845,14 +951,38 @@ namespace Voat.Controllers
             if (moderatorToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             var subverse = _db.Subverses.Find(moderatorToBeRemoved.SubverseName);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            
             // check if caller has clearance to remove a moderator
             if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) ||
                 moderatorToBeRemoved.Username == User.Identity.Name) return RedirectToAction("Index", "Home");
+            
             // execute removal
-            var subverseAdmin = await _db.SubverseAdmins.FindAsync(id);
-            _db.SubverseAdmins.Remove(subverseAdmin);
+            _db.SubverseAdmins.Remove(moderatorToBeRemoved);
             await _db.SaveChangesAsync();
             return RedirectToAction("SubverseModerators");
+        }
+
+        // POST: remove a ban from given subverse
+        [Authorize]
+        [HttpPost, ActionName("RemoveBan")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RemoveBan(int id)
+        {
+            // get ban name for selected subverse
+            var banToBeRemoved = await _db.SubverseBans.FindAsync(id);
+            
+            if (banToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            var subverse = _db.Subverses.Find(banToBeRemoved.SubverseName);
+            if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            // check if caller has clearance to remove a ban
+            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name)) return RedirectToAction("Index", "Home");
+
+            // execute removal
+            _db.SubverseBans.Remove(banToBeRemoved);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("SubverseBans");
         }
 
         // GET: show subverse flair settings view for selected subverse

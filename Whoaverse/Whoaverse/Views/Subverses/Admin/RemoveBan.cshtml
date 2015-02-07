@@ -1,0 +1,43 @@
+﻿@model Voat.Models.SubverseBan
+
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+
+        <h1>User ban management interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+
+        <br />
+        <div class="alert alert-danger">Are you sure you want to remove this ban?</div>
+
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.Label("Username")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Username)
+            </dd>
+            <dt>
+                @Html.Label("Banned by")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.BannedBy)
+            </dd>
+            <dt>
+                @Html.Label("Banned on")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.BanAddedOn)
+            </dd>
+        </dl>
+
+        @using (Html.BeginForm("RemoveBan", "Subverses", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <br />
+            <input type="submit" value="Delete" class="btn-whoaverse-medium" />
+            <br /><br />
+            @Html.ActionLink("Back to ban list", "SubverseBans", new { subversetoshow = Model.SubverseName })
+        }
+    </div>
+</div>
