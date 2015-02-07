@@ -23,5 +23,9 @@ namespace Voat.Models.ViewModels
         public string Username { get; set; }
 
         public string SubverseName { get; set; }
+
+        [Required(ErrorMessage = "Please enter a ban reason.")]
+        [StringLength(23, ErrorMessage = "Ban reason is limited to 50 characters.")]
+        public string BanReason { get; set; }
     }
 }

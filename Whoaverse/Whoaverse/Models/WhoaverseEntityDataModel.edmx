@@ -205,6 +205,7 @@
           <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="BannedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="BanAddedOn" Type="datetime" Nullable="false" />
+          <Property Name="BanReason" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Subverseflairsettings">
           <Key>
@@ -1354,6 +1355,7 @@
           <Property Name="BannedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="BanAddedOn" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_SubverseBans_Subverses" FromRole="SubverseBan" ToRole="Subverse" />
+          <Property Name="BanReason" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_SubverseBans_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1" />
@@ -1721,6 +1723,7 @@
           <EntitySetMapping Name="SubverseBans">
             <EntityTypeMapping TypeName="whoaverseModel.SubverseBan">
               <MappingFragment StoreEntitySet="SubverseBans">
+                <ScalarProperty Name="BanReason" ColumnName="BanReason" />
                 <ScalarProperty Name="BanAddedOn" ColumnName="BanAddedOn" />
                 <ScalarProperty Name="BannedBy" ColumnName="BannedBy" />
                 <ScalarProperty Name="Username" ColumnName="Username" />

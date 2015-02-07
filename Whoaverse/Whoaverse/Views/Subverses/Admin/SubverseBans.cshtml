@@ -20,6 +20,7 @@
                     <tr>
                         <th><b>Username</b></th>
                         <th><b>Banned by</b></th>
+                        <th><b>Ban reason</b></th>
                         <th><b>Banned on</b></th>
                         <th><b>Remove</b></th>
                     </tr>
@@ -31,6 +32,7 @@
                         <tr>
                             <td>@item.Username</td>
                             <td>@item.BannedBy</td>
+                            <td>@item.BanReason</td>
                             <td>@item.BanAddedOn</td>
                             <td>@Html.ActionLink("Remove", "RemoveBan", new { id = item.Id })</td>
                         </tr>

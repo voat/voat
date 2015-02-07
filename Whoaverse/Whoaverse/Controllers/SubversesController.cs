@@ -819,7 +819,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddBan([Bind(Include = "Id,SubverseName,Username")] SubverseBan subverseBan)
+        public ActionResult AddBan([Bind(Include = "Id,SubverseName,Username,BanReason")] SubverseBan subverseBan)
         {
             if (!ModelState.IsValid) return View(subverseBan);
 

@@ -19,6 +19,7 @@ namespace Voat.Models
         public string Username { get; set; }
         public string BannedBy { get; set; }
         public System.DateTime BanAddedOn { get; set; }
+        public string BanReason { get; set; }
     
         public virtual Subverse Subverse { get; set; }
     }
