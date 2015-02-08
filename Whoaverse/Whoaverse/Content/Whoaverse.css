@@ -1324,6 +1324,11 @@ pre, code {
 /* ! Header : Banner : Logo
 ------------------------------------------------------------------------------------ */
 
+#header-img-a {
+    display: inline-block;
+    vertical-align: bottom;
+}
+
 #header-img {
     margin: 7px 12px 10px;
     vertical-align: unset;
@@ -1348,9 +1353,9 @@ pre, code {
     font-size: 16px;
     font-variant: normal;
     font-weight: normal;
+    display: inline-block;
     margin: 0 14px 0 3px;
-    line-height: 44px;
-    vertical-align: middle;
+    vertical-align: bottom;
 }
 
     .pagename a {
