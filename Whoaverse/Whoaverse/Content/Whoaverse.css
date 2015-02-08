@@ -668,9 +668,9 @@ h2.whoaversename {
     background: -moz-linear-gradient( top,#FDFDFD,#F7F7F7 );
     background: -ms-linear-gradient( top,#FDFDFD,#F7F7F7 );
     background: -o-linear-gradient( top,#FDFDFD,#F7F7F7 );
-    border: 1px solid #DFDFDF;
+    border: solid #DFDFDF;
+    border-width: 1px 1px 2px;
     border-radius: 3px;
-    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
     color: #4C4C4C;
     display: inline-block;
     font-size: 12px;
@@ -686,7 +686,6 @@ h2.whoaversename {
         background: -ms-linear-gradient( top,#F8F8F8,#F2F2F2 );
         background: -o-linear-gradient( top,#F8F8F8,#F2F2F2 );
         border-color: #CCC;
-        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: #444;
     }
 
@@ -701,6 +700,25 @@ h2.whoaversename {
         opacity: 0.65;
         box-shadow: none;
     }
+
+/* Promoted */
+.btn-whoaverse.contribute {
+    background: #BBE5FF;
+    background: -webkit-linear-gradient( top,#BBE5FF,#A6DDFF );
+    background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
+    background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
+    background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
+    border-color: #70B7E3;
+    color: #2B4758;
+}
+.btn-whoaverse.contribute:hover {
+    background: #A7DEFF;
+    background: -webkit-linear-gradient( top,#A7DEFF,#91D5FF );
+    background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
+    background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
+    background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
+    border-color: #61AFE0;
+}
 
 a.btn-whoaverse {
     color: #4C4C4C;
@@ -1297,7 +1315,7 @@ pre, code {
 }
 
 #header-banner {
-    font-size: 14px;
+    font-size: 13px;
     margin: 0 auto;
     max-width: 1075px;
     position: relative;
@@ -1308,6 +1326,7 @@ pre, code {
 
 #header-img {
     margin: 7px 12px 10px;
+    vertical-align: unset;
 }
 
     #header-img.default-header {
@@ -1367,7 +1386,7 @@ pre, code {
 
         .tabmenu li a {
             background: none;
-            padding: 7px 10px;
+            padding: 4px 8px;
         }
 
         .tabmenu li.disabled a, .tabmenu li.selected a {
@@ -1380,18 +1399,38 @@ pre, code {
 
         .tabmenu li.selected a {
             background: #FFF;
-            background: -webkit-linear-gradient( top,#FFF,#FBFBFB );
-            background: -moz-linear-gradient( top,#FFF,#FBFBFB );
-            background: -ms-linear-gradient( top,#FFF,#FBFBFB );
-            background: -o-linear-gradient( top,#FFF,#FBFBFB );
-            border: 1px solid #D0D0D0;
-            box-shadow: 0 2px 0 hsla( 0,0%,0%,0.1 );
+            background: -webkit-linear-gradient( top,#FFF,#FAFAFA );
+            background: -moz-linear-gradient( top,#FFF,#FAFAFA );
+            background: -ms-linear-gradient( top,#FFF,#FAFAFA );
+            background: -o-linear-gradient( top,#FFF,#FAFAFA );
+            border: solid #D0D0D0;
+            border-width: 1px 1px 2px;
             color: #444;
         }
 
             .tabmenu li.selected a:hover {
                 color: #4AABE7;
             }
+
+        .tabmenu li.selected a.contribute {
+            background: #BBE5FF;
+            background: -webkit-linear-gradient( top,#BBE5FF,#A6DDFF );
+            background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
+            background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
+            background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
+            border: solid #3F92C5;
+            border-width: 1px 1px 2px;
+            color: #2B4758;
+            font-weight: bold;
+        }
+        .tabmenu li.selected a.contribute:hover {
+            background: #A7DEFF;
+            background: -webkit-linear-gradient( top,#A7DEFF,#91D5FF );
+            background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
+            background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
+            background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
+            border-color: #3389BE;
+        }
 
         /* ! Header : Banner : Tab menu : Tab : Unselected
         ------------------------------------------------------------------------------------ */
@@ -1402,14 +1441,33 @@ pre, code {
 
             .tabmenu li.disabled a:hover {
                 background: #FFF;
-                background: -webkit-linear-gradient( top,#FFF,#FBFBFB );
-                background: -moz-linear-gradient( top,#FFF,#FBFBFB );
-                background: -ms-linear-gradient( top,#FFF,#FBFBFB );
-                background: -o-linear-gradient( top,#FFF,#FBFBFB );
-                border: 1px solid #D0D0D0;
-                box-shadow: 0 2px 0 hsla( 0,0%,0%,0.1 );
+                background: -webkit-linear-gradient( top,#FFF,#FAFAFA );
+                background: -moz-linear-gradient( top,#FFF,#FAFAFA );
+                background: -ms-linear-gradient( top,#FFF,#FAFAFA );
+                background: -o-linear-gradient( top,#FFF,#FAFAFA );
+                border: solid #D0D0D0;
+                border-width: 1px 1px 2px;
                 color: #444;
             }
+
+        .tabmenu li.disabled a.contribute {
+            background: #BBE5FF;
+            background: -webkit-linear-gradient( top,#BBE5FF,#A6DDFF );
+            background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
+            background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
+            background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
+            border: solid #3F92C5;
+            border-width: 1px 1px 2px;
+            color: #2B4758;
+        }
+        .tabmenu li.disabled a.contribute:hover {
+            background: #A7DEFF;
+            background: -webkit-linear-gradient( top,#A7DEFF,#91D5FF );
+            background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
+            background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
+            background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
+            border-color: #3389BE;
+        }
 
 /* ! Header : Banner : Account
 ------------------------------------------------------------------------------------ */

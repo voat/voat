@@ -60,11 +60,11 @@
     {
         if (frontpage == true)
         {
-            <ul class="tabmenu ">
+            <ul class="tabmenu">
                 <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses.">Hot</a></li>
                 <li class="disabled"><a href="~/v/all/new" title="Show latest submissions from all subverses.">New</a></li>
-                <li class="@classDiscussion"><a href="/submit">Start a discussion</a></li>
-                <li class="@classLink"><a href="/submit?linkpost=true">Share a link</a></li>
+                <li class="@classDiscussion"><a class="contribute" href="/submit">Start a discussion</a></li>
+                <li class="@classLink"><a class="contribute" href="/submit?linkpost=true">Share a link</a></li>
             </ul>
         }
     }
@@ -75,8 +75,8 @@
             <li class="@classHot"><a href="@selectedSubverse">Hot</a></li>
             <li class="@classNew"><a href="@selectedSubverse/new">New</a></li>
             <li class="@classTop"><a href="@selectedSubverse/top" title="Show all time top ranked submissions.">Top</a></li>
-            <li class="@classDiscussion"><a href="@selectedSubverse/submit">Start a discussion</a></li>
-            <li class="@classLink"><a href="@selectedSubverse/submit?linkpost=true">Share a link</a></li>
+            <li class="@classDiscussion"><a class="contribute" href="@selectedSubverse/submit">Start a discussion</a></li>
+            <li class="@classLink"><a class="contribute" href="@selectedSubverse/submit?linkpost=true">Share a link</a></li>
         </ul>
     }
 }
