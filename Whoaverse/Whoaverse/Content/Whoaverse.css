@@ -1419,7 +1419,7 @@ pre, code {
             background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
             background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
             background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
-            border: solid #3F92C5;
+            border: solid #70B7E3;
             border-width: 1px 1px 2px;
             color: #2B4758;
             font-weight: bold;
@@ -1430,7 +1430,7 @@ pre, code {
             background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
             background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
             background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
-            border-color: #3389BE;
+            border-color: #61AFE0;
         }
 
         /* ! Header : Banner : Tab menu : Tab : Unselected
@@ -1457,7 +1457,7 @@ pre, code {
             background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
             background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
             background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
-            border: solid #3F92C5;
+            border: solid #70B7E3;
             border-width: 1px 1px 2px;
             color: #2B4758;
         }
@@ -1467,7 +1467,7 @@ pre, code {
             background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
             background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
             background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
-            border-color: #3389BE;
+            border-color: #61AFE0;
         }
 
 /* ! Header : Banner : Account
