@@ -12,8 +12,6 @@
 
 @model Voat.Models.Message
 
-@using Voat.Utils;
-
 @{
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
@@ -21,6 +19,8 @@
 
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
+
+    bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 
     //type 2 = urls
     if (Model.Type == 2)
@@ -40,7 +40,7 @@
                 <a class="title may-blank " href="@Model.MessageContent" tabindex="1" title="@Model.Linkdescription">@Model.Linkdescription</a>
                 <span class="domain">(<a href="#">@submissionDomain</a>)</span>
             </p>
-            @if (Model.Anonymized)
+            @if (Model.Anonymized || subverseAnonymized == true)
             {
                 <p class="tagline">
                     submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="#" class="author may-blank">@Model.Id</a>
@@ -83,12 +83,9 @@
                 <a class="title may-blank" href="@commentsUrl" tabindex="1">@Model.Title</a>
                 <span class="domain">(<a href="/v/@Model.Subverse">self.@Model.Subverse</a>)</span>
             </p>
-
-            <!-- EXPERIMENTAL EXPANDO BUTTON START -->
             <div class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
             <div class="expando" style="display: none;" id="@Model.Id"></div>
-            <!-- EXPERIMENTAL EXPANDO BUTTON END -->
-            @if (Model.Anonymized)
+            @if (Model.Anonymized || subverseAnonymized == true)
             {
                 <p class="tagline">
                     submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="#" class="author may-blank">@Model.Id</a>

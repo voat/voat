@@ -1135,6 +1135,10 @@ namespace Voat.Controllers
 
             if (stickiedSubmission != null)
             {
+                if (stickiedSubmission.Subverses.anonymized_mode)
+                {
+                    ViewBag.SubverseAnonymized = true;
+                }
                 return PartialView("_Stickied", stickiedSubmission);
             }
             return new EmptyResult();
