@@ -16,6 +16,7 @@
         <a class="markdownEditorImgButton" style="background-position: -0px -16px;" alt="hr" title="Horizontal Rule" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n\n----------\n\n','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -32px -16px;" alt="heading" title="Headings" onclick="$(this.parentElement.parentElement).find('#headingsSubMenu').toggle();"></a>
         <a class="markdownEditorImgButton" style="background-position: -64px -16px;" alt="table" title="Table" onclick="$(this.parentElement.parentElement).find('#tableCreatorSubMenu').toggle();"></a>
+		<a class="markdownEditorImgButton" style="background-position: -128px -16px;" alt="spoiler" title="Spoiler" onclick="$(this.parentElement.parentElement).find('#spoilerSubMenu').toggle();$(this.parentElement.parentElement).find('#spoiler').focus();"></a>
     </div>
     <!-- Markdown Editor Link Sub Menu -->
     <div class="markdownEditorSubMenu" id="linkSubMenu" style="display: none;">
@@ -40,5 +41,10 @@
         <a class="markdownEditorImgButton" style="background-position: -64px -48px;" alt="more_rows" title="More Rows" onclick="incRows($(this.parentElement).find('#numRows')[0],$(this.parentElement).find('#numRowsDisplay')[0]);"></a>
         <a class="markdownEditorImgButton" style="background-position: -96px -48px;" alt="less_rows" title="Less Rows" onclick="decRows($(this.parentElement).find('#numRows')[0],$(this.parentElement).find('#numRowsDisplay')[0]);"></a>
         <a class="markdownEditorTextButton" alt="create" title="Create Table" onclick="createTable($(this.parentElement.parentElement.parentElement).find('textarea')[0],$(this.parentElement).find('#numCols')[0].value,$(this.parentElement).find('#numRows')[0].value);">Create <span id="numColsDisplay">1</span>x<span id="numRowsDisplay">1</span> table</a>
+    </div>
+    <!-- Markdown Editor Spoiler Sub Menu -->
+    <div class="markdownEditorSubMenu" id="spoilerSubMenu" style="display: none;">
+        <input type="text" class="markdownEditorTextButton" id="spoiler" placeholder="Enter the spoiler">
+		<a class="markdownEditorTextButton" alt="create" title="Create Spoiler" onclick="addSpoiler($(this.parentElement.parentElement.parentElement).find('textarea')[0],$(this.parentElement).find('#spoiler')[0].value);$(this.parentElement).hide();$(this.parentElement).find('#spoiler')[0].value = '';">Create Spoiler</a>
     </div>
 </div>
