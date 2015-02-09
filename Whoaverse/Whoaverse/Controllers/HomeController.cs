@@ -180,11 +180,15 @@ namespace Voat.Controllers
                 {
                     var domain = UrlUtility.GetDomainFromUri(message.MessageContent);
 
-                    // check if hostname is banned before accepting submission
-                    if (BanningUtility.IsHostnameBanned(domain))
+                    // check if target subvere allows submissions from globally banned hostnames
+                    if (!targetSubverse.exclude_sitewide_bans)
                     {
-                        ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
-                        return View();
+                        // check if hostname is banned before accepting submission
+                        if (BanningUtility.IsHostnameBanned(domain))
+                        {
+                            ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
+                            return View();
+                        }
                     }
 
                     // check if same link was submitted before and deny submission

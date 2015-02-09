@@ -58,6 +58,9 @@ namespace Voat.Models.ViewModels
         public bool Enable_thumbnails { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
+        public bool Exclude_sitewide_bans { get; set; }
+
+        [Required(ErrorMessage = "This setting is required.")]
         public bool Authorized_submitters_only { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]

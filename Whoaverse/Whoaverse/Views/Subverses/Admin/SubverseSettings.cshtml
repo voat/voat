@@ -81,10 +81,18 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.Label("Only allow submissions from authorized submitters", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.Label("Only allow submissions from authorized submitters", htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.Authorized_submitters_only, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Authorized_submitters_only, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.Authorized_submitters_only, new {@class = "form-control"})
+                        @Html.ValidationMessageFor(model => model.Authorized_submitters_only, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Exclude sitewide bans", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Exclude_sitewide_bans, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Exclude_sitewide_bans, "", new { @class = "text-danger" })
                     </div>
                 </div>
 

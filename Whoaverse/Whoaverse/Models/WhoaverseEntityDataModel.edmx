@@ -891,7 +891,7 @@
           <Property Name="rated_adult" Type="Boolean" DefaultValue="false" Nullable="false" />
           <Property Name="allow_default" Type="Boolean" DefaultValue="false" Nullable="false" />
           <Property Name="enable_thumbnails" Type="Boolean" DefaultValue="true" Nullable="false" />
-          <Property Name="exclude_sitewide_bans" Type="Boolean" DefaultValue="false" />
+          <Property Name="exclude_sitewide_bans" Type="Boolean" DefaultValue="false" Nullable="false" />
           <Property Name="traffic_stats_public" Type="Boolean" DefaultValue="false" />
           <Property Name="minutes_to_hide_comments" Type="Int32" />
           <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subverse" ToRole="Message" />

@@ -49,7 +49,7 @@ namespace Voat.Models
         public bool rated_adult { get; set; }
         public bool allow_default { get; set; }
         public bool enable_thumbnails { get; set; }
-        public Nullable<bool> exclude_sitewide_bans { get; set; }
+        public bool exclude_sitewide_bans { get; set; }
         public Nullable<bool> traffic_stats_public { get; set; }
         public Nullable<int> minutes_to_hide_comments { get; set; }
         public System.DateTime creation_date { get; set; }

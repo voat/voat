@@ -237,6 +237,7 @@ namespace Voat.Controllers
                 Rated_adult = subverse.rated_adult,
                 Private_subverse = subverse.private_subverse,
                 Enable_thumbnails = subverse.enable_thumbnails,
+                Exclude_sitewide_bans = subverse.exclude_sitewide_bans,
                 Authorized_submitters_only = subverse.authorized_submitters_only,
                 Anonymized_mode = subverse.anonymized_mode
             };
@@ -296,6 +297,7 @@ namespace Voat.Controllers
                     existingSubverse.private_subverse = updatedModel.private_subverse;
                     existingSubverse.enable_thumbnails = updatedModel.enable_thumbnails;
                     existingSubverse.authorized_submitters_only = updatedModel.authorized_submitters_only;
+                    existingSubverse.exclude_sitewide_bans = updatedModel.exclude_sitewide_bans;
 
                     // these properties are currently not implemented but they can be saved and edited for future use
                     existingSubverse.type = updatedModel.type;
