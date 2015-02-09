@@ -2702,14 +2702,14 @@ textarea.form-control {
 }
 
 @media ( max-width: 700px ) {
-    #header-img {
+    #header-img-a {
         display: none;
     }
 
     .tabmenu {
         display: block;
         text-align: center;
-        line-height: 40px;
+        line-height: 34px;
         position: relative;
     }
 
