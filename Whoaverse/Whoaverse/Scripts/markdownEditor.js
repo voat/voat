@@ -205,16 +205,3 @@ function addHyperlink(textComponent, url) {
     }
     textComponent.focus();
 }
-
-/*
- * Creates the markdown for the spoiler alert
- * textComponent:		the textarea
- * spoiler:				the spoiler text
- */
-function addSpoiler(textComponent, spoiler) {
-    if (spoiler != "" && spoiler !== null) {
-		addTagsToSelectedText(textComponent, '[','](#s "' + spoiler + '")');
-    }
-    textComponent.focus();
-}
-
