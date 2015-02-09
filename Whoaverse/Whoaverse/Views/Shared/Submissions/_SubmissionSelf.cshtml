@@ -12,8 +12,6 @@
 
 @model Voat.Models.Message
 
-@using Voat.Utils;
-
 @{
     var commentCount = Model.Comments.Count(c => c.Name != "deleted");
     bool anonymizedSubverse = false;
@@ -54,10 +52,8 @@
             }
             else
             {
-                <!-- EXPERIMENTAL EXPANDO BUTTON START -->
                 <div class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
                 <div class="expando" style="display: none;" id="@Model.Id"></div>
-                <!-- EXPERIMENTAL EXPANDO BUTTON END -->
 
                 if (Model.Anonymized || anonymizedSubverse)
                 {

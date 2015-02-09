@@ -235,7 +235,7 @@
           <Property Name="rated_adult" Type="bit" Nullable="false" />
           <Property Name="allow_default" Type="bit" Nullable="false" />
           <Property Name="enable_thumbnails" Type="bit" Nullable="false" />
-          <Property Name="exclude_sitewide_bans" Type="bit" />
+          <Property Name="exclude_sitewide_bans" Type="bit" Nullable="false" />
           <Property Name="traffic_stats_public" Type="bit" />
           <Property Name="minutes_to_hide_comments" Type="int" />
           <Property Name="creation_date" Type="datetime" Nullable="false" />
