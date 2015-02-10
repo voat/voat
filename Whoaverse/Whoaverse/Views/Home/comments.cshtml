@@ -30,7 +30,7 @@
     }
 </style>
 
-<style type="text/css">
+<style type="text/css" id="custom_css">
 @if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
@@ -63,7 +63,7 @@ else if (!User.Identity.IsAuthenticated)
        })
     }
     
-<style type="text/css">
+<style type="text/css" id="custom_css">
 @if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
