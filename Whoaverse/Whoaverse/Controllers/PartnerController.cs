@@ -46,7 +46,7 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid) return View();
             var from = new MailAddress(partnerModel.Email);
-            var to = new MailAddress("legal@whoaverse.com");
+            var to = new MailAddress("legal@voat.co");
             var sb = new StringBuilder();
             var msg = new MailMessage(@from, to)
             {

@@ -38,7 +38,7 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View();
 
             var from = new MailAddress(claModel.Email);
-            var to = new MailAddress("legal@whoaverse.com");
+            var to = new MailAddress("legal@voat.co");
             var sb = new StringBuilder();
             var msg = new MailMessage(@from, to) { Subject = "New CLA Submission from " + claModel.FullName };
 
@@ -556,7 +556,7 @@ namespace Voat.Controllers
         public ActionResult Cla()
         {
             ViewBag.SelectedSubverse = string.Empty;
-            ViewBag.Message = "Whoaverse CLA";
+            ViewBag.Message = "Voat CLA";
             return View("~/Views/Legal/Cla.cshtml");
         }
 

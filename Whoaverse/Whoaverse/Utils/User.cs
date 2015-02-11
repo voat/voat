@@ -96,9 +96,22 @@ namespace Voat.Utils
                                 s.MessageContent = "http://voat.co";
                             }
                         }
+
+                        //resign from all moderating positions
+                        db.SubverseAdmins.RemoveRange(db.SubverseAdmins.Where(m => m.Username.Equals(tmpuser.UserName, StringComparison.OrdinalIgnoreCase)));
+
+                        //delete comment reply notifications
+                        db.Commentreplynotifications.RemoveRange(db.Commentreplynotifications.Where(crp => crp.Recipient.Equals(tmpuser.UserName, StringComparison.OrdinalIgnoreCase)));
+
+                        //delete post reply notifications
+                        db.Postreplynotifications.RemoveRange(db.Postreplynotifications.Where(prp => prp.Recipient.Equals(tmpuser.UserName, StringComparison.OrdinalIgnoreCase)));
+
+                        //delete private messages
+                        db.Privatemessages.RemoveRange(db.Privatemessages.Where(pm => pm.Recipient.Equals(tmpuser.UserName, StringComparison.OrdinalIgnoreCase)));
+
                         db.SaveChangesAsync();
 
-                        tmpUserManager.DeleteAsync(tmpuser);
+                        tmpUserManager.Delete(tmpuser);
                         return true;
                     }
                     return false;

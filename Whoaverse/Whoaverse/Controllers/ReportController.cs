@@ -45,7 +45,7 @@ namespace Voat.Controllers
                 try
                 {
                     var from = new MailAddress("abuse@whoaverse.com");
-                    var to = new MailAddress("legal@whoaverse.com");
+                    var to = new MailAddress("legal@voat.co");
                     var msg = new MailMessage(from, to)
                     {
                         Subject = "New comment report from " + User.Identity.Name,

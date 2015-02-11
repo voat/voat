@@ -260,6 +260,7 @@
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HtmlElementsController.cs" />
+    <Compile Include="Controllers\ManagementController.cs" />
     <Compile Include="Controllers\MessagingController.cs" />
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SetsController.cs" />
@@ -769,6 +770,7 @@
     <Content Include="Views\Subverses\Admin\SubverseBans.cshtml" />
     <Content Include="Views\Subverses\Admin\AddBan.cshtml" />
     <Content Include="Views\Subverses\Admin\RemoveBan.cshtml" />
+    <Content Include="Views\Management\Dashboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
