@@ -76,7 +76,7 @@ namespace Voat.Utils
                         {
                             c.Name = "deleted";
                             c.CommentContent = "deleted by user";
-                            db.SaveChangesAsync();
+                            db.SaveChanges();
                         }
 
                         //remove all submissions
@@ -98,20 +98,21 @@ namespace Voat.Utils
                         }
 
                         //resign from all moderating positions
-                        db.SubverseAdmins.RemoveRange(db.SubverseAdmins.Where(m => m.Username.Equals(tmpuser.UserName, StringComparison.OrdinalIgnoreCase)));
+                        db.SubverseAdmins.RemoveRange(db.SubverseAdmins.Where(m => m.Username.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
                         //delete comment reply notifications
-                        db.Commentreplynotifications.RemoveRange(db.Commentreplynotifications.Where(crp => crp.Recipient.Equals(tmpuser.UserName, StringComparison.OrdinalIgnoreCase)));
+                        db.Commentreplynotifications.RemoveRange(db.Commentreplynotifications.Where(crp => crp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
                         //delete post reply notifications
-                        db.Postreplynotifications.RemoveRange(db.Postreplynotifications.Where(prp => prp.Recipient.Equals(tmpuser.UserName, StringComparison.OrdinalIgnoreCase)));
+                        db.Postreplynotifications.RemoveRange(db.Postreplynotifications.Where(prp => prp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
                         //delete private messages
-                        db.Privatemessages.RemoveRange(db.Privatemessages.Where(pm => pm.Recipient.Equals(tmpuser.UserName, StringComparison.OrdinalIgnoreCase)));
+                        db.Privatemessages.RemoveRange(db.Privatemessages.Where(pm => pm.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-                        db.SaveChangesAsync();
+                        //username will stay permanently reserved
 
-                        tmpUserManager.Delete(tmpuser);
+                        db.SaveChanges();
+                        
                         return true;
                     }
                     return false;
