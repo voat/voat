@@ -94,6 +94,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "Subverses" }
             );
 
+            // /acceptmodinvitation/{invitationId}
+            routes.MapRoute(
+                name: "AcceptModInvitation",
+                url: "acceptmodinvitation/{invitationId}",
+                defaults: new { controller = "Subverses", action = "AcceptModInvitation" }
+            );
+
             // /sets
             routes.MapRoute(
                 name: "Sets",

@@ -77,6 +77,8 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult Submit(string selectedsubverse)
         {
+            ViewBag.selectedSubverse = selectedsubverse;
+
             string linkPost = Request.Params["linkpost"];
             string linkDescription = Request.Params["title"];
             string linkUrl = Request.QueryString["url"];
@@ -96,12 +98,13 @@ namespace Voat.Controllers
             }
 
             if (selectedsubverse == null) return View();
+
             if (!selectedsubverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
                 ViewBag.selectedSubverse = selectedsubverse;
             }
 
-            return View();
+            return View("Submit");
         }
 
         // GET: submitlink
@@ -132,8 +135,17 @@ namespace Voat.Controllers
         [Authorize]
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
-        public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
+        public ActionResult Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
         {
+            // abort if model state is invalid
+            if (!ModelState.IsValid) return View();
+
+            // save temp values for the view in case submission fails
+            ViewBag.selectedSubverse = message.Subverse;
+            ViewBag.message = message.MessageContent;
+            ViewBag.title = message.Title;
+            ViewBag.linkDescription = message.Linkdescription;
+
             // check if user is banned
             if (Utils.User.IsUserGloballyBanned(message.Name) || Utils.User.IsUserBannedFromSubverse(User.Identity.Name, message.Subverse))
             {
@@ -150,145 +162,154 @@ namespace Voat.Controllers
                 if (!isCaptchaCodeValid)
                 {
                     ModelState.AddModelError("", "Incorrect recaptcha answer.");
+
+                    // TODO 
+                    // SET PREVENT SPAM DELAY TO 0
+
                     return View();
                 }
             }
+            
 
-            if (!ModelState.IsValid) return View();
+            // everything was okay, process incoming submission
+            // abort if model state is invalid
+            if (!ModelState.IsValid) return View("Submit");
 
             // check if subverse exists
             var targetSubverse = _db.Subverses.Find(message.Subverse.Trim());
-            if (targetSubverse != null && !message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
+            if (targetSubverse == null || message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
-                // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
-                if (targetSubverse.authorized_submitters_only)
-                {
-                    if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
-                    {
-                        // user is not a moderator, check if user is an administrator
-                        if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
-                        {
-                            ModelState.AddModelError("", "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
-                            return View();
-                        }
-                    }
-                }
-
-                // submission is a link post
-                // generate a thumbnail if submission is a direct link to image or video
-                if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
-                {
-                    var domain = UrlUtility.GetDomainFromUri(message.MessageContent);
-
-                    // check if target subvere allows submissions from globally banned hostnames
-                    if (!targetSubverse.exclude_sitewide_bans)
-                    {
-                        // check if hostname is banned before accepting submission
-                        if (BanningUtility.IsHostnameBanned(domain))
-                        {
-                            ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
-                            return View();
-                        }
-                    }
-
-                    // check if same link was submitted before and deny submission
-                    var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(message.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(message.Subverse, StringComparison.OrdinalIgnoreCase));
-
-                    // submission is a repost, discard it and inform the user
-                    if (existingSubmission != null)
-                    {
-                        ModelState.AddModelError(string.Empty, "Sorry, this link has already been submitted by someone else.");
-
-                        // todo: offer the option to repost after informing the user about it
-                        return RedirectToRoute(
-                        "SubverseComments",
-                            new
-                            {
-                                controller = "Comment",
-                                action = "Comments",
-                                id = existingSubmission.Id,
-                                subversetoshow = existingSubmission.Subverse
-                            }
-                        );
-                    }
-
-                    // check if target subverse has thumbnails setting enabled before generating a thumbnail
-                    if (targetSubverse.enable_thumbnails)
-                    {
-                        // try to generate and assign a thumbnail to submission model
-                        message.Thumbnail = ThumbGenerator.ThumbnailFromSubmissionModel(message);
-                    }
-
-                    // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                    if (targetSubverse.anonymized_mode)
-                    {
-                        message.Anonymized = true;
-                    }
-                    else
-                    {
-                        message.Name = User.Identity.Name;
-                    }
-
-                    // accept submission and save it to the database
-                    message.Subverse = targetSubverse.name;
-                    // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                    message.Date = DateTime.Now;
-                    message.Likes = 1;
-                    _db.Messages.Add(message);
-
-                    // update last submission received date for target subverse
-                    targetSubverse.last_submission_received = DateTime.Now;
-                    await _db.SaveChangesAsync();
-                }
-                else if (message.Type == 1 && message.Title != null)
-                {
-                    // submission is a self post
-                    // accept submission and save it to the database
-                    // trim trailing blanks from subverse name if a user mistakenly types them
-                    message.Subverse = targetSubverse.name;
-                    // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                    if (targetSubverse.anonymized_mode)
-                    {
-                        message.Anonymized = true;
-                    }
-                    else
-                    {
-                        message.Name = User.Identity.Name;
-                    }
-                    // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                    message.Date = DateTime.Now;
-                    message.Likes = 1;
-                    _db.Messages.Add(message);
-                    // update last submission received date for target subverse
-                    targetSubverse.last_submission_received = DateTime.Now;
-
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
-                    {
-                        message.MessageContent = ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPreSave, message);
-                    }
-
-                    await _db.SaveChangesAsync();
-
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-                    {
-                        ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPostSave, message);
-                    }
-
-                }
-
-                return RedirectToRoute(
-                    "SubverseComments",
-                    new
-                    {
-                        controller = "Comment",
-                        action = "Comments",
-                        id = message.Id,
-                        subversetoshow = message.Subverse
-                    }
-                    );
+                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
+                return View("Submit");
             }
-            ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
-            return View();
+
+            // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
+            if (targetSubverse.authorized_submitters_only)
+            {
+                if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
+                {
+                    // user is not a moderator, check if user is an administrator
+                    if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
+                    {
+                        ModelState.AddModelError("", "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
+                        return View("Submit");
+                    }
+                }
+            }
+
+            // submission is a link post
+            // generate a thumbnail if submission is a direct link to image or video
+            if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
+            {
+                var domain = UrlUtility.GetDomainFromUri(message.MessageContent);
+
+                // check if target subvere allows submissions from globally banned hostnames
+                if (!targetSubverse.exclude_sitewide_bans)
+                {
+                    // check if hostname is banned before accepting submission
+                    if (BanningUtility.IsHostnameBanned(domain))
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
+                        return View("Submit");
+                    }
+                }
+
+                // check if same link was submitted before and deny submission
+                var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(message.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(message.Subverse, StringComparison.OrdinalIgnoreCase));
+
+                // submission is a repost, discard it and inform the user
+                if (existingSubmission != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, this link has already been submitted by someone else.");
+
+                    // todo: offer the option to repost after informing the user about it
+                    return RedirectToRoute(
+                        "SubverseComments",
+                        new
+                        {
+                            controller = "Comment",
+                            action = "Comments",
+                            id = existingSubmission.Id,
+                            subversetoshow = existingSubmission.Subverse
+                        }
+                        );
+                }
+
+                // check if target subverse has thumbnails setting enabled before generating a thumbnail
+                if (targetSubverse.enable_thumbnails)
+                {
+                    // try to generate and assign a thumbnail to submission model
+                    message.Thumbnail = ThumbGenerator.ThumbnailFromSubmissionModel(message);
+                }
+
+                // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                if (targetSubverse.anonymized_mode)
+                {
+                    message.Anonymized = true;
+                }
+                else
+                {
+                    message.Name = User.Identity.Name;
+                }
+
+                // accept submission and save it to the database
+                message.Subverse = targetSubverse.name;
+
+                // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                message.Date = DateTime.Now;
+                message.Likes = 1;
+                _db.Messages.Add(message);
+
+                // update last submission received date for target subverse
+                targetSubverse.last_submission_received = DateTime.Now;
+                _db.SaveChanges();
+            }
+            else if (message.Type == 1 && message.Title != null)
+            {
+                // submission is a self post
+                // accept submission and save it to the database
+                // trim trailing blanks from subverse name if a user mistakenly types them
+                message.Subverse = targetSubverse.name;
+
+                // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                if (targetSubverse.anonymized_mode)
+                {
+                    message.Anonymized = true;
+                }
+                else
+                {
+                    message.Name = User.Identity.Name;
+                }
+                // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                message.Date = DateTime.Now;
+                message.Likes = 1;
+                _db.Messages.Add(message);
+                // update last submission received date for target subverse
+                targetSubverse.last_submission_received = DateTime.Now;
+
+                if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                {
+                    message.MessageContent = ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPreSave, message);
+                }
+
+                _db.SaveChanges();
+
+                if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+                {
+                    ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPostSave, message);
+                }
+            }
+
+            return RedirectToRoute(
+                "SubverseComments",
+                new
+                {
+                    controller = "Comment",
+                    action = "Comments",
+                    id = message.Id,
+                    subversetoshow = message.Subverse
+                }
+                );
         }
 
         // GET: user/id

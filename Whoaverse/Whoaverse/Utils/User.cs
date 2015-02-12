@@ -71,16 +71,16 @@ namespace Voat.Utils
                         db.Commentvotingtrackers.RemoveRange(db.Commentvotingtrackers.Where(x => x.UserName == userName));
 
                         //remove all comments
-                        var comments = db.Comments.Where(c => c.Name == userName);
+                        var comments = db.Comments.Where(c => c.Name == userName).ToList();
                         foreach (Comment c in comments)
                         {
                             c.Name = "deleted";
                             c.CommentContent = "deleted by user";
-                            db.SaveChanges();
                         }
+                        db.SaveChanges();
 
                         //remove all submissions
-                        var submissions = db.Messages.Where(c => c.Name == userName);
+                        var submissions = db.Messages.Where(c => c.Name == userName).ToList();
                         foreach (Message s in submissions)
                         {
                             if (s.Type == 1)
@@ -108,6 +108,9 @@ namespace Voat.Utils
 
                         //delete private messages
                         db.Privatemessages.RemoveRange(db.Privatemessages.Where(pm => pm.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
+
+                        // TODO:
+                        // keep this updated as new features are added (delete sets etc)
 
                         //username will stay permanently reserved
 

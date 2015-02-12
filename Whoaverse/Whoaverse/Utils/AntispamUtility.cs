@@ -34,8 +34,10 @@ namespace Voat.Utils
     {
         // This stores the time between Requests (in seconds)
         public int DelayRequest = 10;
+        
         // The Error Message that will be displayed in case of excessive Requests
         public string ErrorMessage = "Excessive Request Attempts Detected.";
+        
         // This will store the URL to Redirect errors to
         public string RedirectURL;
 
@@ -44,7 +46,6 @@ namespace Voat.Utils
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var loggedInUser = filterContext.HttpContext.User.Identity.Name;
-            string targetSubverseName = null;
 
             // user is submitting a message
             if (filterContext.ActionParameters.ContainsKey("message"))
@@ -78,7 +79,7 @@ namespace Voat.Utils
                     var relatedMessage = db.Messages.Find(incomingComment.MessageId);
                     if (relatedMessage != null)
                     {
-                        targetSubverseName = relatedMessage.Subverse;
+                        var targetSubverseName = relatedMessage.Subverse;
 
                         // check user CCP for target subverse
                         int CCPForSubverse = Karma.CommentKarmaForSubverse(loggedInUser, targetSubverseName);
@@ -133,8 +134,6 @@ namespace Voat.Utils
 
             base.OnActionExecuting(filterContext);
         }
-
-
     }
 
     public static class ReCaptchaUtility
@@ -143,7 +142,7 @@ namespace Voat.Utils
         public static bool GetCaptchaResponse(string message, HttpRequestBase currentRequest)
         {
             // get private key from Web.config
-            string privateKey = ConfigurationManager.AppSettings["recaptchaPrivateKey"].ToString();
+            string privateKey = ConfigurationManager.AppSettings["recaptchaPrivateKey"];
 
             bool flag = false;
             message = "";
@@ -169,11 +168,11 @@ namespace Voat.Utils
             string formData = string.Format(
                 "privatekey={0}&remoteip={1}&challenge={2}&response={3}",
                 new object[]{
-            HttpUtility.UrlEncode(privateKey),
-            HttpUtility.UrlEncode(Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString()),
-            HttpUtility.UrlEncode(currentRequest.Form["recaptcha_challenge_field"]),
-            HttpUtility.UrlEncode(currentRequest.Form["recaptcha_response_field"])
-        });
+                HttpUtility.UrlEncode(privateKey),
+                HttpUtility.UrlEncode(Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString()),
+                HttpUtility.UrlEncode(currentRequest.Form["recaptcha_challenge_field"]),
+                HttpUtility.UrlEncode(currentRequest.Form["recaptcha_response_field"])
+            });
             byte[] formbytes = Encoding.ASCII.GetBytes(formData);
 
             using (Stream requestStream = request.GetRequestStream())

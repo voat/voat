@@ -17,7 +17,7 @@
 
 @{
     string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
-    string subverseOwner = "Atko";
+    string subverseOwner = "youcanclaimthissub";
 
     var subOwner = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 1).FirstOrDefault();
     if (subOwner != null)

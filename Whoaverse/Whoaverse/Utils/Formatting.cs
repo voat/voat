@@ -31,9 +31,9 @@ namespace Voat.Utils
             {
                 ExtraMode = true, 
                 SafeMode = true,
-                //I don't know why this logic was removed but it's back.... (evil laugh)
-                NewWindowForExternalLinks = Utils.User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name),
-                NewWindowForLocalLinks = Utils.User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name)
+                
+                NewWindowForExternalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name),
+                NewWindowForLocalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name)
             };
 
             return m.Transform(originalMessage);

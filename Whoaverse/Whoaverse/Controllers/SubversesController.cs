@@ -18,8 +18,10 @@ using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 using Voat.Models;
 using Voat.Models.ViewModels;
@@ -114,11 +116,14 @@ namespace Voat.Controllers
         // POST: Create a new Subverse
         // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
-        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [Authorize]
         [ValidateAntiForgeryToken]
+        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> CreateSubverse([Bind(Include = "Name, Title, Description, Type, Sidebar, Creation_date, Owner")] AddSubverse subverseTmpModel)
         {
-            if (!User.Identity.IsAuthenticated) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            // abort if model state is invalid
+            if (!ModelState.IsValid) return View();
+
             int minimumCcp = Convert.ToInt32(ConfigurationManager.AppSettings["minimumCcp"]);
             int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
 
@@ -132,15 +137,34 @@ namespace Voat.Controllers
                 if (!isCaptchaCodeValid)
                 {
                     ModelState.AddModelError("", "Incorrect recaptcha answer.");
+
+                    // TODO 
+                    // SET PREVENT SPAM DELAY TO 0
+
                     return View();
                 }
-                // end recaptcha check
+            }
+
+            // only allow users with less than maximum allowed subverses to create a subverse
+            var amountOfOwnedSubverses = _db.SubverseAdmins
+                .Where(s => s.Username == User.Identity.Name && s.Power == 1)
+                .ToList();
+            if (amountOfOwnedSubverses.Count >= maximumOwnedSubs)
+            {
+                ModelState.AddModelError(string.Empty, "Sorry, you can not own more than " + maximumOwnedSubs + " subverses.");
+                return View();
+            }
+
+            // check if subverse already exists
+            if (_db.Subverses.Find(subverseTmpModel.Name) != null)
+            {
+                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
+                return View();
             }
 
             try
             {
-                if (!ModelState.IsValid) return View();
-                // setup default values
+                // setup default values and create the subverse
                 var subverse = new Subverse
                 {
                     name = subverseTmpModel.Name,
@@ -154,45 +178,28 @@ namespace Voat.Controllers
                     private_subverse = false
                 };
 
-                // check if subverse exists before attempting to create it
-                if (_db.Subverses.Find(subverse.name) == null)
+                _db.Subverses.Add(subverse);
+                await _db.SaveChangesAsync();
+
+                // subscribe user to the newly created subverse
+                Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
+
+                // register user as the owner of the newly created subverse
+                var tmpSubverseAdmin = new SubverseAdmin
                 {
-                    // only allow users with less than maximum allowed subverses to create a subverse
-                    var amountOfOwnedSubverses = _db.SubverseAdmins
-                        .Where(s => s.Username == User.Identity.Name && s.Power == 1)
-                        .ToList();
+                    SubverseName = subverseTmpModel.Name,
+                    Username = User.Identity.Name,
+                    Power = 1
+                };
+                _db.SubverseAdmins.Add(tmpSubverseAdmin);
+                await _db.SaveChangesAsync();
 
-                    if (amountOfOwnedSubverses.Count <= maximumOwnedSubs)
-                    {
-                        _db.Subverses.Add(subverse);
-                        await _db.SaveChangesAsync();
-
-                        // register user as the owner of the newly created subverse
-                        var tmpSubverseAdmin = new SubverseAdmin
-                        {
-                            SubverseName = subverse.name,
-                            Username = User.Identity.Name,
-                            Power = 1
-                        };
-                        _db.SubverseAdmins.Add(tmpSubverseAdmin);
-                        await _db.SaveChangesAsync();
-
-                        // subscribe user to the newly created subverse
-                        Utils.User.SubscribeToSubverse(subverseTmpModel.Owner, subverse.name);
-
-                        // go to newly created Subverse
-                        return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverse.name });
-                    }
-                    ModelState.AddModelError(string.Empty, "Sorry, you can not own more than " + maximumOwnedSubs + " subverses.");
-                    return View();
-                }
-                ModelState.AddModelError(string.Empty,
-                    "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
-                return View();
+                // go to newly created Subverse
+                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverseTmpModel.Name });
             }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Something bad happened.");
+                ModelState.AddModelError(string.Empty, "Something bad happened, please report this to /v/voatdev. Thank you.");
                 return View();
             }
         }
@@ -729,11 +736,11 @@ namespace Voat.Controllers
         {
             // get model for selected subverse
             var subverseModel = _db.Subverses.Find(subversetoshow);
-
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
             // check if caller is subverse owner, if not, deny listing
-            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
-                return RedirectToAction("Index", "Home");
+            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+
             ViewBag.SubverseModel = subverseModel;
             ViewBag.SubverseName = subversetoshow;
             ViewBag.SelectedSubverse = string.Empty;
@@ -774,47 +781,144 @@ namespace Voat.Controllers
             int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
 
             // check if the user being added is not already a moderator of 10 subverses
-            var currentlyModerating = _db.SubverseAdmins
-                .Where(a => a.Username == subverseAdmin.Username).ToList();
+            var currentlyModerating = _db.SubverseAdmins.Where(a => a.Username == subverseAdmin.Username).ToList();
 
             SubverseModeratorViewModel tmpModel;
             if (currentlyModerating.Count <= maximumOwnedSubs)
             {
                 // check if caller is subverse owner, if not, deny posting
-                if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName))
-                    return RedirectToAction("Index", "Home");
+                if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName)) return RedirectToAction("Index", "Home");
 
                 // check that user is not already moderating given subverse
                 var isAlreadyModerator = _db.SubverseAdmins.FirstOrDefault(a => a.Username == subverseAdmin.Username && a.SubverseName == subverseAdmin.SubverseName);
 
                 if (isAlreadyModerator == null)
                 {
-                    subverseAdmin.SubverseName = subverseModel.name;
-                    _db.SubverseAdmins.Add(subverseAdmin);
+                    // check if this user is already invited
+                    var userModeratorInvitations = _db.Moderatorinvitations.Where(i => i.Sent_to.Equals(subverseAdmin.Username, StringComparison.OrdinalIgnoreCase) && i.Subverse.Equals(subverseModel.name, StringComparison.OrdinalIgnoreCase));
+                    if (userModeratorInvitations.Any())
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, the user is already invited to moderate this subverse.");
+                        ViewBag.subversetoshow = subverseAdmin.SubverseName;
+                        return View("Admin/AddModerator");
+                    }
+
+                    // send a new moderator invitation
+                    Moderatorinvitation modInv = new Moderatorinvitation
+                    {
+                        Sent_by = User.Identity.Name,
+                        Sent_on = DateTime.Now,
+                        Sent_to = subverseAdmin.Username,
+                        Subverse = subverseAdmin.SubverseName,
+                        Power = subverseAdmin.Power
+                    };
+
+                    _db.Moderatorinvitations.Add(modInv);
                     _db.SaveChanges();
+
+                    int invitationId = modInv.Id;
+                    var invitationBody = new StringBuilder();
+                    invitationBody.Append("Hello,");
+                    invitationBody.Append(Environment.NewLine);
+                    invitationBody.Append("I would like you to join me in moderating my subverse /v/" + subverseAdmin.SubverseName + ".");
+                    invitationBody.Append(Environment.NewLine);
+                    invitationBody.Append(Environment.NewLine);
+                    invitationBody.Append("Please visit the following link if you want to accept this invitation: " + "https://" + Request.ServerVariables["HTTP_HOST"] + "/acceptmodinvitation/" + invitationId);
+                    invitationBody.Append(Environment.NewLine);
+                    invitationBody.Append(Environment.NewLine);
+                    invitationBody.Append("Thank you.");
+                    MesssagingUtility.SendPrivateMessage(User.Identity.Name, subverseAdmin.Username, "You are invited to moderate my subverse: " + subverseAdmin.SubverseName, invitationBody.ToString());
+
                     return RedirectToAction("SubverseModerators");
                 }
+
                 ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating this subverse.");
                 tmpModel = new SubverseModeratorViewModel
                 {
                     Username = subverseAdmin.Username,
                     Power = subverseAdmin.Power
                 };
+
                 ViewBag.SubverseModel = subverseModel;
                 ViewBag.SubverseName = subverseAdmin.SubverseName;
                 ViewBag.SelectedSubverse = string.Empty;
                 return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
             }
+
             ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating a maximum of " + maximumOwnedSubs + " subverses.");
             tmpModel = new SubverseModeratorViewModel
             {
                 Username = subverseAdmin.Username,
                 Power = subverseAdmin.Power
             };
+
             ViewBag.SubverseModel = subverseModel;
             ViewBag.SubverseName = subverseAdmin.SubverseName;
             ViewBag.SelectedSubverse = string.Empty;
             return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult AcceptModInvitation(int invitationId)
+        {
+            int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
+
+            // check if there is an invitation for this user with this id
+            var userInvitation = _db.Moderatorinvitations.Find(invitationId);
+            if (userInvitation == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            // check if user is over modding limits
+            var amountOfSubsUserModerates = _db.SubverseAdmins.Where(s => s.Username.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+            if (amountOfSubsUserModerates.Any())
+            {
+                if (amountOfSubsUserModerates.Count() >= maximumOwnedSubs)
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, you can not own or moderate more than " + maximumOwnedSubs + " subverses.");
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
+            // check if subverse exists
+            var subverseToAddModTo = _db.Subverses.FirstOrDefault(s => s.name.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase));
+            if (subverseToAddModTo == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            // check if user is already a moderator of this sub
+            var userModerating = _db.SubverseAdmins.Where(s => s.SubverseName.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase) && s.Username.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+            if (userModerating.Any())
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            // add user as moderator as specified in invitation
+            var subAdm = new SubverseAdmin
+            {
+                SubverseName = userInvitation.Subverse,
+                Username = userInvitation.Sent_to,
+                Power = userInvitation.Power,
+                Added_by = userInvitation.Sent_by,
+                Added_on = DateTime.Now
+            };
+
+            _db.SubverseAdmins.Add(subAdm);
+
+            // notify sender that user has accepted the invitation
+            StringBuilder confirmation = new StringBuilder();
+            confirmation.Append("User " + User.Identity.Name + " has accepted your invitation to moderate subverse /v/" + userInvitation.Subverse + ".");
+            confirmation.AppendLine();
+            MesssagingUtility.SendPrivateMessage("Voat", userInvitation.Sent_by, "Moderator invitation for " + userInvitation.Subverse + " accepted", confirmation.ToString());
+
+            // delete the invitation from database
+            _db.Moderatorinvitations.Remove(userInvitation);
+            _db.SaveChanges();
+
+            return RedirectToAction("SubverseSettings", "Subverses", new { subversetoshow = userInvitation.Subverse });
         }
 
         // POST: add a user ban to given subverse
@@ -953,11 +1057,11 @@ namespace Voat.Controllers
             if (moderatorToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             var subverse = _db.Subverses.Find(moderatorToBeRemoved.SubverseName);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            
+
             // check if caller has clearance to remove a moderator
             if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) ||
                 moderatorToBeRemoved.Username == User.Identity.Name) return RedirectToAction("Index", "Home");
-            
+
             // execute removal
             _db.SubverseAdmins.Remove(moderatorToBeRemoved);
             await _db.SaveChangesAsync();
@@ -972,7 +1076,7 @@ namespace Voat.Controllers
         {
             // get ban name for selected subverse
             var banToBeRemoved = await _db.SubverseBans.FindAsync(id);
-            
+
             if (banToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             var subverse = _db.Subverses.Find(banToBeRemoved.SubverseName);

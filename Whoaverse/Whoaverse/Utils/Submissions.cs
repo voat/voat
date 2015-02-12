@@ -51,6 +51,8 @@ namespace Voat.Utils
 
             return duration.TotalHours;            
         }
+
+
         
     }
 }

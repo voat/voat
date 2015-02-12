@@ -18,9 +18,6 @@
 
     string loggedinUser = User.Identity.Name;
     DateTime currentdatetime = DateTime.Now;
-
-    string linkDescription = Request.Params["title"];
-    string linkUrl = Request.QueryString["url"];
 }
 
 @using (Html.BeginForm())
@@ -40,9 +37,9 @@
         @Html.Hidden("Rank", 0)
 
         <div class="form-group">
-            @Html.Label("URL", new {@class = "control-label col-md-2"})
+            @Html.Label("URL", new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.TextBoxFor(m => m.MessageContent, new {@class = "form-control", Value = @linkUrl})
+                @Html.TextBoxFor(m => m.MessageContent, new { @class = "form-control", Value = ViewBag.message })
                 @Html.ValidationMessageFor(model => model.MessageContent)
             </div>
         </div>
@@ -50,7 +47,7 @@
         <div class="form-group">
             @Html.Label("Title", new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.TextBoxFor(m => m.Linkdescription, new { @class = "form-control", Value = @linkDescription })
+                @Html.TextBoxFor(m => m.Linkdescription, new { @class = "form-control", Value = ViewBag.linkDescription })
                 <a href="javascript:void(0)" id="suggest-title" onclick="return suggestTitle()">Enter the URL above, then click here to suggest a title</a>
                 @Html.ValidationMessageFor(model => model.Linkdescription)
             </div>
@@ -59,7 +56,7 @@
         <div class="form-group">
             @Html.Label("Subverse", new { @class = "control-label col-md-2" })
             <div class="col-md-4">
-                @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control", @Value = ViewBag.selectedSubverse, id = "Subverse", @placeholder = "Start typing to get suggestions" })
+                @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control", Value = ViewBag.selectedSubverse, id = "Subverse", @placeholder = "Start typing to get suggestions" })
                 @Html.ValidationMessageFor(model => model.Subverse)
             </div>
         </div>
@@ -81,7 +78,7 @@
             </div>
         </div>
 
-        
+
 
         @if (Karma.CommentKarma(User.Identity.Name) < 25)
         {

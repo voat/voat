@@ -116,6 +116,17 @@
           <Property Name="Anonymized" Type="bit" Nullable="false" />
           <Property Name="Views" Type="float" Nullable="false" />
         </EntityType>
+        <EntityType Name="Moderatorinvitations">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Sent_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Sent_on" Type="datetime" Nullable="false" />
+          <Property Name="Sent_to" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Power" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Postreplynotifications">
           <Key>
             <PropertyRef Name="Id" />
@@ -574,6 +585,7 @@
           <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Featuredsubs" EntityType="Self.Featuredsubs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Moderatorinvitations" EntityType="Self.Moderatorinvitations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Postreplynotifications" EntityType="Self.Postreplynotifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Privatemessages" EntityType="Self.Privatemessages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Promotedsubmissions" EntityType="Self.Promotedsubmissions" Schema="dbo" store:Type="Tables" />
@@ -872,6 +884,7 @@
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="SubverseBan" EntitySet="SubverseBans" />
           </AssociationSet>
+          <EntitySet Name="Moderatorinvitations" EntityType="whoaverseModel.Moderatorinvitation" />
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -1369,6 +1382,17 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Moderatorinvitation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Sent_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Sent_on" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Sent_to" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Subverse" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Power" Type="Int32" Nullable="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1728,6 +1752,18 @@
                 <ScalarProperty Name="BannedBy" ColumnName="BannedBy" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Moderatorinvitations">
+            <EntityTypeMapping TypeName="whoaverseModel.Moderatorinvitation">
+              <MappingFragment StoreEntitySet="Moderatorinvitations">
+                <ScalarProperty Name="Power" ColumnName="Power" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="Sent_to" ColumnName="Sent_to" />
+                <ScalarProperty Name="Sent_on" ColumnName="Sent_on" />
+                <ScalarProperty Name="Sent_by" ColumnName="Sent_by" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
