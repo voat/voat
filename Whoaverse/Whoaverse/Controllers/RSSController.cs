@@ -12,13 +12,13 @@ namespace Voat.Controllers
     public class RssController : Controller
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
-        
+
         // GET: rss/{subverseName}
         public ActionResult Rss(string subverseName)
         {
             var submissions = new List<Message>();
 
-            if (subverseName != null)
+            if (subverseName != null && subverseName != "all")
             {
                 // return only frontpage submissions from a given subverse
                 var subverse = _db.Subverses.Find(subverseName);
@@ -32,6 +32,15 @@ namespace Voat.Controllers
                                    .ToList();
                 }
             }
+            else if (subverseName == "all")
+            {
+                // return submissions from all subs
+                submissions = (from message in _db.Messages
+                               join subverse in _db.Subverses on message.Subverse equals subverse.name
+                               where message.Name != "deleted" && subverse.private_subverse != true && message.Rank > 0.00009
+                               where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                               select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).Take(25).ToList(); 
+            } 
             else
             {
                 // return site-wide frontpage submissions
