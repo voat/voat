@@ -705,6 +705,30 @@ namespace Voat.Controllers
             return View("~/Views/Subverses/Admin/SubverseModerators.cshtml", subverseModerators);
         }
 
+        // GET: subverse moderator invitations for selected subverse
+        [Authorize]
+        public ActionResult ModeratorInvitations(string subversetoshow)
+        {
+            // get model for selected subverse
+            var subverseModel = _db.Subverses.Find(subversetoshow);
+
+            if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            // check if caller is subverse owner, if not, deny listing
+            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+            
+            var moderatorInvitations = _db.Moderatorinvitations
+                .Where(mi => mi.Subverse == subversetoshow)
+                .Take(20)
+                .OrderBy(s => s.Power)
+                .ToList();
+
+            ViewBag.SubverseModel = subverseModel;
+            ViewBag.SubverseName = subversetoshow;
+
+            return PartialView("~/Views/Subverses/Admin/_ModeratorInvitations.cshtml", moderatorInvitations);
+        }
+
         // GET: banned users for selected subverse
         [Authorize]
         public ActionResult SubverseBans(string subversetoshow)
@@ -984,6 +1008,49 @@ namespace Voat.Controllers
             return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subverseAdmin);
         }
 
+        // GET: show remove moderator invitation view for selected subverse
+        [Authorize]
+        public ActionResult RecallModeratorInvitation(int? invitationId)
+        {
+            if (invitationId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var moderatorInvitation = _db.Moderatorinvitations.Find(invitationId);
+
+            if (moderatorInvitation == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            ViewBag.SubverseName = moderatorInvitation.Subverse;
+            return View("~/Views/Subverses/Admin/RecallModeratorInvitation.cshtml", moderatorInvitation);
+        }
+
+        // POST: remove a moderator invitation from given subverse
+        [Authorize]
+        [HttpPost, ActionName("RecallModeratorInvitation")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RecallModeratorInvitation(int invitationId)
+        {
+            // get invitation to remove
+            var invitationToBeRemoved = await _db.Moderatorinvitations.FindAsync(invitationId);
+            if (invitationToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            // check if subverse exists
+            var subverse = _db.Subverses.Find(invitationToBeRemoved.Subverse);
+            if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            // check if caller has clearance to remove a moderator invitation
+            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) || invitationToBeRemoved.Sent_to == User.Identity.Name) return RedirectToAction("Index", "Home");
+
+            // execute invitation removal
+            _db.Moderatorinvitations.Remove(invitationToBeRemoved);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("SubverseModerators");
+        }
+
         // GET: show remove ban view for selected subverse
         [Authorize]
         public ActionResult RemoveBan(int? id)
@@ -1067,6 +1134,8 @@ namespace Voat.Controllers
             await _db.SaveChangesAsync();
             return RedirectToAction("SubverseModerators");
         }
+
+
 
         // POST: remove a ban from given subverse
         [Authorize]

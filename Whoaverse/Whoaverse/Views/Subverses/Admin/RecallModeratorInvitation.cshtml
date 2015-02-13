@@ -1,0 +1,37 @@
+﻿@model Voat.Models.Moderatorinvitation
+
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+
+        <h1>Subverse owner moderator management interface for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+
+        <br />
+        <div class="alert alert-danger">Are you sure you want to recall this moderator invitation?</div>
+
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.Label("Username:", new { @class = "control-label col-md-2" })
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Sent_to)
+            </dd>
+            <dt>
+                @Html.Label("Power:", new { @class = "control-label col-md-2" })
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Power)
+            </dd>
+        </dl>
+
+        @using (Html.BeginForm("RecallModeratorInvitation", "Subverses", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <br />
+            <input type="submit" value="Remove" class="btn-whoaverse-medium" />
+            <br /><br />
+            @Html.ActionLink("Back to moderators list", "SubverseModerators", new { subversetoshow = ViewBag.SubverseName })
+        }
+    </div>
+</div>

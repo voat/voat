@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Voat.Models.Moderatorinvitation>
+
+<h1>Pending moderator invitations</h1>
+
+<table class="table table-striped table-condensed">
+    <thead>
+        <tr>
+            <th><b>Username</b></th>
+            <th><b>Invited by</b></th>
+            <th><b>Clearance</b></th>
+            <th><b>Invited on</b></th>
+            <th><b>Recall invitation</b></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Sent_to</td>
+                <td>@item.Sent_by</td>
+                <td>@item.Power</td>
+                <td>@item.Sent_on</td>
+                <td>@Html.ActionLink("Recall", "RecallModeratorInvitation", new { invitationId = item.Id })</td>
+            </tr>
+        }
+
+    </tbody>
+</table>

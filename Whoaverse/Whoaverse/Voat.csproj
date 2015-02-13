@@ -774,6 +774,8 @@
     <Content Include="Views\Subverses\Admin\AddBan.cshtml" />
     <Content Include="Views\Subverses\Admin\RemoveBan.cshtml" />
     <Content Include="Views\Management\Dashboard.cshtml" />
+    <Content Include="Views\Subverses\Admin\_ModeratorInvitations.cshtml" />
+    <Content Include="Views\Subverses\Admin\RecallModeratorInvitation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

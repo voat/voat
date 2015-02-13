@@ -507,6 +507,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "RemoveModerator" }
             );
 
+            // v/subversetoedit/about/moderatorinvitations/delete
+            routes.MapRoute(
+                name: "removeSubverseModeratorInvitation",
+                url: "v/{subversetoshow}/about/moderatorinvitations/delete/{invitationId}",
+                defaults: new { controller = "Subverses", action = "RecallModeratorInvitation" }
+            );
+
             // v/subversetoedit/about/bans/delete
             routes.MapRoute(
                 name: "removeSubverseBan",
