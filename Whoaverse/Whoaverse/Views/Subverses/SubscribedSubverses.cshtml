@@ -12,8 +12,6 @@
 
 @model PaginatedList<Voat.Models.ViewModels.SubverseDetailsViewModel>
 
-@using Voat.Utils;
-
 @{
     ViewBag.Title = "subverses";
     string sortingMode = ViewBag.SortingMode;
@@ -47,12 +45,19 @@
         </div>
 
         <div class="sitetable linklisting">
-
-            @foreach (var subverse in Model)
+            @using (var enumerator = Model.GetEnumerator())
             {
-                @Html.Partial("_SubscribedSubverseDetails", subverse);
+                while (enumerator.MoveNext())
+                {
+                    <div class="row">
+                        <div class="col-md-6">@Html.Partial("_SubscribedSubverseDetails", enumerator.Current)</div>
+                        @if (enumerator.MoveNext())
+                        {
+                            <div class="col-md-6">@Html.Partial("_SubscribedSubverseDetails", enumerator.Current)</div>
+                        }
+                    </div>
+                }
             }
-
         </div>
 
         <div class="pagination-container">

@@ -12,8 +12,6 @@
 
 @model PaginatedList<Voat.Models.Message>
 
-@using Voat.Utils;
-
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
 
@@ -54,25 +52,25 @@
     }
 
     <style type="text/css" id="custom_css">
-@if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
-{
-    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-}
-else if (!User.Identity.IsAuthenticated)
-{
-    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-}
+        @if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
+        {
+            Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+        }
+        else if (!User.Identity.IsAuthenticated)
+        {
+            Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+        }
     </style>
 
     <div class="content" role="main">
 
         <div class="sitetable linklisting">
 
-            @Html.Action("StickiedSubmission", "Subverses", new { subverseName = selectedSubverse })
+            @Html.Action("StickiedSubmission", "Subverses", new {subverseName = selectedSubverse})
 
             @{
                 int currentPageNumber = Model.PageIndex;
-                int counterCont = (currentPageNumber) * 25;
+                int counterCont = (currentPageNumber)*25;
 
                 int counter = counterCont + 1;
                 string submissionClass = "";
@@ -80,7 +78,7 @@ else if (!User.Identity.IsAuthenticated)
 
             @if (Model.Count < 1)
             {
-                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() { { "selectedSubverse", selectedSubverse } });
+                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() {{"selectedSubverse", selectedSubverse}});
             }
 
             @foreach (var submission in Model)
@@ -96,7 +94,7 @@ else if (!User.Identity.IsAuthenticated)
                     submissionClass = "";
                 }
 
-                if (counter % 2 == 0)
+                if (counter%2 == 0)
                 {
                     //is even
                     classEvenOrOdd = "even";
@@ -111,7 +109,7 @@ else if (!User.Identity.IsAuthenticated)
                     <p class="parent"></p>
                     <span class="rank">@counter</span>
 
-                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary {{"CCP", commentContributionPoints}})
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                     <div class="child"></div>

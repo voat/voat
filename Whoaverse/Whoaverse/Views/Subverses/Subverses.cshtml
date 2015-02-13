@@ -34,7 +34,6 @@
             urlaction = "Subverses";
             break;
     }
-
 }
 
 <style type="text/css">
@@ -76,29 +75,38 @@
         }
 
         <div class="sitetable linklisting">
-            @foreach (var subverse in Model)
+
+            @using (var enumerator = Model.GetEnumerator())
             {
-                @Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = subverse.name });
+                while (enumerator.MoveNext())
+                {
+                    <div class="row">
+                        <div class="col-md-6">@Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = enumerator.Current.name })</div>
+                        @if (enumerator.MoveNext())
+                        {
+                            <div class="col-md-6">@Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = enumerator.Current.name })</div>
+                        }
+                    </div>
+                }
             }
+
+            <div class="pagination-container">
+                <ul>
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="btn-whoaverse-paging">
+                            @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                        </li>
+                    }
+
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="btn-whoaverse-paging">
+                            @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                        </li>
+                    }
+                </ul>
+            </div>
+
         </div>
-
-        <div class="pagination-container">
-            <ul>
-                @if (Model.HasPreviousPage)
-                {
-                    <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
-                    </li>
-                }
-
-                @if (Model.HasNextPage)
-                {
-                    <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
-                    </li>
-                }
-            </ul>
-        </div>
-
     </div>
-</div>
