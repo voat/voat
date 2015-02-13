@@ -717,7 +717,7 @@ h2.whoaversename {
     background: -ms-linear-gradient( top,#B44747,#AB3C3C );
     background: -o-linear-gradient( top,#B44747,#AB3C3C );
     border-color: #933333;
-    color: #FFDCDC;
+    color: #FFF7F7;
 }
 .btn-whoaverse.contribute:hover {
     background: #A43A3A;
@@ -1122,7 +1122,8 @@ pre, code {
     border: 1px solid #272727;
     border-radius: 3px;
     color: #CCC;
-    font-size: inherit;
+    font-size: 12px;
+    white-space: pre !important;
 }
 
 /* ! Body : Tables
@@ -1275,7 +1276,7 @@ pre, code {
 }
 
 .sr-list li a {
-    color: #DDD;
+    color: #4399CD;
 }
 
 .sr-bar .separator {
@@ -1356,6 +1357,15 @@ pre, code {
                     color: #FFF !important;
                 }
 
+.drop-arrow {
+    border-width: 4px 4px 0;
+    border-style: solid;
+    border-color: #4399CD transparent transparent;
+    display: inline-block;
+    height: 0;
+    width: 0;
+}
+
 /* ! Header : Banner
 ------------------------------------------------------------------------------------ */
 
@@ -1373,7 +1383,7 @@ pre, code {
 #header-banner {
     font-size: 13px;
     margin: 0 auto;
-    max-width: 1075px;
+    max-width: 1200px;
     position: relative;
 }
 
@@ -1482,7 +1492,7 @@ pre, code {
             background: -o-linear-gradient( top,#B44747,#AB3C3C );
             border: solid #933333;
             border-width: 1px 1px 2px;
-            color: #FFDCDC;
+            color: #FFF7F7;
             font-weight: bold;
         }
         .tabmenu li.selected a.contribute:hover {
@@ -1631,9 +1641,10 @@ pre, code {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    max-width: 1075px;
+    max-width: 1200px;
     overflow: auto;
     padding: 10px;
+    position: relative;
 }
 
 /* ! Sidebar
@@ -2206,9 +2217,9 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 .link .usertext .md {
     background: #313131;
-    border: 1px solid #272727;
-    border-radius: 0;
-    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
+    border: solid #272727;
+    border-width: 1px 1px 2px;
+    border-radius: 3px;
     margin: 0;
     padding: 5px 10px;
 }
@@ -2245,8 +2256,37 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
     .comment .comment {
-        border-left: 1px solid #222;
+        border: 1px solid #222;
+        border-radius: 3px;
+        margin: 8px 0 3px 10px;
+        padding: 4px 8px;
+    }
+
+    .comment.thread > .comment.child {
         margin-left: 30px;
+    }
+
+    @media ( min-width: 700px ) {
+        .comment .comment .comment,
+        .comment .comment .comment .comment .comment,
+        .comment .comment .comment .comment .comment .comment .comment,
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment,
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment { background-color: #333; }
+            .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #292929; }
+        .comment .comment,
+        .comment .comment .comment .comment,
+        .comment .comment .comment .comment .comment .comment,
+        .comment .comment .comment .comment .comment .comment .comment .comment,
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment { background-color: #292929; }
+            .comment .comment blockquote,
+            .comment .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #333; }
     }
 
     .comment .midcol {
@@ -2720,7 +2760,57 @@ textarea.form-control {
         padding: 0;
     }
 
+    #container {
+        padding-top: 50px;
+    }
+
     .side {
+        visibility: hidden;
+        position: absolute;
+        width: 100%;
+    }
+
+    .side .form-control {
+        visibility: visible;
+        position: absolute;
+        left: 0;
+        top: -36px;
+        width: 35%;
+    }
+
+    .side .titlebox {
+        visibility: visible;
+        position: absolute;
+        left: 37%;
+        top: -31px;
+    }
+
+    .side .titlebox.submissioninfo {
+        display: none;
+    }
+
+    .side .titlebox h1 {
+        font-size: 14px;
+        font-weight: normal;
+        margin: 0 10px 0 0;
+        display: inline-block;
+    }
+
+    .side .subscribers {
+        font-size: 11px;
+        font-weight: bold;
+    }
+
+    .side .subscribers .word {
+        display: none;
+    }
+
+    .side .titlebox .users-online {
+        display: none;
+    }
+
+    .side .titlebox .md,
+    .side .titlebox .bottom {
         display: none;
     }
 
@@ -2802,7 +2892,11 @@ textarea.form-control {
     }
 
     .comment .comment {
-        margin-left: 8px;
+        border: 0;
+        border-left: 1px solid #222;
+        border-radius: 0;
+        margin: 4px 8px 0 0;
+        padding: 0 0 0 4px;
     }
 
     .comment .arrow-downvote, .comment .arrow-downvoted,
