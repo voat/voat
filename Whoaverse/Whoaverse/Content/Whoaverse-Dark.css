@@ -2224,7 +2224,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     border: solid #272727;
     border-width: 1px 1px 2px;
     border-radius: 3px;
-    margin: 0;
+    margin: 8px 0 0;
     padding: 5px 10px;
 }
 
