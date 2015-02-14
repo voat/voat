@@ -2765,11 +2765,17 @@ textarea.form-control {
     #container {
         padding-top: 50px;
     }
+    #container.page-userprofile {
+        padding-top: 10px;
+    }
 
     .side {
         visibility: hidden;
         position: absolute;
         width: 100%;
+    }
+    .page-userprofile .side {
+        display: none;
     }
 
     .side .form-control {
