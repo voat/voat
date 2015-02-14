@@ -5,6 +5,10 @@
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
+.navbar-nav {
+    margin: 0 !important;
+}
+
 .notification-container {
     height: 16px;
     position: relative;
@@ -2207,28 +2211,26 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         margin-left: 30px;
     }
 
-    @media ( min-width: 700px ) {
-        .comment .comment .comment,
-        .comment .comment .comment .comment .comment,
-        .comment .comment .comment .comment .comment .comment .comment,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment { background-color: #FFF; }
-            .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #F5F5F5; }
-        .comment .comment,
-        .comment .comment .comment .comment,
-        .comment .comment .comment .comment .comment .comment,
-        .comment .comment .comment .comment .comment .comment .comment .comment,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment { background-color: #F8F8F8; }
-            .comment .comment blockquote,
-            .comment .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #FFF; }
-    }
+    .comment .comment .comment,
+    .comment .comment .comment .comment .comment,
+    .comment .comment .comment .comment .comment .comment .comment,
+    .comment .comment .comment .comment .comment .comment .comment .comment .comment,
+    .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment { background-color: #FFF; }
+        .comment .comment .comment blockquote,
+        .comment .comment .comment .comment .comment blockquote,
+        .comment .comment .comment .comment .comment .comment .comment blockquote,
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #F5F5F5; }
+    .comment .comment,
+    .comment .comment .comment .comment,
+    .comment .comment .comment .comment .comment .comment,
+    .comment .comment .comment .comment .comment .comment .comment .comment,
+    .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment { background-color: #F8F8F8; }
+        .comment .comment blockquote,
+        .comment .comment .comment .comment blockquote,
+        .comment .comment .comment .comment .comment .comment blockquote,
+        .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #FFF; }
 
     .comment .midcol {
         margin-top: 5px;
@@ -2835,11 +2837,8 @@ textarea.form-control {
     }
 
     .comment .comment {
-        border: 0;
-        border-left: 1px solid #D1D1D1;
-        border-radius: 0;
         margin: 4px 8px 0 0;
-        padding: 0 0 0 4px;
+        padding: 0 0 4px 4px;
     }
 
     .comment .arrow-downvote, .comment .arrow-downvoted,
