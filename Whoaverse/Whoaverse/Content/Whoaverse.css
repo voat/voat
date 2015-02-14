@@ -1588,7 +1588,7 @@ pre, code {
     margin-left: auto;
     margin-right: auto;
     max-width: 1200px;
-    overflow: auto;
+    overflow: hidden;
     padding: 10px;
     position: relative;
 }
