@@ -15,6 +15,7 @@ All Rights Reserved.
 using System;
 using System.Data.Entity;
 using System.Linq;
+using Microsoft.AspNet.SignalR;
 using Voat.Models;
 
 namespace Voat.Utils
@@ -67,7 +68,7 @@ namespace Voat.Utils
 
                 switch (result)
                 {
-                    //never voted before
+                    // never voted before
                     case 0:
 
                         if (submission.Name != userWhichUpvoted)
@@ -78,7 +79,7 @@ namespace Voat.Utils
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
                             submission.Rank = newRank;
 
-                            //register upvote
+                            // register upvote
                             var tmpVotingTracker = new Votingtracker
                             {
                                 MessageId = submissionId,
@@ -88,6 +89,8 @@ namespace Voat.Utils
                             };
                             db.Votingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
+
+                            SendVoteNotification(submission.Name, "upvote");
                         }
 
                         break;
@@ -105,7 +108,7 @@ namespace Voat.Utils
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
                             submission.Rank = newRank;
 
-                            //register Turn DownVote To UpVote
+                            // register Turn DownVote To UpVote
                             var votingTracker = db.Votingtrackers.FirstOrDefault(b => b.MessageId == submissionId && b.UserName == userWhichUpvoted);
 
                             if (votingTracker != null)
@@ -114,6 +117,8 @@ namespace Voat.Utils
                                 votingTracker.Timestamp = DateTime.Now;
                             }
                             db.SaveChanges();
+
+                            SendVoteNotification(submission.Name, "downtoupvote");
                         }
 
                         break;
@@ -131,6 +136,8 @@ namespace Voat.Utils
                             db.SaveChanges();
 
                             ResetMessageVote(userWhichUpvoted, submissionId);
+
+                            SendVoteNotification(submission.Name, "downvote");
                         }
 
                         break;
@@ -178,6 +185,8 @@ namespace Voat.Utils
                             };
                             db.Votingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
+
+                            SendVoteNotification(submission.Name, "downvote");
                         }
 
                         break;
@@ -203,6 +212,8 @@ namespace Voat.Utils
                                 votingTracker.Timestamp = DateTime.Now;
                             }
                             db.SaveChanges();
+
+                            SendVoteNotification(submission.Name, "uptodownvote");
                         }
 
                         break;
@@ -220,6 +231,8 @@ namespace Voat.Utils
                             db.SaveChanges();
 
                             ResetMessageVote(userWhichDownvoted, submissionId);
+
+                            SendVoteNotification(submission.Name, "upvote");
                         }
 
                         break;
@@ -228,6 +241,57 @@ namespace Voat.Utils
             }
 
         }
+
+        // send SignalR realtime notification of incoming vote to the author
+        private static void SendVoteNotification(string userName, string notificationType)
+        {
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+
+            switch (notificationType)
+            {
+                case "downvote":
+                    {
+                        hubContext.Clients.User(userName).incomingDownvote(1);
+                    }
+                    break;
+                case "upvote":
+                    {
+                        hubContext.Clients.User(userName).incomingUpvote(1);
+                    }
+                    break;
+                case "downtoupvote":
+                    {
+                        hubContext.Clients.User(userName).incomingDownToUpvote(1);
+                    }
+                    break;
+                case "uptodownvote":
+                    {
+                        hubContext.Clients.User(userName).incomingUpToDownvote(1);
+                    }
+                    break;
+                case "commentdownvote":
+                    {
+                        hubContext.Clients.User(userName).incomingDownvote(2);
+                    }
+                    break;
+                case "commentupvote":
+                    {
+                        hubContext.Clients.User(userName).incomingUpvote(2);
+                    }
+                    break;
+                case "commentdowntoupvote":
+                    {
+                        hubContext.Clients.User(userName).incomingDownToUpvote(2);
+                    }
+                    break;
+                case "commentuptodownvote":
+                    {
+                        hubContext.Clients.User(userName).incomingUpToDownvote(2);
+                    }
+                    break;
+            }
+        }
+
 
     }
 }

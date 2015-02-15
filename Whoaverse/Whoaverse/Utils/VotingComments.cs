@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Linq;
+using Microsoft.AspNet.SignalR;
 using Voat.Models;
 
 namespace Voat.Utils
@@ -54,6 +55,8 @@ namespace Voat.Utils
                             };
                             db.Commentvotingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
+
+                            SendVoteNotification(comment.Name, "upvote");
                         }
 
                         break;
@@ -75,6 +78,8 @@ namespace Voat.Utils
                                 votingTracker.Timestamp = DateTime.Now;
                             }
                             db.SaveChanges();
+
+                            SendVoteNotification(comment.Name, "downtoupvote");
                         }
 
                         break;
@@ -84,6 +89,8 @@ namespace Voat.Utils
 
                         comment.Likes--;
                         db.SaveChanges();
+
+                        SendVoteNotification(comment.Name, "downvote");
 
                         ResetCommentVote(userWhichUpvoted, commentId);
 
@@ -126,6 +133,8 @@ namespace Voat.Utils
                         };
                         db.Commentvotingtrackers.Add(tmpVotingTracker);
                         db.SaveChanges();
+
+                        SendVoteNotification(comment.Name, "downvote");
                     }
 
                         break;
@@ -146,6 +155,8 @@ namespace Voat.Utils
                             votingTracker.Timestamp = DateTime.Now;
                         }
                         db.SaveChanges();
+
+                        SendVoteNotification(comment.Name, "uptodownvote");
                     }
 
                         break;
@@ -156,6 +167,8 @@ namespace Voat.Utils
                         comment.Dislikes--;
                         db.SaveChanges();
                         ResetCommentVote(userWhichDownvoted, commentId);
+
+                        SendVoteNotification(comment.Name, "upvote");
 
                         break;
                 }
@@ -190,6 +203,36 @@ namespace Voat.Utils
                 // delete vote history
                 db.Commentvotingtrackers.Remove(votingTracker);
                 db.SaveChanges();
+            }
+        }
+
+        // send SignalR realtime notification of incoming commentvote to the author
+        private static void SendVoteNotification(string userName, string notificationType)
+        {
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+
+            switch (notificationType)
+            {
+                case "downvote":
+                    {
+                        hubContext.Clients.User(userName).incomingDownvote(2);
+                    }
+                    break;
+                case "upvote":
+                    {
+                        hubContext.Clients.User(userName).incomingUpvote(2);
+                    }
+                    break;
+                case "downtoupvote":
+                    {
+                        hubContext.Clients.User(userName).incomingDownToUpvote(2);
+                    }
+                    break;
+                case "uptodownvote":
+                    {
+                        hubContext.Clients.User(userName).incomingUpToDownvote(2);
+                    }
+                    break;
             }
         }
     }

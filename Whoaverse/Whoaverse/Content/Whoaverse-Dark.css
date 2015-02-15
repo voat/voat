@@ -1962,21 +1962,21 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 .thumbnail.nsfw {
     background-repeat: no-repeat;
-    background: url( /Graphics/WVSprite.png ) -1px -57px;
+    background: url('/Graphics/WVSprite.png') -1px -33px;
     height: 70px;
     width: 70px;
 }
 
 .thumbnail.self {
     background-repeat: no-repeat;
-    background: url( /Graphics/WVSprite.png ) -1px -128px;
+    background: url('/Graphics/WVSprite.png') -1px -104px;
     height: 70px;
     width: 70px;
 }
 
 .thumbnail.default {
     background-repeat: no-repeat;
-    background: url( /Graphics/WVSprite.png ) -1px -128px;
+    background: url('/Graphics/WVSprite.png') -1px -104px;
     height: 70px;
     width: 70px;
 }

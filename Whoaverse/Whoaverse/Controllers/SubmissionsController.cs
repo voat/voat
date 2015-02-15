@@ -119,6 +119,7 @@ namespace Voat.Controllers
             }
         }
 
+        // vote on a submission
         // POST: vote/{messageId}/{typeOfVote}
         [Authorize]
         public JsonResult Vote(int messageId, int typeOfVote)

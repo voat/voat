@@ -38,6 +38,74 @@
             document.title = '(' + count + ') ' + '@ViewBag.Title';
         };
 
+        // Hub accessed function to inform the user about new incoming upvotes
+        chat.client.incomingUpvote = function (type) {
+            var currentValue = 0;
+            if (type == 2) {
+                // this is a comment vote notification
+                // update CCP display
+                currentValue = $('#ccp').html();
+                currentValue++;
+                $('#ccp').html(currentValue);
+            } else {
+                // update SCP display
+                currentValue = $('#scp').html();
+                currentValue++;
+                $('#scp').html(currentValue);
+            }
+        };
+
+        // Hub accessed function to inform the user about new incoming downvotes
+        chat.client.incomingDownvote = function (type) {
+            var currentValue = 0;
+            if (type == 2) {
+                // this is a comment vote notification
+                // update CCP display
+                currentValue = $('#ccp').html();
+                currentValue--;
+                $('#ccp').html(currentValue);
+            } else {
+                // update SCP display
+                currentValue = $('#scp').html();
+                currentValue--;
+                $('#scp').html(currentValue);
+            }
+        };
+
+        // Hub accessed function to inform the user about new incoming down to upvote
+        chat.client.incomingDownToUpvote = function (type) {
+            var currentValue = 0;
+            if (type == 2) {
+                // this is a comment vote notification
+                // update CCP display
+                currentValue = $('#ccp').html();
+                currentValue = currentValue + 2;
+                $('#ccp').html(currentValue);
+            } else {
+                // update SCP display
+                currentValue = $('#scp').html();
+                currentValue = currentValue + 2;
+                $('#scp').html(currentValue);
+            }
+        };
+
+        // Hub accessed function to inform the user about new incoming up to downvote
+        chat.client.incomingUpToDownvote = function (type) {
+            var currentValue = 0;
+            if (type == 2) {
+                // this is a comment vote notification
+                // update CCP display
+                currentValue = $('#ccp').html();
+                currentValue = currentValue - 2;
+                $('#ccp').html(currentValue);
+            } else {
+                // update SCP display
+                currentValue = $('#scp').html();
+                currentValue = currentValue - 2;
+                $('#scp').html(currentValue);
+            }
+        };
+
         // Start the connection.
         $.connection.hub.start().done(function () {
             //
@@ -62,7 +130,12 @@
         @Html.AntiForgeryToken()
         <div id="header-account">
             <div class="logged-in">
-                <span class="user">@Html.ActionLink(User.Identity.Name, "UserProfile", "Home", routeValues: new { Id = User.Identity.Name, whattodisplay = String.Empty }, htmlAttributes: new { title = "Profile" })&nbsp;(<span class="userkarma" title="submission contribution points">@linkKarma</span>|<span class="userkarma" title="comment contribution points">@commentKarma</span>)</span>
+                <span class="user">
+                    <a href="/user/@User.Identity.Name" title="Profile">@User.Identity.Name</a>
+                    <span class="userkarma" title="submission contribution points" id="scp">@linkKarma</span>
+                    |
+                    <span class="userkarma" title="comment contribution points" id="ccp">@commentKarma</span>
+                </span>
                 <span class="separator">|</span>
                 <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage", id = "manage" })</span>
                 <span class="separator">|</span>
