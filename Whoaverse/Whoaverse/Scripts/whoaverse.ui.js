@@ -787,7 +787,7 @@ UI.ImageExpandoSettings = (function () {
     }
 })();
 
-var MenuHandler = function() {
+UI.SidebarHandler = function () {
     //The div that is the sidebar
     var sidebar = $(".side");
     //The button to shwo the sidebar when mobile
@@ -850,7 +850,7 @@ $(document).ready(function () {
         }
     });
 
-    MenuHandler();
+    UI.SidebarHandler();
 });
 
 
