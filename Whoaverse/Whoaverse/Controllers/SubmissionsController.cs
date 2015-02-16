@@ -180,6 +180,7 @@ namespace Voat.Controllers
 
             if (submissionToDelete != null)
             {
+                // delete submission if delete request is issued by submission author
                 if (submissionToDelete.Name == User.Identity.Name)
                 {
                     submissionToDelete.Name = "deleted";
@@ -191,6 +192,13 @@ namespace Voat.Controllers
                     else
                     {
                         submissionToDelete.MessageContent = "http://voat.co";
+                    }
+
+                    // remove sticky if submission was stickied
+                    var existingSticky = _db.Stickiedsubmissions.FirstOrDefault(s => s.Submission_id == submissionId);
+                    if (existingSticky != null)
+                    {
+                        _db.Stickiedsubmissions.Remove(existingSticky);
                     }
 
                     await _db.SaveChangesAsync();
@@ -234,6 +242,13 @@ namespace Voat.Controllers
 
                         submissionToDelete.MessageContent = "http://voat.co";
                         submissionToDelete.Name = "deleted";
+                    }
+
+                    // remove sticky if submission was stickied
+                    var existingSticky = _db.Stickiedsubmissions.FirstOrDefault(s => s.Submission_id == submissionId);
+                    if (existingSticky != null)
+                    {
+                        _db.Stickiedsubmissions.Remove(existingSticky);
                     }
 
                     await _db.SaveChangesAsync();

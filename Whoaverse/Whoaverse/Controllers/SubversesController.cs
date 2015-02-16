@@ -686,9 +686,9 @@ namespace Voat.Controllers
         public ActionResult SubverseModerators(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subversetoshow);
-
+            var subverseModel = _db.Subverses.FirstOrDefault(s => s.name.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase));
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
             // check if caller is subverse owner, if not, deny listing
             if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
                 return RedirectToAction("Index", "Home");
@@ -710,8 +710,7 @@ namespace Voat.Controllers
         public ActionResult ModeratorInvitations(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subversetoshow);
-
+            var subverseModel = _db.Subverses.FirstOrDefault(s => s.name.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase));
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
@@ -759,7 +758,7 @@ namespace Voat.Controllers
         public ActionResult AddModerator(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subversetoshow);
+            var subverseModel = _db.Subverses.FirstOrDefault(s => s.name.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase));
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
@@ -798,8 +797,7 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View(subverseAdmin);
 
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subverseAdmin.SubverseName);
-
+            var subverseModel = _db.Subverses.FirstOrDefault(s => s.name.Equals(subverseAdmin.SubverseName, StringComparison.OrdinalIgnoreCase));
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
@@ -844,14 +842,15 @@ namespace Voat.Controllers
                     var invitationBody = new StringBuilder();
                     invitationBody.Append("Hello,");
                     invitationBody.Append(Environment.NewLine);
-                    invitationBody.Append("I would like you to join me in moderating my subverse /v/" + subverseAdmin.SubverseName + ".");
+                    invitationBody.Append("You are invited to moderate /v/" + subverseAdmin.SubverseName + ".");
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append("Please visit the following link if you want to accept this invitation: " + "https://" + Request.ServerVariables["HTTP_HOST"] + "/acceptmodinvitation/" + invitationId);
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append("Thank you.");
-                    MesssagingUtility.SendPrivateMessage(User.Identity.Name, subverseAdmin.Username, "You are invited to moderate my subverse: " + subverseAdmin.SubverseName, invitationBody.ToString());
+
+                    MesssagingUtility.SendPrivateMessage(User.Identity.Name, subverseAdmin.Username, "/v/" + subverseAdmin.SubverseName + " moderator invitation", invitationBody.ToString());
 
                     return RedirectToAction("SubverseModerators");
                 }
@@ -1039,7 +1038,7 @@ namespace Voat.Controllers
             if (invitationToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if subverse exists
-            var subverse = _db.Subverses.Find(invitationToBeRemoved.Subverse);
+            var subverse = _db.Subverses.FirstOrDefault(s => s.name.Equals(invitationToBeRemoved.Subverse, StringComparison.OrdinalIgnoreCase));
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a moderator invitation

@@ -30,10 +30,11 @@ namespace Voat.Utils
                     {
                         Sender = sender,
                         Recipient = recipient,
+                        Timestamp = DateTime.Now,
                         Subject = subject,
                         Body = body,
-                        Timestamp = DateTime.Now,
-                        Status = true
+                        Status = true,
+                        Markedasunread = true
                     };
 
                     db.Privatemessages.Add(privateMessage);
