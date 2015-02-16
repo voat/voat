@@ -1215,49 +1215,6 @@ pre, code {
     right: 0;
 }
 
-/* ! Header : Sidebar Button
------------------------------------------------------------------------------------- */
-#show-menu-button {
-    display: none;
-    position: relative;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    float: left;
-    z-index: 3;
-    margin-top: 17px;
-    transition: 500ms margin;
-}
-
-#show-menu-button.show-mobile-sidebar {
-    margin-left: -8px;
-    margin-right: 8px;
-}
-
-#show-menu-button::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-top: 12px double #404040;
-    border-bottom: 4px solid #404040;
-}
-
-#modal-background {
-    z-index: 1;
-    position: absolute;
-    height: calc(100vh - 81px);
-    width: 100%;
-    top: 81px;
-    left: 0;
-    background-color: #000000;
-    opacity: 0;
-    transition: 500ms opacity;
-    pointer-events: none;
-}
-
 /* ! Header : Top : Subverses list
 ------------------------------------------------------------------------------------ */
 
@@ -1662,7 +1619,6 @@ pre, code {
     margin: 0 10px 0;
     padding: 10px;
     width: 300px;
-    transition: 500ms right;
 }
 
     .side .spacer {
@@ -2768,40 +2724,36 @@ textarea.form-control {
 
     #container {
         padding-top: 50px;
-        overflow: visible;
     }
     #container.page-userprofile {
         padding-top: 10px;
     }
 
     .side {
+        visibility: hidden;
         position: absolute;
-        top: -11px;
-        left: -300px;
-        transition: 500ms left;
-        background-color: #FFFFFF;
-        margin: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        z-index: 2;
-        height: calc(100vh - 81px);
+        width: 100%;
     }
-
-    .side.show-mobile-sidebar {
-        left: -1px;
-    }
-
-    #modal-background.show-mobile-sidebar {
-        display: block;
-        opacity: .75;
-        pointer-events: all;
-    }
-
-    #show-menu-button {
-        display: block;
-    }
-
     .page-userprofile .side {
+        display: none;
+    }
+
+    .side .form-control {
+        visibility: visible;
+        position: absolute;
+        left: 0;
+        top: -36px;
+        width: 35%;
+    }
+
+    .side .titlebox {
+        visibility: visible;
+        position: absolute;
+        left: 37%;
+        top: -31px;
+    }
+
+    .side .titlebox.submissioninfo {
         display: none;
     }
 
