@@ -787,6 +787,28 @@ UI.ImageExpandoSettings = (function () {
     }
 })();
 
+var MenuHandler = function() {
+    //The div that is the sidebar
+    var sidebar = $(".side");
+    //The button to shwo the sidebar when mobile
+    var showMenuBtn = $("#show-menu-button");
+    
+    //Add a click listener
+    showMenuBtn.on("click", function() {
+        sidebar.toggleClass("show-mobile-sidebar");
+    });
+
+    //Media query listener to remove class when resized to desktop size
+    var mql = window.matchMedia("(min-width: 870px)");
+    mql.addListener(handleMediaQuery);
+
+    function handleMediaQuery(mql) {
+        if (mql.matches) {
+            sidebar.toggleClass("show-mobile-sidebar", false);
+        }
+    }
+}
+
 
 $(document).ready(function () {
 
@@ -814,7 +836,7 @@ $(document).ready(function () {
         }
     });
 
-
+    MenuHandler();
 });
 
 
