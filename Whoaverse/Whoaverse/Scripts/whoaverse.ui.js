@@ -788,6 +788,11 @@ UI.ImageExpandoSettings = (function () {
 })();
 
 UI.SidebarHandler = function () {
+    //Check if there is a sidebar on the current page
+    if (!$(".side").exists()) {
+        $("#show-menu-button").hide();
+        return;
+    }
     //The div that is the sidebar
     var sidebar = $(".side");
     //The button to shwo the sidebar when mobile
