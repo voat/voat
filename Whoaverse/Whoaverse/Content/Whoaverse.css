@@ -1224,6 +1224,14 @@ pre, code {
     height: 20px;
     cursor: pointer;
     float: left;
+    z-index: 3;
+    margin-top: 17px;
+    transition: 500ms margin;
+}
+
+#show-menu-button.show-mobile-sidebar {
+    margin-left: -8px;
+    margin-right: 8px;
 }
 
 #show-menu-button::before {
@@ -1233,8 +1241,21 @@ pre, code {
     left: 0;
     width: 100%;
     height: 100%;
-    border-top: 12px double #000;
-    border-bottom: 4px solid #000;
+    border-top: 12px double #404040;
+    border-bottom: 4px solid #404040;
+}
+
+#modal-background {
+    z-index: 1;
+    position: absolute;
+    height: calc(100vh - 81px);
+    width: 100%;
+    top: 81px;
+    left: 0;
+    background-color: #000000;
+    opacity: 0;
+    transition: 500ms opacity;
+    pointer-events: none;
 }
 
 /* ! Header : Top : Subverses list
@@ -1627,7 +1648,7 @@ pre, code {
     margin-left: auto;
     margin-right: auto;
     max-width: 1200px;
-    overflow: visible;
+    overflow: hidden;
     padding: 10px;
     position: relative;
 }
@@ -2747,6 +2768,7 @@ textarea.form-control {
 
     #container {
         padding-top: 50px;
+        overflow: visible;
     }
     #container.page-userprofile {
         padding-top: 10px;
@@ -2754,15 +2776,25 @@ textarea.form-control {
 
     .side {
         position: absolute;
-        top: 0;
+        top: -11px;
         left: -300px;
         transition: 500ms left;
         background-color: #FFFFFF;
         margin: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 2;
+        height: calc(100vh - 81px);
     }
 
     .side.show-mobile-sidebar {
-        left: 0;
+        left: -1px;
+    }
+
+    #modal-background.show-mobile-sidebar {
+        display: block;
+        opacity: .75;
+        pointer-events: all;
     }
 
     #show-menu-button {
@@ -2770,17 +2802,6 @@ textarea.form-control {
     }
 
     .page-userprofile .side {
-        display: none;
-    }
-
-    .side .titlebox {
-        visibility: visible;
-        position: absolute;
-        left: 37%;
-        top: -31px;
-    }
-
-    .side .titlebox.submissioninfo {
         display: none;
     }
 
