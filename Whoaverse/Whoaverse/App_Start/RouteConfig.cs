@@ -178,6 +178,13 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "DistinguishComment" }
             );
 
+            // /comments/submissionId/startingpos
+            routes.MapRoute(
+                name: "BucketOfComments",
+                url: "comments/{id}/{startingpos}",
+                defaults: new { controller = "Comment", action = "BucketOfComments" }
+            );
+
             // user/someuserhere/thingtoshow
             routes.MapRoute(
                 name: "UserProfile",

@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -64,91 +65,104 @@ namespace Voat.Controllers
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort)
         {
             var subverse = _db.Subverses.Find(subversetoshow);
+            if (subverse == null) return View("~/Views/Errors/Error_404.cshtml");
 
-            if (subverse != null)
+            ViewBag.SelectedSubverse = subverse.name;
+            ViewBag.SubverseAnonymized = subverse.anonymized_mode;
+
+            if (startingcommentid != null)
             {
-                ViewBag.SelectedSubverse = subverse.name;
-                ViewBag.SubverseAnonymized = subverse.anonymized_mode;
-
-                if (startingcommentid != null)
-                {
-                    ViewBag.StartingCommentId = startingcommentid;
-                }
-
-                if (sort != null)
-                {
-                    ViewBag.SortingMode = sort;
-                }
-
-                if (id == null)
-                {
-                    return View("~/Views/Errors/Error.cshtml");
-                }
-
-                var message = _db.Messages.Find(id);
-
-                if (message == null)
-                {
-                    return View("~/Views/Errors/Error_404.cshtml");
-                }
-
-                // make sure that the combination of selected subverse and message subverse are linked
-                if (!message.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase))
-                {
-                    return View("~/Views/Errors/Error_404.cshtml");
-                }
-
-                // experimental
-                // register a new session for this subverse
-                try
-                {
-                    var currentSubverse = (string)RouteData.Values["subversetoshow"];
-                    SessionTracker.Add(currentSubverse, Session.SessionID);
-                }
-                catch (Exception)
-                {
-                    //
-                }
-
-                // check if this is a new view and register it
-                string clientIpAddress = String.Empty;
-
-                if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
-                {
-                    clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-                }
-                else if (Request.UserHostAddress.Length != 0)
-                {
-                    clientIpAddress = Request.UserHostAddress;
-                }
-
-
-                if (clientIpAddress != String.Empty)
-                {
-
-                    // generate salted hash of client IP address
-                    string ipHash = IpHash.CreateHash(clientIpAddress);
-
-                    // check if this hash is present for this submission id in viewstatistics table
-                    var existingView = _db.Viewstatistics.Find(message.Id, ipHash);
-
-                    // this hash doesn't already exist, register the view
-                    if (existingView == null)
-                    {
-
-                        // this is a new view, register it for this submission
-                        var view = new Viewstatistic { submissionId = message.Id, viewerId = ipHash };
-                        _db.Viewstatistics.Add(view);
-                        message.Views++;
-                        _db.SaveChanges();
-                    }
-
-                }
-
-                return View("~/Views/Home/Comments.cshtml", message);
-
+                ViewBag.StartingCommentId = startingcommentid;
             }
-            return View("~/Views/Errors/Error_404.cshtml");
+
+            if (sort != null)
+            {
+                ViewBag.SortingMode = sort;
+            }
+
+            if (id == null)
+            {
+                return View("~/Views/Errors/Error.cshtml");
+            }
+
+            var message = _db.Messages.Find(id);
+
+            if (message == null)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            // make sure that the combination of selected subverse and message subverse are linked
+            if (!message.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase))
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            // experimental
+            // register a new session for this subverse
+            try
+            {
+                var currentSubverse = (string)RouteData.Values["subversetoshow"];
+                SessionTracker.Add(currentSubverse, Session.SessionID);
+            }
+            catch (Exception)
+            {
+                //
+            }
+
+            // check if this is a new view and register it
+            string clientIpAddress = String.Empty;
+
+            if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
+            {
+                clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            }
+            else if (Request.UserHostAddress.Length != 0)
+            {
+                clientIpAddress = Request.UserHostAddress;
+            }
+
+            if (clientIpAddress == String.Empty) return View("~/Views/Home/Comments.cshtml", message);
+
+            // generate salted hash of client IP address
+            string ipHash = IpHash.CreateHash(clientIpAddress);
+            // check if this hash is present for this submission id in viewstatistics table
+            var existingView = _db.Viewstatistics.Find(message.Id, ipHash);
+            // this IP has already viwed this thread, skip registering a new view
+            if (existingView != null) return View("~/Views/Home/Comments.cshtml", message);
+
+            // this is a new view, register it for this submission
+            var view = new Viewstatistic { submissionId = message.Id, viewerId = ipHash };
+            _db.Viewstatistics.Add(view);
+            message.Views++;
+            _db.SaveChanges();
+
+            return View("~/Views/Home/Comments.cshtml", message);
+        }
+
+        // GET: comments for a given submission
+        public ActionResult BucketOfComments(int? id, int? startingcommentid, int? startingpos, string sort)
+        {
+            if (id == null) return View("~/Views/Errors/Error.cshtml");
+
+            var message = _db.Messages.Find(id);
+            if (message == null) return View("~/Views/Errors/Error_404.cshtml");
+
+            ViewData["StartingPos"] = startingpos;
+            
+            ViewBag.SelectedSubverse = message.Subverses.name;
+            ViewBag.SubverseAnonymized = message.Subverses.anonymized_mode;
+
+            if (startingcommentid != null)
+            {
+                ViewBag.StartingCommentId = startingcommentid;
+            }
+            if (sort != null)
+            {
+                ViewBag.SortingMode = sort;
+            }
+
+            return PartialView("~/Views/Shared/Comments/_CommentBucket.cshtml", message);
         }
 
         // GET: submitcomment

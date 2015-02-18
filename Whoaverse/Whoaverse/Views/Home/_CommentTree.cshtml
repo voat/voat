@@ -16,6 +16,7 @@
 @{
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
     string sortingMode = Convert.ToString(ViewData["SortingMode"]);
+    const int threadsToFetch = 10;
     
     IEnumerable<Comment> firstComments;
         
@@ -37,6 +38,19 @@
     }  
 }
 
+<script type="text/javascript" language="javascript">
+    $(function () {
+        var $win = $(window);
+
+        $win.scroll(function () {
+            if ($win.height() + $win.scrollTop()
+                           == $(document).height()) {
+                $("#loadmorebutton").trigger("click");
+            }
+        });
+    });
+</script>
+
 @if (!User.Identity.IsAuthenticated)
 {
     <div class="menuarea">
@@ -47,18 +61,18 @@
 }
 
 <div class="menuarea">
-    <h2><span class="label label-default">top 200 comments</span>&nbsp;<a href="javascript:void(0)" class="title-button ">show 500</a></h2>
+    <h2><span class="label label-default">top comments</span></h2>
 </div>
 
-<!-- show top 200 submission comments, orderby number of votes each comment has received -->
+<!-- show top submission comments, orderby number of votes each comment has received -->
 <div class='commentarea'>
     
     <div id="siteTable" class="sitetable nestedlisting">
 
-        @foreach (var firstComment in firstComments)
+        @foreach (var firstComment in firstComments.Take(threadsToFetch))
             {
-                //do not show deleted comments unless they have replies
-                if (firstComment.Name == "deleted" && Model.Comments.Where(A => A.ParentId == firstComment.Id).Count() == 0)
+                // do not show deleted comments unless they have replies
+                if (firstComment.Name == "deleted" && Model.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
                 {
                     continue;
                 }
@@ -75,8 +89,11 @@
                         @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
                     </div>
                 }
-            }        
-
+            }
+        <div id="comments-@Model.Id-page" style="display: none">0</div>
+        <a href="javascript:void(0)" onclick='loadMoreComments(this,@Model.Id)' class="btn-whoaverse btn-block" id="loadmorebutton">
+            load more &#9660;
+        </a>
     </div>
 
 </div>

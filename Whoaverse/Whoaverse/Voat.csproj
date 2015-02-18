@@ -776,6 +776,7 @@
     <Content Include="Views\Management\Dashboard.cshtml" />
     <Content Include="Views\Subverses\Admin\_ModeratorInvitations.cshtml" />
     <Content Include="Views\Subverses\Admin\RecallModeratorInvitation.cshtml" />
+    <Content Include="Views\Shared\Comments\_CommentBucket.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -785,6 +786,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Storage\Avatars\" />
+    <Folder Include="Views\Comment\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
