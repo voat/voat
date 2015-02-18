@@ -272,6 +272,7 @@
     <Compile Include="Models\SubverseBan.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\Userset.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
@@ -488,8 +489,9 @@
     <Content Include="Graphics\markdownEditorSprite.png" />
     <Content Include="Graphics\missing_image.png" />
     <Content Include="Graphics\v2_ad.png" />
+    <Content Include="Graphics\voat-goat.png" />
     <Content Include="Graphics\voat-logo.png" />
-    <Content Include="Graphics\voat32x32.png" />
+    <Content Include="Graphics\voat-32x32.png" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
@@ -557,10 +559,7 @@
     <Content Include="Graphics\Light-SpriteSheet.png" />
     <Content Include="Graphics\nsfw-thumb.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
-    <Content Include="Graphics\whoaverse-404.png" />
-    <Content Include="Graphics\whoaverse-mascot.png" />
-    <Content Include="Graphics\whoaverse_32x32.png" />
-    <Content Include="Graphics\whoaverse_mascot_head.png" />
+    <Content Include="Graphics\404.png" />
     <EntityDeploy Include="Models\WhoaverseEntityDataModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>WhoaverseEntityDataModel.Designer.cs</LastGenOutput>
@@ -786,7 +785,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Storage\Avatars\" />
-    <Folder Include="Views\Comment\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

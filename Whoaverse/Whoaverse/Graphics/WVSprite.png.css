@@ -19,15 +19,15 @@ This is an example of how to use the image sprite in your own CSS files
 	height: 70px;
 	background: url('/Graphics/WVSprite.png') -1px -104px;
 }
-.Graphics-whoaverse-404 {
+.Graphics-404 {
 /* You may have to set 'display: block' */
 	width: 450px;
 	height: 405px;
 	background: url('/Graphics/WVSprite.png') -1px -175px;
 }
-.Graphics-whoaverse-mascot {
+.Graphics-voat-goat {
 /* You may have to set 'display: block' */
-	width: 400px;
-	height: 404px;
+	width: 345px;
+	height: 252px;
 	background: url('/Graphics/WVSprite.png') -1px -581px;
 }

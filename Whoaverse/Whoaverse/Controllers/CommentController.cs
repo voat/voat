@@ -13,11 +13,14 @@ All Rights Reserved.
 */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Models;
+using Voat.Models.ViewModels;
 using Voat.Utils;
 using Voat.Utils.Components;
 
@@ -143,15 +146,22 @@ namespace Voat.Controllers
         // GET: comments for a given submission
         public ActionResult BucketOfComments(int? id, int? startingcommentid, int? startingpos, string sort)
         {
+            const int threadsToFetch = 10;
+
             if (id == null) return View("~/Views/Errors/Error.cshtml");
 
-            var message = _db.Messages.Find(id);
-            if (message == null) return View("~/Views/Errors/Error_404.cshtml");
+            var submission = _db.Messages.Find(id);
+            if (submission == null) return View("~/Views/Errors/Error_404.cshtml");
 
             ViewData["StartingPos"] = startingpos;
-            
-            ViewBag.SelectedSubverse = message.Subverses.name;
-            ViewBag.SubverseAnonymized = message.Subverses.anonymized_mode;
+
+            if (User.Identity.IsAuthenticated)
+            {
+                ViewData["CCP"] = Karma.CommentKarma(User.Identity.Name);
+            }
+
+            ViewBag.SelectedSubverse = submission.Subverses.name;
+            ViewBag.SubverseAnonymized = submission.Subverses.anonymized_mode;
 
             if (startingcommentid != null)
             {
@@ -162,7 +172,41 @@ namespace Voat.Controllers
                 ViewBag.SortingMode = sort;
             }
 
-            return PartialView("~/Views/Shared/Comments/_CommentBucket.cshtml", message);
+            // load first comments
+            IEnumerable<Comment> firstComments;
+
+            if (sort == "new")
+            {
+                firstComments = from f in submission.Comments
+                                let commentScore = f.Likes - f.Dislikes
+                                where f.ParentId == null
+                                orderby f.Date descending
+                                select f;
+            }
+            else
+            {
+                firstComments = from f in submission.Comments
+                                let commentScore = f.Likes - f.Dislikes
+                                where f.ParentId == null
+                                orderby commentScore descending
+                                select f;
+            }
+
+            if (startingpos == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            var cbvm = new CommentBucketViewModel
+            {
+                FirstComments = firstComments.Skip((int)startingpos * threadsToFetch).Take(threadsToFetch),
+                Submission = submission
+            };
+
+            if (!cbvm.FirstComments.Any())
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            }
+
+            return PartialView("~/Views/Shared/Comments/_CommentBucket.cshtml", cbvm);
         }
 
         // GET: submitcomment

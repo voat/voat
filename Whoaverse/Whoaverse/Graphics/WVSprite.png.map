@@ -22,16 +22,16 @@
       "offsetY": 104
     },
     {
-      "name": "/Graphics/whoaverse-404.png",
+      "name": "/Graphics/404.png",
       "width": 450,
       "height": 405,
       "offsetX": 1,
       "offsetY": 175
     },
     {
-      "name": "/Graphics/whoaverse-mascot.png",
-      "width": 400,
-      "height": 404,
+      "name": "/Graphics/voat-goat.png",
+      "width": 345,
+      "height": 252,
       "offsetX": 1,
       "offsetY": 581
     }

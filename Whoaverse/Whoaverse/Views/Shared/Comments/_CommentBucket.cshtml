@@ -10,39 +10,17 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@using Voat.Models
-@model Message
+@model Voat.Models.ViewModels.CommentBucketViewModel
 
 @{
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
     int startingPos = Convert.ToInt32(ViewData["StartingPos"]);
     string sortingMode = Convert.ToString(ViewData["SortingMode"]);
 
-    const int threadsToFetch = 10;
-
-    IEnumerable<Comment> firstComments;
-
-    if (sortingMode == "new")
-    {
-        firstComments = from f in Model.Comments
-                        let commentScore = f.Likes - f.Dislikes
-                        where f.ParentId == null
-                        orderby f.Date descending
-                        select f;
-    }
-    else
-    {
-        firstComments = from f in Model.Comments
-                        let commentScore = f.Likes - f.Dislikes
-                        where f.ParentId == null
-                        orderby commentScore descending
-                        select f;
-    }
-
-    foreach (var firstComment in firstComments.Skip(startingPos * threadsToFetch).Take(threadsToFetch))
+    foreach (var firstComment in Model.FirstComments)
     {
         //do not show deleted comments unless they have replies
-        if (firstComment.Name == "deleted" && Model.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
+        if (firstComment.Name == "deleted" && Model.Submission.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
         {
             continue;
         }
@@ -50,16 +28,16 @@
         if (firstComment.Likes - firstComment.Dislikes < -3)
         {
             <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode } })
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model.Submission, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode } })
             </div>
         }
         else
         {
             <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model.Submission, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
             </div>
         }
     }
 
-    <div id="comments-@Model.Id-page" style="display: none">@startingPos</div>
+    <div id="comments-@Model.Submission.Id-page" style="display: none">@startingPos</div>
 }

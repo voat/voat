@@ -19,15 +19,15 @@
 	height: 70px;
 	background: url('/Graphics/WVSprite.png') -1px -104px;
 }
-@mixin sprite-Graphics-whoaverse-404() {
+@mixin sprite-Graphics-404() {
 /* You may have to set 'display: block' */
 	width: 450px;
 	height: 405px;
 	background: url('/Graphics/WVSprite.png') -1px -175px;
 }
-@mixin sprite-Graphics-whoaverse-mascot() {
+@mixin sprite-Graphics-voat-goat() {
 /* You may have to set 'display: block' */
-	width: 400px;
-	height: 404px;
+	width: 345px;
+	height: 252px;
 	background: url('/Graphics/WVSprite.png') -1px -581px;
 }
