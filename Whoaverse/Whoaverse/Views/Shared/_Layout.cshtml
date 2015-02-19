@@ -131,6 +131,8 @@
                 <a title="@ConfigurationManager.AppSettings["siteSlogan"]" href="/" id="header-img-a">
                     <img id="header-img" src="@ConfigurationManager.AppSettings["siteLogo"]" alt="@ConfigurationManager.AppSettings["siteName"]" height="31" width="112">
                 </a>
+                
+                <div id="show-menu-button"></div>
 
                 @if (ViewBag.PmView != null)
                 {
@@ -251,6 +253,7 @@
             </div>
         </div>
     </div>
+    <div id="modal-background"></div>
     <!-- End Not enough comment contribution points for upvoting Modal -->
     @RenderBody()
 
