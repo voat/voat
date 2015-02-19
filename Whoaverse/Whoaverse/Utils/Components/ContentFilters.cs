@@ -53,7 +53,7 @@ namespace Voat.Utils.Components {
         public UserMentionFilter(int matchThreshold, bool ignoreDuplicatMatches){
             _replacer = new RegExReplacer();
             // -> @user & /u/user
-            _replacer.Replacers.Add(new MatchProcessingReplacer(@"(?<=\s{1,}|^)((@|/u/)(?'user'[a-zA-Z0-9-_]+))", MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches });
+            _replacer.Replacers.Add(new MatchProcessingReplacer(@"(?<=\s{1,}|^|\()((@|/u/)(?'user'[a-zA-Z0-9-_]+))", MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches });
         }
 
         protected override string ProcessContent(string content, object context) {
@@ -93,7 +93,7 @@ namespace Voat.Utils.Components {
 
         public override string MatchFound(Match match, object context) {
             var u = new UrlHelper(HttpContext.Current.Request.RequestContext, RouteTable.Routes);
-            return String.Format(" [{0}]({1})", match.Value, u.Action( "UserProfile", "Home", new { id = match.Groups["user"] }));
+            return String.Format("[{0}]({1})", match.Value, u.Action( "UserProfile", "Home", new { id = match.Groups["user"] }));
         }
     }
     

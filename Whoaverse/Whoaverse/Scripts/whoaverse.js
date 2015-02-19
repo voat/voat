@@ -885,17 +885,16 @@ function loadSelfText(obj, messageId) {
         "/ajaxhelpers/messagecontent/" + messageId,
         null,
         function (data) {
-            $(obj).parent().find(".expando").nextAll().find(".md").html(data);
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent().find(".expando").nextAll()); });
+            $(obj).parent().find(".expando").find(".md").html(data);
+            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent().find(".expando")); });
         }
      );
-
     // toggle message content display
-    // note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
-    $(obj).parent().find(".expando").next().next().next().toggle();
+    $(obj).parent().find(".expando").toggle();
 }
 
-// a function to embed a video via expando
+//// a function to embed a video via expando
+//[Obsolete - Remove once UI Expandos are tested]
 function loadVideoPlayer(obj, messageId) {
 
     $(obj).toggleClass("collapsed");

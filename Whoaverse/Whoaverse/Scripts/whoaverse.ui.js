@@ -1,4 +1,4 @@
-﻿//Whoaverse UI JS framework - Version 0.7beta - 12/09/2014
+﻿//Whoaverse UI JS framework - Version 0.8beta - 12/09/2014
 //Tested only with the latest version of IE, FF, & Chrome
 
 var UI = window.UI || {};
@@ -152,9 +152,6 @@ UI.Common = {
     }
 }
 
-UI.LinkHandler = {
-    //This will be the object that converts /u/name -> <a href='/user/name'>/u/name</a> and /v/sub -> <a href='/v/sub'>/v/sub</a>
-}
 UI.ExpandoManager = (function () {
 
     UI.Notifications.subscribe('DOM', function (context) {
@@ -212,8 +209,9 @@ UI.ExpandoManager = (function () {
 })();
 
 //base expando class
-var LinkExpando = function (hrefFilter) {
+var LinkExpando = function (hrefFilter, optionsObject) {
     var filter = hrefFilter;
+    this.options = optionsObject;
     this.getFilter = function () {
         return filter;
     }
@@ -222,6 +220,7 @@ var LinkExpando = function (hrefFilter) {
         try {
             id = this.getFilter().exec(path)[1];//returns first matched group
         } catch (ex) {
+            /*no-op*/
         }
         return id;
     }
@@ -270,170 +269,203 @@ LinkExpando.toggle = function (target, display) {
 var ImageLinkExpando = (function () {
     var countAutoLoaded = 0;
 
-    return function () {
-        LinkExpando.call(this, /^([^\?]+(\.(jpg|jpeg|gif|giff|png)))$/i);
+    return function (options) {
+        LinkExpando.call(this, /^([^\?]+(\.(jpg|jpeg|gif|giff|png)))$/i, options);
         this.autoLoadedCount = function () {
             return countAutoLoaded;
         }
-        this.process = function (targetObj) {
+        this.process = function (source) {
 
-            var target = $(targetObj);
-
-            //target.data('showing', false);
+            //target action button
+            var target = (this.options.targetFunc ? this.options.targetFunc($(source)) : $(source));
+            var source = $(source);
 
             if (LinkExpando.isHooked(target)) {
                 return;
             }
-            
-            target.on('click', ImageLinkExpando.onClick);
+            var me = this;
+
+            target.on('click', (function(event) {me.onClick(event)}));
 
             LinkExpando.isHooked(target, true);
-            LinkExpando.setTag(target, UI.Common.fileExtension(target.prop('href')).toUpperCase());
-            LinkExpando.dataProp(target, 'src', target.prop('href'));
+            if (options.setTags) {
+                LinkExpando.setTag(target, UI.Common.fileExtension(source.prop('href')).toUpperCase());
+            }
+            LinkExpando.dataProp(target, 'src', source.prop('href'));
 
             if (UI.ImageExpandoSettings.autoLoad) {
-                ImageLinkExpando.loadImage(target, target.prop('href'));
+                this.loadImage(target, source.prop('href'));
             } else if (UI.ImageExpandoSettings.autoShow) {
                 target.click();
             } 
         };
+        this.onClick = function (event) {
+            event.preventDefault();
+
+            var target = this.options.targetFunc($(event.target));
+
+            if (!LinkExpando.isVisible(target)) {
+                //show
+                if (LinkExpando.isLoaded(target)) {
+                    LinkExpando.isVisible(target, true);
+                    LinkExpando.toggle(this.options.destinationFunc(target), true);
+                    if (this.options.toggle) {
+                        this.options.toggle(target);
+                    }
+                } else {
+                    //load
+                    this.loadImage(target, LinkExpando.dataProp(target, 'src'));
+                }
+            } else {
+                //hide
+                LinkExpando.toggle(this.options.destinationFunc(target), false);
+                if (this.options.toggle) {
+                    this.options.toggle(target);
+                }
+
+                LinkExpando.isVisible(target, false);
+            }
+        };
+        this.loadImage = function (target, href, autoLoading) {
+            if (this.options.setTags) {
+                LinkExpando.setTag(target, "loading");
+            }
+            LinkExpando.dataProp(target, 'src', href);
+
+            //remove handler while loading
+            target.off();
+            target.on('click', function (e) { e.preventDefault(); }); //disable the link until loaded, prevent rapid clickers
+
+            var img = new Image();
+            img.onerror = function () {
+                //can't determine what kind of error... could be 404, could be a working non-image source, etc.
+                img.src = UI.Common.resolveUrl(UI.ImageExpandoSettings.errorImageUrl);
+            }
+
+            var me = this;
+            img.onload = (function () {
+
+                if (!this.complete) {
+                    return;
+                }
+
+                var parent = target.parent();
+                var destination = me.options.destinationFunc(target);
+
+                var displayDiv = destination;
+
+                var i = $(this);
+
+                displayDiv.html(i);
+
+                //BEGIN: Evil sizing code because IE is *special*
+                var width, height;
+                if (this.naturalWidth) {
+                    width = this.naturalWidth;
+                } else {
+                    width = this.width;
+                }
+                if (this.naturalHeight) {
+                    height = this.naturalHeight;
+                } else {
+                    height = this.height;
+                }
+
+                var desc = UI.Common.fileExtension(href).toUpperCase().concat(' · ', width.toString(), ' x ', height.toString());
+
+                LinkExpando.setDirectLink(displayDiv, desc, href);
+                target.prop('title', desc);
+
+
+                //I HAVE NO IDEA WHY I HAVE TO DO THIS TO REMOVE THE width/height attributes of the image tag itself
+                i.css('width', width);
+                i.css('height', height);
+                this.removeAttribute('width');
+                this.removeAttribute('height');
+
+                var startSize = (UI.ImageExpandoSettings.initialSize != 0 ? UI.ImageExpandoSettings.initialSize : UI.Common.availableWidth(target.parent()));
+
+                if (width > startSize) {
+                    if (width >= height || UI.ImageExpandoSettings.initialSize == 0) {
+                        i.css('width', startSize);
+                        i.css('height', 'auto');
+
+                        i.data('origWidth', startSize);
+                        i.data('origHeight', 'auto');
+                    } else {
+                        i.css('width', 'auto');
+                        i.css('height', startSize);
+
+                        i.data('origWidth', 'auto');
+                        i.data('origHeight', startSize);
+                    }
+                    i.data('inFullMode', false);
+
+                    i.data('maxWidth', Math.min(width, UI.Common.availableWidth(target.parent())));
+
+                    if (startSize < UI.Common.availableWidth(target.parent())) {
+                        displayDiv.click(function () {
+                            var childImg = $(this).children('img');
+                            if (childImg.data('inFullMode')) {
+                                childImg.css('width', childImg.data('origWidth'));
+                                childImg.css('height', childImg.data('origHeight'));
+                                childImg.data('inFullMode', false);
+                            } else {
+                                childImg.css('width', childImg.data('maxWidth'));
+                                childImg.css('height', 'auto');
+                                childImg.data('inFullMode', true);
+                            }
+                        });
+                        displayDiv.css('cursor', 'pointer');
+                    }
+                }
+
+                LinkExpando.isLoaded(target, true);
+
+                //reestablish handler
+                target.off();
+                target.on('click', (function (event) { me.onClick(event) }));
+                if (me.options.setTags) {
+                    LinkExpando.setTag(target, UI.Common.fileExtension(href).toUpperCase());
+                }
+                if (!autoLoading) {
+                    LinkExpando.isVisible(target, true);
+                    if (me.options.toggle) {
+                        me.options.toggle(target);
+                    }
+                    LinkExpando.toggle(displayDiv, true);
+                }
+                if (autoLoading && UI.ImageExpandoSettings.autoShow) {
+                    target.click();
+                }
+            });
+            img.src = href;
+        }
 
     }
 })();
 ImageLinkExpando.prototype = new LinkExpando();
 ImageLinkExpando.prototype.constructor = ImageLinkExpando;
-ImageLinkExpando.onClick = function(event) {
-    event.preventDefault();
+//ImageLinkExpando.onClick = function(event) {
+//    event.preventDefault();
 
-    var target = $(this);
+//    var target = $(this);
 
-    if (!LinkExpando.isVisible(target)) {
-        //show
-        if (LinkExpando.isLoaded(target)) {
-            LinkExpando.isVisible(target, true);
-            LinkExpando.toggle(target.next(), true);
-        } else {
-            //load
-            ImageLinkExpando.loadImage(target, LinkExpando.dataProp(target, 'src'));
-        }
-    } else {
-        //hide
-        LinkExpando.toggle(target.next(), false);
-        LinkExpando.isVisible(target, false);
-    }
-}
-ImageLinkExpando.loadImage = function (target, href, autoLoading) {
-
-        LinkExpando.setTag(target, "loading");
-        LinkExpando.dataProp(target, 'src', href);
-
-        //remove handler while loading
-        target.off();
-        target.on('click', function (e) { e.preventDefault(); }); //disable the link until loaded, prevent rapid clickers
-
-        var img = new Image();
-        img.onerror = function () {
-            //can't determine what kind of error... could be 404, could be a working non-image source, etc.
-            img.src = UI.Common.resolveUrl(UI.ImageExpandoSettings.errorImageUrl);
-        }
-        img.onload = function () {
-
-            if (!this.complete) {
-                return;
-            }
-
-            var parent = target.parent();
-
-            var displayDiv = $('<div/>', {
-                class: 'link-expando',
-                style: 'display:none;'
-            }).insertAfter(target);
-
-            var i = $(this);
-
-            displayDiv.html(i);
-
-            //BEGIN: Evil sizing code because IE is *special*
-            var width, height;
-            if (this.naturalWidth) {
-                width = this.naturalWidth;
-            } else {
-                width = this.width;
-            }
-            if (this.naturalHeight) {
-                height = this.naturalHeight;
-            } else {
-                height = this.height;
-            }
-
-            var desc = UI.Common.fileExtension(href).toUpperCase().concat(' · ', width.toString(), ' x ', height.toString());
-
-            LinkExpando.setDirectLink(displayDiv, desc, href);
-            target.prop('title', desc);
-
-
-            //I HAVE NO IDEA WHY I HAVE TO DO THIS TO REMOVE THE width/height attributes of the image tag itself
-            i.css('width', width);
-            i.css('height', height);
-            this.removeAttribute('width');
-            this.removeAttribute('height');
-
-            var startSize = (UI.ImageExpandoSettings.initialSize != 0 ? UI.ImageExpandoSettings.initialSize : UI.Common.availableWidth(target.parent()));
-
-            if (width > startSize) {
-                if (width >= height || UI.ImageExpandoSettings.initialSize == 0) {
-                    i.css('width', startSize);
-                    i.css('height', 'auto');
-
-                    i.data('origWidth', startSize);
-                    i.data('origHeight', 'auto');
-                } else {
-                    i.css('width', 'auto');
-                    i.css('height', startSize);
-
-                    i.data('origWidth', 'auto');
-                    i.data('origHeight', startSize);
-                }
-                i.data('inFullMode', false);
-
-                i.data('maxWidth', Math.min(width, UI.Common.availableWidth(target.parent())));
-
-                if (startSize < UI.Common.availableWidth(target.parent())) {
-                    displayDiv.click(function () {
-                        var childImg = $(this).children('img');
-                        if (childImg.data('inFullMode')) {
-                            childImg.css('width', childImg.data('origWidth'));
-                            childImg.css('height', childImg.data('origHeight'));
-                            childImg.data('inFullMode', false);
-                        } else {
-                            childImg.css('width', childImg.data('maxWidth'));
-                            childImg.css('height', 'auto');
-                            childImg.data('inFullMode', true);
-                        }
-                    });
-                    displayDiv.css('cursor', 'pointer');
-                }
-            }
-
-            LinkExpando.isLoaded(target, true);
-
-            //reestablish handler
-            target.off();
-            target.on('click', ImageLinkExpando.onClick);
-
-            LinkExpando.setTag(target, UI.Common.fileExtension(href).toUpperCase());
-
-            if (!autoLoading) {
-                LinkExpando.isVisible(target, true);
-                LinkExpando.toggle(displayDiv, true);
-            }
-
-            if (autoLoading && UI.ImageExpandoSettings.autoShow) {
-                target.click();
-            }
-        };
-        img.src = href;
-    }
+//    if (!LinkExpando.isVisible(target)) {
+//        //show
+//        if (LinkExpando.isLoaded(target)) {
+//            LinkExpando.isVisible(target, true);
+//            LinkExpando.toggle(target.next(), true);
+//        } else {
+//            //load
+//            ImageLinkExpando.loadImage(target, LinkExpando.dataProp(target, 'src'));
+//        }
+//    } else {
+//        //hide
+//        LinkExpando.toggle(target.next(), false);
+//        LinkExpando.isVisible(target, false);
+//    }
+//}
 
 
 /* HTML5 Video Expando */
@@ -460,11 +492,12 @@ var VideoLinkExpando = (function () {
         this.isVideoSupported = function () {
             return this.isMP4Supported() || this.isWEBMSupported();
         };
-        this.embedVideo = function (target, videoProps, sources, description) {
+        this.embedVideo = function (source, videoProps, sources, description) {
             
             var item = $('<video/>', videoProps);
+            var target = this.options.targetFunc(source);
 
-            UI.Common.resizeTarget(item, false, target.parent());
+            
 
             if (sources.length > 0) {
                 for (var i = 0; i < sources.length; i++) {
@@ -474,21 +507,26 @@ var VideoLinkExpando = (function () {
                 return;
             }
 
-            var displayDiv = $('<div/>', {
-                class: 'link-expando',
-                style: 'display:none;'
-            }).append(item).insertAfter(target);
+            var destination = this.options.destinationFunc(target);
+            UI.Common.resizeTarget(item, false, destination.parent());
+
+            destination.empty().append(item);
+            //var displayDiv = $('<div/>', {
+            //    class: 'link-expando',
+            //    style: 'display:none;'
+            //}).append(item).insertAfter(target);
 
             //$('video', target.next()).on('abort stalled suspend error', function () {
             //    TODO: Fail gracefully
             //});
-
-            LinkExpando.setTag(target, description);
-            LinkExpando.setDirectLink(displayDiv, description, target.prop('href'));
+            if (this.options.setTags) {
+                LinkExpando.setTag(target, description);
+            }
+            LinkExpando.setDirectLink(destination, description, source.prop('href'));
 
             LinkExpando.isLoaded(target, true);
 
-            return displayDiv;
+            return destination;
 
         }
     }
@@ -497,9 +535,11 @@ var VideoLinkExpando = (function () {
 VideoLinkExpando.prototype = new ImageLinkExpando();
 VideoLinkExpando.prototype.constructor = VideoLinkExpando;
 
-var GfycatExpando = function () {
-    LinkExpando.call(this, /gfycat\.com\/([A-Z]{1}[a-z]+[A-Z]{1}[a-z]+[A-Z]{1}[a-z]+)/);
-    this.hook = function (target) {
+var GfycatExpando = function (options) {
+    LinkExpando.call(this, /gfycat\.com\/([A-Z]{1}[a-z]+[A-Z]{1}[a-z]+[A-Z]{1}[a-z]+)/, options);
+    this.hook = function (source) {
+
+        var target = this.options.targetFunc(source);
 
         if (LinkExpando.isHooked(target)) {
             return;
@@ -507,18 +547,23 @@ var GfycatExpando = function () {
             LinkExpando.isHooked(target, true);
         }
 
-        LinkExpando.dataProp(target, 'id', this.getId(target.prop('href')));
+        LinkExpando.dataProp(target, 'id', this.getId(source.prop('href')));
 
         var me = this;
         target.on('click', function (e) {
 
             e.preventDefault();
-            var target = $(this);
+            //var target = $(e.target);
             if (!LinkExpando.isLoaded(target)) {
-                LinkExpando.setTag(target, "loading");
+
+                if (me.options.setTags) {
+                    LinkExpando.setTag(target, "loading");
+                }
                 function fnError(result) {
                     //bail
-                    LinkExpando.setTag(target, 'Error');
+                    if (me.options.setTags) {
+                        LinkExpando.setTag(target, 'Error');
+                    }
                     target.off('click');
                 }
                 me.getSourceInfo(LinkExpando.dataProp(target, 'id'), 
@@ -531,7 +576,7 @@ var GfycatExpando = function () {
 
                         if (me.isVideoSupported()) {
                             //vid
-                            var div = me.embedVideo(target,
+                            var div = me.embedVideo(source,
                                 {
                                     'width': result.gfyItem.width,
                                     'height': result.gfyItem.height,
@@ -551,7 +596,7 @@ var GfycatExpando = function () {
                             );
 
                             LinkExpando.isLoaded(target, true);
-                            LinkExpando.toggle(div, true);
+                            //LinkExpando.toggle(div, true);
 
                         } else {
                             //gif - load using default ImageLinkExpando logic
@@ -562,10 +607,13 @@ var GfycatExpando = function () {
                     fnError
                 );
             }
-            target.next().slideToggle();
-
+            me.options.destinationFunc(target).slideToggle();
+            me.options.toggle(target);
         });
-        LinkExpando.setTag($(target), "Gfycat");
+        if (me.options.setTags) {
+            LinkExpando.setTag($(target), "Gfycat");
+        }
+
 
     }
     this.getSourceInfo = function (id, fnCallback, fnErrorHandler) {
@@ -587,9 +635,9 @@ GfycatExpando.prototype.process = function (target) {
     this.hook($(target));
 }
 
-var ImgurGifvExpando = function () {
+var ImgurGifvExpando = function (options) {
 
-    LinkExpando.call(this, /i\.imgur\.com\/([^"&?\/\.]*)\.gifv/i);
+    LinkExpando.call(this, /i\.imgur\.com\/([^"&?\/\.]*)\.gifv/i, options);
     this.getSrcUrl = function(id, extension) {
         return 'http://i.imgur.com/'.concat(id, extension);
     }
@@ -607,7 +655,8 @@ var ImgurGifvExpando = function () {
         target.on('click', function (e) {
 
             e.preventDefault();
-            var target = $(this);
+
+            var target = me.options.targetFunc($(e.target));
 
             var id = me.getId(target.prop('href'));
 
@@ -658,10 +707,12 @@ ImgurGifvExpando.prototype.process = function (target) {
 
 
 /* IFrameEmbedder */
-var IFrameEmbedderExpando = function (urlRegEx) {
-    LinkExpando.call(this, urlRegEx);
+var IFrameEmbedderExpando = function (urlRegEx, options) {
+    LinkExpando.call(this, urlRegEx, options);
     this.defaultRatio = 0.5625;
-    this.hook = function (target, description, iFrameSettings) {
+    this.hook = function (source, description, iFrameSettings) {
+
+        var target = this.options.targetFunc(source);
 
         if (LinkExpando.isHooked(target)) {
             return;
@@ -669,38 +720,40 @@ var IFrameEmbedderExpando = function (urlRegEx) {
             LinkExpando.isHooked(target, true);
         }
         
-        var id = this.getId(target.prop('href'));
+        var id = this.getId(source.prop('href'));
         if (!id) {
             return;
         }
 
-        LinkExpando.dataProp($(target), 'source', this.getSrcUrl(id));
+        LinkExpando.dataProp(target, 'source', this.getSrcUrl(id));
         target.prop('title', description);
         
+        var me = this;
         target.on('click',
-            function (e) {
-                e.preventDefault();
+            function (event) {
+                event.preventDefault();
 
-                var target = $(this);
+                var target = me.options.targetFunc($(event.target));
                 if (!LinkExpando.isLoaded(target)) {
-                    var displayDiv = $('<div/>', {
-                        class: 'link-expando',
-                        style: 'display:none;'
-                    });
+
+                    var displayDiv = me.options.destinationFunc(target);
+
                     //<iframe width="560" height="315" src="//www.youtube.com/embed/JUDSeb2zHQ0" frameborder="0" allowfullscreen></iframe>
                     iFrameSettings.src = LinkExpando.dataProp(target, 'source');
                     var iFrame = $('<iframe/>', iFrameSettings);
-                    displayDiv.html(iFrame);
-                    LinkExpando.setDirectLink(displayDiv, description, target.prop('href'));
+                    displayDiv.empty().html(iFrame);
+                    LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
                     LinkExpando.isLoaded(target, true);
 
-                    displayDiv.insertAfter(target);
+                    //displayDiv.insertAfter(target);
                     UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
                 }
-                target.next().slideToggle();
+                me.options.toggle(target);
+                me.options.destinationFunc(target).slideToggle();
             });
-
-        LinkExpando.setTag(target, description);
+        if (me.options.setTags) {
+            LinkExpando.setTag(target, description);
+        }
 
     }
 }
@@ -708,16 +761,18 @@ IFrameEmbedderExpando.prototype = new LinkExpando();
 IFrameEmbedderExpando.prototype.constructor = IFrameEmbedderExpando;
 
 /* YouTube */
-var YouTubeExpando = function(){
-    IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+var YouTubeExpando = function(options){
+    IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i, options);
     this.getSrcUrl = function (id) { return '//www.youtube.com/embed/' + id; };
 };
 YouTubeExpando.prototype = new IFrameEmbedderExpando();
 YouTubeExpando.prototype.constructor = YouTubeExpando;
-YouTubeExpando.prototype.process = function (target) {
-    var width = Math.min(560, UI.Common.availableWidth($(target).parent()));
+YouTubeExpando.prototype.process = function (source) {
+    var target = this.options.targetFunc($(source));
 
-    this.hook($(target), 'YouTube', {
+    var width = Math.min(560, UI.Common.availableWidth(target.parent()));
+
+    this.hook($(source), 'YouTube', {
         width: width.toString(),
         height: (width * this.defaultRatio).toString(),
         frameborder: '0',
@@ -726,8 +781,8 @@ YouTubeExpando.prototype.process = function (target) {
 };
 
 /* Imgur Album */
-var ImgurAlbumExpando = function () {
-    IFrameEmbedderExpando.call(this, /imgur\.com\/a\/(\w+)\/?/i);
+var ImgurAlbumExpando = function (options) {
+    IFrameEmbedderExpando.call(this, /imgur\.com\/a\/(\w+)\/?/i, options);
     this.getSrcUrl = function (id) { return '//imgur.com/a/' + id + '/embed'; };
 };
 ImgurAlbumExpando.prototype = new IFrameEmbedderExpando();
@@ -744,8 +799,8 @@ ImgurAlbumExpando.prototype.process = function (target) {
 };
 
 /* VIMEO */
-var VimeoExpando = function () {
-    IFrameEmbedderExpando.call(this, /vimeo\.com\/(?:.\*|.*\/)?([\d]+)\/?/i);
+var VimeoExpando = function (options) {
+    IFrameEmbedderExpando.call(this, /vimeo\.com\/(?:.\*|.*\/)?([\d]+)\/?/i, options);
     this.getSrcUrl = function (id) { return '//player.vimeo.com/video/' + id; };
 };
 VimeoExpando.prototype = new IFrameEmbedderExpando();
@@ -791,21 +846,101 @@ UI.ImageExpandoSettings = (function () {
 $(document).ready(function () {
 
     UI.Common.debug = false;
-
+    //comment expandos
+    var commentOptions = {
+        targetFunc: function (source) {
+            var anchor = source;
+            if (anchor.is('span')) {
+                anchor = source.parent();
+            }
+            return anchor;
+        },
+        destinationFunc: function (target) {
+            var anchor = this.targetFunc(target);
+            var container = target.parent().find('.link-expando');
+            if (container.length == 0) {
+                var displayDiv = $('<div/>', {
+                    class: 'link-expando',
+                    style: 'display:none;'
+                });
+                displayDiv.insertAfter(target);
+                container = target.parent().find('.link-expando');
+            }
+            return container;
+        },
+        toggle: function (target) {
+           /*no-op*/
+        },
+        setTags: true
+    };
     UI.ExpandoManager.addExpando('.usertext-body > .md a:not(.link-expando-direct), .panel-message-body a:not(.link-expando-direct)',
         [
-            new ImageLinkExpando(),
-            new YouTubeExpando(),
-            new VimeoExpando(),
-            new GfycatExpando(),
+            new ImageLinkExpando(commentOptions),
+            new YouTubeExpando(commentOptions),
+            new VimeoExpando(commentOptions),
+            new GfycatExpando(commentOptions),
             //new SoundCloudExpando,
-            new ImgurAlbumExpando(),          
-            new ImgurGifvExpando()
+            new ImgurAlbumExpando(commentOptions),
+            new ImgurGifvExpando(commentOptions)
         ]);
 
-    if (UI.Common.isCommentPage() || UI.Common.isMessagePage()) {
+
+    //Submission Expando Options
+    var submissionOptions =  {
+        targetFunc: function (source) {
+            var container = source.parent().parent().find(".expando-button");
+            if (container.length == 0) {
+                //add <div class="expando-button collapsed selftext"></div>
+                var displayDiv = $('<div/>', {
+                    class: 'expando-button collapsed selftext'
+                });
+                displayDiv.insertAfter(source.parent())
+                container = source.parent().parent().find(".expando-button");
+            }
+            return container;
+        },
+        destinationFunc: function (target) {
+            var container = target.parent().find(".expando");
+            if (container.length == 0) {
+                var displayDiv = $('<div/>', {
+                    class: 'expando collapsed link-expando',
+                    style: 'display:none;'
+                });
+                target.parent().append(displayDiv);
+                container = target.parent().find('.expando');
+            }
+            if (!container.hasClass('link-expando')) {
+                container.addClass("link-expando");
+            }
+            return container;
+        },
+        toggle: function (target) {
+            if (target.hasClass('collapsed')) {
+                target.removeClass('collapsed');
+                target.addClass('expanded');
+            } else {
+                target.removeClass('expanded');
+                target.addClass('collapsed');
+            }
+        },
+        setTags: false
+    };
+
+    UI.ExpandoManager.addExpando('.submission .entry .title a:not(.link-expando-direct)',
+        [
+            new ImageLinkExpando(submissionOptions),
+            new YouTubeExpando(submissionOptions),
+            new VimeoExpando(submissionOptions),
+            new GfycatExpando(submissionOptions),
+            //new SoundCloudExpando,
+            new ImgurAlbumExpando(submissionOptions),
+            new ImgurGifvExpando(submissionOptions)
+        ]);
+
+
+    //if (UI.Common.isCommentPage() || UI.Common.isMessagePage()) {
         UI.ExpandoManager.execute();
-    }
+    //}
 
     UI.Notifications.subscribe('iFrameLoaded', function (context) {
         var iframe = $('iframe', context);
