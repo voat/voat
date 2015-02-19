@@ -52,9 +52,11 @@
             }
             else
             {
-                <div class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
-                <div class="expando" style="display: none;" id="@Model.Id"></div>
 
+                if (!String.IsNullOrEmpty(Model.MessageContent)) { 
+                    <div class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
+                    @*<div class="expando" style="display: none;" id="@Model.Id"></div>*@
+                }
                 if (Model.Anonymized || anonymizedSubverse)
                 {
                     <p class="tagline">
