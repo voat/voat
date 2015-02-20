@@ -27,11 +27,12 @@ namespace Voat.Utils
                 originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
             }
 
+            originalMessage = originalMessage.Replace("\n", "\n\n"); //forces <p> tags at each return
+
             var m = new Markdown
             {
                 ExtraMode = true, 
                 SafeMode = true,
-                
                 NewWindowForExternalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name),
                 NewWindowForLocalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name)
             };
