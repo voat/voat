@@ -288,8 +288,10 @@ var ImageLinkExpando = (function () {
             target.on('click', (function(event) {me.onClick(event)}));
 
             LinkExpando.isHooked(target, true);
+            var type = UI.Common.fileExtension(source.prop('href')).toUpperCase();
+            target.prop('title', type);
             if (options.setTags) {
-                LinkExpando.setTag(target, UI.Common.fileExtension(source.prop('href')).toUpperCase());
+                LinkExpando.setTag(target, type);
             }
             LinkExpando.dataProp(target, 'src', source.prop('href'));
 
@@ -446,27 +448,6 @@ var ImageLinkExpando = (function () {
 })();
 ImageLinkExpando.prototype = new LinkExpando();
 ImageLinkExpando.prototype.constructor = ImageLinkExpando;
-//ImageLinkExpando.onClick = function(event) {
-//    event.preventDefault();
-
-//    var target = $(this);
-
-//    if (!LinkExpando.isVisible(target)) {
-//        //show
-//        if (LinkExpando.isLoaded(target)) {
-//            LinkExpando.isVisible(target, true);
-//            LinkExpando.toggle(target.next(), true);
-//        } else {
-//            //load
-//            ImageLinkExpando.loadImage(target, LinkExpando.dataProp(target, 'src'));
-//        }
-//    } else {
-//        //hide
-//        LinkExpando.toggle(target.next(), false);
-//        LinkExpando.isVisible(target, false);
-//    }
-//}
-
 
 /* HTML5 Video Expando */
 var VideoLinkExpando = (function () {
@@ -496,7 +477,7 @@ var VideoLinkExpando = (function () {
             
             var item = $('<video/>', videoProps);
             var target = this.options.targetFunc(source);
-
+            target.prop('title', description);
             
 
             if (sources.length > 0) {
@@ -540,6 +521,7 @@ var GfycatExpando = function (options) {
     this.hook = function (source) {
 
         var target = this.options.targetFunc(source);
+        target.prop('title', 'Gfycat');
 
         if (LinkExpando.isHooked(target)) {
             return;
@@ -648,6 +630,7 @@ var ImgurGifvExpando = function (options) {
         } else {
             LinkExpando.isHooked(target, true);
         }
+        target.prop('title', 'Gifv');
 
         LinkExpando.dataProp(target, 'id', this.getId(target.prop('href')));
 

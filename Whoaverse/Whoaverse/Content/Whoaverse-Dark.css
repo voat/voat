@@ -2152,6 +2152,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     height: 16px;
     margin: 2px 5px 2px 0;
     width: 16px;
+    cursor:pointer;
 }
 
     .expando-button.selftext.collapsed {
@@ -2807,7 +2808,7 @@ textarea.form-control {
     }
 
     #container {
-        padding-top: 50px;
+
         overflow: visible;
     }
     #container.page-userprofile {
