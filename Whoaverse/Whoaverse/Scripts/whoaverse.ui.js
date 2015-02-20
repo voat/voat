@@ -837,12 +837,15 @@ UI.SidebarHandler = function () {
     var showMenuBtn = $("#show-menu-button");
     //The background to the sidebar
     var modalBg = $("#modal-background");
+    //The body of the page
+    var body = $("body");
     
     //Add a click listener
     showMenuBtn.on("click", function () {
         modalBg.toggleClass("show-mobile-sidebar");
         showMenuBtn.toggleClass("show-mobile-sidebar");
         sidebar.toggleClass("show-mobile-sidebar");
+        body.toggleClass("show-mobile-sidebar");
     });
 
     modalBg.on("click", function () {
@@ -853,6 +856,7 @@ UI.SidebarHandler = function () {
         modalBg.toggleClass("show-mobile-sidebar", false);
         showMenuBtn.toggleClass("show-mobile-sidebar", false);
         sidebar.toggleClass("show-mobile-sidebar", false);
+        body.toggleClass("show-mobile-sidebar", false);
     }
 
     //Media query listener to remove class when resized to desktop size

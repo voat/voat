@@ -2788,6 +2788,11 @@ textarea.form-control {
         height: calc(100vh - 81px);
     }
 
+    body.show-mobile-sidebar {
+        overflow: hidden;
+        height: 100vh;
+    }
+
     .side.show-mobile-sidebar {
         left: -1px;
     }
