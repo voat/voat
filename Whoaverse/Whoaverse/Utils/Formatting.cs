@@ -23,12 +23,18 @@ namespace Voat.Utils
         
         public static string FormatMessage(String originalMessage, bool processContent = true){
 
-            if (processContent && originalMessage != null) { 
-                originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
+            if (!String.IsNullOrEmpty(originalMessage)) 
+            {
+                originalMessage = originalMessage.Replace("\n", "\n\n"); //forces <p> tags at each return
+                
+                if (processContent) 
+                {
+                    originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
+                }
             }
+            
 
-            originalMessage = originalMessage.Replace("\n", "\n\n"); //forces <p> tags at each return
-
+            
             var m = new Markdown
             {
                 ExtraMode = true, 
