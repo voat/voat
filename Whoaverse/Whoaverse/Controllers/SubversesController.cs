@@ -373,37 +373,38 @@ namespace Voat.Controllers
                 {
                     // check if subverse exists, if not, send to a page not found error
                     var subverse = _db.Subverses.Find(subversetoshow);
-                    if (subverse != null)
+                    if (subverse == null)
                     {
-                        ViewBag.SelectedSubverse = subverse.name;
-                        ViewBag.Title = subverse.description;
-
-                        var paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
-
-                        // check if subverse is rated adult, show a NSFW warning page before entering
-                        if (!subverse.rated_adult) return View(paginatedSubmissions);
-
-                        // check if user wants to see NSFW content by reading user preference
-                        if (User.Identity.IsAuthenticated)
-                        {
-                            if (Utils.User.AdultContentEnabled(User.Identity.Name))
-                            {
-                                return View(paginatedSubmissions);
-                            }
-
-                            // display a view explaining that account preference is set to NO NSFW and why this subverse can not be shown
-                            return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
-                        }
-
-                        // check if user wants to see NSFW content by reading NSFW cookie
-                        if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-                        {
-                            return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
-                        }
-                        return View(paginatedSubmissions);
+                        ViewBag.SelectedSubverse = "404";
+                        return View("~/Views/Errors/Subversenotfound.cshtml");
                     }
-                    ViewBag.SelectedSubverse = "404";
-                    return View("~/Views/Errors/Subversenotfound.cshtml");
+
+                    ViewBag.SelectedSubverse = subverse.name;
+                    ViewBag.Title = subverse.description;
+
+                    var paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
+
+                    // check if subverse is rated adult, show a NSFW warning page before entering
+                    if (!subverse.rated_adult) return View(paginatedSubmissions);
+
+                    // check if user wants to see NSFW content by reading user preference
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        if (Utils.User.AdultContentEnabled(User.Identity.Name))
+                        {
+                            return View(paginatedSubmissions);
+                        }
+
+                        // display a view explaining that account preference is set to NO NSFW and why this subverse can not be shown
+                        return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
+                    }
+
+                    // check if user wants to see NSFW content by reading NSFW cookie
+                    if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                    {
+                        return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
+                    }
+                    return View(paginatedSubmissions);
                 }
 
                 // selected subverse is ALL, show submissions from all subverses, sorted by rank
@@ -715,7 +716,7 @@ namespace Voat.Controllers
 
             // check if caller is subverse owner, if not, deny listing
             if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
-            
+
             var moderatorInvitations = _db.Moderatorinvitations
                 .Where(mi => mi.Subverse == subversetoshow)
                 .Take(20)
@@ -1134,8 +1135,6 @@ namespace Voat.Controllers
             return RedirectToAction("SubverseModerators");
         }
 
-
-
         // POST: remove a ban from given subverse
         [Authorize]
         [HttpPost, ActionName("RemoveBan")]
@@ -1371,14 +1370,13 @@ namespace Voat.Controllers
             const string cookieName = "NSFWEnabled";
 
             if (!sortingmode.Equals("new") && !sortingmode.Equals("top")) return RedirectToAction("Index", "Home");
+
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
             if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
-
-            ViewBag.Title = subversetoshow;
 
             // check if subverse exists, if not, send to a page not found error
             var subverse = _db.Subverses.Find(subversetoshow);
@@ -1387,6 +1385,7 @@ namespace Voat.Controllers
 
             // subverse is adult rated, check if user wants to see NSFW content
             PaginatedList<Message> paginatedSubmissionsByRank;
+
             if (subverse.rated_adult)
             {
                 if (User.Identity.IsAuthenticated)
@@ -1396,50 +1395,13 @@ namespace Voat.Controllers
                     {
                         if (sortingmode.Equals("new"))
                         {
-                            var paginatedSubmissionsByDate =
-                                new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0,
-                                    pageSize);
+                            var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
                             return View("SubverseIndex", paginatedSubmissionsByDate);
                         }
 
                         if (sortingmode.Equals("top"))
                         {
-                            var paginatedSubmissionsByDate =
-                                new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0,
-                                    pageSize);
-                            return View("SubverseIndex", paginatedSubmissionsByDate);
-                        }
-
-                        // default sorting mode by rank
-                        paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0,
-                            pageSize);
-                        return View("SubverseIndex", paginatedSubmissionsByRank);
-                    }
-                    return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
-                }
-                else
-                {
-                    // check if user wants to see NSFW content by reading NSFW cookie
-                    if (!HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-                    {
-                        return RedirectToAction("AdultContentWarning", "Subverses",
-                            new { destination = subverse.name, nsfwok = false });
-                    }
-                    else
-                    {
-                        if (sortingmode.Equals("new"))
-                        {
-                            var paginatedSubmissionsByDate =
-                                new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0,
-                                    pageSize);
-                            return View("SubverseIndex", paginatedSubmissionsByDate);
-                        }
-
-                        if (sortingmode.Equals("top"))
-                        {
-                            var paginatedSubmissionsByDate =
-                                new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0,
-                                    pageSize);
+                            var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
                             return View("SubverseIndex", paginatedSubmissionsByDate);
                         }
 
@@ -1447,21 +1409,43 @@ namespace Voat.Controllers
                         paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissionsByRank);
                     }
+                    return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
                 }
+
+                // check if user wants to see NSFW content by reading NSFW cookie
+                if (!HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                {
+                    return RedirectToAction("AdultContentWarning", "Subverses",
+                        new { destination = subverse.name, nsfwok = false });
+                }
+
+                if (sortingmode.Equals("new"))
+                {
+                    var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissionsByDate);
+                }
+
+                if (sortingmode.Equals("top"))
+                {
+                    var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissionsByDate);
+                }
+
+                // default sorting mode by rank
+                paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
+                return View("SubverseIndex", paginatedSubmissionsByRank);
             }
 
             // subverse is safe for work
             if (sortingmode.Equals("new"))
             {
-                var paginatedSubmissionsByDate =
-                    new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
+                var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissionsByDate);
             }
 
             if (sortingmode.Equals("top"))
             {
-                var paginatedSubmissionsByDate =
-                    new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
+                var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissionsByDate);
             }
 
@@ -1647,34 +1631,48 @@ namespace Voat.Controllers
         #region submissions from a single subverse
         private IQueryable<Message> SubmissionsFromASubverseByDate(string subverseName)
         {
+            var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             IQueryable<Message> submissionsFromASubverseByDate = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                   where message.Name != "deleted" && message.Subverse == subverseName
                                                                   where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                   select message).OrderByDescending(s => s.Date).AsNoTracking();
 
+            if (subverseStickie != null)
+            {
+                return submissionsFromASubverseByDate.Where(s => s.Id != subverseStickie.Submission_id);
+            }
             return submissionsFromASubverseByDate;
         }
 
         private IQueryable<Message> SubmissionsFromASubverseByRank(string subverseName)
         {
+            var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             IQueryable<Message> submissionsFromASubverseByRank = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                   where message.Name != "deleted" && message.Subverse == subverseName
                                                                   where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                   select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
+            if (subverseStickie != null)
+            {
+                return submissionsFromASubverseByRank.Where(s => s.Id != subverseStickie.Submission_id);
+            }
             return submissionsFromASubverseByRank;
         }
 
         private IQueryable<Message> SubmissionsFromASubverseByTop(string subverseName)
         {
+            var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             IQueryable<Message> submissionsFromASubverseByTop = (from message in _db.Messages
                                                                  join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                  where message.Name != "deleted" && message.Subverse == subverseName
                                                                  where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                  select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
-
+            if (subverseStickie != null)
+            {
+                return submissionsFromASubverseByTop.Where(s => s.Id != subverseStickie.Submission_id);
+            }
             return submissionsFromASubverseByTop;
         }
         #endregion
