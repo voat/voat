@@ -23,17 +23,10 @@ namespace Voat.Utils
         
         public static string FormatMessage(String originalMessage, bool processContent = true){
 
-            if (!String.IsNullOrEmpty(originalMessage)) 
+            if (processContent && !String.IsNullOrEmpty(originalMessage)) 
             {
-                originalMessage = originalMessage.Replace("\n", "\n\n"); //forces <p> tags at each return
-                
-                if (processContent) 
-                {
-                    originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
-                }
+                originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
             }
-            
-
             
             var m = new Markdown
             {
