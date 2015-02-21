@@ -379,7 +379,7 @@ namespace Voat.Controllers
 
             var resultList = new List<ApiComment>();
 
-            foreach (var firstComment in firstComments)
+            foreach (var firstComment in firstComments.Take(10))
             {
                 //do not show deleted comments unless they have replies
                 if (firstComment.Name == "deleted" && submission.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
