@@ -505,16 +505,16 @@ function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
 // append a comment edit form to calling area while preventing multiple appends
 function edit(parentcommentid, messageid) {
 
-    //hide original text comment
-    $('#commentContent-' + parentcommentid).toggle(1);
+    // hide original text comment
+    $("#commentContent-" + parentcommentid).toggle(1);
 
-    //show edit form
-    $("#" + parentcommentid).find('.usertext-edit').toggle(1);
+    // show edit form
+    $("#" + parentcommentid).find(".usertext-edit").toggle(1);
 
-    //Focus the cursor on the edit comment form textarea, to prevent unnecessary use of the tab key
-    $('#commenteditform-' + parentcommentid).find('#CommentContent').focus();
+    // Focus the cursor on the edit comment form textarea, to prevent unnecessary use of the tab key
+    $("#commenteditform-" + parentcommentid).find("#CommentContent").focus();
 
-    var form = $('#commenteditform-' + parentcommentid)
+    var form = $("#commenteditform-" + parentcommentid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
             .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
 
@@ -564,15 +564,15 @@ function editmessagesubmit(submissionid) {
     return false;
 }
 
-// remove reply form for given parent id
+// remove comment reply form for given parent id
 function removereplyform(parentcommentid) {
     $('#replyform-' + parentcommentid).remove();
 }
 
 // remove edit form for given parent id and replace it with original comment
 function removeeditform(parentcommentid) {
-    $("#" + parentcommentid).find('.usertext-body').toggle(1);
-    $("#" + parentcommentid).find('.usertext-edit').toggle(1);
+    $("#" + parentcommentid).find(".usertext-body").show();
+    $("#" + parentcommentid).find(".usertext-edit").hide();
 }
 
 function showcomment(commentid) {

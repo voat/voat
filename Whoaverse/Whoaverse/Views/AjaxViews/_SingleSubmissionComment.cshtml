@@ -143,7 +143,7 @@
 
                 @if (Model.Name != "deleted")
                 {
-                    <div class="usertext-body may-blank-within">
+                    <div class="usertext-body may-blank-within" id="commentContent-@Model.Id">
                         <div class="md">
                             @Html.Raw(@Formatting.FormatMessage(WebUtility.HtmlDecode(Model.CommentContent)))
                         </div>
@@ -221,7 +221,7 @@
                             </form>
                         </li>
                     }
-                    
+
                     if (Model.Name != "deleted")
                     {
                         <li>
