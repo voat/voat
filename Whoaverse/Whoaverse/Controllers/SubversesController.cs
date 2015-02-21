@@ -1277,23 +1277,9 @@ namespace Voat.Controllers
                 .ToList()
                 .OrderBy(s => s.Username);
 
-            // find all moderators with power = 2
-            var subverseModerators = subverseAdministration
-                .Where(m => m.Power == 2);
+            ViewBag.subverseModerators = subverseAdministration;
 
-            // if there are no moderators with power = 2, find subverse owner with power = 1 and return him instead
-            if (!subverseModerators.Any())
-            {
-                subverseModerators =
-                subverseAdministration
-                .Where(n => n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase) && n.Power == 1)
-                .Take(1)
-                .ToList();
-            }
-
-            ViewBag.subverseModerators = subverseModerators;
-
-            return PartialView("~/Views/Subverses/_SubverseModerators.cshtml", subverseModerators);
+            return PartialView("~/Views/Subverses/_SubverseModerators.cshtml", subverseAdministration);
         }
 
         // GET: stickied submission
