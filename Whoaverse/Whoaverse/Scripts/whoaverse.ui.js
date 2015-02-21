@@ -492,14 +492,7 @@ var VideoLinkExpando = (function () {
             UI.Common.resizeTarget(item, false, destination.parent());
 
             destination.empty().append(item);
-            //var displayDiv = $('<div/>', {
-            //    class: 'link-expando',
-            //    style: 'display:none;'
-            //}).append(item).insertAfter(target);
 
-            //$('video', target.next()).on('abort stalled suspend error', function () {
-            //    TODO: Fail gracefully
-            //});
             if (this.options.setTags) {
                 LinkExpando.setTag(target, description);
             }
@@ -623,32 +616,36 @@ var ImgurGifvExpando = function (options) {
     this.getSrcUrl = function(id, extension) {
         return 'http://i.imgur.com/'.concat(id, extension);
     }
-    this.hook = function (target) {
+    this.hook = function (source) {
+
+
+        var target = this.options.targetFunc(source);
+        target.prop('title', 'Gifv');
 
         if (LinkExpando.isHooked(target)) {
             return;
         } else {
             LinkExpando.isHooked(target, true);
         }
-        target.prop('title', 'Gifv');
-
-        LinkExpando.dataProp(target, 'id', this.getId(target.prop('href')));
+        
+        LinkExpando.dataProp(target, 'id', this.getId(source.prop('href')));
 
         var me = this;
         target.on('click', function (e) {
 
             e.preventDefault();
 
-            var target = me.options.targetFunc($(e.target));
+            //var target = me.options.targetFunc($(e.target));
 
-            var id = me.getId(target.prop('href'));
+            var id = me.getId(source.prop('href'));
 
             if (!LinkExpando.isLoaded(target)) {
-                LinkExpando.setTag(target, "loading");
-               
+                if (me.options.setTags) {
+                    LinkExpando.setTag(target, "loading");
+                }
                 if (me.isVideoSupported()) {
                     //vid
-                    var div = me.embedVideo(target,
+                    var div = me.embedVideo(source,
                         {
                             'width': '100%',
                             'height': 'auto',
@@ -664,7 +661,7 @@ var ImgurGifvExpando = function (options) {
                             'id': 'webmsource',
                             'src': me.getSrcUrl(id, '.webm'),
                             'type': 'video/webm'
-                        }], 'Imgur Gifv Video'
+                        }], 'Gifv Video'
                     );
 
                     LinkExpando.isLoaded(target, true);
@@ -674,17 +671,19 @@ var ImgurGifvExpando = function (options) {
                     LinkExpando.setTag(target);
                 }
             }
-            target.next().slideToggle();
+            me.options.destinationFunc(target).slideToggle();
+            me.options.toggle(target);
         });
-        LinkExpando.setTag($(target), "Imgur Gifv");
-
+        if (me.options.setTags) {
+            LinkExpando.setTag($(target), "Gifv");
+        }
     }
 
 }
 ImgurGifvExpando.prototype = new VideoLinkExpando();
 ImgurGifvExpando.prototype.constructor = ImgurGifvExpando;
-ImgurGifvExpando.prototype.process = function (target) {
-    this.hook($(target));
+ImgurGifvExpando.prototype.process = function (source) {
+    this.hook($(source));
 }
 
 
@@ -885,14 +884,14 @@ $(document).ready(function () {
         },
         destinationFunc: function (target) {
             var anchor = this.targetFunc(target);
-            var container = target.parent().find('.link-expando');
+            var container = target.next('.link-expando');
             if (container.length == 0) {
                 var displayDiv = $('<div/>', {
                     class: 'link-expando',
                     style: 'display:none;'
                 });
                 displayDiv.insertAfter(target);
-                container = target.parent().find('.link-expando');
+                container = target.next('.link-expando');
             }
             return container;
         },

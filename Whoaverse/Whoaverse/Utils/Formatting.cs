@@ -23,15 +23,22 @@ namespace Voat.Utils
         
         public static string FormatMessage(String originalMessage, bool processContent = true){
 
-            if (processContent && originalMessage != null) { 
-                originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
+            if (!String.IsNullOrEmpty(originalMessage)) 
+            {
+                originalMessage = originalMessage.Replace("\n", "\n\n"); //forces <p> tags at each return
+                
+                if (processContent) 
+                {
+                    originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
+                }
             }
+            
 
+            
             var m = new Markdown
             {
                 ExtraMode = true, 
                 SafeMode = true,
-                
                 NewWindowForExternalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name),
                 NewWindowForLocalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name)
             };
