@@ -513,6 +513,7 @@
     <Content Include="Graphics\WVSprite.png.scss">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\voat beast server.pubxml" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
