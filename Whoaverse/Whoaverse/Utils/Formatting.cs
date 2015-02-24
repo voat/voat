@@ -22,7 +22,9 @@ namespace Voat.Utils
     {
         
         public static string FormatMessage(String originalMessage, bool processContent = true){
-
+            //Test changes to this code against this markdown thread content:
+            //https://voat.co/v/test/comments/53891
+            
             if (processContent && !String.IsNullOrEmpty(originalMessage)) 
             {
                 originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
