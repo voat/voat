@@ -1,6 +1,6 @@
 # Voat
 
-<img height="345" width="252" src="http://voat.co/Graphics/voat-goat.png"
+<img height="252" width="345" src="http://voat.co/Graphics/voat-goat.png"
  alt="Voat mascot" title="Voat" align="right" />
 
 This is the code behind http://www.voat.co.
