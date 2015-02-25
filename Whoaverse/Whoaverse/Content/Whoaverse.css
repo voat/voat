@@ -5,6 +5,10 @@
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
+.even {
+    background: none repeat scroll 0% 0% #FBFBFB;
+}
+
 .navbar-nav {
     margin: 0 !important;
 }
