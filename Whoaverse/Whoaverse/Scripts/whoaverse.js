@@ -491,8 +491,9 @@ function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
             success: function (response) {
                 // remove reply form 
                 removereplyform(parentprivatemessageid);
-                // change reply button to "reply sent"                
+                // change reply button to "reply sent" and disable it               
                 $("#messageContainer-" + parentprivatemessageid).find("#replyPrivateMessage").html("Reply sent.");
+                $("#messageContainer-" + parentprivatemessageid).find("#replyPrivateMessage").addClass("disabled");
             }
         });
 
