@@ -19,27 +19,77 @@ using Voat.Utils;
 namespace UnitTests
 {
     [TestClass]
-    public class UnitTests
+    public class SubmissionAgeTests
     {
+
         [TestMethod]
-        public void TestCalcSubmissionAge()
-        {
-            DateTime testDate = DateTime.Now.AddDays(-2);
-            string result = Submissions.CalcSubmissionAge(testDate);
+        public void Calc_SubmissionAge_1second() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromSeconds(1));
+            Assert.AreEqual("1 second", result, "Submission age was not calculated.");
+        }
+        [TestMethod]
+        public void Calc_SubmissionAge_30seconds() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromSeconds(30));
+            Assert.AreEqual("30 seconds", result, "Submission age was not calculated.");
+        }
+        [TestMethod]
+        public void Calc_SubmissionAge_1minute() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromMinutes(1));
+            Assert.AreEqual("1 minute", result, "Submission age was not calculated.");
+        }
+        [TestMethod]
+        public void Calc_SubmissionAge_2minutes() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromMinutes(2));
+            Assert.AreEqual("2 minutes", result, "Submission age was not calculated.");
+        }
+        [TestMethod]
+        public void Calc_SubmissionAge_1Day() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromDays(1));
+            Assert.AreEqual("1 day", result, "Submission age was not calculated.");
+        }
+        [TestMethod]
+        public void Calc_SubmissionAge_2Day() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromDays(2));
             Assert.AreEqual("2 days", result, "Submission age was not calculated.");
+        }
+      
+        [TestMethod]
+        public void Calc_SubmissionAge_8months() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromDays(8 * 31));
+            Assert.AreEqual("8 months", result, "Submission age was not calculated.");
+        }
+        [TestMethod]
+        public void Calc_SubmissionAge_1year() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromDays(370));
+            Assert.AreEqual("1 year", result, "Submission age was not calculated.");
+        }
+        [TestMethod]
+        public void Calc_SubmissionAge_1_5years() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromDays(18 * 30));
+            Assert.AreEqual("1.5 years", result, "Submission age was not calculated.");
         }
 
         [TestMethod]
-        public void TestCalcSubmissionAgeDouble()
+        public void Calc_SubmissionAge_2years() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromDays(369*2));
+            Assert.AreEqual("2 years", result, "Submission age was not calculated.");
+        }
+
+        [TestMethod]
+        public void Calc_SubmissionAgeDouble()
         {
             DateTime testDate = DateTime.Now.AddDays(-143);
             double result = Submissions.CalcSubmissionAgeDouble(testDate);
             Assert.AreEqual(3432, result, 0.1, "Submission double age was not calculated.");
         }
 
+    }
+
+    [TestClass]
+    public class Misc_Tests {
+
         [TestMethod]
-        public void TestGetDomainFromUri()
-        {
+        public void TestGetDomainFromUri() {
             Uri testUri = new Uri("http://www.youtube.com");
 
             string result = UrlUtility.GetDomainFromUri(testUri.ToString());
@@ -47,8 +97,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestFormatMarkdown()
-        {
+        public void TestFormatMarkdown() {
             string testString = "**Bold**";
 
             string result = Formatting.FormatMessage(testString);
@@ -56,8 +105,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestCalcRank()
-        {            
+        public void TestCalcRank() {
             double result = Ranking.CalculateNewRank(0.5, 150, 20);
             Assert.AreEqual(0.0012465, result, 0.01, "Rank was not calculated.");
         }
