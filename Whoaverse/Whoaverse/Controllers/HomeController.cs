@@ -201,6 +201,13 @@ namespace Voat.Controllers
             // generate a thumbnail if submission is a direct link to image or video
             if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
             {
+                // abort if title contains unicode
+                if (Submissions.ContainsUnicode(message.Linkdescription))
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, the link description may not contain unicode characters.");
+                    return View("Submit");
+                }
+
                 var domain = UrlUtility.GetDomainFromUri(message.MessageContent);
 
                 // check if target subvere allows submissions from globally banned hostnames
@@ -267,6 +274,14 @@ namespace Voat.Controllers
             else if (message.Type == 1 && message.Title != null)
             {
                 // submission is a self post
+
+                // abort if title contains unicode
+                if (Submissions.ContainsUnicode(message.Title))
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, the message title may not contain unicode characters.");
+                    return View("Submit");
+                }
+
                 // accept submission and save it to the database
                 // trim trailing blanks from subverse name if a user mistakenly types them
                 message.Subverse = targetSubverse.name;

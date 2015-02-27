@@ -1446,6 +1446,8 @@ namespace Voat.Controllers
             const string cookieName = "NSFWEnabled";
             const int pageSize = 25;
 
+            ViewBag.SelectedSubverse = "all";
+
             PaginatedList<Message> paginatedSubmissions;
             if (User.Identity.IsAuthenticated)
             {

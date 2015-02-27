@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using System.Linq;
 
 namespace Voat.Utils
 {
@@ -58,6 +59,7 @@ namespace Voat.Utils
 
             return result;
         }
+        
         // calculate submission age in hours from posting date for ranking purposes
         public static double CalcSubmissionAgeDouble(DateTime inPostingDateTime)
         {
@@ -67,7 +69,12 @@ namespace Voat.Utils
             return duration.TotalHours;            
         }
 
-
+        // check if a string contains unicode characters
+        public static bool ContainsUnicode(string stringToTest)
+        {
+            const int maxAnsiCode = 255;
+            return stringToTest.Any(c => c > maxAnsiCode);
+        }
         
     }
 }
