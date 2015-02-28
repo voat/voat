@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Globalization;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -43,14 +44,16 @@ namespace Voat
         }
 
         // force SSL for every request if enabled in Web.config
-        protected void Application_BeginRequest(Object sender, EventArgs e)
-        {
-            if (!Convert.ToBoolean(ConfigurationManager.AppSettings["forceHTTPS"])) return;
-
-            if (HttpContext.Current.Request.IsSecureConnection.Equals(false) && HttpContext.Current.Request.IsLocal.Equals(false))
-            {
-                Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + HttpContext.Current.Request.RawUrl);
+        protected void Application_BeginRequest(Object sender, EventArgs e) {
+            if (Convert.ToBoolean(ConfigurationManager.AppSettings["forceHTTPS"])) {
+                if (HttpContext.Current.Request.IsSecureConnection.Equals(false) && HttpContext.Current.Request.IsLocal.Equals(false)) {
+                    Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + HttpContext.Current.Request.RawUrl);
+                }
             }
+            //change formatting culture for .NET
+            try {
+                System.Threading.Thread.CurrentThread.CurrentCulture =  new CultureInfo(Request.UserLanguages[0]);
+            } catch { }
         }
 
         // fire each time a new session is created     
