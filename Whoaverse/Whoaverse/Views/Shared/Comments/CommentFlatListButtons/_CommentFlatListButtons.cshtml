@@ -24,6 +24,13 @@
             <a href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.MessageId/@Model.CommentModel.Id" class="bylink" rel="nofollow">permalink</a>
         </li>
     }
+    
+    @if (Model.CommentModel.ParentId != null)
+    {
+        <li>
+            <a href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.MessageId/@Model.CommentModel.ParentId" rel="nofollow">parent</a>
+        </li>
+    }
 
     @if (User.Identity.IsAuthenticated)
     {
