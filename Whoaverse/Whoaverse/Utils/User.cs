@@ -696,10 +696,10 @@ namespace Voat.Utils
                 var totalCommentVotes = commentUpvotes + commentDownvotes;
 
                 // downvote ratio
-                var downvotePercentage = (commentDownvotes/totalCommentVotes) * 100;
+                var downvotePercentage = (double)commentDownvotes/totalCommentVotes * 100;
 
                 // upvote ratio
-                var upvotePercentage = (commentUpvotes / totalCommentVotes) * 100;
+                var upvotePercentage = (double)commentUpvotes / totalCommentVotes * 100;
 
                 return downvotePercentage > upvotePercentage;
             }
@@ -717,10 +717,10 @@ namespace Voat.Utils
                 var totalSubmissionVotes = submissionUpvotes + submissionDownvotes;
 
                 // downvote ratio
-                var downvotePercentage = (submissionDownvotes / totalSubmissionVotes) * 100;
+                var downvotePercentage = (double)submissionDownvotes / totalSubmissionVotes * 100;
 
                 // upvote ratio
-                var upvotePercentage = (submissionUpvotes / totalSubmissionVotes) * 100;
+                var upvotePercentage = (double)submissionUpvotes / totalSubmissionVotes * 100;
 
                 return downvotePercentage > upvotePercentage;
             }

@@ -109,11 +109,17 @@ namespace Voat.Utils
             {
                 Comment comment = db.Comments.Find(commentId);
 
+                // do not execute downvoting, subverse is in anonymized mode
                 if (comment.Message.Anonymized)
                 {
-                    // do not execute voting, subverse is in anonymized mode
                     return;
-                }  
+                }
+
+                // do not execute downvoting if user has insufficient CCP for target subverse
+                if (Karma.CommentKarmaForSubverse(userWhichDownvoted, comment.Message.Subverse) < 100)
+                {
+                    return;
+                }
 
                 switch (result)
                 {
