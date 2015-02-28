@@ -683,5 +683,47 @@ namespace Voat.Utils
                 db.SaveChanges();
             }
         }
+
+        // check if a given user has downvoted more comments than upvoted
+        public static bool IsUserCommentVotingMeanie(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                // get voting habits
+                var commentUpvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                var commentDownvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                
+                var totalCommentVotes = commentUpvotes + commentDownvotes;
+
+                // downvote ratio
+                var downvotePercentage = (commentDownvotes/totalCommentVotes) * 100;
+
+                // upvote ratio
+                var upvotePercentage = (commentUpvotes / totalCommentVotes) * 100;
+
+                return downvotePercentage > upvotePercentage;
+            }
+        }
+
+        // check if a given user has downvoted more submissions than upvoted
+        public static bool IsUserSubmissionVotingMeanie(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                // get voting habits
+                var submissionUpvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                var submissionDownvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+
+                var totalSubmissionVotes = submissionUpvotes + submissionDownvotes;
+
+                // downvote ratio
+                var downvotePercentage = (submissionDownvotes / totalSubmissionVotes) * 100;
+
+                // upvote ratio
+                var upvotePercentage = (submissionUpvotes / totalSubmissionVotes) * 100;
+
+                return downvotePercentage > upvotePercentage;
+            }
+        }
     }
 }

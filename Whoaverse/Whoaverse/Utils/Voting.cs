@@ -166,11 +166,16 @@ namespace Voat.Utils
                     // never voted before
                     case 0:
                         {
+                            // this user is downvoting more than upvoting, don't register the downvote
+                            if (User.IsUserCommentVotingMeanie(userWhichDownvoted))
+                            {
+                                return;
+                            }
+
                             submission.Dislikes++;
 
                             double currentScore = submission.Likes - submission.Dislikes;
                             double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.Date);
-
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
                             submission.Rank = newRank;
@@ -236,10 +241,8 @@ namespace Voat.Utils
                         }
 
                         break;
-
                 }
             }
-
         }
 
         // send SignalR realtime notification of incoming vote to the author
@@ -291,7 +294,5 @@ namespace Voat.Utils
                     break;
             }
         }
-
-
     }
 }

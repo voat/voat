@@ -121,6 +121,12 @@ namespace Voat.Utils
                     case 0:
 
                     {
+                        // this user is downvoting more than upvoting, don't register the downvote
+                        if (User.IsUserCommentVotingMeanie(userWhichDownvoted))
+                        {
+                            return;
+                        }
+
                         comment.Dislikes++;
 
                         // register downvote
