@@ -17,7 +17,6 @@
 
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
-    string classEvenOrOdd = "";
 
     int commentContributionPoints = 0;
     if (User.Identity.IsAuthenticated)
@@ -94,6 +93,7 @@
                     submissionClass = "";
                 }
 
+                var classEvenOrOdd = "";
                 if (counter%2 == 0)
                 {
                     //is even

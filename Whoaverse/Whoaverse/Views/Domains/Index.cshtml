@@ -12,11 +12,13 @@
 
 @model PaginatedList<Voat.Models.Message>
 
+@using System.Configuration
+
 @{
     ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
 
     string sortingMode = ViewBag.SortingMode;
-    string urlaction = "";
+    string urlaction;
 
     if (sortingMode != "new")
     {
@@ -33,8 +35,6 @@
         commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
     }  
 }
-@using System.Configuration
-@using Voat.Utils;
 
 <style type="text/css">
     body > .content .link .rank {
@@ -58,15 +58,14 @@
             @{
                 int currentPageNumber = Model.PageIndex;
                 int counterCont = (currentPageNumber - 1) * 25;
-
                 int counter = counterCont + 1;
-                string submissionClass = "";
             }
 
             @foreach (var submission in Model)
             {
                 //type 2 = link
                 //type 1 = message
+                var submissionClass = "";
                 if (submission.Type == 1)
                 {
                     submissionClass = "self";
@@ -106,9 +105,7 @@
                     }
                 </ul>
             </div>
-            <a href="/random">or try a random subverse</a>
-
+            <a href="/random">Try a random subverse?</a>
         </div>
-
     </div>
 </div>

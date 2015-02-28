@@ -1294,7 +1294,8 @@ namespace Voat.Controllers
 
             if (stickiedSubmission != null)
             {
-                if (stickiedSubmission.Subverses.anonymized_mode)
+                var subverse = _db.Subverses.Find(subverseName);
+                if (subverse.anonymized_mode)
                 {
                     ViewBag.SubverseAnonymized = true;
                 }

@@ -122,7 +122,6 @@ namespace Voat.Utils
                 {
                     return 0;
                 }
-
             }
         }
     }

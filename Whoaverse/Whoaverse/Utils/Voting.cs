@@ -155,9 +155,15 @@ namespace Voat.Utils
             {
                 Message submission = db.Messages.Find(submissionId);
 
+                // do not execute downvoting if subverse is in anonymized mode
                 if (submission.Anonymized)
                 {
-                    // do not execute voting, subverse is in anonymized mode
+                    return;
+                }
+                
+                // do not execute downvoting if user has insufficient CCP for target subverse
+                if (Karma.CommentKarmaForSubverse(userWhichDownvoted, submission.Subverse) < 100)
+                {
                     return;
                 }
 
@@ -166,11 +172,16 @@ namespace Voat.Utils
                     // never voted before
                     case 0:
                         {
+                            // this user is downvoting more than upvoting, don't register the downvote
+                            if (User.IsUserCommentVotingMeanie(userWhichDownvoted))
+                            {
+                                return;
+                            }
+
                             submission.Dislikes++;
 
                             double currentScore = submission.Likes - submission.Dislikes;
                             double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.Date);
-
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
                             submission.Rank = newRank;
@@ -236,10 +247,8 @@ namespace Voat.Utils
                         }
 
                         break;
-
                 }
             }
-
         }
 
         // send SignalR realtime notification of incoming vote to the author
@@ -291,7 +300,5 @@ namespace Voat.Utils
                     break;
             }
         }
-
-
     }
 }

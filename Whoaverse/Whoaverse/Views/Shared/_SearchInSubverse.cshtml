@@ -17,7 +17,6 @@
 }
 
 <div class="spacer">
-
     @using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
     {
         <h2>@Html.ValidationSummary(true)</h2>
@@ -31,5 +30,4 @@
 
         @Html.Label("Limit the search to current subverse")
     }
-
 </div>

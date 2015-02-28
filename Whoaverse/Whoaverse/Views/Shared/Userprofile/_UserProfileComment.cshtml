@@ -12,20 +12,6 @@
 
 @model Voat.Models.Comment
 
-@using Voat.Utils;
-
-<!--
-
-    1 user submission with details without comments
-
-    TODO:
-    check if user submission is a comment, a link or a self submission
-    and assign appropriate display
-
-    check if comment author is the submitter and assign proper class
-
--->
-
 <div class="thread id-@Model.Id odd comment" onclick="" data-fullname="" data-ups="" data-downs="">
 
     @{
@@ -75,24 +61,24 @@
         int commentScore = (Model.Likes - Model.Dislikes);
 
         <!--
-            area for voting icons
-            icons removed due to community request http://voat.co/v/ideasforwhoaverse/comments/8212
+        area for voting icons
+        icons removed due to community request http://voat.co/v/ideasforwhoaverse/comments/8212
         -->
 
         <div class="entry unvoted">
-            <div class="collapsed" style="display:none">
-                <a href="#" class="expand" onclick="return showcomment(this)">[+]</a><a href="~/user/@Model.Name" class="author gray submitter may-blank">@Model.Name</a>
+            <div class="collapsed" style="display: none">
+                <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.Name" class="author gray submitter may-blank">@Model.Name</a>
                 @if (Model.Message.Name == Model.Name)
                 {
                     <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
                 }
                 <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span>
                 <span class="score likes">@Model.Likes points</span>
-                <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago &nbsp;<a href="#" class="expand" onclick="return showcomment(this)">(0 children)</a>
+                <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago &nbsp;<a href="#" class="expand" onclick=" return showcomment(this) ">(0 children)</a>
             </div>
             <div class="noncollapsed">
                 <p class="tagline">
-                    <a href="#" class="expand" onclick="return hidecomment(this)">[–]</a><a href="~/user/@Model.Name" class="author submitter may-blank">@Model.Name</a>
+                    <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="~/user/@Model.Name" class="author submitter may-blank">@Model.Name</a>
                     @if (Model.Message.Name == Model.Name)
                     {
                         <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
@@ -103,7 +89,7 @@
                     <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
                     <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago
                 </p>
-                <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-t1_cgpb6dh3f5">
+                <form action="#" class="usertext" onsubmit=" return post_form(this, 'editusertext') " id="form-t1_cgpb6dh3f5">
                     <input name="submission-id" value="xxxx" type="hidden">
                     <div class="usertext-body may-blank-within">
                         <div class="md">
@@ -128,7 +114,5 @@
         <div class="clearleft">
             <!--IE6fix-->
         </div>
-
     }
-
 </div>

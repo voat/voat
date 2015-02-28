@@ -98,6 +98,15 @@
                     <p>This subverse is permamently anonymized: all usernames are hidden and voting is disabled.</p>
                 }
             </div>
+            <div class="bottom">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div>
+                        <span>your CCP for this sub:</span>
+                        <span>@Karma.CommentKarmaForSubverse(User.Identity.Name, Model.name)</span>
+                    </div>
+                }
+            </div>
             <div class="clear">
             </div>
         </div>

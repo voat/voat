@@ -15,7 +15,6 @@
 
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
-
     int commentContributionPoints = 0;
     if (User.Identity.IsAuthenticated)
     {
@@ -70,7 +69,6 @@ else if (!User.Identity.IsAuthenticated)
 </style>
 
     <div class="content" role="main">
-
         <br/><br/>
         @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
 
@@ -161,6 +159,5 @@ else if (!User.Identity.IsAuthenticated)
         {
             @Html.Partial("~/Views/Home/_CommentTree.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
         }
-
     </div>
 </div>

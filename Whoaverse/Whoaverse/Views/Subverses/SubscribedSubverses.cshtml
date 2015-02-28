@@ -14,13 +14,8 @@
 
 @{
     ViewBag.Title = "subverses";
-    string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
 
-    if (sortingMode != "new")
-    {
-        urlaction = "index";
-    }
     if (ViewBag.SubversesView == "subscribed")
     {
         urlaction = "SubscribedSubverses";

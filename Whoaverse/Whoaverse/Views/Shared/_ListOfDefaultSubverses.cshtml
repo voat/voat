@@ -13,31 +13,25 @@
 @model IEnumerable<Voat.Models.Defaultsubverse>
 
 @{
-    object routeDataObject = new object();
     string showingSubverse;
     string selectedFrontpageClass = "";
-    string selectedClass = "selected";
 
-    routeDataObject = ViewContext.RouteData.Values["activeSubverse"];
+    var routeDataObject = ViewContext.RouteData.Values["activeSubverse"];
 
     if (routeDataObject != null)
     {
         showingSubverse = ViewContext.RouteData.Values["activeSubverse"].ToString();
-        
+
         if (showingSubverse == "/")
         {
             selectedFrontpageClass = "selected";
         }
-        
-        selectedClass = "selected";
     }
     else
     {
         showingSubverse = null;
         selectedFrontpageClass = "";
-        selectedClass = "";
-    }   
-
+    }
 }
 
 <div id="sr-header-area">
@@ -72,6 +66,7 @@
                 {
                     string tmpItem = "/v/" + item.name;
 
+                    string selectedClass;
                     if (tmpItem == showingSubverse)
                     {
                         selectedClass = "selected";
@@ -86,9 +81,7 @@
                         <a href="/v/@item.name/">@item.name</a>
                     </li>
                 }
-
             </ul>
-
         </div><a href="/subverses" id="sr-more-link">more »</a>
         <br />
     </div>

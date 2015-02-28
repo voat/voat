@@ -14,15 +14,7 @@
 
 @{
     ViewBag.Title = "Profile overview for " + @ViewBag.userid;
-
-    int currentPageNumber = Model.PageIndex;
-    int counterCont = (currentPageNumber) * 25;
-
-    int counter = counterCont + 1;
-    string submissionClass = "";
 }
-
-@using Voat.Utils;
 
 <div id="container" class="page-userprofile">
 
