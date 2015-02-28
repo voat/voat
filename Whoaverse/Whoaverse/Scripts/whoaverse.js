@@ -1067,7 +1067,7 @@ function toggleSticky(messageId) {
 function showMessagePreview(senderButton, messageContent, previewArea) {
     var rawSubmissionContent = $(messageContent).val();
     if (!rawSubmissionContent.length > 0) {
-        $(previewArea).find("#submission-preview-area-container").html("Please enter a message in order to get a preview.");
+        $(previewArea).find("#submission-preview-area-container").html("Please enter some text in order to get a preview.");
         $(previewArea).show();
         return false;
     }

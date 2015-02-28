@@ -84,8 +84,21 @@
                                 <span data-valmsg-replace="false" data-valmsg-for="CommentContent" class="field-validation-error"></span>
                                 <div class="usertext-buttons">
                                     <input value="Save" class="btn-whoaverse-paging" type="submit">
+									<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#MessageContent'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
                                     <button class="btn-whoaverse-paging" onclick="removesubmissioneditform(@Model.Id)" type="button">Cancel</button>
                                 </div>
+								<div class="panel panel-default" id="submission-preview-area" style="display: none">
+									<div class="panel-heading">
+										<h4 class="panel-title">Preview</h4>
+									</div>
+									<div class="panel-body">
+										<div class="usertext-body may-blank-within">
+											<div class="md" id="submission-preview-area-container">
+												Loading preview...
+											</div>
+										</div>
+									</div>
+								</div>
                             </div>
                         </div>
                     </form>
