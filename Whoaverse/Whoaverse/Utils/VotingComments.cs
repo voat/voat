@@ -116,7 +116,7 @@ namespace Voat.Utils
                 }
 
                 // do not execute downvoting if user has insufficient CCP for target subverse
-                if (Karma.CommentKarmaForSubverse(userWhichDownvoted, comment.Message.Subverse) < 100)
+                if (Karma.CommentKarmaForSubverse(userWhichDownvoted, comment.Message.Subverse) < comment.Message.Subverses.minimumdownvoteccp)
                 {
                     return;
                 }

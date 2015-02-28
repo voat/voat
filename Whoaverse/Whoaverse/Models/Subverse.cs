@@ -60,6 +60,7 @@ namespace Voat.Models
         public bool authorized_submitters_only { get; set; }
         public bool anonymized_mode { get; set; }
         public Nullable<System.DateTime> last_submission_received { get; set; }
+        public Nullable<int> minimumdownvoteccp { get; set; }
     
         public virtual ICollection<Message> Messages { get; set; }
         public virtual Defaultsubverse Defaultsubvers { get; set; }

@@ -99,16 +99,13 @@
                 }
             </div>
             <div class="bottom">
+                Minimum CCP required to downvote in this sub: @Model.minimumdownvoteccp
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <div>
-                        <span>your CCP for this sub:</span>
-                        <span>@Karma.CommentKarmaForSubverse(User.Identity.Name, Model.name)</span>
-                    </div>
+                    <p>Your CCP for this sub: @Karma.CommentKarmaForSubverse(User.Identity.Name, Model.name)</p>
                 }
             </div>
-            <div class="clear">
-            </div>
+            <div class="clear"></div>
         </div>
     </div>
     <div class="spacer">
