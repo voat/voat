@@ -53,6 +53,11 @@ namespace UnitTests
             Assert.AreEqual("1 microcentury", result, "Submission age was not calculated.");
         }
         [TestMethod]
+        public void Calc_SubmissionAge_90minutes() {
+            string result = Submissions.CalcSubmissionAge(TimeSpan.FromMinutes(90));
+            Assert.AreEqual(String.Format("{0} hours", 1.5), result, "Submission age was not calculated.");
+        }
+        [TestMethod]
         public void Calc_SubmissionAge_1Day() {
             string result = Submissions.CalcSubmissionAge(TimeSpan.FromDays(1));
             Assert.AreEqual("1 day", result, "Submission age was not calculated.");
@@ -81,7 +86,7 @@ namespace UnitTests
         [TestMethod]
         public void Calc_SubmissionAge_1_5years() {
             string result = Submissions.CalcSubmissionAge(TimeSpan.FromDays(18 * 30));
-            Assert.AreEqual("1.5 years", result, "Submission age was not calculated.");
+            Assert.AreEqual(String.Format("{0} years", 1.5), result, "Submission age was not calculated.");
         }
 
         [TestMethod]
