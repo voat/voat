@@ -27,33 +27,53 @@ namespace Voat.Utils
             var duration = currentDateTime - inPostingDateTime;
             return CalcSubmissionAge(duration);
         }
-        private static string IsPlural(int amount) {
-            return (amount == 1 ? "" : "s");
+        private static string PluralizeIt(int amount, string unit) {
+            return String.Format("{0} {1}{2}", amount, unit, (amount == 1 ? "" : "s"));
         }
+        private static string PluralizeIt(double amount, string unit) {
+            return String.Format("{0} {1}{2}", amount, unit, (amount <= 1.0 ? "" : "s"));
+        }
+
         public static string CalcSubmissionAge(TimeSpan span) {
             
-            string result = "No idea when this was posted...";
+            string result = "sometime";
 
-            if (span.TotalDays > 365) { 
+            if (span.TotalDays >= 365) { 
                 //years
                 double years = Math.Round(span.TotalDays / 365, 1);
-                result = String.Format("{0} year{1}", years, (years > 1.0 ? "s" : ""));
+                result = PluralizeIt(years, "year"); 
             } else if (span.TotalDays > 31) { 
                 //months
-                int months = (int)(span.TotalDays / 31);
-                result = String.Format("{0} month{1}", months, IsPlural(months));
+                int days = (int)span.TotalDays;
+                if (days.Equals(14)) {
+                    result = "1 fortnight";
+                } else if (days.Equals(52)) {
+                    result = "1 dog year";
+                } else {
+                    int months = (int)(span.TotalDays / 31);
+                    result = PluralizeIt(months, "month");
+                }
             } else if (span.TotalHours >= 24) { 
                 //days 
-                result = String.Format("{0} day{1}", (int)span.TotalDays, IsPlural((int)span.TotalDays));
+                result = PluralizeIt((int)span.TotalDays, "day"); 
             } else if (span.TotalHours > 1 || Math.Abs(span.TotalHours - 1) < Tolerance) {
                 //hours
-                result = String.Format("{0} hour{1}", (int)span.TotalHours, IsPlural((int)span.TotalHours));
+                result = PluralizeIt((int)span.TotalHours, "hour"); 
             } else if (span.TotalSeconds >= 60) {
                 //minutes
-                result = String.Format("{0} minute{1}", (int)span.TotalMinutes, IsPlural((int)span.TotalMinutes));
+                int min = (int)span.TotalMinutes;
+                if (min.Equals(52)) {
+                    result = "1 microcentury";
+                } else {
+                    result = PluralizeIt(min, "minute");
+                } 
             } else {
                 //seconds
-                result = String.Format("{0} second{1}", (int)span.TotalSeconds, IsPlural((int)span.TotalSeconds));
+                if (Math.Round(span.TotalSeconds, 2).Equals(1.21)) {
+                    result = "1 microfortnight";
+                } else {
+                    result = PluralizeIt((int)span.TotalSeconds, "second");
+                }
             }
 
             return result;
