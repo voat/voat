@@ -1235,3 +1235,14 @@ function loadMoreComments(obj, submissionId) {
         }
     });
 }
+
+// a function to fetch the parent of a comment.
+function goToParent(event, parentId) {
+    //If the parent is on the page this js should scroll to it.
+    //Otherwise, href should request a new page.
+    if ($("#" + parentId).exists()) {
+        //Stop event and scroll
+        event.preventDefault();
+        window.location.hash = "#" + parentId;
+    }
+}
