@@ -175,7 +175,8 @@ namespace Voat.Controllers
                     type = "link",
                     enable_thumbnails = true,
                     rated_adult = false,
-                    private_subverse = false
+                    private_subverse = false,
+                    minimumdownvoteccp = 0
                 };
 
                 _db.Subverses.Add(subverse);
@@ -305,6 +306,7 @@ namespace Voat.Controllers
                     existingSubverse.enable_thumbnails = updatedModel.enable_thumbnails;
                     existingSubverse.authorized_submitters_only = updatedModel.authorized_submitters_only;
                     existingSubverse.exclude_sitewide_bans = updatedModel.exclude_sitewide_bans;
+                    existingSubverse.minimumdownvoteccp = updatedModel.minimumdownvoteccp;
 
                     // these properties are currently not implemented but they can be saved and edited for future use
                     existingSubverse.type = updatedModel.type;
