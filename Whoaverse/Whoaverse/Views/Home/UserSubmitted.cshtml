@@ -14,12 +14,7 @@
 
 @{
     ViewBag.Title = "Submission history for " + @ViewBag.userid;
-    int currentPageNumber = Model.PageIndex;
-    int counterCont = (currentPageNumber) * 25;
-    int counter = counterCont + 1;
-    string submissionClass = "";
 }
-@using Voat.Utils;
 
 <div id="container">
     <div class="content-no-margin" role="main">
@@ -30,6 +25,7 @@
         {
             //type 2 = link
             //type 1 = message
+            var submissionClass = "";
             if (submission.Type == 1)
             {
                 submissionClass = "self";

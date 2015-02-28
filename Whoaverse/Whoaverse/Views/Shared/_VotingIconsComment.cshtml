@@ -10,15 +10,11 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@using Voat.Utils;
-
 @{
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
     string collapsedStyle = Convert.ToString(ViewData["collapsedStyle"]);
-
-    int score = (Model.Likes - Model.Dislikes);
 
     //default voting icons style
     string votingStatusClassUpArrow = "arrow-upvote";

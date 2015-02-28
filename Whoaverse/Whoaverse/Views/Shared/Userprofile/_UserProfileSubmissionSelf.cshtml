@@ -12,11 +12,9 @@
 
 @model Voat.Models.Message
 
-@using Voat.Utils;
-
 <!-- 1 user self submission with details without comments -->
 @{
-    var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
+    var commentCount = Model.Comments.Count(c => c.Name != "deleted");
     
     string postAge = Submissions.CalcSubmissionAge(Model.Date);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;

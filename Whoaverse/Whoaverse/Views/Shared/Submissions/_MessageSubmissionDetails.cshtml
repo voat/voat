@@ -12,15 +12,12 @@
 
 @model Voat.Models.Message
 
-@using Voat.Utils;
-
 @{
-    Random rnd = new Random();
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
-    var commentCount = Model.Comments.Where(c => c.Name != "deleted").Count();
+    var commentCount = Model.Comments.Count(c => c.Name != "deleted");
     bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 }
 

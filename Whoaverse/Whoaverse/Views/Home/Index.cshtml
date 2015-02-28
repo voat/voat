@@ -12,9 +12,10 @@
 
 @model PaginatedList<Voat.Models.Message>
 
+@using System.Configuration
+
 @{
     ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
-
     int commentContributionPoints = 0;
 
     if (User.Identity.IsAuthenticated)
@@ -34,8 +35,6 @@
         urlaction = "New";
     }
 }
-
-@using System.Configuration
 
 <style type="text/css">
     body > .content .link .rank {

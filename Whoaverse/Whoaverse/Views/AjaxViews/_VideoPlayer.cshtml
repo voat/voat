@@ -12,18 +12,13 @@
 
 @model Voat.Models.Message
 
-@using Voat.Utils;
-           
 @{
     // check the domain to select appropriate player
     string domain = UrlUtility.GetDomainFromUri(Model.MessageContent);
-    
-    string youtubeVideoId = String.Empty;
-    string vimeoVideoId = String.Empty;
 
     if (domain == "youtube.com" || domain == "youtu.be")
     {
-        youtubeVideoId = UrlUtility.GetVideoIdFromUrl(Model.MessageContent);
+        var youtubeVideoId = UrlUtility.GetVideoIdFromUrl(Model.MessageContent);
         <iframe id="ytplayer" type="text/html" width="568" height="338"
                 src="https://www.youtube.com/embed/@(youtubeVideoId)?autoplay=0&origin=http://voat.co"
                 frameborder="0"></iframe>
@@ -31,7 +26,7 @@
 
     if (domain == "vimeo.com")
     {
-        vimeoVideoId = UrlUtility.GetVideoIdFromUrl(Model.MessageContent);
+        var vimeoVideoId = UrlUtility.GetVideoIdFromUrl(Model.MessageContent);
         <iframe src="https://player.vimeo.com/video/@(vimeoVideoId)" width="568" height="338" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
     }
 }

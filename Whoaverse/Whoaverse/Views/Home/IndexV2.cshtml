@@ -11,6 +11,7 @@
     All Rights Reserved.*@
 
 @model Voat.Models.ViewModels.SetFrontpageViewModel
+@using System.Configuration
 
 @{
     ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
@@ -23,8 +24,6 @@
         commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
     }
 }
-
-@using System.Configuration
 
 <style type="text/css">
     body > .content .link .rank {

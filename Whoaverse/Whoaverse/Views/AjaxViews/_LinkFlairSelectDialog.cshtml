@@ -13,11 +13,8 @@
 @model IEnumerable<Voat.Models.Subverseflairsetting>
 
 @{
-    var subverseName = ViewBag.SubverseName;
     var submissionId = ViewBag.SubmissionId;
 }
-
-@using Voat.Utils;
 
 <div class="modal-dialog">
     <div class="modal-content">
@@ -26,7 +23,7 @@
             <h4 class="modal-title" id="modalLabel">Select a link flair to apply to this submission:</h4>
         </div>
         <div class="modal-body">
-            @if (Model.Count() > 0)
+            @if (Model.Any())
             {
                 <p><b>Defined flairs:</b></p>
                 <button type="button" class="btn btn-default btn-xs" onclick="return clearflair(@submissionId)">Clear current flair</button>

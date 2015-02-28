@@ -8,14 +8,12 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Whoaverse are Copyright (c) 2014 Whoaverse
+All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Voat.Models;
 
 namespace Voat.Utils
@@ -23,13 +21,19 @@ namespace Voat.Utils
     public class BanningUtility
     {
 
-        public static bool IsHostnameBanned(string hostname)
+        public static bool IsHostnameBanned(string hostnameToCheck)
         {
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (var db = new whoaverseEntities())
             {
-                var bannedHostname = db.Banneddomains
-                            .Where(r => r.Hostname.Equals(hostname, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                var bannedHostname = db.Banneddomains.FirstOrDefault(r => r.Hostname.Equals(hostnameToCheck, StringComparison.OrdinalIgnoreCase));
 
+                // manual ban for blogspot
+                if (hostnameToCheck.Contains("blogspot"))
+                {
+                    return true;
+                }
+
+                // look for exact match
                 return bannedHostname != null;
             }
         }

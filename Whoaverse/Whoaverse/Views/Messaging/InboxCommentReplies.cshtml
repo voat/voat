@@ -16,7 +16,6 @@
 
 @{
     ViewBag.Title = "Inbox - comment replies";
-    string statusClass = "";
 }
 
 <style>
@@ -43,7 +42,8 @@
 
                 foreach (var message in Model)
                 {
-                    if (message.Status == true)
+                    var statusClass = "";
+                    if (message.Status)
                     {
                         statusClass = "unreadNotification";
                     }

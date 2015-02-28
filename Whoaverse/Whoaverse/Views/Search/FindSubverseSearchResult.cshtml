@@ -13,7 +13,6 @@
 @model PaginatedList<Voat.Models.Subverse>
 
 @using System.Globalization
-@using Voat.Utils;
 
 @{
     ViewBag.Title = "subverses";
@@ -23,7 +22,7 @@
     {
         searchTerm = Request.QueryString["q"].ToString(CultureInfo.InvariantCulture);
     }
-    
+
     bool includeDescriptions = Request.QueryString["d"].AsBool();
 }
 

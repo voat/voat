@@ -11,7 +11,7 @@
     All Rights Reserved.*@
 
 @using Voat.Models
-@model Voat.Models.Message
+@model Message
 
 @{
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
@@ -47,9 +47,7 @@
             <a href="/v/@Model.Subverse/comments/@Model.Id">view the rest of the comments</a>&nbsp;→
         </p>
     </div>
-
     <div id="siteTable" class="sitetable nestedlisting">
-
         @{            
             foreach (var firstComment in firstComments)
             {
@@ -67,7 +65,5 @@
                 }
             }
         }
-
     </div>
-
 </div>

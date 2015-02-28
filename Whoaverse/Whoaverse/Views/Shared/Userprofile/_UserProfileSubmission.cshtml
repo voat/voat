@@ -12,18 +12,7 @@
 
 @model Voat.Models.Message
 
-@using Voat.Utils;
-
-<!--
-
-    1 user submission with details without comments
-
-    TODO:
-    check if user submission is a comment, a link or a self submission
-    and assign appropriate display    
-
--->
-
+<!-- 1 user submission with details without comments -->
 @if (Model.Type == 2)
 {
     //type 2 = urls, model.messagecontent = url, model.linkdescription = link description

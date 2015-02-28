@@ -15,17 +15,14 @@
 @{
     ViewBag.Title = "Comment history for " + @ViewBag.userid;
 }
-@using Voat.Utils;
 
 <div id="container">
     <div class="content-no-margin" role="main">
         <div class="alert-title">Comment history for @ViewBag.userid.</div>
-
         @foreach (var submission in Model)
         {
             @Html.Partial("Userprofile/_UserProfileComment", submission)
         }
-
         <div class="pagination-container">
             <ul>
                 @if (Model.HasPreviousPage)
@@ -34,7 +31,6 @@
                         @Html.RouteLink("‹ prev", "UserProfile", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
                     </li>
                 }
-
                 @if (Model.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
@@ -43,6 +39,5 @@
                 }
             </ul>
         </div>
-
     </div>
 </div>

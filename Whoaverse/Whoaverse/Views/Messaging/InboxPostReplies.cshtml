@@ -13,11 +13,9 @@
 @model PagedList.IPagedList<Voat.Models.Postreplynotification>
 
 @using PagedList.Mvc;
-@using Voat.Utils;
 
 @{
     ViewBag.Title = "Inbox - post replies";
-    string statusClass = "";
 }
 
 <style>
@@ -37,13 +35,13 @@
         <div class="md single-notification">
             @if (Model.Count > 0)
             {
-                
                 <p>Displaying newest @Model.Count post reply notifications. You have a total of @ViewBag.PostRepliesCount post reply notification(s).</p>
                 <hr />
 
                 foreach (var message in Model)
                 {
-                    if (message.Status == true)
+                    var statusClass = "";
+                    if (message.Status)
                     {
                         statusClass = "unreadNotification";
                     }
@@ -59,7 +57,6 @@
                             <div class="panel panel-heading-messagetitle">
                                 <b>@message.Subject</b>
                             </div>
-
                             <div class="panel-message-body">
                                 @Html.Raw(Formatting.FormatMessage(message.Body))
                             </div>

@@ -12,12 +12,9 @@
 
 @model PaginatedList<Voat.Models.Subverse>
 
-@using Voat.Utils;
-
 @{
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
-    var mostActiveSubverses = SessionTracker.MostActiveSubverses();
 
     switch (sortingMode)
     {
@@ -110,3 +107,4 @@
 
         </div>
     </div>
+</div>
