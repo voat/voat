@@ -2166,12 +2166,12 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         width: 16px;
     }
 
-        .expando-button.selftext.collapsed:hover {
-            background: url( /Graphics/Dark-SpriteSheet.png );
-            background-position: -16px -44px;
-            height: 16px;
-            width: 16px;
-        }
+    .expando-button.selftext.collapsed:hover {
+        background: url( /Graphics/Dark-SpriteSheet.png );
+        background-position: -16px -44px;
+        height: 16px;
+        width: 16px;
+    }
 
     .expando-button.selftext.expanded {
         background: url( /Graphics/Dark-SpriteSheet.png );
@@ -2180,13 +2180,26 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         width: 16px;
     }
 
-        .expando-button.selftext.expanded:hover {
-            background: url( /Graphics/Dark-SpriteSheet.png );
-            background-position: -16px -60px;
-            height: 16px;
-            width: 16px;
-        }
+    .expando-button.selftext.expanded:hover {
+        background: url( /Graphics/Dark-SpriteSheet.png );
+        background-position: -16px -60px;
+        height: 16px;
+        width: 16px;
+    }
 
+    .expando-button.selftext.loading {
+        background: url( /Graphics/Dark-SpriteSheet.png );
+        background-position: 0 -76px;
+        height: 16px;
+        width: 16px;
+    }
+
+    .expando-button.selftext.loading:hover {
+        background: url( /Graphics/Dark-SpriteSheet.png );
+        background-position: -16px -76px;
+        height: 16px;
+        width: 16px;
+    }
 /* ! Sitetable : Link : Tag line
 ------------------------------------------------------------------------------------ */
 
@@ -3006,12 +3019,12 @@ textarea.form-control {
             width: 32px;
         }
 
-            .expando-button.selftext.collapsed:hover {
-                background: url( /Graphics/Dark-SpriteSheet.png );
-                background-position: -32px -44px;
-                height: 32px;
-                width: 32px;
-            }
+        .expando-button.selftext.collapsed:hover {
+            background: url( /Graphics/Dark-SpriteSheet.png );
+            background-position: -32px -44px;
+            height: 32px;
+            width: 32px;
+        }
 
         .expando-button.selftext.expanded {
             background: url( /Graphics/Dark-SpriteSheet.png );
@@ -3020,41 +3033,30 @@ textarea.form-control {
             width: 32px;
         }
 
-            .expando-button.selftext.expanded:hover {
-                background: url( /Graphics/Dark-SpriteSheet.png );
-                background-position: -64px -44px;
-                height: 32px;
-                width: 32px;
-            }
-
-    .link {
-        padding-bottom: 6px;
-    }
+        .expando-button.selftext.expanded:hover {
+            background: url( /Graphics/Dark-SpriteSheet.png );
+            background-position: -64px -44px;
+            height: 32px;
+            width: 32px;
+        }
+        
+        .expando-button.selftext.loading,  .expando-button.selftext.loading:hover {
+            background: url( /Graphics/Dark-SpriteSheet.png );
+            background-position: -32px -76px;
+            height: 32px;
+            width: 32px;
+        }
+    
+        .link {
+            padding-bottom: 6px;
+        }
 
         .link .flat-list.buttons {
             margin: 0;
             padding: 5px 0;
         }
 
-            .link .flat-list.buttons li a {
-                background: #333;
-                border: 1px solid #2C2C2C;
-                border-radius: 2px;
-                box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
-                line-height: 30px;
-                padding: 4px 6px;
-            }
-
-                .link .flat-list.buttons li a:hover {
-                    text-decoration: none;
-                }
-
-    .comment .flat-list.buttons {
-        display: inline-block;
-        padding: 5px 0;
-    }
-
-        .comment .flat-list.buttons li a {
+        .link .flat-list.buttons li a {
             background: #333;
             border: 1px solid #2C2C2C;
             border-radius: 2px;
@@ -3063,9 +3065,27 @@ textarea.form-control {
             padding: 4px 6px;
         }
 
-            .comment .flat-list.buttons li a:hover {
-                text-decoration: none;
-            }
+        .link .flat-list.buttons li a:hover {
+            text-decoration: none;
+        }
+
+    .comment .flat-list.buttons {
+        display: inline-block;
+        padding: 5px 0;
+    }
+
+    .comment .flat-list.buttons li a {
+        background: #333;
+        border: 1px solid #2C2C2C;
+        border-radius: 2px;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+        line-height: 30px;
+        padding: 4px 6px;
+    }
+
+    .comment .flat-list.buttons li a:hover {
+        text-decoration: none;
+    }
 }
 
 @media ( max-width: 420px ) {
@@ -3077,9 +3097,9 @@ textarea.form-control {
         font-size: 12px;
     }
 
-        .modal-body .col-md-4 input.form-control {
-            width: 260px;
-        }
+    .modal-body .col-md-4 input.form-control {
+        width: 260px;
+    }
 }
 .link-expando-type {
     background: #606060; 

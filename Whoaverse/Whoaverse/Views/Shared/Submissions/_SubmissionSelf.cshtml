@@ -54,7 +54,7 @@
             {
 
                 if (!String.IsNullOrEmpty(Model.MessageContent)) { 
-                    <div title="Load Self Text" class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
+                    <div title="Toggle Self Text" class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
                 }
                 if (Model.Anonymized || anonymizedSubverse)
                 {

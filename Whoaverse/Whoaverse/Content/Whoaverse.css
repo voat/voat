@@ -2138,13 +2138,26 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         width: 16px;
     }
 
-        .expando-button.selftext.expanded:hover {
-            background: url( /Graphics/Light-SpriteSheet.png );
-            background-position: -16px -60px;
-            height: 16px;
-            width: 16px;
-        }
+    .expando-button.selftext.expanded:hover {
+        background: url( /Graphics/Light-SpriteSheet.png );
+        background-position: -16px -60px;
+        height: 16px;
+        width: 16px;
+    }
 
+    .expando-button.selftext.loading {
+        background: url( /Graphics/Light-SpriteSheet.png );
+        background-position: 0 -76px;
+        height: 16px;
+        width: 16px;
+    }
+
+    .expando-button.selftext.loading:hover {
+        background: url( /Graphics/Light-SpriteSheet.png );
+        background-position: -16px -76px;
+        height: 16px;
+        width: 16px;
+    }
 /* ! Sitetable : Link : Tag line
 ------------------------------------------------------------------------------------ */
 
@@ -2983,6 +2996,13 @@ textarea.form-control {
     .expando-button.selftext.expanded:hover {
         background: url( /Graphics/Light-SpriteSheet.png );
         background-position: -64px -44px;
+        height: 32px;
+        width: 32px;
+    }
+
+    .expando-button.selftext.loading,  .expando-button.selftext.loading:hover {
+        background: url( /Graphics/Light-SpriteSheet.png );
+        background-position: -32px -76px;
         height: 32px;
         width: 32px;
     }

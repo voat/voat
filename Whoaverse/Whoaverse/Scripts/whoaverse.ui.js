@@ -329,6 +329,10 @@ var ImageLinkExpando = (function () {
             }
         };
         this.loadImage = function (target, href, autoLoading) {
+
+            if (this.options.loading) {
+                this.options.loading(target);
+            }
             if (this.options.setTags) {
                 LinkExpando.setTag(target, "loading");
             }
@@ -530,7 +534,9 @@ var GfycatExpando = function (options) {
             e.preventDefault();
             //var target = $(e.target);
             if (!LinkExpando.isLoaded(target)) {
-
+                if (me.options.loading) {
+                    me.options.loading(target);
+                }
                 if (me.options.setTags) {
                     LinkExpando.setTag(target, "loading");
                 }
@@ -640,6 +646,7 @@ var ImgurGifvExpando = function (options) {
             var id = me.getId(source.prop('href'));
 
             if (!LinkExpando.isLoaded(target)) {
+               
                 if (me.options.setTags) {
                     LinkExpando.setTag(target, "loading");
                 }
@@ -717,6 +724,10 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
 
                 var target = me.options.targetFunc($(event.target));
                 if (!LinkExpando.isLoaded(target)) {
+
+                    if (me.options.loading) {
+                        me.options.loading(target);
+                    }
 
                     var displayDiv = me.options.destinationFunc(target);
 
@@ -942,13 +953,22 @@ $(document).ready(function () {
             return container;
         },
         toggle: function (target) {
-            if (target.hasClass('collapsed')) {
+            if (target.hasClass('loading')) {
+                target.addClass('expanded');
+                target.removeClass('loading');
+                target.removeClass('collapsed');
+            } else if (target.hasClass('collapsed')) {
                 target.removeClass('collapsed');
                 target.addClass('expanded');
             } else {
                 target.removeClass('expanded');
                 target.addClass('collapsed');
             }
+        },
+        loading: function (target) {
+            target.addClass('loading');
+            target.removeClass('collapsed');
+            target.removeClass('expanded');
         },
         setTags: false
     };
