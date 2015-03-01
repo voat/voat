@@ -18,7 +18,7 @@ namespace Voat.Utils
 {
     public static class Submissions
     {
-        //private const double Tolerance = 0.01;
+        private const double Tolerance = 0.01;
 
         // calculate submission age in days, hours or minutes for use in views
         public static string CalcSubmissionAge(DateTime inPostingDateTime)
@@ -31,7 +31,7 @@ namespace Voat.Utils
             return String.Format("{0} {1}{2}", amount, unit, (amount == 1 ? "" : "s"));
         }
         private static string PluralizeIt(double amount, string unit) {
-            return String.Format("{0} {1}{2}", amount, unit, (Math.Round(amount, 1) == 1.0 ? "" : "s"));
+            return String.Format("{0} {1}{2}", amount, unit, (amount <= 1.0 ? "" : "s"));
         }
 
         public static string CalcSubmissionAge(TimeSpan span) {
@@ -56,13 +56,9 @@ namespace Voat.Utils
             } else if (span.TotalHours >= 24) { 
                 //days 
                 result = PluralizeIt((int)span.TotalDays, "day"); 
-            } else if (span.TotalHours > 1) {
+            } else if (span.TotalHours > 1 || Math.Abs(span.TotalHours - 1) < Tolerance) {
                 //hours
-                if (span.TotalHours < 2) {
-                    result = PluralizeIt(span.TotalHours, "hour");
-                } else {
-                    result = PluralizeIt((int)span.TotalHours, "hour");
-                }
+                result = PluralizeIt((int)span.TotalHours, "hour"); 
             } else if (span.TotalSeconds >= 60) {
                 //minutes
                 int min = (int)span.TotalMinutes;
