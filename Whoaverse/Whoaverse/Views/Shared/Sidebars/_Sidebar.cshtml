@@ -133,52 +133,12 @@
     </div>
     @if (User.Identity.IsAuthenticated && subverseOwner == User.Identity.Name)
     {
-        <div class="spacer">
-            <div class="sidecontentbox collapsible" id="moderation_tools">
-                <div class="title"><h1 class="alert-h1">ADMINISTRATION TOOLS</h1></div>
-                <ul style="display: block;" class="content">
-                    <li>
-                        <ul class="flat-vert icon-menu hover">
-                            <li>
-                                <a href="/v/@Model.name/about/edit/">subverse settings</a>
-                            </li>
-                            <li>
-                                <a href="/v/@Model.name/about/flair/">flair settings</a>
-                            </li>
-                            <li>
-                                <a href="/v/@Model.name/about/moderators/">subverse moderators</a>
-                            </li>
-                            <li>
-                                <a href="/v/@Model.name/about/bans/">subverse bans</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        @Html.Partial("Sidebars/_SidebarOwnerToolbox")
     }
     else if (User.Identity.IsAuthenticated && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
     {
-        <div class="spacer">
-
-            <div class="sidecontentbox collapsible" id="moderation_tools">
-                <div class="title"><h1>ADMINISTRATION TOOLS</h1></div>
-                <ul style="display: block;" class="content">
-                    <li>
-                        <ul class="flat-vert icon-menu hover">
-                            <li>
-                                <a href="/v/@Model.name/about/edit/">subverse settings</a>
-                            </li>
-                            <li>
-                                <a href="/v/@Model.name/about/flair/">flair settings</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        @Html.Partial("Sidebars/_SidebarModToolbox")
     }
-
     <div class="spacer">
         <div class="centered">
             <a title="V2 is awesome!" href="/v2">
@@ -186,5 +146,4 @@
             </a>
         </div>
     </div>
-
 </div>

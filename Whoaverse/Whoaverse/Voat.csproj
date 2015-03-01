@@ -777,6 +777,8 @@
     <Content Include="Views\Subverses\Admin\_ModeratorInvitations.cshtml" />
     <Content Include="Views\Subverses\Admin\RecallModeratorInvitation.cshtml" />
     <Content Include="Views\Shared\Comments\_CommentBucket.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarOwnerToolbox.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

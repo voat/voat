@@ -12,47 +12,38 @@
 
 @model Voat.Models.Subverse
 
-@using Voat.Utils;
 @using Voat.Models.ViewModels;
 
 @{
     string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
     string subverseOwner = "youcanclaimthissub";
 
-    var subOwner = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 1).FirstOrDefault();
+    var subOwner = Model.SubverseAdmins.FirstOrDefault(n => n.SubverseName == Model.name && n.Power == 1);
     if (subOwner != null)
     {
         subverseOwner = subOwner.Username;
     }
-
-    var subModerators = Model.SubverseAdmins.Where(n => n.SubverseName == Model.name && n.Power == 2).ToList();
 }
 
 <div class="side">
-
     @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel(), new ViewDataDictionary { { "SelectedSubverse", ViewBag.SelectedSubverse } })
-
     @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml")
-
     <div class="spacer">
         <a href="/v/@Model.name/submit?linkpost=true" class="btn-whoaverse btn-block contribute">
             Share a link
         </a>
     </div>
-
     <div class="spacer">
         <a href="/v/@Model.name/submit" class="btn-whoaverse btn-block contribute">
             Start a discussion
         </a>
     </div>
-
     <div class="spacer">
         <div class="titlebox">
             <h1 class="hover whoaversename">
                 <a href="/v/@Model.name" class="hover">@Model.name</a>
                 <a href="/rss/@Model.name"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
             </h1>
-
             @if (User.Identity.IsAuthenticated)
             {
                 if (Voat.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
@@ -68,7 +59,6 @@
             {
                 <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
             }
-
             <span class="subscribers">
                 <span id="subscriberCount" class="number">@ViewBag.SubscriberCount</span>
                 <span class="word">subscribers</span>
@@ -80,7 +70,7 @@
             @if (User.Identity.IsAuthenticated && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
             {
                 <div class="leavemoderator">you are a moderator of this subverse. (<a href="/v/@Model.name/about/moderators/resign">change</a>)</div>
-            }  
+            }
             <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxxx">
                 <input name="submission-id" value="xxxx" type="hidden">
                 <div class="usertext-body may-blank-within">
@@ -124,36 +114,13 @@
             </div>
             <div class="sidecontentbox content">
                 <p>Did you know you could earn money by writing quality comments, sharing links or stories to Voat? <a href="/v/announcements/comments/30925">Click here</a> to find out how you can monetize your content on this website.</p>
-            </div>            
+            </div>
         </div>
     </div>
     @if (User.Identity.IsAuthenticated && subverseOwner == User.Identity.Name)
     {
-        <div class="spacer">
-            <div class="sidecontentbox collapsible" id="moderation_tools">
-                <div class="title"><h1 class="alert-h1">ADMINISTRATION TOOLS</h1></div>
-                <ul style="display: block;" class="content">
-                    <li>
-                        <ul class="flat-vert icon-menu hover">
-                            <li>
-                                <a href="/v/@Model.name/about/edit/">subverse settings</a>
-                            </li>
-                            <li>
-                                <a href="/v/@Model.name/about/flair/">flair settings</a>
-                            </li>
-                            <li>
-                                <a href="/v/@Model.name/about/moderators/">subverse moderators</a>
-                            </li>
-                            <li>
-                                <a href="/v/@Model.name/about/bans/">subverse bans</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        @Html.Partial("Sidebars/_SidebarOwnerToolbox")
     }
-    
     <div class="spacer">
         <div class="centered">
             <a title="V2 is awesome!" href="/v2">
@@ -161,5 +128,4 @@
             </a>
         </div>
     </div>
-
 </div>
