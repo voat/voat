@@ -755,14 +755,11 @@ IFrameEmbedderExpando.prototype.constructor = IFrameEmbedderExpando;
 
 /* YouTube */
 var YouTubeExpando = function (options) {
-    options.onShow = function () {
-        
-    }
     options.onHide = function (player) {
         if (player) {
             player.pauseVideo();
         }
-    }
+    };
 
     //Check to see if API is already injected.
     if (!$("script[src=\"" + "https://www.youtube.com/iframe_api" + "\"]").exists()) {
