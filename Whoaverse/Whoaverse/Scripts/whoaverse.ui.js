@@ -699,6 +699,7 @@ ImgurGifvExpando.prototype.process = function (source) {
 var IFrameEmbedderExpando = function (urlRegEx, options) {
     LinkExpando.call(this, urlRegEx, options);
     this.defaultRatio = 0.5625;
+    this.iFrame = undefined;
     this.hook = function (source, description, iFrameSettings) {
 
         var target = this.options.targetFunc(source);
@@ -733,13 +734,20 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
 
                     //<iframe width="560" height="315" src="//www.youtube.com/embed/JUDSeb2zHQ0" frameborder="0" allowfullscreen></iframe>
                     iFrameSettings.src = LinkExpando.dataProp(target, 'source');
-                    var iFrame = $('<iframe/>', iFrameSettings);
-                    displayDiv.empty().html(iFrame);
+                    me.iFrame = $('<iframe/>', iFrameSettings);
+                    displayDiv.empty().html(me.iFrame);
                     LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
                     LinkExpando.isLoaded(target, true);
 
                     //displayDiv.insertAfter(target);
                     UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
+                }
+                if (!LinkExpando.isVisible(target)) {
+                    //show
+                    LinkExpando.isVisible(target, true);
+                } else {
+                    LinkExpando.isVisible(target, false);
+                    if (me.options.onHide && me.iFrame != null) { me.options.onHide(me.iFrame[0]); }
                 }
                 me.options.toggle(target);
                 me.options.destinationFunc(target).slideToggle();
@@ -755,104 +763,26 @@ IFrameEmbedderExpando.prototype.constructor = IFrameEmbedderExpando;
 
 /* YouTube */
 var YouTubeExpando = function (options) {
-    options.onHide = function (player) {
-        if (player) {
-            player.pauseVideo();
+    options.onHide = function (iFrameDiv) {
+        if (iFrameDiv) {
+            iFrameDiv.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
         }
-    };
-
-    //Check to see if API is already injected.
-    if (!$("script[src=\"" + "https://www.youtube.com/iframe_api" + "\"]").exists()) {
-        //Inject youtube API
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     }
-
-    LinkExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i, options);
-    this.getSrcUrl = function (id) { return '//www.youtube.com/embed/' + id; };
-    this.defaultRatio = 0.5625;
-    this.hook = function (source, description, ytSettings) {
-
-        var target = this.options.targetFunc(source);
-
-        if (LinkExpando.isHooked(target)) {
-            return;
-        } else {
-            LinkExpando.isHooked(target, true);
-        }
-
-        var id = this.getId(source.prop('href'));
-        if (!id) {
-            return;
-        }
-
-        LinkExpando.dataProp(target, 'source', this.getSrcUrl(id));
-        target.prop('title', description);
-
-        var me = this;
-        target.on('click',
-            function (event) {
-                event.preventDefault();
-
-                var target = me.options.targetFunc($(event.target));
-                if (!LinkExpando.isLoaded(target)) {
-
-                    if (me.options.loading) {
-                        me.options.loading(target);
-                    }
-
-                    var displayDiv = me.options.destinationFunc(target);
-
-                    var ytPlaceholder = $('<div>', ytSettings);
-                    displayDiv.empty().html(ytPlaceholder);
-
-                    if (YT) {
-                        me.player = new YT.Player(ytSettings.id, {
-                            height: ytSettings.width.toString(),
-                            width: (ytSettings.width * me.defaultRatio).toString(),
-                            videoId: ytSettings.id,
-                        });
-                    }
-
-                    LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
-                    LinkExpando.isLoaded(target, true);
-                    UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
-                }
-                me.options.toggle(target);
-                if (!LinkExpando.isVisible(target)) {
-                    //show
-                    LinkExpando.isVisible(target, true);
-                }
-                else {
-                    //hide
-                    LinkExpando.isVisible(target, false);
-                    if (me.options.onHide) {
-                        me.options.onHide(me.player);
-                    }
-                }
-                me.options.destinationFunc(target).slideToggle();
-            });
-        if (me.options.setTags) {
-            LinkExpando.setTag(target, description);
-        }
-
-    }
+    IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i, options);
+    this.getSrcUrl = function (id) { return '//www.youtube.com/embed/' + id + "?enablejsapi=1"; };
 };
-YouTubeExpando.prototype = new LinkExpando();
+YouTubeExpando.prototype = new IFrameEmbedderExpando();
 YouTubeExpando.prototype.constructor = YouTubeExpando;
 YouTubeExpando.prototype.process = function (source) {
     var target = this.options.targetFunc($(source));
 
     var width = Math.min(560, UI.Common.availableWidth(target.parent()));
 
-    var id = this.getId($(source).prop('href'));
-
     this.hook($(source), 'YouTube', {
         width: width.toString(),
         height: (width * this.defaultRatio).toString(),
-        id: id
+        frameborder: '0',
+        allowfullscreen: true
     });
 };
 
