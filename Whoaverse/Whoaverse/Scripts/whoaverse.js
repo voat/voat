@@ -1112,7 +1112,7 @@ function loadMoreSetItems(obj, setId) {
         url: "/set/" + setId + "/" + currentPage + "/",
         success: function (data) {
             $("#set-" + setId + "-page").remove();
-            $(obj).before(data);
+            $("#set-" + setId + "-container").append(data);
             $(obj).html("load more &#9660;");
         },
         error: function () {
