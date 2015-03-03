@@ -15,7 +15,7 @@ All Rights Reserved.
 // Please feel free to refactor this code, I wrote most of it when I first started playing with JavaScript
 
 $(document).ready(function () {
-    // activate bootsrap popovers
+    // activate bootstrap popovers
     $('[data-toggle="popover"]').popover({ trigger: 'hover', 'placement': 'top' });
 
     // prepare auth tokens
@@ -159,12 +159,12 @@ function submitUpVote(messageid) {
 
 function voteUpComment(commentid) {
     submitCommentUpVote(commentid);
-
+	
     // get current score
     var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
-    var scoreDislikes = $(".id-" + commentid).find('.post_downvotes').filter(":first").html();
+    var scoreDislikes = -($(".id-" + commentid).find('.post_downvotes').filter(":first").html());
 
-    // ADD LIKE IF UNVOTED
+	// ADD LIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
         $(".id-" + commentid).children(".midcol").toggleClass("likes", true); //add class likes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
@@ -199,9 +199,9 @@ function voteUpComment(commentid) {
         $(".id-" + commentid).children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //add upvoted arrow
         // increment/decrement comment points counters and update DOM element
         scoreLikes++;
-        scoreDislikes++; // this will always be a negative number        
+        scoreDislikes--;
         $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);
-        $(".id-" + commentid).find('.post_downvotes').filter(":first").html(scoreDislikes);
+        $(".id-" + commentid).find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
         $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
         $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     }
@@ -209,12 +209,12 @@ function voteUpComment(commentid) {
 
 function voteDownComment(commentid) {
     submitCommentDownVote(commentid);
-
+	
     // get current score
     var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
-    var scoreDislikes = $(".id-" + commentid).find('.post_downvotes').filter(":first").html();
+    var scoreDislikes = -($(".id-" + commentid).find('.post_downvotes').filter(":first").html());
 
-    // ADD DISLIKE IF UNVOTED
+	// ADD DISLIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
         $(".id-" + commentid).children(".midcol").toggleClass("dislikes", true); //add class dislikes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
@@ -222,10 +222,10 @@ function voteDownComment(commentid) {
         $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //set downvote arrow to downvoted
         $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false); //remove downvote arrow
         // increment comment points counter and update DOM element        
-        scoreDislikes--;
-        $(".id-" + commentid).find('.post_downvotes').filter(":first").html(scoreDislikes);
-        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes + scoreDislikes) + " points");
-        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes + scoreDislikes) + " points");
+        scoreDislikes++;
+        $(".id-" + commentid).find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
+        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     } else if ($(".id-" + commentid).children(".midcol").is(".dislikes")) {
         // REMOVE DISLIKE IF DISLIKED
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", true); //add class unvoted
@@ -234,7 +234,7 @@ function voteDownComment(commentid) {
         $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set arrow to downvote
         $(".id-" + commentid).children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
         // decrement comment points counter and update DOM element
-        scoreDislikes++;
+        scoreDislikes--;
         $(".id-" + commentid).find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
         $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
         $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
@@ -249,17 +249,11 @@ function voteDownComment(commentid) {
         $(".id-" + commentid).children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //add downvoted arrow
         // increment/decrement comment points counters and update DOM element
         scoreLikes--;
-        scoreDislikes--; // this will always be a negative number
+        scoreDislikes++;
         $(".id-" + commentid).find('.post_upvotes').filter(":first").html('+' + scoreLikes);
-        $(".id-" + commentid).find('.post_downvotes').filter(":first").html(scoreDislikes);
-        var score = 0;
-        if (scoreDislikes < 0) {
-            score = scoreLikes + scoreDislikes;
-        } else {
-            score = scoreLikes - scoreDislikes;
-        }
-        $(".id-" + commentid).find('.score.unvoted').filter(":first").html(score + " points");
-        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html(score + " points");
+        $(".id-" + commentid).find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
+        $(".id-" + commentid).find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+        $(".id-" + commentid).find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
     }
 }
 
