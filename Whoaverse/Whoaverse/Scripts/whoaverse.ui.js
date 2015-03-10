@@ -249,7 +249,7 @@ LinkExpando.setTag = function (target, tagText) {
     }
 }
 LinkExpando.dataProp = function (target, prop, value) {
-    if (value) {
+    if (value != null) {
         $(target).data(prop, value);
     }
     return $(target).data(prop)
@@ -699,7 +699,6 @@ ImgurGifvExpando.prototype.process = function (source) {
 var IFrameEmbedderExpando = function (urlRegEx, options) {
     LinkExpando.call(this, urlRegEx, options);
     this.defaultRatio = 0.5625;
-    this.iFrame = undefined;
     this.hook = function (source, description, iFrameSettings) {
 
         var target = this.options.targetFunc(source);
@@ -724,18 +723,17 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
                 event.preventDefault();
 
                 var target = me.options.targetFunc($(event.target));
+                var displayDiv = me.options.destinationFunc(target);
                 if (!LinkExpando.isLoaded(target)) {
 
                     if (me.options.loading) {
                         me.options.loading(target);
                     }
 
-                    var displayDiv = me.options.destinationFunc(target);
-
                     //<iframe width="560" height="315" src="//www.youtube.com/embed/JUDSeb2zHQ0" frameborder="0" allowfullscreen></iframe>
                     iFrameSettings.src = LinkExpando.dataProp(target, 'source');
-                    me.iFrame = $('<iframe/>', iFrameSettings);
-                    displayDiv.empty().html(me.iFrame);
+                    var iFrame = $('<iframe/>', iFrameSettings);
+                    displayDiv.empty().html(iFrame);
                     LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
                     LinkExpando.isLoaded(target, true);
 
@@ -747,7 +745,10 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
                     LinkExpando.isVisible(target, true);
                 } else {
                     LinkExpando.isVisible(target, false);
-                    if (me.options.onHide && me.iFrame != null) { me.options.onHide(me.iFrame[0]); }
+                    if (LinkExpando.isLoaded(target)) {
+                        displayDiv.empty();
+                        LinkExpando.isLoaded(target, false);
+                    }
                 }
                 me.options.toggle(target);
                 me.options.destinationFunc(target).slideToggle();
@@ -763,13 +764,8 @@ IFrameEmbedderExpando.prototype.constructor = IFrameEmbedderExpando;
 
 /* YouTube */
 var YouTubeExpando = function (options) {
-    options.onHide = function (iFrameDiv) {
-        if (iFrameDiv) {
-            iFrameDiv.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        }
-    }
     IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i, options);
-    this.getSrcUrl = function (id) { return '//www.youtube.com/embed/' + id + "?enablejsapi=1"; };
+    this.getSrcUrl = function (id) { return '//www.youtube.com/embed/' + id; };
 };
 YouTubeExpando.prototype = new IFrameEmbedderExpando();
 YouTubeExpando.prototype.constructor = YouTubeExpando;
