@@ -208,7 +208,7 @@ namespace Voat.Controllers
                     return View("Submit");
                 }
                 // abort if title less than 20 characters
-                if (message.Linkdescription.Length <= 20)
+                if (message.Linkdescription.Length < 20)
                 {
                     ModelState.AddModelError(string.Empty, "Sorry, the link description may not be less than 20 characters.");
                     return View("Submit");
@@ -288,7 +288,7 @@ namespace Voat.Controllers
                     return View("Submit");
                 }
                 // abort if title less than 20 characters
-                if (message.Linkdescription.Length <= 20)
+                if (message.Linkdescription.Length < 20)
                 {
                     ModelState.AddModelError(string.Empty, "Sorry, the link description may not be less than 20 characters.");
                     return View("Submit");
