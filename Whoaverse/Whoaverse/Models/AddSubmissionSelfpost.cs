@@ -34,8 +34,8 @@ namespace Voat.Models
 
 
         [Required(ErrorMessage = "Message title is required. Please fill this field.")]
-        [StringLength(200, ErrorMessage = "Submission title is limited to 200 characters.")]
-        public string Title { get; set; }
+        [StringLength(200, ErrorMessage = "Submission title must be at least 20 and is limited to 200 characters long.", MinimumLength = 20)]
+        public string Linkdescription { get; set; }
 
         [Required(ErrorMessage = "You must type a subverse to send the post to. Example: programming, videos, pics, funny.")]
         [StringLength(200, ErrorMessage = "Subverse title is limited to 20 characters.")]

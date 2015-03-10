@@ -207,6 +207,12 @@ namespace Voat.Controllers
                     ModelState.AddModelError(string.Empty, "Sorry, the link description may not contain unicode characters.");
                     return View("Submit");
                 }
+                // abort if title less than 20 characters
+                if (message.Linkdescription.Length < 20)
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, the link description may not be less than 20 characters.");
+                    return View("Submit");
+                }
 
                 var domain = UrlUtility.GetDomainFromUri(message.MessageContent);
 
@@ -279,6 +285,12 @@ namespace Voat.Controllers
                 if (Submissions.ContainsUnicode(message.Title))
                 {
                     ModelState.AddModelError(string.Empty, "Sorry, the message title may not contain unicode characters.");
+                    return View("Submit");
+                }
+                // abort if title less than 20 characters
+                if (message.Linkdescription.Length < 20)
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, the link description may not be less than 20 characters.");
                     return View("Submit");
                 }
 
