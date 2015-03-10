@@ -74,7 +74,6 @@ namespace Voat.Controllers
 
             if (user == null)
             {
-
                 // Check if correct username was entered with wrong password and increment failed attempts - lockout account
                 var tmpuser = await UserManager.FindByNameAsync(model.UserName);
                 if (tmpuser != null)
@@ -102,8 +101,6 @@ namespace Voat.Controllers
             // Read User Theme preference and set value to session variable
             Session["UserTheme"] = Utils.User.UserStylePreference(user.UserName);
             return RedirectToLocal(returnUrl);
-
-            // If we got this far, something failed, redisplay form
         }
 
         // GET: /Account/Register
@@ -178,6 +175,7 @@ namespace Voat.Controllers
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+                : message == ManageMessageId.WrongPassword ? "The password you entered does not match the one on our record."
                 : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : message == ManageMessageId.InvalidFileFormat ? "Please upload a .jpg or .png image."
@@ -200,6 +198,7 @@ namespace Voat.Controllers
             if (hasPassword)
             {
                 if (!ModelState.IsValid) return View(model);
+
                 var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
                 if (result.Succeeded)
                 {
@@ -226,7 +225,7 @@ namespace Voat.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            return RedirectToAction("Manage", new { Message = ManageMessageId.WrongPassword });
         }
 
         // POST: /Account/ExternalLogin
@@ -373,16 +372,27 @@ namespace Voat.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteAccount(DeleteAccountViewModel model)
         {
-            if (!ModelState.IsValid) return View("~/Views/Errors/Error.cshtml");
-            if (!User.Identity.IsAuthenticated) return View("~/Views/Errors/Error.cshtml");
-            AuthenticationManager.SignOut();
+            // require users to enter their password in order to execute account delete action
+            var user = UserManager.Find(User.Identity.Name, model.CurrentPassword);
+            
+            if (user != null)
+            {
+                // execute delete action
+                if (Utils.User.DeleteUser(User.Identity.Name))
+                {
+                    AuthenticationManager.SignOut();
+                    return View("~/Views/Account/AccountDeleted.cshtml");
+                }
+                
+                // something went wrong when deleting user account
+                return View("~/Views/Errors/Error.cshtml");
+            }
 
-            // execute delete action
-            return View(Utils.User.DeleteUser(User.Identity.Name) ? "~/Views/Account/AccountDeleted.cshtml" : "~/Views/Errors/Error.cshtml");
+            return RedirectToAction("Manage", new { message = ManageMessageId.WrongPassword });
         }
 
         // GET: /Account/UserPreferencesAbout
-        [ChildActionOnly]
+        [Authorize]
         public ActionResult UserPreferencesAbout()
         {
             try
@@ -433,7 +443,7 @@ namespace Voat.Controllers
                     // create a new record for this user in userpreferences table
                     tmpModel.Shortbio = model.Shortbio;
                     tmpModel.Username = User.Identity.Name;
-                };
+                }
 
                 if (model.Avatarfile != null && model.Avatarfile.ContentLength > 0)
                 {
@@ -586,6 +596,42 @@ namespace Voat.Controllers
             return RedirectToAction("Manage");
         }
 
+        // GET: /Account/UserAccountEmail
+        [Authorize]
+        [ChildActionOnly]
+        public ActionResult UserAccountEmail()
+        {
+            var existingEmail = UserManager.GetEmail(User.Identity.GetUserId());
+
+            if (existingEmail == null) return PartialView("_ChangeAccountEmail");
+
+            var userEmailViewModel = new UserEmailViewModel
+            {
+                EmailAddress = existingEmail
+            };
+
+            return PartialView("_ChangeAccountEmail", userEmailViewModel);
+        }
+
+        // POST: /Account/UserAccountEmail
+        [Authorize]
+        [HttpPost]
+        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UserAccountEmail([Bind(Include = "EmailAddress")] UserEmailViewModel model)
+        {
+            if (!ModelState.IsValid) return View("Manage", model);
+
+            // save changes
+            var result = await UserManager.SetEmailAsync(User.Identity.GetUserId(), model.EmailAddress);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Manage");
+            }
+            AddErrors(result);
+            return View("Manage", model);
+        }
+
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
@@ -633,7 +679,8 @@ namespace Voat.Controllers
             ChangeRecoveryInfoSuccess,
             Error,
             InvalidFileFormat,
-            UploadedFileToolarge
+            UploadedFileToolarge,
+            WrongPassword
         }
 
         private ActionResult RedirectToLocal(string returnUrl)

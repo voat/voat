@@ -22,7 +22,7 @@
         <div class="row nomargin">
             <div class="well col-md-12">
                 <div class="alert-title">Your public profile</div>
-                
+
                 @if (ViewBag.StatusMessage != String.Empty)
                 {
                     <p class="alert alert-danger">@ViewBag.StatusMessage</p>
@@ -35,7 +35,6 @@
                     </section>
                 }
                 <div class="alert-title">User preferences</div>
-                <h2>You can use this form to customize your Voat experience.</h2>
 
                 @if (User.Identity.IsAuthenticated)
                 {
@@ -44,11 +43,12 @@
                     </section>
                 }
 
-                <div class="alert-title">Change your password</div>
-                <h2>You can use this form to change your password.</h2>
-                <br />
+                <div class="alert-title">Account e-mail</div>
+                <section id="userEmail">
+                    @Html.Action("UserAccountEmail")
+                </section>
 
-                <p class="text-success">@ViewBag.StatusMessage</p>
+                <div class="alert-title">Change your password</div>
 
                 @if (User.Identity.IsAuthenticated)
                 {
@@ -60,8 +60,6 @@
                 }
 
                 <div class="alert-title">Delete your account</div>
-                <h2>You can use this form to permanently delete your account.</h2>
-                <br />
 
                 @if (User.Identity.IsAuthenticated)
                 {

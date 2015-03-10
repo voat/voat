@@ -11,8 +11,8 @@
     All Rights Reserved.*@
 
 @{
-    string userName = ViewBag.userid;
-    DateTime userRegistrationDateTime = Voat.Utils.User.GetUserRegistrationDateTime(userName);
+    string userName = User.Identity.Name;
+    DateTime userRegistrationDateTime = Voat.Utils.User.GetUserRegistrationDateTime(User.Identity.Name);
 
     <style>
         .titlebox {
@@ -103,6 +103,7 @@
             </div>
         </div>
         @Html.Action("SubversesUserModerates", "Home", new { userName = userName })
+
         @if (Voat.Utils.User.PublicSubscriptionsEnabled(userName))
         {
             @Html.Action("SubversesUserIsSubscribedTo", "Home", new { userName = userName })

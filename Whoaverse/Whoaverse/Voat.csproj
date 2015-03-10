@@ -513,7 +513,7 @@
     <Content Include="Graphics\WVSprite.png.scss">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
-    <None Include="Properties\PublishProfiles\voat beast server.pubxml" />
+    <None Include="Properties\PublishProfiles\voat.co ROOT - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -618,7 +618,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Thumbs\Placeholder.txt" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -779,6 +781,7 @@
     <Content Include="Views\Shared\Comments\_CommentBucket.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarOwnerToolbox.cshtml" />
+    <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -64,13 +64,13 @@ namespace Voat.Utils
                     var tmpuser = tmpUserManager.FindByName(userName);
                     if (tmpuser != null)
                     {
-                        //remove voting history for submisions
+                        // remove voting history for submisions
                         db.Votingtrackers.RemoveRange(db.Votingtrackers.Where(x => x.UserName == userName));
 
-                        //remove voting history for comments
+                        // remove voting history for comments
                         db.Commentvotingtrackers.RemoveRange(db.Commentvotingtrackers.Where(x => x.UserName == userName));
 
-                        //remove all comments
+                        // remove all comments
                         var comments = db.Comments.Where(c => c.Name == userName).ToList();
                         foreach (Comment c in comments)
                         {
@@ -79,7 +79,7 @@ namespace Voat.Utils
                         }
                         db.SaveChanges();
 
-                        //remove all submissions
+                        // remove all submissions
                         var submissions = db.Messages.Where(c => c.Name == userName).ToList();
                         foreach (Message s in submissions)
                         {
@@ -97,27 +97,28 @@ namespace Voat.Utils
                             }
                         }
 
-                        //resign from all moderating positions
+                        // resign from all moderating positions
                         db.SubverseAdmins.RemoveRange(db.SubverseAdmins.Where(m => m.Username.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-                        //delete comment reply notifications
+                        // delete comment reply notifications
                         db.Commentreplynotifications.RemoveRange(db.Commentreplynotifications.Where(crp => crp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-                        //delete post reply notifications
+                        // delete post reply notifications
                         db.Postreplynotifications.RemoveRange(db.Postreplynotifications.Where(prp => prp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-                        //delete private messages
+                        // delete private messages
                         db.Privatemessages.RemoveRange(db.Privatemessages.Where(pm => pm.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
                         // TODO:
                         // keep this updated as new features are added (delete sets etc)
 
-                        //username will stay permanently reserved
+                        // username will stay permanently reserved
 
                         db.SaveChanges();
                         
                         return true;
                     }
+                    // user account could not be found
                     return false;
                 }
 

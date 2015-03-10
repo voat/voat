@@ -57,6 +57,11 @@ namespace Voat.Models.ViewModels
         [Display(Name = "Re-type DELETE to confirm")]
         [Compare("FirstWord", ErrorMessage = "Please re-type the word DELETE in this field.")]
         public string SecondWord { get; set; }
+
+        [Required(ErrorMessage = "Current password is required.")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Current password")]
+        public string CurrentPassword { get; set; }
     }
 
     public class UserPreferencesViewModel
@@ -90,6 +95,14 @@ namespace Voat.Models.ViewModels
 
         [Display(Name = "Avatar")]
         public HttpPostedFileBase Avatarfile { get; set; }
+    }
+
+    public class UserEmailViewModel
+    {
+        [Display(Name = "E-mail address")]
+        [EmailAddress(ErrorMessage = "Please enter a valid E-mail address")]
+        [Required(ErrorMessage = "E-mail address is required. Please fill this field.")]
+        public string EmailAddress { get; set; }
     }
 
     public class LoginViewModel
