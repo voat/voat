@@ -740,18 +740,14 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
                     //displayDiv.insertAfter(target);
                     UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
                 }
-                if (!LinkExpando.isVisible(target)) {
-                    //show
-                    LinkExpando.isVisible(target, true);
-                } else {
-                    LinkExpando.isVisible(target, false);
-                    if (LinkExpando.isLoaded(target)) {
+                LinkExpando.isVisible(target, !LinkExpando.isVisible(target));
+                me.options.toggle(target);
+                me.options.destinationFunc(target).slideToggle(400, function () {
+                    if (!LinkExpando.isVisible(target) && LinkExpando.isLoaded(target)) {
                         displayDiv.empty();
                         LinkExpando.isLoaded(target, false);
                     }
-                }
-                me.options.toggle(target);
-                me.options.destinationFunc(target).slideToggle();
+                });
             });
         if (me.options.setTags) {
             LinkExpando.setTag(target, description);
