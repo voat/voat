@@ -11,8 +11,8 @@
     All Rights Reserved.*@
 
 @{
-    string userName = User.Identity.Name;
-    DateTime userRegistrationDateTime = Voat.Utils.User.GetUserRegistrationDateTime(User.Identity.Name);
+    string userName = ViewBag.userid;
+    DateTime userRegistrationDateTime = Voat.Utils.User.GetUserRegistrationDateTime(ViewBag.userid);
 
     <style>
         .titlebox {
