@@ -249,7 +249,7 @@ LinkExpando.setTag = function (target, tagText) {
     }
 }
 LinkExpando.dataProp = function (target, prop, value) {
-    if (value) {
+    if (value != null) {
         $(target).data(prop, value);
     }
     return $(target).data(prop)
@@ -723,13 +723,12 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
                 event.preventDefault();
 
                 var target = me.options.targetFunc($(event.target));
+                var displayDiv = me.options.destinationFunc(target);
                 if (!LinkExpando.isLoaded(target)) {
 
                     if (me.options.loading) {
                         me.options.loading(target);
                     }
-
-                    var displayDiv = me.options.destinationFunc(target);
 
                     //<iframe width="560" height="315" src="//www.youtube.com/embed/JUDSeb2zHQ0" frameborder="0" allowfullscreen></iframe>
                     iFrameSettings.src = LinkExpando.dataProp(target, 'source');
@@ -741,8 +740,14 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
                     //displayDiv.insertAfter(target);
                     UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
                 }
+                LinkExpando.isVisible(target, !LinkExpando.isVisible(target));
                 me.options.toggle(target);
-                me.options.destinationFunc(target).slideToggle();
+                me.options.destinationFunc(target).slideToggle(400, function () {
+                    if (!LinkExpando.isVisible(target) && LinkExpando.isLoaded(target)) {
+                        displayDiv.empty();
+                        LinkExpando.isLoaded(target, false);
+                    }
+                });
             });
         if (me.options.setTags) {
             LinkExpando.setTag(target, description);
@@ -754,7 +759,7 @@ IFrameEmbedderExpando.prototype = new LinkExpando();
 IFrameEmbedderExpando.prototype.constructor = IFrameEmbedderExpando;
 
 /* YouTube */
-var YouTubeExpando = function(options){
+var YouTubeExpando = function (options) {
     IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i, options);
     this.getSrcUrl = function (id) { return '//www.youtube.com/embed/' + id; };
 };
