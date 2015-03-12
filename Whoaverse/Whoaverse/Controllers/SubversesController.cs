@@ -1579,7 +1579,7 @@ namespace Voat.Controllers
                                                                                 join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                                 where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false && message.Date >= startDate && message.Date <= DateTime.Now
                                                                                 where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                                select message).OrderByDescending(s => s.Views).Take(5).DistinctBy(m => m.Subverse).AsQueryable().AsNoTracking();
+                                                                                select message).DistinctBy(m => m.Subverse).OrderByDescending(s => s.Views).Take(5).AsQueryable().AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByViews24Hours;
         }
