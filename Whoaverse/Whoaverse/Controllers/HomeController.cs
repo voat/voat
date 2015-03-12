@@ -35,7 +35,7 @@ namespace Voat.Controllers
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public ActionResult ClaSubmit(Cla claModel)
         {
-            if (!ModelState.IsValid) return View();
+            if (!ModelState.IsValid) return View("~/Views/Legal/Cla.cshtml");
 
             var from = new MailAddress(claModel.Email);
             var to = new MailAddress("legal@voat.co");
@@ -288,9 +288,9 @@ namespace Voat.Controllers
                     return View("Submit");
                 }
                 // abort if title less than 20 characters
-                if (message.Linkdescription.Length < 20)
+                if (message.Title.Length < 20)
                 {
-                    ModelState.AddModelError(string.Empty, "Sorry, the link description may not be less than 20 characters.");
+                    ModelState.AddModelError(string.Empty, "Sorry, the the message title may not be less than 20 characters.");
                     return View("Submit");
                 }
 
