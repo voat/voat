@@ -384,10 +384,12 @@ var ImageLinkExpando = (function () {
 
 
                 //I HAVE NO IDEA WHY I HAVE TO DO THIS TO REMOVE THE width/height attributes of the image tag itself
-                i.css('width', width);
-                i.css('height', height);
                 this.removeAttribute('width');
                 this.removeAttribute('height');
+                //Hide drag shadow
+                i.attr("draggable", false);
+                //Hide right click menu as it is remapped to scale image
+                i.attr("oncontextmenu", "return false");
 
                 var startSize = (UI.ImageExpandoSettings.initialSize != 0 ? UI.ImageExpandoSettings.initialSize : UI.Common.availableWidth(target.parent()));
 
@@ -426,11 +428,44 @@ var ImageLinkExpando = (function () {
                     }
                 }
 
+                var touchData;
+                i.on("mousedown touchstart", function (event) {
+                    console.log(event.which);
+                    if (event.which === 3) {
+                        //Right click, scale image to its natural size
+                        var testImage = new Image();
+                        testImage.src = i.attr("src");
+                        i.css("width", testImage.width);
+                        event.preventDefault();
+                        return;
+                    }
+                    touchData = {
+                        x: event.pageX,
+                        origWidth: i.width()
+                    };
+                    $("body").on("mousemove touchmove", resizeListener);
+                    $("body").on("mouseup touchend", mouseUpListener);
+                });
+                var resizeListener = function (event) {
+                    var deltaX = event.pageX - touchData.x;
+                    i.css("width", touchData.origWidth + deltaX);
+                }
+                var mouseUpListener = function () {
+                    $("body").off("mousemove touchmove", resizeListener);
+                    $("body").off("mouseup touchend", mouseUpListener);
+                };
+
                 LinkExpando.isLoaded(target, true);
 
                 //reestablish handler
                 target.off();
-                target.on('click', (function (event) { me.onClick(event) }));
+                target.on('click', (function (event) {
+                    if (!LinkExpando.isVisible(target)) {
+                        //Reset image width
+                        i.css("width", "");
+                    }
+                    me.onClick(event);
+                }));
                 if (me.options.setTags) {
                     LinkExpando.setTag(target, UI.Common.fileExtension(href).toUpperCase());
                 }
@@ -999,6 +1034,11 @@ $(document).ready(function () {
         if (iframe) {
             UI.Common.resizeTarget(iframe, false, iframe.parent());
         }
+    });
+
+    //Reset image expando size on resize
+    $(window).on('resize', function () {
+        $(".link-expando img").css("width", "");
     });
 
     UI.SidebarHandler();

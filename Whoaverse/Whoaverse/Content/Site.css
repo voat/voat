@@ -2070,7 +2070,7 @@ body.with-listing-chooser.explore-page #header .pagename {
         }
 
 .md {
-    max-width: 650px;
+    /*max-width: 650px;*/
     overflow: auto;
 }
 
@@ -9455,12 +9455,19 @@ body.with-listing-chooser {
         font-style: italic;
     }
 
-.link-expando img { 
-    display: block !important;
+.link-expando {
+    overflow-x: auto;
 }
-.link-expando span { 
-    display: block !important;
-}
+
+    .link-expando img { 
+        display: block !important;
+        min-width: 68px;
+        width: 100%;
+        height: auto;
+    }
+    .link-expando span { 
+        display: block !important;
+    }
 
 .link-expando-type {
     background: #f2f2f2;
