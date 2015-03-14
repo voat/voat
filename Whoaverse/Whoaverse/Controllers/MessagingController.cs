@@ -115,7 +115,6 @@ namespace Voat.Controllers
             }
         }
 
-
         // GET: InboxCommentReplies
         [System.Web.Mvc.Authorize]
         public ActionResult InboxCommentReplies(int? page)
@@ -183,24 +182,22 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            // get logged in username and fetch received comment replies
+            // get logged in username and fetch received post replies
             try
             {
-                IQueryable<Postreplynotification> postReplies = _db.Postreplynotifications
-                    .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(s => s.Timestamp)
-                    .ThenBy(s => s.Sender);
+                IQueryable<Postreplynotification> postReplyNotifications = _db.Postreplynotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
 
-                if (postReplies.Any())
+                var postReplies = _db.Comments.Where(p => postReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
+
+                if (postReplyNotifications.Any())
                 {
-                    var unreadPostReplies = postReplies
-                        .Where(s => s.Status && s.Markedasunread == false).ToList();
+                    var unreadPostReplies = postReplyNotifications.Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
-                    if (unreadPostReplies.Count > 0)
+                    if (unreadPostReplies.Any())
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singlePostReply in unreadPostReplies.ToList())
+                        foreach (var singlePostReply in unreadPostReplies)
                         {
                             // status: true = unread, false = read
                             singlePostReply.Status = false;
@@ -209,17 +206,14 @@ namespace Voat.Controllers
                     }
                 }
 
-                ViewBag.PostRepliesCount = postReplies.Count();
+                ViewBag.PostRepliesCount = postReplyNotifications.Count();
                 return View("InboxPostReplies", postReplies.ToPagedList(pageNumber, pageSize));
-
             }
             catch (Exception)
             {
                 return RedirectToAction("HeavyLoad", "Error");
             }
         }
-
-
 
         // GET: Sent
         [System.Web.Mvc.Authorize]

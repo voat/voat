@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Voat.Models.Postreplynotification>
+@model PagedList.IPagedList<Voat.Models.Comment>
 
 @using PagedList.Mvc;
 
@@ -18,13 +18,13 @@
     ViewBag.Title = "Inbox - post replies";
 }
 
+@Html.AntiForgeryToken()
+
 <style>
-    .p {
-        font-size: 35px;
+    .comment {
+        margin: 0px 0px 0px;
     }
 </style>
-
-@Html.AntiForgeryToken()
 
 <div id="container">
     <h1>Post Reply Notifications</h1>
@@ -38,40 +38,29 @@
                 <p>Displaying newest @Model.Count post reply notifications. You have a total of @ViewBag.PostRepliesCount post reply notification(s).</p>
                 <hr />
 
-                foreach (var message in Model)
+                foreach (var comment in Model)
                 {
-                    var statusClass = "";
-                    if (message.Status)
-                    {
-                        statusClass = "unreadNotification";
-                    }
-                    else
-                    {
-                        statusClass = "";
-                    }
-                    <div id="commentContainer-@message.CommentId">
+                    <div id="commentContainer-@comment.Id">
                         <div class="panel panel-default">
-                            <div class="panel panel-heading @statusClass">
-                                From: <a href="/u/@message.Sender">@message.Sender</a> | Sent: @message.Timestamp
+                            <div class="panel panel-heading">
+                                From: <a href="/u/@comment.Name">@comment.Name</a> | Sent: @comment.Date
                             </div>
                             <div class="panel panel-heading-messagetitle">
-                                <b>@message.Subject</b>
+                                @if (comment.Message.Type == 1)
+                                {
+                                    <a href="/v/@comment.Message.Subverse/comments/@comment.MessageId"><b>@comment.Message.Title</b></a>
+                                }
+                                else
+                                {
+                                    <a href="/v/@comment.Message.Subverse/comments/@comment.MessageId"><b>@comment.Message.Linkdescription</b></a>
+                                }
                             </div>
                             <div class="panel-message-body">
-                                @Html.Raw(Formatting.FormatMessage(message.Body))
+                                <div class="thread id-@comment.Id comment " data-fullname="" data-ups="" data-downs="">
+                                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", comment.Message, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" } })
+                                </div>
                             </div>
                         </div>
-
-                        <ul class="flat-list buttons">
-                            <li>
-                                <a class="btn-whoaverse-paging" href="/v/@message.Subverse/comments/@message.SubmissionId/@message.CommentId">Permalink</a>
-                            </li>
-                            <li>|</li>
-                            <li>
-                                <a class="btn-whoaverse-paging" id="replyCommentNotification" href="javascript:void(0)" onclick="return replyToCommentNotification(@message.CommentId, @message.SubmissionId)">Reply</a>
-                            </li>
-                        </ul>
-                        <br /><br />
                     </div>
                 }
             }
@@ -82,11 +71,10 @@
                     If you started submitting more stuff, you would be getting more post reply notifications. How's that for advice from artificial intelligence?
                 </p>
             }
-
         </div>
     </div>
     @if (Model.PageCount > 1)
     {
-        @Html.PagedListPager(Model, page => Url.Action("postreplies", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
+        @Html.PagedListPager(Model, page => Url.Action("InboxPostReplies", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
     }
 </div>
