@@ -56,9 +56,7 @@
                                 }
                             </div>
                             <div class="panel-message-body">
-                                <div class="thread id-@comment.Id comment " data-fullname="" data-ups="" data-downs="">
-                                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", comment.Message, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" } })
-                                </div>
+                                @Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" } })
                             </div>
                         </div>
                     </div>

@@ -120,9 +120,7 @@ namespace Voat.Controllers
         public ActionResult InboxCommentReplies(int? page)
         {
             ViewBag.PmView = "inbox";
-
             SetViewBagCounts();
-
             const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
@@ -130,24 +128,22 @@ namespace Voat.Controllers
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
-
+            
             // get logged in username and fetch received comment replies
             try
             {
-                IQueryable<Commentreplynotification> commentReplies = _db.Commentreplynotifications
-                    .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(s => s.Timestamp)
-                    .ThenBy(s => s.Sender);
+                IQueryable<Commentreplynotification> commentReplyNotifications = _db.Commentreplynotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+                var commentReplies = _db.Comments.Where(p => commentReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
 
-                if (commentReplies.Any())
+                if (commentReplyNotifications.Any())
                 {
-                    var unreadCommentReplies = commentReplies.Where(s => s.Status && s.Markedasunread == false).ToList();
+                    var unreadCommentReplies = commentReplyNotifications.Where(s => s.Status && s.Markedasunread == false);
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
-                    if (unreadCommentReplies.Count > 0)
+                    if (unreadCommentReplies.Any())
                     {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singleCommentReply in unreadCommentReplies.ToList())
+                        foreach (var singleCommentReply in unreadCommentReplies)
                         {
                             // status: true = unread, false = read
                             singleCommentReply.Status = false;
@@ -155,10 +151,8 @@ namespace Voat.Controllers
                         }
                     }
                 }
-
-                ViewBag.CommentRepliesCount = commentReplies.Count();
+                ViewBag.CommentRepliesCount = commentReplyNotifications.Count();
                 return View("InboxCommentReplies", commentReplies.ToPagedList(pageNumber, pageSize));
-
             }
             catch (Exception)
             {
@@ -171,9 +165,7 @@ namespace Voat.Controllers
         public ActionResult InboxPostReplies(int? page)
         {
             ViewBag.PmView = "inbox";
-
             SetViewBagCounts();
-
             const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
@@ -186,12 +178,11 @@ namespace Voat.Controllers
             try
             {
                 IQueryable<Postreplynotification> postReplyNotifications = _db.Postreplynotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
-
                 var postReplies = _db.Comments.Where(p => postReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
 
                 if (postReplyNotifications.Any())
                 {
-                    var unreadPostReplies = postReplyNotifications.Where(s => s.Status && s.Markedasunread == false).ToList();
+                    var unreadPostReplies = postReplyNotifications.Where(s => s.Status && s.Markedasunread == false);
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPostReplies.Any())
@@ -205,7 +196,6 @@ namespace Voat.Controllers
                         }
                     }
                 }
-
                 ViewBag.PostRepliesCount = postReplyNotifications.Count();
                 return View("InboxPostReplies", postReplies.ToPagedList(pageNumber, pageSize));
             }
