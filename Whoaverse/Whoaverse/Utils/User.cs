@@ -115,7 +115,7 @@ namespace Voat.Utils
                         // username will stay permanently reserved
 
                         db.SaveChanges();
-                        
+
                         return true;
                     }
                     // user account could not be found
@@ -142,7 +142,7 @@ namespace Voat.Utils
             {
                 var subverseModerator = db.SubverseAdmins.FirstOrDefault(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 2);
 
-                return subverseModerator != null && subverseModerator.Username.Equals(userName, StringComparison.OrdinalIgnoreCase);;
+                return subverseModerator != null && subverseModerator.Username.Equals(userName, StringComparison.OrdinalIgnoreCase); ;
             }
         }
 
@@ -152,7 +152,7 @@ namespace Voat.Utils
             using (var db = new whoaverseEntities())
             {
                 var subverseSubscriber = db.Subscriptions.FirstOrDefault(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username == userName);
-                return subverseSubscriber != null;;
+                return subverseSubscriber != null; ;
             }
         }
 
@@ -173,7 +173,7 @@ namespace Voat.Utils
             using (var db = new whoaverseEntities())
             {
                 // add a new subscription
-                var newSubscription = new Subscription {Username = userName, SubverseName = subverse};
+                var newSubscription = new Subscription { Username = userName, SubverseName = subverse };
                 db.Subscriptions.Add(newSubscription);
 
                 // record new subscription in subverse table subscribers field
@@ -273,16 +273,14 @@ namespace Voat.Utils
             using (var db = new whoaverseEntities())
             {
                 var commentReplies = db.Commentreplynotifications
-                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(s => s.Timestamp)
-                        .ThenBy(s => s.Sender)
-                        .ToList();
+                    .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(s => s.Timestamp)
+                    .ThenBy(s => s.Sender);
 
                 if (!commentReplies.Any()) return 0;
-                var unreadCommentReplies = commentReplies
-                    .Where(s => s.Status && s.Markedasunread == false).ToList();
-
-                return unreadCommentReplies.Count > 0 ? unreadCommentReplies.Count : 0;
+                
+                var unreadCommentReplies = commentReplies.Where(s => s.Status && s.Markedasunread == false);
+                return unreadCommentReplies.Any() ? unreadCommentReplies.Count() : 0;
             }
         }
 
@@ -292,16 +290,14 @@ namespace Voat.Utils
             using (var db = new whoaverseEntities())
             {
                 var postReplies = db.Postreplynotifications
-                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(s => s.Timestamp)
-                        .ThenBy(s => s.Sender)
-                        .ToList();
+                    .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(s => s.Timestamp)
+                    .ThenBy(s => s.Sender);
 
                 if (!postReplies.Any()) return 0;
-                var unreadPostReplies = postReplies
-                    .Where(s => s.Status && s.Markedasunread == false).ToList();
+                var unreadPostReplies = postReplies.Where(s => s.Status && s.Markedasunread == false);
 
-                return unreadPostReplies.Count > 0 ? unreadPostReplies.Count : 0;
+                return unreadPostReplies.Any() ? unreadPostReplies.Count() : 0;
             }
         }
 
@@ -311,16 +307,14 @@ namespace Voat.Utils
             using (var db = new whoaverseEntities())
             {
                 var privateMessages = db.Privatemessages
-                        .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(s => s.Timestamp)
-                        .ThenBy(s => s.Sender)
-                        .ToList();
+                    .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(s => s.Timestamp)
+                    .ThenBy(s => s.Sender);
 
                 if (!privateMessages.Any()) return 0;
-                var unreadPrivateMessages = privateMessages
-                    .Where(s => s.Status && s.Markedasunread == false).ToList();
+                var unreadPrivateMessages = privateMessages.Where(s => s.Status && s.Markedasunread == false);
 
-                return unreadPrivateMessages.Count > 0 ? unreadPrivateMessages.Count : 0;
+                return unreadPrivateMessages.Any() ? unreadPrivateMessages.Count() : 0;
             }
         }
 
@@ -693,11 +687,11 @@ namespace Voat.Utils
                 // get voting habits
                 var commentUpvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
                 var commentDownvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
-                
+
                 var totalCommentVotes = commentUpvotes + commentDownvotes;
 
                 // downvote ratio
-                var downvotePercentage = (double)commentDownvotes/totalCommentVotes * 100;
+                var downvotePercentage = (double)commentDownvotes / totalCommentVotes * 100;
 
                 // upvote ratio
                 var upvotePercentage = (double)commentUpvotes / totalCommentVotes * 100;

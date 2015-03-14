@@ -11,7 +11,7 @@
     All Rights Reserved.*@
 
 @{
-    var selectedSubverse = ViewBag.selectedSubverse;    
+    var selectedSubverse = ViewBag.selectedSubverse;
     var selectedSubverseName = ViewBag.selectedSubverseName;
     var action = ViewBag.action;
     bool? frontpage = ViewBag.frontpage;
@@ -33,7 +33,7 @@
         case "top":
             classTop = "selected";
             classNew = "disabled";
-            classHot = "disabled";            
+            classHot = "disabled";
             break;
         default:
             classHot = "selected";
@@ -41,7 +41,7 @@
             classTop = "disabled";
             break;
     }
-    
+
     if (action != null)
     {
         if (action == "link")
@@ -54,7 +54,7 @@
             classHot = "disabled";
             classDiscussion = "selected";
         }
-    }    
+    }
 
     if (frontpage.HasValue)
     {
@@ -64,8 +64,8 @@
                 <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses.">Hot</a></li>
                 <li class="@classNew"><a href="~/new" title="Show most popular submissions from default subverses or the ones you are subscribed to.">New</a></li>
                 <li class="disabled"><a href="~/v/all/new" title="Show latest submissions from all subverses.">Incoming</a></li>
-                <li class="@classDiscussion"><a class="contribute" href="/submit">Start a discussion</a></li>
                 <li class="@classLink"><a class="contribute" href="/submit?linkpost=true">Share a link</a></li>
+                <li class="@classDiscussion"><a class="contribute" href="/submit">Start a discussion</a></li>
             </ul>
         }
     }
@@ -76,8 +76,8 @@
             <li class="@classHot"><a href="@selectedSubverse">Hot</a></li>
             <li class="@classNew"><a href="@selectedSubverse/new">New</a></li>
             <li class="@classTop"><a href="@selectedSubverse/top" title="Show all time top ranked submissions.">Top</a></li>
-            <li class="@classDiscussion"><a class="contribute" href="@selectedSubverse/submit">Start a discussion</a></li>
             <li class="@classLink"><a class="contribute" href="@selectedSubverse/submit?linkpost=true">Share a link</a></li>
+            <li class="@classDiscussion"><a class="contribute" href="@selectedSubverse/submit">Start a discussion</a></li>
         </ul>
     }
 }

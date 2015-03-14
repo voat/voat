@@ -10,9 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Voat.Models.Comment>
-
-@using PagedList.Mvc;
+@model PaginatedList<Voat.Models.Comment>
 
 @{
     ViewBag.Title = "Inbox - comment replies";
@@ -74,8 +72,21 @@
 
         </div>
     </div>
-    @if (Model.PageCount > 1)
-    {
-        @Html.PagedListPager(Model, page => Url.Action("InboxCommentReplies", new { page }), WhoaversePagerOptions.PagedListRenderOptions())
-    }
+    <div class="pagination-container">
+        <ul>
+            @if (Model.HasPreviousPage)
+            {
+                <li class="btn-whoaverse-paging">
+                    @Html.RouteLink("‹ prev", "CommentReplies", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="btn-whoaverse-paging">
+                    @Html.RouteLink("next ›", "CommentReplies", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                </li>
+            }
+        </ul>
+    </div>
 </div>

@@ -29,25 +29,17 @@ namespace Voat.Controllers
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
 
-        private void SetViewBagCounts() {
-            
+        private void SetViewBagCounts()
+        {
             // set unread counts
-            int unreadCommentCount = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
-            int unreadPostCount = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
-            int unreadPMCount = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
-
-            ViewBag.UnreadCommentReplies = unreadCommentCount;
-            ViewBag.UnreadPostReplies = unreadPostCount;
-            ViewBag.UnreadPrivateMessages = unreadPMCount;
+            ViewBag.UnreadCommentReplies = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
             // set total counts
-            int totalCommentRepliesCount = Utils.User.CommentRepliesCount(User.Identity.Name);
-            int totalPostRepliesCount = Utils.User.PostRepliesCount(User.Identity.Name);
-            int totalPMCount = Utils.User.PrivateMessageCount(User.Identity.Name);
-
-            ViewBag.PostRepliesCount = totalPostRepliesCount;
-            ViewBag.CommentRepliesCount = totalCommentRepliesCount;
-            ViewBag.InboxCount = totalPMCount;
+            ViewBag.PostRepliesCount = Utils.User.PostRepliesCount(User.Identity.Name);
+            ViewBag.CommentRepliesCount = Utils.User.CommentRepliesCount(User.Identity.Name);
+            ViewBag.InboxCount = Utils.User.PrivateMessageCount(User.Identity.Name);
         }
 
         // GET: Inbox
@@ -59,21 +51,29 @@ namespace Voat.Controllers
             int unreadPostCount = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
             int unreadPMCount = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
 
-            if (unreadPMCount > 0) {
+            if (unreadPMCount > 0)
+            {
                 return InboxPrivateMessages(page);
-            } else if (unreadCommentCount > 0) {
+            }
+            else if (unreadCommentCount > 0)
+            {
                 return InboxCommentReplies(page);
-            } else if (unreadPostCount > 0) {
+            }
+            else if (unreadPostCount > 0)
+            {
                 return InboxPostReplies(page);
-            } else  {
+            }
+            else
+            {
                 return InboxPrivateMessages(page);
-            } 
-                        
+            }
+
         }
 
         // GET: Inbox
         [System.Web.Mvc.Authorize]
-        public ActionResult InboxPrivateMessages(int? page) {
+        public ActionResult InboxPrivateMessages(int? page)
+        {
             ViewBag.PmView = "inbox";
 
             SetViewBagCounts();
@@ -81,23 +81,27 @@ namespace Voat.Controllers
             const int pageSize = 25;
             int pageNumber = (page ?? 1);
 
-            if (pageNumber < 1) {
+            if (pageNumber < 1)
+            {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
             // get logged in username and fetch received messages
-            try {
+            try
+            {
                 IQueryable<Privatemessage> privateMessages = _db.Privatemessages
                     .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(s => s.Timestamp)
                     .ThenBy(s => s.Sender);
 
-                if (privateMessages.Any()) {
+                if (privateMessages.Any())
+                {
                     var unreadPrivateMessages = privateMessages
                         .Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
-                    if (unreadPrivateMessages.Count > 0) {
+                    if (unreadPrivateMessages.Count > 0)
+                    {
                         // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
                         foreach (var singleMessage in unreadPrivateMessages.ToList())
                         {
@@ -110,7 +114,9 @@ namespace Voat.Controllers
 
                 ViewBag.InboxCount = privateMessages.Count();
                 return View("Inbox", privateMessages.ToPagedList(pageNumber, pageSize));
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 return RedirectToAction("HeavyLoad", "Error");
             }
         }
@@ -122,18 +128,18 @@ namespace Voat.Controllers
             ViewBag.PmView = "inbox";
             SetViewBagCounts();
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
-            
+
             // get logged in username and fetch received comment replies
             try
             {
                 IQueryable<Commentreplynotification> commentReplyNotifications = _db.Commentreplynotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
-                var commentReplies = _db.Comments.Where(p => commentReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
+                IQueryable<Comment> commentReplies = _db.Comments.Where(p => commentReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
 
                 if (commentReplyNotifications.Any())
                 {
@@ -147,12 +153,14 @@ namespace Voat.Controllers
                         {
                             // status: true = unread, false = read
                             singleCommentReply.Status = false;
-                            _db.SaveChanges();
                         }
+                        _db.SaveChanges();
                     }
                 }
                 ViewBag.CommentRepliesCount = commentReplyNotifications.Count();
-                return View("InboxCommentReplies", commentReplies.ToPagedList(pageNumber, pageSize));
+
+                PaginatedList<Comment> paginatedComments = new PaginatedList<Comment>(commentReplies, page ?? 0, pageSize);
+                return View("InboxCommentReplies", paginatedComments);
             }
             catch (Exception)
             {
@@ -167,9 +175,9 @@ namespace Voat.Controllers
             ViewBag.PmView = "inbox";
             SetViewBagCounts();
             const int pageSize = 25;
-            int pageNumber = (page ?? 1);
+            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 1)
+            if (pageNumber < 0)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
@@ -178,7 +186,7 @@ namespace Voat.Controllers
             try
             {
                 IQueryable<Postreplynotification> postReplyNotifications = _db.Postreplynotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
-                var postReplies = _db.Comments.Where(p => postReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
+                IQueryable<Comment> postReplies = _db.Comments.Where(p => postReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
 
                 if (postReplyNotifications.Any())
                 {
@@ -192,12 +200,14 @@ namespace Voat.Controllers
                         {
                             // status: true = unread, false = read
                             singlePostReply.Status = false;
-                            _db.SaveChanges();
                         }
+                        _db.SaveChanges();
                     }
                 }
                 ViewBag.PostRepliesCount = postReplyNotifications.Count();
-                return View("InboxPostReplies", postReplies.ToPagedList(pageNumber, pageSize));
+
+                PaginatedList<Comment> paginatedComments = new PaginatedList<Comment>(postReplies, page ?? 0, pageSize);
+                return View("InboxPostReplies", paginatedComments);
             }
             catch (Exception)
             {
@@ -265,7 +275,7 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid) return View();
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null) return RedirectToAction("Sent", "Messaging");
-            
+
             // check if recipient exists
             if (Utils.User.UserExists(privateMessage.Recipient) && !Utils.User.IsUserGloballyBanned(User.Identity.Name))
             {
@@ -322,10 +332,10 @@ namespace Voat.Controllers
                 try
                 {
                     await _db.SaveChangesAsync();
-                    
+
                     // get count of unread notifications
                     int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(privateMessage.Recipient);
-                    
+
                     // send SignalR realtime notification to recipient
                     var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
                     hubContext.Clients.User(privateMessage.Recipient).setNotificationsPending(unreadNotifications);
