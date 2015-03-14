@@ -2070,7 +2070,6 @@ body.with-listing-chooser.explore-page #header .pagename {
         }
 
 .md {
-    /*max-width: 650px;*/
     overflow: auto;
 }
 

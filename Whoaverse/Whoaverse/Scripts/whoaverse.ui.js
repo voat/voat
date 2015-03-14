@@ -430,7 +430,6 @@ var ImageLinkExpando = (function () {
 
                 var touchData;
                 i.on("mousedown touchstart", function (event) {
-                    console.log(event.which);
                     if (event.which === 3) {
                         //Right click, scale image to its natural size
                         var testImage = new Image();
