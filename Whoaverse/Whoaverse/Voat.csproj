@@ -513,7 +513,7 @@
     <Content Include="Graphics\WVSprite.png.scss">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
-    <None Include="Properties\PublishProfiles\voat.co ROOT - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -599,7 +599,7 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
-    <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\OLD voat.co - Web Deploy.pubxml" />
     <Content Include="robots.txt" />
     <Content Include="Scripts\jquery-2.1.3.min.map" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
@@ -710,7 +710,6 @@
     <Content Include="Views\Messaging\Sent.cshtml" />
     <Content Include="Views\Shared\_SubscriptionsHoverMenu.cshtml" />
     <Content Include="Views\Messaging\InboxCommentReplies.cshtml" />
-    <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
     <Content Include="Views\Account\_LoginModal.cshtml" />
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
@@ -782,6 +781,7 @@
     <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarOwnerToolbox.cshtml" />
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
+    <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

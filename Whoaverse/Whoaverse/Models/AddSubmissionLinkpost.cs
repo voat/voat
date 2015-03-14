@@ -28,7 +28,7 @@ namespace Voat.Models
         public Nullable<double> Rank { get; set; }
 
         [Required(ErrorMessage = "Post title is required. Please fill this field.")]
-        [StringLength(200, ErrorMessage = "The title must be at least 20 and no more than 200 characters long.", MinimumLength = 20)]
+        [StringLength(200, ErrorMessage = "The title must be at least 10 and no more than 200 characters long.", MinimumLength = 10)]
         public string Linkdescription { get; set; }
 
         [Required(ErrorMessage = "URL is required. Please fill this field.")]
