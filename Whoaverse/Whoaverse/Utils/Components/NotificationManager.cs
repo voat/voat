@@ -1,34 +1,52 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿/*
+This source file is subject to version 3 of the GPL license, 
+that is bundled with this package in the file LICENSE, and is 
+available online at http://www.gnu.org/licenses/gpl.txt; 
+you may not use this file except in compliance with the License. 
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+the specific language governing rights and limitations under the License.
+
+All portions of the code written by Voat are Copyright (c) 2014 Voat
+All Rights Reserved.
+*/
+
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNet.SignalR;
 using Voat.Models;
 
-namespace Voat.Utils.Components {
-    public static class NotificationManager {
-
-        public static async Task SendUserMentionNotification(string user, Comment comment) {
-            if (comment != null) {
-              
-
-                if (!User.UserExists(user)) {
+namespace Voat.Utils.Components
+{
+    public static class NotificationManager
+    {
+        public static async Task SendUserMentionNotification(string user, Comment comment)
+        {
+            if (comment != null)
+            {
+                if (!User.UserExists(user))
+                {
                     return;
                 }
 
                 string recipient = User.OriginalUsername(user);
 
                 var commentReplyNotification = new Commentreplynotification();
-                using (var _db = new whoaverseEntities()) {
-                    
+                using (var _db = new whoaverseEntities())
+                {
+
                     commentReplyNotification.CommentId = comment.Id;
                     commentReplyNotification.SubmissionId = comment.Message.Id;
                     commentReplyNotification.Recipient = recipient;
-                    if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode) {
+                    if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
+                    {
                         commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                    } else {
+                    }
+                    else
+                    {
                         commentReplyNotification.Sender = comment.Name;
                     }
                     commentReplyNotification.Body = comment.CommentContent;
@@ -41,34 +59,39 @@ namespace Voat.Utils.Components {
                     _db.Commentreplynotifications.Add(commentReplyNotification);
                     await _db.SaveChangesAsync();
                 }
+
                 // get count of unread notifications
-                int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
+                int unreadNotifications = User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
 
                 // send SignalR realtime notification to recipient
                 var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
                 hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
-            
             }
         }
-        public static async Task SendUserMentionNotification(string user, Message message) {
-            if (message != null) {
 
-
-                if (!User.UserExists(user)) {
+        public static async Task SendUserMentionNotification(string user, Message message)
+        {
+            if (message != null)
+            {
+                if (!User.UserExists(user))
+                {
                     return;
                 }
 
                 string recipient = User.OriginalUsername(user);
 
                 var commentReplyNotification = new Commentreplynotification();
-                using (var _db = new whoaverseEntities()) {
-
+                using (var _db = new whoaverseEntities())
+                {
                     //commentReplyNotification.CommentId = comment.Id;
                     commentReplyNotification.SubmissionId = message.Id;
                     commentReplyNotification.Recipient = recipient;
-                    if (message.Anonymized || message.Subverses.anonymized_mode) {
+                    if (message.Anonymized || message.Subverses.anonymized_mode)
+                    {
                         commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                    } else {
+                    }
+                    else
+                    {
                         commentReplyNotification.Sender = message.Name;
                     }
                     commentReplyNotification.Body = message.MessageContent;
@@ -81,40 +104,50 @@ namespace Voat.Utils.Components {
                     _db.Commentreplynotifications.Add(commentReplyNotification);
                     await _db.SaveChangesAsync();
                 }
+
                 // get count of unread notifications
-                int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
+                int unreadNotifications = User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
 
                 // send SignalR realtime notification to recipient
                 var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
                 hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
-
             }
         }
-        public static async Task SendCommentNotification(Comment comment) {
+
+        public static async Task SendCommentNotification(Comment comment)
+        {
 
             whoaverseEntities _db = new whoaverseEntities();
             Random _rnd = new Random();
 
-            if (comment.ParentId != null && comment.CommentContent != null) {
+            if (comment.ParentId != null && comment.CommentContent != null)
+            {
                 // find the parent comment and its author
                 var parentComment = _db.Comments.Find(comment.ParentId);
-                if (parentComment != null) {
+                if (parentComment != null)
+                {
                     // check if recipient exists
-                    if (Utils.User.UserExists(parentComment.Name)) {
+                    if (User.UserExists(parentComment.Name))
+                    {
                         // do not send notification if author is the same as comment author
-                        if (parentComment.Name != System.Web.HttpContext.Current.User.Identity.Name) {
+                        if (parentComment.Name != HttpContext.Current.User.Identity.Name)
+                        {
                             // send the message
 
                             var commentMessage = _db.Messages.Find(comment.MessageId);
-                            if (commentMessage != null) {
+                            if (commentMessage != null)
+                            {
                                 var commentReplyNotification = new Commentreplynotification();
                                 commentReplyNotification.CommentId = comment.Id;
                                 commentReplyNotification.SubmissionId = commentMessage.Id;
                                 commentReplyNotification.Recipient = parentComment.Name;
-                                if (parentComment.Message.Anonymized || parentComment.Message.Subverses.anonymized_mode) {
+                                if (parentComment.Message.Anonymized || parentComment.Message.Subverses.anonymized_mode)
+                                {
                                     commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                                } else {
-                                    commentReplyNotification.Sender = System.Web.HttpContext.Current.User.Identity.Name;
+                                }
+                                else
+                                {
+                                    commentReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
                                 }
                                 commentReplyNotification.Body = comment.CommentContent;
                                 commentReplyNotification.Subverse = commentMessage.Subverse;
@@ -129,7 +162,7 @@ namespace Voat.Utils.Components {
                                 await _db.SaveChangesAsync();
 
                                 // get count of unread notifications
-                                int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
+                                int unreadNotifications = User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
 
                                 // send SignalR realtime notification to recipient
                                 var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
@@ -138,14 +171,19 @@ namespace Voat.Utils.Components {
                         }
                     }
                 }
-            } else {
+            }
+            else
+            {
                 // comment reply is sent to a root comment which has no parent id, trigger post reply notification
                 var commentMessage = _db.Messages.Find(comment.MessageId);
-                if (commentMessage != null) {
+                if (commentMessage != null)
+                {
                     // check if recipient exists
-                    if (Utils.User.UserExists(commentMessage.Name)) {
+                    if (User.UserExists(commentMessage.Name))
+                    {
                         // do not send notification if author is the same as comment author
-                        if (commentMessage.Name != System.Web.HttpContext.Current.User.Identity.Name) {
+                        if (commentMessage.Name != HttpContext.Current.User.Identity.Name)
+                        {
                             // send the message
                             var postReplyNotification = new Postreplynotification();
 
@@ -153,10 +191,13 @@ namespace Voat.Utils.Components {
                             postReplyNotification.SubmissionId = commentMessage.Id;
                             postReplyNotification.Recipient = commentMessage.Name;
 
-                            if (commentMessage.Anonymized || commentMessage.Subverses.anonymized_mode) {
+                            if (commentMessage.Anonymized || commentMessage.Subverses.anonymized_mode)
+                            {
                                 postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                            } else {
-                                postReplyNotification.Sender = System.Web.HttpContext.Current.User.Identity.Name;
+                            }
+                            else
+                            {
+                                postReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
                             }
 
                             postReplyNotification.Body = comment.CommentContent;
@@ -172,16 +213,15 @@ namespace Voat.Utils.Components {
                             await _db.SaveChangesAsync();
 
                             // get count of unread notifications
-                            int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(postReplyNotification.Recipient);
+                            int unreadNotifications = User.UnreadTotalNotificationsCount(postReplyNotification.Recipient);
 
                             // send SignalR realtime notification to recipient
                             var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
                             hubContext.Clients.User(postReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
                         }
                     }
-                } 
+                }
             }
         }
-
     }
 }

@@ -46,7 +46,6 @@ namespace Voat.Controllers
         [System.Web.Mvc.Authorize]
         public ActionResult Inbox(int? page)
         {
-
             int unreadCommentCount = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
             int unreadPostCount = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
             int unreadPMCount = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
@@ -55,19 +54,15 @@ namespace Voat.Controllers
             {
                 return InboxPrivateMessages(page);
             }
-            else if (unreadCommentCount > 0)
+            if (unreadCommentCount > 0)
             {
                 return InboxCommentReplies(page);
             }
-            else if (unreadPostCount > 0)
+            if (unreadPostCount > 0)
             {
                 return InboxPostReplies(page);
             }
-            else
-            {
-                return InboxPrivateMessages(page);
-            }
-
+            return InboxPrivateMessages(page);
         }
 
         // GET: Inbox
@@ -96,8 +91,7 @@ namespace Voat.Controllers
 
                 if (privateMessages.Any())
                 {
-                    var unreadPrivateMessages = privateMessages
-                        .Where(s => s.Status && s.Markedasunread == false).ToList();
+                    var unreadPrivateMessages = privateMessages.Where(s => s.Status && s.Markedasunread == false).ToList();
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPrivateMessages.Count > 0)
@@ -107,8 +101,10 @@ namespace Voat.Controllers
                         {
                             // status: true = unread, false = read
                             singleMessage.Status = false;
-                            _db.SaveChanges();
                         }
+                        _db.SaveChanges();
+                        // update notification icon
+                        UpdateNotificationCounts();
                     }
                 }
 
@@ -155,6 +151,8 @@ namespace Voat.Controllers
                             singleCommentReply.Status = false;
                         }
                         _db.SaveChanges();
+                        // update notification icon
+                        UpdateNotificationCounts();
                     }
                 }
                 ViewBag.CommentRepliesCount = commentReplyNotifications.Count();
@@ -202,6 +200,8 @@ namespace Voat.Controllers
                             singlePostReply.Status = false;
                         }
                         _db.SaveChanges();
+                        // update notification icon
+                        UpdateNotificationCounts();
                     }
                 }
                 ViewBag.PostRepliesCount = postReplyNotifications.Count();
@@ -399,5 +399,14 @@ namespace Voat.Controllers
             return Json("Bad request.", JsonRequestBehavior.AllowGet);
         }
 
+        // a method which triggers SignalR notification count update on client side for logged-in user
+        private void UpdateNotificationCounts()
+        {
+            // get count of unread notifications
+            int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(User.Identity.Name);
+
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+            hubContext.Clients.User(User.Identity.Name).setNotificationsPending(unreadNotifications);
+        }
     }
 }
