@@ -386,6 +386,8 @@ var ImageLinkExpando = (function () {
                 //I HAVE NO IDEA WHY I HAVE TO DO THIS TO REMOVE THE width/height attributes of the image tag itself
                 this.removeAttribute('width');
                 this.removeAttribute('height');
+                i.css("min-width", Math.min(width, 68));
+                i.css("max-width", width);
                 //Hide drag shadow
                 i.attr("draggable", false);
                 //Hide right click menu as it is remapped to scale image
@@ -432,9 +434,7 @@ var ImageLinkExpando = (function () {
                 i.on("mousedown touchstart", function (event) {
                     if (event.which === 3) {
                         //Right click, scale image to its natural size
-                        var testImage = new Image();
-                        testImage.src = i.attr("src");
-                        i.css("width", testImage.width);
+                        i.css("width", width);
                         event.preventDefault();
                         return;
                     }
@@ -448,6 +448,7 @@ var ImageLinkExpando = (function () {
                 var resizeListener = function (event) {
                     var deltaX = event.pageX - touchData.x;
                     i.css("width", touchData.origWidth + deltaX);
+                    i.css("max-width", "");
                 }
                 var mouseUpListener = function () {
                     $("body").off("mousemove touchmove", resizeListener);
@@ -461,6 +462,7 @@ var ImageLinkExpando = (function () {
                 target.on('click', (function (event) {
                     if (!LinkExpando.isVisible(target)) {
                         //Reset image width
+                        i.css("max-width", width);
                         i.css("width", "");
                     }
                     me.onClick(event);
