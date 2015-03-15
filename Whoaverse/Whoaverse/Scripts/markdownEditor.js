@@ -211,7 +211,7 @@ markdown.ExtraMode = true;
 markdown.SafeMode = true;
 
 //Replace all matches with markdown
-function renderMardown(outputString) {
+function renderMarkdown(outputString) {
     var searchRules = [
         {
             //MUST BE RUN FIRST
@@ -253,7 +253,7 @@ function updatePreview(textarea) {
     var panel = textarea.siblings(".panel");
     var preview = panel.find(".md-preview");
     if (!textarea || !preview || !panel) { return; }
-    var htmlString = renderMardown(textarea.val());
+    var htmlString = renderMarkdown(textarea.val());
     preview.html(htmlString);
     if (htmlString) {
         panel.show();
