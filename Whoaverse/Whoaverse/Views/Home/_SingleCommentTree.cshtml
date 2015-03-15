@@ -16,7 +16,6 @@
 @{
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
     int startingCommentId = Convert.ToInt32(ViewData["StartingCommentId"]);
-
     string sortingMode = Convert.ToString(ViewData["SortingMode"]);
 
     IEnumerable<Comment> firstComments;
@@ -36,7 +35,7 @@
                         where f.Id == startingCommentId
                         orderby commentScore descending
                         select f;
-    }  
+    }
 }
 
 <!-- show top 200 submission comments, orderby number of votes each comment has received -->
@@ -54,13 +53,13 @@
                 if (firstComment.Likes - firstComment.Dislikes < -3)
                 {
                     <div class="thread id-@firstComment.Id comment" data-fullname="" data-ups="" data-downs="">
-                        @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode } })
+                        @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode }, { "commentToHighlight", ViewBag.CommentToHighLight } })
                     </div>
                 }
                 else
                 {
                     <div class="thread id-@firstComment.Id comment" data-fullname="" data-ups="" data-downs="">
-                        @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
+                        @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode }, { "commentToHighlight", ViewBag.CommentToHighLight } })
                     </div>
                 }
             }

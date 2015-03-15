@@ -29,7 +29,6 @@ namespace Voat.Controllers
     public class CommentController : Controller
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
-        readonly Random _rnd = new Random();
 
         // POST: votecomment/{commentId}/{typeOfVote}
         [Authorize]
@@ -65,7 +64,7 @@ namespace Voat.Controllers
         }
 
         // GET: comments for a given submission
-        public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort)
+        public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
         {
             var subverse = _db.Subverses.Find(subversetoshow);
             if (subverse == null) return View("~/Views/Errors/Error_404.cshtml");
@@ -76,6 +75,11 @@ namespace Voat.Controllers
             if (startingcommentid != null)
             {
                 ViewBag.StartingCommentId = startingcommentid;
+            }
+
+            if (commentToHighLight != null)
+            {
+                ViewBag.CommentToHighLight = commentToHighLight;
             }
 
             if (sort != null)

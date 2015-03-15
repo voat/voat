@@ -14,6 +14,7 @@
 @model Voat.Models.Message
 
 @{
+    string highLight = "";
     string selectedSubverse = ViewBag.SelectedSubverse;
     int commentContributionPoints = 0;
     if (User.Identity.IsAuthenticated)
@@ -60,16 +61,16 @@ else if (!User.Identity.IsAuthenticated)
            views = Model.Views
        })
     }
-    
-<style type="text/css" id="custom_css">
+
+    <style type="text/css" id="custom_css">
 @if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
 }
-</style>
+    </style>
 
     <div class="content" role="main">
-        <br/><br/>
+        <br /><br />
         @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
 
         @{
@@ -153,7 +154,7 @@ else if (!User.Identity.IsAuthenticated)
         @if (ViewBag.StartingCommentId != null)
         {
             // show comment tree for a single thread starting at passed starting comment id
-            @Html.Partial("~/Views/Home/_SingleCommentTree.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode } })
+            @Html.Partial("~/Views/Home/_SingleCommentTree.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode }, { "commentToHighlight", ViewBag.CommentToHighLight } })
         }
         else
         {

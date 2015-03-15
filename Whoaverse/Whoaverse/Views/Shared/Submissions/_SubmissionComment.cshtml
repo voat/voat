@@ -19,6 +19,8 @@
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
     string sortingMode = Convert.ToString(ViewData["SortingMode"]);
 
+    string highlightClass = "";
+
     bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 
     // depth level limit of 10 test
@@ -253,16 +255,21 @@
             break;
         }
 
+        if (ViewBag.CommentToHighLight == childComment.Id)
+        {
+            highlightClass = "highlightedComment";
+        }
+        
         if (parentIsHidden)
         {
-            <div class="child id-@childComment.Id comment" data-fullname="" data-ups="" data-downs="" style="display:none">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter } })
+            <div class="child id-@childComment.Id comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="display:none">
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
             </div>
         }
         else
         {
-            <div class="child id-@childComment.Id comment" data-fullname="" data-ups="" data-downs="" style="">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter } })
+            <div class="child id-@childComment.Id comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="">
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
             </div>
         }
 

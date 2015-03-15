@@ -9,6 +9,10 @@
     background: none repeat scroll 0% 0% #313131;
 }
 
+.highlightedComment {
+    background: #B24545  !important;
+}
+
 .navbar-nav {
     margin: 0 !important;
 }

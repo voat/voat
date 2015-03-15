@@ -559,8 +559,14 @@ namespace Voat
             // v/subversetoshow/comments/123456
             routes.MapRoute(
                 name: "SubverseComments",
-                url: "v/{subversetoshow}/comments/{id}/{startingcommentid}",
-                defaults: new { controller = "Comment", action = "Comments", startingcommentid = UrlParameter.Optional }
+                url: "v/{subversetoshow}/comments/{id}/{startingcommentid}/{commentToHighLight}",
+                defaults: new
+                {
+                    controller = "Comment", 
+                    action = "Comments", 
+                    startingcommentid = UrlParameter.Optional,
+                    commentToHighLight = UrlParameter.Optional
+                }
             );            
 
             // v/subversetoshow/sortingmode
