@@ -362,20 +362,10 @@ var ImageLinkExpando = (function () {
 
                 var i = $(this);
 
+                //Get natural dimensions. Since the image is not yet rendered, its dimensions are its natural ones
+                var width = this.width, height = this.height;
+                //Render image
                 displayDiv.html(i);
-
-                //BEGIN: Evil sizing code because IE is *special*
-                var width, height;
-                if (this.naturalWidth) {
-                    width = this.naturalWidth;
-                } else {
-                    width = this.width;
-                }
-                if (this.naturalHeight) {
-                    height = this.naturalHeight;
-                } else {
-                    height = this.height;
-                }
 
                 var desc = UI.Common.fileExtension(href).toUpperCase().concat(' · ', width.toString(), ' x ', height.toString());
 
@@ -394,45 +384,8 @@ var ImageLinkExpando = (function () {
                 //Hide right click menu as it is remapped to scale image
                 i.attr("oncontextmenu", "return false");
 
-                var startSize = (UI.ImageExpandoSettings.initialSize != 0 ? UI.ImageExpandoSettings.initialSize : UI.Common.availableWidth(target.parent()));
-
-                if (width > startSize) {
-                    if (width >= height || UI.ImageExpandoSettings.initialSize == 0) {
-                        i.css('width', startSize);
-                        i.css('height', 'auto');
-
-                        i.data('origWidth', startSize);
-                        i.data('origHeight', 'auto');
-                    } else {
-                        i.css('width', 'auto');
-                        i.css('height', startSize);
-
-                        i.data('origWidth', 'auto');
-                        i.data('origHeight', startSize);
-                    }
-                    i.data('inFullMode', false);
-
-                    i.data('maxWidth', Math.min(width, UI.Common.availableWidth(target.parent())));
-
-                    if (startSize < UI.Common.availableWidth(target.parent())) {
-                        displayDiv.click(function () {
-                            var childImg = $(this).children('img');
-                            if (childImg.data('inFullMode')) {
-                                childImg.css('width', childImg.data('origWidth'));
-                                childImg.css('height', childImg.data('origHeight'));
-                                childImg.data('inFullMode', false);
-                            } else {
-                                childImg.css('width', childImg.data('maxWidth'));
-                                childImg.css('height', 'auto');
-                                childImg.data('inFullMode', true);
-                            }
-                        });
-                        displayDiv.css('cursor', 'pointer');
-                    }
-                }
-
                 var touchData;
-                i.on("mousedown touchstart", function (event) {
+                i.on("mousedown", function (event) {
                     if (event.which === 3) {
                         //Right click, scale image to its natural size
                         i.css("width", width);
@@ -443,8 +396,8 @@ var ImageLinkExpando = (function () {
                         x: event.pageX,
                         origWidth: i.width()
                     };
-                    $("body").on("mousemove touchmove", resizeListener);
-                    $("body").on("mouseup touchend", mouseUpListener);
+                    $("body").on("mousemove", resizeListener);
+                    $("body").on("mouseup", mouseUpListener);
                 });
                 var resizeListener = function (event) {
                     var deltaX = event.pageX - touchData.x;
@@ -452,8 +405,8 @@ var ImageLinkExpando = (function () {
                     i.css("max-width", "");
                 }
                 var mouseUpListener = function () {
-                    $("body").off("mousemove touchmove", resizeListener);
-                    $("body").off("mouseup touchend", mouseUpListener);
+                    $("body").off("mousemove", resizeListener);
+                    $("body").off("mouseup", mouseUpListener);
                 };
 
                 LinkExpando.isLoaded(target, true);
