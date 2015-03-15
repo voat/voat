@@ -9460,7 +9460,6 @@ body.with-listing-chooser {
 
     .link-expando img { 
         display: block !important;
-        min-width: 68px;
         width: 100%;
         height: auto;
     }
