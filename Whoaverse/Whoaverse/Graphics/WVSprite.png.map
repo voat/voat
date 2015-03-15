@@ -1,35 +1,35 @@
 {
   "images": [
     {
-      "name": "/Graphics/voat-logo.png",
+      "name": "/Whoaverse/Graphics/voat-logo.png",
       "width": 112,
       "height": 31,
       "offsetX": 1,
       "offsetY": 1
     },
     {
-      "name": "/Graphics/nsfw-thumb.png",
+      "name": "/Whoaverse/Graphics/nsfw-thumb.png",
       "width": 70,
       "height": 70,
       "offsetX": 1,
       "offsetY": 33
     },
     {
-      "name": "/Graphics/thumb-placeholder.png",
+      "name": "/Whoaverse/Graphics/thumb-placeholder.png",
       "width": 70,
       "height": 70,
       "offsetX": 1,
       "offsetY": 104
     },
     {
-      "name": "/Graphics/404.png",
+      "name": "/Whoaverse/Graphics/404.png",
       "width": 450,
       "height": 405,
       "offsetX": 1,
       "offsetY": 175
     },
     {
-      "name": "/Graphics/voat-goat.png",
+      "name": "/Whoaverse/Graphics/voat-goat.png",
       "width": 345,
       "height": 252,
       "offsetX": 1,

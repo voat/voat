@@ -24,12 +24,12 @@
         <a class="markdownEditorImgButton" style="background-position: -0px -16px;" alt="hr" title="Horizontal Rule" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'\n\n----------\n\n','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -32px -16px;" alt="heading" title="Headings" onclick="$(this.parentElement.parentElement).find('#headingsSubMenu').toggle();"></a>
         <a class="markdownEditorImgButton" style="background-position: -64px -16px;" alt="table" title="Table" onclick="$(this.parentElement.parentElement).find('#tableCreatorSubMenu').toggle();"></a>
-		<a class="markdownEditorImgButton" style="background-position: -128px -16px;" alt="spoiler" title="Spoiler" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'[](#s &quot;','&quot;)');"></a>
+        <a class="markdownEditorImgButton" style="background-position: -128px -16px;" alt="spoiler" title="Spoiler" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'[](#s &quot;','&quot;)');"></a>
     </div>
     <!-- Markdown Editor Link Sub Menu -->
     <div class="markdownEditorSubMenu" id="linkSubMenu" style="display: none;">
         <input type="text" class="markdownEditorTextButton" id="url" placeholder="Enter the page url">
-		<a class="markdownEditorTextButton" alt="create" title="Create Link" onclick="addHyperlink($(this.parentElement.parentElement.parentElement).find('textarea')[0],$(this.parentElement).find('#url')[0].value);$(this.parentElement).hide();$(this.parentElement).find('#url')[0].value = '';">Create link</a>
+        <a class="markdownEditorTextButton" alt="create" title="Create Link" onclick="addHyperlink($(this.parentElement.parentElement.parentElement).find('textarea')[0],$(this.parentElement).find('#url')[0].value);$(this.parentElement).hide();$(this.parentElement).find('#url')[0].value = '';">Create link</a>
     </div>
     <!-- Markdown Editor Headings Sub Menu -->
     <div class="markdownEditorSubMenu" id="headingsSubMenu" style="display: none;">

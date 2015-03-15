@@ -55,7 +55,16 @@
                         <div class="form-group">
                             @Html.Label("Message body", htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-9">
-                                @Html.MarkdownEditorFor(m => m.Body, new { rows="8", cols="1", @class = "form-control" })
+                                @Html.MarkdownEditorFor(m => m.Body, new { rows = "8", cols = "1", @class = "form-control", oninput = "updatePreview(this)" })
+                                <br />
+                                <div class="panel panel-default" id="submission-preview-area" style="display:none">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Preview</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="md-preview"></div>
+                                    </div>
+                                </div>
                                 @Html.ValidationMessageFor(model => model.Body)
                             </div>
                         </div>
@@ -113,7 +122,6 @@
                             <div class="form-group">
                                 <div class="pull-left">
                                     <input type="submit" value="Send" class="btn-whoaverse" />
-									<input type="button" id="previewButton" value="Preview" class="btn-whoaverse" onclick="showMessagePreview(this,$(this.parentElement.parentElement.parentElement).find('#Body'),$(this.parentElement.parentElement.parentElement).find('#submission-preview-area'))">
                                 </div>
                             </div>
                         }
@@ -122,24 +130,9 @@
                             <div class="form-group">
                                 <div class="col-md-offset-2 col-md-10">
                                     <input type="submit" value="Send" class="btn-whoaverse" />
-									<input type="button" id="previewButton" value="Preview" class="btn-whoaverse" onclick="showMessagePreview(this,$(this.parentElement.parentElement.parentElement).find('#Body'),$(this.parentElement.parentElement.parentElement).find('#submission-preview-area'))">
                                 </div>
                             </div>
                         }
-						<div class="form-group">
-							<div class="panel panel-default" id="submission-preview-area" style="display: none">
-								<div class="panel-heading">
-									<h4 class="panel-title">Preview</h4>
-								</div>
-								<div class="panel-body">
-									<div class="usertext-body may-blank-within">
-										<div class="md" id="submission-preview-area-container">
-											Loading preview...
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
 
                     </div>
                 }

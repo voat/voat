@@ -205,3 +205,67 @@ function addHyperlink(textComponent, url) {
     }
     textComponent.focus();
 }
+
+var markdown = new MarkdownDeep.Markdown();
+markdown.ExtraMode = true;
+markdown.SafeMode = true;
+
+//Replace all matches with markdown
+function renderMardown(outputString) {
+    var searchRules = [
+        {
+            //MUST BE RUN FIRST
+            "name": "URL",
+            "regex": /((?:\W|^)(?:ht|f)tp(?:s?)\:\/\/[0-9a-zA-Z](?:[-.\w]*[0-9a-zA-Z])*(?::(0-9)*)*(?:\/?)(?:[a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=]*))/g,
+            "prefix": "",
+            "suffix": ""
+        },
+        {
+            "name": "User Mentions",
+            "regex": /(?:\W|^)(?:(?:@|\/u\/)([a-zA-Z0-9-_]+))\b/g,
+            "prefix": "/user/",
+            "suffix": ""
+        },
+        {
+            "name": "Subverse Mentions",
+            "regex": /(?:\W|^)\/v\/([a-zA-Z0-9]+)/g,
+            "prefix": "/v/",
+            "suffix": ""
+        },
+        {
+            "name": "Subreddit Mentions",
+            "regex": /(?:\W|^)\/r\/([a-zA-Z0-9]+)/g,
+            "prefix": "https://reddit.com/r/",
+            "suffix": ""
+        }
+    ];
+    for (var i = 0; i < searchRules.length; i++) {
+        var currentRule = searchRules[i];
+        outputString = outputString.replace(currentRule.regex, function () {
+            return "[" + arguments[0] + "](" + currentRule.prefix + arguments[1] + currentRule.suffix + ")";
+        });
+    }
+    return markdown.Transform(outputString);
+}
+
+function updatePreview(textarea) {
+    textarea = $(textarea);
+    var panel = textarea.siblings(".panel");
+    var preview = panel.find(".md-preview");
+    if (!textarea || !preview || !panel) { return; }
+    var htmlString = renderMardown(textarea.val());
+    preview.html(htmlString);
+    if (htmlString) {
+        panel.show();
+    } else {
+        panel.hide();
+    }
+}
+//Initialize the preview for every box.
+//Some browsers, like Chrome preserve entries through navigation.
+//This ensures the preview is visible.
+$(document).ready(function() {
+    $("textarea[oninput]").each(function() {
+        updatePreview(this);
+    });
+});
