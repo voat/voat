@@ -1,33 +1,33 @@
 ﻿/*
 This is an example of how to use the image sprite in your own CSS files
 */
-.Whoaverse-Graphics-voat-logo {
+.Graphics-voat-logo {
 /* You may have to set 'display: block' */
 	width: 112px;
 	height: 31px;
-	background: url('/Whoaverse/Graphics/WVSprite.png') -1px -1px;
+	background: url('/Graphics/WVSprite.png') -1px -1px;
 }
-.Whoaverse-Graphics-nsfw-thumb {
+.Graphics-nsfw-thumb {
 /* You may have to set 'display: block' */
 	width: 70px;
 	height: 70px;
-	background: url('/Whoaverse/Graphics/WVSprite.png') -1px -33px;
+	background: url('/Graphics/WVSprite.png') -1px -33px;
 }
-.Whoaverse-Graphics-thumb-placeholder {
+.Graphics-thumb-placeholder {
 /* You may have to set 'display: block' */
 	width: 70px;
 	height: 70px;
-	background: url('/Whoaverse/Graphics/WVSprite.png') -1px -104px;
+	background: url('/Graphics/WVSprite.png') -1px -104px;
 }
-.Whoaverse-Graphics-404 {
+.Graphics-404 {
 /* You may have to set 'display: block' */
 	width: 450px;
 	height: 405px;
-	background: url('/Whoaverse/Graphics/WVSprite.png') -1px -175px;
+	background: url('/Graphics/WVSprite.png') -1px -175px;
 }
-.Whoaverse-Graphics-voat-goat {
+.Graphics-voat-goat {
 /* You may have to set 'display: block' */
 	width: 345px;
 	height: 252px;
-	background: url('/Whoaverse/Graphics/WVSprite.png') -1px -581px;
+	background: url('/Graphics/WVSprite.png') -1px -581px;
 }
