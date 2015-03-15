@@ -187,25 +187,19 @@
 
             <div class="usertext-edit" style="width: 775px; display: none;">
                 <div>
-                    @Html.Partial("_MarkdownEditor")
-                    <textarea aria-invalid="false" class="form-control valid" cols="20" id="CommentContent" name="CommentContent" rows="2" data-rule-required="true" data-msg-required="The comment can not be empty.">@WebUtility.HtmlDecode(commentModel.CommentContent)</textarea>
-                    <span data-valmsg-replace="false" data-valmsg-for="CommentContent" class="field-validation-error"></span>
-                    <div class="usertext-buttons">
-                        <input value="Save" class="btn-whoaverse-paging" type="submit">
-                        <input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#CommentContent'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
-                        <button class="btn-whoaverse-paging" onclick="removeeditform(@commentId)" type="button">Cancel</button>
-                    </div>
-                    <div class="panel panel-default" id="submission-preview-area" style="display: none">
+                    @Html.MarkdownEditorFor(m => m.MessageContent, new { @class = "commenttextarea", rows = "3", oninput = "updatePreview(this)" })
+                    <div class="panel panel-default" id="submission-preview-area" style="display:none">
                         <div class="panel-heading">
                             <h4 class="panel-title">Preview</h4>
                         </div>
                         <div class="panel-body">
-                            <div class="usertext-body may-blank-within">
-                                <div class="md" id="submission-preview-area-container">
-                                    Loading preview...
-                                </div>
-                            </div>
+                            <div class="md-preview"></div>
                         </div>
+                    </div>
+                    <span data-valmsg-replace="false" data-valmsg-for="CommentContent" class="field-validation-error"></span>
+                    <div class="usertext-buttons">
+                        <input value="Save" class="btn-whoaverse-paging" type="submit">
+                        <button class="btn-whoaverse-paging" onclick="removeeditform(@commentId)" type="button">Cancel</button>
                     </div>
                 </div>
             </div>

@@ -60,7 +60,8 @@
     <Reference Include="Kaliko.ImageLibrary">
       <HintPath>..\packages\ImageLibrary.2.0.0\lib\Kaliko.ImageLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="MarkdownDeep">
+    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -526,6 +527,7 @@
     <Content Include="Scripts\jquery.signalR-2.1.2.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\MarkdownDeepLib.min.js" />
     <Content Include="Scripts\markdownEditor.js" />
     <Content Include="Scripts\npm.js" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />

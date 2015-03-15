@@ -28,6 +28,7 @@ namespace Voat
                         "~/Scripts/jquery.validate*",
                         "~/Scripts/whoaverse.ui.js",
                         "~/Scripts/whoaverse.js",
+                        "~/Scripts/MarkdownDeepLib.min.js",
                         "~/Scripts/markdownEditor.js"
                         ));
 
