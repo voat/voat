@@ -35,6 +35,8 @@
     commentAuthor = commentAuthor.Trim();
 
     bool? isRootComment = ViewBag.rootComment;
+    bool? showContextLink = ViewBag.ShowContextLink;
+        
     string commentType = "";
     if (isRootComment == true)
     {
@@ -172,6 +174,12 @@
 
             </form>
             <ul class="flat-list buttons">
+                @if (Model.Name != "deleted" && showContextLink == true)
+                {
+                <li>
+                    <a href="/v/@Model.Message.Subverse/comments/@Model.MessageId/@Model.ParentId" rel="nofollow">context</a>
+                </li>
+                }
                 @if (Model.Name != "deleted")
                 {
                     <li class="first">
