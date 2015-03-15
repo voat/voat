@@ -388,6 +388,7 @@ var ImageLinkExpando = (function () {
                 this.removeAttribute('height');
                 i.css("min-width", Math.min(width, 68));
                 i.css("max-width", width);
+                i.data("nwidth", width);
                 //Hide drag shadow
                 i.attr("draggable", false);
                 //Hide right click menu as it is remapped to scale image
@@ -1039,7 +1040,10 @@ $(document).ready(function () {
 
     //Reset image expando size on resize
     $(window).on('resize', function () {
-        $(".link-expando img").css("width", "");
+        $(".link-expando img").each(function() {
+            var naturalWidth = $(this).data("nwidth");
+            $(this).css({ "width": "", "max-width": naturalWidth });
+        });
     });
 
     UI.SidebarHandler();
