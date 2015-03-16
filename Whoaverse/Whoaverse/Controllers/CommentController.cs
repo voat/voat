@@ -39,7 +39,7 @@ namespace Voat.Controllers
             switch (typeOfVote)
             {
                 case 1:
-                    if (Karma.CommentKarma(loggedInUser) > 20)
+                    if (Karma.CommentKarma(loggedInUser) >= 20)
                     {
                         // perform upvoting or resetting
                         VotingComments.UpvoteComment(commentId, loggedInUser);
@@ -51,7 +51,7 @@ namespace Voat.Controllers
                     }
                     break;
                 case -1:
-                    if (Karma.CommentKarma(loggedInUser) > 100)
+                    if (Karma.CommentKarma(loggedInUser) >= 100)
                     {
                         // perform downvoting or resetting
                         VotingComments.DownvoteComment(commentId, loggedInUser);
