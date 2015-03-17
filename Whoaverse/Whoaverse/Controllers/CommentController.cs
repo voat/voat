@@ -313,7 +313,7 @@ namespace Voat.Controllers
                         }
 
                         // parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
-                        var formattedComment = Formatting.FormatMessage(WebUtility.HtmlDecode(existingComment.CommentContent));
+                        var formattedComment = Formatting.FormatMessage(existingComment.CommentContent);
                         return Json(new { response = formattedComment });
                     }
                     return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);

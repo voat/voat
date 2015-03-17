@@ -33,12 +33,16 @@ namespace Voat.Controllers
 
             if (message != null)
             {
+                var mpm = new MarkdownPreviewModel();
+
                 if (message.MessageContent != null)
                 {
-                    return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", message);
+                    mpm.MessageContent = message.MessageContent;
+                    return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
                 }
-                message.MessageContent = "This message only has a title.";
-                return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", message);
+                
+                mpm.MessageContent = "This message only has a title.";
+                return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
