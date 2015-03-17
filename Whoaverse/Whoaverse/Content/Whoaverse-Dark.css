@@ -10,7 +10,8 @@
 }
 
 .highlightedComment {
-    background: #B24545  !important;
+    background: #4F3333 !important;
+    border: 1px dashed #A23E3E !important;
 }
 
 .navbar-nav {
@@ -1787,6 +1788,9 @@ pre, code {
     .titlebox .bottom {
         border-top: 1px solid #222;
     }
+        .minimum-ccp-downvote {
+            margin-top: 6px;
+        }
 
 .side .titlebox .bottom .h6 {
     color: #aaa;

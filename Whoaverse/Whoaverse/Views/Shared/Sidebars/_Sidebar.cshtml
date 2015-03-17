@@ -46,7 +46,7 @@
         <div class="titlebox">
             <h1 class="hover whoaversename">
                 <a href="/v/@Model.name" class="hover">@Model.name</a>
-                <a href="/rss/@Model.name"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
+                <a href="/rss/@Model.name" class="rss-icon"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
             </h1>
 
             @if (User.Identity.IsAuthenticated)
@@ -90,20 +90,24 @@
                 </div>
             </form>
             <div class="bottom">
-                created by <a href="/user/@subverseOwner" class="author may-blank">@subverseOwner</a>
-                <span class="userattrs"></span>
-                <span class="age">a community for <time title="@Model.creation_date" datetime="@Model.creation_date">@subverseAge</time></span>
-                @if (Model.anonymized_mode)
-                {
-                    <p>This subverse is permamently anonymized: all usernames are hidden and voting is disabled.</p>
-                }
-            </div>
-            <div class="bottom">
-                Minimum CCP required to downvote in this sub: @Model.minimumdownvoteccp
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <p>Your CCP for this sub: @Karma.CommentKarmaForSubverse(User.Identity.Name, Model.name)</p>
-                }
+                <p>
+                    created by <a href="/user/@subverseOwner" class="author may-blank">@subverseOwner</a>
+                    <span class="userattrs"></span>
+                    <span class="age">a community for <time title="@Model.creation_date" datetime="@Model.creation_date">@subverseAge</time></span>
+                    @if (Model.anonymized_mode)
+                    {
+                        <p>This subverse is permamently anonymized: all usernames are hidden and voting is disabled.</p>
+                    }
+                </p>
+                <div class="minimum-ccp-downvote">
+                    <p>
+                        Minimum CCP required to downvote in this sub: @Model.minimumdownvoteccp
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <p>Your CCP for this sub: @Karma.CommentKarmaForSubverse(User.Identity.Name, Model.name)</p>
+                        }
+                    </p>
+                </div>
             </div>
             <div class="clear"></div>
         </div>
