@@ -128,10 +128,13 @@ namespace Voat.Controllers
         // GET: markdown format a submission and return rendered result
         [Authorize]
         [HttpPost]
-        public ActionResult RenderSubmission(Message submissionModel)
+        public ActionResult RenderSubmission(MarkdownPreviewModel submissionModel)
         {
             if (submissionModel != null)
             {
+                var escapedCommentContent = WebUtility.HtmlEncode(submissionModel.MessageContent);
+                submissionModel.MessageContent = escapedCommentContent;
+
                 return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", submissionModel);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

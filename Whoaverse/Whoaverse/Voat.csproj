@@ -266,6 +266,7 @@
     <Compile Include="Controllers\SetsController.cs" />
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
+    <Compile Include="Models\MarkdownPreviewModel.cs" />
     <Compile Include="Models\Moderatorinvitation.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
