@@ -13,7 +13,6 @@ All Rights Reserved.
 */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -226,41 +225,44 @@ namespace Voat.Controllers
         [Authorize]
         [PreventSpam(DelayRequest = 120, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SubmitComment([Bind(Include = "Id, CommentContent, MessageId, ParentId")] Comment comment)
+        public async Task<ActionResult> SubmitComment([Bind(Include = "Id, CommentContent, MessageId, ParentId")] Comment commentModel)
         {
-            comment.Date = DateTime.Now;
-            comment.Name = User.Identity.Name;
-            comment.Votes = 0;
-            comment.Likes = 0;
-
+            commentModel.Date = DateTime.Now;
+            commentModel.Name = User.Identity.Name;
+            commentModel.Votes = 0;
+            commentModel.Likes = 0;
+            
             if (ModelState.IsValid)
             {
                 // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
-                var message = _db.Messages.Find(comment.MessageId);
+                var message = _db.Messages.Find(commentModel.MessageId);
                 if (message != null && (message.Anonymized || message.Subverses.anonymized_mode))
                 {
-                    comment.Anonymized = true;
+                    commentModel.Anonymized = true;
                 }
 
                 // check if author is banned, don't save the comment or send notifications if true
                 if (!Utils.User.IsUserGloballyBanned(User.Identity.Name) && !Utils.User.IsUserBannedFromSubverse(User.Identity.Name, message.Subverse))
                 {
-                    _db.Comments.Add(comment);
+                    var escapedCommentContent = WebUtility.HtmlEncode(commentModel.CommentContent);
+                    commentModel.CommentContent = escapedCommentContent;
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                     {
-                        comment.CommentContent = ContentProcessor.Instance.Process(comment.CommentContent, ProcessingStage.InboundPreSave, comment);
+                        commentModel.CommentContent = ContentProcessor.Instance.Process(commentModel.CommentContent, ProcessingStage.InboundPreSave, commentModel);
                     }
+
+                    _db.Comments.Add(commentModel);
 
                     await _db.SaveChangesAsync();
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
                     {
-                        ContentProcessor.Instance.Process(comment.CommentContent, ProcessingStage.InboundPostSave, comment);
+                        ContentProcessor.Instance.Process(commentModel.CommentContent, ProcessingStage.InboundPostSave, commentModel);
                     }
 
                     // send comment reply notification to parent comment author if the comment is not a new root comment
-                    await NotificationManager.SendCommentNotification(comment);
+                    await NotificationManager.SendCommentNotification(commentModel);
                 }
 
                 if (Request.UrlReferrer != null)
@@ -274,7 +276,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            ModelState.AddModelError(String.Empty, "Sorry, you are either banned fromt this sub or doing that too fast. Please try again in 2 minutes.");
+            ModelState.AddModelError(String.Empty, "Sorry, you are either banned from this sub or doing that too fast. Please try again in 2 minutes.");
             return View("~/Views/Help/SpeedyGonzales.cshtml");
         }
 
@@ -284,18 +286,18 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> EditComment([Bind(Include = "Id, CommentContent")] Comment model)
+        public async Task<ActionResult> EditComment([Bind(Include = "Id, CommentContent")] Comment commentModel)
         {
             if (ModelState.IsValid)
             {
-                var existingComment = _db.Comments.Find(model.Id);
+                var existingComment = _db.Comments.Find(commentModel.Id);
 
                 if (existingComment != null)
                 {
                     if (existingComment.Name.Trim() == User.Identity.Name)
                     {
                         existingComment.LastEditDate = DateTime.Now;
-                        var escapedCommentContent = WebUtility.HtmlEncode(model.CommentContent);
+                        var escapedCommentContent = WebUtility.HtmlEncode(commentModel.CommentContent);
                         existingComment.CommentContent = escapedCommentContent;
 
                         if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
@@ -320,7 +322,8 @@ namespace Voat.Controllers
 
             if (Request.IsAjaxRequest())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return Json("model was invalid: ", JsonRequestBehavior.AllowGet);
             }
 
             return Json("Unauthorized edit or comment not found - comment ID was.", JsonRequestBehavior.AllowGet);

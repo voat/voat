@@ -12,32 +12,22 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
 namespace Voat.Models
 {
-    public class AddComment
+    [MetadataType(typeof(CommentMetaData))]
+    public partial class Comment
     {
-        public int Id { get; set; }
-        public short Likes { get; set; }
-        public Nullable<int> ParentId { get; set; }
-        public Nullable<short> Votes { get; set; }
-        public bool Anonymized { get; set; }
-        
-        [Required(ErrorMessage = "Comment author is required.")]
-        public string Name { get; set; }
-        
+
+    }
+
+    public class CommentMetaData
+    {
         [Required(ErrorMessage = "Comment text is required. Please fill this field.")]
         [StringLength(10000, ErrorMessage = "Comment text is limited to 10.000 characters.")]
         [AllowHtml]
         public string CommentContent { get; set; }
-
-        [Required(ErrorMessage = "Date is required.")]
-        public DateTime Date { get; set; }
-
-        [Required(ErrorMessage = "MessageId is required.")]
-        public int MessageId { get; set; }
     }
 }
