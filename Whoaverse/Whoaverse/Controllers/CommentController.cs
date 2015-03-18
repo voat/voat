@@ -14,6 +14,8 @@ All Rights Reserved.
 
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -91,15 +93,15 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error.cshtml");
             }
 
-            var message = _db.Messages.Find(id);
+            var submission = _db.Messages.Find(id);
 
-            if (message == null)
+            if (submission == null)
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
             // make sure that the combination of selected subverse and message subverse are linked
-            if (!message.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase))
+            if (!submission.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase))
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
@@ -128,22 +130,23 @@ namespace Voat.Controllers
                 clientIpAddress = Request.UserHostAddress;
             }
 
-            if (clientIpAddress == String.Empty) return View("~/Views/Home/Comments.cshtml", message);
+            if (clientIpAddress == String.Empty) return View("~/Views/Home/Comments.cshtml", submission);
 
             // generate salted hash of client IP address
             string ipHash = IpHash.CreateHash(clientIpAddress);
             // check if this hash is present for this submission id in viewstatistics table
-            var existingView = _db.Viewstatistics.Find(message.Id, ipHash);
+            var existingView = _db.Viewstatistics.Find(submission.Id, ipHash);
             // this IP has already viwed this thread, skip registering a new view
-            if (existingView != null) return View("~/Views/Home/Comments.cshtml", message);
+            if (existingView != null) return View("~/Views/Home/Comments.cshtml", submission);
 
             // this is a new view, register it for this submission
-            var view = new Viewstatistic { submissionId = message.Id, viewerId = ipHash };
+            var view = new Viewstatistic { submissionId = submission.Id, viewerId = ipHash };
             _db.Viewstatistics.Add(view);
-            message.Views++;
+            submission.Views++;
+
             _db.SaveChanges();
 
-            return View("~/Views/Home/Comments.cshtml", message);
+            return View("~/Views/Home/Comments.cshtml", submission);
         }
 
         // GET: comments for a given submission
