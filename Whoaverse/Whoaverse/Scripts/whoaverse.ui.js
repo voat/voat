@@ -362,20 +362,10 @@ var ImageLinkExpando = (function () {
 
                 var i = $(this);
 
+                //Get natural dimensions. Since the image is not yet rendered, its dimensions are its natural ones
+                var width = this.width, height = this.height;
+                //Render image
                 displayDiv.html(i);
-
-                //BEGIN: Evil sizing code because IE is *special*
-                var width, height;
-                if (this.naturalWidth) {
-                    width = this.naturalWidth;
-                } else {
-                    width = this.width;
-                }
-                if (this.naturalHeight) {
-                    height = this.naturalHeight;
-                } else {
-                    height = this.height;
-                }
 
                 var desc = UI.Common.fileExtension(href).toUpperCase().concat(' · ', width.toString(), ' x ', height.toString());
 
@@ -384,53 +374,53 @@ var ImageLinkExpando = (function () {
 
 
                 //I HAVE NO IDEA WHY I HAVE TO DO THIS TO REMOVE THE width/height attributes of the image tag itself
-                i.css('width', width);
-                i.css('height', height);
                 this.removeAttribute('width');
                 this.removeAttribute('height');
+                i.css("min-width", Math.min(width, 68));
+                i.css("max-width", width);
+                i.data("nwidth", width);
+                //Hide drag shadow
+                i.attr("draggable", false);
+                //Hide right click menu as it is remapped to scale image
+                i.attr("oncontextmenu", "return false");
 
-                var startSize = (UI.ImageExpandoSettings.initialSize != 0 ? UI.ImageExpandoSettings.initialSize : UI.Common.availableWidth(target.parent()));
-
-                if (width > startSize) {
-                    if (width >= height || UI.ImageExpandoSettings.initialSize == 0) {
-                        i.css('width', startSize);
-                        i.css('height', 'auto');
-
-                        i.data('origWidth', startSize);
-                        i.data('origHeight', 'auto');
-                    } else {
-                        i.css('width', 'auto');
-                        i.css('height', startSize);
-
-                        i.data('origWidth', 'auto');
-                        i.data('origHeight', startSize);
+                var touchData;
+                i.on("mousedown", function (event) {
+                    if (event.which === 3) {
+                        //Right click, scale image to its natural size
+                        i.css("width", width);
+                        event.preventDefault();
+                        return;
                     }
-                    i.data('inFullMode', false);
-
-                    i.data('maxWidth', Math.min(width, UI.Common.availableWidth(target.parent())));
-
-                    if (startSize < UI.Common.availableWidth(target.parent())) {
-                        displayDiv.click(function () {
-                            var childImg = $(this).children('img');
-                            if (childImg.data('inFullMode')) {
-                                childImg.css('width', childImg.data('origWidth'));
-                                childImg.css('height', childImg.data('origHeight'));
-                                childImg.data('inFullMode', false);
-                            } else {
-                                childImg.css('width', childImg.data('maxWidth'));
-                                childImg.css('height', 'auto');
-                                childImg.data('inFullMode', true);
-                            }
-                        });
-                        displayDiv.css('cursor', 'pointer');
-                    }
+                    touchData = {
+                        x: event.pageX,
+                        origWidth: i.width()
+                    };
+                    $("body").on("mousemove", resizeListener);
+                    $("body").on("mouseup", mouseUpListener);
+                });
+                var resizeListener = function (event) {
+                    var deltaX = event.pageX - touchData.x;
+                    i.css("width", touchData.origWidth + deltaX);
+                    i.css("max-width", "");
                 }
+                var mouseUpListener = function () {
+                    $("body").off("mousemove", resizeListener);
+                    $("body").off("mouseup", mouseUpListener);
+                };
 
                 LinkExpando.isLoaded(target, true);
 
                 //reestablish handler
                 target.off();
-                target.on('click', (function (event) { me.onClick(event) }));
+                target.on('click', (function (event) {
+                    if (!LinkExpando.isVisible(target)) {
+                        //Reset image width
+                        i.css("max-width", width);
+                        i.css("width", "");
+                    }
+                    me.onClick(event);
+                }));
                 if (me.options.setTags) {
                     LinkExpando.setTag(target, UI.Common.fileExtension(href).toUpperCase());
                 }
@@ -999,6 +989,14 @@ $(document).ready(function () {
         if (iframe) {
             UI.Common.resizeTarget(iframe, false, iframe.parent());
         }
+    });
+
+    //Reset image expando size on resize
+    $(window).on('resize', function () {
+        $(".link-expando img").each(function() {
+            var naturalWidth = $(this).data("nwidth");
+            $(this).css({ "width": "", "max-width": naturalWidth });
+        });
     });
 
     UI.SidebarHandler();
