@@ -244,9 +244,6 @@ namespace Voat.Controllers
                 // check if author is banned, don't save the comment or send notifications if true
                 if (!Utils.User.IsUserGloballyBanned(User.Identity.Name) && !Utils.User.IsUserBannedFromSubverse(User.Identity.Name, message.Subverse))
                 {
-                    var escapedCommentContent = WebUtility.HtmlEncode(commentModel.CommentContent);
-                    commentModel.CommentContent = escapedCommentContent;
-
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                     {
                         commentModel.CommentContent = ContentProcessor.Instance.Process(commentModel.CommentContent, ProcessingStage.InboundPreSave, commentModel);
@@ -297,8 +294,7 @@ namespace Voat.Controllers
                     if (existingComment.Name.Trim() == User.Identity.Name)
                     {
                         existingComment.LastEditDate = DateTime.Now;
-                        var escapedCommentContent = WebUtility.HtmlEncode(commentModel.CommentContent);
-                        existingComment.CommentContent = escapedCommentContent;
+                        existingComment.CommentContent = commentModel.CommentContent;
 
                         if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                         {
@@ -322,8 +318,7 @@ namespace Voat.Controllers
 
             if (Request.IsAjaxRequest())
             {
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                return Json("model was invalid: ", JsonRequestBehavior.AllowGet);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             return Json("Unauthorized edit or comment not found - comment ID was.", JsonRequestBehavior.AllowGet);

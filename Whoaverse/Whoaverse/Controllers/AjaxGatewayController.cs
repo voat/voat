@@ -136,9 +136,6 @@ namespace Voat.Controllers
         {
             if (submissionModel != null)
             {
-                var escapedCommentContent = WebUtility.HtmlEncode(submissionModel.MessageContent);
-                submissionModel.MessageContent = escapedCommentContent;
-
                 return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", submissionModel);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
