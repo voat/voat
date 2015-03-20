@@ -120,11 +120,12 @@
             </div>
             <ul class="content">
                 @{
-                    Html.RenderAction("SubverseModeratorsList", "Subverses", new { subverseName = Model.name });
+                    Html.RenderAction("SubverseModeratorsList", "Subverses", new {subverseName = Model.name});
                 }
             </ul>
         </div>
     </div>
+    @Html.Partial("Sidebars/_SidebarChat", Model)
     <div class="spacer spacersection">
         <div class="sidecontentbox ">
             <div class="title">

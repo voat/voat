@@ -10,6 +10,13 @@
     padding-right: 15px;
 }
 
+.subverseChatRoomContent {
+    min-height: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .user-avatar {
     margin: 0;
     padding: 2px 2px 2px;

@@ -15,6 +15,8 @@ All Rights Reserved.
 // Please feel free to refactor this code, I wrote most of it when I first started playing with JavaScript
 
 $(document).ready(function () {
+    scrollChatToBottom();
+
     // activate bootstrap popovers
     $('[data-toggle="popover"]').popover({ trigger: 'hover', 'placement': 'top' });
 
@@ -159,12 +161,12 @@ function submitUpVote(messageid) {
 
 function voteUpComment(commentid) {
     submitCommentUpVote(commentid);
-	
+
     // get current score
     var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
     var scoreDislikes = -($(".id-" + commentid).find('.post_downvotes').filter(":first").html());
 
-	// ADD LIKE IF UNVOTED
+    // ADD LIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
         $(".id-" + commentid).children(".midcol").toggleClass("likes", true); //add class likes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
@@ -209,12 +211,12 @@ function voteUpComment(commentid) {
 
 function voteDownComment(commentid) {
     submitCommentDownVote(commentid);
-	
+
     // get current score
     var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
     var scoreDislikes = -($(".id-" + commentid).find('.post_downvotes').filter(":first").html());
 
-	// ADD DISLIKE IF UNVOTED
+    // ADD DISLIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
         $(".id-" + commentid).children(".midcol").toggleClass("dislikes", true); //add class dislikes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
@@ -1178,7 +1180,7 @@ function saveSetTitle(obj, setId) {
 // a function to ask the user to confirm permanent set deletion request
 function deleteSet(obj, setId) {
     $(obj).html("Are you sure?");
-    
+
     $(obj).bind({
         click: function () {
             deleteSetExecute(obj, setId);
@@ -1239,4 +1241,29 @@ function goToParent(event, parentId) {
         event.preventDefault();
         window.location.hash = "#" + parentId;
     }
+}
+
+// a function to scroll chat box content up
+function scrollChatToBottom() {
+    var elem = document.getElementById('subverseChatRoom');
+    elem.scrollTop = elem.scrollHeight;
+}
+
+// a function to submit chat message to subverse chat room
+function sendChatMessage(userName, inputBox, subverse) {
+    var messageToSend = $(inputBox).val();
+    var chatProxy = $.connection.messagingHub;
+    chatProxy.server.sendChatMessage(userName, messageToSend, subverse);
+    scrollChatToBottom();
+    // clear input
+    $("#chatInputBox").val('');
+}
+
+// a function to add a client to a subverse chat room
+function joinSubverseChatRoom(subverseName) {
+    // Start the connection.
+    $.connection.hub.start().done(function () {
+        var chatProxy = $.connection.messagingHub;
+        chatProxy.server.joinSubverseChatRoom(subverseName);
+    });
 }
