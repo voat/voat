@@ -18,7 +18,7 @@
     </div>
     @using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
     {
-        @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search voat" })
+        @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search Voat" })
         @Html.ValidationMessage("q")
     }
 </div>
