@@ -429,7 +429,6 @@
     <Compile Include="Utils\EmailUtility.cs" />
     <Compile Include="Utils\MesssagingUtility.cs" />
     <Compile Include="Utils\IpHashUtility.cs" />
-    <Compile Include="Utils\RealtimeBroker.cs" />
     <Compile Include="Utils\RSSUtility.cs" />
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />

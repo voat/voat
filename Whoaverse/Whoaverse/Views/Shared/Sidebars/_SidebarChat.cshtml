@@ -33,13 +33,14 @@
                                 </p>
                             </div>
                         </div>
+                        <script>
+                            $(function () {
+                                joinSubverseChatRoom('@Model.name');
+                            });
+                        </script>
+
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <script>
-                                $(function () {
-                                    joinSubverseChatRoom('@Model.name');
-                                });
-                            </script>
                             <input id="chatInputBox" onkeydown="if (event.keyCode == 13) sendChatMessage('@User.Identity.Name', this, '@Model.name');" class="form-control" data-val="true" data-val-length="Please write at least 3 characters." data-val-length-max="100" data-val-length-min="3" data-val-required="Please enter a message." name="chatInputBox" placeholder="Say something. Anything." value="" type="text">
                             <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="sendChatMessage('@User.Identity.Name', this, '@Model.name');">send</button>
                         }
