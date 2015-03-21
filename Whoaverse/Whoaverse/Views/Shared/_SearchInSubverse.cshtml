@@ -20,7 +20,7 @@
     @using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
     {
         <h2>@Html.ValidationSummary(true)</h2>
-        @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search voat" })
+        @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search Voat" })
         @Html.ValidationMessage("q")
 
         @Html.Hidden("sub", selectedSubverse)
