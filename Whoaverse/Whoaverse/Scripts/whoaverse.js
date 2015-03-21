@@ -15,8 +15,6 @@ All Rights Reserved.
 // Please feel free to refactor this code, I wrote most of it when I first started playing with JavaScript
 
 $(document).ready(function () {
-    scrollChatToBottom();
-
     // activate bootstrap popovers
     $('[data-toggle="popover"]').popover({ trigger: 'hover', 'placement': 'top' });
 
