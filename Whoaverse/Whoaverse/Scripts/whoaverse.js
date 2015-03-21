@@ -1248,8 +1248,8 @@ function scrollChatToBottom() {
 }
 
 // a function to submit chat message to subverse chat room
-function sendChatMessage(userName, inputBox, subverse) {
-    var messageToSend = $(inputBox).val();
+function sendChatMessage(userName, subverse) {
+    var messageToSend = $("#chatInputBox").val();
     var chatProxy = $.connection.messagingHub;
     chatProxy.server.sendChatMessage(userName, messageToSend, subverse);
     scrollChatToBottom();
