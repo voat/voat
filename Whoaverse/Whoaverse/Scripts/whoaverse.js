@@ -1208,6 +1208,7 @@ function deleteSetExecute(obj, setId) {
 // a function to fetch 1 comment bucket for a submission and append to the bottom of the page
 var loadCommentsRequest;
 function loadMoreComments(obj, submissionId) {
+    if (loadCommentsRequest) { return; }
     $(obj).html("Sit tight...");
 
     // try to see if this request is a subsequent request
@@ -1217,7 +1218,6 @@ function loadMoreComments(obj, submissionId) {
     } else {
         currentPage++;
     }
-    if (loadCommentsRequest) { return; }
     loadCommentsRequest = $.ajax({
         url: "/comments/" + submissionId + "/" + currentPage + "/",
         success: function (data) {
