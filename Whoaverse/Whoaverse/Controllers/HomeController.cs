@@ -153,6 +153,13 @@ namespace Voat.Controllers
                 return View("~/Views/Home/Comments.cshtml", message);
             }
 
+            // check if user has reached daily posting quota for target subverse
+            if (Utils.User.UserDailyPostingQuotaForSubUsed(User.Identity.Name,message.Subverse))
+            {
+                ModelState.AddModelError("", "You have reached your daily submission quota for this subverse.");
+                return View();
+            }
+
             // verify recaptcha if user has less than 25 CCP
             if (Karma.CommentKarma(User.Identity.Name) < 25)
             {
@@ -169,7 +176,6 @@ namespace Voat.Controllers
                     return View();
                 }
             }
-            
 
             // everything was okay, process incoming submission
             // abort if model state is invalid

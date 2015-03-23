@@ -16,6 +16,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using Voat.Models;
 using Voat.Models.ViewModels;
@@ -278,7 +279,7 @@ namespace Voat.Utils
                     .ThenBy(s => s.Sender);
 
                 if (!commentReplies.Any()) return 0;
-                
+
                 var unreadCommentReplies = commentReplies.Where(s => s.Status && s.Markedasunread == false);
                 return unreadCommentReplies.Any() ? unreadCommentReplies.Count() : 0;
             }
@@ -615,19 +616,29 @@ namespace Voat.Utils
             }
         }
 
-        // STUB
-        // check if a given user has used his daily posting quota
-        public static bool UserDailyPostingQuotaUsed(string userName)
+        // check if a given user has used his daily posting quota for a given subverse
+        public static bool UserDailyPostingQuotaForSubUsed(string userName, string subverse)
         {
-            throw new NotImplementedException();
+            // set starting date to 24 hours ago from now
+            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
 
-            // if user is a new user with low CCP threshold
-            // int dailyPostingQuota = 10;
+            // read daily posting quota per sub configuration parameter from web.config
+            int dpqps = Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaPerSub"]);
 
-            // if user is old user with high CCP threshold
-            // dailyPostingQuota = 100;
+            using (var db = new whoaverseEntities())
+            {
+                // check how many submission user made today
+                var userSubmissionsToTargetSub = db.Messages.Count(
+                    m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                        && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.Date >= startDate && m.Date <= DateTime.Now);
 
-            // check how many submission user made today
+                if (dpqps <= userSubmissionsToTargetSub)
+                {
+                    return true;
+                }
+                return false;
+            }
         }
 
         // subscribe to a set

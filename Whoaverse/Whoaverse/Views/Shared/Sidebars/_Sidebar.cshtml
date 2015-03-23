@@ -96,59 +96,59 @@
                     <span class="age">a community for <time title="@Model.creation_date" datetime="@Model.creation_date">@subverseAge</time></span>
                     @if (Model.anonymized_mode)
                     {
-                        <p>This subverse is permamently anonymized: all usernames are hidden and voting is disabled.</p>
+                    <p>This subverse is permamently anonymized: all usernames are hidden and voting is disabled.</p>
                     }
-                </p>
-                <div class="minimum-ccp-downvote">
-                    <p>
-                        Minimum CCP required to downvote in this sub: @Model.minimumdownvoteccp
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <p>Your CCP for this sub: @Karma.CommentKarmaForSubverse(User.Identity.Name, Model.name)</p>
-                        }
                     </p>
+                    <div class="minimum-ccp-downvote">
+                        <p>
+                            Minimum CCP required to downvote in this sub: @Model.minimumdownvoteccp
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                            <p>Your CCP for this sub: @Karma.CommentKarmaForSubverse(User.Identity.Name, Model.name)</p>
+                            }
+                            </p>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
                 </div>
             </div>
-            <div class="clear"></div>
-        </div>
-    </div>
-    <div class="spacer">
-        <div class="sidecontentbox ">
-            <a class="helplink message-moderators-temporary-class" title="This feature is currently under development. We apologize for any inconvenience." href="#">message the moderators</a>
-            <div class="title">
-                <h1 class="alert-h1">MODERATORS</h1>
+            <div class="spacer">
+                <div class="sidecontentbox ">
+                    <a class="helplink message-moderators-temporary-class" title="This feature is currently under development. We apologize for any inconvenience." href="#">message the moderators</a>
+                    <div class="title">
+                        <h1 class="alert-h1">MODERATORS</h1>
+                    </div>
+                    <ul class="content">
+                        @{
+                            Html.RenderAction("SubverseModeratorsList", "Subverses", new { subverseName = Model.name });
+                        }
+                    </ul>
+                </div>
             </div>
-            <ul class="content">
-                @{
-                    Html.RenderAction("SubverseModeratorsList", "Subverses", new {subverseName = Model.name});
-                }
-            </ul>
-        </div>
-    </div>
-    @Html.Partial("Sidebars/_SidebarChat", Model)
-    <div class="spacer spacersection">
-        <div class="sidecontentbox ">
-            <div class="title">
-                <h1 class="alert-h1">ANNOUNCEMENTS</h1>
+            @Html.Partial("Sidebars/_SidebarChat", Model)
+            <div class="spacer spacersection">
+                <div class="sidecontentbox ">
+                    <div class="title">
+                        <h1 class="alert-h1">ANNOUNCEMENTS</h1>
+                    </div>
+                    <div class="sidecontentbox content">
+                        <p>Did you know you could earn money by writing quality comments, sharing links or stories to Voat? <a href="/v/announcements/comments/30925">Click here</a> to find out how you can monetize your content on this website.</p>
+                    </div>
+                </div>
             </div>
-            <div class="sidecontentbox content">
-                <p>Did you know you could earn money by writing quality comments, sharing links or stories to Voat? <a href="/v/announcements/comments/30925">Click here</a> to find out how you can monetize your content on this website.</p>
+            @if (User.Identity.IsAuthenticated && subverseOwner == User.Identity.Name)
+            {
+                @Html.Partial("Sidebars/_SidebarOwnerToolbox")
+            }
+            else if (User.Identity.IsAuthenticated && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
+            {
+                @Html.Partial("Sidebars/_SidebarModToolbox")
+            }
+            <div class="spacer">
+                <div class="centered">
+                    <a title="V2 is awesome!" href="/v2">
+                        <img src="~/Graphics/v2_ad.png" alt="Oh look, a flower!" height="108" width="276">
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-    @if (User.Identity.IsAuthenticated && subverseOwner == User.Identity.Name)
-    {
-        @Html.Partial("Sidebars/_SidebarOwnerToolbox")
-    }
-    else if (User.Identity.IsAuthenticated && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.name))
-    {
-        @Html.Partial("Sidebars/_SidebarModToolbox")
-    }
-    <div class="spacer">
-        <div class="centered">
-            <a title="V2 is awesome!" href="/v2">
-                <img src="~/Graphics/v2_ad.png" alt="Oh look, a flower!" height="108" width="276">
-            </a>
-        </div>
-    </div>
-</div>
