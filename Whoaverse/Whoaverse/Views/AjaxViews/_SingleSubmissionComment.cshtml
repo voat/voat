@@ -188,14 +188,11 @@
 
                 @if (User.Identity.IsAuthenticated && commentAuthor != "deleted")
                 {
-                    // if user is sub admin or sub mod but not comment author, show delete and distinguish buttons
+                    // if user is sub admin or sub mod but not comment author, show delete button
                     if (User.Identity.Name != commentAuthor)
                     {
                         if (Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse) || Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
                         {
-                            <li>
-                                <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.Id, @Model.MessageId)">distinguish</a>
-                            </li>
                             <li>
                                 <form class="toggle del-button " action="#" method="get">
                                     <input class="active" name="executed" value="deleted" type="hidden">
@@ -210,9 +207,15 @@
                         }
                     }
 
-                    // if user is comment author, show edit and delete buttons
+                    // if user is comment author, show edit and delete buttons. additionally, if he is sub admin or mod, show distinguish button
                     if (User.Identity.Name == commentAuthor)
                     {
+						if (Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse) || Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
+                        {
+                            <li>
+                                <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.Id, @Model.MessageId)">distinguish</a>
+                            </li>
+						}
                         <li>
                             <a class="" href="javascript:void(0)" onclick="return edit(@Model.Id, @Model.MessageId)">edit</a>
                         </li>
