@@ -1206,7 +1206,9 @@ function deleteSetExecute(obj, setId) {
 }
 
 // a function to fetch 1 comment bucket for a submission and append to the bottom of the page
+var loadCommentsRequest;
 function loadMoreComments(obj, submissionId) {
+    if (loadCommentsRequest) { return; }
     $(obj).html("Sit tight...");
 
     // try to see if this request is a subsequent request
@@ -1216,8 +1218,7 @@ function loadMoreComments(obj, submissionId) {
     } else {
         currentPage++;
     }
-
-    $.ajax({
+    loadCommentsRequest = $.ajax({
         url: "/comments/" + submissionId + "/" + currentPage + "/",
         success: function (data) {
             $("#comments-" + submissionId + "-page").remove();
@@ -1226,6 +1227,9 @@ function loadMoreComments(obj, submissionId) {
         },
         error: function () {
             $(obj).html("That's it. There was nothing else to show. Phew. This was hard.");
+        },
+        complete: function() {
+            loadCommentsRequest = null;
         }
     });
 }
