@@ -159,12 +159,12 @@ function submitUpVote(messageid) {
 
 function voteUpComment(commentid) {
     submitCommentUpVote(commentid);
-	
+
     // get current score
     var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
     var scoreDislikes = -($(".id-" + commentid).find('.post_downvotes').filter(":first").html());
 
-	// ADD LIKE IF UNVOTED
+    // ADD LIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
         $(".id-" + commentid).children(".midcol").toggleClass("likes", true); //add class likes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
@@ -209,12 +209,12 @@ function voteUpComment(commentid) {
 
 function voteDownComment(commentid) {
     submitCommentDownVote(commentid);
-	
+
     // get current score
     var scoreLikes = +($(".id-" + commentid).find('.post_upvotes').filter(":first").html());
     var scoreDislikes = -($(".id-" + commentid).find('.post_downvotes').filter(":first").html());
 
-	// ADD DISLIKE IF UNVOTED
+    // ADD DISLIKE IF UNVOTED
     if ($(".id-" + commentid).children(".midcol").is(".unvoted")) {
         $(".id-" + commentid).children(".midcol").toggleClass("dislikes", true); //add class dislikes
         $(".id-" + commentid).children(".midcol").toggleClass("unvoted", false); //remove class unvoted
@@ -1178,7 +1178,7 @@ function saveSetTitle(obj, setId) {
 // a function to ask the user to confirm permanent set deletion request
 function deleteSet(obj, setId) {
     $(obj).html("Are you sure?");
-    
+
     $(obj).bind({
         click: function () {
             deleteSetExecute(obj, setId);
@@ -1206,7 +1206,9 @@ function deleteSetExecute(obj, setId) {
 }
 
 // a function to fetch 1 comment bucket for a submission and append to the bottom of the page
+var loadCommentsRequest;
 function loadMoreComments(obj, submissionId) {
+    if (loadCommentsRequest) { return; }
     $(obj).html("Sit tight...");
 
     // try to see if this request is a subsequent request
@@ -1216,8 +1218,7 @@ function loadMoreComments(obj, submissionId) {
     } else {
         currentPage++;
     }
-
-    $.ajax({
+    loadCommentsRequest = $.ajax({
         url: "/comments/" + submissionId + "/" + currentPage + "/",
         success: function (data) {
             $("#comments-" + submissionId + "-page").remove();
@@ -1226,6 +1227,9 @@ function loadMoreComments(obj, submissionId) {
         },
         error: function () {
             $(obj).html("That's it. There was nothing else to show. Phew. This was hard.");
+        },
+        complete: function() {
+            loadCommentsRequest = null;
         }
     });
 }
@@ -1239,4 +1243,29 @@ function goToParent(event, parentId) {
         event.preventDefault();
         window.location.hash = "#" + parentId;
     }
+}
+
+// a function to scroll chat box content up
+function scrollChatToBottom() {
+    var elem = document.getElementById('subverseChatRoom');
+    elem.scrollTop = elem.scrollHeight;
+}
+
+// a function to submit chat message to subverse chat room
+function sendChatMessage(userName, subverse) {
+    var messageToSend = $("#chatInputBox").val();
+    var chatProxy = $.connection.messagingHub;
+    chatProxy.server.sendChatMessage(userName, messageToSend, subverse);
+    scrollChatToBottom();
+    // clear input
+    $("#chatInputBox").val('');
+}
+
+// a function to add a client to a subverse chat room
+function joinSubverseChatRoom(subverseName) {
+    // Start the connection.
+    $.connection.hub.start().done(function () {
+        var chatProxy = $.connection.messagingHub;
+        chatProxy.server.joinSubverseChatRoom(subverseName);
+    });
 }

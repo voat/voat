@@ -1,0 +1,56 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model Voat.Models.Subverse
+
+<div class="spacer spacersection">
+    <div class="sidecontentbox ">
+        <div class="title">
+            <h1 class="alert-h1">Subverse Chat</h1>
+        </div>
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                        Toggle Subverse Chat
+                    </a>
+                </div>
+                <div id="collapseOne" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                        <div class="sidecontentbox content">
+                            <div id="subverseChatRoom" class="subverseChatRoomContent">
+                                <p>
+                                    <b>Voat</b>: you have joined /v/@Model.name chatroom.
+                                </p>
+                            </div>
+                        </div>
+                        <script>
+                            $(function () {
+                                joinSubverseChatRoom('@Model.name');
+                            });
+                        </script>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <input id="chatInputBox" onkeydown="if (event.keyCode == 13) sendChatMessage('@User.Identity.Name', '@Model.name');" class="form-control" data-val="true" data-val-length="Please write at least 3 characters." data-val-length-max="100" data-val-length-min="3" data-val-required="Please enter a message." name="chatInputBox" placeholder="Say something. Anything." value="" type="text">
+                            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="sendChatMessage('@User.Identity.Name', '@Model.name');">send</button>
+                        }
+                        else
+                        {
+                            <a href="#" onclick="mustLogin();" class="login-required">Login to join chat</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

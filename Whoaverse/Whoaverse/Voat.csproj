@@ -783,6 +783,7 @@
     <Content Include="Views\Shared\Sidebars\_SidebarOwnerToolbox.cshtml" />
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
     <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarChat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

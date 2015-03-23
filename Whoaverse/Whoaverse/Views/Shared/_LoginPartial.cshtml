@@ -117,6 +117,12 @@
             }
         };
 
+        // Hub accessed function to append incoming chat message
+        proxy.client.appendChatMessage = function (sender, chatMessage) {
+            $("#subverseChatRoom").append('<p><b>' + sender + '</b>: ' + chatMessage + '</p>');
+            scrollChatToBottom();
+        };
+
         // Start the connection.
         $.connection.hub.start().done(function () {
             //
