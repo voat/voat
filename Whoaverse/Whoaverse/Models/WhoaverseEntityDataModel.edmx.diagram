@@ -31,7 +31,6 @@
         <EntityTypeShape EntityType="whoaverseModel.Userpreference" Width="1.5" PointX="9.75" PointY="4.75" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Subverseflairsetting" Width="1.5" PointX="2" PointY="27.875" IsExpanded="true" />
         <AssociationConnector Association="whoaverseModel.FK_Subverseflairsettings_Subverses1" />
-        <EntityTypeShape EntityType="whoaverseModel.Sessiontracker" Width="1.5" PointX="0.75" PointY="10.75" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Stickiedsubmission" Width="1.5" PointX="7.625" PointY="15.75" IsExpanded="true" />
         <AssociationConnector Association="whoaverseModel.FK_Stickiedsubmissions_Messages" />
         <AssociationConnector Association="whoaverseModel.FK_Stickiedsubmissions_Subverses" />
@@ -52,6 +51,7 @@
         <EntityTypeShape EntityType="whoaverseModel.SubverseBan" Width="1.5" PointX="3.625" PointY="17.625" />
         <AssociationConnector Association="whoaverseModel.FK_SubverseBans_Subverses" />
         <EntityTypeShape EntityType="whoaverseModel.Moderatorinvitation" Width="2.125" PointX="12.375" PointY="0.75" />
+        <EntityTypeShape EntityType="whoaverseModel.Sessiontracker" Width="1.5" PointX="5.375" PointY="0.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -65,7 +65,8 @@ namespace Voat.Utils
                 if (SessionExists(sessionId, subverseName)) return;
                 using (var db = new whoaverseEntities())
                 {
-                    var newSession = new Sessiontracker {SessionId = sessionId, Subverse = subverseName};
+                    var newSession = new Sessiontracker { SessionId = sessionId, Subverse = subverseName, Timestamp = DateTime.Now };
+
                     db.Sessiontrackers.Add(newSession);
                     db.SaveChanges();
 

@@ -176,8 +176,9 @@
             <PropertyRef Name="SessionId" />
             <PropertyRef Name="Subverse" />
           </Key>
-          <Property Name="SessionId" Type="nvarchar" MaxLength="24" Nullable="false" />
+          <Property Name="SessionId" Type="nvarchar" MaxLength="90" Nullable="false" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Stickiedsubmissions">
           <Key>
@@ -835,7 +836,6 @@
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Subverseflairsetting" EntitySet="Subverseflairsettings" />
           </AssociationSet>
-          <EntitySet Name="Sessiontrackers" EntityType="whoaverseModel.Sessiontracker" />
           <EntitySet Name="Stickiedsubmissions" EntityType="whoaverseModel.Stickiedsubmission" />
           <AssociationSet Name="FK_Stickiedsubmissions_Messages" Association="whoaverseModel.FK_Stickiedsubmissions_Messages">
             <End Role="Message" EntitySet="Messages" />
@@ -886,6 +886,7 @@
             <End Role="SubverseBan" EntitySet="SubverseBans" />
           </AssociationSet>
           <EntitySet Name="Moderatorinvitations" EntityType="whoaverseModel.Moderatorinvitation" />
+          <EntitySet Name="Sessiontrackers" EntityType="whoaverseModel.Sessiontracker" />
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -1142,14 +1143,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Sessiontracker">
-          <Key>
-            <PropertyRef Name="SessionId" />
-            <PropertyRef Name="Subverse" />
-          </Key>
-          <Property Name="SessionId" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="true" />
-          <Property Name="Subverse" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="Stickiedsubmission">
           <Key>
             <PropertyRef Name="Submission_id" />
@@ -1394,6 +1387,15 @@
           <Property Name="Sent_to" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Subverse" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Power" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sessiontracker">
+          <Key>
+            <PropertyRef Name="SessionId" />
+            <PropertyRef Name="Subverse" />
+          </Key>
+          <Property Name="SessionId" Type="String" Nullable="false" MaxLength="90" FixedLength="false" Unicode="true" />
+          <Property Name="Subverse" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1649,14 +1651,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Sessiontrackers">
-            <EntityTypeMapping TypeName="whoaverseModel.Sessiontracker">
-              <MappingFragment StoreEntitySet="Sessiontracker">
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Stickiedsubmissions">
             <EntityTypeMapping TypeName="whoaverseModel.Stickiedsubmission">
               <MappingFragment StoreEntitySet="Stickiedsubmissions">
@@ -1768,6 +1762,15 @@
                 <ScalarProperty Name="Sent_on" ColumnName="Sent_on" />
                 <ScalarProperty Name="Sent_by" ColumnName="Sent_by" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sessiontrackers">
+            <EntityTypeMapping TypeName="whoaverseModel.Sessiontracker">
+              <MappingFragment StoreEntitySet="Sessiontracker">
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -14,8 +14,6 @@ All Rights Reserved.
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Validation;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -106,19 +104,7 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            // experimental
-            // register a new session for this subverse
-            try
-            {
-                var currentSubverse = (string)RouteData.Values["subversetoshow"];
-                SessionTracker.Add(currentSubverse, Session.SessionID);
-            }
-            catch (Exception)
-            {
-                //
-            }
-
-            // check if this is a new view and register it
+            // experimental: register a new session for this subverse
             string clientIpAddress = String.Empty;
 
             if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
@@ -134,8 +120,16 @@ namespace Voat.Controllers
 
             // generate salted hash of client IP address
             string ipHash = IpHash.CreateHash(clientIpAddress);
+
+            var currentSubverse = (string)RouteData.Values["subversetoshow"];
+            
+            // register a new session for this subverse
+            SessionTracker.Add(currentSubverse, ipHash);
+
+            // register a new view for this thread
             // check if this hash is present for this submission id in viewstatistics table
             var existingView = _db.Viewstatistics.Find(submission.Id, ipHash);
+
             // this IP has already viwed this thread, skip registering a new view
             if (existingView != null) return View("~/Views/Home/Comments.cshtml", submission);
 
@@ -234,7 +228,7 @@ namespace Voat.Controllers
             commentModel.Name = User.Identity.Name;
             commentModel.Votes = 0;
             commentModel.Likes = 0;
-            
+
             if (ModelState.IsValid)
             {
                 // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
