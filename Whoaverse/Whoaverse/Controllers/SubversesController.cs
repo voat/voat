@@ -362,7 +362,20 @@ namespace Voat.Controllers
             try
             {
                 var currentSubverse = (string)RouteData.Values["subversetoshow"];
-                SessionTracker.Add(currentSubverse, Session.SessionID);
+
+                // register a new session for this subverse
+                string clientIpAddress = String.Empty;
+                if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
+                {
+                    clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                }
+                else if (Request.UserHostAddress.Length != 0)
+                {
+                    clientIpAddress = Request.UserHostAddress;
+                }
+                string ipHash = IpHash.CreateHash(clientIpAddress);
+                SessionTracker.Add(currentSubverse, ipHash);
+                
                 ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
             }
             catch (Exception)
@@ -466,7 +479,20 @@ namespace Voat.Controllers
             try
             {
                 var currentSubverse = (string)RouteData.Values["subversetoshow"];
-                SessionTracker.Add(currentSubverse, Session.SessionID);
+
+                // register a new session for this subverse
+                string clientIpAddress = String.Empty;
+                if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
+                {
+                    clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                }
+                else if (Request.UserHostAddress.Length != 0)
+                {
+                    clientIpAddress = Request.UserHostAddress;
+                }
+                string ipHash = IpHash.CreateHash(clientIpAddress);
+                SessionTracker.Add(currentSubverse, ipHash);
+
                 ViewBag.OnlineUsers = SessionTracker.ActiveSessionsForSubverse(currentSubverse);
             }
             catch (Exception)

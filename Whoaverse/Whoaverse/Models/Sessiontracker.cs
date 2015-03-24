@@ -16,5 +16,6 @@ namespace Voat.Models
     {
         public string SessionId { get; set; }
         public string Subverse { get; set; }
+        public System.DateTime Timestamp { get; set; }
     }
 }

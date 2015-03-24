@@ -77,7 +77,8 @@ namespace Voat
             // experimental
             try
             {
-                SessionTracker.Remove(Session.SessionID);
+                // session removal is executed in a background, standalone task
+                // SessionTracker.Remove(Session.SessionID);
             }
             catch (Exception)
             {
