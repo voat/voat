@@ -150,9 +150,7 @@
                 <span class="separator">|</span>
                 <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage", id = "manage" })</span>
                 <span class="separator">|</span>
-                <div id="nightmodetoggle">
-                    <a onclick="toggleNightMode()" title="Toggle Night Mode"></a>
-                </div>
+                <a id="nightmodetoggle" onclick="toggleNightMode()" title="Toggle Night Mode"></a>
                 <span class="separator">|</span>
                 @if (Voat.Utils.User.UserHasNewMessages(User.Identity.Name))
                 {

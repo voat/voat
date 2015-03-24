@@ -1663,19 +1663,12 @@ pre, code {
 }
 
 #nightmodetoggle {
-    display: inline-block;
-    height: 12px;
-    vertical-align: middle;
-    margin-top: -18px;
-}
-
-#nightmodetoggle a {
     background: url(/Graphics/Dark-SpriteSheet.png );
-    background-position: -87px 0;
+    background-position: -86px 0;
     display: inline-block;
     cursor: pointer;
-    height: 20px;
-    width: 8px;
+    height: 16px;
+    width: 10px;
     position: relative;
     top: 4px;
 }
