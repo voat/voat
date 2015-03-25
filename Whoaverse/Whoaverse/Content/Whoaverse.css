@@ -1621,6 +1621,17 @@ pre, code {
     top: 4px;
 }
 
+#nightmodetoggle {
+    background: url(/Graphics/Light-SpriteSheet.png );
+    background-position: -86px 0;
+    display: inline-block;
+    cursor: pointer;
+    height: 16px;
+    width: 10px;
+    position: relative;
+    top: 4px;
+}
+
 #mail {
     display: inline-block;
     overflow: hidden;

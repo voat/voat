@@ -1269,3 +1269,14 @@ function joinSubverseChatRoom(subverseName) {
         chatProxy.server.joinSubverseChatRoom(subverseName);
     });
 }
+
+function toggleNightMode() {
+    $.ajax({
+        type: "POST",
+        url: "/account/togglenightmode/",
+        complete: function () {
+            //Reload Page to get new styles
+            window.location.reload();
+        }
+    });
+}

@@ -596,6 +596,50 @@ namespace Voat.Controllers
             return RedirectToAction("Manage");
         }
 
+        // POST: /Account/ToggleNightMode
+        [Authorize]
+        public async Task<ActionResult> ToggleNightMode()
+        {
+            // save changes
+            using (var db = new whoaverseEntities())
+            {
+                var userPreferences = db.Userpreferences.Find(User.Identity.Name);
+
+                if (userPreferences != null)
+                {
+                    // modify existing preferences
+                    userPreferences.Night_mode = !userPreferences.Night_mode;
+
+                    await db.SaveChangesAsync();
+                    // apply theme change
+                    Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                }
+                else
+                {
+                    // create a new record for this user in userpreferences table
+                    var tmpModel = new Userpreference
+                    {
+                        Disable_custom_css = false,
+                        //Since if user has no pref, they must have been on the light theme
+                        Night_mode = true,
+                        Clicking_mode = false,
+                        Enable_adult_content = false,
+                        Public_subscriptions = false,
+                        Topmenu_from_subscriptions = false,
+                        Username = User.Identity.Name
+                    };
+                    db.Userpreferences.Add(tmpModel);
+
+                    await db.SaveChangesAsync();
+                    // apply theme change
+                    Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                }
+            }
+
+            Response.StatusCode = 200;
+            return Json("Toggled Night Mode", JsonRequestBehavior.AllowGet);
+        }
+
         // GET: /Account/UserAccountEmail
         [Authorize]
         [ChildActionOnly]
