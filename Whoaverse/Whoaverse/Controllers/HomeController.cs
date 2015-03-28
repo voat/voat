@@ -152,8 +152,15 @@ namespace Voat.Controllers
                 return View("~/Views/Home/Comments.cshtml", message);
             }
 
+            // check if user has reached hourly posting quota for target subverse
+            if (Utils.User.UserHourlyPostingQuotaForSubUsed(User.Identity.Name,message.Subverse))
+            {
+                ModelState.AddModelError("", "You have reached your hourly submission quota for this subverse.");
+                return View();
+            }
+
             // check if user has reached daily posting quota for target subverse
-            if (Utils.User.UserDailyPostingQuotaForSubUsed(User.Identity.Name,message.Subverse))
+            if (Utils.User.UserDailyPostingQuotaForSubUsed(User.Identity.Name, message.Subverse))
             {
                 ModelState.AddModelError("", "You have reached your daily submission quota for this subverse.");
                 return View();

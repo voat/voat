@@ -641,6 +641,31 @@ namespace Voat.Utils
             }
         }
 
+        // check if a given user has used his hourly posting quota for a given subverse
+        public static bool UserHourlyPostingQuotaForSubUsed(string userName, string subverse)
+        {
+            // set starting date to 1 hours ago from now
+            var startDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
+
+            // read daily posting quota per sub configuration parameter from web.config
+            int dpqps = Convert.ToInt32(ConfigurationManager.AppSettings["hourlyPostingQuotaPerSub"]);
+
+            using (var db = new whoaverseEntities())
+            {
+                // check how many submission user made in the last hour
+                var userSubmissionsToTargetSub = db.Messages.Count(
+                    m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                        && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.Date >= startDate && m.Date <= DateTime.Now);
+
+                if (dpqps <= userSubmissionsToTargetSub)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         // subscribe to a set
         public static void SubscribeToSet(string userName, int setId)
         {
