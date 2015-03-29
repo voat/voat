@@ -29,12 +29,12 @@
     @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel(), new ViewDataDictionary { { "SelectedSubverse", ViewBag.SelectedSubverse } })
     @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml")
     <div class="spacer">
-        <a href="/v/@Model.name/submit?linkpost=true" class="btn-whoaverse btn-block contribute">
+        <a href="/v/@Model.name/submit?linkpost=true" class="btn-whoaverse btn-block contribute share-link">
             Share a link
         </a>
     </div>
     <div class="spacer">
-        <a href="/v/@Model.name/submit" class="btn-whoaverse btn-block contribute">
+        <a href="/v/@Model.name/submit" class="btn-whoaverse btn-block contribute share-text">
             Start a discussion
         </a>
     </div>
