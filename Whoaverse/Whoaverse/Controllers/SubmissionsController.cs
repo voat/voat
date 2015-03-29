@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -124,27 +125,37 @@ namespace Voat.Controllers
         [Authorize]
         public JsonResult Vote(int messageId, int typeOfVote)
         {
+            int dailyVotingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyVotingQuota"]);
             var loggedInUser = User.Identity.Name;
+            var userCcp = Karma.CommentKarma(loggedInUser);
+            var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
+            var totalVotesUsedInPast24Hours = Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name);
 
             switch (typeOfVote)
             {
                 case 1:
-                    if (Karma.CommentKarma(loggedInUser) >= 20)
+                    if (userCcp >= 20)
                     {
-                        // perform upvoting or resetting
-                        Voting.UpvoteSubmission(messageId, loggedInUser);
+                        if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
+                        {
+                            // perform upvoting or resetting
+                            Voting.UpvoteSubmission(messageId, loggedInUser);
+                        }
                     }
-                    else if (Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                    else if (totalVotesUsedInPast24Hours < 11)
                     {
                         // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
                         Voting.UpvoteSubmission(messageId, loggedInUser);
                     }
                     break;
                 case -1:
-                    if (Karma.CommentKarma(loggedInUser) > 100)
+                    if (userCcp >= 100)
                     {
-                        // perform downvoting or resetting
-                        Voting.DownvoteSubmission(messageId, loggedInUser);
+                        if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
+                        {
+                            // perform downvoting or resetting
+                            Voting.DownvoteSubmission(messageId, loggedInUser);
+                        }
                     }
                     break;
             }
