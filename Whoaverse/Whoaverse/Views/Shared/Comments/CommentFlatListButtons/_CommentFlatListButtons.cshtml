@@ -28,7 +28,7 @@
     @if (Model.CommentModel.ParentId != null)
     {
         <li>
-            <a onclick="goToParent(event, @Model.CommentModel.ParentId)" href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.MessageId/@Model.CommentModel.ParentId" rel="nofollow">parent</a>
+            <a class="parentLink" data-parent-id="@Model.CommentModel.ParentId" data-message-id="@Model.CommentModel.MessageId" onclick="goToParent(event)" onmouseenter="hoverParent(event)" href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.MessageId/@Model.CommentModel.ParentId" rel="nofollow">parent</a>
         </li>
     }
 

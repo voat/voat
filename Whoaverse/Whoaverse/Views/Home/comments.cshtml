@@ -162,3 +162,11 @@ else if (!User.Identity.IsAuthenticated)
         }
     </div>
 </div>
+<div class="hovercomment" onmousedown="lockHoverParent()" onmouseleave="hideHoverParent(false, event)">
+    <div class="hovercover"></div>
+    <div class="hovercommenttitlebar">
+        <span>Parents</span>
+        <div class="closehovercomment" onclick="hideHoverParent(true, event)">X</div>
+    </div>
+    <div class="hovercommentcontainer"></div>
+</div>
