@@ -485,6 +485,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Graphics\Badges\voat_cakeday.png" />
     <Content Include="Graphics\edit.png" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Graphics\markdownEditorSprite.png" />

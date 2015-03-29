@@ -90,6 +90,14 @@
                         {
                             <img style="cursor: help" src="~/Graphics/Badges/alpha_user.png" data-toggle="popover" data-trigger="focus" title="Early adopter" data-content="Alpha tester, joined Voat during its alpha testing phase" />
                         }
+                        // check voat cake day
+                        if (userRegistrationDateTime.Date.Year < DateTime.Now.Date.Year)
+                        {
+                            if ((userRegistrationDateTime.Date.Day == DateTime.Now.Date.Day) && (userRegistrationDateTime.Date.Month == DateTime.Now.Date.Month))
+                            {
+                                <img style="cursor: help" src="~/Graphics/Badges/voat_cakeday.png" data-toggle="popover" data-trigger="focus" title="Voat Cake Day" data-content="This user is celebrating Voat Cake Day today!" />
+                            }
+                        }
                     }
                     else if (userRegistrationDateTime < new DateTime(2015, 06, 15))
                     {
