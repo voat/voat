@@ -524,6 +524,28 @@ input, button, select, textarea {
     font-size: 12px;
 }
 
+.hovercomment::before {
+    border-color: transparent #D1D1D1 transparent transparent;
+}
+
+.hovercommentcontainer {
+    background: #FFF;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border: 1px solid #D1D1D1;
+    border-top: 1px solid #FFF;
+    color: #333;
+    padding: 0 8px 8px 8px;
+}
+
+.hovercommenttitlebar {
+    background: #FFF;
+    border-top: 1px solid #D1D1D1;
+    border-right: 1px solid #D1D1D1;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
 /* Tag line */
 
 .tagline {

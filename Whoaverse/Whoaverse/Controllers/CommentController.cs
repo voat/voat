@@ -143,6 +143,37 @@ namespace Voat.Controllers
             return View("~/Views/Home/Comments.cshtml", submission);
         }
 
+        // GET: comment/{postId}/{commentId}
+        public ActionResult GetComment(int? postId, int? commentId)
+        {
+            if (postId == null || commentId == null) { return new EmptyResult(); }
+            var commentContributionPoints = 0;
+            if (User.Identity.IsAuthenticated)
+            {
+                commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
+            }
+
+            var submission = _db.Messages.Find(postId);
+            IEnumerable<Comment> firstComments = from f in submission.Comments
+                            let commentScore = f.Likes - f.Dislikes
+                            where f.Id == commentId
+                            orderby f.Date descending
+                            select f;
+            var firstComment = firstComments.FirstOrDefault();
+            if (firstComment == null) { return new EmptyResult(); }
+            //TODO other view data
+            ViewData["CommentId"] = firstComment.Id;
+            ViewData["CCP"] = commentContributionPoints;
+            ViewData["parentIsHidden"] = true;
+            ViewData["SortingMode"] = "new";
+            ViewData["commentToHighlight"] = ViewBag.CommentToHighLight;
+            ViewData["parentIsHidden"] = false;
+            ViewData["childTohiddenParent"] = false;
+            ViewData["NoChildren"] = true;
+
+            return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", submission);
+        }
+
         // GET: comments for a given submission
         public ActionResult BucketOfComments(int? id, int? startingcommentid, int? startingpos, string sort)
         {
