@@ -2300,8 +2300,8 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     .comment .comment {
         border: 1px solid #D1D1D1;
         border-radius: 3px;
-        margin: 8px 0 3px 10px;
-        padding: 4px 8px;
+        margin: 4px 0 2px 8px;
+        padding: 4px 6px 4px 8px;
     }
 
     .comment.thread > .comment.child {
