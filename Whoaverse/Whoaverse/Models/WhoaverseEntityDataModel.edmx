@@ -189,6 +189,15 @@
           <Property Name="Stickied_by" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Stickied_date" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="SubmissionRemovalLog">
+          <Key>
+            <PropertyRef Name="SubmissionId" />
+          </Key>
+          <Property Name="SubmissionId" Type="int" Nullable="false" />
+          <Property Name="Moderator" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RemovalTimestamp" Type="datetime" Nullable="false" />
+          <Property Name="ReasonForRemoval" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="Subscriptions">
           <Key>
             <PropertyRef Name="Id" />
@@ -441,6 +450,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SubmissionRemovalLog_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SubmissionRemovalLog" Type="Self.SubmissionRemovalLog" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SubmissionRemovalLog">
+              <PropertyRef Name="SubmissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Subscriptions_Subverses">
           <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -594,6 +617,7 @@
           <EntitySet Name="Savedsubmissions" EntityType="Self.Savedsubmissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Sessiontracker" EntityType="Self.Sessiontracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Stickiedsubmissions" EntityType="Self.Stickiedsubmissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubmissionRemovalLog" EntityType="Self.SubmissionRemovalLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubverseBans" EntityType="Self.SubverseBans" Schema="dbo" store:Type="Tables" />
@@ -634,6 +658,10 @@
           <AssociationSet Name="FK_Stickiedsubmissions_Subverses" Association="Self.FK_Stickiedsubmissions_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
             <End Role="Stickiedsubmissions" EntitySet="Stickiedsubmissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubmissionRemovalLog_Messages" Association="Self.FK_SubmissionRemovalLog_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="SubmissionRemovalLog" EntitySet="SubmissionRemovalLog" />
           </AssociationSet>
           <AssociationSet Name="FK_Subscriptions_Subverses" Association="Self.FK_Subscriptions_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
@@ -737,6 +765,7 @@
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
           <Property Name="Views" Type="Double" Nullable="false" />
           <NavigationProperty Name="Viewstatistics" Relationship="whoaverseModel.FK_Viewstatistics_Messages" FromRole="Message" ToRole="Viewstatistic" />
+          <NavigationProperty Name="SubmissionRemovalLog" Relationship="whoaverseModel.FK_SubmissionRemovalLog_Messages" FromRole="Message" ToRole="SubmissionRemovalLog" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -887,6 +916,11 @@
           </AssociationSet>
           <EntitySet Name="Moderatorinvitations" EntityType="whoaverseModel.Moderatorinvitation" />
           <EntitySet Name="Sessiontrackers" EntityType="whoaverseModel.Sessiontracker" />
+          <EntitySet Name="SubmissionRemovalLogs" EntityType="whoaverseModel.SubmissionRemovalLog" />
+          <AssociationSet Name="FK_SubmissionRemovalLog_Messages" Association="whoaverseModel.FK_SubmissionRemovalLog_Messages">
+            <End Role="Message" EntitySet="Messages" />
+            <End Role="SubmissionRemovalLog" EntitySet="SubmissionRemovalLogs" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -1397,6 +1431,30 @@
           <Property Name="Subverse" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
+        <EntityType Name="SubmissionRemovalLog">
+          <Key>
+            <PropertyRef Name="SubmissionId" />
+          </Key>
+          <Property Name="SubmissionId" Type="Int32" Nullable="false" />
+          <Property Name="Moderator" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RemovalTimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ReasonForRemoval" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Message" Relationship="whoaverseModel.FK_SubmissionRemovalLog_Messages" FromRole="SubmissionRemovalLog" ToRole="Message" />
+        </EntityType>
+        <Association Name="FK_SubmissionRemovalLog_Messages">
+          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whoaverseModel.SubmissionRemovalLog" Role="SubmissionRemovalLog" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Message">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SubmissionRemovalLog">
+              <PropertyRef Name="SubmissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1771,6 +1829,16 @@
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubmissionRemovalLogs">
+            <EntityTypeMapping TypeName="whoaverseModel.SubmissionRemovalLog">
+              <MappingFragment StoreEntitySet="SubmissionRemovalLog">
+                <ScalarProperty Name="ReasonForRemoval" ColumnName="ReasonForRemoval" />
+                <ScalarProperty Name="RemovalTimestamp" ColumnName="RemovalTimestamp" />
+                <ScalarProperty Name="Moderator" ColumnName="Moderator" />
+                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

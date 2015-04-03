@@ -376,7 +376,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
                 // submission failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit reply");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html("You are doing that too fast. Please wait 2 minutes before trying again.");
+                $form.find("#errorMessage").html("You are doing that too fast. Please wait 30 seconds before trying again.");
                 $form.find("#errorMessage").toggle(true);
             },
 
@@ -425,7 +425,7 @@ function postCommentAjax(senderButton, messageId, userName) {
                 // submission failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit comment");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html("You are doing that too fast. Please wait 2 minutes before trying again.");
+                $form.find("#errorMessage").html("You are doing that too fast. Please wait 30 seconds before trying again.");
                 $form.find("#errorMessage").toggle(true);
             },
 
@@ -478,7 +478,7 @@ function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
                 //submission failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit reply");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html("You are doing that too fast. Please wait 2 minutes before trying again.");
+                $form.find("#errorMessage").html("You are doing that too fast. Please wait 30 seconds before trying again.");
                 $form.find("#errorMessage").toggle(true);
             },
 

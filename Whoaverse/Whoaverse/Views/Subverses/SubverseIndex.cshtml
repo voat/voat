@@ -47,7 +47,7 @@
 <div id="container">
     @if (!selectedSubverse.Equals("user") && !selectedSubverse.Equals("all"))
     {
-        @Html.Action("SidebarForSelectedSubverse", "Subverses", new {selectedSubverse = selectedSubverse})
+        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse })
     }
     else
     {
@@ -63,15 +63,15 @@
         {
             Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new {selectedSubverse = selectedSubverse});
         }
-        </style>
+    </style>
 
     <div class="content" role="main">
         <div class="sitetable linklisting">
-            @Html.Action("StickiedSubmission", "Subverses", new {subverseName = selectedSubverse})
+            @Html.Action("StickiedSubmission", "Subverses", new { subverseName = selectedSubverse })
 
             @{
                 int currentPageNumber = Model.PageIndex;
-                int counterCont = (currentPageNumber)*25;
+                int counterCont = (currentPageNumber) * 25;
 
                 int counter = counterCont + 1;
                 string submissionClass = "";
@@ -79,7 +79,7 @@
 
             @if (Model.Count < 1)
             {
-                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() {{"selectedSubverse", selectedSubverse}});
+                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() { { "selectedSubverse", selectedSubverse } });
             }
 
             @foreach (var submission in Model)
@@ -96,7 +96,7 @@
                 }
 
                 var classEvenOrOdd = "";
-                if (counter%2 == 0)
+                if (counter % 2 == 0)
                 {
                     //is even
                     classEvenOrOdd = "even";
@@ -111,7 +111,7 @@
                     <p class="parent"></p>
                     <span class="rank">@counter</span>
 
-                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary {{"CCP", commentContributionPoints}})
+                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                     <div class="child"></div>
@@ -126,14 +126,14 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", urlaction, new {page = (Model.PageIndex - 1)}, new {rel = "prev"})
+                        @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
                     </li>
                 }
 
                 @if (Model.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", urlaction, new {page = (Model.PageIndex + 1)}, new {rel = "next"})
+                        @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
                     </li>
                 }
             </ul>

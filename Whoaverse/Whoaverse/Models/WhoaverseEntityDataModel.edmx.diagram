@@ -52,6 +52,8 @@
         <AssociationConnector Association="whoaverseModel.FK_SubverseBans_Subverses" />
         <EntityTypeShape EntityType="whoaverseModel.Moderatorinvitation" Width="2.125" PointX="12.375" PointY="0.75" />
         <EntityTypeShape EntityType="whoaverseModel.Sessiontracker" Width="1.5" PointX="5.375" PointY="0.75" />
+        <EntityTypeShape EntityType="whoaverseModel.SubmissionRemovalLog" Width="1.5" PointX="5.875" PointY="28.625" />
+        <AssociationConnector Association="whoaverseModel.FK_SubmissionRemovalLog_Messages" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

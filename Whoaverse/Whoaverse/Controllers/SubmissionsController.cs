@@ -214,9 +214,23 @@ namespace Voat.Controllers
 
                     await _db.SaveChangesAsync();
                 }
+
                 // delete submission if delete request is issued by subverse moderator
                 else if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
                 {
+                    // mark submission as deleted (TODO: don't use name, add a new bit field to messages table instead)
+                    submissionToDelete.Name = "deleted";
+
+                    // move the submission to removal log
+                    var removalLog = new SubmissionRemovalLog
+                    {
+                        SubmissionId = submissionToDelete.Id,
+                        Moderator = User.Identity.Name,
+                        ReasonForRemoval = "This feature is not yet implemented",
+                        RemovalTimestamp = DateTime.Now
+                    };
+
+                    _db.SubmissionRemovalLogs.Add(removalLog);
 
                     if (submissionToDelete.Type == 1)
                     {
@@ -232,9 +246,6 @@ namespace Voat.Controllers
                             "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
                             "Submission content: " + submissionToDelete.MessageContent
                             );
-
-                        submissionToDelete.MessageContent = "deleted by a moderator at " + DateTime.Now;
-                        submissionToDelete.Name = "deleted";
                     }
                     else
                     {
@@ -250,9 +261,6 @@ namespace Voat.Controllers
                             "Link description: " + submissionToDelete.Linkdescription + ", " + Environment.NewLine +
                             "Link URL: " + submissionToDelete.MessageContent
                             );
-
-                        submissionToDelete.MessageContent = "http://voat.co";
-                        submissionToDelete.Name = "deleted";
                     }
 
                     // remove sticky if submission was stickied

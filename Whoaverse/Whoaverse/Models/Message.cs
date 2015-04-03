@@ -48,5 +48,6 @@ namespace Voat.Models
         public virtual Subverse Subverses { get; set; }
         public virtual Stickiedsubmission Stickiedsubmission { get; set; }
         public virtual ICollection<Viewstatistic> Viewstatistics { get; set; }
+        public virtual SubmissionRemovalLog SubmissionRemovalLog { get; set; }
     }
 }

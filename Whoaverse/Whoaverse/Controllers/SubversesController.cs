@@ -1378,6 +1378,23 @@ namespace Voat.Controllers
             return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
         }
 
+        // GET: show submission removal log
+        public ActionResult SubmissionRemovalLog(int? page, string subversetoshow)
+        {
+            ViewBag.SelectedSubverse = subversetoshow;
+
+            try
+            {
+                var listOfRemovedSubmissions = new PaginatedList<SubmissionRemovalLog>(_db.SubmissionRemovalLogs.Where(rl => rl.Message.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).OrderByDescending(rl=>rl.RemovalTimestamp), page ?? 0, 20);
+                return View("SubmissionRemovalLog", listOfRemovedSubmissions);
+            }
+            catch (Exception)
+            {
+                return new EmptyResult();
+            }
+        }
+
+
         [ChildActionOnly]
         private ActionResult HandleSortedSubverse(int? page, string subversetoshow, string sortingmode)
         {

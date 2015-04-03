@@ -54,5 +54,6 @@ namespace Voat.Models
         public virtual DbSet<SubverseBan> SubverseBans { get; set; }
         public virtual DbSet<Moderatorinvitation> Moderatorinvitations { get; set; }
         public virtual DbSet<Sessiontracker> Sessiontrackers { get; set; }
+        public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLogs { get; set; }
     }
 }

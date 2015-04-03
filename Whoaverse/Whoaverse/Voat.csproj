@@ -271,6 +271,9 @@
     <Compile Include="Models\Moderatorinvitation.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SubmissionRemovalLog.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SubverseBan.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -485,6 +488,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Graphics\Badges\donor_level_2.png" />
     <Content Include="Graphics\Badges\voat_cakeday.png" />
     <Content Include="Graphics\edit.png" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -785,6 +789,7 @@
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
     <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarChat.cshtml" />
+    <Content Include="Views\Subverses\SubmissionRemovalLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
