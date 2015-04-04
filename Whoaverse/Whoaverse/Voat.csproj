@@ -300,6 +300,7 @@
     <Compile Include="Utils\Components\ContentProcessor.cs" />
     <Compile Include="Utils\Components\NotificationManager.cs" />
     <Compile Include="Utils\Components\RegExReplacer.cs" />
+    <Compile Include="Utils\DateTimeUtility.cs" />
     <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\PaginatedList.cs" />
     <Compile Include="Controllers\PartnerController.cs" />

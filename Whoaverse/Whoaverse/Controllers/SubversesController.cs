@@ -460,7 +460,7 @@ namespace Voat.Controllers
             }
         }
 
-        public ActionResult SortedSubverseFrontpage(int? page, string subversetoshow, string sortingmode)
+        public ActionResult SortedSubverseFrontpage(int? page, string subversetoshow, string sortingmode, string time)
         {
             // sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
@@ -502,11 +502,11 @@ namespace Voat.Controllers
 
             if (!subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
-                return HandleSortedSubverse(page, subversetoshow, sortingmode);
+                return HandleSortedSubverse(page, subversetoshow, sortingmode, time);
             }
 
             // selected subverse is ALL, show submissions from all subverses, sorted by date
-            return HandleSortedSubverseAll(page, sortingmode);
+            return HandleSortedSubverseAll(page, sortingmode, time);
         }
 
         // GET: show a list of subverses
@@ -1396,11 +1396,12 @@ namespace Voat.Controllers
 
 
         [ChildActionOnly]
-        private ActionResult HandleSortedSubverse(int? page, string subversetoshow, string sortingmode)
+        private ActionResult HandleSortedSubverse(int? page, string subversetoshow, string sortingmode, string daterange)
         {
             ViewBag.SortingMode = sortingmode;
             ViewBag.SelectedSubverse = subversetoshow;
             const string cookieName = "NSFWEnabled";
+            DateTime startDate = DateTimeUtility.DateRangeToDateTime(daterange);
 
             if (!sortingmode.Equals("new") && !sortingmode.Equals("top")) return RedirectToAction("Index", "Home");
 
@@ -1434,7 +1435,7 @@ namespace Voat.Controllers
 
                         if (sortingmode.Equals("top"))
                         {
-                            var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
+                            var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow, startDate), page ?? 0, pageSize);
                             return View("SubverseIndex", paginatedSubmissionsByDate);
                         }
 
@@ -1460,7 +1461,7 @@ namespace Voat.Controllers
 
                 if (sortingmode.Equals("top"))
                 {
-                    var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
+                    var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow, startDate), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissionsByDate);
                 }
 
@@ -1478,7 +1479,7 @@ namespace Voat.Controllers
 
             if (sortingmode.Equals("top"))
             {
-                var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow), page ?? 0, pageSize);
+                var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow, startDate), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissionsByDate);
             }
 
@@ -1488,10 +1489,11 @@ namespace Voat.Controllers
         }
 
         [ChildActionOnly]
-        private ActionResult HandleSortedSubverseAll(int? page, string sortingmode)
+        private ActionResult HandleSortedSubverseAll(int? page, string sortingmode, string daterange)
         {
             const string cookieName = "NSFWEnabled";
             const int pageSize = 25;
+            DateTime startDate = DateTimeUtility.DateRangeToDateTime(daterange);
 
             ViewBag.SelectedSubverse = "all";
 
@@ -1509,7 +1511,7 @@ namespace Voat.Controllers
 
                     if (sortingmode.Equals("top"))
                     {
-                        paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                        paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissions);
                     }
 
@@ -1527,7 +1529,7 @@ namespace Voat.Controllers
                 }
                 if (sortingmode.Equals("top"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
                 // default sorting mode by rank
@@ -1546,7 +1548,7 @@ namespace Voat.Controllers
                 }
                 if (sortingmode.Equals("top"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
 
@@ -1562,14 +1564,13 @@ namespace Voat.Controllers
             }
             if (sortingmode.Equals("top"))
             {
-                paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByTop(), page ?? 0, pageSize);
+                paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
 
             // default sorting mode by rank
             paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
             return View("SubverseIndex", paginatedSubmissions);
-
         }
 
         [ChildActionOnly]
@@ -1603,14 +1604,14 @@ namespace Voat.Controllers
             return sfwSubmissionsFromAllSubversesByRank;
         }
 
-        private IQueryable<Message> SfwSubmissionsFromAllSubversesByTop()
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByTop(DateTime startDate)
         {
             IQueryable<Message> sfwSubmissionsFromAllSubversesByTop = (from message in _db.Messages
                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false
                                                                        where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                       select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
-
+                                                                       select message).OrderByDescending(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
+                                                                       .AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByTop;
         }
@@ -1651,13 +1652,14 @@ namespace Voat.Controllers
             return submissionsFromAllSubversesByRank;
         }
 
-        private IQueryable<Message> SubmissionsFromAllSubversesByTop()
+        private IQueryable<Message> SubmissionsFromAllSubversesByTop(DateTime startDate)
         {
             IQueryable<Message> submissionsFromAllSubversesByTop = (from message in _db.Messages
                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                     where message.Name != "deleted" && subverse.private_subverse != true
                                                                     where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                    select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
+                                                                    select message).OrderByDescending(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
+                                                                    .AsNoTracking();
 
             return submissionsFromAllSubversesByTop;
         }
@@ -1696,14 +1698,15 @@ namespace Voat.Controllers
             return submissionsFromASubverseByRank;
         }
 
-        private IQueryable<Message> SubmissionsFromASubverseByTop(string subverseName)
+        private IQueryable<Message> SubmissionsFromASubverseByTop(string subverseName, DateTime startDate)
         {
             var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             IQueryable<Message> submissionsFromASubverseByTop = (from message in _db.Messages
                                                                  join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                  where message.Name != "deleted" && message.Subverse == subverseName
                                                                  where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                 select message).OrderByDescending(s => s.Likes - s.Dislikes).AsNoTracking();
+                                                                 select message).OrderByDescending(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
+                                                                 .AsNoTracking();
             if (subverseStickie != null)
             {
                 return submissionsFromASubverseByTop.Where(s => s.Id != subverseStickie.Submission_id);
