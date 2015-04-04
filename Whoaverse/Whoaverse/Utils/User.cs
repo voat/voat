@@ -666,6 +666,30 @@ namespace Voat.Utils
             }
         }
 
+        // check if given user has submitted the same url before
+        public static bool DailyCrossPostingQuotaUsed(string userName, string url)
+        {
+            // read daily crosspost quota from web.config
+            int dailyCrossPostQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyCrossPostingQuota"]);
+
+            // set starting date to 24 hours ago from now
+            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+
+            using (var db = new whoaverseEntities())
+            {
+                var numberOfTimesSubmitted = db.Messages.Count(
+                    m => m.MessageContent.Equals(url, StringComparison.OrdinalIgnoreCase)
+                        && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.Date >= startDate && m.Date <= DateTime.Now);
+
+                if (dailyCrossPostQuota <= numberOfTimesSubmitted)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         // subscribe to a set
         public static void SubscribeToSet(string userName, int setId)
         {

@@ -260,6 +260,13 @@ namespace Voat.Controllers
                         );
                 }
 
+                // check if user has reached daily crossposting quota
+                if (Utils.User.DailyCrossPostingQuotaUsed(User.Identity.Name, message.MessageContent))
+                {
+                    ModelState.AddModelError("", "You have reached your daily crossposting quota for this URL.");
+                    return View();
+                }
+
                 // check if target subverse has thumbnails setting enabled before generating a thumbnail
                 if (targetSubverse.enable_thumbnails)
                 {
