@@ -279,23 +279,26 @@ function submitCommentDownVote(commentid) {
 }
 
 // append a comment reply form to calling area while preventing multiple appends
+var replyCommentFormRequest;
 function reply(parentcommentid, messageid) {
-    //exit function if the form is already being shown
-    if ($("#commentreplyform-" + parentcommentid).exists()) {
+    //exit function if the form is already being shown or a request is in progress
+    if ($("#commentreplyform-" + parentcommentid).exists() || replyCommentFormRequest) {
         return;
     }
 
     var token = $("input[name='__RequestVerificationToken']").val();
 
-    var replyform = $.get(
-        "/ajaxhelpers/commentreplyform/" + parentcommentid + "/" + messageid,
-        null,
-        function (data) {
+    replyCommentFormRequest = $.ajax({
+        url: "/ajaxhelpers/commentreplyform/" + parentcommentid + "/" + messageid,
+        success: function (data) {
             $("#" + parentcommentid).append(data);
             //Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
             $('#commentreplyform-' + parentcommentid).find('#CommentContent').focus();
+        },
+        complete: function () {
+            replyCommentFormRequest = null;
         }
-     );
+    });
 
     var form = $('#commentreplyform-' + parentcommentid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
@@ -305,23 +308,26 @@ function reply(parentcommentid, messageid) {
 }
 
 // append a private message reply form to calling area
+var replyFormPMRequest;
 function replyprivatemessage(parentprivatemessageid, recipient, subject) {
-    // exit function if the form is already being shown
-    if ($("#privatemessagereplyform-" + parentprivatemessageid).exists()) {
+    // exit function if the form is already being shown or a request is in progress
+    if ($("#privatemessagereplyform-" + parentprivatemessageid).exists() || replyFormPMRequest) {
         return;
     }
 
     var token = $("input[name='__RequestVerificationToken']").val();
 
-    var replyform = $.get(
-        "/ajaxhelpers/privatemessagereplyform/" + parentprivatemessageid + "?recipient=" + recipient + "&subject=" + subject,
-        null,
-        function (data) {
+    replyFormPMRequest = $.ajax({
+        url: "/ajaxhelpers/privatemessagereplyform/" + parentprivatemessageid + "?recipient=" + recipient + "&subject=" + subject,
+        success: function (data) {
             $("#messageContainer-" + parentprivatemessageid).append(data);
             //Focus the cursor on the private message reply form textarea, to prevent unnecessary use of the tab key
             $('#privatemessagereplyform-' + parentprivatemessageid).find('#Body').focus();
+        },
+        complete: function () {
+            replyFormPMRequest = null;
         }
-     );
+     });
 
     var form = $('#privatemessagereplyform-' + parentprivatemessageid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
@@ -334,23 +340,26 @@ function replyprivatemessage(parentprivatemessageid, recipient, subject) {
 }
 
 // append a comment reply form to calling area (used in comment reply notification view)
+var replyToCommentFormRequest;
 function replyToCommentNotification(commentId, submissionId) {
-    // exit function if the form is already being shown
-    if ($("#commentreplyform-" + commentId).exists()) {
+    // exit function if the form is already being shown or a request is in progress
+    if ($("#commentreplyform-" + commentId).exists() || replyToCommentFormRequest) {
         return;
     }
 
     var token = $("input[name='__RequestVerificationToken']").val();
 
-    var replyform = $.get(
-        "/ajaxhelpers/commentreplyform/" + commentId + "/" + submissionId,
-        null,
-        function (data) {
+    replyToCommentFormRequest = $.ajax({
+        url: "/ajaxhelpers/commentreplyform/" + commentId + "/" + submissionId,
+        success: function(data) {
             $("#commentContainer-" + commentId).append(data);
             //Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
             $('#commentreplyform-' + commentId).find('#CommentContent').focus();
+        },
+        complete: function() {
+            replyToCommentFormRequest = null;
         }
-     );
+    });
 
     var form = $('#commentreplyform-' + commentId)
             .removeData("validator") /* added by the raw jquery.validate plugin */
@@ -379,13 +388,12 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
                 $form.find("#errorMessage").html("You are doing that too fast. Please wait 30 seconds before trying again.");
                 $form.find("#errorMessage").toggle(true);
             },
-
             success: function (response) {
                 // remove reply form
                 removereplyform(parentcommentid);
 
                 // load rendered comment that was just posted and append it
-                var replyresult = $.get(
+                $.get(
                     "/ajaxhelpers/singlesubmissioncomment/" + messageId + "/" + userName,
                     null,
                     function (data) {
@@ -396,7 +404,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
 
                         //notify UI framework of DOM insertion async
                         window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentcommentid).last('div')); });
-
+                        //Waiting until the second request comes back before allowing more replies
                     }
                  );
             }
@@ -431,7 +439,7 @@ function postCommentAjax(senderButton, messageId, userName) {
 
             success: function (response) {
                 // load rendered comment that was just posted
-                var replyresult = $.get(
+                $.get(
                     "/ajaxhelpers/singlesubmissioncomment/" + messageId + "/" + userName,
                     null,
                     function (data) {
@@ -481,7 +489,6 @@ function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
                 $form.find("#errorMessage").html("You are doing that too fast. Please wait 30 seconds before trying again.");
                 $form.find("#errorMessage").toggle(true);
             },
-
             success: function (response) {
                 // remove reply form 
                 removereplyform(parentprivatemessageid);
@@ -1091,7 +1098,9 @@ function showMessagePreview(senderButton, messageContent, previewArea) {
 }
 
 // a function to fetch 1 page for a set and append to the bottom of the given set
+var loadMoreSetRequest;
 function loadMoreSetItems(obj, setId) {
+    if (loadMoreSetRequest) { return; }
     $(obj).html("Sit tight...");
 
     // try to see if this request is a subsequent request
@@ -1102,7 +1111,7 @@ function loadMoreSetItems(obj, setId) {
         currentPage++;
     }
 
-    $.ajax({
+    loadMoreSetRequest = $.ajax({
         url: "/set/" + setId + "/" + currentPage + "/",
         success: function (data) {
             $("#set-" + setId + "-page").remove();
@@ -1113,6 +1122,9 @@ function loadMoreSetItems(obj, setId) {
             {
                 $(obj).html("That's it. There was nothing else to show.");
             }
+        },
+        complete: function() {
+            loadMoreSetRequest = null;
         }
     });
 }
