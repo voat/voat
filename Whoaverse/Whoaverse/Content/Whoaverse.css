@@ -1028,6 +1028,11 @@ a.btn-whoaverse {
     overflow: auto;
 }
 
+    .md a:hover {
+        color: #4AABE7;
+        text-decoration: underline;
+    }
+
     .md blockquote {
         background: #F5F5F5;
         border-color: #E8E8E8 #E8E8E8 #E8E8E8 #DBDBDB;
@@ -2300,8 +2305,8 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     .comment .comment {
         border: 1px solid #D1D1D1;
         border-radius: 3px;
-        margin: 8px 0 3px 10px;
-        padding: 4px 8px;
+        margin: 4px 0 2px 8px;
+        padding: 4px 6px 4px 8px;
     }
 
     .comment.thread > .comment.child {
@@ -3066,6 +3071,16 @@ textarea.form-control {
     }
 }
 
+@media ( max-width: 480px ) {
+    .comment .comment {
+        margin-right: 2px;
+    }
+
+    .comment.thread > .comment.child {
+        margin-left: 8px;
+    }
+}
+
 @media ( max-width: 420px ) {
     .modal-dialog {
         width: 300px;
@@ -3077,5 +3092,11 @@ textarea.form-control {
 
     .modal-body .col-md-4 input.form-control {
         width: 260px;
+    }
+}
+
+@media ( max-width: 380px ) {
+    .comment .md {
+        font-size: 12px;
     }
 }

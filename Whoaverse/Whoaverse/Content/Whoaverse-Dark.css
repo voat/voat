@@ -2342,8 +2342,8 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     .comment .comment {
         border: 1px solid #222;
         border-radius: 3px;
-        margin: 8px 0 3px 10px;
-        padding: 4px 8px;
+        margin: 4px 0 2px 8px;
+        padding: 4px 6px 4px 8px;
     }
 
     .comment.thread > .comment.child {
@@ -3106,6 +3106,16 @@ textarea.form-control {
     }
 }
 
+@media ( max-width: 480px ) {
+    .comment .comment {
+        margin-right: 2px;
+    }
+
+    .comment.thread > .comment.child {
+        margin-left: 8px;
+    }
+}
+
 @media ( max-width: 420px ) {
     .modal-dialog {
         width: 300px;
@@ -3119,12 +3129,20 @@ textarea.form-control {
         width: 260px;
     }
 }
+
+@media ( max-width: 380px ) {
+    .comment .md {
+        font-size: 12px;
+    }
+}
+
 .link-expando-type {
     background: #606060; 
     border: 1px solid #606060; 
     color: #c2c2c2; 
 
 }
+
 .markdownEditorImgButton, .markdownEditorTextButton { 
     background-color: #606060 !important;
 }
