@@ -28,6 +28,16 @@ namespace Voat.Controllers
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
             if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            if (q == "rick roll")
+            {
+                return new RedirectResult("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+            }
+
+            if (q == "spoon")
+            {
+                return View("Jaje");
+            }
             
             // limit the search to selected subverse
             if (l != null && sub != null)
@@ -60,7 +70,7 @@ namespace Voat.Controllers
                     .ThenByDescending(s => s.Date).Take(100);
 
                 var results = linkSubmissions.Concat(selfSubmissionsTitle);
-                results = results.Concat(selfSubmissionsMessageContent).OrderByDescending(s=>s.Date);
+                results = results.Concat(selfSubmissionsMessageContent).Distinct().OrderByDescending(s => s.Date);
 
                 ViewBag.Title = "search results";
 
@@ -98,7 +108,7 @@ namespace Voat.Controllers
                     .ThenByDescending(s => s.Date).Take(100);
 
                 var results = linkSubmissions.Concat(selfSubmissionsTitle);
-                results = results.Concat(selfSubmissionsMessageContent).OrderByDescending(s=>s.Date);
+                results = results.Concat(selfSubmissionsMessageContent).Distinct().OrderByDescending(s => s.Date);
 
                 var paginatedResults = new PaginatedList<Message>(results, page ?? 0, pageSize);
 

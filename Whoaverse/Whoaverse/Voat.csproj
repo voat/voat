@@ -791,6 +791,7 @@
     <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarChat.cshtml" />
     <Content Include="Views\Subverses\SubmissionRemovalLog.cshtml" />
+    <Content Include="Views\Search\Jaje.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
