@@ -3106,6 +3106,16 @@ textarea.form-control {
     }
 }
 
+@media ( max-width: 480px ) {
+    .comment .comment {
+        margin-right: 2px;
+    }
+
+    .comment.thread > .comment.child {
+        margin-left: 8px;
+    }
+}
+
 @media ( max-width: 420px ) {
     .modal-dialog {
         width: 300px;
@@ -3119,12 +3129,20 @@ textarea.form-control {
         width: 260px;
     }
 }
+
+@media ( max-width: 380px ) {
+    .comment .md {
+        font-size: 12px;
+    }
+}
+
 .link-expando-type {
     background: #606060; 
     border: 1px solid #606060; 
     color: #c2c2c2; 
 
 }
+
 .markdownEditorImgButton, .markdownEditorTextButton { 
     background-color: #606060 !important;
 }
