@@ -70,17 +70,20 @@ namespace Voat.Controllers
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid) return View(model);
-            var user = await UserManager.FindAsync(model.UserName, model.Password);
 
+            var user = await UserManager.FindAsync(model.UserName, model.Password);
+            var tmpuser = await UserManager.FindByNameAsync(model.UserName);
+
+            // invalid credentials, increment failed login attempt and lockout account
             if (user == null)
             {
-                // Check if correct username was entered with wrong password and increment failed attempts - lockout account
-                var tmpuser = await UserManager.FindByNameAsync(model.UserName);
+                // correct username was entered with wrong credentials
                 if (tmpuser != null)
                 {
+                    // record failed login attempt and lockout account if failed login limit is reached
                     await UserManager.AccessFailedAsync(tmpuser.Id);
 
-                    // Check if correct username was entered and see if account was locked out, notify
+                    // if account is locked out, notify the user
                     if (await UserManager.IsLockedOutAsync(tmpuser.Id))
                     {
                         ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
@@ -92,13 +95,20 @@ namespace Voat.Controllers
                 return View(model);
             }
 
-            // When token is verified correctly, clear the access failed count used for lockout
+            // if account is locked out, and a correct password has been given, notify the user of lockout and don't allow login
+            if (await UserManager.IsLockedOutAsync(tmpuser.Id))
+            {
+                ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
+                return View(model);
+            }
+
+            // when token is verified correctly, clear the access failed count used for lockout
             await UserManager.ResetAccessFailedCountAsync(user.Id);
 
-            // Sign in and continue
+            // sign in and continue
             await SignInAsync(user, model.RememberMe);
 
-            // Read User Theme preference and set value to session variable
+            // read User Theme preference and set value to session variable
             Session["UserTheme"] = Utils.User.UserStylePreference(user.UserName);
             return RedirectToLocal(returnUrl);
         }
@@ -374,7 +384,7 @@ namespace Voat.Controllers
         {
             // require users to enter their password in order to execute account delete action
             var user = UserManager.Find(User.Identity.Name, model.CurrentPassword);
-            
+
             if (user != null)
             {
                 // execute delete action
@@ -383,7 +393,7 @@ namespace Voat.Controllers
                     AuthenticationManager.SignOut();
                     return View("~/Views/Account/AccountDeleted.cshtml");
                 }
-                
+
                 // something went wrong when deleting user account
                 return View("~/Views/Errors/Error.cshtml");
             }
