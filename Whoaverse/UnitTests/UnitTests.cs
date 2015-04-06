@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenGraph_Net;
 using Voat.Utils;
 
 namespace UnitTests
@@ -106,6 +107,14 @@ namespace UnitTests
 
             string result = UrlUtility.GetDomainFromUri(testUri.ToString());
             Assert.AreEqual("youtube.com", result, "Unable to extract domain from given Uri.");
+        }
+
+        [TestMethod]
+        public void TestGetOpenGraphImageFromUri()
+        {
+            Uri testUri = new Uri("http://www.bbc.com/news/technology-32194196");
+            var graph = OpenGraph.ParseUrl(testUri);
+            Assert.AreEqual("http://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg", graph.Image.ToString(), "Unable to extract domain from given Uri.");
         }
 
         [TestMethod]

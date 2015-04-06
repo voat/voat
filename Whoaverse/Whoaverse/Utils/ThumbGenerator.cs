@@ -96,7 +96,8 @@ namespace Voat.Utils
                 // try generating a thumbnail by using the Open Graph Protocol
                 try
                 {
-                    var graph = OpenGraph.ParseUrl(submissionModel.MessageContent);
+                    var graphUri = new Uri(submissionModel.MessageContent);
+                    var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
 
                     // open graph failed to find og:image element, abort thumbnail generation
                     if (graph.Image == null) return null;
@@ -115,7 +116,8 @@ namespace Voat.Utils
             // try generating a thumbnail by using the Open Graph Protocol
             try
             {
-                var graph = OpenGraph.ParseUrl(submissionModel.MessageContent);
+                var graphUri = new Uri(submissionModel.MessageContent);
+                var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
 
                 // open graph failed to find og:image element, abort thumbnail generation
                 if (graph.Image == null) return null;
