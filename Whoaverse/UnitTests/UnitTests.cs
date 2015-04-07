@@ -13,10 +13,6 @@ All Rights Reserved.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using HtmlAgilityPack;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenGraph_Net;
 using Voat.Utils;
