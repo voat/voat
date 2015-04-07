@@ -448,6 +448,14 @@
     <Compile Include="Utils\VotingComments.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-144x144-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-152x152-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-180x180-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-72x72-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-76x76-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-precomposed.png" />
     <Content Include="App_Data\WhoaverseDocumentation.xml" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -493,6 +501,7 @@
     <Content Include="Graphics\Badges\voat_cakeday.png" />
     <Content Include="Graphics\edit.png" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Graphics\Icons\touch-icon-192x192.png" />
     <Content Include="Graphics\markdownEditorSprite.png" />
     <Content Include="Graphics\missing_image.png" />
     <Content Include="Graphics\v2_ad.png" />
