@@ -14,6 +14,8 @@ All Rights Reserved.
 
 using System;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Voat.Utils
 {
@@ -28,45 +30,58 @@ namespace Voat.Utils
             var duration = currentDateTime - inPostingDateTime;
             return CalcSubmissionAge(duration);
         }
-        private static string IsPlural(int amount) {
+        private static string IsPlural(int amount)
+        {
             return (amount == 1 ? "" : "s");
         }
-        public static string CalcSubmissionAge(TimeSpan span) {
-            
+        public static string CalcSubmissionAge(TimeSpan span)
+        {
+
             string result = "No idea when this was posted...";
 
-            if (span.TotalDays > 365) { 
+            if (span.TotalDays > 365)
+            {
                 //years
                 double years = Math.Round(span.TotalDays / 365, 1);
                 result = String.Format("{0} year{1}", years, (years > 1.0 ? "s" : ""));
-            } else if (span.TotalDays > 31) { 
+            }
+            else if (span.TotalDays > 31)
+            {
                 //months
                 int months = (int)(span.TotalDays / 31);
                 result = String.Format("{0} month{1}", months, IsPlural(months));
-            } else if (span.TotalHours >= 24) { 
+            }
+            else if (span.TotalHours >= 24)
+            {
                 //days 
                 result = String.Format("{0} day{1}", (int)span.TotalDays, IsPlural((int)span.TotalDays));
-            } else if (span.TotalHours > 1 || Math.Abs(span.TotalHours - 1) < Tolerance) {
+            }
+            else if (span.TotalHours > 1 || Math.Abs(span.TotalHours - 1) < Tolerance)
+            {
                 //hours
                 result = String.Format("{0} hour{1}", (int)span.TotalHours, IsPlural((int)span.TotalHours));
-            } else if (span.TotalSeconds >= 60) {
+            }
+            else if (span.TotalSeconds >= 60)
+            {
                 //minutes
                 result = String.Format("{0} minute{1}", (int)span.TotalMinutes, IsPlural((int)span.TotalMinutes));
-            } else {
+            }
+            else
+            {
                 //seconds
                 result = String.Format("{0} second{1}", (int)span.TotalSeconds, IsPlural((int)span.TotalSeconds));
             }
 
             return result;
         }
-        
+
         // calculate submission age in hours from posting date for ranking purposes
         public static double CalcSubmissionAgeDouble(DateTime inPostingDateTime)
         {
             var currentDateTime = DateTime.Now;
             var duration = currentDateTime - inPostingDateTime;
 
-            return duration.TotalHours;            
+            return duration.TotalHours;
         }
 
         // check if a string contains unicode characters
@@ -75,6 +90,12 @@ namespace Voat.Utils
             const int maxAnsiCode = 255;
             return stringToTest.Any(c => c > maxAnsiCode);
         }
-        
+
+        // string unicode characters from a string
+        public static string StripUnicode(string stringToClean)
+        {
+            return Regex.Replace(stringToClean, @"[^\u0000-\u007F]", string.Empty);
+        }
+
     }
 }

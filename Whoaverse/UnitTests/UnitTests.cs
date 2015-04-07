@@ -13,6 +13,10 @@ All Rights Reserved.
 */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using HtmlAgilityPack;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenGraph_Net;
 using Voat.Utils;
@@ -110,6 +114,15 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void TestGetTitleFromUri()
+        {
+            const string testUri = "http://www.google.com";
+            string result = UrlUtility.GetTitleFromUri(testUri);
+
+            Assert.AreEqual("Google", result, "Unable to extract title from given Uri.");
+        }
+
+        [TestMethod]
         public void TestGetOpenGraphImageFromUri()
         {
             Uri testUri = new Uri("http://www.bbc.com/news/technology-32194196");
@@ -144,6 +157,16 @@ namespace UnitTests
 
             bool resultWithoutUnicode = Submissions.ContainsUnicode(testStringWithoutUnicode);
             Assert.IsFalse(resultWithoutUnicode, "Unicode was not detected.");
+        }
+
+        [TestMethod]
+        public void TestUnicodeStripping()
+        {
+            const string testString = "NSA holds info over US citizens like loaded gun, but says ‘trust me’ – Snowden";
+            const string testStringWithoutUnicode = "NSA holds info over US citizens like loaded gun, but says trust me  Snowden";
+
+            string result = Submissions.StripUnicode(testString);
+            Assert.IsTrue(result.Equals(testStringWithoutUnicode));
         }
 
     }

@@ -213,16 +213,15 @@ namespace Voat.Controllers
             // generate a thumbnail if submission is a direct link to image or video
             if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
             {
-                // abort if title contains unicode
+                // strip unicode if title contains unicode
                 if (Submissions.ContainsUnicode(message.Linkdescription))
                 {
-                    ModelState.AddModelError(string.Empty, "Sorry, the link description may not contain unicode characters.");
-                    return View("Submit");
+                    message.Linkdescription = Submissions.StripUnicode(message.Linkdescription);
                 }
                 // abort if title less than 10 characters
                 if (message.Linkdescription.Length < 10)
                 {
-                    ModelState.AddModelError(string.Empty, "Sorry, the link description may not be less than 10 characters.");
+                    ModelState.AddModelError(string.Empty, "Sorry, the title may not be less than 10 characters.");
                     return View("Submit");
                 }
 
@@ -300,11 +299,10 @@ namespace Voat.Controllers
             {
                 // submission is a self post
 
-                // abort if title contains unicode
+                // strip unicode if message contains unicode
                 if (Submissions.ContainsUnicode(message.Title))
                 {
-                    ModelState.AddModelError(string.Empty, "Sorry, the message title may not contain unicode characters.");
-                    return View("Submit");
+                    message.Title = Submissions.StripUnicode(message.Title);
                 }
                 // abort if title less than 10 characters
                 if (message.Title.Length < 10)

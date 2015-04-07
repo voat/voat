@@ -16,8 +16,11 @@ using System.Web;
 using OpenGraph_Net;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace Voat.Utils
 {
@@ -43,7 +46,8 @@ namespace Voat.Utils
         {
             try
             {
-                var graph = OpenGraph.ParseUrl(@remoteUri);
+                // try using Open Graph to get target page title
+                var graph = OpenGraph.ParseUrl(@remoteUri, "Voat.co OpenGraph Parser");
                 if (!string.IsNullOrEmpty(graph.Title))
                 {
                     var tmpStringWriter = new StringWriter();
@@ -51,29 +55,22 @@ namespace Voat.Utils
                     return tmpStringWriter.ToString();
                 }
 
-                var req = (HttpWebRequest)WebRequest.Create(@remoteUri);
-                req.Timeout = 3000;
-                var sr = new StreamReader(req.GetResponse().GetResponseStream());
+                // Open Graph parsing failed, try getting HTML TITLE tag instead
+                HtmlWeb htmlWeb = new HtmlWeb();
+                HtmlDocument htmlDocument = htmlWeb.Load(@remoteUri);
 
-                var buffer = new Char[256];
-                var counter = sr.Read(buffer, 0, 256);
-                while (counter > 0)
+                if (htmlDocument != null)
                 {
-                    var outputData = new String(buffer, 0, counter);
-                    var match = Regex.Match(outputData, @"<title>([^<]+)", RegexOptions.IgnoreCase);
-                    if (match.Success)
+                    var titleNode = htmlDocument.DocumentNode.Descendants("title").SingleOrDefault();
+                    if (titleNode != null)
                     {
-                        var tmpStringWriter = new StringWriter();
-                        HttpUtility.HtmlDecode(match.Groups[1].Value, tmpStringWriter);
-                        return tmpStringWriter.ToString();
+                        return titleNode.InnerText;
                     }
-                    counter = sr.Read(buffer, 0, 256);
                 }
 
                 return null;
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }            
