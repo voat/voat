@@ -13,12 +13,15 @@ Voat uses SQL server and .NET framework 4.5.
 
 The following 3rd party libraries/extensions are used:
 
-- Markdowndeep (http://www.toptensoftware.com/markdowndeep/)
-- Bootstrap (http://getbootstrap.com/)
-- jQuery (http://jquery.com/)
-- Entity Framework (https://entityframework.codeplex.com/)
+- Markdowndeep (http://www.toptensoftware.com/markdowndeep)
+- Entity Framework (https://entityframework.codeplex.com)
 - WebApiThrottle (https://github.com/stefanprodan/WebApiThrottle)
 - SignalR (https://github.com/SignalR/SignalR)
+- OpenGraph-Net (https://github.com/ghorsey/OpenGraph-Net)
+- .NET Image Library (https://www.nuget.org/packages/ImageLibrary)
+- HtmlAgilityPack (http://www.nuget.org/packages/HtmlAgilityPack)
+- Bootstrap (http://getbootstrap.com)
+- jQuery (http://jquery.com)
 
 ### Installation instructions
 Follow these steps to get up and running:
@@ -54,16 +57,21 @@ After creating your subverse, you can visit it (localhost/v/yourtestsubverse) an
 This was just a hobby project to help me get a better understanding of C# and ASP.NET MVC and Entity Framework.
 
 ### How does Voat differ from related projects?
-- Voat has increased focus on users privacy. It enables users to delete their account by automatically overwriting every comment and every submission the user has made with a string "deleted", before proceeding to remove the user account from user credentials database. 
+- based in Switzerland, no censorship policy as long as content is legal in Switzerland
+- ad revenue sharing model (in development, we will disclose more details soon) where community is rewarded with real money for quality original content
+- deterministically scaling voting quota
+- limited voting (new users need to gain a certain amount of points before they are able to vote without restrictions)
+- limited number of owned/moderated subs per user (10)
+- voat has increased focus on privacy. It enables users to delete their account by automatically overwriting every comment and every submission the user has made with a string "deleted", before proceeding to remove the user account from user credentials database. 
 - built-in night mode
+- subverse set system similar to the one used on Google News
+- realtime notifications for user mentions, post and comment replies
+- realtime chat for every subverse
+- markdown toolbar for user friendly text editing
+- automatic expando creation for many popular services
 - anonymized mode: subverse owners can irreversibly convert their subverse to anonymized mode which hides all usernames and disables all voting actions within that subverse
 - responsive design which works great on mobile out of the box
-- limited voting (new users need to gain a certain amount of points before they are able to vote without restrictions)
-- limited number of owned subs per user
-- a score bar which graphically shows percentage of upvotes/downvotes
-- user profiles which show statistics about user activity, for example, submission distribution and highest-lowest rated submissions
-- ad revenue sharing model (in development, we will disclose more details soon) where community is rewarded with real money
-- based in Switzerland, no censorship policy as long as content is legal in Switzerland
+- user profiles show statistics about user activity, for example, submission distribution and highest-lowest rated submissions and a short biography with avatar
 
 ### What does the future hold?
 Voat aims to make a media aggregator platform with new ideas and unique features that set Voat apart from similar platforms.
