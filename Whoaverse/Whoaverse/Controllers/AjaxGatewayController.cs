@@ -103,7 +103,7 @@ namespace Voat.Controllers
             {
                 var resultList = new List<string>
                 {
-                    UrlUtility.GetTitleFromUri(uri)
+                    title
                 };
 
                 return Json(resultList, JsonRequestBehavior.AllowGet);
