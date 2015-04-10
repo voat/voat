@@ -348,7 +348,7 @@ namespace Voat.Controllers
                         commentToDelete.Name,
                         "Your comment has been deleted by a moderator",
                         "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.MessageId + "/" + commentToDelete.Id + ") has been deleted by: " +
-                        "[" + User.Identity.Name + "](/user/" + User.Identity.Name + ")" + " on: " + DateTime.Now + "  " + Environment.NewLine +
+                        "/u/" + User.Identity.Name + " on: " + DateTime.Now + "  " + Environment.NewLine +
                         "Original comment content was: " + Environment.NewLine +
                         "---" + Environment.NewLine +
                         commentToDelete.CommentContent
