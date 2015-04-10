@@ -233,7 +233,7 @@ namespace Voat.Controllers
                             submissionToDelete.Name,
                             "Your submission has been deleted by a moderator",
                             "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.Id + ") has been deleted by: " +
-                            "[" + User.Identity.Name + "](/user/" + User.Identity.Name + ")" + " at " + DateTime.Now + "  " + Environment.NewLine +
+                            "/u/" + User.Identity.Name + User.Identity.Name + ")" + " at " + DateTime.Now + "  " + Environment.NewLine +
                             "Original submission content was: " + Environment.NewLine +
                             "---" + Environment.NewLine +
                             "Link description: " + submissionToDelete.Linkdescription + ", " + Environment.NewLine +
