@@ -480,7 +480,7 @@
     <Key>
       <PropertyRef Name="Id" />
     </Key>
-    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="MessageId" Type="int" Nullable="false" />
     <Property Name="UserName" Type="nvarchar" Nullable="true" MaxLength="50" />
     <Property Name="SaveStatus" Type="bit" Nullable="false" />
@@ -490,7 +490,7 @@
     <Key>
       <PropertyRef Name="Id" />
     </Key>
-    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="CommentId" Type="int" Nullable="false" />
     <Property Name="UserName" Type="nvarchar" Nullable="true" MaxLength="50" />
     <Property Name="SaveStatus" Type="bit" Nullable="false" />
@@ -1537,7 +1537,7 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Nullable="false" Type="Int32" />
+          <Property Name="Id" Nullable="false" Type="Int32" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MessageId" Type="Int32" Nullable="false" />
           <Property Name="UserName" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="SaveStatus" Type="Boolean" Nullable="false" />
@@ -1548,7 +1548,7 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CommentId" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="SaveStatus" Type="Boolean" Nullable="false" />

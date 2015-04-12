@@ -407,12 +407,15 @@ namespace Voat.Controllers
                 var submissionIds = new List<int>(savedSubmissions.Keys);
                 var commentIds = new List<int>(savedComments.Keys);
 
-                var submissionsSavedByUser = _db.Messages.Where(submission => submissionIds.Contains(submission.Id));
+                var submissionsSavedByUser = _db.Messages.Where(submission => submissionIds.Contains(submission.Id)).ToList();
 
-                var commentsSavedByUser = _db.Comments.Where(comment => commentIds.Contains(comment.Id));
+                var commentsSavedByUser = _db.Comments.Where(comment => commentIds.Contains(comment.Id)).ToList();
 
                 //Merge submissions and comments into one list sorted by date
                 var mergedSubmissionsAndComments = new List<Object>();
+
+                submissionsSavedByUser.Sort((a, b) => savedSubmissions[a.Id].CompareTo(savedSubmissions[b.Id]));
+                commentsSavedByUser.Sort((a, b) => savedComments[a.Id].CompareTo(savedComments[b.Id]));
 
                 var subEnumerator = submissionsSavedByUser.GetEnumerator();
                 var hasNextSubmission = subEnumerator.MoveNext();

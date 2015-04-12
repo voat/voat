@@ -135,7 +135,15 @@
                     }
 
                 </li>
-               
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (Model.Name != "deleted")
+                    {
+                        <li>
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
+                        </li>
+                    }
+                }
             </ul>
             <div class="expando" style="display: none">
                 <form style="" novalidate="novalidate" class="usertext" action="#">
