@@ -19,6 +19,7 @@ namespace Voat.Models
             this.Likes = 1;
             this.Dislikes = 0;
             this.Commentvotingtrackers = new HashSet<Commentvotingtracker>();
+            this.Commentsavingtrackers = new HashSet<Commentsavingtracker>();
         }
     
         public int Id { get; set; }
@@ -36,5 +37,6 @@ namespace Voat.Models
     
         public virtual Message Message { get; set; }
         public virtual ICollection<Commentvotingtracker> Commentvotingtrackers { get; set; }
+        public virtual ICollection<Commentsavingtracker> Commentsavingtrackers { get; set; }
     }
 }

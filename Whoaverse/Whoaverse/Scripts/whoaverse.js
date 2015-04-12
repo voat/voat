@@ -1292,3 +1292,33 @@ function toggleNightMode() {
         }
     });
 }
+
+function toggleSaveSubmission(submissionId) {
+    var saveLink = $(".submission.id-" + submissionId + " .savelink");
+    if (saveLink.exists()) {
+        if (saveLink.text() === "save") {
+            saveLink.text("unsave");
+        } else {
+            saveLink.text("save");
+        }
+        $.ajax({
+            type: "POST",
+            url: "/save/" + submissionId
+        });
+    }
+}
+
+function toggleSaveComment(commentId) {
+    var saveLink = $(".comment.id-" + commentId + " .savelink");
+    if (saveLink.exists()) {
+        if (saveLink.text() === "save") {
+            saveLink.text("unsave");
+        } else {
+            saveLink.text("save");
+        }
+        $.ajax({
+            type: "POST",
+            url: "/savecomment/" + commentId
+        });
+    }
+}

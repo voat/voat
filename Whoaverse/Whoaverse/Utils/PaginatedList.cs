@@ -36,6 +36,16 @@ namespace Voat.Utils
             AddRange(source.Skip(PageIndex * PageSize).Take(PageSize));
         }
 
+        public PaginatedList(List<T> source, int pageIndex, int pageSize)
+        {
+            PageIndex = pageIndex;
+            PageSize = pageSize;
+            TotalCount = source.Count();
+            TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
+
+            AddRange(source.Skip(PageIndex * PageSize).Take(PageSize));
+        }
+
         public bool HasPreviousPage
         {
             get

@@ -14,6 +14,7 @@
     string classOverview = "disabled";
     string classComments = "disabled";
     string classSubmissions = "disabled";
+    string classSaved = "disabled";
     var selectedUser = ViewBag.selectedUser;
     var whattodisplay = ViewBag.whattodisplay;
 
@@ -24,18 +25,30 @@
             classComments = "selected";
             classOverview = "disabled";
             classSubmissions = "disabled";
+            classSaved = "disabled";
         }
         if (whattodisplay == "overview")
         {
             classComments = "disabled";
             classOverview = "selected";
             classSubmissions = "disabled";
+            classSaved = "disabled";
+
         }
         if (whattodisplay == "submissions")
         {
             classComments = "disabled";
             classOverview = "disabled";
             classSubmissions = "selected";
+            classSaved = "disabled";
+
+        }
+        if (whattodisplay == "saved")
+        {
+            classComments = "disabled";
+            classOverview = "disabled";
+            classSubmissions = "disabled";
+            classSaved = "selected";
         }
     }
 }
@@ -44,4 +57,11 @@
     <li class="@classOverview"><a href="~/user/@selectedUser">Overview</a></li>
     <li class="@classComments"><a href="~/user/@selectedUser/comments">Comments</a></li>
     <li class="@classSubmissions"><a href="~/user/@selectedUser/submissions">Submissions</a></li>
+    @if (User.Identity.IsAuthenticated)
+    {
+        if (User.Identity.Name == selectedUser)
+        {
+            <li class="@classSaved"><a href="~/user/@selectedUser/saved">Saved</a></li>
+        }
+    }
 </ul>

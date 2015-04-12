@@ -4,707 +4,773 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="whoaverseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Badges">
-          <Key>
-            <PropertyRef Name="BadgeId" />
-          </Key>
-          <Property Name="BadgeId" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="BadgeGraphics" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="BadgeTitle" Type="nvarchar" MaxLength="300" Nullable="false" />
-          <Property Name="BadgeName" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Banneddomains">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Hostname" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Added_by" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Added_on" Type="datetime" Nullable="false" />
-          <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Bannedusers">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Date_banned" Type="datetime" Nullable="false" />
-          <Property Name="Reason" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Banned_by" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Commentreplynotifications">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CommentId" Type="int" Nullable="false" />
-          <Property Name="SubmissionId" Type="int" Nullable="false" />
-          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
-          <Property Name="Status" Type="bit" Nullable="false" />
-          <Property Name="Timestamp" Type="datetime" Nullable="false" />
-          <Property Name="Markedasunread" Type="bit" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Comments">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Votes" Type="int" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CommentContent" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Date" Type="datetime" Nullable="false" />
-          <Property Name="LastEditDate" Type="datetime" />
-          <Property Name="MessageId" Type="int" />
-          <Property Name="Likes" Type="bigint" Nullable="false" />
-          <Property Name="Dislikes" Type="bigint" Nullable="false" />
-          <Property Name="ParentId" Type="int" />
-          <Property Name="Anonymized" Type="bit" Nullable="false" />
-          <Property Name="IsDistinguished" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Commentvotingtracker">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CommentId" Type="int" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
-          <Property Name="VoteStatus" Type="int" />
-          <Property Name="Timestamp" Type="datetime" />
-        </EntityType>
-        <EntityType Name="Defaultsubverses">
-          <Key>
-            <PropertyRef Name="name" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="position" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Featuredsubs">
-          <Key>
-            <PropertyRef Name="Feature_id" />
-          </Key>
-          <Property Name="Feature_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subname" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Featured_by" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Featured_on" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Messages">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Votes" Type="int" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="MessageContent" Type="nvarchar(max)" />
-          <Property Name="Date" Type="datetime" Nullable="false" />
-          <Property Name="Type" Type="int" Nullable="false" />
-          <Property Name="Linkdescription" Type="nvarchar" MaxLength="200" />
-          <Property Name="Title" Type="nvarchar" MaxLength="200" />
-          <Property Name="Rank" Type="float" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" />
-          <Property Name="Likes" Type="bigint" Nullable="false" />
-          <Property Name="Dislikes" Type="bigint" Nullable="false" />
-          <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
-          <Property Name="LastEditDate" Type="datetime" />
-          <Property Name="FlairLabel" Type="nvarchar" MaxLength="50" />
-          <Property Name="FlairCss" Type="nvarchar" MaxLength="50" />
-          <Property Name="Anonymized" Type="bit" Nullable="false" />
-          <Property Name="Views" Type="float" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Moderatorinvitations">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Sent_by" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Sent_on" Type="datetime" Nullable="false" />
-          <Property Name="Sent_to" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Power" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Postreplynotifications">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CommentId" Type="int" Nullable="false" />
-          <Property Name="SubmissionId" Type="int" Nullable="false" />
-          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
-          <Property Name="Status" Type="bit" Nullable="false" />
-          <Property Name="Timestamp" Type="datetime" Nullable="false" />
-          <Property Name="Markedasunread" Type="bit" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Privatemessages">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Timestamp" Type="datetime" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
-          <Property Name="Status" Type="bit" Nullable="false" />
-          <Property Name="Markedasunread" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Promotedsubmissions">
-          <Key>
-            <PropertyRef Name="promoted_submission_id" />
-          </Key>
-          <Property Name="promoted_submission_id" Type="int" Nullable="false" />
-          <Property Name="promoted_by" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Savedsubmissions">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="SubmissionId" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Sessiontracker">
-          <Key>
-            <PropertyRef Name="SessionId" />
-            <PropertyRef Name="Subverse" />
-          </Key>
-          <Property Name="SessionId" Type="nvarchar" MaxLength="90" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Timestamp" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Stickiedsubmissions">
-          <Key>
-            <PropertyRef Name="Submission_id" />
-          </Key>
-          <Property Name="Submission_id" Type="int" Nullable="false" />
-          <Property Name="Subversename" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Stickied_by" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Stickied_date" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="SubmissionRemovalLog">
-          <Key>
-            <PropertyRef Name="SubmissionId" />
-          </Key>
-          <Property Name="SubmissionId" Type="int" Nullable="false" />
-          <Property Name="Moderator" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="RemovalTimestamp" Type="datetime" Nullable="false" />
-          <Property Name="ReasonForRemoval" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Subscriptions">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
-        <EntityType Name="SubverseAdmins">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Power" Type="int" Nullable="false" />
-          <Property Name="Added_by" Type="nvarchar" MaxLength="50" />
-          <Property Name="Added_on" Type="datetime" />
-        </EntityType>
-        <EntityType Name="SubverseBans">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="BannedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="BanAddedOn" Type="datetime" Nullable="false" />
-          <Property Name="BanReason" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Subverseflairsettings">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subversename" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Label" Type="nvarchar" MaxLength="50" />
-          <Property Name="CssClass" Type="nvarchar" MaxLength="50" />
-        </EntityType>
-        <EntityType Name="Subverses">
-          <Key>
-            <PropertyRef Name="name" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="title" Type="nvarchar" MaxLength="500" Nullable="false" />
-          <Property Name="description" Type="nvarchar" MaxLength="500" />
-          <Property Name="sidebar" Type="nvarchar" MaxLength="4000" />
-          <Property Name="submission_text" Type="nvarchar" MaxLength="500" />
-          <Property Name="language" Type="nvarchar" MaxLength="10" />
-          <Property Name="type" Type="nvarchar" MaxLength="10" Nullable="false" />
-          <Property Name="label_submit_new_link" Type="nvarchar" MaxLength="50" />
-          <Property Name="label_sumit_new_selfpost" Type="nvarchar" MaxLength="50" />
-          <Property Name="spam_filter_links" Type="nvarchar" MaxLength="10" />
-          <Property Name="spam_filter_selfpost" Type="nvarchar" MaxLength="10" />
-          <Property Name="spam_filter_comments" Type="nvarchar" MaxLength="10" />
-          <Property Name="rated_adult" Type="bit" Nullable="false" />
-          <Property Name="allow_default" Type="bit" Nullable="false" />
-          <Property Name="enable_thumbnails" Type="bit" Nullable="false" />
-          <Property Name="exclude_sitewide_bans" Type="bit" Nullable="false" />
-          <Property Name="traffic_stats_public" Type="bit" />
-          <Property Name="minutes_to_hide_comments" Type="int" />
-          <Property Name="creation_date" Type="datetime" Nullable="false" />
-          <Property Name="stylesheet" Type="nvarchar(max)" />
-          <Property Name="subscribers" Type="int" />
-          <Property Name="private_subverse" Type="bit" Nullable="false" />
-          <Property Name="authorized_submitters_only" Type="bit" Nullable="false" />
-          <Property Name="anonymized_mode" Type="bit" Nullable="false" />
-          <Property Name="last_submission_received" Type="datetime" />
-          <Property Name="minimumdownvoteccp" Type="int" />
-        </EntityType>
-        <EntityType Name="Survey">
-          <Key>
-            <PropertyRef Name="Username" />
-          </Key>
-          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Interested_in_content_creation" Type="bit" Nullable="false" />
-          <Property Name="Interested_in_commenting" Type="bit" Nullable="false" />
-          <Property Name="Interested_in_donating_earnings" Type="bit" Nullable="false" />
-          <Property Name="Preferred_payment_method" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Interested_in_bitcoin_payout" Type="bit" Nullable="false" />
-          <Property Name="Country" Type="nvarchar" MaxLength="50" />
-          <Property Name="City" Type="nvarchar" MaxLength="50" />
-          <Property Name="Date_submitted" Type="datetime" Nullable="false" />
-          <Property Name="Wants_to_be_contacted_at_service_launch" Type="bit" Nullable="false" />
-          <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Wants_to_subscribe_to_whoaverse_news" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Userbadges">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="BadgeId" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Awarded" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Userpreferences">
-          <Key>
-            <PropertyRef Name="Username" />
-          </Key>
-          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Disable_custom_css" Type="bit" Nullable="false" />
-          <Property Name="Night_mode" Type="bit" Nullable="false" />
-          <Property Name="Language" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Clicking_mode" Type="bit" Nullable="false" />
-          <Property Name="Enable_adult_content" Type="bit" Nullable="false" />
-          <Property Name="Public_votes" Type="bit" Nullable="false" />
-          <Property Name="Public_subscriptions" Type="bit" Nullable="false" />
-          <Property Name="Topmenu_from_subscriptions" Type="bit" Nullable="false" />
-          <Property Name="Shortbio" Type="nvarchar" MaxLength="100" />
-          <Property Name="Avatar" Type="nvarchar" MaxLength="50" />
-        </EntityType>
-        <EntityType Name="Usersetdefinitions">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Set_id" Type="int" Nullable="false" />
-          <Property Name="Subversename" Type="nvarchar" MaxLength="20" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Usersets">
-          <Key>
-            <PropertyRef Name="Set_id" />
-          </Key>
-          <Property Name="Set_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="Created_by" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Created_on" Type="datetime" Nullable="false" />
-          <Property Name="Public" Type="bit" Nullable="false" />
-          <Property Name="Subscribers" Type="int" Nullable="false" />
-          <Property Name="Default" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Usersetsubscriptions">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Set_id" Type="int" Nullable="false" />
-          <Property Name="Order" Type="int" Nullable="false" />
-          <Property Name="Username" Type="nvarchar" MaxLength="20" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Viewstatistics">
-          <Key>
-            <PropertyRef Name="submissionId" />
-            <PropertyRef Name="viewerId" />
-          </Key>
-          <Property Name="submissionId" Type="int" Nullable="false" />
-          <Property Name="viewerId" Type="nvarchar" MaxLength="90" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Votingtracker">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="MessageId" Type="int" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
-          <Property Name="VoteStatus" Type="int" />
-          <Property Name="Timestamp" Type="datetime" />
-        </EntityType>
-        <Association Name="FK_Comments_Messages">
-          <End Role="Messages" Type="Self.Messages" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Comments" Type="Self.Comments" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Messages">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Comments">
-              <PropertyRef Name="MessageId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Commentvotingtracker_Comments">
-          <End Role="Comments" Type="Self.Comments" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Commentvotingtracker" Type="Self.Commentvotingtracker" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Comments">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Commentvotingtracker">
-              <PropertyRef Name="CommentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Defaultsubverses_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Defaultsubverses" Type="Self.Defaultsubverses" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="Defaultsubverses">
-              <PropertyRef Name="name" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Featuredsubs_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1" />
-          <End Role="Featuredsubs" Type="Self.Featuredsubs" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="Featuredsubs">
-              <PropertyRef Name="Subname" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Messages_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="Messages">
-              <PropertyRef Name="Subverse" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Stickiedsubmissions_Messages">
-          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
-          <End Role="Stickiedsubmissions" Type="Self.Stickiedsubmissions" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="Messages">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Stickiedsubmissions">
-              <PropertyRef Name="Submission_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Stickiedsubmissions_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1" />
-          <End Role="Stickiedsubmissions" Type="Self.Stickiedsubmissions" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="Stickiedsubmissions">
-              <PropertyRef Name="Subversename" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SubmissionRemovalLog_Messages">
-          <End Role="Messages" Type="Self.Messages" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="SubmissionRemovalLog" Type="Self.SubmissionRemovalLog" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="Messages">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="SubmissionRemovalLog">
-              <PropertyRef Name="SubmissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Subscriptions_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Subscriptions" Type="Self.Subscriptions" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="Subscriptions">
-              <PropertyRef Name="SubverseName" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SubverseAdmins_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="SubverseAdmins" Type="Self.SubverseAdmins" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="SubverseAdmins">
-              <PropertyRef Name="SubverseName" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SubverseBans_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1" />
-          <End Role="SubverseBans" Type="Self.SubverseBans" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="SubverseBans">
-              <PropertyRef Name="SubverseName" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Subverseflairsettings_Subverses1">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Subverseflairsettings" Type="Self.Subverseflairsettings" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="Subverseflairsettings">
-              <PropertyRef Name="Subversename" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Userbadges_Badges">
-          <End Role="Badges" Type="Self.Badges" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Userbadges" Type="Self.Userbadges" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Badges">
-              <PropertyRef Name="BadgeId" />
-            </Principal>
-            <Dependent Role="Userbadges">
-              <PropertyRef Name="BadgeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Usersetdefinitions_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Usersetdefinitions" Type="Self.Usersetdefinitions" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverses">
-              <PropertyRef Name="name" />
-            </Principal>
-            <Dependent Role="Usersetdefinitions">
-              <PropertyRef Name="Subversename" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Usersetdefinitions_Usersets">
-          <End Role="Usersets" Type="Self.Usersets" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Usersetdefinitions" Type="Self.Usersetdefinitions" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Usersets">
-              <PropertyRef Name="Set_id" />
-            </Principal>
-            <Dependent Role="Usersetdefinitions">
-              <PropertyRef Name="Set_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Usersetsubscriptions_Usersets">
-          <End Role="Usersets" Type="Self.Usersets" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Usersetsubscriptions" Type="Self.Usersetsubscriptions" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Usersets">
-              <PropertyRef Name="Set_id" />
-            </Principal>
-            <Dependent Role="Usersetsubscriptions">
-              <PropertyRef Name="Set_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Viewstatistics_Messages">
-          <End Role="Messages" Type="Self.Messages" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Viewstatistics" Type="Self.Viewstatistics" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Messages">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Viewstatistics">
-              <PropertyRef Name="submissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Votingtracker_Messages">
-          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
-          <End Role="Votingtracker" Type="Self.Votingtracker" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Messages">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Votingtracker">
-              <PropertyRef Name="MessageId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityContainer Name="whoaverseModelStoreContainer">
-          <EntitySet Name="Badges" EntityType="Self.Badges" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Banneddomains" EntityType="Self.Banneddomains" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Bannedusers" EntityType="Self.Bannedusers" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Commentreplynotifications" EntityType="Self.Commentreplynotifications" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Featuredsubs" EntityType="Self.Featuredsubs" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Moderatorinvitations" EntityType="Self.Moderatorinvitations" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Postreplynotifications" EntityType="Self.Postreplynotifications" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Privatemessages" EntityType="Self.Privatemessages" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Promotedsubmissions" EntityType="Self.Promotedsubmissions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Savedsubmissions" EntityType="Self.Savedsubmissions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Sessiontracker" EntityType="Self.Sessiontracker" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Stickiedsubmissions" EntityType="Self.Stickiedsubmissions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="SubmissionRemovalLog" EntityType="Self.SubmissionRemovalLog" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmins" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="SubverseBans" EntityType="Self.SubverseBans" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Subverseflairsettings" EntityType="Self.Subverseflairsettings" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Userbadges" EntityType="Self.Userbadges" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Userpreferences" EntityType="Self.Userpreferences" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Usersetdefinitions" EntityType="Self.Usersetdefinitions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Usersets" EntityType="Self.Usersets" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Usersetsubscriptions" EntityType="Self.Usersetsubscriptions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Viewstatistics" EntityType="Self.Viewstatistics" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Votingtracker" EntityType="Self.Votingtracker" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_Comments_Messages" Association="Self.FK_Comments_Messages">
-            <End Role="Messages" EntitySet="Messages" />
-            <End Role="Comments" EntitySet="Comments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Commentvotingtracker_Comments" Association="Self.FK_Commentvotingtracker_Comments">
-            <End Role="Comments" EntitySet="Comments" />
-            <End Role="Commentvotingtracker" EntitySet="Commentvotingtracker" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="Self.FK_Defaultsubverses_Subverses">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="Defaultsubverses" EntitySet="Defaultsubverses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Featuredsubs_Subverses" Association="Self.FK_Featuredsubs_Subverses">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="Featuredsubs" EntitySet="Featuredsubs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Messages_Subverses" Association="Self.FK_Messages_Subverses">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="Messages" EntitySet="Messages" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Stickiedsubmissions_Messages" Association="Self.FK_Stickiedsubmissions_Messages">
-            <End Role="Messages" EntitySet="Messages" />
-            <End Role="Stickiedsubmissions" EntitySet="Stickiedsubmissions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Stickiedsubmissions_Subverses" Association="Self.FK_Stickiedsubmissions_Subverses">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="Stickiedsubmissions" EntitySet="Stickiedsubmissions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SubmissionRemovalLog_Messages" Association="Self.FK_SubmissionRemovalLog_Messages">
-            <End Role="Messages" EntitySet="Messages" />
-            <End Role="SubmissionRemovalLog" EntitySet="SubmissionRemovalLog" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Subscriptions_Subverses" Association="Self.FK_Subscriptions_Subverses">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="Subscriptions" EntitySet="Subscriptions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="Self.FK_SubverseAdmins_Subverses">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="SubverseAdmins" EntitySet="SubverseAdmins" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SubverseBans_Subverses" Association="Self.FK_SubverseBans_Subverses">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="SubverseBans" EntitySet="SubverseBans" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="Self.FK_Subverseflairsettings_Subverses1">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="Subverseflairsettings" EntitySet="Subverseflairsettings" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Userbadges_Badges" Association="Self.FK_Userbadges_Badges">
-            <End Role="Badges" EntitySet="Badges" />
-            <End Role="Userbadges" EntitySet="Userbadges" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Usersetdefinitions_Subverses" Association="Self.FK_Usersetdefinitions_Subverses">
-            <End Role="Subverses" EntitySet="Subverses" />
-            <End Role="Usersetdefinitions" EntitySet="Usersetdefinitions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Usersetdefinitions_Usersets" Association="Self.FK_Usersetdefinitions_Usersets">
-            <End Role="Usersets" EntitySet="Usersets" />
-            <End Role="Usersetdefinitions" EntitySet="Usersetdefinitions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Usersetsubscriptions_Usersets" Association="Self.FK_Usersetsubscriptions_Usersets">
-            <End Role="Usersets" EntitySet="Usersets" />
-            <End Role="Usersetsubscriptions" EntitySet="Usersetsubscriptions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Viewstatistics_Messages" Association="Self.FK_Viewstatistics_Messages">
-            <End Role="Messages" EntitySet="Messages" />
-            <End Role="Viewstatistics" EntitySet="Viewstatistics" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Votingtracker_Messages" Association="Self.FK_Votingtracker_Messages">
-            <End Role="Messages" EntitySet="Messages" />
-            <End Role="Votingtracker" EntitySet="Votingtracker" />
-          </AssociationSet>
-        </EntityContainer>
-      </Schema></edmx:StorageModels>
+    <Schema Namespace="whoaverseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="whoaverseModelStoreContainer">
+    <EntitySet Name="Comments" EntityType="whoaverseModel.Store.Comments" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Commentvotingtrackers" EntityType="whoaverseModel.Store.Commentvotingtrackers" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Messages" EntityType="whoaverseModel.Store.Messages" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Votingtrackers" EntityType="whoaverseModel.Store.Votingtrackers" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Subverses" EntityType="whoaverseModel.Store.Subverses" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Defaultsubverses" EntityType="whoaverseModel.Store.Defaultsubverses" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="SubverseAdmins" EntityType="whoaverseModel.Store.SubverseAdmins" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Promotedsubmissions" EntityType="whoaverseModel.Store.Promotedsubmissions" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Savedsubmissions" EntityType="whoaverseModel.Store.Savedsubmissions" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Subscriptions" EntityType="whoaverseModel.Store.Subscriptions" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Badges" EntityType="whoaverseModel.Store.Badges" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Userbadges" EntityType="whoaverseModel.Store.Userbadges" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Banneddomains" EntityType="whoaverseModel.Store.Banneddomains" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Privatemessages" EntityType="whoaverseModel.Store.Privatemessages" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Commentreplynotifications" EntityType="whoaverseModel.Store.Commentreplynotifications" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Postreplynotifications" EntityType="whoaverseModel.Store.Postreplynotifications" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Userpreferences" EntityType="whoaverseModel.Store.Userpreferences" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Subverseflairsettings" EntityType="whoaverseModel.Store.Subverseflairsettings" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Stickiedsubmissions" EntityType="whoaverseModel.Store.Stickiedsubmissions" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Bannedusers" EntityType="whoaverseModel.Store.Bannedusers" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Surveys" EntityType="whoaverseModel.Store.Surveys" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Featuredsubs" EntityType="whoaverseModel.Store.Featuredsubs" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Viewstatistics" EntityType="whoaverseModel.Store.Viewstatistics" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Usersetdefinitions" EntityType="whoaverseModel.Store.Usersetdefinitions" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Usersets" EntityType="whoaverseModel.Store.Usersets" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Usersetsubscriptions" EntityType="whoaverseModel.Store.Usersetsubscriptions" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="SubverseBans" EntityType="whoaverseModel.Store.SubverseBans" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Moderatorinvitations" EntityType="whoaverseModel.Store.Moderatorinvitations" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Sessiontrackers" EntityType="whoaverseModel.Store.Sessiontrackers" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="SubmissionRemovalLogs" EntityType="whoaverseModel.Store.SubmissionRemovalLogs" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Savingtrackers" EntityType="whoaverseModel.Store.Savingtrackers" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Commentsavingtrackers" EntityType="whoaverseModel.Store.Commentsavingtrackers" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="FK_Comments_Messages" Association="whoaverseModel.Store.FK_Comments_Messages">
+      <End Role="Messages" EntitySet="Messages" />
+      <End Role="Comments" EntitySet="Comments" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Commentvotingtracker_Comments" Association="whoaverseModel.Store.FK_Commentvotingtracker_Comments">
+      <End Role="Comments" EntitySet="Comments" />
+      <End Role="Commentvotingtracker" EntitySet="Commentvotingtrackers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Votingtracker_Messages" Association="whoaverseModel.Store.FK_Votingtracker_Messages">
+      <End Role="Messages" EntitySet="Messages" />
+      <End Role="Votingtracker" EntitySet="Votingtrackers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Messages_Subverses" Association="whoaverseModel.Store.FK_Messages_Subverses">
+      <End Role="Subverse" EntitySet="Subverses" />
+      <End Role="Message" EntitySet="Messages" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="whoaverseModel.Store.FK_Defaultsubverses_Subverses">
+      <End Role="Subverse" EntitySet="Subverses" />
+      <End Role="Defaultsubvers" EntitySet="Defaultsubverses" />
+    </AssociationSet>
+    <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="whoaverseModel.Store.FK_SubverseAdmins_Subverses">
+      <End Role="Subverse" EntitySet="Subverses" />
+      <End Role="SubverseAdmin" EntitySet="SubverseAdmins" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Userbadges_Badges" Association="whoaverseModel.Store.FK_Userbadges_Badges">
+      <End Role="Badge" EntitySet="Badges" />
+      <End Role="Userbadge" EntitySet="Userbadges" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="whoaverseModel.Store.FK_Subverseflairsettings_Subverses1">
+      <End Role="Subverse" EntitySet="Subverses" />
+      <End Role="Subverseflairsetting" EntitySet="Subverseflairsettings" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Stickiedsubmissions_Messages" Association="whoaverseModel.Store.FK_Stickiedsubmissions_Messages">
+      <End Role="Message" EntitySet="Messages" />
+      <End Role="Stickiedsubmission" EntitySet="Stickiedsubmissions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Stickiedsubmissions_Subverses" Association="whoaverseModel.Store.FK_Stickiedsubmissions_Subverses">
+      <End Role="Subverse" EntitySet="Subverses" />
+      <End Role="Stickiedsubmission" EntitySet="Stickiedsubmissions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Messages_Messages" Association="whoaverseModel.Store.FK_Messages_Messages">
+      <End Role="Message" EntitySet="Messages" />
+      <End Role="Message1" EntitySet="Messages" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Subscriptions_Subverses" Association="whoaverseModel.Store.FK_Subscriptions_Subverses">
+      <End Role="Subverse" EntitySet="Subverses" />
+      <End Role="Subscription" EntitySet="Subscriptions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Featuredsubs_Subverses" Association="whoaverseModel.Store.FK_Featuredsubs_Subverses">
+      <End Role="Subverse" EntitySet="Subverses" />
+      <End Role="Featuredsub" EntitySet="Featuredsubs" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Viewstatistics_Messages" Association="whoaverseModel.Store.FK_Viewstatistics_Messages">
+      <End Role="Message" EntitySet="Messages" />
+      <End Role="Viewstatistic" EntitySet="Viewstatistics" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Usersetdefinitions_Subverses" Association="whoaverseModel.Store.FK_Usersetdefinitions_Subverses">
+      <End Role="Subverse" EntitySet="Subverses" />
+      <End Role="Usersetdefinition" EntitySet="Usersetdefinitions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Usersetdefinitions_Usersets" Association="whoaverseModel.Store.FK_Usersetdefinitions_Usersets">
+      <End Role="Userset" EntitySet="Usersets" />
+      <End Role="Usersetdefinition" EntitySet="Usersetdefinitions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Usersetsubscriptions_Usersets" Association="whoaverseModel.Store.FK_Usersetsubscriptions_Usersets">
+      <End Role="Userset" EntitySet="Usersets" />
+      <End Role="Usersetsubscription" EntitySet="Usersetsubscriptions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_SubverseBans_Subverses" Association="whoaverseModel.Store.FK_SubverseBans_Subverses">
+      <End Role="Subverse" EntitySet="Subverses" />
+      <End Role="SubverseBan" EntitySet="SubverseBans" />
+    </AssociationSet>
+    <AssociationSet Name="FK_SubmissionRemovalLog_Messages" Association="whoaverseModel.Store.FK_SubmissionRemovalLog_Messages">
+      <End Role="Message" EntitySet="Messages" />
+      <End Role="SubmissionRemovalLog" EntitySet="SubmissionRemovalLogs" />
+    </AssociationSet>
+    <AssociationSet Name="CommentCommentsavingtracker" Association="whoaverseModel.Store.CommentCommentsavingtracker">
+      <End Role="Comment" EntitySet="Comments" />
+      <End Role="Commentsavingtracker" EntitySet="Commentsavingtrackers" />
+    </AssociationSet>
+    <AssociationSet Name="MessageSavingtracker" Association="whoaverseModel.Store.MessageSavingtracker">
+      <End Role="Message" EntitySet="Messages" />
+      <End Role="Savingtracker" EntitySet="Savingtrackers" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Comments">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Votes" Type="int" Nullable="true" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Date" Type="datetime" Nullable="false" />
+    <Property Name="MessageId" Type="int" Nullable="true" />
+    <Property Name="CommentContent" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Likes" Type="smallint" Nullable="false" DefaultValue="1" />
+    <Property Name="Dislikes" Type="smallint" Nullable="false" DefaultValue="0" />
+    <Property Name="ParentId" Type="int" Nullable="true" />
+    <Property Name="LastEditDate" Type="datetime" Nullable="true" />
+    <Property Name="Anonymized" Type="bit" Nullable="false" />
+    <Property Name="IsDistinguished" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Commentvotingtrackers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="CommentId" Type="int" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="VoteStatus" Type="int" Nullable="true" />
+    <Property Name="Timestamp" Type="datetime" Nullable="true" />
+  </EntityType>
+  <EntityType Name="Messages">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Votes" Type="smallint" Nullable="true" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Date" Type="datetime" Nullable="false" />
+    <Property Name="Type" Type="int" Nullable="false" />
+    <Property Name="Linkdescription" Type="nvarchar" Nullable="true" MaxLength="200" />
+    <Property Name="Title" Type="nvarchar" Nullable="true" MaxLength="200" />
+    <Property Name="Rank" Type="float" Nullable="false" DefaultValue="0" />
+    <Property Name="MessageContent" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Subverse" Type="nvarchar" Nullable="true" MaxLength="20" />
+    <Property Name="Likes" Type="smallint" Nullable="false" DefaultValue="1" />
+    <Property Name="Dislikes" Type="smallint" Nullable="false" DefaultValue="0" />
+    <Property Name="Thumbnail" Type="nchar" Nullable="true" MaxLength="40" />
+    <Property Name="LastEditDate" Type="datetime" Nullable="true" />
+    <Property Name="FlairLabel" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="FlairCss" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="Anonymized" Type="bit" Nullable="false" />
+    <Property Name="Views" Type="float" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Votingtrackers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="MessageId" Type="int" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="VoteStatus" Type="int" Nullable="true" />
+    <Property Name="Timestamp" Type="datetime" Nullable="true" />
+  </EntityType>
+  <EntityType Name="Subverses">
+    <Key>
+      <PropertyRef Name="name" />
+    </Key>
+    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="title" Type="nvarchar" Nullable="false" MaxLength="500" />
+    <Property Name="sidebar" Type="nvarchar" Nullable="true" MaxLength="4000" />
+    <Property Name="submission_text" Type="nvarchar" Nullable="true" MaxLength="500" />
+    <Property Name="language" Type="nvarchar" Nullable="true" MaxLength="10" />
+    <Property Name="type" Type="nvarchar" Nullable="false" DefaultValue="link" MaxLength="10" />
+    <Property Name="label_submit_new_link" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="label_sumit_new_selfpost" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="spam_filter_links" Type="nvarchar" Nullable="true" MaxLength="10" />
+    <Property Name="spam_filter_selfpost" Type="nvarchar" Nullable="true" MaxLength="10" />
+    <Property Name="spam_filter_comments" Type="nvarchar" Nullable="true" MaxLength="10" />
+    <Property Name="rated_adult" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="allow_default" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="enable_thumbnails" Type="bit" Nullable="false" DefaultValue="true" />
+    <Property Name="exclude_sitewide_bans" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="traffic_stats_public" Type="bit" Nullable="true" DefaultValue="false" />
+    <Property Name="minutes_to_hide_comments" Type="int" Nullable="true" />
+    <Property Name="creation_date" Type="datetime" Nullable="false" />
+    <Property Name="description" Type="nvarchar" Nullable="true" MaxLength="500" />
+    <Property Name="stylesheet" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="subscribers" Type="int" Nullable="true" DefaultValue="1" />
+    <Property Name="private_subverse" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="authorized_submitters_only" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="anonymized_mode" Type="bit" Nullable="false" />
+    <Property Name="last_submission_received" Type="datetime" Nullable="true" />
+    <Property Name="minimumdownvoteccp" Type="int" Nullable="true" />
+  </EntityType>
+  <EntityType Name="Defaultsubverses">
+    <Key>
+      <PropertyRef Name="name" />
+    </Key>
+    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="position" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="SubverseAdmins">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SubverseName" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Power" Type="int" Nullable="false" />
+    <Property Name="Added_by" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="Added_on" Type="datetime" Nullable="true" />
+  </EntityType>
+  <EntityType Name="Promotedsubmissions">
+    <Key>
+      <PropertyRef Name="promoted_submission_id" />
+    </Key>
+    <Property Name="promoted_submission_id" Type="int" Nullable="false" />
+    <Property Name="promoted_by" Type="nvarchar" Nullable="false" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Savedsubmissions">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="SubmissionId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Subscriptions">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SubverseName" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Badges">
+    <Key>
+      <PropertyRef Name="BadgeId" />
+    </Key>
+    <Property Name="BadgeId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="BadgeGraphics" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="BadgeTitle" Type="nvarchar" Nullable="false" MaxLength="300" />
+    <Property Name="BadgeName" Type="nvarchar" Nullable="false" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Userbadges">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="BadgeId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Awarded" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Banneddomains">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Hostname" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Added_by" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Added_on" Type="datetime" Nullable="false" />
+    <Property Name="Reason" Type="nvarchar" Nullable="false" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="Privatemessages">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Sender" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Recipient" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Timestamp" Type="datetime" Nullable="false" />
+    <Property Name="Subject" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Body" Type="nvarchar" Nullable="false" MaxLength="4000" />
+    <Property Name="Status" Type="bit" Nullable="false" />
+    <Property Name="Markedasunread" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Commentreplynotifications">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CommentId" Type="int" Nullable="false" />
+    <Property Name="SubmissionId" Type="int" Nullable="false" />
+    <Property Name="Recipient" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Sender" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Body" Type="nvarchar" Nullable="false" MaxLength="4000" />
+    <Property Name="Status" Type="bit" Nullable="false" />
+    <Property Name="Timestamp" Type="datetime" Nullable="false" />
+    <Property Name="Markedasunread" Type="bit" Nullable="false" />
+    <Property Name="Subject" Type="nvarchar" Nullable="false" MaxLength="200" />
+    <Property Name="Subverse" Type="nvarchar" Nullable="false" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="Postreplynotifications">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CommentId" Type="int" Nullable="false" />
+    <Property Name="SubmissionId" Type="int" Nullable="false" />
+    <Property Name="Recipient" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Sender" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Subject" Type="nvarchar" Nullable="false" MaxLength="200" />
+    <Property Name="Body" Type="nvarchar" Nullable="false" MaxLength="4000" />
+    <Property Name="Status" Type="bit" Nullable="false" />
+    <Property Name="Timestamp" Type="datetime" Nullable="false" />
+    <Property Name="Markedasunread" Type="bit" Nullable="false" />
+    <Property Name="Subverse" Type="nvarchar" Nullable="false" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="Userpreferences">
+    <Key>
+      <PropertyRef Name="Username" />
+    </Key>
+    <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Disable_custom_css" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="Night_mode" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="Language" Type="nvarchar" Nullable="false" DefaultValue="en" MaxLength="50" />
+    <Property Name="Clicking_mode" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="Enable_adult_content" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="Public_votes" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="Public_subscriptions" Type="bit" Nullable="false" />
+    <Property Name="Topmenu_from_subscriptions" Type="bit" Nullable="false" />
+    <Property Name="Shortbio" Type="nvarchar" Nullable="true" MaxLength="100" />
+    <Property Name="Avatar" Type="nvarchar" Nullable="true" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Subverseflairsettings">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Subversename" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="Label" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="CssClass" Type="nvarchar" Nullable="true" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Stickiedsubmissions">
+    <Key>
+      <PropertyRef Name="Submission_id" />
+    </Key>
+    <Property Name="Submission_id" Type="int" Nullable="false" />
+    <Property Name="Subversename" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="Stickied_by" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Stickied_date" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Bannedusers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Date_banned" Type="datetime" Nullable="false" />
+    <Property Name="Reason" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Banned_by" Type="nvarchar" Nullable="false" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Surveys">
+    <Key>
+      <PropertyRef Name="Username" />
+    </Key>
+    <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Interested_in_content_creation" Type="bit" Nullable="false" />
+    <Property Name="Interested_in_commenting" Type="bit" Nullable="false" />
+    <Property Name="Interested_in_donating_earnings" Type="bit" Nullable="false" />
+    <Property Name="Preferred_payment_method" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Interested_in_bitcoin_payout" Type="bit" Nullable="false" />
+    <Property Name="Country" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="City" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="Date_submitted" Type="datetime" Nullable="false" />
+    <Property Name="Wants_to_be_contacted_at_service_launch" Type="bit" Nullable="false" />
+    <Property Name="Email" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Wants_to_subscribe_to_whoaverse_news" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Featuredsubs">
+    <Key>
+      <PropertyRef Name="Feature_id" />
+    </Key>
+    <Property Name="Feature_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Subname" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="Featured_by" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Featured_on" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Viewstatistics">
+    <Key>
+      <PropertyRef Name="submissionId" />
+      <PropertyRef Name="viewerId" />
+    </Key>
+    <Property Name="submissionId" Type="int" Nullable="false" />
+    <Property Name="viewerId" Type="nvarchar" Nullable="false" MaxLength="90" />
+  </EntityType>
+  <EntityType Name="Usersetdefinitions">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Set_id" Type="int" Nullable="false" />
+    <Property Name="Subversename" Type="nvarchar" Nullable="false" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="Usersets">
+    <Key>
+      <PropertyRef Name="Set_id" />
+    </Key>
+    <Property Name="Set_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="Description" Type="nvarchar" Nullable="false" MaxLength="200" />
+    <Property Name="Created_by" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="Created_on" Type="datetime" Nullable="false" />
+    <Property Name="Public" Type="bit" Nullable="false" />
+    <Property Name="Subscribers" Type="int" Nullable="false" />
+    <Property Name="Default" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Usersetsubscriptions">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Set_id" Type="int" Nullable="false" />
+    <Property Name="Order" Type="int" Nullable="false" />
+    <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="SubverseBans">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SubverseName" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="BannedBy" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="BanAddedOn" Type="datetime" Nullable="false" />
+    <Property Name="BanReason" Type="nvarchar" Nullable="false" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Moderatorinvitations">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Sent_by" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Sent_on" Type="datetime" Nullable="false" />
+    <Property Name="Sent_to" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Subverse" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Power" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Sessiontrackers">
+    <Key>
+      <PropertyRef Name="SessionId" />
+      <PropertyRef Name="Subverse" />
+    </Key>
+    <Property Name="SessionId" Type="nvarchar" Nullable="false" MaxLength="90" />
+    <Property Name="Subverse" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="Timestamp" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="SubmissionRemovalLogs">
+    <Key>
+      <PropertyRef Name="SubmissionId" />
+    </Key>
+    <Property Name="SubmissionId" Type="int" Nullable="false" />
+    <Property Name="Moderator" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="RemovalTimestamp" Type="datetime" Nullable="false" />
+    <Property Name="ReasonForRemoval" Type="nvarchar" Nullable="false" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Savingtrackers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="MessageId" Type="int" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="SaveStatus" Type="bit" Nullable="false" />
+    <Property Name="Timestamp" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Commentsavingtrackers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="CommentId" Type="int" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="SaveStatus" Type="bit" Nullable="false" />
+    <Property Name="Timestamp" Type="datetime" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_Comments_Messages">
+    <End Role="Messages" Type="whoaverseModel.Store.Messages" Multiplicity="0..1" />
+    <End Role="Comments" Type="whoaverseModel.Store.Comments" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Messages">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Comments">
+        <PropertyRef Name="MessageId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Commentvotingtracker_Comments">
+    <End Role="Comments" Type="whoaverseModel.Store.Comments" Multiplicity="1" />
+    <End Role="Commentvotingtracker" Type="whoaverseModel.Store.Commentvotingtrackers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Comments">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Commentvotingtracker">
+        <PropertyRef Name="CommentId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Votingtracker_Messages">
+    <End Role="Messages" Type="whoaverseModel.Store.Messages" Multiplicity="1" />
+    <End Role="Votingtracker" Type="whoaverseModel.Store.Votingtrackers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Messages">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Votingtracker">
+        <PropertyRef Name="MessageId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Messages_Subverses">
+    <End Role="Subverse" Type="whoaverseModel.Store.Subverses" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Message" Type="whoaverseModel.Store.Messages" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Subverse">
+        <PropertyRef Name="name" />
+      </Principal>
+      <Dependent Role="Message">
+        <PropertyRef Name="Subverse" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Defaultsubverses_Subverses">
+    <End Role="Subverse" Type="whoaverseModel.Store.Subverses" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Defaultsubvers" Type="whoaverseModel.Store.Defaultsubverses" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Subverse">
+        <PropertyRef Name="name" />
+      </Principal>
+      <Dependent Role="Defaultsubvers">
+        <PropertyRef Name="name" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_SubverseAdmins_Subverses">
+    <End Role="Subverse" Type="whoaverseModel.Store.Subverses" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="SubverseAdmin" Type="whoaverseModel.Store.SubverseAdmins" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Subverse">
+        <PropertyRef Name="name" />
+      </Principal>
+      <Dependent Role="SubverseAdmin">
+        <PropertyRef Name="SubverseName" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Userbadges_Badges">
+    <End Role="Badge" Type="whoaverseModel.Store.Badges" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Userbadge" Type="whoaverseModel.Store.Userbadges" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Badge">
+        <PropertyRef Name="BadgeId" />
+      </Principal>
+      <Dependent Role="Userbadge">
+        <PropertyRef Name="BadgeId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Subverseflairsettings_Subverses1">
+    <End Role="Subverse" Type="whoaverseModel.Store.Subverses" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Subverseflairsetting" Type="whoaverseModel.Store.Subverseflairsettings" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Subverse">
+        <PropertyRef Name="name" />
+      </Principal>
+      <Dependent Role="Subverseflairsetting">
+        <PropertyRef Name="Subversename" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Stickiedsubmissions_Messages">
+    <End Role="Message" Type="whoaverseModel.Store.Messages" Multiplicity="1" />
+    <End Role="Stickiedsubmission" Type="whoaverseModel.Store.Stickiedsubmissions" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Message">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Stickiedsubmission">
+        <PropertyRef Name="Submission_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Stickiedsubmissions_Subverses">
+    <End Role="Subverse" Type="whoaverseModel.Store.Subverses" Multiplicity="1" />
+    <End Role="Stickiedsubmission" Type="whoaverseModel.Store.Stickiedsubmissions" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Subverse">
+        <PropertyRef Name="name" />
+      </Principal>
+      <Dependent Role="Stickiedsubmission">
+        <PropertyRef Name="Subversename" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Messages_Messages">
+    <End Role="Message" Type="whoaverseModel.Store.Messages" Multiplicity="1" />
+    <End Role="Message1" Type="whoaverseModel.Store.Messages" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Message">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Message1">
+        <PropertyRef Name="Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Subscriptions_Subverses">
+    <End Role="Subverse" Type="whoaverseModel.Store.Subverses" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Subscription" Type="whoaverseModel.Store.Subscriptions" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Subverse">
+        <PropertyRef Name="name" />
+      </Principal>
+      <Dependent Role="Subscription">
+        <PropertyRef Name="SubverseName" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Featuredsubs_Subverses">
+    <End Role="Subverse" Type="whoaverseModel.Store.Subverses" Multiplicity="1" />
+    <End Role="Featuredsub" Type="whoaverseModel.Store.Featuredsubs" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Subverse">
+        <PropertyRef Name="name" />
+      </Principal>
+      <Dependent Role="Featuredsub">
+        <PropertyRef Name="Subname" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Viewstatistics_Messages">
+    <End Role="Message" Type="whoaverseModel.Store.Messages" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Viewstatistic" Type="whoaverseModel.Store.Viewstatistics" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Message">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Viewstatistic">
+        <PropertyRef Name="submissionId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Usersetdefinitions_Subverses">
+    <End Role="Subverse" Type="whoaverseModel.Store.Subverses" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Usersetdefinition" Type="whoaverseModel.Store.Usersetdefinitions" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Subverse">
+        <PropertyRef Name="name" />
+      </Principal>
+      <Dependent Role="Usersetdefinition">
+        <PropertyRef Name="Subversename" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Usersetdefinitions_Usersets">
+    <End Role="Userset" Type="whoaverseModel.Store.Usersets" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Usersetdefinition" Type="whoaverseModel.Store.Usersetdefinitions" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Userset">
+        <PropertyRef Name="Set_id" />
+      </Principal>
+      <Dependent Role="Usersetdefinition">
+        <PropertyRef Name="Set_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Usersetsubscriptions_Usersets">
+    <End Role="Userset" Type="whoaverseModel.Store.Usersets" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Usersetsubscription" Type="whoaverseModel.Store.Usersetsubscriptions" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Userset">
+        <PropertyRef Name="Set_id" />
+      </Principal>
+      <Dependent Role="Usersetsubscription">
+        <PropertyRef Name="Set_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_SubverseBans_Subverses">
+    <End Role="Subverse" Type="whoaverseModel.Store.Subverses" Multiplicity="1" />
+    <End Role="SubverseBan" Type="whoaverseModel.Store.SubverseBans" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Subverse">
+        <PropertyRef Name="name" />
+      </Principal>
+      <Dependent Role="SubverseBan">
+        <PropertyRef Name="SubverseName" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_SubmissionRemovalLog_Messages">
+    <End Role="Message" Type="whoaverseModel.Store.Messages" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="SubmissionRemovalLog" Type="whoaverseModel.Store.SubmissionRemovalLogs" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Message">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="SubmissionRemovalLog">
+        <PropertyRef Name="SubmissionId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="CommentCommentsavingtracker">
+    <End Role="Comment" Type="whoaverseModel.Store.Comments" Multiplicity="1" />
+    <End Role="Commentsavingtracker" Type="whoaverseModel.Store.Commentsavingtrackers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Comment">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Commentsavingtracker">
+        <PropertyRef Name="CommentId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="MessageSavingtracker">
+    <End Role="Message" Type="whoaverseModel.Store.Messages" Multiplicity="1" />
+    <End Role="Savingtracker" Type="whoaverseModel.Store.Savingtrackers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Message">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Savingtracker">
+        <PropertyRef Name="MessageId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="whoaverseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -712,7 +778,7 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Votes" Type="Int32" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Date" Type="DateTime" Precision="3" Nullable="false" />
@@ -726,6 +792,7 @@
           <Property Name="LastEditDate" Type="DateTime" Precision="3" />
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
           <Property Name="IsDistinguished" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Commentsavingtrackers" Relationship="whoaverseModel.CommentCommentsavingtracker" FromRole="Comment" ToRole="Commentsavingtracker" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -742,7 +809,7 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Votes" Type="Int16" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Date" Type="DateTime" Precision="3" Nullable="false" />
@@ -766,6 +833,7 @@
           <Property Name="Views" Type="Double" Nullable="false" />
           <NavigationProperty Name="Viewstatistics" Relationship="whoaverseModel.FK_Viewstatistics_Messages" FromRole="Message" ToRole="Viewstatistic" />
           <NavigationProperty Name="SubmissionRemovalLog" Relationship="whoaverseModel.FK_SubmissionRemovalLog_Messages" FromRole="Message" ToRole="SubmissionRemovalLog" />
+          <NavigationProperty Name="Savingtrackers" Relationship="whoaverseModel.MessageSavingtracker" FromRole="Message" ToRole="Savingtracker" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -920,6 +988,16 @@
           <AssociationSet Name="FK_SubmissionRemovalLog_Messages" Association="whoaverseModel.FK_SubmissionRemovalLog_Messages">
             <End Role="Message" EntitySet="Messages" />
             <End Role="SubmissionRemovalLog" EntitySet="SubmissionRemovalLogs" />
+          </AssociationSet>
+          <EntitySet Name="Savingtrackers" EntityType="whoaverseModel.Savingtracker" />
+          <EntitySet Name="Commentsavingtrackers" EntityType="whoaverseModel.Commentsavingtracker" />
+          <AssociationSet Name="CommentCommentsavingtracker" Association="whoaverseModel.CommentCommentsavingtracker">
+            <End Role="Comment" EntitySet="Comments" />
+            <End Role="Commentsavingtracker" EntitySet="Commentsavingtrackers" />
+          </AssociationSet>
+          <AssociationSet Name="MessageSavingtracker" Association="whoaverseModel.MessageSavingtracker">
+            <End Role="Message" EntitySet="Messages" />
+            <End Role="Savingtracker" EntitySet="Savingtrackers" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
@@ -1455,396 +1533,463 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Savingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Nullable="false" Type="Int32" />
+          <Property Name="MessageId" Type="Int32" Nullable="false" />
+          <Property Name="UserName" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="SaveStatus" Type="Boolean" Nullable="false" />
+          <Property Name="Timestamp" Precision="3" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Message" Relationship="whoaverseModel.MessageSavingtracker" FromRole="Savingtracker" ToRole="Message" />
+        </EntityType>
+        <EntityType Name="Commentsavingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SaveStatus" Type="Boolean" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Precision="3" Nullable="false" />
+          <NavigationProperty Name="Comment" Relationship="whoaverseModel.CommentCommentsavingtracker" FromRole="Commentsavingtracker" ToRole="Comment" />
+        </EntityType>
+        <Association Name="CommentCommentsavingtracker">
+          <End Type="whoaverseModel.Comment" Role="Comment" Multiplicity="1" />
+          <End Type="whoaverseModel.Commentsavingtracker" Role="Commentsavingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Comment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Commentsavingtracker">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="MessageSavingtracker">
+          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="1" />
+          <End Type="whoaverseModel.Savingtracker" Role="Savingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Message">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Savingtracker">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="whoaverseModelStoreContainer" CdmEntityContainer="whoaverseEntities">
-          <EntitySetMapping Name="Comments">
-            <EntityTypeMapping TypeName="whoaverseModel.Comment">
-              <MappingFragment StoreEntitySet="Comments">
-                <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
-                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
-                <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
-                <ScalarProperty Name="Likes" ColumnName="Likes" />
-                <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Votes" ColumnName="Votes" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Commentvotingtrackers">
-            <EntityTypeMapping TypeName="whoaverseModel.Commentvotingtracker">
-              <MappingFragment StoreEntitySet="Commentvotingtracker">
-                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Messages">
-            <EntityTypeMapping TypeName="whoaverseModel.Message">
-              <MappingFragment StoreEntitySet="Messages">
-                <ScalarProperty Name="Views" ColumnName="Views" />
-                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
-                <ScalarProperty Name="FlairCss" ColumnName="FlairCss" />
-                <ScalarProperty Name="FlairLabel" ColumnName="FlairLabel" />
-                <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
-                <ScalarProperty Name="Thumbnail" ColumnName="Thumbnail" />
-                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
-                <ScalarProperty Name="Likes" ColumnName="Likes" />
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="MessageContent" ColumnName="MessageContent" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Votes" ColumnName="Votes" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Linkdescription" ColumnName="Linkdescription" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="Rank" ColumnName="Rank" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Votingtrackers">
-            <EntityTypeMapping TypeName="whoaverseModel.Votingtracker">
-              <MappingFragment StoreEntitySet="Votingtracker">
-                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Subverses">
-            <EntityTypeMapping TypeName="whoaverseModel.Subverse">
-              <MappingFragment StoreEntitySet="Subverses">
-                <ScalarProperty Name="minimumdownvoteccp" ColumnName="minimumdownvoteccp" />
-                <ScalarProperty Name="last_submission_received" ColumnName="last_submission_received" />
-                <ScalarProperty Name="anonymized_mode" ColumnName="anonymized_mode" />
-                <ScalarProperty Name="authorized_submitters_only" ColumnName="authorized_submitters_only" />
-                <ScalarProperty Name="private_subverse" ColumnName="private_subverse" />
-                <ScalarProperty Name="subscribers" ColumnName="subscribers" />
-                <ScalarProperty Name="stylesheet" ColumnName="stylesheet" />
-                <ScalarProperty Name="description" ColumnName="description" />
-                <ScalarProperty Name="creation_date" ColumnName="creation_date" />
-                <ScalarProperty Name="minutes_to_hide_comments" ColumnName="minutes_to_hide_comments" />
-                <ScalarProperty Name="traffic_stats_public" ColumnName="traffic_stats_public" />
-                <ScalarProperty Name="exclude_sitewide_bans" ColumnName="exclude_sitewide_bans" />
-                <ScalarProperty Name="enable_thumbnails" ColumnName="enable_thumbnails" />
-                <ScalarProperty Name="allow_default" ColumnName="allow_default" />
-                <ScalarProperty Name="rated_adult" ColumnName="rated_adult" />
-                <ScalarProperty Name="spam_filter_comments" ColumnName="spam_filter_comments" />
-                <ScalarProperty Name="spam_filter_selfpost" ColumnName="spam_filter_selfpost" />
-                <ScalarProperty Name="spam_filter_links" ColumnName="spam_filter_links" />
-                <ScalarProperty Name="label_sumit_new_selfpost" ColumnName="label_sumit_new_selfpost" />
-                <ScalarProperty Name="label_submit_new_link" ColumnName="label_submit_new_link" />
-                <ScalarProperty Name="type" ColumnName="type" />
-                <ScalarProperty Name="language" ColumnName="language" />
-                <ScalarProperty Name="submission_text" ColumnName="submission_text" />
-                <ScalarProperty Name="sidebar" ColumnName="sidebar" />
-                <ScalarProperty Name="title" ColumnName="title" />
-                <ScalarProperty Name="name" ColumnName="name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Defaultsubverses">
-            <EntityTypeMapping TypeName="whoaverseModel.Defaultsubverse">
-              <MappingFragment StoreEntitySet="Defaultsubverses">
-                <ScalarProperty Name="position" ColumnName="position" />
-                <ScalarProperty Name="name" ColumnName="name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SubverseAdmins">
-            <EntityTypeMapping TypeName="whoaverseModel.SubverseAdmin">
-              <MappingFragment StoreEntitySet="SubverseAdmins">
-                <ScalarProperty Name="Added_on" ColumnName="Added_on" />
-                <ScalarProperty Name="Added_by" ColumnName="Added_by" />
-                <ScalarProperty Name="Power" ColumnName="Power" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Promotedsubmissions">
-            <EntityTypeMapping TypeName="whoaverseModel.Promotedsubmission">
-              <MappingFragment StoreEntitySet="Promotedsubmissions">
-                <ScalarProperty Name="promoted_by" ColumnName="promoted_by" />
-                <ScalarProperty Name="promoted_submission_id" ColumnName="promoted_submission_id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Savedsubmissions">
-            <EntityTypeMapping TypeName="whoaverseModel.Savedsubmission">
-              <MappingFragment StoreEntitySet="Savedsubmissions">
-                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Subscriptions">
-            <EntityTypeMapping TypeName="whoaverseModel.Subscription">
-              <MappingFragment StoreEntitySet="Subscriptions">
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Badges">
-            <EntityTypeMapping TypeName="whoaverseModel.Badge">
-              <MappingFragment StoreEntitySet="Badges">
-                <ScalarProperty Name="BadgeName" ColumnName="BadgeName" />
-                <ScalarProperty Name="BadgeTitle" ColumnName="BadgeTitle" />
-                <ScalarProperty Name="BadgeGraphics" ColumnName="BadgeGraphics" />
-                <ScalarProperty Name="BadgeId" ColumnName="BadgeId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Userbadges">
-            <EntityTypeMapping TypeName="whoaverseModel.Userbadge">
-              <MappingFragment StoreEntitySet="Userbadges">
-                <ScalarProperty Name="Awarded" ColumnName="Awarded" />
-                <ScalarProperty Name="BadgeId" ColumnName="BadgeId" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Banneddomains">
-            <EntityTypeMapping TypeName="whoaverseModel.Banneddomain">
-              <MappingFragment StoreEntitySet="Banneddomains">
-                <ScalarProperty Name="Reason" ColumnName="Reason" />
-                <ScalarProperty Name="Added_on" ColumnName="Added_on" />
-                <ScalarProperty Name="Added_by" ColumnName="Added_by" />
-                <ScalarProperty Name="Hostname" ColumnName="Hostname" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Privatemessages">
-            <EntityTypeMapping TypeName="whoaverseModel.Privatemessage">
-              <MappingFragment StoreEntitySet="Privatemessages">
-                <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="Body" ColumnName="Body" />
-                <ScalarProperty Name="Subject" ColumnName="Subject" />
-                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
-                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
-                <ScalarProperty Name="Sender" ColumnName="Sender" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Commentreplynotifications">
-            <EntityTypeMapping TypeName="whoaverseModel.Commentreplynotification">
-              <MappingFragment StoreEntitySet="Commentreplynotifications">
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="Subject" ColumnName="Subject" />
-                <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
-                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="Body" ColumnName="Body" />
-                <ScalarProperty Name="Sender" ColumnName="Sender" />
-                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
-                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
-                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Postreplynotifications">
-            <EntityTypeMapping TypeName="whoaverseModel.Postreplynotification">
-              <MappingFragment StoreEntitySet="Postreplynotifications">
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
-                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="Body" ColumnName="Body" />
-                <ScalarProperty Name="Subject" ColumnName="Subject" />
-                <ScalarProperty Name="Sender" ColumnName="Sender" />
-                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
-                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
-                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Userpreferences">
-            <EntityTypeMapping TypeName="whoaverseModel.Userpreference">
-              <MappingFragment StoreEntitySet="Userpreferences">
-                <ScalarProperty Name="Avatar" ColumnName="Avatar" />
-                <ScalarProperty Name="Shortbio" ColumnName="Shortbio" />
-                <ScalarProperty Name="Topmenu_from_subscriptions" ColumnName="Topmenu_from_subscriptions" />
-                <ScalarProperty Name="Public_subscriptions" ColumnName="Public_subscriptions" />
-                <ScalarProperty Name="Public_votes" ColumnName="Public_votes" />
-                <ScalarProperty Name="Enable_adult_content" ColumnName="Enable_adult_content" />
-                <ScalarProperty Name="Clicking_mode" ColumnName="Clicking_mode" />
-                <ScalarProperty Name="Language" ColumnName="Language" />
-                <ScalarProperty Name="Night_mode" ColumnName="Night_mode" />
-                <ScalarProperty Name="Disable_custom_css" ColumnName="Disable_custom_css" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Subverseflairsettings">
-            <EntityTypeMapping TypeName="whoaverseModel.Subverseflairsetting">
-              <MappingFragment StoreEntitySet="Subverseflairsettings">
-                <ScalarProperty Name="CssClass" ColumnName="CssClass" />
-                <ScalarProperty Name="Label" ColumnName="Label" />
-                <ScalarProperty Name="Subversename" ColumnName="Subversename" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Stickiedsubmissions">
-            <EntityTypeMapping TypeName="whoaverseModel.Stickiedsubmission">
-              <MappingFragment StoreEntitySet="Stickiedsubmissions">
-                <ScalarProperty Name="Stickied_date" ColumnName="Stickied_date" />
-                <ScalarProperty Name="Stickied_by" ColumnName="Stickied_by" />
-                <ScalarProperty Name="Subversename" ColumnName="Subversename" />
-                <ScalarProperty Name="Submission_id" ColumnName="Submission_id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Bannedusers">
-            <EntityTypeMapping TypeName="whoaverseModel.Banneduser">
-              <MappingFragment StoreEntitySet="Bannedusers">
-                <ScalarProperty Name="Banned_by" ColumnName="Banned_by" />
-                <ScalarProperty Name="Reason" ColumnName="Reason" />
-                <ScalarProperty Name="Date_banned" ColumnName="Date_banned" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Surveys">
-            <EntityTypeMapping TypeName="whoaverseModel.Survey">
-              <MappingFragment StoreEntitySet="Survey">
-                <ScalarProperty Name="Wants_to_subscribe_to_whoaverse_news" ColumnName="Wants_to_subscribe_to_whoaverse_news" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Wants_to_be_contacted_at_service_launch" ColumnName="Wants_to_be_contacted_at_service_launch" />
-                <ScalarProperty Name="Date_submitted" ColumnName="Date_submitted" />
-                <ScalarProperty Name="City" ColumnName="City" />
-                <ScalarProperty Name="Country" ColumnName="Country" />
-                <ScalarProperty Name="Interested_in_bitcoin_payout" ColumnName="Interested_in_bitcoin_payout" />
-                <ScalarProperty Name="Preferred_payment_method" ColumnName="Preferred_payment_method" />
-                <ScalarProperty Name="Interested_in_donating_earnings" ColumnName="Interested_in_donating_earnings" />
-                <ScalarProperty Name="Interested_in_commenting" ColumnName="Interested_in_commenting" />
-                <ScalarProperty Name="Interested_in_content_creation" ColumnName="Interested_in_content_creation" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Featuredsubs">
-            <EntityTypeMapping TypeName="whoaverseModel.Featuredsub">
-              <MappingFragment StoreEntitySet="Featuredsubs">
-                <ScalarProperty Name="Featured_on" ColumnName="Featured_on" />
-                <ScalarProperty Name="Featured_by" ColumnName="Featured_by" />
-                <ScalarProperty Name="Subname" ColumnName="Subname" />
-                <ScalarProperty Name="Feature_id" ColumnName="Feature_id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Viewstatistics">
-            <EntityTypeMapping TypeName="whoaverseModel.Viewstatistic">
-              <MappingFragment StoreEntitySet="Viewstatistics">
-                <ScalarProperty Name="viewerId" ColumnName="viewerId" />
-                <ScalarProperty Name="submissionId" ColumnName="submissionId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Usersetdefinitions">
-            <EntityTypeMapping TypeName="whoaverseModel.Usersetdefinition">
-              <MappingFragment StoreEntitySet="Usersetdefinitions">
-                <ScalarProperty Name="Subversename" ColumnName="Subversename" />
-                <ScalarProperty Name="Set_id" ColumnName="Set_id" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Usersets">
-            <EntityTypeMapping TypeName="whoaverseModel.Userset">
-              <MappingFragment StoreEntitySet="Usersets">
-                <ScalarProperty Name="Default" ColumnName="Default" />
-                <ScalarProperty Name="Subscribers" ColumnName="Subscribers" />
-                <ScalarProperty Name="Public" ColumnName="Public" />
-                <ScalarProperty Name="Created_on" ColumnName="Created_on" />
-                <ScalarProperty Name="Created_by" ColumnName="Created_by" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Set_id" ColumnName="Set_id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Usersetsubscriptions">
-            <EntityTypeMapping TypeName="whoaverseModel.Usersetsubscription">
-              <MappingFragment StoreEntitySet="Usersetsubscriptions">
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="Order" ColumnName="Order" />
-                <ScalarProperty Name="Set_id" ColumnName="Set_id" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SubverseBans">
-            <EntityTypeMapping TypeName="whoaverseModel.SubverseBan">
-              <MappingFragment StoreEntitySet="SubverseBans">
-                <ScalarProperty Name="BanReason" ColumnName="BanReason" />
-                <ScalarProperty Name="BanAddedOn" ColumnName="BanAddedOn" />
-                <ScalarProperty Name="BannedBy" ColumnName="BannedBy" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Moderatorinvitations">
-            <EntityTypeMapping TypeName="whoaverseModel.Moderatorinvitation">
-              <MappingFragment StoreEntitySet="Moderatorinvitations">
-                <ScalarProperty Name="Power" ColumnName="Power" />
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="Sent_to" ColumnName="Sent_to" />
-                <ScalarProperty Name="Sent_on" ColumnName="Sent_on" />
-                <ScalarProperty Name="Sent_by" ColumnName="Sent_by" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Sessiontrackers">
-            <EntityTypeMapping TypeName="whoaverseModel.Sessiontracker">
-              <MappingFragment StoreEntitySet="Sessiontracker">
-                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SubmissionRemovalLogs">
-            <EntityTypeMapping TypeName="whoaverseModel.SubmissionRemovalLog">
-              <MappingFragment StoreEntitySet="SubmissionRemovalLog">
-                <ScalarProperty Name="ReasonForRemoval" ColumnName="ReasonForRemoval" />
-                <ScalarProperty Name="RemovalTimestamp" ColumnName="RemovalTimestamp" />
-                <ScalarProperty Name="Moderator" ColumnName="Moderator" />
-                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          </EntityContainerMapping>
-      </Mapping>
-    </edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="whoaverseModelStoreContainer" CdmEntityContainer="whoaverseEntities">
+    <EntitySetMapping Name="Comments">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Comment)">
+        <MappingFragment StoreEntitySet="Comments">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Votes" ColumnName="Votes" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+          <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
+          <ScalarProperty Name="Likes" ColumnName="Likes" />
+          <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
+          <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+          <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
+          <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
+          <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Commentvotingtrackers">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Commentvotingtracker)">
+        <MappingFragment StoreEntitySet="Commentvotingtrackers">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
+          <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Messages">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Message)">
+        <MappingFragment StoreEntitySet="Messages">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Votes" ColumnName="Votes" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="Linkdescription" ColumnName="Linkdescription" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Rank" ColumnName="Rank" />
+          <ScalarProperty Name="MessageContent" ColumnName="MessageContent" />
+          <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+          <ScalarProperty Name="Likes" ColumnName="Likes" />
+          <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
+          <ScalarProperty Name="Thumbnail" ColumnName="Thumbnail" />
+          <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
+          <ScalarProperty Name="FlairLabel" ColumnName="FlairLabel" />
+          <ScalarProperty Name="FlairCss" ColumnName="FlairCss" />
+          <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
+          <ScalarProperty Name="Views" ColumnName="Views" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Votingtrackers">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Votingtracker)">
+        <MappingFragment StoreEntitySet="Votingtrackers">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
+          <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Subverses">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Subverse)">
+        <MappingFragment StoreEntitySet="Subverses">
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="title" ColumnName="title" />
+          <ScalarProperty Name="sidebar" ColumnName="sidebar" />
+          <ScalarProperty Name="submission_text" ColumnName="submission_text" />
+          <ScalarProperty Name="language" ColumnName="language" />
+          <ScalarProperty Name="type" ColumnName="type" />
+          <ScalarProperty Name="label_submit_new_link" ColumnName="label_submit_new_link" />
+          <ScalarProperty Name="label_sumit_new_selfpost" ColumnName="label_sumit_new_selfpost" />
+          <ScalarProperty Name="spam_filter_links" ColumnName="spam_filter_links" />
+          <ScalarProperty Name="spam_filter_selfpost" ColumnName="spam_filter_selfpost" />
+          <ScalarProperty Name="spam_filter_comments" ColumnName="spam_filter_comments" />
+          <ScalarProperty Name="rated_adult" ColumnName="rated_adult" />
+          <ScalarProperty Name="allow_default" ColumnName="allow_default" />
+          <ScalarProperty Name="enable_thumbnails" ColumnName="enable_thumbnails" />
+          <ScalarProperty Name="exclude_sitewide_bans" ColumnName="exclude_sitewide_bans" />
+          <ScalarProperty Name="traffic_stats_public" ColumnName="traffic_stats_public" />
+          <ScalarProperty Name="minutes_to_hide_comments" ColumnName="minutes_to_hide_comments" />
+          <ScalarProperty Name="creation_date" ColumnName="creation_date" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="stylesheet" ColumnName="stylesheet" />
+          <ScalarProperty Name="subscribers" ColumnName="subscribers" />
+          <ScalarProperty Name="private_subverse" ColumnName="private_subverse" />
+          <ScalarProperty Name="authorized_submitters_only" ColumnName="authorized_submitters_only" />
+          <ScalarProperty Name="anonymized_mode" ColumnName="anonymized_mode" />
+          <ScalarProperty Name="last_submission_received" ColumnName="last_submission_received" />
+          <ScalarProperty Name="minimumdownvoteccp" ColumnName="minimumdownvoteccp" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Defaultsubverses">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Defaultsubverse)">
+        <MappingFragment StoreEntitySet="Defaultsubverses">
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="position" ColumnName="position" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SubverseAdmins">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.SubverseAdmin)">
+        <MappingFragment StoreEntitySet="SubverseAdmins">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+          <ScalarProperty Name="Username" ColumnName="Username" />
+          <ScalarProperty Name="Power" ColumnName="Power" />
+          <ScalarProperty Name="Added_by" ColumnName="Added_by" />
+          <ScalarProperty Name="Added_on" ColumnName="Added_on" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Promotedsubmissions">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Promotedsubmission)">
+        <MappingFragment StoreEntitySet="Promotedsubmissions">
+          <ScalarProperty Name="promoted_submission_id" ColumnName="promoted_submission_id" />
+          <ScalarProperty Name="promoted_by" ColumnName="promoted_by" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Savedsubmissions">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Savedsubmission)">
+        <MappingFragment StoreEntitySet="Savedsubmissions">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Subscriptions">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Subscription)">
+        <MappingFragment StoreEntitySet="Subscriptions">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+          <ScalarProperty Name="Username" ColumnName="Username" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Badges">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Badge)">
+        <MappingFragment StoreEntitySet="Badges">
+          <ScalarProperty Name="BadgeId" ColumnName="BadgeId" />
+          <ScalarProperty Name="BadgeGraphics" ColumnName="BadgeGraphics" />
+          <ScalarProperty Name="BadgeTitle" ColumnName="BadgeTitle" />
+          <ScalarProperty Name="BadgeName" ColumnName="BadgeName" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Userbadges">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Userbadge)">
+        <MappingFragment StoreEntitySet="Userbadges">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Username" ColumnName="Username" />
+          <ScalarProperty Name="BadgeId" ColumnName="BadgeId" />
+          <ScalarProperty Name="Awarded" ColumnName="Awarded" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Banneddomains">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Banneddomain)">
+        <MappingFragment StoreEntitySet="Banneddomains">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Hostname" ColumnName="Hostname" />
+          <ScalarProperty Name="Added_by" ColumnName="Added_by" />
+          <ScalarProperty Name="Added_on" ColumnName="Added_on" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Privatemessages">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Privatemessage)">
+        <MappingFragment StoreEntitySet="Privatemessages">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Sender" ColumnName="Sender" />
+          <ScalarProperty Name="Recipient" ColumnName="Recipient" />
+          <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+          <ScalarProperty Name="Subject" ColumnName="Subject" />
+          <ScalarProperty Name="Body" ColumnName="Body" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Commentreplynotifications">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Commentreplynotification)">
+        <MappingFragment StoreEntitySet="Commentreplynotifications">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+          <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+          <ScalarProperty Name="Recipient" ColumnName="Recipient" />
+          <ScalarProperty Name="Sender" ColumnName="Sender" />
+          <ScalarProperty Name="Body" ColumnName="Body" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+          <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
+          <ScalarProperty Name="Subject" ColumnName="Subject" />
+          <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Postreplynotifications">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Postreplynotification)">
+        <MappingFragment StoreEntitySet="Postreplynotifications">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+          <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+          <ScalarProperty Name="Recipient" ColumnName="Recipient" />
+          <ScalarProperty Name="Sender" ColumnName="Sender" />
+          <ScalarProperty Name="Subject" ColumnName="Subject" />
+          <ScalarProperty Name="Body" ColumnName="Body" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+          <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
+          <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Userpreferences">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Userpreference)">
+        <MappingFragment StoreEntitySet="Userpreferences">
+          <ScalarProperty Name="Username" ColumnName="Username" />
+          <ScalarProperty Name="Disable_custom_css" ColumnName="Disable_custom_css" />
+          <ScalarProperty Name="Night_mode" ColumnName="Night_mode" />
+          <ScalarProperty Name="Language" ColumnName="Language" />
+          <ScalarProperty Name="Clicking_mode" ColumnName="Clicking_mode" />
+          <ScalarProperty Name="Enable_adult_content" ColumnName="Enable_adult_content" />
+          <ScalarProperty Name="Public_votes" ColumnName="Public_votes" />
+          <ScalarProperty Name="Public_subscriptions" ColumnName="Public_subscriptions" />
+          <ScalarProperty Name="Topmenu_from_subscriptions" ColumnName="Topmenu_from_subscriptions" />
+          <ScalarProperty Name="Shortbio" ColumnName="Shortbio" />
+          <ScalarProperty Name="Avatar" ColumnName="Avatar" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Subverseflairsettings">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Subverseflairsetting)">
+        <MappingFragment StoreEntitySet="Subverseflairsettings">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Subversename" ColumnName="Subversename" />
+          <ScalarProperty Name="Label" ColumnName="Label" />
+          <ScalarProperty Name="CssClass" ColumnName="CssClass" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Stickiedsubmissions">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Stickiedsubmission)">
+        <MappingFragment StoreEntitySet="Stickiedsubmissions">
+          <ScalarProperty Name="Submission_id" ColumnName="Submission_id" />
+          <ScalarProperty Name="Subversename" ColumnName="Subversename" />
+          <ScalarProperty Name="Stickied_by" ColumnName="Stickied_by" />
+          <ScalarProperty Name="Stickied_date" ColumnName="Stickied_date" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Bannedusers">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Banneduser)">
+        <MappingFragment StoreEntitySet="Bannedusers">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Username" ColumnName="Username" />
+          <ScalarProperty Name="Date_banned" ColumnName="Date_banned" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="Banned_by" ColumnName="Banned_by" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Surveys">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Survey)">
+        <MappingFragment StoreEntitySet="Surveys">
+          <ScalarProperty Name="Username" ColumnName="Username" />
+          <ScalarProperty Name="Interested_in_content_creation" ColumnName="Interested_in_content_creation" />
+          <ScalarProperty Name="Interested_in_commenting" ColumnName="Interested_in_commenting" />
+          <ScalarProperty Name="Interested_in_donating_earnings" ColumnName="Interested_in_donating_earnings" />
+          <ScalarProperty Name="Preferred_payment_method" ColumnName="Preferred_payment_method" />
+          <ScalarProperty Name="Interested_in_bitcoin_payout" ColumnName="Interested_in_bitcoin_payout" />
+          <ScalarProperty Name="Country" ColumnName="Country" />
+          <ScalarProperty Name="City" ColumnName="City" />
+          <ScalarProperty Name="Date_submitted" ColumnName="Date_submitted" />
+          <ScalarProperty Name="Wants_to_be_contacted_at_service_launch" ColumnName="Wants_to_be_contacted_at_service_launch" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Wants_to_subscribe_to_whoaverse_news" ColumnName="Wants_to_subscribe_to_whoaverse_news" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Featuredsubs">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Featuredsub)">
+        <MappingFragment StoreEntitySet="Featuredsubs">
+          <ScalarProperty Name="Feature_id" ColumnName="Feature_id" />
+          <ScalarProperty Name="Subname" ColumnName="Subname" />
+          <ScalarProperty Name="Featured_by" ColumnName="Featured_by" />
+          <ScalarProperty Name="Featured_on" ColumnName="Featured_on" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Viewstatistics">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Viewstatistic)">
+        <MappingFragment StoreEntitySet="Viewstatistics">
+          <ScalarProperty Name="submissionId" ColumnName="submissionId" />
+          <ScalarProperty Name="viewerId" ColumnName="viewerId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Usersetdefinitions">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Usersetdefinition)">
+        <MappingFragment StoreEntitySet="Usersetdefinitions">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Set_id" ColumnName="Set_id" />
+          <ScalarProperty Name="Subversename" ColumnName="Subversename" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Usersets">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Userset)">
+        <MappingFragment StoreEntitySet="Usersets">
+          <ScalarProperty Name="Set_id" ColumnName="Set_id" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Created_by" ColumnName="Created_by" />
+          <ScalarProperty Name="Created_on" ColumnName="Created_on" />
+          <ScalarProperty Name="Public" ColumnName="Public" />
+          <ScalarProperty Name="Subscribers" ColumnName="Subscribers" />
+          <ScalarProperty Name="Default" ColumnName="Default" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Usersetsubscriptions">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Usersetsubscription)">
+        <MappingFragment StoreEntitySet="Usersetsubscriptions">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Set_id" ColumnName="Set_id" />
+          <ScalarProperty Name="Order" ColumnName="Order" />
+          <ScalarProperty Name="Username" ColumnName="Username" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SubverseBans">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.SubverseBan)">
+        <MappingFragment StoreEntitySet="SubverseBans">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+          <ScalarProperty Name="Username" ColumnName="Username" />
+          <ScalarProperty Name="BannedBy" ColumnName="BannedBy" />
+          <ScalarProperty Name="BanAddedOn" ColumnName="BanAddedOn" />
+          <ScalarProperty Name="BanReason" ColumnName="BanReason" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Moderatorinvitations">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Moderatorinvitation)">
+        <MappingFragment StoreEntitySet="Moderatorinvitations">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Sent_by" ColumnName="Sent_by" />
+          <ScalarProperty Name="Sent_on" ColumnName="Sent_on" />
+          <ScalarProperty Name="Sent_to" ColumnName="Sent_to" />
+          <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+          <ScalarProperty Name="Power" ColumnName="Power" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sessiontrackers">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Sessiontracker)">
+        <MappingFragment StoreEntitySet="Sessiontrackers">
+          <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+          <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+          <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SubmissionRemovalLogs">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.SubmissionRemovalLog)">
+        <MappingFragment StoreEntitySet="SubmissionRemovalLogs">
+          <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+          <ScalarProperty Name="Moderator" ColumnName="Moderator" />
+          <ScalarProperty Name="RemovalTimestamp" ColumnName="RemovalTimestamp" />
+          <ScalarProperty Name="ReasonForRemoval" ColumnName="ReasonForRemoval" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Savingtrackers">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Savingtracker)">
+        <MappingFragment StoreEntitySet="Savingtrackers">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="SaveStatus" ColumnName="SaveStatus" />
+          <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Commentsavingtrackers">
+      <EntityTypeMapping TypeName="IsTypeOf(whoaverseModel.Commentsavingtracker)">
+        <MappingFragment StoreEntitySet="Commentsavingtrackers">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="SaveStatus" ColumnName="SaveStatus" />
+          <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
@@ -1858,7 +2003,7 @@
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
-        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>

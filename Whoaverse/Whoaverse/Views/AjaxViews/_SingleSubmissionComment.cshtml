@@ -188,6 +188,12 @@
 
                 @if (User.Identity.IsAuthenticated && commentAuthor != "deleted")
                 {
+                    //returns true if user has saved this post
+                    var savedOrNot = SavingComments.CheckIfSavedComment(User.Identity.Name, @Model.Id);
+                    var saveString = savedOrNot == true ? "unsave" : "save";
+                    <li>
+                        <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@Model.Id);">@saveString</a>
+                    </li>
                     // if user is sub admin or sub mod but not comment author, show delete button
                     if (User.Identity.Name != commentAuthor)
                     {

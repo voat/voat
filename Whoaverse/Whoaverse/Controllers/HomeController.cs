@@ -398,6 +398,56 @@ namespace Voat.Controllers
                 return View("UserSubmitted", paginatedUserSubmissions);
             }
 
+            // show saved                        
+            if (whattodisplay != null && whattodisplay == "saved" && User.Identity.IsAuthenticated && User.Identity.Name == id)
+            {
+                var savedSubmissions = _db.Savingtrackers.Where(u => u.UserName == id).ToDictionary(saveSubTracker => saveSubTracker.MessageId, saveSubTracker => saveSubTracker.Timestamp);
+                var savedComments = _db.Commentsavingtrackers.Where(u => u.UserName == id).ToDictionary(saveCommentTracker => saveCommentTracker.CommentId, saveCommentTracker => saveCommentTracker.Timestamp);
+
+                var submissionIds = new List<int>(savedSubmissions.Keys);
+                var commentIds = new List<int>(savedComments.Keys);
+
+                var submissionsSavedByUser = _db.Messages.Where(submission => submissionIds.Contains(submission.Id));
+
+                var commentsSavedByUser = _db.Comments.Where(comment => commentIds.Contains(comment.Id));
+
+                //Merge submissions and comments into one list sorted by date
+                var mergedSubmissionsAndComments = new List<Object>();
+
+                var subEnumerator = submissionsSavedByUser.GetEnumerator();
+                var hasNextSubmission = subEnumerator.MoveNext();
+                foreach (var comment in commentsSavedByUser)
+                {
+                    var commentSavedTimestamp = savedComments[comment.Id];
+                    var subSavedTimestamp = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    if (subEnumerator.Current != null)
+                    {
+                        subSavedTimestamp = savedSubmissions[subEnumerator.Current.Id];
+                    }
+                    while (hasNextSubmission && subSavedTimestamp <= commentSavedTimestamp)
+                    {
+                        mergedSubmissionsAndComments.Add(subEnumerator.Current);
+                        hasNextSubmission = subEnumerator.MoveNext();
+                        if (subEnumerator.Current != null)
+                        {
+                            subSavedTimestamp = savedSubmissions[subEnumerator.Current.Id];
+                        }
+                    }
+                    mergedSubmissionsAndComments.Add(comment);
+                }
+                while (hasNextSubmission)
+                {
+                    mergedSubmissionsAndComments.Add(subEnumerator.Current);
+                    hasNextSubmission = subEnumerator.MoveNext();
+                }
+                mergedSubmissionsAndComments.Reverse();
+
+                var paginatedUserSubmissions = new PaginatedList<Object>(mergedSubmissionsAndComments, page ?? 0, pageSize);
+
+
+                return View("UserSaved", paginatedUserSubmissions);
+            }
+
             // default, show overview
             ViewBag.whattodisplay = "overview";
 
