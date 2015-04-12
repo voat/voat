@@ -527,7 +527,6 @@
     <Content Include="Graphics\WVSprite.png.css">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
-    <Content Include="Models\WhoaverseEntityDataModel.edmx.sql" />
     <Content Include="oexchange.xrd" />
     <Content Include="Graphics\WVSprite.png.map">
       <DependentUpon>WVSprite.png</DependentUpon>
