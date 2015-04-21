@@ -355,11 +355,11 @@ namespace Voat.Controllers
                 {
                     // notify comment author that his comment has been deleted by a moderator
                     MesssagingUtility.SendPrivateMessage(
-                        "Whoaverse",
+                        "Voat",
                         commentToDelete.Name,
                         "Your comment has been deleted by a moderator",
                         "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.MessageId + "/" + commentToDelete.Id + ") has been deleted by: " +
-                        "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " on: " + DateTime.Now + "  " + Environment.NewLine +
+                        "/u/" + User.Identity.Name + " on: " + DateTime.Now + "  " + Environment.NewLine +
                         "Original comment content was: " + Environment.NewLine +
                         "---" + Environment.NewLine +
                         commentToDelete.CommentContent
