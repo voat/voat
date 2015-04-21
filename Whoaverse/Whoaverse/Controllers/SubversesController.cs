@@ -248,7 +248,8 @@ namespace Voat.Controllers
                 Enable_thumbnails = subverse.enable_thumbnails,
                 Exclude_sitewide_bans = subverse.exclude_sitewide_bans,
                 Authorized_submitters_only = subverse.authorized_submitters_only,
-                Anonymized_mode = subverse.anonymized_mode
+                Anonymized_mode = subverse.anonymized_mode,
+                Minimumdownvoteccp = subverse.minimumdownvoteccp
             };
 
             ViewBag.SelectedSubverse = string.Empty;

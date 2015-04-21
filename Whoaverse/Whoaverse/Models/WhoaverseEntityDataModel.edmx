@@ -266,7 +266,7 @@
           <Property Name="authorized_submitters_only" Type="bit" Nullable="false" />
           <Property Name="anonymized_mode" Type="bit" Nullable="false" />
           <Property Name="last_submission_received" Type="datetime" />
-          <Property Name="minimumdownvoteccp" Type="int" />
+          <Property Name="minimumdownvoteccp" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Survey">
           <Key>
@@ -493,7 +493,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SubverseBans_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1" />
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="SubverseBans" Type="Self.SubverseBans" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverses">
@@ -960,7 +962,7 @@
           <Property Name="last_submission_received" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Usersetdefinitions" Relationship="whoaverseModel.FK_Usersetdefinitions_Subverses" FromRole="Subverse" ToRole="Usersetdefinition" />
           <NavigationProperty Name="SubverseBans" Relationship="whoaverseModel.FK_SubverseBans_Subverses" FromRole="Subverse" ToRole="SubverseBan" />
-          <Property Name="minimumdownvoteccp" Type="Int32" />
+          <Property Name="minimumdownvoteccp" Type="Int32" Nullable="false" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="0..1">
