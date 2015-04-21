@@ -27,13 +27,7 @@ namespace Voat.Utils
         {
             using (var db = new whoaverseEntities())
             {
-                var checkResult = db.Commentsavingtrackers.Where(b => b.CommentId == commentId && b.UserName == userToCheck)
-                        .AsNoTracking()
-                        .FirstOrDefault();
-
-                var boolCheckResult = checkResult != null ? checkResult.SaveStatus : false;
-
-                return boolCheckResult;
+                return db.Commentsavingtrackers.Where(b => b.CommentId == commentId && b.UserName == userToCheck).AsNoTracking().Any();
             }
 
         }
@@ -57,7 +51,6 @@ namespace Voat.Utils
                     {
                         CommentId = commentId,
                         UserName = userWhichSaved,
-                        SaveStatus = true,
                         Timestamp = DateTime.Now
                     };
                     db.Commentsavingtrackers.Add(tmpSavingTracker);

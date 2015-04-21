@@ -17,7 +17,6 @@ namespace Voat.Models
         public int Id { get; set; }
         public int MessageId { get; set; }
         public string UserName { get; set; }
-        public bool SaveStatus { get; set; }
         public System.DateTime Timestamp { get; set; }
     
         public virtual Message Message { get; set; }

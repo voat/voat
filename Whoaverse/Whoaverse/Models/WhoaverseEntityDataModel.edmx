@@ -483,7 +483,6 @@
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="MessageId" Type="int" Nullable="false" />
     <Property Name="UserName" Type="nvarchar" Nullable="true" MaxLength="50" />
-    <Property Name="SaveStatus" Type="bit" Nullable="false" />
     <Property Name="Timestamp" Type="datetime" Nullable="false" />
   </EntityType>
   <EntityType Name="Commentsavingtrackers">
@@ -493,7 +492,6 @@
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="CommentId" Type="int" Nullable="false" />
     <Property Name="UserName" Type="nvarchar" Nullable="true" MaxLength="50" />
-    <Property Name="SaveStatus" Type="bit" Nullable="false" />
     <Property Name="Timestamp" Type="datetime" Nullable="false" />
   </EntityType>
   <Association Name="FK_Comments_Messages">
@@ -1540,7 +1538,6 @@
           <Property Name="Id" Nullable="false" Type="Int32" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MessageId" Type="Int32" Nullable="false" />
           <Property Name="UserName" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
-          <Property Name="SaveStatus" Type="Boolean" Nullable="false" />
           <Property Name="Timestamp" Precision="3" Type="DateTime" Nullable="false" />
           <NavigationProperty Name="Message" Relationship="whoaverseModel.MessageSavingtracker" FromRole="Savingtracker" ToRole="Message" />
         </EntityType>
@@ -1551,7 +1548,6 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CommentId" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SaveStatus" Type="Boolean" Nullable="false" />
           <Property Name="Timestamp" Type="DateTime" Precision="3" Nullable="false" />
           <NavigationProperty Name="Comment" Relationship="whoaverseModel.CommentCommentsavingtracker" FromRole="Commentsavingtracker" ToRole="Comment" />
         </EntityType>
@@ -1972,7 +1968,6 @@
           <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="MessageId" ColumnName="MessageId" />
           <ScalarProperty Name="UserName" ColumnName="UserName" />
-          <ScalarProperty Name="SaveStatus" ColumnName="SaveStatus" />
           <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
         </MappingFragment>
       </EntityTypeMapping>
@@ -1983,7 +1978,6 @@
           <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="CommentId" ColumnName="CommentId" />
           <ScalarProperty Name="UserName" ColumnName="UserName" />
-          <ScalarProperty Name="SaveStatus" ColumnName="SaveStatus" />
           <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
         </MappingFragment>
       </EntityTypeMapping>
