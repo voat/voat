@@ -33,7 +33,6 @@ namespace Voat.Models
         public virtual DbSet<Defaultsubverse> Defaultsubverses { get; set; }
         public virtual DbSet<SubverseAdmin> SubverseAdmins { get; set; }
         public virtual DbSet<Promotedsubmission> Promotedsubmissions { get; set; }
-        public virtual DbSet<Savedsubmission> Savedsubmissions { get; set; }
         public virtual DbSet<Subscription> Subscriptions { get; set; }
         public virtual DbSet<Badge> Badges { get; set; }
         public virtual DbSet<Userbadge> Userbadges { get; set; }
@@ -55,7 +54,7 @@ namespace Voat.Models
         public virtual DbSet<Moderatorinvitation> Moderatorinvitations { get; set; }
         public virtual DbSet<Sessiontracker> Sessiontrackers { get; set; }
         public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLogs { get; set; }
-        public virtual DbSet<Savingtracker> Savingtrackers { get; set; }
         public virtual DbSet<Commentsavingtracker> Commentsavingtrackers { get; set; }
+        public virtual DbSet<Savingtracker> Savingtrackers { get; set; }
     }
 }

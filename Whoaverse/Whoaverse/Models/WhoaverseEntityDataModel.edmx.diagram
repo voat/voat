@@ -19,7 +19,6 @@
         <EntityTypeShape EntityType="whoaverseModel.SubverseAdmin" Width="1.5" PointX="2" PointY="25.25" IsExpanded="true" />
         <AssociationConnector Association="whoaverseModel.FK_SubverseAdmins_Subverses" />
         <EntityTypeShape EntityType="whoaverseModel.Promotedsubmission" Width="2" PointX="0.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="whoaverseModel.Savedsubmission" Width="2" PointX="3.75" PointY="3.75" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Subscription" Width="1.5" PointX="3.625" PointY="6.5" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Badge" Width="1.5" PointX="0.75" PointY="0.875" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Userbadge" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
@@ -54,6 +53,10 @@
         <EntityTypeShape EntityType="whoaverseModel.Sessiontracker" Width="1.5" PointX="5.375" PointY="0.75" />
         <EntityTypeShape EntityType="whoaverseModel.SubmissionRemovalLog" Width="1.5" PointX="5.875" PointY="28.625" />
         <AssociationConnector Association="whoaverseModel.FK_SubmissionRemovalLog_Messages" />
+        <EntityTypeShape EntityType="whoaverseModel.Commentsavingtracker" Width="1.5" PointX="8.5" PointY="25.125" />
+        <EntityTypeShape EntityType="whoaverseModel.Savingtracker" Width="1.5" PointX="5.875" PointY="32.25" />
+        <AssociationConnector Association="whoaverseModel.FK_Commentsavingtracker_Comments" />
+        <AssociationConnector Association="whoaverseModel.FK_Savingtracker_Messages" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
