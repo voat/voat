@@ -1311,7 +1311,7 @@ function toggleSaveSubmission(submissionId) {
 }
 
 function toggleSaveComment(commentId) {
-    var saveLink = $(".comment.id-" + commentId + " .savelink");
+    var saveLink = $(".comment.id-" + commentId + " .savelink").first();
     if (saveLink.exists()) {
         if (saveLink.text() === "save") {
             saveLink.text("unsave");
