@@ -55,5 +55,7 @@ namespace Voat.Models
         public virtual DbSet<Moderatorinvitation> Moderatorinvitations { get; set; }
         public virtual DbSet<Sessiontracker> Sessiontrackers { get; set; }
         public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLogs { get; set; }
+        public virtual DbSet<Savingtracker> Savingtrackers { get; set; }
+        public virtual DbSet<Commentsavingtracker> Commentsavingtrackers { get; set; }
     }
 }

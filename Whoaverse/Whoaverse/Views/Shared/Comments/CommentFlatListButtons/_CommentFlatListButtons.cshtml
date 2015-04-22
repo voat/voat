@@ -34,8 +34,21 @@
 
     @if (User.Identity.IsAuthenticated)
     {
+        string loggedInUserName = User.Identity.Name;
+
+        //returns true if user has saved this post
+        var savedOrNot = SavingComments.CheckIfSavedComment(loggedInUserName, commentId);
+        var saveString = savedOrNot == true ? "unsave" : "save";
+        
+        if (commentAuthor != "deleted")
+        {
+            <li>
+                <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@commentId);">@saveString</a>
+            </li>
+        }
+        
         if (commentAuthor != "deleted" && User.Identity.Name != commentAuthor)
-		{
+        {
             <li>
                 <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
             </li>

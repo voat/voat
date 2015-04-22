@@ -367,6 +367,20 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "VoteComment" }
             );
 
+            // save
+            routes.MapRoute(
+                name: "save",
+                url: "save/{messageId}",
+                defaults: new { controller = "Submissions", action = "Save" }
+            );
+
+            // save comment
+            routes.MapRoute(
+                name: "savecomment",
+                url: "savecomment/{commentId}",
+                defaults: new { controller = "Comment", action = "SaveComment" }
+            );
+
             // editcomment
             routes.MapRoute(
                   "editcomment",

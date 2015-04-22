@@ -23,8 +23,14 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-		if (Model.Name != "deleted" && User.Identity.Name != Model.Name)
-		{
+        if (Model.Name != "deleted")
+        {
+            <li>
+                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
+            </li>
+        }
+        if (Model.Name != "deleted" && User.Identity.Name != Model.Name)
+        {
 			<li>
                 <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
             </li>

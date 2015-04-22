@@ -398,6 +398,37 @@ namespace Voat.Controllers
                 return View("UserSubmitted", paginatedUserSubmissions);
             }
 
+            // show saved                        
+            // show saved                        
+            if (whattodisplay != null && whattodisplay == "saved" && User.Identity.IsAuthenticated && User.Identity.Name == id)
+            {
+                IQueryable<SavedItem> savedSubmissions = (from m in _db.Messages
+                                                          join s in _db.Savingtrackers on m.Id equals s.MessageId
+                                                          where m.Name != "deleted" && s.UserName == User.Identity.Name
+                                                          select new SavedItem()
+                                                          {
+                                                              SaveDateTime = s.Timestamp,
+                                                              SavedMessage = m,
+                                                              SavedComment = null
+                                                          });
+
+                IQueryable<SavedItem> savedComments = (from c in _db.Comments
+                                                       join s in _db.Commentsavingtrackers on c.Id equals s.CommentId
+                                                       where c.Name != "deleted" && s.UserName == User.Identity.Name
+                                                       select new SavedItem()
+                                                       {
+                                                           SaveDateTime = s.Timestamp,
+                                                           SavedMessage = null,
+                                                           SavedComment = c
+                                                       });
+
+                // merge submissions and comments into one list sorted by date
+                var mergedSubmissionsAndComments = savedSubmissions.Concat(savedComments).OrderByDescending(s => s.SaveDateTime).AsQueryable();
+
+                var paginatedUserSubmissionsAndComments = new PaginatedList<SavedItem>(mergedSubmissionsAndComments, page ?? 0, pageSize);
+                return View("UserSaved", paginatedUserSubmissionsAndComments);
+            }
+
             // default, show overview
             ViewBag.whattodisplay = "overview";
 

@@ -162,6 +162,17 @@ namespace Voat.Controllers
             return Json("Voting ok", JsonRequestBehavior.AllowGet);
         }
 
+        // save a submission
+        // POST: save/{messageId}
+        [Authorize]
+        public JsonResult Save(int messageId)
+        {
+            var loggedInUser = User.Identity.Name;
+            // perform saving or unsaving
+            Saving.SaveSubmission(messageId, loggedInUser);
+            return Json("Saving ok", JsonRequestBehavior.AllowGet);
+        }
+
         // POST: editsubmission
         [Authorize]
         [HttpPost]

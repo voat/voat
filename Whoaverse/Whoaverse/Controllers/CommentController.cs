@@ -73,6 +73,18 @@ namespace Voat.Controllers
             return Json("Voting ok", JsonRequestBehavior.AllowGet);
         }
 
+        // POST: savecomment/{commentId}
+        [Authorize]
+        public JsonResult SaveComment(int commentId)
+        {
+            var loggedInUser = User.Identity.Name;
+            // perform saving or unsaving
+            SavingComments.SaveComment(commentId, loggedInUser);
+
+            Response.StatusCode = 200;
+            return Json("Saving ok", JsonRequestBehavior.AllowGet);
+        }
+
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
         {
