@@ -399,56 +399,34 @@ namespace Voat.Controllers
             }
 
             // show saved                        
+            // show saved                        
             if (whattodisplay != null && whattodisplay == "saved" && User.Identity.IsAuthenticated && User.Identity.Name == id)
             {
-                var savedSubmissions = _db.Savingtrackers.Where(u => u.UserName == id).ToDictionary(saveSubTracker => saveSubTracker.MessageId, saveSubTracker => saveSubTracker.Timestamp);
-                var savedComments = _db.Commentsavingtrackers.Where(u => u.UserName == id).ToDictionary(saveCommentTracker => saveCommentTracker.CommentId, saveCommentTracker => saveCommentTracker.Timestamp);
+                IQueryable<SavedItem> savedSubmissions = (from m in _db.Messages
+                                                          join s in _db.Savingtrackers on m.Id equals s.MessageId
+                                                          where m.Name != "deleted" && s.UserName == User.Identity.Name
+                                                          select new SavedItem()
+                                                          {
+                                                              SaveDateTime = s.Timestamp,
+                                                              SavedMessage = m,
+                                                              SavedComment = null
+                                                          });
 
-                var submissionIds = new List<int>(savedSubmissions.Keys);
-                var commentIds = new List<int>(savedComments.Keys);
+                IQueryable<SavedItem> savedComments = (from c in _db.Comments
+                                                       join s in _db.Commentsavingtrackers on c.Id equals s.CommentId
+                                                       where c.Name != "deleted" && s.UserName == User.Identity.Name
+                                                       select new SavedItem()
+                                                       {
+                                                           SaveDateTime = s.Timestamp,
+                                                           SavedMessage = null,
+                                                           SavedComment = c
+                                                       });
 
-                var submissionsSavedByUser = _db.Messages.Where(submission => submissionIds.Contains(submission.Id)).ToList();
+                // merge submissions and comments into one list sorted by date
+                var mergedSubmissionsAndComments = savedSubmissions.Concat(savedComments).OrderByDescending(s => s.SaveDateTime).AsQueryable();
 
-                var commentsSavedByUser = _db.Comments.Where(comment => commentIds.Contains(comment.Id)).ToList();
-
-                //Merge submissions and comments into one list sorted by date
-                var mergedSubmissionsAndComments = new List<Object>();
-
-                submissionsSavedByUser.Sort((a, b) => savedSubmissions[a.Id].CompareTo(savedSubmissions[b.Id]));
-                commentsSavedByUser.Sort((a, b) => savedComments[a.Id].CompareTo(savedComments[b.Id]));
-
-                var subEnumerator = submissionsSavedByUser.GetEnumerator();
-                var hasNextSubmission = subEnumerator.MoveNext();
-                foreach (var comment in commentsSavedByUser)
-                {
-                    var commentSavedTimestamp = savedComments[comment.Id];
-                    var subSavedTimestamp = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                    if (subEnumerator.Current != null)
-                    {
-                        subSavedTimestamp = savedSubmissions[subEnumerator.Current.Id];
-                    }
-                    while (hasNextSubmission && subSavedTimestamp <= commentSavedTimestamp)
-                    {
-                        mergedSubmissionsAndComments.Add(subEnumerator.Current);
-                        hasNextSubmission = subEnumerator.MoveNext();
-                        if (subEnumerator.Current != null)
-                        {
-                            subSavedTimestamp = savedSubmissions[subEnumerator.Current.Id];
-                        }
-                    }
-                    mergedSubmissionsAndComments.Add(comment);
-                }
-                while (hasNextSubmission)
-                {
-                    mergedSubmissionsAndComments.Add(subEnumerator.Current);
-                    hasNextSubmission = subEnumerator.MoveNext();
-                }
-                mergedSubmissionsAndComments.Reverse();
-
-                var paginatedUserSubmissions = new PaginatedList<Object>(mergedSubmissionsAndComments, page ?? 0, pageSize);
-
-
-                return View("UserSaved", paginatedUserSubmissions);
+                var paginatedUserSubmissionsAndComments = new PaginatedList<SavedItem>(mergedSubmissionsAndComments, page ?? 0, pageSize);
+                return View("UserSaved", paginatedUserSubmissionsAndComments);
             }
 
             // default, show overview

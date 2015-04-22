@@ -11,7 +11,7 @@
     All Rights Reserved.*@
 
 @using Voat.Models
-@model PaginatedList<Object>
+@model PaginatedList<SavedItem>
 
 @{
     ViewBag.Title = "Saved Posts/Comments for " + @ViewBag.userid;
@@ -24,8 +24,8 @@
 
         @foreach (var obj in Model)
         {
-            var message = obj as Message;
-            var comment = obj as Comment;
+            var message = obj.SavedMessage;
+            var comment = obj.SavedComment;
             if (message != null)
             {
                 //Is a message
