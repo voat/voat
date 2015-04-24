@@ -26,6 +26,7 @@
         {
             var message = obj.SavedMessage;
             var comment = obj.SavedComment;
+            
             if (message != null)
             {
                 //Is a message
@@ -40,8 +41,10 @@
                 {
                     submissionClass = "";
                 }
-                <div class="submission id-@message.Id even link @submissionClass" data-fullname="@message.Id" data-ups="@message.Votes" data-downs="">
-                    @Html.Partial("Userprofile/_UserProfileSubmission", message)
+                <div class="submission id-@message.Id odd link @submissionClass" data-fullname="@message.Id" data-ups="@message.Votes" data-downs="">
+                    <p class="parent"></p>
+                    @Html.Partial("_votingIconsSubmission", message, new ViewDataDictionary { { "CCP", Karma.CommentKarma(User.Identity.Name) } })
+                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", message)
                     <div class="child"></div>
                     <div class="clearleft"><!--IE6fix--></div>
                 </div>
@@ -49,7 +52,7 @@
             if (comment != null)
             {
                 //Is a comment
-                @Html.Partial("Userprofile/_UserProfileComment", comment)
+                @Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
             }
         }
 
