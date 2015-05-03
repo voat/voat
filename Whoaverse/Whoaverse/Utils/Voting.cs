@@ -32,7 +32,6 @@ namespace Voat.Utils
                         .FirstOrDefault();
 
                 int intCheckResult = checkResult != null ? checkResult.VoteStatus.Value : 0;
-
                 return intCheckResult;
             }
         }
@@ -52,8 +51,9 @@ namespace Voat.Utils
         }
 
         // submit submission upvote
-        public static void UpvoteSubmission(int submissionId, string userWhichUpvoted)
+        public static void UpvoteSubmission(int submissionId, string userWhichUpvoted, string clientIp)
         {
+            // user account voting check
             int result = CheckIfVoted(userWhichUpvoted, submissionId);
 
             using (var db = new whoaverseEntities())
@@ -73,6 +73,10 @@ namespace Voat.Utils
 
                         if (submission.Name != userWhichUpvoted)
                         {
+                            // check if this IP already voted on the same submission, abort voting if true
+                            var ipVotedAlready = db.Votingtrackers.Where(x => x.MessageId == submissionId && x.ClientIpAddress == clientIp);
+                            if (ipVotedAlready.Any()) return;
+
                             submission.Likes++;
                             double currentScore = submission.Likes - submission.Dislikes;
                             double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.Date);
@@ -85,8 +89,10 @@ namespace Voat.Utils
                                 MessageId = submissionId,
                                 UserName = userWhichUpvoted,
                                 VoteStatus = 1,
-                                Timestamp = DateTime.Now
+                                Timestamp = DateTime.Now,
+                                ClientIpAddress = clientIp
                             };
+
                             db.Votingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
 
@@ -147,7 +153,7 @@ namespace Voat.Utils
         }
 
         // submit submission downvote
-        public static void DownvoteSubmission(int submissionId, string userWhichDownvoted)
+        public static void DownvoteSubmission(int submissionId, string userWhichDownvoted, string clientIp)
         {
             int result = CheckIfVoted(userWhichDownvoted, submissionId);
 
@@ -178,6 +184,10 @@ namespace Voat.Utils
                                 return;
                             }
 
+                            // check if this IP already voted on the same submission, abort voting if true
+                            var ipVotedAlready = db.Votingtrackers.Where(x => x.MessageId == submissionId && x.ClientIpAddress == clientIp);
+                            if (ipVotedAlready.Any()) return;
+
                             submission.Dislikes++;
 
                             double currentScore = submission.Likes - submission.Dislikes;
@@ -192,7 +202,8 @@ namespace Voat.Utils
                                 MessageId = submissionId,
                                 UserName = userWhichDownvoted,
                                 VoteStatus = -1,
-                                Timestamp = DateTime.Now
+                                Timestamp = DateTime.Now,
+                                ClientIpAddress = clientIp
                             };
                             db.Votingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();

@@ -22,7 +22,7 @@ namespace Voat.Utils
     public class VotingComments
     {
         // submit comment upvote
-        public static void UpvoteComment(int commentId, string userWhichUpvoted)
+        public static void UpvoteComment(int commentId, string userWhichUpvoted, string clientIp)
         {
             int result = CheckIfVotedComment(userWhichUpvoted, commentId);
 
@@ -43,6 +43,10 @@ namespace Voat.Utils
 
                         if (comment.Name != userWhichUpvoted)
                         {
+                            // check if this IP already voted on the same comment, abort voting if true
+                            var ipVotedAlready = db.Commentvotingtrackers.Where(x => x.CommentId == commentId && x.ClientIpAddress == clientIp);
+                            if (ipVotedAlready.Any()) return;
+
                             comment.Likes++;
 
                             // register upvote
@@ -51,7 +55,8 @@ namespace Voat.Utils
                                 CommentId = commentId,
                                 UserName = userWhichUpvoted,
                                 VoteStatus = 1,
-                                Timestamp = DateTime.Now
+                                Timestamp = DateTime.Now,
+                                ClientIpAddress = clientIp
                             };
                             db.Commentvotingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
@@ -101,7 +106,7 @@ namespace Voat.Utils
         }
 
         // submit submission downvote
-        public static void DownvoteComment(int commentId, string userWhichDownvoted)
+        public static void DownvoteComment(int commentId, string userWhichDownvoted, string clientIp)
         {
             int result = CheckIfVotedComment(userWhichDownvoted, commentId);
 
@@ -133,6 +138,10 @@ namespace Voat.Utils
                             return;
                         }
 
+                        // check if this IP already voted on the same comment, abort voting if true
+                        var ipVotedAlready = db.Commentvotingtrackers.Where(x => x.CommentId == commentId && x.ClientIpAddress == clientIp);
+                        if (ipVotedAlready.Any()) return;
+
                         comment.Dislikes++;
 
                         // register downvote
@@ -141,7 +150,8 @@ namespace Voat.Utils
                             CommentId = commentId,
                             UserName = userWhichDownvoted,
                             VoteStatus = -1,
-                            Timestamp = DateTime.Now
+                            Timestamp = DateTime.Now,
+                            ClientIpAddress = clientIp
                         };
                         db.Commentvotingtrackers.Add(tmpVotingTracker);
                         db.SaveChanges();

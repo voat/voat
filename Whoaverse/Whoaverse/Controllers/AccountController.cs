@@ -105,6 +105,14 @@ namespace Voat.Controllers
             // when token is verified correctly, clear the access failed count used for lockout
             await UserManager.ResetAccessFailedCountAsync(user.Id);
 
+            // get user IP address
+            string clientIpAddress = Utils.User.UserIpAddress(Request);
+
+            // save last login ip and timestamp
+            user.LastLoginFromIp = clientIpAddress;
+            user.LastLoginDateTime = DateTime.Now;
+            await UserManager.UpdateAsync(user);
+
             // sign in and continue
             await SignInAsync(user, model.RememberMe);
 
@@ -134,6 +142,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
+
             // begin recaptcha check
             const string captchaMessage = "";
             var isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(captchaMessage, Request);
@@ -147,12 +156,22 @@ namespace Voat.Controllers
 
             try
             {
-                var user = new WhoaVerseUser { UserName = model.UserName, RegistrationDateTime = DateTime.Now };
+                // get user IP address
+                string clientIpAddress = Utils.User.UserIpAddress(Request);
+
+                var user = new WhoaVerseUser
+                {
+                    UserName = model.UserName, 
+                    RegistrationDateTime = DateTime.Now,
+                    LastLoginFromIp = clientIpAddress,
+                    LastLoginDateTime = DateTime.Now
+                };
 
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await SignInAsync(user, isPersistent: false);
+
                     // redirect new users to Welcome actionresult
                     return RedirectToAction("Welcome", "Home");
                 }

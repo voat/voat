@@ -15,12 +15,17 @@ All Rights Reserved.
 using System.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Voat.Models
 {
     public class WhoaVerseUser : IdentityUser
     {
         public DateTime RegistrationDateTime { get; set; }
+        public DateTime LastLoginDateTime { get; set; }
+
+        [StringLength(50)]
+        public string LastLoginFromIp { get; set; }
         
         // user registered as partner: original content creator - in form of submissions or comments
         public bool Partner { get; set; }       

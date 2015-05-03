@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Web;
 using Voat.Models;
 using Voat.Models.ViewModels;
 
@@ -779,6 +780,21 @@ namespace Voat.Utils
 
                 return downvotePercentage > upvotePercentage;
             }
+        }
+
+        // get user IP address from httprequestbase
+        public static string UserIpAddress(HttpRequestBase request)
+        {
+            string clientIpAddress = String.Empty;
+            if (request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
+            {
+                clientIpAddress = request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            }
+            else if (request.UserHostAddress.Length != 0)
+            {
+                clientIpAddress = request.UserHostAddress;
+            }
+            return clientIpAddress;
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Voat.Models
         public string UserName { get; set; }
         public Nullable<int> VoteStatus { get; set; }
         public Nullable<System.DateTime> Timestamp { get; set; }
+        public string ClientIpAddress { get; set; }
     
         public virtual Comment Comment { get; set; }
     }

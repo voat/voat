@@ -48,13 +48,13 @@ namespace Voat.Controllers
                         if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {
                             // perform upvoting or resetting
-                            VotingComments.UpvoteComment(commentId, loggedInUser);
+                            VotingComments.UpvoteComment(commentId, loggedInUser, Utils.User.UserIpAddress(Request));
                         }
                     }
                     else if (totalVotesUsedInPast24Hours < 11)
                     {
                         // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
-                        VotingComments.UpvoteComment(commentId, loggedInUser);
+                        VotingComments.UpvoteComment(commentId, loggedInUser, Utils.User.UserIpAddress(Request));
                     }
                     break;
                 case -1:
@@ -63,7 +63,7 @@ namespace Voat.Controllers
                         if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {
                             // perform downvoting or resetting
-                            VotingComments.DownvoteComment(commentId, loggedInUser);
+                            VotingComments.DownvoteComment(commentId, loggedInUser, Utils.User.UserIpAddress(Request));
                         }
                     }
                     break;

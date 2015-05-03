@@ -85,6 +85,7 @@
           <Property Name="UserName" Type="nvarchar" MaxLength="50" />
           <Property Name="VoteStatus" Type="int" />
           <Property Name="Timestamp" Type="datetime" />
+          <Property Name="ClientIpAddress" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Defaultsubverses">
           <Key>
@@ -367,6 +368,7 @@
           <Property Name="UserName" Type="nvarchar" MaxLength="50" />
           <Property Name="VoteStatus" Type="int" />
           <Property Name="Timestamp" Type="datetime" />
+          <Property Name="ClientIpAddress" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <Association Name="FK_Comments_Messages">
           <End Role="Messages" Type="Self.Messages" Multiplicity="0..1">
@@ -787,6 +789,7 @@
           <Property Name="VoteStatus" Type="Int32" />
           <NavigationProperty Name="Comment" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Commentvotingtracker" ToRole="Comments" />
           <Property Name="Timestamp" Type="DateTime" Precision="3" />
+          <Property Name="ClientIpAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Message">
           <Key>
@@ -828,6 +831,7 @@
           <Property Name="VoteStatus" Type="Int32" />
           <NavigationProperty Name="Message" Relationship="Self.FK_Votingtracker_Messages" FromRole="Votingtracker" ToRole="Messages" />
           <Property Name="Timestamp" Type="DateTime" Precision="3" />
+          <Property Name="ClientIpAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Comments_Messages">
           <End Role="Messages" Type="Self.Message" Multiplicity="0..1" />
@@ -1582,6 +1586,7 @@
           <EntitySetMapping Name="Commentvotingtrackers">
             <EntityTypeMapping TypeName="whoaverseModel.Commentvotingtracker">
               <MappingFragment StoreEntitySet="Commentvotingtracker">
+                <ScalarProperty Name="ClientIpAddress" ColumnName="ClientIpAddress" />
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="CommentId" ColumnName="CommentId" />
@@ -1617,6 +1622,7 @@
           <EntitySetMapping Name="Votingtrackers">
             <EntityTypeMapping TypeName="whoaverseModel.Votingtracker">
               <MappingFragment StoreEntitySet="Votingtracker">
+                <ScalarProperty Name="ClientIpAddress" ColumnName="ClientIpAddress" />
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="MessageId" ColumnName="MessageId" />
