@@ -22,7 +22,7 @@ namespace Voat.Utils
     public class VotingComments
     {
         // submit comment upvote
-        public static void UpvoteComment(int commentId, string userWhichUpvoted, string clientIp)
+        public static void UpvoteComment(int commentId, string userWhichUpvoted, string clientIpHash)
         {
             int result = CheckIfVotedComment(userWhichUpvoted, commentId);
 
@@ -44,7 +44,7 @@ namespace Voat.Utils
                         if (comment.Name != userWhichUpvoted)
                         {
                             // check if this IP already voted on the same comment, abort voting if true
-                            var ipVotedAlready = db.Commentvotingtrackers.Where(x => x.CommentId == commentId && x.ClientIpAddress == clientIp);
+                            var ipVotedAlready = db.Commentvotingtrackers.Where(x => x.CommentId == commentId && x.ClientIpAddress == clientIpHash);
                             if (ipVotedAlready.Any()) return;
 
                             comment.Likes++;
@@ -56,7 +56,7 @@ namespace Voat.Utils
                                 UserName = userWhichUpvoted,
                                 VoteStatus = 1,
                                 Timestamp = DateTime.Now,
-                                ClientIpAddress = clientIp
+                                ClientIpAddress = clientIpHash
                             };
                             db.Commentvotingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
@@ -106,7 +106,7 @@ namespace Voat.Utils
         }
 
         // submit submission downvote
-        public static void DownvoteComment(int commentId, string userWhichDownvoted, string clientIp)
+        public static void DownvoteComment(int commentId, string userWhichDownvoted, string clientIpHash)
         {
             int result = CheckIfVotedComment(userWhichDownvoted, commentId);
 
@@ -139,7 +139,7 @@ namespace Voat.Utils
                         }
 
                         // check if this IP already voted on the same comment, abort voting if true
-                        var ipVotedAlready = db.Commentvotingtrackers.Where(x => x.CommentId == commentId && x.ClientIpAddress == clientIp);
+                        var ipVotedAlready = db.Commentvotingtrackers.Where(x => x.CommentId == commentId && x.ClientIpAddress == clientIpHash);
                         if (ipVotedAlready.Any()) return;
 
                         comment.Dislikes++;
@@ -151,7 +151,7 @@ namespace Voat.Utils
                             UserName = userWhichDownvoted,
                             VoteStatus = -1,
                             Timestamp = DateTime.Now,
-                            ClientIpAddress = clientIp
+                            ClientIpAddress = clientIpHash
                         };
                         db.Commentvotingtrackers.Add(tmpVotingTracker);
                         db.SaveChanges();
