@@ -37,7 +37,7 @@ namespace Voat.Controllers
                 // return submissions from all subs
                 submissions = (from message in _db.Messages
                                join subverse in _db.Subverses on message.Subverse equals subverse.name
-                               where message.Name != "deleted" && subverse.private_subverse != true && message.Rank > 0.00009
+                               where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && message.Rank > 0.00009
                                where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).Take(25).ToList(); 
             } 

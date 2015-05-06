@@ -57,6 +57,8 @@
         <EntityTypeShape EntityType="whoaverseModel.Savingtracker" Width="1.5" PointX="5.875" PointY="32.25" />
         <AssociationConnector Association="whoaverseModel.FK_Commentsavingtracker_Comments" />
         <AssociationConnector Association="whoaverseModel.FK_Savingtracker_Messages" />
+        <EntityTypeShape EntityType="whoaverseModel.UserBlockedSubvers" Width="1.5" PointX="3.625" PointY="33" />
+        <AssociationConnector Association="whoaverseModel.FK_UserBlockedSubverses_Subverses" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

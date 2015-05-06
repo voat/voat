@@ -278,6 +278,7 @@
           <Property Name="anonymized_mode" Type="bit" Nullable="false" />
           <Property Name="last_submission_received" Type="datetime" />
           <Property Name="minimumdownvoteccp" Type="int" Nullable="false" />
+          <Property Name="forced_private" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Survey">
           <Key>
@@ -304,6 +305,14 @@
           <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="BadgeId" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Awarded" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserBlockedSubverses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Userpreferences">
           <Key>
@@ -574,6 +583,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_UserBlockedSubverses_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserBlockedSubverses" Type="Self.UserBlockedSubverses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="UserBlockedSubverses">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Usersetdefinitions_Subverses">
           <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -668,6 +691,7 @@
           <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userbadges" EntityType="Self.Userbadges" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserBlockedSubverses" EntityType="Self.UserBlockedSubverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userpreferences" EntityType="Self.Userpreferences" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usersetdefinitions" EntityType="Self.Usersetdefinitions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usersets" EntityType="Self.Usersets" Schema="dbo" store:Type="Tables" />
@@ -733,6 +757,10 @@
           <AssociationSet Name="FK_Userbadges_Badges" Association="Self.FK_Userbadges_Badges">
             <End Role="Badges" EntitySet="Badges" />
             <End Role="Userbadges" EntitySet="Userbadges" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserBlockedSubverses_Subverses" Association="Self.FK_UserBlockedSubverses_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="UserBlockedSubverses" EntitySet="UserBlockedSubverses" />
           </AssociationSet>
           <AssociationSet Name="FK_Usersetdefinitions_Subverses" Association="Self.FK_Usersetdefinitions_Subverses">
             <End Role="Subverses" EntitySet="Subverses" />
@@ -985,6 +1013,11 @@
             <End Role="Message" EntitySet="Messages" />
             <End Role="Savingtracker" EntitySet="Savingtrackers" />
           </AssociationSet>
+          <EntitySet Name="UserBlockedSubverses" EntityType="whoaverseModel.UserBlockedSubvers" />
+          <AssociationSet Name="FK_UserBlockedSubverses_Subverses" Association="whoaverseModel.FK_UserBlockedSubverses_Subverses">
+            <End Role="Subverse" EntitySet="Subverses" />
+            <End Role="UserBlockedSubvers" EntitySet="UserBlockedSubverses" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -1025,6 +1058,8 @@
           <NavigationProperty Name="Usersetdefinitions" Relationship="whoaverseModel.FK_Usersetdefinitions_Subverses" FromRole="Subverse" ToRole="Usersetdefinition" />
           <NavigationProperty Name="SubverseBans" Relationship="whoaverseModel.FK_SubverseBans_Subverses" FromRole="Subverse" ToRole="SubverseBan" />
           <Property Name="minimumdownvoteccp" Type="Int32" Nullable="false" />
+          <Property Name="forced_private" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="UserBlockedSubverses" Relationship="whoaverseModel.FK_UserBlockedSubverses_Subverses" FromRole="Subverse" ToRole="UserBlockedSubvers" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="0..1">
@@ -1559,6 +1594,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="UserBlockedSubvers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Subvers" Relationship="whoaverseModel.FK_UserBlockedSubverses_Subverses" FromRole="UserBlockedSubvers" ToRole="Subverse" />
+        </EntityType>
+        <Association Name="FK_UserBlockedSubverses_Subverses">
+          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whoaverseModel.UserBlockedSubvers" Role="UserBlockedSubvers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverse">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="UserBlockedSubvers">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1634,6 +1692,7 @@
           <EntitySetMapping Name="Subverses">
             <EntityTypeMapping TypeName="whoaverseModel.Subverse">
               <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="forced_private" ColumnName="forced_private" />
                 <ScalarProperty Name="minimumdownvoteccp" ColumnName="minimumdownvoteccp" />
                 <ScalarProperty Name="last_submission_received" ColumnName="last_submission_received" />
                 <ScalarProperty Name="anonymized_mode" ColumnName="anonymized_mode" />
@@ -1955,6 +2014,15 @@
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserBlockedSubverses">
+            <EntityTypeMapping TypeName="whoaverseModel.UserBlockedSubvers">
+              <MappingFragment StoreEntitySet="UserBlockedSubverses">
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

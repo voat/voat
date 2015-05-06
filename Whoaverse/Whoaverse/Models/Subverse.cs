@@ -33,6 +33,7 @@ namespace Voat.Models
             this.Featuredsubs = new HashSet<Featuredsub>();
             this.Usersetdefinitions = new HashSet<Usersetdefinition>();
             this.SubverseBans = new HashSet<SubverseBan>();
+            this.UserBlockedSubverses = new HashSet<UserBlockedSubvers>();
         }
     
         public string name { get; set; }
@@ -61,6 +62,7 @@ namespace Voat.Models
         public bool anonymized_mode { get; set; }
         public Nullable<System.DateTime> last_submission_received { get; set; }
         public int minimumdownvoteccp { get; set; }
+        public bool forced_private { get; set; }
     
         public virtual ICollection<Message> Messages { get; set; }
         public virtual Defaultsubverse Defaultsubvers { get; set; }
@@ -71,5 +73,6 @@ namespace Voat.Models
         public virtual ICollection<Featuredsub> Featuredsubs { get; set; }
         public virtual ICollection<Usersetdefinition> Usersetdefinitions { get; set; }
         public virtual ICollection<SubverseBan> SubverseBans { get; set; }
+        public virtual ICollection<UserBlockedSubvers> UserBlockedSubverses { get; set; }
     }
 }
