@@ -1515,9 +1515,6 @@ namespace Voat.Controllers
                 {
                     if (sortingmode.Equals("new"))
                     {
-                        //paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
-                        //return View("SubverseIndex", paginatedSubmissions);
-
                         var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
                         var submissionsExcludingBlockedSubverses = SubmissionsFromAllSubversesByDate().Where(x => !blockedSubverses.Contains(x.Subverse));
                         var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
@@ -1539,9 +1536,6 @@ namespace Voat.Controllers
                 // user does not want to see NSFW content
                 if (sortingmode.Equals("new"))
                 {
-                    //paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
-                    //return View("SubverseIndex", paginatedSubmissions);
-
                     var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
                     var submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByDate().Where(x => !blockedSubverses.Contains(x.Subverse));
                     var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
