@@ -304,6 +304,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "Subscribe" }
             );
 
+            // block a subverse
+            routes.MapRoute(
+                name: "blocksubverse",
+                url: "subverses/block/{subverseName}",
+                defaults: new { controller = "Subverses", action = "BlockSubverse" }
+            );
+
             // subscribe to set
             routes.MapRoute(
                 name: "subscribetoset",

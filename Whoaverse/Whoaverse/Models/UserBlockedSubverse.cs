@@ -12,12 +12,12 @@ namespace Voat.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class UserBlockedSubvers
+    public partial class UserBlockedSubverse
     {
         public int Id { get; set; }
         public string SubverseName { get; set; }
         public string Username { get; set; }
     
-        public virtual Subverse Subvers { get; set; }
+        public virtual Subverse Subverse { get; set; }
     }
 }

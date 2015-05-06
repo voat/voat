@@ -1013,7 +1013,7 @@
             <End Role="Message" EntitySet="Messages" />
             <End Role="Savingtracker" EntitySet="Savingtrackers" />
           </AssociationSet>
-          <EntitySet Name="UserBlockedSubverses" EntityType="whoaverseModel.UserBlockedSubvers" />
+          <EntitySet Name="UserBlockedSubverses" EntityType="whoaverseModel.UserBlockedSubverse" />
           <AssociationSet Name="FK_UserBlockedSubverses_Subverses" Association="whoaverseModel.FK_UserBlockedSubverses_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="UserBlockedSubvers" EntitySet="UserBlockedSubverses" />
@@ -1594,20 +1594,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="UserBlockedSubvers">
+        <EntityType Name="UserBlockedSubverse">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Subvers" Relationship="whoaverseModel.FK_UserBlockedSubverses_Subverses" FromRole="UserBlockedSubvers" ToRole="Subverse" />
+          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_UserBlockedSubverses_Subverses" FromRole="UserBlockedSubvers" ToRole="Subverse" />
         </EntityType>
         <Association Name="FK_UserBlockedSubverses_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.UserBlockedSubvers" Role="UserBlockedSubvers" Multiplicity="*" />
+          <End Type="whoaverseModel.UserBlockedSubverse" Role="UserBlockedSubvers" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -2019,7 +2019,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="UserBlockedSubverses">
-            <EntityTypeMapping TypeName="whoaverseModel.UserBlockedSubvers">
+            <EntityTypeMapping TypeName="whoaverseModel.UserBlockedSubverse">
               <MappingFragment StoreEntitySet="UserBlockedSubverses">
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />

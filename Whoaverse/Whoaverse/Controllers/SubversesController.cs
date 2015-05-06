@@ -1395,6 +1395,16 @@ namespace Voat.Controllers
             }
         }
 
+        // POST: block a subverse
+        [Authorize]
+        public JsonResult BlockSubverse(string subverseName)
+        {
+            var loggedInUser = User.Identity.Name;
+
+            Utils.User.BlockSubverse(loggedInUser, subverseName);
+            return Json("Subverse block request was successful.", JsonRequestBehavior.AllowGet);
+        }
+
         [ChildActionOnly]
         private ActionResult HandleSortedSubverse(int? page, string subversetoshow, string sortingmode, string daterange)
         {
@@ -1505,8 +1515,13 @@ namespace Voat.Controllers
                 {
                     if (sortingmode.Equals("new"))
                     {
-                        paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
-                        return View("SubverseIndex", paginatedSubmissions);
+                        //paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                        //return View("SubverseIndex", paginatedSubmissions);
+
+                        var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
+                        var submissionsExcludingBlockedSubverses = SubmissionsFromAllSubversesByDate().Where(x => !blockedSubverses.Contains(x.Subverse));
+                        var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
+                        return View("SubverseIndex", paginatedSubmissionsFromAllSubverses);
                     }
 
                     if (sortingmode.Equals("top"))
@@ -1524,8 +1539,13 @@ namespace Voat.Controllers
                 // user does not want to see NSFW content
                 if (sortingmode.Equals("new"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
-                    return View("SubverseIndex", paginatedSubmissions);
+                    //paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                    //return View("SubverseIndex", paginatedSubmissions);
+
+                    var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
+                    var submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByDate().Where(x => !blockedSubverses.Contains(x.Subverse));
+                    var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissionsFromAllSubverses);
                 }
                 if (sortingmode.Equals("top"))
                 {
@@ -1535,7 +1555,6 @@ namespace Voat.Controllers
                 // default sorting mode by rank
                 paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
-
             }
 
             // guest users: check if user wants to see NSFW content by reading NSFW cookie

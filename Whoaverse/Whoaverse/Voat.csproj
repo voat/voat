@@ -284,7 +284,7 @@
     <Compile Include="Models\SubverseBan.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\UserBlockedSubvers.cs">
+    <Compile Include="Models\UserBlockedSubverse.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />

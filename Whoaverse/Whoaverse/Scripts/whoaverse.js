@@ -1330,3 +1330,20 @@ function toggleSaveComment(commentId) {
         });
     }
 }
+
+// a function to call block subverse endpoint for a given subverse
+function blockSubverse(obj, subverseName) {
+    $(obj).parent().parent().find('.option, .main').toggleClass("active");
+
+    // submit block request
+    $.ajax({
+        type: "POST",
+        url: "/subverses/block/" + subverseName,
+        success: function () {
+            $(obj).parent().parent().find('.togglebutton').html("blocked!");
+        },
+        error: function () {
+            $(obj).parent().parent().find('.togglebutton').html("error!");
+        }
+    });
+}

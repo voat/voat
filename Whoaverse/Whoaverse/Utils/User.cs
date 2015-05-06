@@ -154,7 +154,17 @@ namespace Voat.Utils
             using (var db = new whoaverseEntities())
             {
                 var subverseSubscriber = db.Subscriptions.FirstOrDefault(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username == userName);
-                return subverseSubscriber != null; ;
+                return subverseSubscriber != null;
+            }
+        }
+
+        // check if given user blocks a given subverse
+        public static bool IsUserBlockingSubverse(string userName, string subverse)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var subverseSubscriber = db.UserBlockedSubverses.FirstOrDefault(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username == userName);
+                return subverseSubscriber != null;
             }
         }
 
@@ -795,6 +805,22 @@ namespace Voat.Utils
                 clientIpAddress = request.UserHostAddress;
             }
             return clientIpAddress;
+        }
+
+        // block a subverse
+        public static void BlockSubverse(string userName, string subverse)
+        {
+            // abort if subverse is already blocked
+            if (IsUserBlockingSubverse(userName, subverse)) return;
+
+            using (var db = new whoaverseEntities())
+            {
+                // add a new block
+                var blockedSubverse = new UserBlockedSubverse() { Username = userName, SubverseName = subverse };
+                db.UserBlockedSubverses.Add(blockedSubverse);
+
+                db.SaveChanges();
+            }
         }
     }
 }

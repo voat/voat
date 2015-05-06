@@ -56,6 +56,6 @@ namespace Voat.Models
         public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLogs { get; set; }
         public virtual DbSet<Commentsavingtracker> Commentsavingtrackers { get; set; }
         public virtual DbSet<Savingtracker> Savingtrackers { get; set; }
-        public virtual DbSet<UserBlockedSubvers> UserBlockedSubverses { get; set; }
+        public virtual DbSet<UserBlockedSubverse> UserBlockedSubverses { get; set; }
     }
 }
