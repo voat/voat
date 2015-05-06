@@ -48,11 +48,6 @@
 	text-decoration: none!important;
 	cursor: pointer;
 }
-#charCounter {
-  font-size: 14px;
-  vertical-align: middle;
-  margin-left: 5px;
-}
 @media (min-width: 870px) {
     .markdownEditor { 
         display:block;
