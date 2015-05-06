@@ -142,6 +142,9 @@
                         <li>
                             @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
                         </li>
+                        <li>
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary { { "subverseName", Model.Subverse } })
+                        </li>
                     }
                 }
             </ul>

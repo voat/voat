@@ -28,13 +28,16 @@
             <li>
                 @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
             </li>
+            <li>
+                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary { { "subverseName", Model.Subverse } })
+            </li>
         }
         if (Model.Name != "deleted" && User.Identity.Name != Model.Name)
         {
-			<li>
+            <li>
                 <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
             </li>
-		}
+        }
         if (User.Identity.Name == Model.Name)
         {
             <li>

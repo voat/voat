@@ -284,6 +284,9 @@
     <Compile Include="Models\SubverseBan.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\UserBlockedSubvers.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\Userset.cs">
@@ -809,6 +812,7 @@
     <Content Include="Views\Search\Jaje.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSave.cshtml" />
     <Content Include="Views\Home\UserSaved.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonBlockSubverse.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

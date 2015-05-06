@@ -35,10 +35,10 @@
                 @if (Model.FlairLabel != null && Model.FlairCss != null)
                 {
                     if (routeActiveSubverse != string.Empty && routeActiveSubverse != "all" && routeActiveSubverse != null)
-                    {   
+                    {
                         <span class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
-                    }                    
-                }                
+                    }
+                }
                 <a class="title may-blank " href="@commentsUrl" tabindex="1" title="@Model.Title">@Model.Title</a>
                 <span class="domain">(<a href="/v/@Model.Subverse">self.@Model.Subverse</a>)</span>
             </p>
@@ -53,7 +53,8 @@
             else
             {
 
-                if (!String.IsNullOrEmpty(Model.MessageContent)) { 
+                if (!String.IsNullOrEmpty(Model.MessageContent))
+                {
                     <div title="Toggle Self Text" class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
                 }
                 if (Model.Anonymized || anonymizedSubverse)
@@ -91,7 +92,10 @@
                     if (Model.Name != "deleted")
                     {
                         <li>
-                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary {{"submissionId", Model.Id}})
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
+                        </li>
+                        <li>
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary { { "subverseName", Model.Subverse } })
                         </li>
                     }
                 }
@@ -100,9 +104,9 @@
                 <form style="" novalidate="novalidate" class="usertext" action="#">
                     <div class="usertext-body may-blank-within">
                         <div class="md">
-                            Please wait...                            
+                            Please wait...
                         </div>
-                    </div>                    
+                    </div>
                 </form>
             </div>
         </div>

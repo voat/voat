@@ -695,6 +695,12 @@ function toggle(obj, commentid) {
     return false;
 }
 
+// toggle are you sure question for subverse block action
+function toggleblocksubverse(obj) {
+    $(obj).parent().parent().find('.option, .error').toggleClass("active");
+    return false;
+}
+
 // toggle are you sure question for comment report
 function togglereport(commentid) {
     $("#" + commentid).find('.report').toggleClass("active");
