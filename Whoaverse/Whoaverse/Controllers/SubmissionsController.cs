@@ -180,12 +180,12 @@ namespace Voat.Controllers
         {
             var existingSubmission = _db.Messages.Find(model.SubmissionId);
 
-            if (existingSubmission == null)
-                return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
-            if (existingSubmission.Name.Trim() != User.Identity.Name)
-                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+            if (existingSubmission == null) return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+            if (existingSubmission.Name.Trim() != User.Identity.Name) return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+            
             existingSubmission.MessageContent = model.SubmissionContent;
             existingSubmission.LastEditDate = DateTime.Now;
+
             _db.SaveChanges();
 
             // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
