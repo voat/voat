@@ -77,5 +77,4 @@ This was just a hobby project to help me get a better understanding of C# and AS
 Voat aims to make a media aggregator platform with new ideas and unique features that set Voat apart from similar platforms.
 
 ### Contributing
-There is a whole lot of work to be done, code contributions are welcome. A Contributor License Agreement (CLA) is required for all code contributions, configuration changes, documentation, or any other materials that you send to us.
-CLA form can be signed and submitted at http://voat.co/cla
+There is a whole lot of work to be done, code contributions are more than welcome. By submitting a pull request, you are agreeing for your contribution to be distributed under GPL V3 license (the same license voat uses for the rest of voat project).
