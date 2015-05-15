@@ -39,7 +39,50 @@ $(document).ready(function () {
         {
             source: '/ajaxhelpers/autocompletesubversename'
         });
+
+    // drag'n'drop link sharing
+    $(document).on('dragenter', function () {
+        $('#share-a-link-overlay').show();
+    });
+
+    $('#share-a-link-overlay').on('dragleave', function (e) {
+        if (e.originalEvent.pageX < 10 || e.originalEvent.pageY < 10 || $(window).width() - e.originalEvent.pageX < 10 || $(window).height - e.originalEvent.pageY < 10) {
+            $("#share-a-link-overlay").hide();
+        }
+    });
+
+    $('#share-a-link-overlay').on('dragover', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    });
 });
+
+// a function which handles mouse drop events (sharing links by dragging and dropping)
+function dropFunction(event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    var droppedData = event.dataTransfer.getData('text/html');
+
+    var url;
+    if ($(droppedData).children().length > 0) {
+        url = $(droppedData).attr('href');
+    } else {
+        url = $(droppedData).attr('href');
+    }
+
+    // dropped data did not contain a HREF element, try to see if it has a SRC element instead
+    if (url != null) {
+        window.location.replace("/submit?linkpost=true&url=" + url);
+    } else {
+        url = $(droppedData).attr('src');
+        if (url != null) {
+            window.location.replace("/submit?linkpost=true&url=" + url);
+        }
+    }
+
+    $("#share-a-link-overlay").hide();
+}
 
 function click_voting() {
     $(this).toggleClass("arrow upmod login-required");
@@ -329,7 +372,7 @@ function replyprivatemessage(parentprivatemessageid, recipient, subject) {
         complete: function () {
             replyFormPMRequest = null;
         }
-     });
+    });
 
     var form = $('#privatemessagereplyform-' + parentprivatemessageid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
@@ -353,12 +396,12 @@ function replyToCommentNotification(commentId, submissionId) {
 
     replyToCommentFormRequest = $.ajax({
         url: "/ajaxhelpers/commentreplyform/" + commentId + "/" + submissionId,
-        success: function(data) {
+        success: function (data) {
             $("#commentContainer-" + commentId).append(data);
             //Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
             $('#commentreplyform-' + commentId).find('#CommentContent').focus();
         },
-        complete: function() {
+        complete: function () {
             replyToCommentFormRequest = null;
         }
     });
@@ -1131,7 +1174,7 @@ function loadMoreSetItems(obj, setId) {
                 $(obj).html("That's it. There was nothing else to show.");
             }
         },
-        complete: function() {
+        complete: function () {
             loadMoreSetRequest = null;
         }
     });
@@ -1243,13 +1286,13 @@ function loadMoreComments(obj, submissionId) {
         success: function (data) {
             $("#comments-" + submissionId + "-page").remove();
             $(obj).before(data);
-			window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent());});
+            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent()); });
             $(obj).html("load more &#9660;");
         },
         error: function () {
             $(obj).html("That's it. There was nothing else to show. Phew. This was hard.");
         },
-        complete: function() {
+        complete: function () {
             loadCommentsRequest = null;
         }
     });

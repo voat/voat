@@ -54,7 +54,7 @@
 <head prefix="og: http://ogp.me/ns#">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta lang="en"/>
+    <meta lang="en" />
     <link rel="http://oexchange.org/spec/0.8/rel/related-target" type="application/xrd+xml" href="http://voat.co/oexchange.xrd" />
 
     @if (ViewBag.Description != null)
@@ -129,12 +129,17 @@
     <!-- For the iPad mini and the first- and second-generation iPad (1× display) on iOS ≤ 6: -->
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="~/Graphics/Icons/apple-touch-icon-72x72-precomposed.png">
     <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
-    <link rel="apple-touch-icon-precomposed" href="~/Graphics/Icons/apple-touch-icon-precomposed.png"><!-- 57×57px -->
-
+    <link rel="apple-touch-icon-precomposed" href="~/Graphics/Icons/apple-touch-icon-precomposed.png">
+    <!-- 57×57px -->
     <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
 
 </head>
-<body>
+<body ondrop="dropFunction(event);" ondragover="return false">
+    <div style="display:none" id="share-a-link-overlay">
+        <div>
+            <h1>share a link</h1>
+        </div>
+    </div>
 
     <div id="header" role="banner">
         @if (User.Identity.IsAuthenticated && Voat.Utils.User.SubscriptionCount(User.Identity.Name) > 0 && Voat.Utils.User.Topmenu_From_Subscriptions(User.Identity.Name))
@@ -298,10 +303,10 @@
         }
         <!-- End First time visitor welcome -->
 
-    <div class="alert eppnotice alert-dismissible" role="alert">
-        <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
-        Cookies help us deliver our services. By using our services, you agree to our use of cookies.
-    </div>
+        <div class="alert eppnotice alert-dismissible" role="alert">
+            <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
+            Cookies help us deliver our services. By using our services, you agree to our use of cookies.
+        </div>
     }
 
 </body>

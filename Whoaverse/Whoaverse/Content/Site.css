@@ -9493,3 +9493,29 @@ body.with-listing-chooser {
     align-content:center;
 }
 
+#share-a-link-overlay div {
+    background: none repeat scroll 0px 0px #151515;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    opacity: 0.9;
+    z-index: 10001;
+}
+
+#share-a-link-overlay h1 {
+    position: relative;
+    font-size: 48px;
+    font-weight: bold;
+    color: #FFF;
+}
+
+#share-a-link-overlay h1, #share-a-link-overlay a {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+}
