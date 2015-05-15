@@ -1243,6 +1243,7 @@ function loadMoreComments(obj, submissionId) {
         success: function (data) {
             $("#comments-" + submissionId + "-page").remove();
             $(obj).before(data);
+			window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent());});
             $(obj).html("load more &#9660;");
         },
         error: function () {
