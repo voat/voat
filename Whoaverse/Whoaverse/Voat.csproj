@@ -812,7 +812,6 @@
     <Content Include="Views\Search\Jaje.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSave.cshtml" />
     <Content Include="Views\Home\UserSaved.cshtml" />
-    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonBlockSubverse.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

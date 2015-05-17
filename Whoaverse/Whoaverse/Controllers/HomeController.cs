@@ -153,7 +153,7 @@ namespace Voat.Controllers
             }
 
             // check if user has reached hourly posting quota for target subverse
-            if (Utils.User.UserHourlyPostingQuotaForSubUsed(User.Identity.Name,message.Subverse))
+            if (Utils.User.UserHourlyPostingQuotaForSubUsed(User.Identity.Name, message.Subverse))
             {
                 ModelState.AddModelError("", "You have reached your hourly submission quota for this subverse.");
                 return View();
@@ -461,15 +461,15 @@ namespace Voat.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
+                    var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
                     IQueryable<Message> submissions = (from m in _db.Messages
                                                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
                                                        where m.Name != "deleted" && s.Username == User.Identity.Name
-                                                       select m)
-                        .OrderByDescending(s => s.Rank);
+                                                       select m).OrderByDescending(s => s.Rank);
 
                     var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
-
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissionsWithoutStickies, page ?? 0, pageSize);
+                    var submissionsExcludingBlockedSubverses = submissionsWithoutStickies.Where(x => !blockedSubverses.Contains(x.Subverse));
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
 
                     return View(paginatedSubmissions);
                 }
@@ -479,8 +479,7 @@ namespace Voat.Controllers
                     IQueryable<Message> submissions = (from message in _db.Messages
                                                        where message.Name != "deleted"
                                                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                                       select message)
-                        .OrderByDescending(s => s.Rank);
+                                                       select message).OrderByDescending(s => s.Rank);
 
                     var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
 
@@ -512,6 +511,7 @@ namespace Voat.Controllers
                 if (User.Identity.IsAuthenticated && Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
                 {
                     var userSetSubscriptions = _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name);
+                    var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
 
                     foreach (var set in userSetSubscriptions)
                     {
@@ -521,7 +521,9 @@ namespace Voat.Controllers
                         foreach (var subverse in userSetDefinition)
                         {
                             // get top ranked submissions
-                            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, subverse.Userset.Name, 2, 0));
+                            var submissionsExcludingBlockedSubverses = SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, subverse.Userset.Name, 2, 0)
+                                .Where(x => !blockedSubverses.Contains(x.Subverse));
+                            submissions.AddRange(submissionsExcludingBlockedSubverses);
                         }
                     }
 
@@ -554,7 +556,6 @@ namespace Voat.Controllers
                 defaultFrontPageResultModel.DefaultSets = defaultSets;
                 defaultFrontPageResultModel.HasSetSubscriptions = false;
                 defaultFrontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
-
 
                 return View("~/Views/Home/IndexV2.cshtml", defaultFrontPageResultModel);
             }
@@ -603,14 +604,15 @@ namespace Voat.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
+                    var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
                     IQueryable<Message> submissions = (from m in _db.Messages
                                                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
                                                        where m.Name != "deleted" && s.Username == User.Identity.Name
-                                                       select m)
-                        .OrderByDescending(s => s.Date);
+                                                       select m).OrderByDescending(s => s.Date);
 
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
-
+                    var submissionsExcludingBlockedSubverses = submissions.Where(x => !blockedSubverses.Contains(x.Subverse));
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
+                    
                     return View("Index", paginatedSubmissions);
                 }
                 else
@@ -619,14 +621,12 @@ namespace Voat.Controllers
                     IQueryable<Message> submissions = (from message in _db.Messages
                                                        where message.Name != "deleted"
                                                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                                       select message)
-                        .OrderByDescending(s => s.Date);
+                                                       select message).OrderByDescending(s => s.Date);
 
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
 
                     return View("Index", paginatedSubmissions);
                 }
-
             }
             catch (Exception)
             {

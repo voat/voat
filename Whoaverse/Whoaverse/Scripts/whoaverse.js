@@ -1375,19 +1375,21 @@ function toggleSaveComment(commentId) {
     }
 }
 
-// a function to call block subverse endpoint for a given subverse
-function blockSubverse(obj, subverseName) {
-    $(obj).parent().parent().find('.option, .main').toggleClass("active");
-
-    // submit block request
-    $.ajax({
-        type: "POST",
-        url: "/subverses/block/" + subverseName,
-        success: function () {
-            $(obj).parent().parent().find('.togglebutton').html("blocked!");
-        },
-        error: function () {
-            $(obj).parent().parent().find('.togglebutton').html("error!");
+// a function to submit subverse block/unblock request
+function toggleBlockSubverse(obj, subverseName) {
+    var blockButton = $(obj);
+    if (blockButton.exists()) {
+        if (blockButton.text() === "block") {
+            blockButton.text("unblock");
+        } else {
+            blockButton.text("block");
         }
-    });
+
+        // submit block request
+        $.ajax({
+            type: "POST",
+            url: "/subverses/block/" + subverseName
+        });
+    }
 }
+

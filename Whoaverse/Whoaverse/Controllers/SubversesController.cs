@@ -1504,50 +1504,55 @@ namespace Voat.Controllers
             const string cookieName = "NSFWEnabled";
             const int pageSize = 25;
             DateTime startDate = DateTimeUtility.DateRangeToDateTime(daterange);
+            PaginatedList<Message> paginatedSubmissions;
 
             ViewBag.SelectedSubverse = "all";
-
-            PaginatedList<Message> paginatedSubmissions;
+            
             if (User.Identity.IsAuthenticated)
             {
-                // check if user wants to see NSFW content by reading user preference
+                var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
+                IQueryable<Message> submissionsExcludingBlockedSubverses;
+
+                // check if user wants to see NSFW content by reading user preference and exclude submissions from blocked subverses
                 if (Utils.User.AdultContentEnabled(User.Identity.Name))
                 {
                     if (sortingmode.Equals("new"))
                     {
-                        var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
-                        var submissionsExcludingBlockedSubverses = SubmissionsFromAllSubversesByDate().Where(x => !blockedSubverses.Contains(x.Subverse));
-                        var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
-                        return View("SubverseIndex", paginatedSubmissionsFromAllSubverses);
+                        submissionsExcludingBlockedSubverses = SubmissionsFromAllSubversesByDate().Where(x => !blockedSubverses.Contains(x.Subverse));
+                        paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
+                        return View("SubverseIndex", paginatedSubmissions);
                     }
 
                     if (sortingmode.Equals("top"))
                     {
-                        paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
+                        submissionsExcludingBlockedSubverses = SubmissionsFromAllSubversesByTop(startDate).Where(x => !blockedSubverses.Contains(x.Subverse));
+                        paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissions);
                     }
 
                     // default sorting mode by rank
-                    paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                    submissionsExcludingBlockedSubverses = SubmissionsFromAllSubversesByRank().Where(x => !blockedSubverses.Contains(x.Subverse));
+                    paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
-
                 }
 
                 // user does not want to see NSFW content
                 if (sortingmode.Equals("new"))
                 {
-                    var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
-                    var submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByDate().Where(x => !blockedSubverses.Contains(x.Subverse));
-                    var paginatedSubmissionsFromAllSubverses = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
-                    return View("SubverseIndex", paginatedSubmissionsFromAllSubverses);
+                    submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByDate().Where(x => !blockedSubverses.Contains(x.Subverse));
+                    paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissions);
                 }
                 if (sortingmode.Equals("top"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
+                    submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByTop(startDate).Where(x => !blockedSubverses.Contains(x.Subverse));
+                    paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
+
                 // default sorting mode by rank
-                paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByRank().Where(x => !blockedSubverses.Contains(x.Subverse));
+                paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
 
