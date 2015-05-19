@@ -1,4 +1,5 @@
 ﻿using Kaliko.ImageLibrary;
+using Kaliko.ImageLibrary.Scaling;
 using OpenGraph_Net;
 using System;
 using System.Drawing;
@@ -28,11 +29,11 @@ namespace Voat.Utils
             var response = request.GetResponse();
 
             var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
-            originalImage.GetThumbnailImage(MaxWidth, MaxHeight, ThumbnailMethod.Pad).SaveJpg(DestinationPath + '\\' + randomFileName + ".jpg", 90);
+            originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPath + '\\' + randomFileName + ".jpg", 90);
 
             return randomFileName + ".jpg";
         }
-        
+
         public static bool GenerateAvatar(Image inputImage, string userName, string mimetype)
         {
             try
@@ -41,7 +42,7 @@ namespace Voat.Utils
 
                 var originalImage = new KalikoImage(inputImage);
 
-                originalImage.GetThumbnailImage(MaxWidth, MaxHeight, ThumbnailMethod.Pad).SaveJpg(DestinationPath + '\\' + userName + ".jpg", 90);
+                originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPath + '\\' + userName + ".jpg", 90);
 
                 return true;
             }
@@ -51,7 +52,7 @@ namespace Voat.Utils
             }
         }
 
-        // Generate a random filename and make sure that the file does not exist.        
+        // Generate a random filename and make sure that the file does not exist.
         private static string GenerateRandomFilename()
         {
             string rndFileName;

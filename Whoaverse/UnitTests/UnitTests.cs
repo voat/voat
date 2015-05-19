@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -13,6 +13,8 @@ All Rights Reserved.
 */
 
 using System;
+using System.Globalization;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenGraph_Net;
 using Voat.Utils;
@@ -75,6 +77,7 @@ namespace UnitTests
         [TestMethod]
         public void Calc_SubmissionAge_1_5years()
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             string result = Submissions.CalcSubmissionAge(TimeSpan.FromDays(18 * 30));
             Assert.AreEqual("1.5 years", result, "Submission age was not calculated.");
         }
