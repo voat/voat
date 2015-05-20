@@ -10,20 +10,10 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Comment
+@model Voat.Models.ViewModels.BasicUserInfo
 
-@using Voat.Models;
-
-@{
-    bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
-}
-
-@if (Model.Anonymized || subverseAnonymized == true)
-{
-    <a href="#" class="author submitter may-blank">@Model.Id</a>
-}
-else
-{
-    <a href="/user/@Model.Name" class="author submitter may-blank userinfo" data-username="@Model.Name">@Model.Name</a>
-}
-<span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+<div>
+    <span>Member for @Model.MemberSince</span>
+    <span>SCP: @Model.Scp</span>
+    <span>CCP: @Model.Ccp</span>
+</div>

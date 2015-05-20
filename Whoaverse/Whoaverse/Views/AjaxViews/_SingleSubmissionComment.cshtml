@@ -84,7 +84,7 @@
             {
                 int commentScore = Model.Likes - Model.Dislikes;
 
-                <a href="/user/@Model.Name" class="author gray may-blank">@Model.Name</a>
+                <a href="/user/@Model.Name" class="author gray may-blank userinfo" data-username="@Model.Name">@Model.Name</a>
                 <span class="userattrs"></span>
                 <span class="score dislikes">@Model.Dislikes points</span>
                 <span class="score onlycollapsed">@commentScore points</span>

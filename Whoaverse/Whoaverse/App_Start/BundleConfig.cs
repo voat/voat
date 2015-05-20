@@ -24,6 +24,7 @@ namespace Voat
             bundles.Add(new ScriptBundle("~/bundles/whoaverse").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/jquery-ui-{version}.js",
+                        "~/Scripts/jquery.tooltipster.js",
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*",
                         "~/Scripts/whoaverse.ui.js",
@@ -49,6 +50,7 @@ namespace Voat
             bundles.Add(new StyleBundle("~/Content/light").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css",
+                      "~/Content/tooltipster.css",
                       "~/Content/Whoaverse.css",
                       "~/Content/PagedList.css",
                       "~/Content/markdownEditor.css"
@@ -57,6 +59,7 @@ namespace Voat
             bundles.Add(new StyleBundle("~/Content/dark").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css",
+                      "~/Content/tooltipster.css",
                       "~/Content/Whoaverse-Dark.css",
                       "~/Content/PagedList.css",
                       "~/Content/markdownEditor.css"

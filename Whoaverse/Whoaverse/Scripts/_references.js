@@ -14,3 +14,4 @@
 /// <reference path="jquery-ui-1.11.2.min.js" />
 /// <reference path="jquery.validate.js" />
 /// <reference path="jquery.signalr-2.1.2.min.js" />
+/// <reference path="jquery.tooltipster.min.js" />

@@ -632,6 +632,13 @@ namespace Voat
                 defaults: new { controller = "AjaxGateway", action = "MessageContent" }
             );
 
+            // ajaxhelpers/basicuserinfo
+            routes.MapRoute(
+                name: "BasicUserInfo",
+                url: "ajaxhelpers/userinfo/{userName}",
+                defaults: new { controller = "AjaxGateway", action = "UserBasicInfo" }
+            );
+
             // ajaxhelpers/videoplayer
             routes.MapRoute(
                 name: "VideoPlayer",

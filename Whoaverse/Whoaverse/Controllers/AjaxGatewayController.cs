@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Voat.Models;
+using Voat.Models.ViewModels;
 using Voat.Utils;
 
 namespace Voat.Controllers
@@ -147,6 +148,24 @@ namespace Voat.Controllers
             var userSetDefinition = _db.Usersetdefinitions.FirstOrDefault(s => s.Set_id == setId && s.Subversename.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
 
             return PartialView("~/Views/AjaxViews/_SubverseInfo.cshtml", userSetDefinition);
+        }
+
+        // GET: basic info about a user
+        public ActionResult UserBasicInfo(string userName)
+        {
+            var userRegistrationDateTime = Utils.User.GetUserRegistrationDateTime(userName);
+            var memberFor = Submissions.CalcSubmissionAge(userRegistrationDateTime);
+            var scp = Karma.LinkKarma(userName);
+            var ccp = Karma.CommentKarma(userName);
+
+            var userInfoModel = new BasicUserInfo()
+            {
+                MemberSince = memberFor,
+                Ccp = ccp,
+                Scp = scp
+            };
+
+            return PartialView("~/Views/AjaxViews/_BasicUserInfo.cshtml", userInfoModel);
         }
     }
 }

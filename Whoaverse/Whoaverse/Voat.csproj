@@ -287,6 +287,7 @@
     <Compile Include="Models\UserBlockedSubverse.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
     <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\Userset.cs">
@@ -457,6 +458,7 @@
     <Compile Include="Utils\VotingComments.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\tooltipster.css" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-144x144-precomposed.png" />
@@ -549,6 +551,8 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.signalR-2.1.2.js" />
     <Content Include="Scripts\jquery.signalR-2.1.2.min.js" />
+    <Content Include="Scripts\jquery.tooltipster.js" />
+    <Content Include="Scripts\jquery.tooltipster.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\markdownEditor.js" />
@@ -812,6 +816,7 @@
     <Content Include="Views\Search\Jaje.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSave.cshtml" />
     <Content Include="Views\Home\UserSaved.cshtml" />
+    <Content Include="Views\AjaxViews\_BasicUserInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
