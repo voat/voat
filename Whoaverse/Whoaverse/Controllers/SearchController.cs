@@ -25,6 +25,7 @@ namespace Voat.Controllers
         private readonly whoaverseEntities _db = new whoaverseEntities();
 
         [PreventSpam]
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
             if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -119,6 +120,7 @@ namespace Voat.Controllers
         }
 
         [PreventSpam]
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult FindSubverse(int? page, string d, string q)
         {
             if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

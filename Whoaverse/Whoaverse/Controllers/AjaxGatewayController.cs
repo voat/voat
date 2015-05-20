@@ -151,6 +151,7 @@ namespace Voat.Controllers
         }
 
         // GET: basic info about a user
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserBasicInfo(string userName)
         {
             var userRegistrationDateTime = Utils.User.GetUserRegistrationDateTime(userName);

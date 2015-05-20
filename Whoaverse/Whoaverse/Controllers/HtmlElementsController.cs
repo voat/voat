@@ -27,8 +27,7 @@ namespace Voat.Controllers
         // GET: CommentReplyForm
         public ActionResult CommentReplyForm(int? parentCommentId, int? messageId)
         {
-            if (parentCommentId == null || messageId == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (parentCommentId == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             ViewBag.MessageId = messageId;
             ViewBag.ParentCommentId = parentCommentId;

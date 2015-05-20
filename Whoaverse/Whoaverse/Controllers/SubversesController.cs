@@ -13,7 +13,6 @@ All Rights Reserved.
 */
 
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
@@ -21,7 +20,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Http.Results;
 using System.Web.Mvc;
 using Microsoft.Ajax.Utilities;
 using Voat.Models;
@@ -41,15 +39,17 @@ namespace Voat.Controllers
         {
             var subverse = _db.Subverses.Find(selectedSubverse);
 
+            //don't return a sidebar since subverse doesn't exist or is a system subverse
             if (subverse == null) return new EmptyResult();
+            
             // get subscriber count for selected subverse
-            var subscriberCount =
-                _db.Subscriptions.Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
+            var subscriberCount = _db.Subscriptions.Count(r => r.SubverseName.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
 
             ViewBag.SubscriberCount = subscriberCount;
             ViewBag.SelectedSubverse = selectedSubverse;
 
             if (!showingComments) return new EmptyResult();
+
             if (anonymized || subverse.anonymized_mode)
             {
                 ViewBag.name = submissionId.ToString();
@@ -77,7 +77,6 @@ namespace Voat.Controllers
             }
 
             return PartialView("~/Views/Shared/Sidebars/_SidebarComments.cshtml", subverse);
-            //don't return a sidebar since subverse doesn't exist or is a system subverse
         }
 
         // GET: sidebar for selected subverse
@@ -510,7 +509,8 @@ namespace Voat.Controllers
             return HandleSortedSubverseAll(page, sortingmode, time);
         }
 
-        // GET: show a list of subverses
+        // GET: show a list of subverses by number of subscribers
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult Subverses(int? page)
         {
             ViewBag.SelectedSubverse = "subverses";
@@ -525,8 +525,7 @@ namespace Voat.Controllers
             try
             {
                 // order by subscriber count (popularity)
-                var subverses = _db.Subverses
-                    .OrderByDescending(s => s.subscribers);
+                var subverses = _db.Subverses.OrderByDescending(s => s.subscribers);
 
                 var paginatedSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
 
@@ -595,6 +594,8 @@ namespace Voat.Controllers
             //don't return a sidebar since subverse doesn't exist or is a system subverse
         }
 
+        // GET: show a list of subverses by creation date
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ViewResult NewestSubverses(int? page, string sortingmode)
         {
             ViewBag.SelectedSubverse = "subverses";
@@ -608,9 +609,7 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            var subverses = _db.Subverses
-                .Where(s => s.description != null && s.sidebar != null)
-                .OrderByDescending(s => s.creation_date);
+            var subverses = _db.Subverses.Where(s => s.description != null && s.sidebar != null).OrderByDescending(s => s.creation_date);
 
             var paginatedNewestSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
 
@@ -618,6 +617,7 @@ namespace Voat.Controllers
         }
 
         // show subverses ordered by last received submission
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ViewResult ActiveSubverses(int? page)
         {
             ViewBag.SelectedSubverse = "subverses";
@@ -640,7 +640,7 @@ namespace Voat.Controllers
             return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
         }
 
-        [OutputCache(VaryByParam = "none", Duration = 3600)]
+        [OutputCache(Duration = 3600, VaryByParam = "none")]
         public ActionResult Subversenotfound()
         {
             ViewBag.SelectedSubverse = "404";
@@ -677,9 +677,9 @@ namespace Voat.Controllers
         {
             try
             {
-                // fetch a random subverse with minimum number of subscribers
+                // fetch a random subverse with minimum number of subscribers where last subverse activity was evident
                 var subverse = from subverses in _db.Subverses
-                          .Where(s => s.subscribers > 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase))
+                          .Where(s => s.subscribers > 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase) && s.last_submission_received != null)
                                select subverses;
 
                 var submissionCount = 0;
@@ -1335,6 +1335,7 @@ namespace Voat.Controllers
         }
 
         // GET: list of default subverses
+        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult ListOfDefaultSubverses()
         {
             try
@@ -1592,6 +1593,7 @@ namespace Voat.Controllers
         }
 
         [ChildActionOnly]
+        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult TopViewedSubmissions24Hours()
         {
             var submissions = SfwSubmissionsFromAllSubversesByViews24Hours();

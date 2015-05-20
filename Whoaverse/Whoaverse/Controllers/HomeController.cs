@@ -357,6 +357,7 @@ namespace Voat.Controllers
         }
 
         // GET: user/id
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserProfile(string id, int? page, string whattodisplay)
         {
             ViewBag.SelectedSubverse = "user";
@@ -635,6 +636,7 @@ namespace Voat.Controllers
         }
 
         // GET: /about
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult About(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -656,6 +658,7 @@ namespace Voat.Controllers
             return View("~/Views/Legal/Cla.cshtml");
         }
 
+        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult Welcome()
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -663,6 +666,7 @@ namespace Voat.Controllers
         }
 
         // GET: /help
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult Help(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -683,6 +687,7 @@ namespace Voat.Controllers
         }
 
         // GET: /help/privacy
+        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult Privacy()
         {
             ViewBag.Message = "Privacy Policy";
@@ -691,6 +696,7 @@ namespace Voat.Controllers
 
         // GET: stickied submission from /v/announcements for display on frontpage
         [ChildActionOnly]
+        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult StickiedSubmission()
         {
             var stickiedSubmissions = _db.Stickiedsubmissions.FirstOrDefault(s => s.Subversename == "announcements");
@@ -707,6 +713,7 @@ namespace Voat.Controllers
         }
 
         // GET: list of subverses user moderates
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SubversesUserModerates(string userName)
         {
             if (userName != null)
@@ -723,6 +730,7 @@ namespace Voat.Controllers
 
         // GET: list of subverses user is subscribed to
         [ChildActionOnly]
+        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SubversesUserIsSubscribedTo(string userName)
         {
             if (userName != null)
@@ -737,6 +745,7 @@ namespace Voat.Controllers
             return new EmptyResult();
         }
 
+        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult FeaturedSub()
         {
             var featuredSub = _db.Featuredsubs.OrderByDescending(s => s.Featured_on).FirstOrDefault();
@@ -744,7 +753,6 @@ namespace Voat.Controllers
             if (featuredSub == null) return new EmptyResult();
 
             return PartialView("~/Views/Subverses/_FeaturedSub.cshtml", featuredSub);
-
         }
     }
 }
