@@ -264,6 +264,7 @@
     <Compile Include="Controllers\MessagingController.cs" />
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SetsController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
@@ -826,6 +827,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Storage\Avatars\" />
+    <Folder Include="Views\User\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

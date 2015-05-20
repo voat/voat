@@ -1335,7 +1335,6 @@ namespace Voat.Controllers
         }
 
         // GET: list of default subverses
-        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult ListOfDefaultSubverses()
         {
             try
@@ -1350,6 +1349,7 @@ namespace Voat.Controllers
         }
 
         [Authorize]
+        // GET: list of subverses user is subscribed to, used in hover menu
         public ActionResult ListOfSubversesUserIsSubscribedTo()
         {
             // show custom list of subverses in top menu

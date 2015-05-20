@@ -357,7 +357,6 @@ namespace Voat.Controllers
         }
 
         // GET: user/id
-        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserProfile(string id, int? page, string whattodisplay)
         {
             ViewBag.SelectedSubverse = "user";
@@ -400,7 +399,6 @@ namespace Voat.Controllers
             }
 
             // show saved                        
-            // show saved                        
             if (whattodisplay != null && whattodisplay == "saved" && User.Identity.IsAuthenticated && User.Identity.Name == id)
             {
                 IQueryable<SavedItem> savedSubmissions = (from m in _db.Messages
@@ -433,14 +431,7 @@ namespace Voat.Controllers
             // default, show overview
             ViewBag.whattodisplay = "overview";
 
-            var userDefaultSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
-                                         where b.Name.Equals(id) && b.Anonymized == false
-                                         select b;
-
-            PaginatedList<Message> paginatedUserDefaultSubmissions = new PaginatedList<Message>(userDefaultSubmissions, page ?? 0, pageSize);
-
-
-            return View("UserProfile", paginatedUserDefaultSubmissions);
+            return View("UserProfile");
         }
 
         // GET: /
@@ -636,7 +627,6 @@ namespace Voat.Controllers
         }
 
         // GET: /about
-        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult About(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -658,7 +648,6 @@ namespace Voat.Controllers
             return View("~/Views/Legal/Cla.cshtml");
         }
 
-        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult Welcome()
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -666,7 +655,6 @@ namespace Voat.Controllers
         }
 
         // GET: /help
-        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult Help(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -687,14 +675,13 @@ namespace Voat.Controllers
         }
 
         // GET: /help/privacy
-        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult Privacy()
         {
             ViewBag.Message = "Privacy Policy";
             return View("~/Views/Help/Privacy.cshtml");
         }
 
-        // GET: stickied submission from /v/announcements for display on frontpage
+        // GET: stickied submission from /v/announcements for the frontpage
         [ChildActionOnly]
         [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult StickiedSubmission()
@@ -728,9 +715,8 @@ namespace Voat.Controllers
             return new EmptyResult();
         }
 
-        // GET: list of subverses user is subscribed to
+        // GET: list of subverses user is subscribed to for sidebar
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SubversesUserIsSubscribedTo(string userName)
         {
             if (userName != null)

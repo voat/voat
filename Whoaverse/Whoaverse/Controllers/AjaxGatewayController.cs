@@ -142,7 +142,7 @@ namespace Voat.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
-        // GET: subverse basic info
+        // GET: subverse basic info used for V2 sets layout
         public ActionResult SubverseBasicInfo(int setId, string subverseName)
         {
             var userSetDefinition = _db.Usersetdefinitions.FirstOrDefault(s => s.Set_id == setId && s.Subversename.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
