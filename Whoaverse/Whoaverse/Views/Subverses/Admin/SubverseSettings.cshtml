@@ -119,10 +119,17 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.Label("Minimum CCP required for downvoting", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.Label("Minimum CCP required for downvoting", htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Minimumdownvoteccp, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Minimumdownvoteccp, "", new { @class = "text-danger" })
+                        @Html.TextBoxFor(model => model.Minimumdownvoteccp, new {@class = "form-control"})
+                        @Html.ValidationMessageFor(model => model.Minimumdownvoteccp, "", new {@class = "text-danger"})
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="control-label col-md-2"></div>
+                    <div class="col-md-9">
+                        WARNING: if you set minimum CCP to a value higher than 0, your subverse will be hidden from /v/all.
                     </div>
                 </div>
 

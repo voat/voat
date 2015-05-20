@@ -126,7 +126,7 @@ namespace UnitTests
         {
             Uri testUri = new Uri("http://www.bbc.com/news/technology-32194196");
             var graph = OpenGraph.ParseUrl(testUri);
-            Assert.AreEqual("http://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg", graph.Image.ToString(), "Unable to extract domain from given Uri.");
+            Assert.AreEqual("http://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", graph.Image.ToString(), "Unable to extract domain from given Uri.");
         }
 
         [TestMethod]
