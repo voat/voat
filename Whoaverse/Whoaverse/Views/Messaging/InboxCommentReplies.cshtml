@@ -37,20 +37,31 @@
                 <hr />
                 foreach (var comment in Model)
                 {
-                    var commentAuthorUrl = "";
+                    string commentAuthorUrl;
+                    var commentAuthorName = "";
                     if (comment.Name == "deleted")
                     {
                         commentAuthorUrl = "#";
+                        commentAuthorName = comment.Name;
                     }
                     else
                     {
-                        commentAuthorUrl = "/u/"+ @comment.Name;
+                        if (comment.Anonymized)
+                        {
+                            commentAuthorUrl = "#";
+                            commentAuthorName = comment.Id.ToString();
+                        }
+                        else
+                        {
+                            commentAuthorUrl = "/u/" + @comment.Name;
+                            commentAuthorName = comment.Name;
+                        }
                     }
                     
                     <div id="commentContainer-@comment.Id">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
-                                From: <a href="@commentAuthorUrl">@comment.Name</a> | Sent: @comment.Date
+                                From: <a href="@commentAuthorUrl">@commentAuthorName</a> | Sent: @comment.Date
                             </div>
                             <div class="panel panel-heading-messagetitle">
                                 @if (comment.Message.Type == 1)
