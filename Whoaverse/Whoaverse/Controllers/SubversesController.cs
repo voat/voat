@@ -131,8 +131,8 @@ namespace Voat.Controllers
             if (Karma.CommentKarma(User.Identity.Name) < minimumCcp)
             {
                 // begin recaptcha check
-                const string captchaMessage = "";
-                var isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(captchaMessage, Request);
+                string encodedResponse = Request.Form["g-Recaptcha-Response"];
+                bool isCaptchaCodeValid = (ReCaptchaUtility.Validate(encodedResponse) == "True" ? true : false);
 
                 if (!isCaptchaCodeValid)
                 {
@@ -510,7 +510,6 @@ namespace Voat.Controllers
         }
 
         // GET: show a list of subverses by number of subscribers
-        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult Subverses(int? page)
         {
             ViewBag.SelectedSubverse = "subverses";
@@ -595,7 +594,6 @@ namespace Voat.Controllers
         }
 
         // GET: show a list of subverses by creation date
-        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ViewResult NewestSubverses(int? page, string sortingmode)
         {
             ViewBag.SelectedSubverse = "subverses";
@@ -617,7 +615,6 @@ namespace Voat.Controllers
         }
 
         // show subverses ordered by last received submission
-        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ViewResult ActiveSubverses(int? page)
         {
             ViewBag.SelectedSubverse = "subverses";

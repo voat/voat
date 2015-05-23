@@ -17,6 +17,7 @@ Copyright Rion Williams 2013
 */
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -27,6 +28,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 using Voat.Models;
+using Newtonsoft.Json;
 
 namespace Voat.Utils
 {
@@ -138,66 +140,22 @@ namespace Voat.Utils
 
     public static class ReCaptchaUtility
     {
-        // special thanks to Sourav Mondal - http://dotnetawesome.blogspot.ch - for his writeup on Google reCaptcha implementation in ASP.NET MVC
-        public static bool GetCaptchaResponse(string message, HttpRequestBase currentRequest)
+        public static string Validate(string encodedResponse)
         {
-            // get private key from Web.config
+            var client = new WebClient();
             string privateKey = ConfigurationManager.AppSettings["recaptchaPrivateKey"];
-
-            bool flag = false;
-            message = "";
-
-            string[] result;
-            HttpWebRequest request;
-
-            // check if connection is secure and use appropriate protocol for verification
-            if (currentRequest.IsSecureConnection)
-            {
-                request = (HttpWebRequest)WebRequest.Create("https://www.google.com/recaptcha/api/verify");
-            }
-            else
-            {
-                request = (HttpWebRequest)WebRequest.Create("http://www.google.com/recaptcha/api/verify");
-            }
-
-            request.ProtocolVersion = HttpVersion.Version10;
-            request.Timeout = 0x7530;
-            request.Method = "POST";
-            request.UserAgent = "reCAPTCHA/ASP.NET";
-            request.ContentType = "application/x-www-form-urlencoded";
-            string formData = string.Format(
-                "privatekey={0}&remoteip={1}&challenge={2}&response={3}",
-                new object[]{
-                HttpUtility.UrlEncode(privateKey),
-                HttpUtility.UrlEncode(Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString()),
-                HttpUtility.UrlEncode(currentRequest.Form["recaptcha_challenge_field"]),
-                HttpUtility.UrlEncode(currentRequest.Form["recaptcha_response_field"])
-            });
-            byte[] formbytes = Encoding.ASCII.GetBytes(formData);
-
-            using (Stream requestStream = request.GetRequestStream())
-            {
-                requestStream.Write(formbytes, 0, formbytes.Length);
-            }
-
-            try
-            {
-                using (WebResponse httpResponse = request.GetResponse())
-                {
-                    using (TextReader readStream = new StreamReader(httpResponse.GetResponseStream(), Encoding.UTF8))
-                    {
-                        result = readStream.ReadToEnd().Split(new string[] { "\n", @"\n" }, StringSplitOptions.RemoveEmptyEntries);
-                        message = result[1];
-                        flag = Convert.ToBoolean(result[0]);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                message = ex.Message;
-                return false;
-            }
-            return flag;
+            var googleReply = client.DownloadString(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", privateKey, encodedResponse));
+            var captchaResponse = JsonConvert.DeserializeObject<ReCaptchaResponseClass>(googleReply);
+            return captchaResponse.Success;
         }
+    }
+
+    public class ReCaptchaResponseClass
+    {
+        [JsonProperty("success")]
+        public string Success { get; set; }
+
+        [JsonProperty("error-codes")]
+        public List<string> ErrorCodes { get; set; }
     }
 }

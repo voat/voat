@@ -17,7 +17,7 @@ namespace Voat.Areas.HelpPage
         {
             context.MapRoute(
                 "HelpPage_Default",
-                "api/help/{action}/{apiId}",
+                "Help/{action}/{apiId}",
                 new { controller = "Help", action = "Index", apiId = UrlParameter.Optional });
 
             HelpPageConfig.Register(GlobalConfiguration.Configuration);

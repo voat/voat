@@ -144,8 +144,8 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View(model);
 
             // begin recaptcha check
-            const string captchaMessage = "";
-            var isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(captchaMessage, Request);
+            string encodedResponse = Request.Form["g-Recaptcha-Response"];
+            bool isCaptchaCodeValid = (ReCaptchaUtility.Validate(encodedResponse) == "True" ? true : false);
 
             if (!isCaptchaCodeValid)
             {
@@ -486,14 +486,23 @@ namespace Voat.Controllers
                                 if (img.RawFormat.Equals(ImageFormat.Jpeg) || img.RawFormat.Equals(ImageFormat.Png))
                                 {
                                     // resize uploaded file
-                                    ThumbGenerator.GenerateAvatar(img, User.Identity.Name, model.Avatarfile.ContentType);
-                                    if (userPreferences == null)
+                                    var thumbnailResult = ThumbGenerator.GenerateAvatar(img, User.Identity.Name, model.Avatarfile.ContentType);
+                                    if (thumbnailResult)
                                     {
-                                        tmpModel.Avatar = User.Identity.Name + ".jpg";
+                                        if (userPreferences == null)
+                                        {
+                                            tmpModel.Avatar = User.Identity.Name + ".jpg";
+                                        }
+                                        else
+                                        {
+                                            userPreferences.Avatar = User.Identity.Name + ".jpg";
+                                        }
                                     }
                                     else
                                     {
-                                        userPreferences.Avatar = User.Identity.Name + ".jpg";
+                                        // unable to generate thumbnail
+                                        ModelState.AddModelError("", "Uploaded file is not recognized as a valid image.");
+                                        return RedirectToAction("Manage", new { Message = ManageMessageId.InvalidFileFormat });
                                     }
                                 }
                                 else

@@ -169,8 +169,8 @@ namespace Voat.Controllers
             // verify recaptcha if user has less than 25 CCP
             if (Karma.CommentKarma(User.Identity.Name) < 25)
             {
-                const string captchaMessage = "";
-                var isCaptchaCodeValid = ReCaptchaUtility.GetCaptchaResponse(captchaMessage, Request);
+                string encodedResponse = Request.Form["g-Recaptcha-Response"];
+                bool isCaptchaCodeValid = (ReCaptchaUtility.Validate(encodedResponse) == "True" ? true : false);
 
                 if (!isCaptchaCodeValid)
                 {
