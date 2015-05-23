@@ -37,10 +37,20 @@
                 <hr />
                 foreach (var comment in Model)
                 {
+                    var commentAuthorUrl = "";
+                    if (comment.Name == "deleted")
+                    {
+                        commentAuthorUrl = "#";
+                    }
+                    else
+                    {
+                        commentAuthorUrl = "/u/"+ @comment.Name;
+                    }
+                    
                     <div id="commentContainer-@comment.Id">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
-                                From: <a href="/u/@comment.Name">@comment.Name</a> | Sent: @comment.Date
+                                From: <a href="@commentAuthorUrl">@comment.Name</a> | Sent: @comment.Date
                             </div>
                             <div class="panel panel-heading-messagetitle">
                                 @if (comment.Message.Type == 1)
