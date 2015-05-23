@@ -141,7 +141,7 @@
         </div>
     </div>
 
-    <div id="header" role="banner">
+    <div id="header" tabindex=0 role="banner">
         @if (User.Identity.IsAuthenticated && Voat.Utils.User.SubscriptionCount(User.Identity.Name) > 0 && Voat.Utils.User.Topmenu_From_Subscriptions(User.Identity.Name))
         {
             @Html.Action("ListOfSubversesUserIsSubscribedTo", "Subverses", new { activeSubverse = selectedSubverse })
