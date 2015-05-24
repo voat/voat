@@ -17,6 +17,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
+using Voat.Utils;
 
 namespace Voat
 {
@@ -24,12 +25,13 @@ namespace Voat
     public class MessagingHub : Hub
     {
         // send a chat message to all users in a subverse room
+        [Authorize]
         public void SendChatMessage(string name, string message, string subverseName)
         {
             if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(message) && !String.IsNullOrEmpty(subverseName))
             {
                 var htmlEncodedMessage = WebUtility.HtmlEncode(message);
-                Clients.Group(subverseName).appendChatMessage(name, htmlEncodedMessage);
+                Clients.Group(subverseName).appendChatMessage(Context.User.Identity.Name, htmlEncodedMessage);
             }
         }
 
