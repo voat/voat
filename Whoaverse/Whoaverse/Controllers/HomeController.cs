@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -167,7 +168,8 @@ namespace Voat.Controllers
             }
 
             // verify recaptcha if user has less than 25 CCP
-            if (Karma.CommentKarma(User.Identity.Name) < 25)
+            var userCcp = Karma.CommentKarma(User.Identity.Name);
+            if (userCcp < 25)
             {
                 string encodedResponse = Request.Form["g-Recaptcha-Response"];
                 bool isCaptchaCodeValid = (ReCaptchaUtility.Validate(encodedResponse) == "True" ? true : false);
@@ -183,7 +185,18 @@ namespace Voat.Controllers
                 }
             }
 
-            // everything was okay, process incoming submission
+            // if user CCP or SCP is less than -50, allow only X submissions per 24 hours
+            var userScp = Karma.LinkKarma(User.Identity.Name);
+            if (userCcp <= -50 || userScp <= -50)
+            {
+                var quotaUsed = Utils.User.UserDailyPostingQuotaForNegativeScoreUsed(User.Identity.Name);
+                if (quotaUsed)
+                {
+                    ModelState.AddModelError("", "You have reached your daily submission quota. Your current quota is " + Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaForNegativeScore"]) + " submission(s) per 24 hours.");
+                    return View();
+                }
+            }
+
             // abort if model state is invalid
             if (!ModelState.IsValid) return View("Submit");
 
@@ -208,6 +221,8 @@ namespace Voat.Controllers
                     }
                 }
             }
+
+            // everything was okay, process incoming submission
 
             // submission is a link post
             // generate a thumbnail if submission is a direct link to image or video

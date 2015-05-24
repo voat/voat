@@ -652,6 +652,54 @@ namespace Voat.Utils
             }
         }
 
+        // check if a given user has used his daily posting quota
+        public static bool UserDailyPostingQuotaForNegativeScoreUsed(string userName)
+        {
+            // set starting date to 24 hours ago from now
+            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+
+            // read daily posting quota per sub configuration parameter from web.config
+            int dpqps = Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaForNegativeScore"]);
+
+            using (var db = new whoaverseEntities())
+            {
+                // check how many submission user made today
+                var userSubmissionsInPast24Hours = db.Messages.Count(
+                    m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.Date >= startDate && m.Date <= DateTime.Now);
+
+                if (dpqps <= userSubmissionsInPast24Hours)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // check if a given user has used his daily comment posting quota
+        public static bool UserDailyCommentPostingQuotaForNegativeScoreUsed(string userName)
+        {
+            // set starting date to 24 hours ago from now
+            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+
+            // read daily posting quota per sub configuration parameter from web.config
+            int dpqps = Convert.ToInt32(ConfigurationManager.AppSettings["dailyCommentPostingQuotaForNegativeScore"]);
+
+            using (var db = new whoaverseEntities())
+            {
+                // check how many submission user made today
+                var userCommentSubmissionsInPast24Hours = db.Comments.Count(
+                    m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.Date >= startDate && m.Date <= DateTime.Now);
+
+                if (dpqps <= userCommentSubmissionsInPast24Hours)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         // check if a given user has used his hourly posting quota for a given subverse
         public static bool UserHourlyPostingQuotaForSubUsed(string userName, string subverse)
         {

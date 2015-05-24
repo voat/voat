@@ -262,6 +262,18 @@ namespace Voat.Controllers
                     commentModel.Anonymized = true;
                 }
 
+                // if user CCP is < 50, allow only X comment submissions per 24 hours
+                var userCcp = Karma.CommentKarma(User.Identity.Name);
+                if (userCcp <= -50)
+                {
+                    var quotaUsed = Utils.User.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
+                    if (quotaUsed)
+                    {
+                        ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + Convert.ToInt32(ConfigurationManager.AppSettings["dailyCommentPostingQuotaForNegativeScore"]) + " comment(s) per 24 hours.");
+                        return View();
+                    }
+                }
+
                 // check if author is banned, don't save the comment or send notifications if true
                 if (!Utils.User.IsUserGloballyBanned(User.Identity.Name) && !Utils.User.IsUserBannedFromSubverse(User.Identity.Name, message.Subverse))
                 {
@@ -271,7 +283,6 @@ namespace Voat.Controllers
                     }
 
                     _db.Comments.Add(commentModel);
-
                     await _db.SaveChangesAsync();
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
