@@ -20,6 +20,7 @@
     // check if thread should be hidden
     bool parentIsHidden = Convert.ToBoolean(ViewData["parentIsHidden"]);
     bool childTohiddenParent = Convert.ToBoolean(ViewData["childTohiddenParent"]);
+    bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
@@ -84,7 +85,15 @@
             {
                 int commentScore = Model.Likes - Model.Dislikes;
 
-                <a href="/user/@Model.Name" class="author gray may-blank userinfo" data-username="@Model.Name">@Model.Name</a>
+                if (Model.Anonymized || subverseAnonymized == true)
+                {
+                    <a href="#" class="author gray may-blank">@Model.Id</a>
+                }
+                else
+                {
+                    <a href="/user/@Model.Name" class="author gray may-blank">@Model.Name</a>
+                }
+
                 <span class="userattrs"></span>
                 <span class="score dislikes">@Model.Dislikes points</span>
                 <span class="score onlycollapsed">@commentScore points</span>
