@@ -6,7 +6,7 @@
     ============================================================================ */
 
 .even {
-    background: #F8F8F8;
+    background: #F8F8F8;.
 }
 
 .highlightedComment {
@@ -608,15 +608,15 @@ input, button, select, textarea {
     border: 1px solid #DEDEDE;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.17 );
     margin: 0 0 24px;
+    padding: 13px;
 }
 
 .userstats-heading-1 {
     color: #4AABE7;
     font-size: 13px;
     font-weight: bold;
-    padding: 1px;
-    border-bottom: 2px solid #DDD;
-    margin: 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid rgb(221, 221, 221);
 }
 
 .userstats-heading-2 {
@@ -624,17 +624,26 @@ input, button, select, textarea {
     border: 1px dotted #D3D3D3;
     color: #5D5D5D;
     font-size: 13px;
-    margin: 10px;
-    padding: 5px;
+    margin: 10px 0;
+    padding: 5px 7px;
 }
 
 .userstats-body {
     font-size: 12px;
-    margin: 10px 13px;
+    margin: 10px 0px;
 }
 
     .userstats-body > p {
         margin: 0 0 6px;
+    }
+    
+    .userstats-body > .entry {
+    	margin-top: 5px;
+	margin-bottom: 5px;
+    }
+    
+    .userstats-body .comment .flat-list.buttons li a {
+    	font-size: 11px;
     }
 
 .userstats-submission-title {
