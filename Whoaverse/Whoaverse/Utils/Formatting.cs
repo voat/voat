@@ -32,6 +32,22 @@ namespace Voat.Utils
             
             var m = new Markdown
             {
+                PrepareLink = new Func<HtmlTag, bool>(x =>
+                {
+                    //Remove [Title](javascript:alter('hello')) exploit 
+                    string href = x.attributes["href"];
+                    if (!String.IsNullOrEmpty(href))
+                    {
+                        //I think it needs the javascript: prefix to work at all but there might be more holes as this is just a simple check.
+                        if (href.ToLower().Trim().StartsWith("javascript:"))
+                        {
+                            x.attributes["href"] = "#";
+                            //add it to the output for verification?
+                            x.attributes.Add("data-ScriptStrip", String.Format("/* script detected: {0} */", href));
+                        }
+                    }
+                    return true;
+                }),
                 ExtraMode = true, 
                 SafeMode = true,
                 NewWindowForExternalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name),
