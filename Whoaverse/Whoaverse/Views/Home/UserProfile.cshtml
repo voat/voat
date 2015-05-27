@@ -1,4 +1,4 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
     available online at http://www.gnu.org/licenses/gpl.txt;
     you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
     <div class="content" role="main">
         <div class="alert-title">Profile overview for @ViewBag.userid.</div>
         <div class="userstats">
-            <div class="userstats-heading-1">Submission distribution</div>
+            <div class="userstats-heading-1">Submission statistics</div>
             <div class="userstats-body">
                 @{
                     var userStatsModel = Voat.Utils.User.UserStatsModel(@ViewBag.userid);
@@ -39,21 +39,14 @@
                         <p>This user made no submissions.</p>
                     }
                 }
-            </div>
-        </div>
-        <div class="userstats">
-            <div class="userstats-heading-1">Submission counters</div>
-            <div class="userstats-body">
-                This user has so far shared a total of <strong>@userStatsModel.LinkSubmissionsSubmitted</strong> links, started a total of <strong>@userStatsModel.MessageSubmissionsSubmitted</strong> discussions and submitted a total of <strong>@userStatsModel.TotalCommentsSubmitted</strong> comments.
+                <p>This user has so far shared a total of <strong>@userStatsModel.LinkSubmissionsSubmitted</strong> links, started a total of <strong>@userStatsModel.MessageSubmissionsSubmitted</strong> discussions and submitted a total of <strong>@userStatsModel.TotalCommentsSubmitted</strong> comments.</p>
             </div>
         </div>
         <div class="userstats">
             <div class="userstats-heading-1">Voting habits</div>
             <div class="userstats-body">
-                <p class="userstats-heading-2">Submissions</p>
-                This user has upvoted <strong>@userStatsModel.TotalSubmissionsUpvoted</strong> and downvoted <strong>@userStatsModel.TotalSubmissionsDownvoted </strong>submissions.
-                <p class="userstats-heading-2">Comments</p>
-                This user has upvoted <strong>@userStatsModel.TotalCommentsUpvoted</strong> and downvoted <strong>@userStatsModel.TotalCommentsDownvoted </strong>comments.
+                <p><strong>Submissions:</strong> This user has upvoted <strong>@userStatsModel.TotalSubmissionsUpvoted</strong> and downvoted <strong>@userStatsModel.TotalSubmissionsDownvoted </strong>submissions.</p>
+                <p><strong>Comments:</strong> This user has upvoted <strong>@userStatsModel.TotalCommentsUpvoted</strong> and downvoted <strong>@userStatsModel.TotalCommentsDownvoted </strong>comments.</p>
             </div>
         </div>
         <div class="userstats">
@@ -135,6 +128,7 @@
 
                                 <div class="entry unvoted">
                                     <p class="tagline">
+                                        <a href="/user/@ViewBag.userid" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.userid">@ViewBag.userid</a>
                                         <span class="score dislikes">@item.Dislikes points</span>
                                         <span class="userstats-submission-score">@score points</span>
                                         <span class="score likes">@item.Likes points</span>
@@ -146,7 +140,7 @@
                                             @{
                             string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
                                             }
-                                            <b>@ViewBag.userid</b> wrote: @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                                            @Html.Raw(@Formatting.FormatMessage(trimmedComment))
                                         </div>
                                     </div>
                                     <ul class="flat-list buttons">
@@ -188,6 +182,7 @@
 
                                 <div class="entry unvoted">
                                     <p class="tagline">
+                                        <a href="/user/@ViewBag.userid" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.userid">@ViewBag.userid</a>
                                         <span class="score dislikes">@item.Dislikes points</span>
                                         <span class="userstats-submission-score">@score points</span>
                                         <span class="score likes">@item.Likes points</span>
@@ -199,7 +194,7 @@
                                             @{
                             string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
                                             }
-                                            <b>@ViewBag.userid</b> wrote: @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                                            @Html.Raw(@Formatting.FormatMessage(trimmedComment))
                                         </div>
                                     </div>
                                     <ul class="flat-list buttons">
