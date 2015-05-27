@@ -468,16 +468,6 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\ui-themes\autocomplete\autocomplete.css" />
-    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css">
-      <DependentUpon>autocompletebundle.css.bundle</DependentUpon>
-    </Content>
-    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.min.css">
-      <DependentUpon>autocompletebundle.css</DependentUpon>
-    </Content>
-    <Content Include="Content\ui-themes\autocomplete\core.css" />
-    <Content Include="Content\ui-themes\autocomplete\menu.css" />
-    <Content Include="Content\ui-themes\autocomplete\theme.css" />
     <Content Include="Content\tooltipster.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
@@ -542,7 +532,6 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
-    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -551,8 +540,12 @@
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery-ui-1.11.4.js" />
-    <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery-ui.css" />
+    <Content Include="Scripts\jquery-ui.js" />
+    <Content Include="Scripts\jquery-ui.min.css" />
+    <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery-ui.structure.css" />
+    <Content Include="Scripts\jquery-ui.structure.min.css" />
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
     <Content Include="Scripts\jquery.tooltipster.js" />

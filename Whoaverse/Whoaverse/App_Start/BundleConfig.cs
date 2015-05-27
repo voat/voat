@@ -25,7 +25,7 @@ namespace Voat
             bundles.Add(new ScriptBundle("~/bundles/javascript").Include(
                         "~/Scripts/modernizr-*",
                         "~/Scripts/jquery-{version}.js",
-                        "~/Scripts/jquery-ui-{version}.js",
+                        "~/Scripts/jquery-ui.js",
                         "~/Scripts/jquery.tooltipster.js",
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*",
