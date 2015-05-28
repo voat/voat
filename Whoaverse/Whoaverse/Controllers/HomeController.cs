@@ -698,7 +698,6 @@ namespace Voat.Controllers
 
         // GET: stickied submission from /v/announcements for the frontpage
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult StickiedSubmission()
         {
             var stickiedSubmissions = _db.Stickiedsubmissions.FirstOrDefault(s => s.Subversename == "announcements");
