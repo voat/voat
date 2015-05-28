@@ -17,12 +17,10 @@ Disallow: /api
 Disallow: /post
 Disallow: /submit
 Disallow: /goto
-Disallow: /*after=
-Disallow: /*before=
-Disallow: /domain/*t=
+Disallow: /*page=
+Disallow: /domains/*
 Disallow: /login
 Disallow: /subverses/search
 Disallow: /search
 Disallow: /v/*/search
 Allow: /
-

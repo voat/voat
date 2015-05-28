@@ -22,7 +22,6 @@
 
 <div class="submission id-@Model.Id even link stickied" data-fullname="@Model.Id" data-ups="@Model.Likes" data-downs="@Model.Dislikes">
     <p class="parent"></p>
-    <span class="rank"></span>
 
     @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })    
     @Html.Partial("~/Views/Shared/Submissions/_StickiedSubmission.cshtml", Model)

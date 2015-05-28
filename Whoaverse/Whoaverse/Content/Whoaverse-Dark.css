@@ -41,10 +41,6 @@
     pointer-events: none;
 }
 
-.submission {
-    border-bottom: 1px solid #272727;
-}
-
 body {
     background: #292929;
     color: #DFDFDF;
@@ -170,13 +166,13 @@ label {
 }
 
 .alert-featuredsub {
-    background: #292929;
-    border-color: #9D3131 #222 #222;
+    background: #333333;
+    border-color: #9D3131;
     border-style: solid;
-    border-width: 4px 0 1px;
+    border-width: 4px 0 0;
     color: #DFDFDF;
     font-size: 12px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     padding: 5px;
 }
 

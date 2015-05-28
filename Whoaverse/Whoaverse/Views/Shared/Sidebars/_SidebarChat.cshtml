@@ -15,7 +15,7 @@
 <div class="spacer spacersection">
     <div class="sidecontentbox ">
         <div class="title">
-            <h1 class="alert-h1">Subverse Chat</h1>
+            <h1 class="alert-h1">SUBVERSE CHAT</h1>
         </div>
         <div class="accordion" id="accordion2">
             <div class="accordion-group">
@@ -34,9 +34,7 @@
                             </div>
                         </div>
                         <script>
-                            $(function () {
-                                joinSubverseChatRoom('@Model.name');
-                            });
+                            window.onload = function () { joinSubverseChatRoom('@Model.name'); }
                         </script>
 
                         @if (User.Identity.IsAuthenticated)
@@ -46,7 +44,7 @@
                         }
                         else
                         {
-                            <a href="#" onclick="mustLogin();" class="login-required">Login to join chat</a>
+                            <a href="#" onclick="mustLogin();" class="login-required">Login to talk</a>
                         }
                     </div>
                 </div>

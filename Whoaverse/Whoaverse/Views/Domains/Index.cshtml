@@ -77,7 +77,6 @@
 
                 <div class="submission id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
                     <p class="parent"></p>
-                    <span class="rank">@counter</span>                    
 
                     @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })                    
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)

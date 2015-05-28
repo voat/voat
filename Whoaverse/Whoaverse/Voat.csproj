@@ -468,7 +468,13 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\markdownEditor.min.css">
+      <DependentUpon>markdownEditor.css</DependentUpon>
+    </Content>
     <Content Include="Content\tooltipster.css" />
+    <Content Include="Content\tooltipster.min.css">
+      <DependentUpon>tooltipster.css</DependentUpon>
+    </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
