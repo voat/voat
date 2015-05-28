@@ -42,6 +42,9 @@
     body > .content .link .rank {
         width: 3.2ex;
     }
+    .alert-no-post {
+        color:red;
+    }
 </style>
 
 <div id="container">
@@ -77,7 +80,10 @@
             </div>
         }
         <div class="sitetable linklisting">
-            @Html.Action("StickiedSubmission", "Subverses", new {subverseName = selectedSubverse})
+            @if (sortingMode != "top")
+            {
+                @Html.Action("StickiedSubmission", "Subverses", new {subverseName = selectedSubverse})
+            }
 
             @{
                 int currentPageNumber = Model.PageIndex;
@@ -89,8 +95,15 @@
 
             @if (Model.Count < 1)
             {
-                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() {{"selectedSubverse", selectedSubverse}});
-            }
+                @if (sortingMode == "top")
+                {
+                    <span class="alert-no-post">No link / discussion to show.</span>
+                }
+                else
+                {
+                    Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() {{"selectedSubverse", selectedSubverse}});
+                }
+             }
 
             @foreach (var submission in Model)
             {
@@ -136,14 +149,14 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", urlaction, new {page = (Model.PageIndex - 1)}, new {rel = "prev"})
+                        @Html.RouteLink("â€¹ prev", urlaction, new {page = (Model.PageIndex - 1)}, new {rel = "prev"})
                     </li>
                 }
 
                 @if (Model.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", urlaction, new {page = (Model.PageIndex + 1)}, new {rel = "next"})
+                        @Html.RouteLink("next â€º", urlaction, new {page = (Model.PageIndex + 1)}, new {rel = "next"})
                     </li>
                 }
             </ul>
