@@ -16,6 +16,7 @@
 {
     int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
     int commentKarma = Karma.CommentKarma(User.Identity.GetUserName());
+    int upvotesGiven = Karma.UpvotesGiven(User.Identity.GetUserName());
 
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {
@@ -27,6 +28,8 @@
                     <span class="userkarma" title="submission contribution points"><a href="/user/@User.Identity.Name/submissions" class="userkarma" id="scp">@linkKarma</a></span>
                     |
                     <span class="userkarma" title="comment contribution points"><a href="/user/@User.Identity.Name/comments" class="userkarma" id="ccp">@commentKarma</a></span>
+                    |
+                    <span class="upvoatsGiven" title="total upvoats given"><a href="/user/@User.Identity.Name" class="upvoatsGiven" id="upvoatsGiven">@upvotesGiven</a></span>
                 </span>
                 <span class="separator">|</span>
                 <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage", id = "manage" })</span>

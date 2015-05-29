@@ -124,6 +124,25 @@ namespace Voat.Utils
                 }
             }
         }
+
+        // get total upvotes given by a user
+        public static int UpvotesGiven(string userName)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                try
+                {
+                    var submissionUpvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                    var commentUpvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+
+                    return submissionUpvotes + commentUpvotes;
+                }
+                catch (Exception)
+                {
+                    return 0;
+                }
+            }
+        }
     }
 
 }

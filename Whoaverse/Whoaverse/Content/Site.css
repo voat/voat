@@ -370,6 +370,13 @@ ul.flat-vert {
         border-bottom: 1px dotted gray;
     }
 
+    .user .upvoatsGiven a{
+        color: #4AABE7 !important;
+        cursor: help;
+        font-weight: bold;
+        border-bottom: 1px dotted gray;
+    }
+
 .pagename {
     font-weight: bold;
     margin-right: 1ex;

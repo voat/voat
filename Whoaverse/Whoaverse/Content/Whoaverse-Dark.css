@@ -586,6 +586,14 @@ input, button, select, textarea {
         margin: 0 2px;
     }
 
+    .user .upvoatsGiven {
+        color: #56A8DA;
+        border-bottom: 1px dotted #666;
+        cursor: help;
+        font-weight: normal;
+        margin: 0 2px;
+    }
+
 /* User profile stats */
 
 .userstats {
