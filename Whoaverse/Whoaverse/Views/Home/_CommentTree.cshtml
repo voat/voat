@@ -17,39 +17,26 @@
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
     string sortingMode = Convert.ToString(ViewData["SortingMode"]);
     const int threadsToFetch = 10;
-    
+
     IEnumerable<Comment> firstComments;
-        
+
     if (sortingMode == "new")
     {
         firstComments = from f in Model.Comments
-                            let commentScore = f.Likes - f.Dislikes
-                            where f.ParentId == null
-                            orderby f.Date descending
-                            select f;
+                        let commentScore = f.Likes - f.Dislikes
+                        where f.ParentId == null
+                        orderby f.Date descending
+                        select f;
     }
     else
     {
         firstComments = from f in Model.Comments
-                            let commentScore = f.Likes - f.Dislikes
-                            where f.ParentId == null
-                            orderby commentScore descending
-                            select f;
-    }  
+                        let commentScore = f.Likes - f.Dislikes
+                        where f.ParentId == null
+                        orderby commentScore descending
+                        select f;
+    }
 }
-
-<script type="text/javascript" language="javascript">
-    $(function () {
-        var $win = $(window);
-
-        $win.scroll(function () {
-            if ($win.height() + $win.scrollTop()
-                           == $(document).height()) {
-                $("#loadmorebutton").trigger("click");
-            }
-        });
-    });
-</script>
 
 @if (!User.Identity.IsAuthenticated)
 {
@@ -66,30 +53,30 @@
 
 <!-- show top submission comments, orderby number of votes each comment has received -->
 <div class='commentarea'>
-    
+
     <div id="siteTable" class="sitetable nestedlisting">
 
         @foreach (var firstComment in firstComments.Take(threadsToFetch))
+        {
+            // do not show deleted comments unless they have replies
+            if (firstComment.Name == "deleted" && Model.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
             {
-                // do not show deleted comments unless they have replies
-                if (firstComment.Name == "deleted" && Model.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
-                {
-                    continue;
-                }
-
-                if (firstComment.Likes - firstComment.Dislikes < -3)
-                {
-                    <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
-                        @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode } })
-                    </div>
-                }
-                else
-                {
-                    <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
-                        @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
-                    </div>
-                }
+                continue;
             }
+
+            if (firstComment.Likes - firstComment.Dislikes < -3)
+            {
+                <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
+                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode } })
+                </div>
+            }
+            else
+            {
+                <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
+                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
+                </div>
+            }
+        }
         <div class="spacer">
         </div>
         <div id="comments-@Model.Id-page" style="display: none">0</div>

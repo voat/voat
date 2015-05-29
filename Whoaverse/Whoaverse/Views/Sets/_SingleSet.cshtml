@@ -22,25 +22,9 @@
     }
 }
 
-@*
-    endless scrolling for single set frontpage
-*@
-<script type="text/javascript" language="javascript">
-    $(function () {
-        var $win = $(window);
-
-        $win.scroll(function () {
-            if ($win.height() + $win.scrollTop()
-                           == $(document).height()) {
-                $("#loadmorebutton").trigger("click");
-            }
-        });
-    });
-</script>
-
 <div class="sitetable">
     <div class="set-container" id="set-@Model.Id-container">
-        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary {{"setTitle", Model.Name}, {"setId", Model.Id}})
+        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", Model.Name }, { "setId", Model.Id } })
 
         @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet.Equals(Model.Name, StringComparison.OrdinalIgnoreCase)))
         {
@@ -58,7 +42,7 @@
             }
 
             string classEvenOrOdd = "";
-            if (counter%2 == 0)
+            if (counter % 2 == 0)
             {
                 //is even
                 classEvenOrOdd = "even";
@@ -72,7 +56,7 @@
             <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
                 <p class="parent"></p>
 
-                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary {{"CCP", commentContributionPoints}})
+                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
                 @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                 <div class="child"></div>

@@ -51,7 +51,6 @@
 
                         <div class="submission id-@logItem.Message.Id link @submissionClass" data-fullname="@logItem.Message.Id" data-ups="@logItem.Message.Votes" data-downs="">
                             <p class="parent"></p>
-                            <span class="rank">x</span>
 
                             @Html.Partial("_votingIconsSubmission", logItem.Message, new ViewDataDictionary { { "CCP", 0 } })
                             @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", logItem.Message)

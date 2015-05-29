@@ -87,6 +87,7 @@ $(document).ready(function () {
 
         // Hub accessed function to inform the user about new pending notifications
         proxy.client.setNotificationsPending = function (count) {
+            var originalTitle = $('meta[property="og:title"]').attr('content');
             if (count > 0) {
                 // set mail icon
                 if ($('#mail').hasClass('nohavemail')) {
@@ -97,7 +98,7 @@ $(document).ready(function () {
                 $('#mailcounter').show();
                 $('#mailcounter').html(count);
                 // set browser title
-                document.title = '(' + count + ') ' + '@ViewBag.Title';
+                document.title = '(' + count + ') ' + originalTitle;
             } else {
                 // set no new mail icon
                 if ($('#mail').hasClass('havemail')) {
@@ -108,7 +109,7 @@ $(document).ready(function () {
                 $('#mailcounter').html(0);
                 $('#mailcounter').hide();
                 // set browser title
-                document.title = '@ViewBag.Title';
+                document.title = originalTitle;
             }
         };
 
@@ -189,6 +190,18 @@ $(document).ready(function () {
         // Start the connection.
         $.connection.hub.start().done(function () {
             //
+        });
+    });
+
+    // hook scroll event to load more button for endless scrolling
+    $(function () {
+        var $win = $(window);
+
+        $win.scroll(function () {
+            if ($win.height() + $win.scrollTop()
+                == $(document).height()) {
+                $("#loadmorebutton").trigger("click");
+            }
         });
     });
 
