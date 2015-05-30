@@ -207,7 +207,7 @@ label {
     background-color: #FDFDFD;
     border: 1px solid #DCDCDC;
     border-radius: 2px;
-    box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 2px 0 hsla( 0,0%,0%,0.07);
     color: #505050;
     font-size: 12px;
     margin: 10px auto;
@@ -612,7 +612,7 @@ input, button, select, textarea {
     font-size: 13px;
     font-weight: bold;
     padding-bottom: 3px;
-    border-bottom: 1px solid rgb(221, 221, 221);
+    border-bottom: 1px solid #DDD;
 }
 
 .userstats-heading-2 {
@@ -839,6 +839,25 @@ a.btn-whoaverse {
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: #FFF;
     }
+
+.btn-unsub {
+    background: #F8F8F8;
+    background: -webkit-linear-gradient( top,#F8F8F8,#F0F0F0 );
+    background: -moz-linear-gradient( top,#F8F8F8,#F0F0F0 );
+    background: -ms-linear-gradient( top,#F8F8F8,#F0F0F0 );
+    background: -o-linear-gradient( top,#F8F8F8,#F0F0F0 );
+    border: 1px solid #C9C9C9;
+    color: #5A5A5A;
+}
+.btn-unsub:hover,.btn-unsub:active,.btn-unsub:focus {
+    background: #C4B7FF;
+    background: -webkit-linear-gradient( top,#C4B7FF,#BDAEFF );
+    background: -moz-linear-gradient( top,#C4B7FF,#BDAEFF );
+    background: -ms-linear-gradient( top,#C4B7FF,#BDAEFF );
+    background: -o-linear-gradient( top,#C4B7FF,#BDAEFF );
+    border-color: #9B85FF;
+    color: #5B46BE;
+}
 
 /* ! Body : Forms
 ------------------------------------------------------------------------------------ */
@@ -2101,7 +2120,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
     .link a.title.may-blank:visited {
-        color: #665398;
+        color: #9178D0;
     }
 
     .link a.title.may-blank:hover {
@@ -2813,9 +2832,9 @@ textarea.form-control {
     }
 
     #container {
-
         overflow: visible;
     }
+
     #container.page-userprofile {
         padding-top: 10px;
     }
@@ -3077,12 +3096,16 @@ textarea.form-control {
 }
 
 @media ( max-width: 480px ) {
+    #container {
+        padding: 0;
+    }
+
     .comment .comment {
         margin-right: 2px;
     }
 
     .comment.thread > .comment.child {
-        margin-left: 8px;
+        margin-left: 4px;
     }
 }
 

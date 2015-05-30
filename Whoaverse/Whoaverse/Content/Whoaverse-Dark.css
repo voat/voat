@@ -166,7 +166,7 @@ label {
 }
 
 .alert-featuredsub {
-    background: #333333;
+    background: #333;
     border-color: #9D3131;
     border-style: solid;
     border-width: 4px 0 0;
@@ -838,6 +838,24 @@ a.btn-whoaverse {
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: #FFF;
     }
+
+.btn-sub {
+    background: #B44747;
+    background: -webkit-linear-gradient( top,#B44747,#AB3C3C );
+    background: -moz-linear-gradient( top,#B44747,#AB3C3C );
+    background: -ms-linear-gradient( top,#B44747,#AB3C3C );
+    background: -o-linear-gradient( top,#B44747,#AB3C3C );
+    border: 1px solid #933333;
+    color: #FFF7F7;
+}
+.btn-sub:hover {
+    background: #A43A3A;
+    background: -webkit-linear-gradient( top,#A43A3A,#993030 );
+    background: -moz-linear-gradient( top,#A43A3A,#993030 );
+    background: -ms-linear-gradient( top,#A43A3A,#993030 );
+    background: -o-linear-gradient( top,#A43A3A,#993030 );
+    border-color: #802626;
+}
 
 /* ! Body : Forms
 ------------------------------------------------------------------------------------ */
@@ -2857,9 +2875,9 @@ textarea.form-control {
     }
 
     #container {
-
         overflow: visible;
     }
+
     #container.page-userprofile {
         padding-top: 10px;
     }
@@ -3121,12 +3139,16 @@ textarea.form-control {
 }
 
 @media ( max-width: 480px ) {
+    #container {
+        padding: 0;
+    }
+
     .comment .comment {
         margin-right: 2px;
     }
 
     .comment.thread > .comment.child {
-        margin-left: 8px;
+        margin-left: 4px;
     }
 }
 
