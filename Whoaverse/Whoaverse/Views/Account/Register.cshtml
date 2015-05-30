@@ -43,8 +43,9 @@
                     <div class="form-group">
                         @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
                         <div class="col-md-4">
-                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", onblur = "checkUsernameAvailability(this)" })
                             @Html.ValidationMessageFor(model => model.UserName)
+                            <span id="usernameAvailabilityStatus" class="field-validation-error" style="display:none">This username is not available. Doh!</span>
                         </div>
                     </div>
                     <div class="form-group">

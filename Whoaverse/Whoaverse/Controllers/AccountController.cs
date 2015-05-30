@@ -24,6 +24,7 @@ using System.Web.Mvc;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utils;
+using System.Net;
 
 namespace Voat.Controllers
 {
@@ -712,6 +713,47 @@ namespace Voat.Controllers
             }
             AddErrors(result);
             return View("Manage", model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [PreventSpam(DelayRequest = 5, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        public JsonResult CheckUsernameAvailability()
+        {
+            var userNameToCheck = Request.Params["userName"];
+            if (userNameToCheck == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("A username parameter is required for this function.", JsonRequestBehavior.AllowGet);
+            }            
+
+            // check username availability
+            var userNameAvailable = UserManager.FindByName(userNameToCheck);
+
+            if (userNameAvailable == null)
+            {
+                Response.StatusCode = 200;
+                var response = new UsernameAvailabilityResponse{
+                    Available=true
+                };
+
+                return Json(response, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                Response.StatusCode = 200;
+                var response = new UsernameAvailabilityResponse
+                {
+                    Available = false
+                };
+                return Json(response, JsonRequestBehavior.AllowGet);
+            }            
+        }
+
+
+        private class UsernameAvailabilityResponse{
+            public bool Available { get; set; }
         }
 
         #region Helpers

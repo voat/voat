@@ -1543,3 +1543,23 @@ function toggleBlockSubverse(obj, subverseName) {
     }
 }
 
+// a function to check username availability
+function checkUsernameAvailability(obj) {
+    if ($(obj).val().length > 1) {
+        if (!/\s/g.test($(obj).val())) {
+            var checkRequest = $.ajax({
+                type: "POST",
+                url: "/account/CheckUsernameAvailability",
+                data: { userName: $(obj).val() },
+                success: function (data) {
+                    // analyze response and inform the user
+                    if (data.Available) {
+                        $('#usernameAvailabilityStatus').hide();
+                    } else {
+                        $('#usernameAvailabilityStatus').show();
+                    }
+                }
+            });
+        }        
+    }    
+}

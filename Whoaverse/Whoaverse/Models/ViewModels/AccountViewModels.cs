@@ -124,14 +124,12 @@ namespace Voat.Models.ViewModels
     {
         [RegularExpression(@"^[a-zA-Z0-9][A-Za-z0-9-_]*$", ErrorMessage="The username must be alphanumeric and start with a letter or number. It may contain hyphens and underscores.")]
         [Required(ErrorMessage = "Username is required. Please fill this field.")]
-        [StringLength(20, ErrorMessage = "The username should not exceed 20 characters.")]
+        [StringLength(20, ErrorMessage = "The username should not exceed 20 characters and be at least {2} characters long.", MinimumLength = 2)]
         [Display(Name = "User name")]
-
         public string UserName { get; set; }
 
         [Required(ErrorMessage = "A password is required. Please fill this field.")]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
-        
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]        
         [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
