@@ -48,11 +48,11 @@
             {
                 if (Voat.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
                 {
-                    <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default">unsubscribe</button>
+                    <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
                 }
                 else
                 {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return subscribe(this, '@Model.name')">subscribe</button>
+                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="return subscribe(this, '@Model.name')">subscribe</button>
                 }
             }
             else
