@@ -42,9 +42,6 @@
     body > .content .link .rank {
         width: 3.2ex;
     }
-    .alert-no-post {
-        color:red;
-    }
 </style>
 
 <div id="container">
@@ -97,7 +94,9 @@
             {
                 @if (sortingMode == "top")
                 {
-                    <span class="alert-no-post">No link / discussion to show.</span>
+                    <div class="alert alert-info">
+                        <p>There are no links or discussions for selected time period.</p>
+                    </div>
                 }
                 else
                 {
