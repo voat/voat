@@ -37,7 +37,7 @@
         @Html.Hidden("Rank", 0)
 
         <div class="form-group">
-            @Html.Label("URL", new { @class = "control-label col-md-2" })
+            @Html.Label("URL:", new { @class = "control-label col-md-2" })
             <div class="col-md-9">
                 @Html.TextBoxFor(m => m.MessageContent, new { @class = "form-control", Value = ViewBag.linkUrl })
                 @Html.ValidationMessageFor(model => model.MessageContent)
@@ -45,17 +45,17 @@
         </div>
 
         <div class="form-group">
-            @Html.Label("Title", new { @class = "control-label col-md-2" })
+            @Html.Label("Title:", new { @class = "control-label col-md-2" })
             <div class="col-md-9">
                 @Html.TextBoxFor(m => m.Linkdescription, new { @class = "form-control", Value = ViewBag.linkDescription })
                 @Html.ValidationMessageFor(model => model.Linkdescription)
-                <br/>
-                <a href="javascript:void(0)" id="suggest-title" onclick="return suggestTitle()">Enter the URL above, then click here to suggest a title</a>
+                <br />
+                <a href="javascript:void(0)" id="suggest-title" onclick="return suggestTitle()">Enter the URL above, then click here if you want to get a title suggestion</a>
             </div>
         </div>
 
         <div class="form-group">
-            @Html.Label("Subverse", new { @class = "control-label col-md-2" })
+            @Html.Label("Subverse:", new { @class = "control-label col-md-2" })
             <div class="col-md-4">
                 @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control", Value = ViewBag.selectedSubverse, id = "Subverse", @placeholder = "Start typing to get suggestions" })
                 @Html.ValidationMessageFor(model => model.Subverse)
@@ -65,7 +65,19 @@
         <div class="form-group">
             <div class="control-label col-md-2"></div>
             <div class="col-md-9">
-                popular choices:
+                A subverse mostly serves as a way of classifying submissions so that other users can easily find what interests them.
+                <p>
+                    <b>
+                        If you don't want to classify your submission, enter "whatever" in this field.
+                    </b>
+                </p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="control-label col-md-2"></div>
+            <div class="col-md-9">
+                Here are some other popular choices:
                 <b>
                     videos,
                     pics,

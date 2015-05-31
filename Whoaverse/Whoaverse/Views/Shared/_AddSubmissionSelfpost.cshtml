@@ -40,7 +40,7 @@
         @Html.Hidden("Rank", 0)
 
         <div class="form-group">
-            @Html.Label("Title", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label("Title:", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-9">
                 @Html.TextAreaFor(m => m.Title, new { @class = "form-control", Value = ViewBag.title })
                 @Html.ValidationMessageFor(model => model.Title)
@@ -48,7 +48,7 @@
         </div>
 
         <div class="form-group">
-            @Html.Label("Subverse", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label("Subverse:", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-4">
                 @Html.TextBoxFor(m => m.Subverse, new { @class = "form-control", Value = ViewBag.selectedSubverse, id = "Subverse", @placeholder = "Start typing to get suggestions" })
                 @Html.ValidationMessageFor(model => model.Subverse)
@@ -58,7 +58,19 @@
         <div class="form-group">
             <div class="control-label col-md-2"></div>
             <div class="col-md-9">
-                popular choices:
+                A subverse mostly serves as a way of classifying submissions so that other users can easily find what interests them.
+                <p>
+                    <b>
+                        If you don't want to classify your submission, enter "whatever" in this field.
+                    </b>
+                </p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="control-label col-md-2"></div>
+            <div class="col-md-9">
+                Here are some other popular choices:
                 <b>
                     videos,
                     pics,
@@ -73,7 +85,7 @@
         </div>
 
         <div class="form-group">
-            @Html.Label("Message (optional)", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label("Message (optional):", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-9">
                 @Html.MarkdownEditorFor(m => m.MessageContent, new { @class = "form-control", rows = "5", Value = ViewBag.message })
                 @Html.ValidationMessageFor(model => model.MessageContent)
