@@ -205,3 +205,29 @@ function addHyperlink(textComponent, url) {
     }
     textComponent.focus();
 }
+
+/*
+ * Creates the markdown for a piece of code (can be inline or codeblock)
+ * textComponent:		the textarea
+ * url:					the hyperlink's target
+ */
+function addCode(textComponent) {
+    var selectedText = getSelectionArray(textComponent);
+    //Add text located before the selected text (which should not have been modified)
+    textComponent.value = selectedText[0];
+    //Check if there is a new line in the selected text
+	var hasNewLine = /\r|\n/.exec(selectedText[1]);
+	if (hasNewLine){
+		//Selected text has a new line, format as code block
+		textComponent.value += addTagsToText(selectedText[1], '~~~\n', '\n~~~');
+	} else {
+		//Selected text doesn't have a new line, format as inline code
+		textComponent.value += addTagsToText(selectedText[1], '`', '`');
+	}
+    //Add text located after the selected text (which should not have been modified)
+    textComponent.value += selectedText[2];
+    //Temporary variable so that I can put the cursor at intended position
+    var cursorPos = textComponent.value.length - rightTag.length - selectedText[2].length;
+    //Set the focus back on the text component at the intended position
+    setSelectionRange(textComponent, cursorPos, cursorPos);
+}
