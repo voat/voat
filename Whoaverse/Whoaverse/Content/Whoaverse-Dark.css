@@ -1081,8 +1081,8 @@ a.btn-whoaverse {
     }
 
     .md blockquote {
-        background: #292929;
-        border-color: #242424 #242424 #242424 #202020;
+        background: #312D3A;
+        border-color: #25212C #25212C #25212C #211E26;
         border-style: solid;
         border-width: 1px 1px 1px 3px;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
@@ -1162,8 +1162,8 @@ pre {
     }
 
 pre, code {
-    background: #2E2E2E;
-    border: 1px solid #272727;
+    background: #312D3A;
+    border: 1px solid #25212C;
     border-radius: 3px;
     color: #CCC;
     font-size: 12px;
@@ -2341,11 +2341,11 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
     .link .usertext .md blockquote {
-        background: #333;
+        background: #312D3A;
     }
 
     .link .usertext .md pre, .link .usertext .md code {
-        background: #333;
+        background: #312D3A;
     }
 
 /* ! Sitetable : Comments
@@ -2391,7 +2391,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         .comment .comment .comment .comment .comment blockquote,
         .comment .comment .comment .comment .comment .comment .comment blockquote,
         .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #292929; }
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #312D3A; }
     .comment .comment,
     .comment .comment .comment .comment,
     .comment .comment .comment .comment .comment .comment,
@@ -2401,7 +2401,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         .comment .comment .comment .comment blockquote,
         .comment .comment .comment .comment .comment .comment blockquote,
         .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #333; }
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #312D3A; }
 
     .comment .midcol {
         margin-top: 5px;
