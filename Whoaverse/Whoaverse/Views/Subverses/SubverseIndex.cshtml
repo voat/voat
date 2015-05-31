@@ -92,7 +92,7 @@
 
             @if (Model.Count < 1)
             {
-                @if (sortingMode == "top")
+                if (sortingMode == "top")
                 {
                     <div class="alert alert-info">
                         <p>There are no links or discussions for selected time period.</p>
