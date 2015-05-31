@@ -25,6 +25,9 @@
         <a class="markdownEditorImgButton" style="background-position: -32px -16px;" alt="heading" title="Headings" onclick="$(this.parentElement.parentElement).find('#headingsSubMenu').toggle();"></a>
         <a class="markdownEditorImgButton" style="background-position: -64px -16px;" alt="table" title="Table" onclick="$(this.parentElement.parentElement).find('#tableCreatorSubMenu').toggle();"></a>
 		<a class="markdownEditorImgButton" style="background-position: -128px -16px;" alt="spoiler" title="Spoiler" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'[](#s &quot;','&quot;)');"></a>
+		<a class="markdownEditorImgButton" style="background-position: -160px -16px;" alt="spoiler" title="Strikethrough" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'<s>','</s>');"></a>
+		<a class="markdownEditorImgButton" style="background-position: -192px -16px;" alt="spoiler" title="Superscript" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'<sup>','</sup>');"></a>
+		<a class="markdownEditorImgButton" style="background-position: -224px -16px;" alt="spoiler" title="Subscript" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'<sub>','</sub>');"></a>
     </div>
     <!-- Markdown Editor Link Sub Menu -->
     <div class="markdownEditorSubMenu" id="linkSubMenu" style="display: none;">
