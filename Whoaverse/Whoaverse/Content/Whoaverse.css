@@ -1057,6 +1057,10 @@ a.btn-whoaverse {
         text-decoration: underline;
     }
 
+    .md a:visited {
+        color: #9178D0;
+    }
+
     .md blockquote {
         background: #F5F5F5;
         border-color: #E8E8E8 #E8E8E8 #E8E8E8 #DBDBDB;

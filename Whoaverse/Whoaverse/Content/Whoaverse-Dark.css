@@ -1080,6 +1080,14 @@ a.btn-whoaverse {
         max-width: none;
     }
 
+    .md a:hover {
+        color: #DC5757 !important;
+    }
+
+    .md a:visited {
+        color: #8A8A8A;
+    }
+
     .md blockquote {
         background: #312D3A;
         border-color: #25212C #25212C #25212C #211E26;
