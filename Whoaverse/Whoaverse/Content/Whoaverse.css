@@ -2404,6 +2404,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     .comment a.author {
         color: #4AABE7;
         font-weight: bold;
+        margin: 3px;
     }
 
         .comment a.author:visited {
@@ -2424,6 +2425,10 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
     .comment a.admin {
         color: #E12D39;
+    }
+
+    .comment .tagline .number {
+        font-weight: bold;
     }
 
     .comment .flat-list.buttons li a {
