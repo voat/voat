@@ -875,6 +875,7 @@ a.btn-whoaverse {
     -o-transition: border-color 0.1s ease-in-out 0s;
     transition: border-color 0.1s ease-in-out 0s;
     width: 100%;
+    resize: vertical;
 }
 
     .commenttextarea:focus {
@@ -2669,6 +2670,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
     .well label.control-label {
         margin-bottom: 5px;
+        resize: vertical;
     }
 
 textarea.form-control {
