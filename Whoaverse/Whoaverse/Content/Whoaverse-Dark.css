@@ -875,7 +875,6 @@ a.btn-whoaverse {
     -o-transition: border-color 0.1s ease-in-out 0s;
     transition: border-color 0.1s ease-in-out 0s;
     width: 100%;
-    max-width: 100%;
 }
 
     .commenttextarea:focus {
