@@ -1330,7 +1330,7 @@ function loadMoreSetItems(obj, setId) {
     });
 }
 
-// a function that toggles the visibility of the comment/submission source textarea
+// a function that toggles the visibility of the comment/submission/message source textarea
 function toggleSource(senderButton) {
     //toggle textarea visibility
     $(senderButton.parentElement.parentElement.parentElement).find('#sourceDisplay').toggle();

@@ -42,7 +42,7 @@
 
                 foreach (var message in Model)
                 {
-                    <div id="messageContainer-@message.Id">
+                    <div id="messageContainer-@message.Id" class="entry comment">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
                                 Sender: <a href="/u/@message.Sender">@message.Sender</a> | Sent: @message.Timestamp
@@ -53,18 +53,22 @@
 
                             <div class="panel-message-body">
                                 @Html.Raw(Formatting.FormatMessage(message.Body))
+                                <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Html.Raw(message.Body)</textarea>
+                                <ul class="flat-list buttons">
+                                    <li>
+                                        <a id="replyPrivateMessage" href="javascript:void(0)" onclick="return replyprivatemessage(@message.Id, '@message.Sender', '@Html.Encode(@message.Subject)')">reply</a>
+                                    </li>
+                                    <li>
+                                        <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
+                                    </li>
+                                    <li>
+                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deletePrivateMessage(this, @message.Id)">delete</a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
 
-                        <ul class="flat-list buttons">
-                            <li>
-                                <a class="btn-whoaverse-paging" id="replyPrivateMessage" href="javascript:void(0)" onclick="return replyprivatemessage(@message.Id, '@message.Sender', '@Html.Encode(@message.Subject)')">Reply</a>
-                            </li>
-                            <li>|</li>
-                            <li>
-                                <a class="btn-whoaverse-paging" id="deletePrivateMessage" href="javascript:void(0)" onclick="return deletePrivateMessage(this, @message.Id)">Delete</a>
-                            </li>
-                        </ul>
+                        
                         <br /><br />
                     </div>
                 }
