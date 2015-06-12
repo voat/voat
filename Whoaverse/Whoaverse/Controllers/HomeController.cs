@@ -443,6 +443,23 @@ namespace Voat.Controllers
                 return View("UserSaved", paginatedUserSubmissionsAndComments);
             }
 
+            // show hidden
+            if (whattodisplay != null && whattodisplay == "hidden" && User.Identity.IsAuthenticated && User.Identity.Name == id)
+            {
+                IQueryable<HiddenItem> hiddenSubmissions = (from m in _db.Messages
+                                                            join s in _db.Hidingtrackers on m.Id equals s.MessageId
+                                                            where m.Name != "deleted" && s.UserName == User.Identity.Name
+                                                            select new HiddenItem()
+                                                            {
+                                                                HiddenDateTime = s.Timestamp,
+                                                                HiddenMessage = m
+                                                            });
+
+                var orderedSubmissions = hiddenSubmissions.OrderByDescending(s => s.HiddenDateTime).AsQueryable();
+                var paginatedSubmissions = new PaginatedList<HiddenItem>(orderedSubmissions, page ?? 0, pageSize);
+                return View("UserHidden", paginatedSubmissions);
+            }
+
             // default, show overview
             ViewBag.whattodisplay = "overview";
 

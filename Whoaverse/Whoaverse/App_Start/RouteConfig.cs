@@ -381,6 +381,13 @@ namespace Voat
                 defaults: new { controller = "Submissions", action = "Save" }
             );
 
+            // hide
+            routes.MapRoute(
+                name: "hide",
+                url: "hide/{messageId}",
+                defaults: new {controller = "Submissions", action = "Hide" }
+             );
+
             // save comment
             routes.MapRoute(
                 name: "savecomment",

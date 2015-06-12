@@ -4,9 +4,9 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="16d91f6c35a3475cb9ce6e7417581c6e" Name="Diagram" ZoomLevel="94" ShowGrid="true">
+      <Diagram DiagramId="16d91f6c35a3475cb9ce6e7417581c6e" Name="Diagram" ZoomLevel="109" ShowGrid="true">
         <EntityTypeShape EntityType="whoaverseModel.Comment" Width="1.875" PointX="5.875" PointY="9.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="whoaverseModel.Commentvotingtracker" Width="2.125" PointX="8.5" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="whoaverseModel.Commentvotingtracker" Width="2.125" PointX="8.25" PointY="8.875" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Message" Width="1.5" PointX="3.625" PointY="10.75" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Votingtracker" Width="1.5" PointX="5.875" PointY="13.375" IsExpanded="true" />
         <AssociationConnector Association="whoaverseModel.FK_Comments_Messages" ManuallyRouted="false" />
@@ -59,6 +59,8 @@
         <AssociationConnector Association="whoaverseModel.FK_Savingtracker_Messages" />
         <EntityTypeShape EntityType="whoaverseModel.UserBlockedSubverse" Width="1.5" PointX="3.625" PointY="33" />
         <AssociationConnector Association="whoaverseModel.FK_UserBlockedSubverses_Subverses" />
+        <EntityTypeShape EntityType="whoaverseModel.Hidingtracker" Width="1.5" PointX="7.5" PointY="32.25" />
+        <AssociationConnector Association="whoaverseModel.FK_Hidingtracker_Messages" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

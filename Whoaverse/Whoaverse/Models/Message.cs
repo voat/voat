@@ -23,6 +23,7 @@ namespace Voat.Models
             this.Votingtrackers = new HashSet<Votingtracker>();
             this.Viewstatistics = new HashSet<Viewstatistic>();
             this.Savingtrackers = new HashSet<Savingtracker>();
+            this.Hidingtrackers = new HashSet<Hidingtracker>();
         }
     
         public int Id { get; set; }
@@ -51,5 +52,6 @@ namespace Voat.Models
         public virtual ICollection<Viewstatistic> Viewstatistics { get; set; }
         public virtual SubmissionRemovalLog SubmissionRemovalLog { get; set; }
         public virtual ICollection<Savingtracker> Savingtrackers { get; set; }
+        public virtual ICollection<Hidingtracker> Hidingtrackers { get; set; }
     }
 }
