@@ -204,7 +204,106 @@ $(document).ready(function () {
             }
         });
     });
+    
+    var key = {};
 
+    // List of the inputs the user use when creating a new discussion
+    var submitInputs = [
+      '#Title',
+      '#Subverse',
+      '#MessageContent',
+      '.markdownEditorImgButton'
+    ];
+    
+    document.onkeydown = function(evt) {
+      var evt = evt || window.event;
+      var charCode = evt.keyCode || evt.which;
+      var charStr = String.fromCharCode(charCode);
+      
+      // Turn key numbers into readable string
+      switch(charCode) {
+        case 13:
+          key['Enter'] = true;
+          break;
+        case 17:
+          key['Ctrl'] = true;
+          break;
+        case 18:
+          key['Alt'] = true;
+          break;
+        case 27:
+          key['Esc'] = true;
+          break;
+        case 32:
+          key['Space'] = true;
+          break;
+        case 37:
+          key['Left'] = true;
+          break;
+        case 38:
+          key['Top'] = true;
+          break;
+        case 39:
+          key['Right'] = true;
+          break;
+        case 40:
+          key['Bottom'] = true;
+          break;
+        default:
+          key[charStr] = true;
+      }
+      
+      // If ctrl and enter are clicked at the same time, submit the post
+      if(key.Enter && key.Enter === true && key.Ctrl && key.Ctrl === true) {
+        submitInputs.forEach(function(selector) {
+          if(document.querySelector(selector) == document.activeElement) {
+            document.querySelector('input.btn-whoaverse[type="submit"]').click();
+          }
+        });
+      }
+    };
+    
+    window.onkeyup = function(evt){
+      var evt = evt || window.event;
+      var charCode = evt.keyCode || evt.which;
+      var charStr = String.fromCharCode(charCode);
+      
+      // Turn key numbers into readable string
+      switch(charCode) {
+        case 13:
+          key['Enter'] = true;
+          break;
+        case 17:
+          key['Ctrl'] = true;
+          break;
+        case 18:
+          key['Alt'] = true;
+          break;
+        case 27:
+          key['Esc'] = true;
+          break;
+        case 32:
+          key['Space'] = true;
+          break;
+        case 37:
+          key['Left'] = true;
+          break;
+        case 38:
+          key['Top'] = true;
+          break;
+        case 39:
+          key['Right'] = true;
+          break;
+        case 40:
+          key['Bottom'] = true;
+          break;
+        default:
+          key[charStr] = true;
+      }
+      
+      console.log(charCode);
+      console.log(key);
+    };
 });
 
 // a function which handles mouse drop events (sharing links by dragging and dropping)
