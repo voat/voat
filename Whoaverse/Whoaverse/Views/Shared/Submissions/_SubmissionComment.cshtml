@@ -169,12 +169,19 @@
         <form class="usertext" onsubmit="return editcommentsubmit(@commentId)" id="commenteditform-@commentId" action="#">
             @Html.AntiForgeryToken()
             <input id="CommentId" name="CommentId" value="@commentId" type="hidden">
-
             @if (commentModel.Name != "deleted")
             {
                 <div class="usertext-body may-blank-within" id="commentContent-@commentId">
                     <div class="md">
-                        @Html.Raw(@Formatting.FormatMessage(commentModel.CommentContent))
+                        @* Skip Regex intense processing if we've pre-processed *@
+                        @if (!String.IsNullOrEmpty(commentModel.FormattedContent))
+                        {
+                            @Html.Raw(commentModel.FormattedContent)
+                        }
+                        else
+                        {
+                            @Html.Raw(@Formatting.FormatMessage(commentModel.CommentContent))
+                        }
                     </div>
                 </div>
             }
@@ -216,6 +223,8 @@
         <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@commentModel.CommentContent</textarea>
         @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", submissionViewModel)
     </div>
+
+
 </div>
 
 @{

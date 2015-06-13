@@ -137,10 +137,16 @@
                                     </p>
                                     <div class="usertext-body">
                                         <div class="md">
-                                            @{
-                            string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
+                                            @* To save processing just display formatted content if we have it, else trim it and format it. *@
+                                            @if (!String.IsNullOrEmpty(item.FormattedContent))
+                                            {
+                                                @Html.Raw(item.FormattedContent)
                                             }
-                                            @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                                            else
+                                            {
+                                                string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
+                                                @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                                            }
                                         </div>
                                     </div>
                                     <ul class="flat-list buttons">
@@ -191,10 +197,16 @@
                                     </p>
                                     <div class="usertext-body">
                                         <div class="md">
-                                            @{
-                            string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
+                                            @* To save processing just display formatted content if we have it, else trim it and format it. *@
+                                            @if (!String.IsNullOrEmpty(item.FormattedContent))
+                                            {
+                                                @Html.Raw(item.FormattedContent)
                                             }
-                                            @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                                            else
+                                            {
+                                                string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
+                                                @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                                            }
                                         </div>
                                     </div>
                                     <ul class="flat-list buttons">

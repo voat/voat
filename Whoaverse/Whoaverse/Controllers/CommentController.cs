@@ -282,7 +282,12 @@ namespace Voat.Controllers
                         commentModel.CommentContent = ContentProcessor.Instance.Process(commentModel.CommentContent, ProcessingStage.InboundPreSave, commentModel);
                     }
 
+                    //save fully formatted content 
+                    var formattedComment = Formatting.FormatMessage(commentModel.CommentContent);
+                    commentModel.FormattedContent = formattedComment;
+                    
                     _db.Comments.Add(commentModel);
+
                     await _db.SaveChangesAsync();
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
@@ -333,6 +338,10 @@ namespace Voat.Controllers
                             existingComment.CommentContent = ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPreSave, existingComment);
                         }
 
+                        //save fully formatted content 
+                        var formattedComment = Formatting.FormatMessage(existingComment.CommentContent);
+                        existingComment.FormattedContent = formattedComment;
+
                         await _db.SaveChangesAsync();
 
                         if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
@@ -340,8 +349,7 @@ namespace Voat.Controllers
                             ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPostSave, existingComment);
                         }
 
-                        // parse the new comment through markdown formatter and then return the formatted comment so that it can replace the existing html comment which just got modified
-                        var formattedComment = Formatting.FormatMessage(existingComment.CommentContent);
+                        //return the formatted comment so that it can replace the existing html comment which just got modified
                         return Json(new { response = formattedComment });
                     }
                     return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);

@@ -66,6 +66,7 @@
           <Property Name="ParentId" Type="int" />
           <Property Name="Anonymized" Type="bit" Nullable="false" />
           <Property Name="IsDistinguished" Type="bit" Nullable="false" />
+          <Property Name="FormattedContent" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Commentsavingtracker">
           <Key>
@@ -488,7 +489,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Stickiedsubmissions_Subverses">
-          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1" />
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Stickiedsubmissions" Type="Self.Stickiedsubmissions" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverses">
@@ -806,6 +809,7 @@
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
           <Property Name="IsDistinguished" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Commentsavingtrackers" Relationship="whoaverseModel.FK_Commentsavingtracker_Comments" FromRole="Comment" ToRole="Commentsavingtracker" />
+          <Property Name="FormattedContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -1626,6 +1630,7 @@
           <EntitySetMapping Name="Comments">
             <EntityTypeMapping TypeName="whoaverseModel.Comment">
               <MappingFragment StoreEntitySet="Comments">
+                <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
                 <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
                 <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
                 <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
