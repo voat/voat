@@ -276,6 +276,8 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View();
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null) return RedirectToAction("Sent", "Messaging");
 
+            // TODO: Actually verify Captcha
+
             // check if recipient exists
             if (Utils.User.UserExists(privateMessage.Recipient) && !Utils.User.IsUserGloballyBanned(User.Identity.Name))
             {

@@ -20,6 +20,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Voat.Models;
@@ -45,6 +46,8 @@ namespace Voat.Controllers
             var to = new MailAddress("legal@voat.co");
             var sb = new StringBuilder();
             var msg = new MailMessage(@from, to) { Subject = "New CLA Submission from " + claModel.FullName };
+
+            // TODO: Actually verify Captcha
 
             // format CLA email
             sb.Append("Full name: " + claModel.FullName);
@@ -139,7 +142,7 @@ namespace Voat.Controllers
         [Authorize]
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
-        public ActionResult Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
+        public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
         {
             // abort if model state is invalid
             if (!ModelState.IsValid) return View();
@@ -175,8 +178,7 @@ namespace Voat.Controllers
             var userCcp = Karma.CommentKarma(User.Identity.Name);
             if (userCcp < 25)
             {
-                string encodedResponse = Request.Form["g-Recaptcha-Response"];
-                bool isCaptchaCodeValid = (ReCaptchaUtility.Validate(encodedResponse) == "True" ? true : false);
+                bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);
 
                 if (!isCaptchaCodeValid)
                 {

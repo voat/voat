@@ -66,16 +66,7 @@
                                 <div class="panel-heading">Are you a human?</div>
                                 <div class="panel-body">
                                     <p>Please solve the reCAPTCHA challenge below:</p>
-                                    @if (Request.IsSecureConnection)
-                                    {
-                                        <script src='https://www.google.com/recaptcha/api.js'></script>
-                                        <div class="g-recaptcha" data-sitekey="6LcQ8_8SAAAAAJODcAim8n-vQZXStxkjKUmAxQpX"></div>
-                                    }
-                                    else
-                                    {
-                                        <script src='http://www.google.com/recaptcha/api.js'></script>
-                                        <div class="g-recaptcha" data-sitekey="6LcQ8_8SAAAAAJODcAim8n-vQZXStxkjKUmAxQpX"></div>
-                                    }
+                                    @{Html.RenderPartial("_Captcha");}
                                 </div>
                             </div>
 

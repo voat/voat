@@ -45,6 +45,9 @@ namespace Voat.Controllers
         public ActionResult PartnerIntentRegistration(PartnerIntent partnerModel)
         {
             if (!ModelState.IsValid) return View();
+
+            // TODO: Actually verify Captcha
+
             var from = new MailAddress(partnerModel.Email);
             var to = new MailAddress("legal@voat.co");
             var sb = new StringBuilder();
