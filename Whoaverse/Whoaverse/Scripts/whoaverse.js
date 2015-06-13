@@ -208,12 +208,16 @@ $(document).ready(function () {
     var key = {};
 
     // List of the inputs the user use when creating a new discussion
-    var submitInputs = [
-      '#Title',
-      '#Subverse',
-      '#MessageContent',
-      '.markdownEditorImgButton'
-    ];
+    var submitInputs = {
+      post: [
+        '#Title',
+        '#Subverse',
+        '#MessageContent'
+      ],
+      reply: [
+        '#CommentContent'
+      ]
+    };
     
     document.onkeydown = function(evt) {
       var evt = evt || window.event;
@@ -253,11 +257,20 @@ $(document).ready(function () {
           key[charStr] = true;
       }
       
-      // If ctrl and enter are clicked at the same time, submit the post
       if(key.Enter && key.Enter === true && key.Ctrl && key.Ctrl === true) {
-        submitInputs.forEach(function(selector) {
+        submitInputs.post.forEach(function(selector) {
           if(document.querySelector(selector) == document.activeElement) {
             document.querySelector('input.btn-whoaverse[type="submit"]').click();
+          }
+        });
+        
+        submitInputs.reply.forEach(function(selector) {
+          var inputs = document.querySelectorAll(selector);
+          
+          for(var i=0; i<inputs.length; i++) {
+            if(inputs[i] == document.activeElement) {
+              inputs[i].form.querySelector('#submitbutton').click();
+            }
           }
         });
       }
