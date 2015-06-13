@@ -12,9 +12,11 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -27,6 +29,8 @@ using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
+
+
     public class HomeController : Controller
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
@@ -469,7 +473,7 @@ namespace Voat.Controllers
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
                     var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
-                    IQueryable<Message> submissions = (from m in _db.Messages
+                    IQueryable<Message> submissions = (from m in _db.Messages.Include("Subverses").AsNoTracking()
                                                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
                                                        where m.Name != "deleted" && s.Username == User.Identity.Name
                                                        select m).OrderByDescending(s => s.Rank);
@@ -483,7 +487,7 @@ namespace Voat.Controllers
                 else
                 {
                     // get only submissions from default subverses, order by rank
-                    IQueryable<Message> submissions = (from message in _db.Messages
+                    IQueryable<Message> submissions = (from message in _db.Messages.Include("Subverses").AsNoTracking()
                                                        where message.Name != "deleted"
                                                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                                        select message).OrderByDescending(s => s.Rank);

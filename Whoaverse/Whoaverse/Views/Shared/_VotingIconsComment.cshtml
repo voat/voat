@@ -25,23 +25,44 @@
     //LOGGED IN USERS
     {
         string loggedInUserName = User.Identity.Name;
+        
+        //What you see here is a major hack. Atko is 100% responsible for this too. ;)
         //returns -1:downvoted, 1:upvoted, or 0:not voted
-        int votedOrNot = VotingComments.CheckIfVotedComment(loggedInUserName, commentId);
-
-        switch (votedOrNot)
+        int? votedOrNot = null;
+        if (ViewBag.VoteCache != null)
         {
-            case 1:
-                votingStatusClassUpArrow = "arrow-upvoted";
-                votingStatusClassDownArrow = "arrow-downvote";
-                likesOrDislikesClass = "likes";
-                break;
-            case -1:
-                likesOrDislikesClass = "dislikes";
-                votingStatusClassUpArrow = "arrow-upvote";
-                votingStatusClassDownArrow = "arrow-downvoted";
-                break;
+            foreach (var cv in ViewBag.VoteCache)
+            {
+                if (cv.CommentId == commentId)
+                {
+                    votedOrNot = cv.VoteStatus;
+                    break;
+                }
+            }
         }
-
+        else 
+        {
+            //backwards compat if ViewBad.VoteCache isn't populated as many code paths funnel here
+            votedOrNot = VotingComments.CheckIfVotedComment(loggedInUserName, commentId);
+            //throw new Exception("I WANT VOTECACHE");
+        }
+        //int votedOrNot = VotingComments.CheckIfVotedComment(loggedInUserName, commentId);
+        if (votedOrNot.HasValue) { 
+            switch (votedOrNot.Value)
+            {
+                case 1:
+                    votingStatusClassUpArrow = "arrow-upvoted";
+                    votingStatusClassDownArrow = "arrow-downvote";
+                    likesOrDislikesClass = "likes";
+                    break;
+                case -1:
+                    likesOrDislikesClass = "dislikes";
+                    votingStatusClassUpArrow = "arrow-upvote";
+                    votingStatusClassDownArrow = "arrow-downvoted";
+                    break;
+            }
+        }
+        
         <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
             @if (commentContributionPoints < 20)
             {

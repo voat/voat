@@ -13,7 +13,9 @@
 @model Voat.Models.Message
 
 @{
-    var commentCount = Model.Comments.Count(c => c.Name != "deleted");
+    //var commentCount = Model.Comments.Count(c => c.Name != "deleted");
+    var commentCount = CommentCounter.CommentCount(Model.Id);
+    
     bool anonymizedSubverse = false;
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];

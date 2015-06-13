@@ -85,7 +85,7 @@
 
 @if (commentModel.Name != "deleted")
 {
-    @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", commentId }, { "CCP", commentContributionPoints }, { "collapsedStyle", uncollapsedComment } })
+    @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary {  { "VoteCache", ViewBag.VoteCache }, { "CommentId", commentId }, { "CCP", commentContributionPoints }, { "collapsedStyle", uncollapsedComment } })
 }
 
 <div class="entry unvoted">
@@ -272,13 +272,13 @@
         if (parentIsHidden)
         {
             <div class="child id-@childComment.Id comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="display:none">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
             </div>
         }
         else
         {
             <div class="child id-@childComment.Id comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
             </div>
         }
 

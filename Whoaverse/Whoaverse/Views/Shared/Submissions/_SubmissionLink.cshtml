@@ -25,7 +25,8 @@
         }
     }
 
-    var commentCount = Model.Comments.Count(c => c.Name != "deleted");
+    //var commentCount = Model.Comments.Count(c => c.Name != "deleted");
+    var commentCount = CommentCounter.CommentCount(Model.Id);
 
     if (Model.Subverses != null)
     {

@@ -27,6 +27,9 @@ using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
+
+    
+
     public class CommentController : Controller
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
@@ -85,7 +88,17 @@ namespace Voat.Controllers
             Response.StatusCode = 200;
             return Json("Saving ok", JsonRequestBehavior.AllowGet);
         }
+        private List<Commentvotingtracker> UserVotesBySubmission(int submissionID) {
+            List<Commentvotingtracker> vCache = new List<Commentvotingtracker>();
 
+            if (User.Identity.IsAuthenticated){
+                vCache = (from cv in _db.Commentvotingtrackers.AsNoTracking()
+                            join c in _db.Comments on cv.CommentId equals c.Id
+                            where c.MessageId == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                            select cv).ToList();    
+            }
+            return vCache;
+        }
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
         {
@@ -94,6 +107,10 @@ namespace Voat.Controllers
 
             ViewBag.SelectedSubverse = subverse.name;
             ViewBag.SubverseAnonymized = subverse.anonymized_mode;
+
+            //Temp cache user votes for this thread
+            ViewBag.VoteCache = UserVotesBySubmission(id.Value);
+
 
             if (startingcommentid != null)
             {
@@ -176,6 +193,10 @@ namespace Voat.Controllers
 
             var submission = _db.Messages.Find(id);
             if (submission == null) return View("~/Views/Errors/Error_404.cshtml");
+
+            //Temp cache user votes for this thread
+            ViewBag.VoteCache = UserVotesBySubmission(id.Value);
+
 
             ViewData["StartingPos"] = startingpos;
 

@@ -155,7 +155,15 @@
                 {
                     <div class="usertext-body may-blank-within" id="commentContent-@Model.Id">
                         <div class="md">
-                            @Html.Raw(@Formatting.FormatMessage(Model.CommentContent))
+                            @* Skip Regex intense processing if we've pre-processed *@
+                            @if (!String.IsNullOrEmpty(Model.FormattedContent))
+                            {
+                                @Html.Raw(Model.FormattedContent)
+                            }
+                            else
+                            {
+                                @Html.Raw(@Formatting.FormatMessage(Model.CommentContent))
+                            }
                         </div>
                     </div>
                 }
