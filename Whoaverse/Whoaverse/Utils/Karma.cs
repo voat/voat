@@ -28,15 +28,9 @@ namespace Voat.Utils
 
                 try
                 {
-                    var likes = db.Messages
-                                                .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                                                .Sum(r => (int)r.Likes);
-
-                    var dislikes = db.Messages
-                                        .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                                        .Sum(r => (int)r.Dislikes);
-
-                    return likes - dislikes;
+                    return db.Messages.Where(c => c.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .Select(c => c.Likes - c.Dislikes)
+                        .Sum();
                 }
                 catch (Exception)
                 {
@@ -53,16 +47,9 @@ namespace Voat.Utils
             {
                 try
                 {
-                    var likes = db.Messages
-                                                .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
-                                                .Sum(r => (int)r.Likes);
-
-
-                    var dislikes = db.Messages
-                                        .Where(r => r.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && r.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
-                                        .Sum(r => (int)r.Dislikes);
-
-                    return likes - dislikes;
+                    return db.Messages.Where(c => c.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase) && c.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
+                        .Select(c => c.Likes - c.Dislikes)
+                        .Sum();
                 }
                 catch (Exception)
                 {
@@ -78,15 +65,9 @@ namespace Voat.Utils
             {
                 try
                 {
-                    var sumOfLikes = db.Comments
-                                               .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
-                                               .Sum(r => (int)r.Likes);
-
-                    var sumOfdislikes = db.Comments
-                                        .Where(r => r.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
-                                        .Sum(r => (int)r.Dislikes);
-
-                    return sumOfLikes - sumOfdislikes;
+                    return db.Comments.Where(c => c.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        .Select(c => c.Likes - c.Dislikes)
+                        .Sum();
                 }
                 catch (Exception)
                 {
@@ -104,19 +85,13 @@ namespace Voat.Utils
             {
                 try
                 {
-                    var sumOfLikes = (from comment in db.Comments
-                                      join message in db.Messages on comment.MessageId equals message.Id
-                                      where comment.Name != "deleted" && comment.Name == userName && message.Subverse == subverseName
-                                      select comment)
-                                       .Sum(r => r.Likes);
-
-                    var sumOfDislikes = (from comment in db.Comments
-                                         join message in db.Messages on comment.MessageId equals message.Id
-                                         where comment.Name != "deleted" && comment.Name == userName && message.Subverse == subverseName
-                                         select comment)
-                                       .Sum(r => r.Dislikes);
-
-                    return sumOfLikes - sumOfDislikes;
+                    return db.Comments.Join(db.Messages, comment => comment.MessageId, message => message.Id, (comment, message) => new {comment, message})
+                        .Where(
+                            x =>
+                                x.comment.Name != "deleted" && x.comment.Name == userName &&
+                                x.message.Subverse == subverseName)
+                        .Select(x => x.comment.Likes - x.comment.Dislikes)
+                        .Sum();
                 }
                 catch (Exception)
                 {
