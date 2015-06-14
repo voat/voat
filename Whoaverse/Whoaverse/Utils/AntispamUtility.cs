@@ -19,11 +19,12 @@ Copyright Rion Williams 2013
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
+using System.Data.Entity.SqlServer.Utilities;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
@@ -32,6 +33,28 @@ using Newtonsoft.Json;
 
 namespace Voat.Utils
 {
+    public class ValidateCaptchaAttribute : ActionFilterAttribute
+    {
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            try
+            {
+                var request = filterContext.RequestContext.HttpContext.Request;
+                var captchaValid = ReCaptchaUtility.Validate(request).Result;
+
+                if (!captchaValid)
+                {
+                    // Add a model error if the captcha was not valid
+                    filterContext.Controller.ViewData.ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+
     public class PreventSpamAttribute : ActionFilterAttribute
     {
         // This stores the time between Requests (in seconds)
@@ -140,22 +163,30 @@ namespace Voat.Utils
 
     public static class ReCaptchaUtility
     {
-        public static string Validate(string encodedResponse)
+        public static async Task<bool> Validate(HttpRequestBase request)
         {
-            var client = new WebClient();
             string privateKey = ConfigurationManager.AppSettings["recaptchaPrivateKey"];
-            var googleReply = client.DownloadString(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", privateKey, encodedResponse));
-            var captchaResponse = JsonConvert.DeserializeObject<ReCaptchaResponseClass>(googleReply);
+            string encodedResponse = request.Form["g-Recaptcha-Response"];
+
+            var client = new HttpClient();
+            var content = new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string, string>("secret", privateKey), 
+                new KeyValuePair<string, string>("response", encodedResponse), 
+            });
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content).ConfigureAwait(false);
+            var captchaResponse = await response.Content.ReadAsAsync<ReCaptchaResponse>().ConfigureAwait(false);
+
             return captchaResponse.Success;
         }
-    }
 
-    public class ReCaptchaResponseClass
-    {
-        [JsonProperty("success")]
-        public string Success { get; set; }
+        private class ReCaptchaResponse
+        {
+            [JsonProperty("success")]
+            public bool Success { get; set; }
 
-        [JsonProperty("error-codes")]
-        public List<string> ErrorCodes { get; set; }
+            [JsonProperty("error-codes")]
+            public List<string> ErrorCodes { get; set; }
+        }
     }
 }

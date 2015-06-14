@@ -140,20 +140,10 @@ namespace Voat.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [ValidateCaptcha]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
-
-            // begin recaptcha check
-            string encodedResponse = Request.Form["g-Recaptcha-Response"];
-            bool isCaptchaCodeValid = (ReCaptchaUtility.Validate(encodedResponse) == "True" ? true : false);
-
-            if (!isCaptchaCodeValid)
-            {
-                ModelState.AddModelError("", "Incorrect recaptcha answer.");
-                return View();
-            }
-            // end recaptcha check
 
             try
             {

@@ -802,6 +802,7 @@
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSave.cshtml" />
     <Content Include="Views\Home\UserSaved.cshtml" />
     <Content Include="Views\AjaxViews\_BasicUserInfo.cshtml" />
+    <Content Include="Views\Shared\_Captcha.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

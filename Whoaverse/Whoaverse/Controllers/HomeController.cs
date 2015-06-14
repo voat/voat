@@ -20,6 +20,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Voat.Models;
@@ -37,7 +38,8 @@ namespace Voat.Controllers
 
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public ActionResult ClaSubmit(Cla claModel)
+        [ValidateCaptcha]
+        public async Task<ActionResult> ClaSubmit(Cla claModel)
         {
             if (!ModelState.IsValid) return View("~/Views/Legal/Cla.cshtml");
 
@@ -139,7 +141,7 @@ namespace Voat.Controllers
         [Authorize]
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
-        public ActionResult Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
+        public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
         {
             // abort if model state is invalid
             if (!ModelState.IsValid) return View();
@@ -175,8 +177,7 @@ namespace Voat.Controllers
             var userCcp = Karma.CommentKarma(User.Identity.Name);
             if (userCcp < 25)
             {
-                string encodedResponse = Request.Form["g-Recaptcha-Response"];
-                bool isCaptchaCodeValid = (ReCaptchaUtility.Validate(encodedResponse) == "True" ? true : false);
+                bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);
 
                 if (!isCaptchaCodeValid)
                 {

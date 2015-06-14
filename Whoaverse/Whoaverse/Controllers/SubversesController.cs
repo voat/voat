@@ -131,8 +131,7 @@ namespace Voat.Controllers
             if (Karma.CommentKarma(User.Identity.Name) < minimumCcp)
             {
                 // begin recaptcha check
-                string encodedResponse = Request.Form["g-Recaptcha-Response"];
-                bool isCaptchaCodeValid = (ReCaptchaUtility.Validate(encodedResponse) == "True" ? true : false);
+                bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);
 
                 if (!isCaptchaCodeValid)
                 {

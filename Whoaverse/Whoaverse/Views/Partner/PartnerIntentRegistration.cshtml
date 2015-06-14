@@ -48,6 +48,7 @@
             @using (Html.BeginForm("PartnerIntentRegistration", "Partner", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
                 @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
                 @Html.HiddenFor(m => m.UserName)
                 <div class="form-group">
                     @Html.LabelFor(m => m.FullName, "Full name*", new { @class = "col-md-2 control-label" })
@@ -97,16 +98,7 @@
 
                 <div class="panel panel-transparent">
                     @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
-                    @if (Request.IsSecureConnection)
-                    {
-                        <script src='https://www.google.com/recaptcha/api.js'></script>
-                        <div class="g-recaptcha" data-sitekey="6LcQ8_8SAAAAAJODcAim8n-vQZXStxkjKUmAxQpX"></div>
-                    }
-                    else
-                    {
-                        <script src='http://www.google.com/recaptcha/api.js'></script>
-                        <div class="g-recaptcha" data-sitekey="6LcQ8_8SAAAAAJODcAim8n-vQZXStxkjKUmAxQpX"></div>
-                    }
+                    @{Html.RenderPartial("_Captcha");}
                 </div>
 
                 <div class="form-group">
