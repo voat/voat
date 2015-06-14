@@ -284,34 +284,34 @@ $(document).ready(function () {
       // Turn key numbers into readable string
       switch(charCode) {
         case 13:
-          key['Enter'] = true;
+          key['Enter'] = false;
           break;
         case 17:
-          key['Ctrl'] = true;
+          key['Ctrl'] = false;
           break;
         case 18:
-          key['Alt'] = true;
+          key['Alt'] = false;
           break;
         case 27:
-          key['Esc'] = true;
+          key['Esc'] = false;
           break;
         case 32:
-          key['Space'] = true;
+          key['Space'] = false;
           break;
         case 37:
-          key['Left'] = true;
+          key['Left'] = false;
           break;
         case 38:
-          key['Top'] = true;
+          key['Top'] = false;
           break;
         case 39:
-          key['Right'] = true;
+          key['Right'] = false;
           break;
         case 40:
-          key['Bottom'] = true;
+          key['Bottom'] = false;
           break;
         default:
-          key[charStr] = true;
+          key[charStr] = false;
       }
       
       console.log(charCode);
