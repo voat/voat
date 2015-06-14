@@ -455,7 +455,7 @@ namespace Voat.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Error");
+                return View("~/Views/Errors/DbNotResponding.cshtml");
             }
         }
 
@@ -531,7 +531,7 @@ namespace Voat.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Error");
+                return View("~/Views/Errors/DbNotResponding.cshtml");
             }
         }
 
@@ -704,7 +704,7 @@ namespace Voat.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Error");
+                return View("~/Views/Errors/DbNotResponding.cshtml");
             }
         }
 

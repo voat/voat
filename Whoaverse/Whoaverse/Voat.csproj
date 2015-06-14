@@ -476,6 +476,12 @@
     <Content Include="Content\tooltipster.min.css">
       <DependentUpon>tooltipster.css</DependentUpon>
     </Content>
+    <Content Include="Content\ui-themes\autocomplete\autocomplete.css" />
+    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css" />
+    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.min.css" />
+    <Content Include="Content\ui-themes\autocomplete\core.css" />
+    <Content Include="Content\ui-themes\autocomplete\menu.css" />
+    <Content Include="Content\ui-themes\autocomplete\theme.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
@@ -539,6 +545,7 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
+    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -803,6 +810,7 @@
     <Content Include="Views\Home\UserSaved.cshtml" />
     <Content Include="Views\AjaxViews\_BasicUserInfo.cshtml" />
     <Content Include="Views\Shared\_Captcha.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
