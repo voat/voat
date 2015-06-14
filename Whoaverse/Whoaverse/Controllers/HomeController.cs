@@ -38,7 +38,8 @@ namespace Voat.Controllers
 
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public ActionResult ClaSubmit(Cla claModel)
+        [ValidateCaptcha]
+        public async Task<ActionResult> ClaSubmit(Cla claModel)
         {
             if (!ModelState.IsValid) return View("~/Views/Legal/Cla.cshtml");
 
@@ -46,8 +47,6 @@ namespace Voat.Controllers
             var to = new MailAddress("legal@voat.co");
             var sb = new StringBuilder();
             var msg = new MailMessage(@from, to) { Subject = "New CLA Submission from " + claModel.FullName };
-
-            // TODO: Actually verify Captcha
 
             // format CLA email
             sb.Append("Full name: " + claModel.FullName);

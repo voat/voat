@@ -42,11 +42,10 @@ namespace Voat.Controllers
         [RequireHttps]
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [ValidateCaptcha]
         public ActionResult PartnerIntentRegistration(PartnerIntent partnerModel)
         {
             if (!ModelState.IsValid) return View();
-
-            // TODO: Actually verify Captcha
 
             var from = new MailAddress(partnerModel.Email);
             var to = new MailAddress("legal@voat.co");

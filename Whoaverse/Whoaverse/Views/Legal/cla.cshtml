@@ -83,6 +83,7 @@
         @using (Html.BeginForm("ClaSubmit", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
             @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
             <div class="form-group">
                 @Html.LabelFor(m => m.FullName, "Full name*", new { @class = "col-md-2 control-label" })
                 <div class="col-md-3">

@@ -19,6 +19,7 @@ Copyright Rion Williams 2013
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Entity.SqlServer.Utilities;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -32,6 +33,28 @@ using Newtonsoft.Json;
 
 namespace Voat.Utils
 {
+    public class ValidateCaptchaAttribute : ActionFilterAttribute
+    {
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            try
+            {
+                var request = filterContext.RequestContext.HttpContext.Request;
+                var captchaValid = ReCaptchaUtility.Validate(request).Result;
+
+                if (!captchaValid)
+                {
+                    // Add a model error if the captcha was not valid
+                    filterContext.Controller.ViewData.ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+
     public class PreventSpamAttribute : ActionFilterAttribute
     {
         // This stores the time between Requests (in seconds)
@@ -151,8 +174,8 @@ namespace Voat.Utils
                 new KeyValuePair<string, string>("secret", privateKey), 
                 new KeyValuePair<string, string>("response", encodedResponse), 
             });
-            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
-            var captchaResponse = await response.Content.ReadAsAsync<ReCaptchaResponse>();
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content).ConfigureAwait(false);
+            var captchaResponse = await response.Content.ReadAsAsync<ReCaptchaResponse>().ConfigureAwait(false);
 
             return captchaResponse.Success;
         }

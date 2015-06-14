@@ -48,6 +48,7 @@
             @using (Html.BeginForm("PartnerIntentRegistration", "Partner", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
                 @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
                 @Html.HiddenFor(m => m.UserName)
                 <div class="form-group">
                     @Html.LabelFor(m => m.FullName, "Full name*", new { @class = "col-md-2 control-label" })
