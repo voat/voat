@@ -1079,19 +1079,23 @@ function addSubToSet(obj, setId) {
 
 // a function to load content of a self post and append it to calling object
 function loadSelfText(obj, messageId) {
+    // load content only if collapsed, don't cache as author may edit the submission
+    var isExpanded = false;
+    if ($(obj).hasClass('collapsed')) {
+        //fetch message content and append under class md
+        var messageContent = $.get(
+            "/ajaxhelpers/messagecontent/" + messageId,
+            null,
+            function (data) {
+                $(obj).parent().find(".expando").find(".md").html(data);
+                window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent().find(".expando")); });
+            }
+         );
+    }
 
     $(obj).toggleClass("collapsed");
     $(obj).toggleClass("expanded");
-
-    //fetch message content and append under class md
-    var messageContent = $.get(
-        "/ajaxhelpers/messagecontent/" + messageId,
-        null,
-        function (data) {
-            $(obj).parent().find(".expando").find(".md").html(data);
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent().find(".expando")); });
-        }
-     );
+    
     // toggle message content display
     $(obj).parent().find(".expando").toggle();
 }
