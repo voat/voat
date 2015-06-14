@@ -149,9 +149,12 @@
                     @Html.Partial("~/Views/Shared/UserDistinctions/_UserDistinction.cshtml", commentModel, new ViewDataDictionary { { "SubverseAnonymized", subverseAnonymized } })
                 }
 
-                <span class="score dislikes">@commentModel.Dislikes points</span>
-                <span class="score unvoted">@commentScore points</span>
-                <span class="score likes">@commentModel.Likes points</span>
+                <span class="score dislikes">
+                    <span class="number">@commentModel.Dislikes</span> points</span>
+                <span class="score unvoted">
+                    <span class="number">@commentScore</span> points</span>
+                <span class="score likes">
+                    <span class="number">@commentModel.Likes</span> points</span>
                 <span class="commentvotesratio">(<span class="post_upvotes">+@commentModel.Likes</span>|<span class="post_downvotes">-@commentModel.Dislikes</span>)</span>
             }
             else

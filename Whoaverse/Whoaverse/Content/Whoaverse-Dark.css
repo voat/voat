@@ -875,6 +875,7 @@ a.btn-whoaverse {
     -o-transition: border-color 0.1s ease-in-out 0s;
     transition: border-color 0.1s ease-in-out 0s;
     width: 100%;
+    resize: vertical;
 }
 
     .commenttextarea:focus {
@@ -1078,6 +1079,14 @@ a.btn-whoaverse {
 
     .md .single-notification {
         max-width: none;
+    }
+
+    .md a:hover {
+        color: #DC5757 !important;
+    }
+
+    .md a:visited {
+        color: #8A8A8A;
     }
 
     .md blockquote {
@@ -2445,6 +2454,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     .comment a.author {
         color: #56A8DA;
         font-weight: bold;
+        margin: 3px;
     }
 
         .comment a.author:visited {
@@ -2466,6 +2476,10 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
     .comment a.admin {
         color: #E12D39;
+    }
+
+    .comment .tagline .number {
+        font-weight: bold;
     }
 
     .comment .flat-list.buttons li a:hover {
@@ -2656,6 +2670,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
     .well label.control-label {
         margin-bottom: 5px;
+        resize: vertical;
     }
 
 textarea.form-control {
