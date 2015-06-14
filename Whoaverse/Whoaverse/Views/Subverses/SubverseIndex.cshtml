@@ -85,6 +85,8 @@
 
                 int counter = counterCont + 1;
                 string submissionClass = "";
+
+                int hideCount = 0;
             }
 
             @if (Model.Count < 1)
@@ -94,6 +96,14 @@
 
             @foreach (var submission in Model)
             {
+                if (Hiding.CheckIfHidden(User.Identity.Name, submission.Id) == true) {
+                    hideCount += 1;
+                    if (hideCount == Model.Count)
+                    {
+                        Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() {{"selectedSubverse", selectedSubverse}});
+                    }
+                    continue;
+                }
                 //type 2 = link
                 //type 1 = message
                 if (submission.Type == 1)

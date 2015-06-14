@@ -79,7 +79,7 @@ $(document).ready(function () {
             }
         }
     });
-
+    
     // SignalR helper methods to start hub connection, update the page and send messages
     $(function () {
         // Reference the auto-generated proxy for the hub.
@@ -1514,6 +1514,31 @@ function toggleSaveSubmission(submissionId) {
     }
 }
 
+var hideTimer = 0;
+
+// When clicking "hide", set the post as hidden and fade it out of the page before setting display:none
+function toggleHideSubmission(submissionId) {
+    var hideLink = $(".submission.id-" + submissionId + " .hidelink");
+    var loc = window.location.pathname;
+    var dir = loc.substr(loc.lastIndexOf('/'), loc.lastIndexOf('/') + 1);
+
+    if (hideLink.exists()) {
+        if (hideLink.text() === "hide") {
+            if (dir == "/hidden") { clearTimeout(hideTimer); }
+            else { hideTimer = setTimeout(fadeOut, 3000, document.getElementsByClassName("submission id-" + submissionId)[0]); }
+            hideLink.text("unhide");
+        } else {
+            if (dir == "/hidden") { hideTimer = setTimeout(fadeOut, 3000, document.getElementsByClassName("submission id-" + submissionId)[0]); }
+            else { clearTimeout(hideTimer); }
+            hideLink.text("hide");
+        }
+        $.ajax({
+            type: "POST",
+            url: "/hide/" + submissionId
+        });
+    }
+}
+
 function toggleSaveComment(commentId) {
     var saveLink = $(".comment.id-" + commentId + " .savelink").first();
     if (saveLink.exists()) {
@@ -1566,4 +1591,21 @@ function checkUsernameAvailability(obj) {
             });
         }        
     }    
+}
+
+ 
+
+// Add a fade out effect for hiding comments
+function fadeOut(element) {
+    var op = 1;
+
+    var timer = setInterval(function () {
+        if (op <= 0.1) {
+            clearInterval(timer);
+            element.style.display = 'none';
+        }
+        element.style.opacity = op;
+        element.style.filter = 'alpha(opacity=' + op * 1000 + ")";
+        op -= op * 0.1;
+    }, 50);
 }

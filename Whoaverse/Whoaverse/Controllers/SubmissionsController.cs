@@ -173,6 +173,17 @@ namespace Voat.Controllers
             return Json("Saving ok", JsonRequestBehavior.AllowGet);
         }
 
+        // hide a submission
+        // POST: hide/{messageId}
+        [Authorize]
+        public JsonResult Hide(int messageId)
+        {
+            var loggedInUser = User.Identity.Name;
+            // hide/unhide
+            Hiding.HideSubmission(messageId, loggedInUser);
+            return Json("Saving ok", JsonRequestBehavior.AllowGet);
+        }
+
         // POST: editsubmission
         [Authorize]
         [HttpPost]

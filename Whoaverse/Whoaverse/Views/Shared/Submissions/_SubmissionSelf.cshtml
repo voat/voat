@@ -97,6 +97,10 @@
                             @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
                         </li>
                     }
+
+                    <li>
+                        @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonHide.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
+                    </li>
                 }
             </ul>
             <div class="expando" style="display: none">

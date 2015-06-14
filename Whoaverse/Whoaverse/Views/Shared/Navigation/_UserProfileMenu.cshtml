@@ -15,6 +15,7 @@
     string classComments = "disabled";
     string classSubmissions = "disabled";
     string classSaved = "disabled";
+    string classHidden = "disabled";
     var selectedUser = ViewBag.selectedUser;
     var whattodisplay = ViewBag.whattodisplay;
 
@@ -26,6 +27,7 @@
             classOverview = "disabled";
             classSubmissions = "disabled";
             classSaved = "disabled";
+            classHidden = "disabled";
         }
         if (whattodisplay == "overview")
         {
@@ -33,6 +35,7 @@
             classOverview = "selected";
             classSubmissions = "disabled";
             classSaved = "disabled";
+            classHidden = "disabled";
 
         }
         if (whattodisplay == "submissions")
@@ -41,6 +44,7 @@
             classOverview = "disabled";
             classSubmissions = "selected";
             classSaved = "disabled";
+            classHidden = "disabled";
 
         }
         if (whattodisplay == "saved")
@@ -49,6 +53,15 @@
             classOverview = "disabled";
             classSubmissions = "disabled";
             classSaved = "selected";
+            classHidden = "disabled";
+        }
+        if (whattodisplay == "hidden")
+        {
+            classComments = "disabled";
+            classOverview = "disabled";
+            classSubmissions = "disabled";
+            classSaved = "disabled";
+            classHidden = "selected";
         }
     }
 }
@@ -62,6 +75,7 @@
         if (User.Identity.Name == selectedUser)
         {
             <li class="@classSaved"><a href="~/user/@selectedUser/saved">Saved</a></li>
+            <li class="@classHidden"><a href="~/user/@selectedUser/hidden">Hidden</a></li>
         }
     }
 </ul>
