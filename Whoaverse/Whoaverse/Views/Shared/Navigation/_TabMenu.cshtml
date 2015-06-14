@@ -20,6 +20,7 @@
     var classHot = "";
     var classNew = "";
     var classTop = "";
+    var classWorst = "";
     var classDiscussion = "disabled";
     var classLink = "disabled";
 
@@ -29,16 +30,25 @@
             classNew = "selected";
             classHot = "disabled";
             classTop = "disabled";
+            classWorst = "disabled";
             break;
         case "top":
             classTop = "selected";
             classNew = "disabled";
             classHot = "disabled";
+            classWorst = "disabled";
+            break;
+        case "worst":
+            classTop = "disabled";
+            classNew = "disabled";
+            classHot = "disabled";
+            classWorst = "selected";
             break;
         default:
             classHot = "selected";
             classNew = "disabled";
             classTop = "disabled";
+            classWorst = "disabled";
             break;
     }
 
@@ -63,6 +73,7 @@
             <ul class="tabmenu">
                 <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions from default subverses or the ones you are subscribed to.">Hot</a></li>
                 <li class="@classNew"><a href="~/new" title="Show latest submissions from default subverses or the ones you are subscribed to.">New</a></li>
+                <li class="@classWorst"><a href="~/worst" title="Show least popular submissions from default subverses or the ones you are subscribed to.">Worst</a></li>
                 <li class="disabled"><a href="~/v/all/new" title="Show latest submissions from all subverses.">Incoming</a></li>
                 <li class="@classLink"><a class="contribute submit-link" href="/submit?linkpost=true">Share a link</a></li>
                 <li class="@classDiscussion"><a class="contribute submit-text" href="/submit">Discuss</a></li>
@@ -76,6 +87,7 @@
             <li class="@classHot"><a href="@selectedSubverse" title="Show most popular submissions.">Hot</a></li>
             <li class="@classNew"><a href="@selectedSubverse/new" title="Show latest submissions.">New</a></li>
             <li class="@classTop"><a href="@selectedSubverse/top" title="Show all time top ranked submissions.">Top</a></li>
+            <li class="@classWorst"><a href="@selectedSubverse/worst" title="Show least popular submissions.">Worst</a></li>
             <li class="@classLink"><a class="contribute submit-link" href="@selectedSubverse/submit?linkpost=true">Share a link</a></li>
             <li class="@classDiscussion"><a class="contribute submit-text" href="@selectedSubverse/submit">Discuss</a></li>
         </ul>

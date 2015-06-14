@@ -32,6 +32,9 @@
         case "top":
             urlaction = "SortedSubverseFrontpage";
             break;
+        case "worst":
+            urlaction = "SortedSubverseFrontpage";
+            break;
         default:
             urlaction = "SubverseIndex";
             break;
@@ -74,6 +77,16 @@
                 @Html.RouteLink("month", urlaction, new {time = "month"}) |
                 @Html.RouteLink("year", urlaction, new {time = "year"}) |
                 @Html.RouteLink("all", urlaction, new {time = "all"})
+            </div>
+        }
+        @if (sortingMode == "worst")
+        {
+            <div id="sortingThingy" class="">
+                @Html.RouteLink("day", urlaction) |
+                @Html.RouteLink("week", urlaction, new { time = "week" }) |
+                @Html.RouteLink("month", urlaction, new { time = "month" }) |
+                @Html.RouteLink("year", urlaction, new { time = "year" }) |
+                @Html.RouteLink("all", urlaction, new { time = "all" })
             </div>
         }
         <div class="sitetable linklisting">

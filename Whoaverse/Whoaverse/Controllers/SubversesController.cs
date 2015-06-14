@@ -466,7 +466,7 @@ namespace Voat.Controllers
             ViewBag.SelectedSubverse = subversetoshow;
             ViewBag.Title = subversetoshow;
 
-            if (!sortingmode.Equals("new") && !sortingmode.Equals("top")) return RedirectToAction("Index", "Home");
+            if (!sortingmode.Equals("new") && !sortingmode.Equals("top") && !sortingmode.Equals("worst")) return RedirectToAction("Index", "Home");
 
             int pageNumber = (page ?? 0);
             if (pageNumber < 0)
@@ -1410,7 +1410,7 @@ namespace Voat.Controllers
             const string cookieName = "NSFWEnabled";
             DateTime startDate = DateTimeUtility.DateRangeToDateTime(daterange);
 
-            if (!sortingmode.Equals("new") && !sortingmode.Equals("top")) return RedirectToAction("Index", "Home");
+            if (!sortingmode.Equals("new") && !sortingmode.Equals("top") && !sortingmode.Equals("worst")) return RedirectToAction("Index", "Home");
 
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
@@ -1446,6 +1446,12 @@ namespace Voat.Controllers
                             return View("SubverseIndex", paginatedSubmissionsByDate);
                         }
 
+                        if (sortingmode.Equals("worst"))
+                        {
+                            var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByWorst(subversetoshow, startDate), page ?? 0, pageSize);
+                            return View("SubverseIndex", paginatedSubmissionsByDate);
+                        }
+
                         // default sorting mode by rank
                         paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissionsByRank);
@@ -1472,6 +1478,12 @@ namespace Voat.Controllers
                     return View("SubverseIndex", paginatedSubmissionsByDate);
                 }
 
+                if (sortingmode.Equals("worst"))
+                {
+                    var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByWorst(subversetoshow, startDate), page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissionsByDate);
+                }
+
                 // default sorting mode by rank
                 paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissionsByRank);
@@ -1487,6 +1499,12 @@ namespace Voat.Controllers
             if (sortingmode.Equals("top"))
             {
                 var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow, startDate), page ?? 0, pageSize);
+                return View("SubverseIndex", paginatedSubmissionsByDate);
+            }
+
+            if (sortingmode.Equals("worst"))
+            {
+                var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByWorst(subversetoshow, startDate), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissionsByDate);
             }
 
@@ -1527,6 +1545,13 @@ namespace Voat.Controllers
                         return View("SubverseIndex", paginatedSubmissions);
                     }
 
+                    if (sortingmode.Equals("worst"))
+                    {
+                        submissionsExcludingBlockedSubverses = SubmissionsFromAllSubversesByWorst(startDate).Where(x => !blockedSubverses.Contains(x.Subverse));
+                        paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
+                        return View("SubverseIndex", paginatedSubmissions);
+                    }
+
                     // default sorting mode by rank
                     submissionsExcludingBlockedSubverses = SubmissionsFromAllSubversesByRank().Where(x => !blockedSubverses.Contains(x.Subverse));
                     paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
@@ -1543,6 +1568,12 @@ namespace Voat.Controllers
                 if (sortingmode.Equals("top"))
                 {
                     submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByTop(startDate).Where(x => !blockedSubverses.Contains(x.Subverse));
+                    paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissions);
+                }
+                if (sortingmode.Equals("worst"))
+                {
+                    submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByWorst(startDate).Where(x => !blockedSubverses.Contains(x.Subverse));
                     paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
@@ -1566,6 +1597,11 @@ namespace Voat.Controllers
                     paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
+                if (sortingmode.Equals("worst"))
+                {
+                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByWorst(startDate), page ?? 0, pageSize);
+                    return View("SubverseIndex", paginatedSubmissions);
+                }
 
                 // default sorting mode by rank
                 paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
@@ -1580,6 +1616,11 @@ namespace Voat.Controllers
             if (sortingmode.Equals("top"))
             {
                 paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
+                return View("SubverseIndex", paginatedSubmissions);
+            }
+            if (sortingmode.Equals("worst"))
+            {
+                paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByWorst(startDate), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
 
@@ -1630,6 +1671,18 @@ namespace Voat.Controllers
                                                                        .AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByTop;
+        }
+
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByWorst(DateTime startDate)
+        {
+            IQueryable<Message> sfwSubmissionsFromAllSubversesByWorst = (from message in _db.Messages
+                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                         where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
+                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                         select message).OrderBy(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
+                                                                        .AsNoTracking();
+
+            return sfwSubmissionsFromAllSubversesByWorst;
         }
 
         private IQueryable<Message> SfwSubmissionsFromAllSubversesByViews24Hours()
@@ -1684,6 +1737,19 @@ namespace Voat.Controllers
 
             return submissionsFromAllSubversesByTop;
         }
+
+        private IQueryable<Message> SubmissionsFromAllSubversesByWorst(DateTime startDate)
+        {
+            IQueryable<Message> submissionsFromAllSubversesByWorst = (from message in _db.Messages
+                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                      where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
+                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                      select message).OrderBy(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
+                                                                      .AsNoTracking();
+
+            return submissionsFromAllSubversesByWorst;
+        }
+
         #endregion
 
         #region submissions from a single subverse
@@ -1733,6 +1799,23 @@ namespace Voat.Controllers
                 return submissionsFromASubverseByTop.Where(s => s.Id != subverseStickie.Submission_id);
             }
             return submissionsFromASubverseByTop;
+        }
+
+        private IQueryable<Message> SubmissionsFromASubverseByWorst(string subverseName, DateTime startDate)
+        {
+            var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            IQueryable<Message> submissionsFromASubverseByWorst = (from message in _db.Messages
+                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
+                                                                   where message.Name != "deleted" && message.Subverse == subverseName
+                                                                   where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                   select message).OrderBy(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
+                                     
+                                                                   .AsNoTracking();
+            if (subverseStickie != null)
+            {
+                return submissionsFromASubverseByWorst.Where(s => s.Id != subverseStickie.Submission_id);
+            }
+            return submissionsFromASubverseByWorst;
         }
         #endregion
     }
