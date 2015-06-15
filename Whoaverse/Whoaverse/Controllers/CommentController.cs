@@ -24,6 +24,8 @@ using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utils;
 using Voat.Utils.Components;
+using Dapper;
+using System.Transactions;
 
 namespace Voat.Controllers
 {
@@ -390,37 +392,62 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> DeleteComment(int commentId)
         {
-            var commentToDelete = _db.Comments.Find(commentId);
+            var commentToDelete = _db.Database.Connection.Query<Comment>("SELECT * FROM dbo.Comments WHERE Id = @Id", new { Id = commentId }).FirstOrDefault();
 
             if (commentToDelete != null)
             {
-                var commentSubverse = commentToDelete.Message.Subverse;
-
                 // delete comment if the comment author is currently logged in user
                 if (commentToDelete.Name == User.Identity.Name)
                 {
                     commentToDelete.Name = "deleted";
                     commentToDelete.CommentContent = "deleted by author at " + DateTime.Now;
-                    await _db.SaveChangesAsync();
-                }
-                // delete comment if delete request is issued by subverse moderator
-                else if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
-                {
-                    // notify comment author that his comment has been deleted by a moderator
-                    MesssagingUtility.SendPrivateMessage(
-                        "Voat",
-                        commentToDelete.Name,
-                        "Your comment has been deleted by a moderator",
-                        "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.MessageId + "/" + commentToDelete.Id + ") has been deleted by: " +
-                        "/u/" + User.Identity.Name + " on: " + DateTime.Now + "  " + Environment.NewLine +
-                        "Original comment content was: " + Environment.NewLine +
-                        "---" + Environment.NewLine +
-                        commentToDelete.CommentContent
-                        );
 
-                    commentToDelete.Name = "deleted";
-                    commentToDelete.CommentContent = "deleted by a moderator at " + DateTime.Now;
-                    await _db.SaveChangesAsync();
+                    _db.Database.Connection.Open();
+
+                    using (var transaction = _db.Database.Connection.BeginTransaction())
+                    {
+                        await _db.Database.Connection.ExecuteAsync("UPDATE dbo.Comments SET Name = @Name, CommentContent = @CommentContent WHERE Id = @Id",
+                            new { Name = commentToDelete.Name, CommentContent = commentToDelete.CommentContent, Id = commentToDelete.Id }, transaction, 10);
+
+                        transaction.Commit();
+                    }
+                }
+
+                // delete comment if delete request is issued by subverse moderator
+                else
+                {
+                    var commentSubverse = _db.Database.Connection.ExecuteScalar<string>("SELECT M.Subverse " +
+                                                                 "FROM dbo.Messages M " +
+                                                                 "WHERE M.Id = @Id ", new { Id = commentToDelete.MessageId });
+
+                    if (!string.IsNullOrEmpty(commentSubverse) && 
+                        (Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse)))
+                    {
+                        // notify comment author that his comment has been deleted by a moderator
+                        MesssagingUtility.SendPrivateMessage(
+                            "Voat",
+                            commentToDelete.Name,
+                            "Your comment has been deleted by a moderator",
+                            "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.MessageId + "/" + commentToDelete.Id + ") has been deleted by: " +
+                            "/u/" + User.Identity.Name + " on: " + DateTime.Now + "  " + Environment.NewLine +
+                            "Original comment content was: " + Environment.NewLine +
+                            "---" + Environment.NewLine +
+                            commentToDelete.CommentContent
+                            );
+
+                        commentToDelete.Name = "deleted";
+                        commentToDelete.CommentContent = "deleted by a moderator at " + DateTime.Now;
+
+                        _db.Database.Connection.Open();
+
+                        using (var transaction = _db.Database.Connection.BeginTransaction())
+                        {
+                            await _db.Database.Connection.ExecuteAsync("UPDATE dbo.Comments SET Name=@Name, CommentContent=@CommentContent WHERE Id = @Id",
+                                new { Name = commentToDelete.Name, CommentContent = commentToDelete.CommentContent, Id = commentToDelete.Id }, transaction, 10);
+
+                            transaction.Commit();
+                        }
+                    }
                 }
             }
 
