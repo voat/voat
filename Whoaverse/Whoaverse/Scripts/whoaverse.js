@@ -513,7 +513,7 @@ function replyprivatemessage(parentprivatemessageid, recipient, subject) {
     var token = $("input[name='__RequestVerificationToken']").val();
 
     replyFormPMRequest = $.ajax({
-        url: "/ajaxhelpers/privatemessagereplyform/" + parentprivatemessageid + "?recipient=" + recipient + "&subject=" + subject,
+        url: "/ajaxhelpers/privatemessagereplyform/" + parentprivatemessageid + "?recipient=" + recipient + "&subject=" + htmlDecode(subject),
         success: function (data) {
             $("#messageContainer-" + parentprivatemessageid).append(data);
             //Focus the cursor on the private message reply form textarea, to prevent unnecessary use of the tab key
@@ -1566,4 +1566,14 @@ function checkUsernameAvailability(obj) {
             });
         }        
     }    
+}
+
+// Decode html
+function htmlDecode(value) {
+    return String(value)
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&');
 }
