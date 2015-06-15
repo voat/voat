@@ -686,8 +686,23 @@ namespace Voat.Controllers
                     var count = subverse.Count(); // 1st round-trip
                     var index = new Random().Next(count);
 
-                    randomSubverse = subverse.OrderBy(s => s.name).Skip(index).FirstOrDefault(); // 2nd round-trip
+                    randomSubverse = subverse.OrderBy(s => s.name).Skip(index).FirstOrDefault(); // 2nd round-
 
+                    // find a verse the user isnt blocking
+                    if (!Utils.User.AdultContentEnabled(User.Identity.Name))
+                    {
+                        while (Utils.User.IsUserBlockingSubverse(User.Identity.Name, randomSubverse.name) && !randomSubverse.rated_adult)
+                        {
+                            randomSubverse = subverse.OrderBy(s => s.name).Skip(index).FirstOrDefault();
+                        }
+                    }
+                    else
+                    {
+                        while (Utils.User.IsUserBlockingSubverse(User.Identity.Name, randomSubverse.name))
+                        {
+                            randomSubverse = subverse.OrderBy(s => s.name).Skip(index).FirstOrDefault();
+                        }
+                    }
                     var submissions = _db.Messages
                             .Where(x => x.Subverse == randomSubverse.name && x.Name != "deleted")
                             .OrderByDescending(s => s.Rank)
