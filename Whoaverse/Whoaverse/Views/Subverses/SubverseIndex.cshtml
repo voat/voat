@@ -94,6 +94,8 @@
 
             @foreach (var submission in Model)
             {
+                // Don't show submissions from blocked verses
+                if (selectedSubverse.Equals("all") && Voat.Utils.User.IsUserBlockingSubverse(User.Identity.Name, submission.Subverse)) { continue; }
                 //type 2 = link
                 //type 1 = message
                 if (submission.Type == 1)
