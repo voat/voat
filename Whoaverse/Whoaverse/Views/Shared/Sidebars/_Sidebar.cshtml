@@ -28,8 +28,16 @@
 
 <div class="side">
 
+
     @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel(), new ViewDataDictionary { { "SelectedSubverse", ViewBag.SelectedSubverse } })
 
+    <div class="spacer" ondrop="dropFunction(event);" ondragover="return false">
+        <div id="share-a-link-overlay">
+            <div>
+                <h1>drop a link to share</h1>
+            </div>
+        </div>
+    </div>
     <div class="spacer">
         <a href="/v/@Model.name/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">
             Share a link

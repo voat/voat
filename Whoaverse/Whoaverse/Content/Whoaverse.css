@@ -3139,3 +3139,27 @@ textarea.form-control {
         font-size: 12px;
     }
 }
+
+#share-a-link-overlay {
+    background: #FDFDFD none repeat scroll 0% 0%;
+    border: 2px dashed #D3D3D3;
+    border-radius: 2px;
+    position: relative;
+    height: 100px;
+    z-index: 10001;
+}
+
+#share-a-link-overlay h1 {
+    position: relative;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#share-a-link-overlay h1, #share-a-link-overlay a {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+}
