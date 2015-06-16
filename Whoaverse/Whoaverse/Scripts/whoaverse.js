@@ -227,31 +227,31 @@ $(document).ready(function () {
       // Turn key numbers into readable string
       switch(charCode) {
         case 13:
-          key['Enter'] = true;
+          key.Enter = true;
           break;
         case 17:
-          key['Ctrl'] = true;
+          key.Ctrl = true;
           break;
         case 18:
-          key['Alt'] = true;
+          key.Alt = true;
           break;
         case 27:
-          key['Esc'] = true;
+          key.Esc = true;
           break;
         case 32:
-          key['Space'] = true;
+          key.Space = true;
           break;
         case 37:
-          key['Left'] = true;
+          key.Left = true;
           break;
         case 38:
-          key['Top'] = true;
+          key.Top = true;
           break;
         case 39:
-          key['Right'] = true;
+          key.Right = true;
           break;
         case 40:
-          key['Bottom'] = true;
+          key.Bottom = true;
           break;
         default:
           key[charStr] = true;
@@ -284,31 +284,31 @@ $(document).ready(function () {
       // Turn key numbers into readable string
       switch(charCode) {
         case 13:
-          key['Enter'] = false;
+          key.Enter = false;
           break;
         case 17:
-          key['Ctrl'] = false;
+          key.Ctrl = false;
           break;
         case 18:
-          key['Alt'] = false;
+          key.Alt = false;
           break;
         case 27:
-          key['Esc'] = false;
+          key.Esc = false;
           break;
         case 32:
-          key['Space'] = false;
+          key.Space = false;
           break;
         case 37:
-          key['Left'] = false;
+          key.Left = false;
           break;
         case 38:
-          key['Top'] = false;
+          key.Top = false;
           break;
         case 39:
-          key['Right'] = false;
+          key.Right = false;
           break;
         case 40:
-          key['Bottom'] = false;
+          key.Bottom = false;
           break;
         default:
           key[charStr] = false;
