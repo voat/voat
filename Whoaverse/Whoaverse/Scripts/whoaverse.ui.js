@@ -68,9 +68,13 @@ UI.Common = {
         }
         return '';
     },
-    getDomainName: function(url, includeSub, removeWWW){
-        //TODO:
-        return "notdone.com";
+    getDomainName: function(url, removeSub, removeWWW, removePath) {
+        // http://jsfiddle.net/Lbcm6trt/ unit tests
+        if (removeSub) url = url.replace(/(\w+\.)+(?!.\w.\/)/,'');
+    	if (removeWWW) url = url.replace(/http\:\/+(www\.)?|((w|W){3}\.)/,'');
+        if (removePath) url = url.replace(url.split("/").pop(),'');
+        url = url.replace(/\/$/,'');
+    	return url;
     },
     currentDomainRoot: function () {
         return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
