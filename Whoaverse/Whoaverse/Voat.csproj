@@ -272,6 +272,8 @@
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
+    <Compile Include="Models\IKarmaTracked.cs" />
+    <Compile Include="Models\IVoteTracked.cs" />
     <Compile Include="Models\SavedItem.cs" />
     <Compile Include="Models\Commentsavingtracker.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
