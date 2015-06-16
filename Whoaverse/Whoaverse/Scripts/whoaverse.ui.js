@@ -69,11 +69,30 @@ UI.Common = {
         return '';
     },
     getDomainName: function(url, removeSub, removeWWW, removePath) {
-        // http://jsfiddle.net/Lbcm6trt/ unit tests
-        if (removeSub) url = url.replace(/(\w+\.)+(?!.\w.\/)/,'');
-    	if (removeWWW) url = url.replace(/http\:\/+(www\.)?|((w|W){3}\.)/,'');
-        if (removePath) url = url.replace(url.split("/").pop(),'');
-        url = url.replace(/\/$/,'');
+        // http://jsfiddle.net/qpjdmLsk/ new unit testing
+        var anchor = document.createElement('a');
+        var reg;
+        anchor.href = url;
+        
+        if (removeSub) {
+            reg = url.match(/(?:\/\/)(\w+\.){2,}(?!\.\w+\.\w+\.\/)/);
+            if (reg) url = url.replace(reg[0],reg[1]);
+        }
+        
+        if (removeWWW) {
+            reg = new RegExp(anchor.protocol,'g');
+            url = url.replace(reg,'');
+            url = url.replace(/^\/+(w|W){3}\./,'');
+        }
+        
+        if (removePath) {
+            reg = new RegExp(anchor.pathname,'g');
+            url = url.replace(reg,'');
+            console.log(url);
+            if (anchor.search) url = url.replace(anchor.search,'');
+        }
+        
+        url = url.replace(/^\/+/,''); // remove lingering slashes
     	return url;
     },
     currentDomainRoot: function () {
