@@ -148,11 +148,7 @@ namespace Voat.Controllers
             // experimental: register a new session for this subverse
             string clientIpAddress = String.Empty;
 
-            if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
-            {
-                clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            }
-            else if (Request.UserHostAddress.Length != 0)
+            if (Request.UserHostAddress.Length != 0)
             {
                 clientIpAddress = Request.UserHostAddress;
             }
