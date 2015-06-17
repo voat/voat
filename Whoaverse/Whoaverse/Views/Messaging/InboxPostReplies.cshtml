@@ -75,7 +75,8 @@
                                 }
                             </div>
                             <div class="panel-message-body">
-                                @Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" } })
+                                @*TODO: DB call in a view? That's a no-no. Appropriate property should be in the model.*@
+                                @Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary {{"CommentId", comment.Id}, {"CCP", 0 /*Karma.CommentKarma(User.Identity.Name)*/}, {"parentIsHidden", false}, {"SortingMode", "new"}})
                             </div>
                         </div>
                     </div>

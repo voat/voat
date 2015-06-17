@@ -27,8 +27,8 @@ using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
+    using Queries.Karma;
 
-    
 
     public class CommentController : Controller
     {
@@ -36,11 +36,12 @@ namespace Voat.Controllers
 
         // POST: votecomment/{commentId}/{typeOfVote}
         [Authorize]
-        public JsonResult VoteComment(int commentId, int typeOfVote)
+        public async Task<JsonResult> VoteComment(int commentId, int typeOfVote)
         {
             int dailyVotingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyVotingQuota"]);
             var loggedInUser = User.Identity.Name;
-            var userCcp = Karma.CommentKarma(loggedInUser);
+            //var userCcp = Karma.CommentKarma(loggedInUser);
+            var userCcp = await _db.GetCommentKarmaAsync(loggedInUser);
             var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
             var totalVotesUsedInPast24Hours = Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name);
 
@@ -185,7 +186,7 @@ namespace Voat.Controllers
         }
 
         // GET: comments for a given submission
-        public ActionResult BucketOfComments(int? id, int? startingcommentid, int? startingpos, string sort)
+        public async Task<ActionResult> BucketOfComments(int? id, int? startingcommentid, int? startingpos, string sort)
         {
             const int threadsToFetch = 10;
 
@@ -202,7 +203,7 @@ namespace Voat.Controllers
 
             if (User.Identity.IsAuthenticated)
             {
-                ViewData["CCP"] = Karma.CommentKarma(User.Identity.Name);
+                ViewData["CCP"] = await _db.GetCommentKarmaAsync(User.Identity.Name);
             }
 
             ViewBag.SelectedSubverse = submission.Subverses.name;
@@ -284,7 +285,7 @@ namespace Voat.Controllers
                 }
 
                 // if user CCP is < 50, allow only X comment submissions per 24 hours
-                var userCcp = Karma.CommentKarma(User.Identity.Name);
+                var userCcp = await _db.GetCommentKarmaAsync(User.Identity.Name);
                 if (userCcp <= -50)
                 {
                     var quotaUsed = Utils.User.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);

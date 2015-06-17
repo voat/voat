@@ -457,7 +457,7 @@
     <Compile Include="Utils\SetsUtility.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
-    <Compile Include="Utils\Karma.cs" />
+    <Compile Include="Queries\Karma\Karma.cs" />
     <Compile Include="Utils\PagerOptions.cs" />
     <Compile Include="Utils\Ranking.cs" />
     <Compile Include="Utils\Submissions.cs" />

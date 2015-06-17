@@ -167,8 +167,9 @@ namespace Voat.Utils
                     return;
                 }
                 
+                // TODO: rebuild voting to also use new karma retrieval
                 // do not execute downvoting if user has insufficient CCP for target subverse
-                if (Karma.CommentKarmaForSubverse(userWhichDownvoted, submission.Subverse) < submission.Subverses.minimumdownvoteccp)
+                if (false)//(Karma.CommentKarmaForSubverse(userWhichDownvoted, submission.Subverse) < submission.Subverses.minimumdownvoteccp)
                 {
                     return;
                 }

@@ -14,9 +14,13 @@
 
 @if (Request.IsAuthenticated)
 {
-    int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
+    //TODO: DB calls in a view? That's a no-no. Appropriate property should be in the model.
+    int linkKarma = 0;
+    int commentKarma = 0;
+    int upvotesGiven = 0;
+    /*int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
     int commentKarma = Karma.CommentKarma(User.Identity.GetUserName());
-    int upvotesGiven = Karma.UpvotesGiven(User.Identity.GetUserName());
+    int upvotesGiven = Karma.UpvotesGiven(User.Identity.GetUserName());*/
 
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {

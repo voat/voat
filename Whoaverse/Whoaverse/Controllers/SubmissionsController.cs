@@ -23,6 +23,8 @@ using Voat.Utils;
 
 namespace Voat.Controllers
 {
+    using Queries.Karma;
+
     public class SubmissionsController : Controller
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
@@ -123,11 +125,11 @@ namespace Voat.Controllers
         // vote on a submission
         // POST: vote/{messageId}/{typeOfVote}
         [Authorize]
-        public JsonResult Vote(int messageId, int typeOfVote)
+        public async Task<JsonResult> Vote(int messageId, int typeOfVote)
         {
             int dailyVotingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyVotingQuota"]);
             var loggedInUser = User.Identity.Name;
-            var userCcp = Karma.CommentKarma(loggedInUser);
+            var userCcp = await _db.GetCommentKarmaAsync(loggedInUser);
             var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
             var totalVotesUsedInPast24Hours = Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name);
 

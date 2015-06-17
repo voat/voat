@@ -67,7 +67,7 @@ namespace Voat.Utils
         public string RedirectURL;
 
         private bool trustedUser = false;
-
+        
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var loggedInUser = filterContext.HttpContext.User.Identity.Name;
@@ -81,7 +81,8 @@ namespace Voat.Utils
                 // check user LCP for target subverse
                 if (targetSubverse != null)
                 {
-                    var LCPForSubverse = Karma.LinkKarmaForSubverse(loggedInUser, targetSubverse);
+                    //TODO: Add dependency injection into filters and either force synchronous wait on current methods or create sync methods for karma retrieval
+                    var LCPForSubverse = 0;//Karma.LinkKarmaForSubverse(loggedInUser, targetSubverse);
                     if (LCPForSubverse >= 40)
                     {
                         // lower DelayRequest time
@@ -106,8 +107,9 @@ namespace Voat.Utils
                     {
                         var targetSubverseName = relatedMessage.Subverse;
 
+                        //TODO: Add dependency injection into filters and either force synchronous wait on current methods or create sync methods for karma retrieval
                         // check user CCP for target subverse
-                        int CCPForSubverse = Karma.CommentKarmaForSubverse(loggedInUser, targetSubverseName);
+                        int CCPForSubverse = 0;// Karma.CommentKarmaForSubverse(loggedInUser, targetSubverseName);
                         if (CCPForSubverse >= 40)
                         {
                             // lower DelayRequest time

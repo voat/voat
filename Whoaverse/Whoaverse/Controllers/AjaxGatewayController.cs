@@ -23,6 +23,9 @@ using Voat.Utils;
 
 namespace Voat.Controllers
 {
+    using System.Threading.Tasks;
+    using Queries.Karma;
+
     public class AjaxGatewayController : Controller
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
@@ -152,12 +155,12 @@ namespace Voat.Controllers
 
         // GET: basic info about a user
         [OutputCache(Duration = 600, VaryByParam = "*")]
-        public ActionResult UserBasicInfo(string userName)
+        public async Task<ActionResult> UserBasicInfo(string userName)
         {
             var userRegistrationDateTime = Utils.User.GetUserRegistrationDateTime(userName);
             var memberFor = Submissions.CalcSubmissionAge(userRegistrationDateTime);
-            var scp = Karma.LinkKarma(userName);
-            var ccp = Karma.CommentKarma(userName);
+            var scp = await _db.GetLinkKarmaAsync(userName);
+            var ccp = await _db.GetCommentKarmaAsync(userName);
 
             var userInfoModel = new BasicUserInfo()
             {
