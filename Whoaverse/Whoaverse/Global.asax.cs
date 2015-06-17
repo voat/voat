@@ -9,6 +9,9 @@ using System.Web.Routing;
 
 namespace Voat
 {
+    using Autofac;
+    using Autofac.Integration.Mvc;
+
     public class MvcApplication : HttpApplication
     {
         protected void Application_Start()
@@ -23,8 +26,15 @@ namespace Voat
 
             ViewEngines.Engines.Clear();
             ViewEngines.Engines.Add(new RazorViewEngine());
-
+            
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
+
+            var builder = new ContainerBuilder();
+            builder.RegisterControllers(typeof (MvcApplication).Assembly);
+            builder.RegisterFilterProvider();
+            DependencyInjection.RegisterComponents(builder);
+            var container = builder.Build();
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
             // USE ONLY FOR DEBUG: clear all sessions used for online users count
             // SessionTracker.RemoveAllSessions();
