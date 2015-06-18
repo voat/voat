@@ -722,7 +722,7 @@ function edit(parentcommentid, messageid) {
 function editsubmission(submissionid) {
 
     //hide original text    
-    $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
+    $("#submissionid-" + submissionid).find('.original').toggle(1);
 
     //show edit form
     $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);
