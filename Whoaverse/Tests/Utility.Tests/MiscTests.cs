@@ -18,6 +18,7 @@ namespace Utility.Tests
     using Voat.Utils;
     using Xunit;
 
+    [Trait("Category", "Unit tests")]
     public class MiscTests
     {
 

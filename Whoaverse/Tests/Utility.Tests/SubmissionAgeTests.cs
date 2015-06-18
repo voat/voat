@@ -6,6 +6,7 @@
     using Voat.Utils;
     using Xunit;
 
+    [Trait("Category", "Unit tests")]
     public class SubmissionAgeTests
     {
         [Fact]
