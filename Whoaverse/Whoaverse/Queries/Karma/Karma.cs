@@ -84,7 +84,10 @@ namespace Voat.Queries.Karma
             var submissionUpvotes = context.Set<Votingtracker>().CreateUpvotedEntriesQuery(userName);
 
             // Concat is the equivalent of UNION ALL
-            return comments.Concat(submissionUpvotes).CountAsync();
+            return
+                comments.Select(x => new {x.UserName, x.VoteStatus})
+                    .Concat(submissionUpvotes.Select(x => new {x.UserName, x.VoteStatus}))
+                    .CountAsync();
         }
     }
 }

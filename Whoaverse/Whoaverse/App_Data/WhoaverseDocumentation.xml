@@ -481,6 +481,11 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="T:Voat.Models.IKarmaTracked">
+            <summary>
+            Represents entities which have their karma tracked
+            </summary>
+        </member>
         <member name="M:Voat.Controllers.WebApiController.DefaultSubverses">
             <summary>
              This API returns a list of default subverses shown to guests.
@@ -547,6 +552,32 @@
              This API returns comments for a given submission id.
             </summary>
             <param name="submissionId">The submission Id for which to fetch comments.</param>
+        </member>
+        <member name="M:Voat.Queries.Karma.KarmaQueries.GetLinkKarmaAsync(System.Data.Entity.DbContext,System.String,System.String)">
+            <summary>
+            Gets link contribution points for specified user asynchronously
+            </summary>
+            <param name="context"></param>
+            <param name="userName"></param>
+            <param name="subverse">Subverse name for which the link karma should be retrieved</param>
+            <returns></returns>
+        </member>
+        <member name="M:Voat.Queries.Karma.KarmaQueries.GetCommentKarmaAsync(System.Data.Entity.DbContext,System.String,System.String)">
+            <summary>
+            Gets comment contribution points for specified user asynchronously
+            </summary>
+            <param name="context"></param>
+            <param name="userName"></param>
+            <param name="subverse"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Voat.Queries.Karma.KarmaQueries.GetUpvotesGivenAsync(System.Data.Entity.DbContext,System.String)">
+            <summary>
+            Gets the total number of upvotes given by a user
+            </summary>
+            <param name="context"></param>
+            <param name="userName"></param>
+            <returns></returns>
         </member>
     </members>
 </doc>
