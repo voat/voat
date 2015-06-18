@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Voting\CommentVoteQueries.cs" />
     <Compile Include="EntityString.cs" />
     <Compile Include="KarmaQueries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
