@@ -17,7 +17,7 @@
 
     public static class CommentVote
     {
-        public static async Task<VoteDirection> UpvoteComment(this DbContext context, int commentId, string userName, string clientIpHash)
+        public static async Task<VoteDirection> UpvoteCommentAsync(this DbContext context, int commentId, string userName, string clientIpHash)
         {
             var comment = await context.Set<Comment>().FindAsync(commentId).ConfigureAwait(false);
 
