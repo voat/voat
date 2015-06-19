@@ -258,6 +258,8 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Models\Messaging\PrivateMessage.cs" />
+    <Compile Include="Commands\SendPrivateMessage.cs" />
     <Compile Include="Commands\Voting\CommentVote.cs" />
     <Compile Include="Commands\Voting\SubmissionVote.cs" />
     <Compile Include="Commands\Voting\VoteDirection.cs" />
