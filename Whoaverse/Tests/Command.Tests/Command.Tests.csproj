@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="EntityString.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Saving\SavingTests.cs" />
     <Compile Include="Voting\CommentVoteCommands.cs" />
     <Compile Include="Voting\SubmissionVoteCommands.cs" />
   </ItemGroup>
