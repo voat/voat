@@ -259,6 +259,8 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Commands\Voting\CommentVote.cs" />
+    <Compile Include="Commands\Voting\SubmissionVote.cs" />
+    <Compile Include="Commands\Voting\VoteDirection.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AjaxGatewayController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
@@ -317,6 +319,9 @@
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Queries\Voting\CommentVote.cs" />
+    <Compile Include="Queries\Voting\SubmissionVote.cs" />
+    <Compile Include="Queries\Voting\Vote.cs" />
+    <Compile Include="Queries\Voting\VoteStatus.cs" />
     <Compile Include="Utils\CommentCounter.cs" />
     <Compile Include="Utils\Components\ContentFilters.cs" />
     <Compile Include="Utils\Components\ContentProcessor.cs" />

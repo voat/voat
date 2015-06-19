@@ -1,5 +1,6 @@
 ﻿namespace Command.Tests.Voting
 {
+    using System;
     using System.Data.Entity;
     using System.Threading.Tasks;
     using Query.Tests;
@@ -8,11 +9,11 @@
     using Xunit;
 
     [Trait("Category", "Semi-integration"), Trait("Subcategory", "Commands")]
-    public class CommentVoteCommands
+    public class SubmissionVoteCommands : IDisposable
     {
         private readonly DbContext dbContext;
 
-        public CommentVoteCommands()
+        public SubmissionVoteCommands()
         {
             var effortConnection = Effort.EntityConnectionFactory.CreateTransient(EntityString.Value);
             dbContext = new whoaverseEntities(effortConnection);
@@ -23,89 +24,71 @@
                 name = "test"
             });
 
-            var firstMessage = dbContext.Set<Message>().Add(new Message
+            dbContext.SaveChanges();
+
+            dbContext.Set<Message>().Add(new Message
             {
                 Id = 1,
-                Name = "yetAnotherUser",
-                Anonymized = true
+                Title = "Empty",
+                Name = "testuser",
             });
+
             var secondMessage = dbContext.Set<Message>().Add(new Message
             {
                 Id = 2,
-                Name = "testuser",
-                Anonymized = false,
-            });
-
-            dbContext.SaveChanges();
-
-            dbContext.Set<Comment>().Add(new Comment
-            {
-                Id = 1,
-                CommentContent = "Empty",
-                Name = "testuser",
-                Message = secondMessage
-            });
-
-            var secondComment = dbContext.Set<Comment>().Add(new Comment
-            {
-                Id = 2,
-                CommentContent = "Empty",
+                Title = "Empty",
                 Name = "testuser2",
                 Likes = 10,
                 Dislikes = 5,
-                Message = secondMessage
             });
 
-            dbContext.Set<Comment>().Add(new Comment
+            dbContext.Set<Message>().Add(new Message
             {
                 Id = 3,
-                CommentContent = "Empty",
+                Title = "Empty",
                 Name = "abc",
-                Message = firstMessage
+                Anonymized = true
             });
 
-            dbContext.Set<Comment>().Add(new Comment
+            dbContext.Set<Message>().Add(new Message
             {
                 Id = 4,
-                Message = secondMessage,
                 Name = "abc",
                 Likes = 5,
-                CommentContent = "Empty"
+                Title = "Empty"
             });
 
-            var fifthComment = dbContext.Set<Comment>().Add(new Comment
+            var fifthMessage = dbContext.Set<Message>().Add(new Message
             {
                 Id = 5,
-                Message = secondMessage,
                 Name = "abc",
                 Likes = 5,
-                CommentContent = "Empty"
+                Title = "Empty"
             });
 
-            dbContext.Set<Comment>().Add(new Comment
+            dbContext.Set<Message>().Add(new Message
             {
                 Id = 6,
-                Message = secondMessage,
                 Name = "abc",
                 Likes = 5,
-                CommentContent = "Empty"
+                Title = "Empty"
             });
 
             dbContext.SaveChanges();
 
-            dbContext.Set<Commentvotingtracker>().Add(new Commentvotingtracker
+            dbContext.Set<Votingtracker>().Add(new Votingtracker
             {
                 Id = 1,
-                Comment = fifthComment,
+                Message = fifthMessage,
                 ClientIpAddress = "hashedAddress",
                 VoteStatus = 1,
                 UserName = "yetAnotherUser"
             });
 
-            dbContext.Set<Commentvotingtracker>().Add(new Commentvotingtracker
+            dbContext.Set<Votingtracker>().Add(new Votingtracker
             {
                 Id = 2,
-                Comment = secondComment,
+                Message = secondMessage,
                 ClientIpAddress = "hashedAddress",
                 VoteStatus = -1,
                 UserName = "yetAnotherUser"
@@ -114,51 +97,51 @@
             dbContext.SaveChanges();
         }
 
-        [Fact(DisplayName = "Users cannot upvote their own comment")]
+        [Fact(DisplayName = "Users cannot upvote their own submission")]
         public async Task UsersCannotUpvoteTheirOwnComments()
         {
-            var result = await dbContext.UpvoteCommentAsync(1, "testuser", "hash");
+            var result = await dbContext.UpvoteSubmissionAsync(1, "testuser", "hash");
             Assert.Equal(VoteDirection.None, result);
         }
 
-        [Fact(DisplayName = "If the comment is anonymous, it should not be available for upvote.")]
+        [Fact(DisplayName = "If the submission is anonymous, it should not be available for upvote.")]
         public async Task CannotUpvoteIfAnonymous()
         {
-            var result = await dbContext.UpvoteCommentAsync(3, "testuser", "hash");
+            var result = await dbContext.UpvoteSubmissionAsync(3, "testuser", "hash");
             Assert.Equal(VoteDirection.None, result);
         }
 
-        [Fact(DisplayName = "Users cannot upvote the same comment from different accounts from the same IP.")]
+        [Fact(DisplayName = "Users cannot upvote the same submission from different accounts from the same IP.")]
         public async Task CannotUpvoteTwiceFromSameIpAddress()
         {
-            var result = await dbContext.UpvoteCommentAsync(5, "testuser", "hashedAddress");
+            var result = await dbContext.UpvoteSubmissionAsync(5, "testuser", "hashedAddress");
             Assert.Equal(VoteDirection.None, result);
         }
 
-        [Fact(DisplayName = "Initial vote on someone else's non-anonymous comment should pass.")]
+        [Fact(DisplayName = "Initial vote on someone else's non-anonymous submission should pass.")]
         public async Task RegularFirstUpvote()
         {
-            var result = await dbContext.UpvoteCommentAsync(4, "testuser2", "otherAddress");
+            var result = await dbContext.UpvoteSubmissionAsync(4, "testuser2", "otherAddress");
             Assert.Equal(VoteDirection.Upvote, result);
         }
 
-        [Fact(DisplayName = "Initial vote should add comment tracking entry")]
+        [Fact(DisplayName = "Initial vote should add message tracking entry")]
         public async Task FirstUpvoteShouldAddTrackingEntry()
         {
             var trackingData =
                 await
-                    dbContext.Set<Commentvotingtracker>()
-                        .FirstOrDefaultAsync(cvt => cvt.CommentId == 4 && cvt.UserName == "testuser2");
+                    dbContext.Set<Votingtracker>()
+                        .FirstOrDefaultAsync(cvt => cvt.MessageId == 4 && cvt.UserName == "testuser2");
 
             Assert.Null(trackingData);
 
-            var result = await dbContext.UpvoteCommentAsync(4, "testuser2", "otherAddress");
+            var result = await dbContext.UpvoteSubmissionAsync(4, "testuser2", "otherAddress");
             Assert.Equal(VoteDirection.Upvote, result);
-            trackingData = await dbContext.Set<Commentvotingtracker>().FirstOrDefaultAsync(cvt => cvt.CommentId == 4 && cvt.UserName == "testuser2");
-            
+            trackingData = await dbContext.Set<Votingtracker>().FirstOrDefaultAsync(cvt => cvt.MessageId == 4 && cvt.UserName == "testuser2");
+
             Assert.NotNull(trackingData);
             Assert.Equal(1, trackingData.VoteStatus);
-            Assert.Equal(4, trackingData.CommentId);
+            Assert.Equal(4, trackingData.MessageId);
             Assert.Equal("testuser2", trackingData.UserName);
             Assert.Equal("otherAddress", trackingData.ClientIpAddress);
         }
@@ -166,10 +149,10 @@
         [Fact(DisplayName = "Removing upvote should decrement likes.")]
         public async Task RemovingUpvote()
         {
-            var result = await dbContext.UpvoteCommentAsync(5, "yetAnotherUser", "hashedAddress");
+            var result = await dbContext.UpvoteSubmissionAsync(5, "yetAnotherUser", "hashedAddress");
             Assert.Equal(VoteDirection.Downvote, result);
 
-            var data = await dbContext.Set<Comment>().FindAsync(5);
+            var data = await dbContext.Set<Message>().FindAsync(5);
 
             Assert.Equal(4, data.Likes);
         }
@@ -177,14 +160,14 @@
         [Fact(DisplayName = "Removing upvote should remove tracking entry.")]
         public async Task RemovingUpvoteShouldRemoveTrackingEntry()
         {
-            var data = await dbContext.Set<Commentvotingtracker>().FindAsync(1);
+            var data = await dbContext.Set<Votingtracker>().FindAsync(1);
 
             Assert.NotNull(data);
 
-            var result = await dbContext.UpvoteCommentAsync(5, "yetAnotherUser", "hashedAddress");
+            var result = await dbContext.UpvoteSubmissionAsync(5, "yetAnotherUser", "hashedAddress");
             Assert.Equal(VoteDirection.Downvote, result);
 
-            data = await dbContext.Set<Commentvotingtracker>().FindAsync(1);
+            data = await dbContext.Set<Votingtracker>().FindAsync(1);
 
             Assert.Null(data);
         }
@@ -192,18 +175,23 @@
         [Fact(DisplayName = "Switching to upvote from downvote should decrement dislikes and increment likes")]
         public async Task SwitchingFromDownvoteToUpvote()
         {
-            var commentTrackingData = await dbContext.Set<Commentvotingtracker>().FindAsync(2);
+            var commentTrackingData = await dbContext.Set<Votingtracker>().FindAsync(2);
 
             Assert.NotNull(commentTrackingData);
 
-            var result = await dbContext.UpvoteCommentAsync(2, "yetAnotherUser", "hashedAddress");
+            var result = await dbContext.UpvoteSubmissionAsync(2, "yetAnotherUser", "hashedAddress");
             Assert.Equal(VoteDirection.DownvoteToUpvote, result);
 
-            commentTrackingData = await dbContext.Set<Commentvotingtracker>().FindAsync(1);
-            var data = await dbContext.Set<Comment>().FindAsync(2);
+            commentTrackingData = await dbContext.Set<Votingtracker>().FindAsync(1);
+            var data = await dbContext.Set<Message>().FindAsync(2);
             Assert.Equal(1, commentTrackingData.VoteStatus);
             Assert.Equal(4, data.Dislikes);
             Assert.Equal(11, data.Likes);
+        }
+
+        public void Dispose()
+        {
+            dbContext.Dispose();
         }
     }
 }

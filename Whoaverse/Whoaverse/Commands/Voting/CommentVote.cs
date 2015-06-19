@@ -6,15 +6,6 @@
     using Models;
     using Queries.Voting;
 
-    public enum VoteDirection
-    {
-        None,
-        Upvote,
-        UpvoteToDownvote,
-        Downvote,
-        DownvoteToUpvote
-    }
-
     public static class CommentVote
     {
         public static async Task<VoteDirection> UpvoteCommentAsync(this DbContext context, int commentId, string userName, string clientIpHash)
@@ -99,7 +90,7 @@
                         context.Set<Commentvotingtracker>().Remove(entryToRemove);
                     }
                     await context.SaveChangesAsync().ConfigureAwait(false);
-                    return VoteDirection.Upvote;
+                    return VoteDirection.Downvote;
 
                 default:
                     return VoteDirection.None;
