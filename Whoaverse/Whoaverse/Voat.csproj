@@ -320,6 +320,7 @@
     <Compile Include="Models\Viewstatistic.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Queries\Session\SessionTracking.cs" />
     <Compile Include="Queries\Voting\CommentVote.cs" />
     <Compile Include="Queries\Voting\SubmissionVote.cs" />
     <Compile Include="Queries\Voting\Vote.cs" />
