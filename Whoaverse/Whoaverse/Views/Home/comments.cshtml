@@ -42,9 +42,9 @@ else if (!User.Identity.IsAuthenticated)
 
 <div id="container">
 
-    <!--
+    @*
         display 1 submission with details and comments
-    -->
+    *@
     @if (!selectedSubverse.Equals("user"))
     {
         @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new
