@@ -3146,7 +3146,6 @@ textarea.form-control {
     border-radius: 2px;
     position: relative;
     height: 100px;
-    z-index: 10001;
 }
 
 #share-a-link-overlay h1 {
