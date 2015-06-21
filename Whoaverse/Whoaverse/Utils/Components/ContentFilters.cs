@@ -52,8 +52,8 @@ namespace Voat.Utils.Components {
         protected RegExReplacer _replacer;
         public UserMentionFilter(int matchThreshold, bool ignoreDuplicatMatches){
             _replacer = new RegExReplacer();
-            // -> @user & /u/user
-            _replacer.Replacers.Add(new MatchProcessingReplacer(@"(?<=\s{1,}|^|\()((@|/u/)(?'user'[a-zA-Z0-9-_]+))", MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches });
+            // -> @user & /u/user & u/user & user/user & /user/user
+            _replacer.Replacers.Add(new MatchProcessingReplacer(@"(?<=\s{1,}|^|\()((@|(/user/|user/)|(/u/|u/))(?'user'[a-zA-Z0-9-_\.]+))", MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches });
         }
 
         protected override string ProcessContent(string content, object context) {
@@ -106,7 +106,8 @@ namespace Voat.Utils.Components {
         }
 
         protected override string ProcessContent(string content, object context) {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(@"(?<=\s{1,}|^)((/v/)(?'sub'[a-zA-Z0-9]+))", 
+            // match /v/ & v/
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(@"(?<=\s{1,}|^|\()((/v/|v/)(?'sub'[a-zA-Z0-9]+))", 
                 delegate(Match m, object state) {
                     var u = new UrlHelper(HttpContext.Current.Request.RequestContext, RouteTable.Routes);
                     return String.Format("[{0}]({0})", u.Action("SubverseIndex", "Subverses", new { subversetoshow = m.Groups["sub"] }));
