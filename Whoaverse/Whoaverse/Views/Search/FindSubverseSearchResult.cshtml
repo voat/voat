@@ -18,12 +18,12 @@
     ViewBag.Title = "subverses";
     string searchTerm = "";
 
-    if (!String.IsNullOrEmpty(Request.QueryString["q"]))
+    if (!String.IsNullOrEmpty(Request.Unvalidated.QueryString["q"]))
     {
-        searchTerm = Request.QueryString["q"].ToString(CultureInfo.InvariantCulture);
+        searchTerm = Request.Unvalidated.QueryString["q"].ToString(CultureInfo.InvariantCulture);
     }
 
-    bool includeDescriptions = Request.QueryString["d"].AsBool();
+    bool includeDescriptions = Request.Unvalidated.QueryString["d"].AsBool();
 }
 
 <style type="text/css">

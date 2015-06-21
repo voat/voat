@@ -25,6 +25,7 @@ namespace Voat.Controllers
         private readonly whoaverseEntities _db = new whoaverseEntities();
 
         [PreventSpam]
+        [ValidateInput(false)]
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
