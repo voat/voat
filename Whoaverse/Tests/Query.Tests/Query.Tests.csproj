@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommentQueries.cs" />
     <Compile Include="SessionQueries.cs" />
     <Compile Include="Voting\CommentVoteQueries.cs" />
     <Compile Include="EntityString.cs" />
