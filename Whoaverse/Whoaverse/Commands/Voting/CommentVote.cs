@@ -17,7 +17,7 @@
                 return VoteDirection.None;
             }
 
-            var currentVoteStatus = await context.CheckCommentForVoteAsync(userName, commentId).ConfigureAwait(false);
+            var currentVoteStatus = await context.Set<Commentvotingtracker>().CheckCommentForVoteAsync(userName, commentId).ConfigureAwait(false);
 
             switch (currentVoteStatus)
             {

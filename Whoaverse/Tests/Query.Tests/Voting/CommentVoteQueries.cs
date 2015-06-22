@@ -89,7 +89,7 @@
         public async Task CheckingCommentForUserVote(string userName, int commentId,
             VoteStatus expectedStatus)
         {
-            var result = await dbContext.CheckCommentForVoteAsync(userName, commentId);
+            var result = await dbContext.Set<Commentvotingtracker>().CheckCommentForVoteAsync(userName, commentId);
             Assert.Equal(expectedStatus, result);
         }
 

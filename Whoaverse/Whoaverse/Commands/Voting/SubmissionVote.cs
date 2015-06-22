@@ -20,7 +20,7 @@
             }
 
             var currentVoteStatus =
-                await context.CheckSubmissionForVoteAsync(userName, submissionId).ConfigureAwait(false);
+                await context.Set<Votingtracker>().CheckSubmissionForVoteAsync(userName, submissionId).ConfigureAwait(false);
 
             switch (currentVoteStatus)
             {

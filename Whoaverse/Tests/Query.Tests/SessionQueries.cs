@@ -54,7 +54,7 @@
         [InlineData("no_session", "another_subverse", false)]
         public async Task CheckIfSessionExists(string sessionId, string subverse, bool expectedResult)
         {
-            var result = await dbContext.SessionExistsAsync(sessionId, subverse);
+            var result = await dbContext.Set<Sessiontracker>().SessionExistsAsync(sessionId, subverse);
             Assert.Equal(expectedResult, result);
         }
 
@@ -64,14 +64,14 @@
         [InlineData("other_subverse", 0)]
         public async Task GettingActiveSessionCount(string subverse, int expectedCount)
         {
-            var result = await dbContext.GetSubverseActiveSessionCountAsync(subverse);
+            var result = await dbContext.Set<Sessiontracker>().GetSubverseActiveSessionCountAsync(subverse);
             Assert.Equal(expectedCount, result);
         }
 
         [Fact(DisplayName = "Most active subverses should be fetched in correct order.")]
         public async Task GettingMostActiveSubverses()
         {
-            var result = await dbContext.GetMostActiveSubversesAsync();
+            var result = await dbContext.Set<Sessiontracker>().GetMostActiveSubversesAsync();
             var expectedList = new[]
             {
                 new ActiveSubverseViewModel
@@ -98,7 +98,7 @@
         [Fact(DisplayName = "Most active subverse list can be trimmed to desired length.")]
         public async Task MostActiveSubverseListCanBeTrimmed()
         {
-            var result = await dbContext.GetMostActiveSubversesAsync(take: 1);
+            var result = await dbContext.Set<Sessiontracker>().GetMostActiveSubversesAsync(take: 1);
             var expectedList = new[]
             {
                 new ActiveSubverseViewModel

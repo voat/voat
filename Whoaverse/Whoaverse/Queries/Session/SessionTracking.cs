@@ -9,29 +9,29 @@
 
     public static class SessionTracking
     {
-        public static Task<bool> SessionExistsAsync(this DbContext context, string sessionId, string subverse)
+        public static Task<bool> SessionExistsAsync(this IQueryable<Sessiontracker> query, string sessionId, string subverse)
         {
             return
-                context.Set<Sessiontracker>()
+                query
                     .AsNoTracking()
                     .Where(s => s.SessionId == sessionId && s.Subverse == subverse)
                     .AnyAsync();
         }
 
-        public static Task<int> GetSubverseActiveSessionCountAsync(this DbContext context, string subverse)
+        public static Task<int> GetSubverseActiveSessionCountAsync(this IQueryable<Sessiontracker> query, string subverse)
         {
             return
-                context.Set<Sessiontracker>()
+                query
                     .AsNoTracking()
                     .Where(s => s.Subverse == subverse)
                     .CountAsync();
         }
 
         public static async Task<IReadOnlyList<ActiveSubverseViewModel>> GetMostActiveSubversesAsync(
-            this DbContext context, int take = 7)
+            this IQueryable<Sessiontracker> query, int take = 7)
         {
             var items =
-                await context.Set<Sessiontracker>()
+                await query
                     .AsNoTracking()
                     .GroupBy(s => s.Subverse)
                     .Select(s => new ActiveSubverseViewModel
