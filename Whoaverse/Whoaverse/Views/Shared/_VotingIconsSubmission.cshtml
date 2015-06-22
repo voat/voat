@@ -64,9 +64,9 @@
                 <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
             }
 
-            <div class="score dislikes">@Model.Dislikes</div>
+            <div class="score dislikes">@score</div>
             <div class="score unvoted">@score</div>
-            <div class="score likes">@Model.Likes</div>
+            <div class="score likes">@score</div>
 
             @if (commentContributionPoints < 100)
             {
@@ -89,9 +89,9 @@
     {
         <div class="midcol unvoted">
             <div class="arrow-upvote login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0" id="upvotebutton-@Model.Id"></div>
-            <div class="score dislikes">@Model.Dislikes</div>
+            <div class="score dislikes">@score</div>
             <div class="score unvoted">@score</div>
-            <div class="score likes">@Model.Likes</div>
+            <div class="score likes">@score</div>
             <div class="arrow-downvote login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
         </div>
 
