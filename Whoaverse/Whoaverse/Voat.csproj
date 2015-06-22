@@ -260,6 +260,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Commands\Saving\CommentSaving.cs" />
     <Compile Include="Commands\Saving\SubmissionSaving.cs" />
+    <Compile Include="Models\CombinedKarma.cs" />
     <Compile Include="Models\Messaging\PrivateMessage.cs" />
     <Compile Include="Commands\SendPrivateMessage.cs" />
     <Compile Include="Commands\Voting\CommentVote.cs" />

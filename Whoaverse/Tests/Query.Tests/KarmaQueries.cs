@@ -190,6 +190,21 @@
             Assert.Equal(expectedUpvotes, result);
         }
 
+        // TODO: Change it to theory and add a data source that cannot be inline (split the test body into separate test cases)
+        [Fact(DisplayName = "Combined link & comment karma should be properly retrieved for a given user and (optionally) subverse.")]
+        public async Task CombinedKarmaRetrieval()
+        {
+            var result = await dbContext.GetCombinedKarmaAsync("testName", "subverse1");
+
+            Assert.Equal(result.LinkKarma, 22 - 10);
+            Assert.Equal(result.CommentKarma, 23 - 22);
+
+            result = await dbContext.GetCombinedKarmaAsync("testName");
+
+            Assert.Equal(result.LinkKarma, (22 - 10) + (32 - 3));
+            Assert.Equal(result.CommentKarma, (23 - 22) + (40 - 2));
+        }
+
         public void Dispose()
         {
             dbContext.Dispose();

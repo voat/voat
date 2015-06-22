@@ -22,9 +22,9 @@ namespace Voat.Queries.Karma
 
     public static class KarmaQueries
     {
-        private static Task<int> GetKarmaAsync(this IQueryable<IKarmaTracked> messages)
+        private static IQueryable<int> GetRawKarmaQuery(this IQueryable<IKarmaTracked> messages)
         {
-            return messages.Select(c => c.Likes - c.Dislikes).DefaultIfEmpty(0).SumAsync();
+            return messages.Select(c => c.Likes - c.Dislikes).DefaultIfEmpty(0);
         }
 
         private static IQueryable<IKarmaTracked> PrepareLinkKarmaQuery(this IQueryable<Message> query, string userName,
@@ -55,6 +55,37 @@ namespace Voat.Queries.Karma
             return baseQuery;
         }
 
+        public static async Task<CombinedKarma> GetCombinedKarmaAsync(this DbContext context, string userName, string subverse = null)
+        {
+            var linkKarma =
+                context.Set<Message>()
+                    .PrepareLinkKarmaQuery(userName, subverse)
+                    .GetRawKarmaQuery()
+                    .Select(x => new {LinkKarma = x, CommentKarma = 0});
+
+            var commentKarma =
+                context.Set<Comment>()
+                    .PrepareCommentKarmaQuery(userName, subverse)
+                    .GetRawKarmaQuery()
+                    .Select(x => new {LinkKarma = 0, CommentKarma = x});
+
+            var result = await
+                linkKarma.Concat(commentKarma)
+                    // Unfortunately there's no way to do direct equivalent of SELECT SUM(...) FROM, so there has to be a dummy group that will enable the use of aggregates.
+                    .GroupBy(x => 1) 
+                    .Select(
+                        g =>
+                            new
+                            {
+                                CommentKarma = g.Sum(x => x.CommentKarma),
+                                LinkKarma = g.Sum(x => x.LinkKarma)
+                            })
+                    .FirstAsync()
+                    .ConfigureAwait(false);
+
+            return new CombinedKarma(result.LinkKarma, result.CommentKarma);
+        }
+
         /// <summary>
         /// Gets link contribution points for specified user asynchronously
         /// </summary>
@@ -64,7 +95,7 @@ namespace Voat.Queries.Karma
         /// <returns></returns>
         public static Task<int> GetLinkKarmaAsync(this IQueryable<Message> query, string userName, string subverse = null)
         {
-            return query.PrepareLinkKarmaQuery(userName, subverse).GetKarmaAsync();
+            return query.PrepareLinkKarmaQuery(userName, subverse).GetRawKarmaQuery().SumAsync();
         }
 
         /// <summary>
@@ -76,7 +107,7 @@ namespace Voat.Queries.Karma
         /// <returns></returns>
         public static Task<int> GetCommentKarmaAsync(this IQueryable<Comment> query, string userName, string subverse = null)
         {
-            return query.PrepareCommentKarmaQuery(userName, subverse).GetKarmaAsync();
+            return query.PrepareCommentKarmaQuery(userName, subverse).GetRawKarmaQuery().SumAsync();
         }
 
         private static IQueryable<IVoteTracked> CreateUpvotedEntriesQuery(this IQueryable<IVoteTracked> source, string userName)
