@@ -318,6 +318,7 @@ namespace Voat.Controllers
 
                     // send comment reply notification to parent comment author if the comment is not a new root comment
                     await NotificationManager.SendCommentNotification(commentModel);
+                    return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
 
                 if (Request.UrlReferrer != null)

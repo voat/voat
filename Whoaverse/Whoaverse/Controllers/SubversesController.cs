@@ -673,11 +673,21 @@ namespace Voat.Controllers
         {
             try
             {
-                // fetch a random subverse with minimum number of subscribers where last subverse activity was evident
-                var subverse = from subverses in _db.Subverses
-                          .Where(s => s.subscribers > 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase) && s.last_submission_received != null)
-                               select subverses;
+                IQueryable<Subverse> subverse;
 
+                // fetch a random subverse with minimum number of subscribers where last subverse activity was evident and the user isn't blocking it
+                if (Voat.Utils.User.AdultContentEnabled(User.Identity.Name))
+                {
+                    subverse = from subverses in _db.Subverses
+                              .Where(s => s.subscribers >= 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase) && s.last_submission_received != null && !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(s.name) select ubs.Username).Contains(User.Identity.Name) && s.rated_adult.Equals(false))
+                                   select subverses;
+                }
+                else
+                {
+                    subverse = from subverses in _db.Subverses
+                              .Where(s => s.subscribers >= 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase) && s.last_submission_received != null && !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(s.name) select ubs.Username).Contains(User.Identity.Name))
+                                   select subverses;
+                }
                 var submissionCount = 0;
                 Subverse randomSubverse;
 
@@ -1603,8 +1613,8 @@ namespace Voat.Controllers
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                         where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                        select message
-                                                                        ).OrderByDescending(s => s.Date).AsNoTracking();
+                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
+                                                                        select message).OrderByDescending(s => s.Date).AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByDate;
         }
@@ -1615,6 +1625,7 @@ namespace Voat.Controllers
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                         where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                         select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByRank;
@@ -1626,6 +1637,7 @@ namespace Voat.Controllers
                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                        where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                       where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                        select message).OrderByDescending(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
                                                                        .AsNoTracking();
 
@@ -1657,6 +1669,7 @@ namespace Voat.Controllers
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                      where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                     where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                      select message).OrderByDescending(s => s.Date).AsNoTracking();
 
             return submissionsFromAllSubversesByDate;
@@ -1668,6 +1681,7 @@ namespace Voat.Controllers
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                      where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                     where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                      select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
             return submissionsFromAllSubversesByRank;
@@ -1679,6 +1693,7 @@ namespace Voat.Controllers
                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                     where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
                                                                     where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                    where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                     select message).OrderByDescending(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
                                                                     .AsNoTracking();
 

@@ -40,17 +40,6 @@ $(document).ready(function () {
             source: '/ajaxhelpers/autocompletesubversename'
         });
 
-    // drag'n'drop link sharing
-    $(document).on('dragenter', function () {
-        $('#share-a-link-overlay').show();
-    });
-
-    $('#share-a-link-overlay').on('dragleave', function (e) {
-        if (e.originalEvent.pageX < 10 || e.originalEvent.pageY < 10 || $(window).width() - e.originalEvent.pageX < 10 || $(window).height - e.originalEvent.pageY < 10) {
-            $("#share-a-link-overlay").hide();
-        }
-    });
-
     $('#share-a-link-overlay').on('dragover', function (e) {
         e.stopPropagation();
         e.preventDefault();
@@ -230,8 +219,6 @@ function dropFunction(event) {
             window.location.replace("/submit?linkpost=true&url=" + url);
         }
     }
-
-    $("#share-a-link-overlay").hide();
 }
 
 function click_voting() {
@@ -513,7 +500,7 @@ function replyprivatemessage(parentprivatemessageid, recipient, subject) {
     var token = $("input[name='__RequestVerificationToken']").val();
 
     replyFormPMRequest = $.ajax({
-        url: "/ajaxhelpers/privatemessagereplyform/" + parentprivatemessageid + "?recipient=" + recipient + "&subject=" + subject,
+        url: "/ajaxhelpers/privatemessagereplyform/" + parentprivatemessageid + "?recipient=" + recipient + "&subject=" + htmlDecode(subject),
         success: function (data) {
             $("#messageContainer-" + parentprivatemessageid).append(data);
             //Focus the cursor on the private message reply form textarea, to prevent unnecessary use of the tab key
@@ -1566,4 +1553,14 @@ function checkUsernameAvailability(obj) {
             });
         }        
     }    
+}
+
+// Decode html
+function htmlDecode(value) {
+    return String(value)
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&');
 }

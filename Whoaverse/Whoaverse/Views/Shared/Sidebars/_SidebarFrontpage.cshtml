@@ -16,6 +16,13 @@
 
     @Html.Partial("_SearchMinimal", new SearchViewModel())
 
+    <div class="spacer" ondrop="dropFunction(event);" ondragover="return false">
+        <div id="share-a-link-overlay">
+            <div>
+                <h1>drop a link to share</h1>
+            </div>
+        </div>
+    </div>
     <div class="spacer">
         <a href="/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">
             Share a link

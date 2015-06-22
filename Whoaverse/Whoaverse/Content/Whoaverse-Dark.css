@@ -3197,3 +3197,26 @@ textarea.form-control {
 .markdownEditorImgButton, .markdownEditorTextButton { 
     background-color: #606060 !important;
 }
+
+#share-a-link-overlay {
+    background: #313131 none repeat scroll 0% 0%;
+    border: 2px dashed #222;
+    border-radius: 2px;
+    position: relative;
+    height: 100px;
+}
+
+#share-a-link-overlay h1 {
+    position: relative;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#share-a-link-overlay h1, #share-a-link-overlay a {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+}
