@@ -326,8 +326,8 @@ namespace Voat.Controllers
             var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge {Awarded = item.Awarded, BadgeName = item.Badge.BadgeName}).ToList();
 
             resultModel.Name = userName;
-            resultModel.CCP = await _db.GetCommentKarmaAsync(userName);
-            resultModel.LCP = await _db.GetLinkKarmaAsync(userName);
+            resultModel.CCP = await _db.Set<Comment>().GetCommentKarmaAsync(userName);
+            resultModel.LCP = await _db.Set<Message>().GetLinkKarmaAsync(userName);
             resultModel.RegistrationDate = Utils.User.GetUserRegistrationDateTime(userName);
             resultModel.Badges = resultBadgesList;
 

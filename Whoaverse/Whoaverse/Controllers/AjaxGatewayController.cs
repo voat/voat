@@ -159,8 +159,8 @@ namespace Voat.Controllers
         {
             var userRegistrationDateTime = Utils.User.GetUserRegistrationDateTime(userName);
             var memberFor = Submissions.CalcSubmissionAge(userRegistrationDateTime);
-            var scp = await _db.GetLinkKarmaAsync(userName);
-            var ccp = await _db.GetCommentKarmaAsync(userName);
+            var scp = await _db.Set<Message>().GetLinkKarmaAsync(userName);
+            var ccp = await _db.Set<Comment>().GetCommentKarmaAsync(userName);
 
             var userInfoModel = new BasicUserInfo()
             {

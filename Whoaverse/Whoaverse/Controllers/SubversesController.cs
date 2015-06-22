@@ -128,7 +128,7 @@ namespace Voat.Controllers
 
             int minimumCcp = Convert.ToInt32(ConfigurationManager.AppSettings["minimumCcp"]);
             int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
-            var commentKarma = await _db.GetCommentKarmaAsync(User.Identity.Name);
+            var commentKarma = await _db.Set<Comment>().GetCommentKarmaAsync(User.Identity.Name);
             // verify recaptcha if user has less than minimum required CCP
             if (commentKarma < minimumCcp)
             {

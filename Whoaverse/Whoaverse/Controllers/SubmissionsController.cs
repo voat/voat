@@ -129,7 +129,7 @@ namespace Voat.Controllers
         {
             int dailyVotingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyVotingQuota"]);
             var loggedInUser = User.Identity.Name;
-            var userCcp = await _db.GetCommentKarmaAsync(loggedInUser);
+            var userCcp = await _db.Set<Comment>().GetCommentKarmaAsync(loggedInUser);
             var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
             var totalVotesUsedInPast24Hours = Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name);
 

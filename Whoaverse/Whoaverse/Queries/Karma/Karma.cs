@@ -27,44 +27,56 @@ namespace Voat.Queries.Karma
             return messages.Select(c => c.Likes - c.Dislikes).DefaultIfEmpty(0).SumAsync();
         }
 
-        /// <summary>
-        /// Gets link contribution points for specified user asynchronously
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="userName"></param>
-        /// <param name="subverse">Subverse name for which the link karma should be retrieved</param>
-        /// <returns></returns>
-        public static Task<int> GetLinkKarmaAsync(this DbContext context, string userName, string subverse = null)
+        private static IQueryable<IKarmaTracked> PrepareLinkKarmaQuery(this IQueryable<Message> query, string userName,
+            string subverse)
         {
             var baseQuery =
-                context.Set<Message>()
-                    .Where(c => c.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase));
+               query
+                   .Where(c => c.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase));
 
             if (!string.IsNullOrEmpty(subverse))
             {
                 baseQuery = baseQuery.Where(c => c.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase));
             }
 
-            return baseQuery.GetKarmaAsync();
+            return baseQuery;
         }
 
-        /// <summary>
-        /// Gets comment contribution points for specified user asynchronously
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="userName"></param>
-        /// <param name="subverse"></param>
-        /// <returns></returns>
-        public static Task<int> GetCommentKarmaAsync(this DbContext context, string userName, string subverse = null)
+        private static IQueryable<IKarmaTracked> PrepareCommentKarmaQuery(this IQueryable<Comment> query,
+            string userName, string subverse)
         {
-            var baseQuery = context.Set<Comment>().Where(c => c.Name != "deleted" && c.Name == userName);
+            var baseQuery = query.Where(c => c.Name != "deleted" && c.Name == userName);
 
             if (!string.IsNullOrEmpty(subverse))
             {
                 baseQuery = baseQuery.Where(c => c.Message.Subverse == subverse);
             }
 
-            return baseQuery.GetKarmaAsync();
+            return baseQuery;
+        }
+
+        /// <summary>
+        /// Gets link contribution points for specified user asynchronously
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="userName"></param>
+        /// <param name="subverse">Subverse name for which the link karma should be retrieved</param>
+        /// <returns></returns>
+        public static Task<int> GetLinkKarmaAsync(this IQueryable<Message> query, string userName, string subverse = null)
+        {
+            return query.PrepareLinkKarmaQuery(userName, subverse).GetKarmaAsync();
+        }
+
+        /// <summary>
+        /// Gets comment contribution points for specified user asynchronously
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="userName"></param>
+        /// <param name="subverse"></param>
+        /// <returns></returns>
+        public static Task<int> GetCommentKarmaAsync(this IQueryable<Comment> query, string userName, string subverse = null)
+        {
+            return query.PrepareCommentKarmaQuery(userName, subverse).GetKarmaAsync();
         }
 
         private static IQueryable<IVoteTracked> CreateUpvotedEntriesQuery(this IQueryable<IVoteTracked> source, string userName)

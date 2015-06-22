@@ -146,7 +146,7 @@
         [InlineData("testName2", 4 - 10)]
         public async Task LinkKarmaRetrievalForUser(string userName, int expectedKarma)
         {
-            var result = await dbContext.GetLinkKarmaAsync(userName);
+            var result = await dbContext.Set<Message>().GetLinkKarmaAsync(userName);
             Assert.Equal(expectedKarma, result);
         }
 
@@ -157,7 +157,7 @@
         [InlineData("testName2", "subverse1", 4 - 10)]
         public async Task LinkKarmaRetrievalForUserAndSubverse(string userName, string subverse, int expectedKarma)
         {
-            var result = await dbContext.GetLinkKarmaAsync(userName, subverse);
+            var result = await dbContext.Set<Message>().GetLinkKarmaAsync(userName, subverse);
             Assert.Equal(expectedKarma, result);
         }
 
@@ -166,7 +166,7 @@
         [InlineData("testName2", (3 - 15))]
         public async Task CommentKarmaRetrievalForUser(string userName, int expectedKarma)
         {
-            var result = await dbContext.GetCommentKarmaAsync(userName);
+            var result = await dbContext.Set<Comment>().GetCommentKarmaAsync(userName);
             Assert.Equal(expectedKarma, result);
         }
 
@@ -177,7 +177,7 @@
         [InlineData("testName2", "subverse1", 3 - 15)]
         public async Task CommentKarmaRetrievalForUserAndSubverse(string userName, string subverse, int expectedKarma)
         {
-            var result = await dbContext.GetCommentKarmaAsync(userName, subverse);
+            var result = await dbContext.Set<Comment>().GetCommentKarmaAsync(userName, subverse);
             Assert.Equal(expectedKarma, result);
         }
 

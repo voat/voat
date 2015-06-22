@@ -277,7 +277,7 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid) return View();
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null) return RedirectToAction("Sent", "Messaging");
-            var commentKarma = await _db.GetCommentKarmaAsync(User.Identity.Name);
+            var commentKarma = await _db.Set<Comment>().GetCommentKarmaAsync(User.Identity.Name);
             if (commentKarma < 100)
             {
                 bool isCaptchaValid = await ReCaptchaUtility.Validate(Request);

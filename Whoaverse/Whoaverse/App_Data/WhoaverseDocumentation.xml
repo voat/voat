@@ -553,20 +553,20 @@
             </summary>
             <param name="submissionId">The submission Id for which to fetch comments.</param>
         </member>
-        <member name="M:Voat.Queries.Karma.KarmaQueries.GetLinkKarmaAsync(System.Data.Entity.DbContext,System.String,System.String)">
+        <member name="M:Voat.Queries.Karma.KarmaQueries.GetLinkKarmaAsync(System.Linq.IQueryable{Voat.Models.Message},System.String,System.String)">
             <summary>
             Gets link contribution points for specified user asynchronously
             </summary>
-            <param name="context"></param>
+            <param name="query"></param>
             <param name="userName"></param>
             <param name="subverse">Subverse name for which the link karma should be retrieved</param>
             <returns></returns>
         </member>
-        <member name="M:Voat.Queries.Karma.KarmaQueries.GetCommentKarmaAsync(System.Data.Entity.DbContext,System.String,System.String)">
+        <member name="M:Voat.Queries.Karma.KarmaQueries.GetCommentKarmaAsync(System.Linq.IQueryable{Voat.Models.Comment},System.String,System.String)">
             <summary>
             Gets comment contribution points for specified user asynchronously
             </summary>
-            <param name="context"></param>
+            <param name="query"></param>
             <param name="userName"></param>
             <param name="subverse"></param>
             <returns></returns>
