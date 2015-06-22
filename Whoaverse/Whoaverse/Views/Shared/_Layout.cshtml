@@ -17,6 +17,7 @@
     string selectedSubverse = ViewBag.SelectedSubverse;
 
     var theme = Session["UserTheme"];
+    var themeClass = theme == null || theme == "light" ? "light" : "dark";
 
     LoginViewModel loginViewModel = new LoginViewModel();
 
@@ -131,7 +132,7 @@
     <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
 
 </head>
-<body ondrop="dropFunction(event);" ondragover="return false">
+<body ondrop="dropFunction(event);" ondragover="return false" class="@themeClass">
     <div style="display:none" id="share-a-link-overlay">
         <div>
             <h1>share a link</h1>
