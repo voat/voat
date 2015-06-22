@@ -37,7 +37,7 @@
             <div class="submission id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
                 @Html.Partial("Userprofile/_UserProfileSubmission", submission)
                 <div class="child"></div>
-                <div class="clearleft"><!--IE6fix--></div>
+                <div class="clearleft">@*IE6fix*@</div>
             </div>
         }
 

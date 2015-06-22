@@ -216,8 +216,8 @@ function addCode(textComponent) {
     //Add text located before the selected text (which should not have been modified)
     textComponent.value = selectedText[0];
     //Check if there is a new line in the selected text
-	var hasNewLine = /\r|\n/.exec(selectedText[1]);
-	if (hasNewLine){
+    var formatAsCodeBlock = ((/\r|\n/.exec(selectedText[1])) || (selectedText[1].length == 0));
+	if (formatAsCodeBlock){
 		//Selected text has a new line, format as code block
 		textComponent.value += addTagsToText(selectedText[1], '~~~\n', '\n~~~');
 	} else {

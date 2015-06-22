@@ -258,14 +258,6 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Commands\Saving\CommentSaving.cs" />
-    <Compile Include="Commands\Saving\SubmissionSaving.cs" />
-    <Compile Include="Models\CombinedKarma.cs" />
-    <Compile Include="Models\Messaging\PrivateMessage.cs" />
-    <Compile Include="Commands\SendPrivateMessage.cs" />
-    <Compile Include="Commands\Voting\CommentVote.cs" />
-    <Compile Include="Commands\Voting\SubmissionVote.cs" />
-    <Compile Include="Commands\Voting\VoteDirection.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AjaxGatewayController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
@@ -280,9 +272,6 @@
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
-    <Compile Include="Models\DbContextPartial.cs" />
-    <Compile Include="Models\IKarmaTracked.cs" />
-    <Compile Include="Models\IVoteTracked.cs" />
     <Compile Include="Models\SavedItem.cs" />
     <Compile Include="Models\Commentsavingtracker.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
@@ -323,13 +312,6 @@
     <Compile Include="Models\Viewstatistic.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Queries\Comments\CommentCount.cs" />
-    <Compile Include="Queries\Session\SessionTracking.cs" />
-    <Compile Include="Queries\Voting\CommentVote.cs" />
-    <Compile Include="Queries\Voting\SubmissionVote.cs" />
-    <Compile Include="Queries\Voting\Vote.cs" />
-    <Compile Include="Queries\Voting\VoteStatus.cs" />
-    <Compile Include="Utils\CommentCounter.cs" />
     <Compile Include="Utils\Components\ContentFilters.cs" />
     <Compile Include="Utils\Components\ContentProcessor.cs" />
     <Compile Include="Utils\Components\NotificationManager.cs" />
@@ -472,7 +454,7 @@
     <Compile Include="Utils\SetsUtility.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
-    <Compile Include="Queries\Karma\Karma.cs" />
+    <Compile Include="Utils\Karma.cs" />
     <Compile Include="Utils\PagerOptions.cs" />
     <Compile Include="Utils\Ranking.cs" />
     <Compile Include="Utils\Submissions.cs" />
@@ -493,12 +475,6 @@
     <Content Include="Content\tooltipster.min.css">
       <DependentUpon>tooltipster.css</DependentUpon>
     </Content>
-    <Content Include="Content\ui-themes\autocomplete\autocomplete.css" />
-    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css" />
-    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.min.css" />
-    <Content Include="Content\ui-themes\autocomplete\core.css" />
-    <Content Include="Content\ui-themes\autocomplete\menu.css" />
-    <Content Include="Content\ui-themes\autocomplete\theme.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
@@ -562,7 +538,6 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
-    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -826,8 +801,6 @@
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSave.cshtml" />
     <Content Include="Views\Home\UserSaved.cshtml" />
     <Content Include="Views\AjaxViews\_BasicUserInfo.cshtml" />
-    <Content Include="Views\Shared\_Captcha.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

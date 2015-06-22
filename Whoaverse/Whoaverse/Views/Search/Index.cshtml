@@ -59,6 +59,7 @@
 
         <div class="alert alert-info">
             <p>Here are your search results for the term "<b>@searchTerm</b>", we found <b>@Model.TotalCount</b> matches:</p>
+            <p><i>* Search is currently limited to 25 records due to performance reasons.</i></p>
         </div>
 
         <div class="sitetable linklisting">
@@ -91,7 +92,7 @@
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                     <div class="child"></div>
-                    <div class="clearleft"><!--IE6fix--></div>
+                    <div class="clearleft">@*IE6fix*@</div>
                 </div>
                 counter++;
             }
