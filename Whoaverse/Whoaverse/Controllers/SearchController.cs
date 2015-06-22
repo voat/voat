@@ -54,24 +54,32 @@ namespace Voat.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
 
-                // show search results, default sorting by rank and date
-                var linkSubmissions = _db.Messages
-                    .Where(x => x.Name != "deleted" & x.Subverse == sub & x.Linkdescription.ToLower().Contains(q))
-                    .OrderByDescending(s => s.Rank)
-                    .ThenByDescending(s => s.Date).Take(100);
+                //// show search results, default sorting by rank and date
+                //var linkSubmissions = _db.Messages
+                //    .Where(x => x.Name != "deleted" & x.Subverse == sub & x.Linkdescription.ToLower().Contains(q))
+                //    .OrderByDescending(s => s.Rank)
+                //    .ThenByDescending(s => s.Date).Take(100);
 
-                var selfSubmissionsTitle = _db.Messages
-                    .Where(x => x.Name != "deleted" & x.Subverse == sub & x.Title.ToLower().Contains(q))
-                    .OrderByDescending(s => s.Rank)
-                    .ThenByDescending(s => s.Date).Take(100);
+                //var selfSubmissionsTitle = _db.Messages
+                //    .Where(x => x.Name != "deleted" & x.Subverse == sub & x.Title.ToLower().Contains(q))
+                //    .OrderByDescending(s => s.Rank)
+                //    .ThenByDescending(s => s.Date).Take(100);
 
-                var selfSubmissionsMessageContent = _db.Messages
-                    .Where(x => x.Name != "deleted" & x.Subverse == sub & x.MessageContent.ToLower().Contains(q))
-                    .OrderByDescending(s => s.Rank)
-                    .ThenByDescending(s => s.Date).Take(100);
+                //var selfSubmissionsMessageContent = _db.Messages
+                //    .Where(x => x.Name != "deleted" & x.Subverse == sub & x.MessageContent.ToLower().Contains(q))
+                //    .OrderByDescending(s => s.Rank)
+                //    .ThenByDescending(s => s.Date).Take(100);
 
-                var results = linkSubmissions.Concat(selfSubmissionsTitle);
-                results = results.Concat(selfSubmissionsMessageContent).Distinct().OrderByDescending(s => s.Date);
+                //var results = linkSubmissions.Concat(selfSubmissionsTitle);
+
+                //results = results.Concat(selfSubmissionsMessageContent).Distinct().OrderByDescending(s => s.Date);
+
+                var results = _db.Messages
+                    .Where(x => x.Name != "deleted" && x.Subverse == sub &&
+                        (x.Linkdescription.ToLower().Contains(q) || x.MessageContent.ToLower().Contains(q) || x.Title.ToLower().Contains(q))
+                    ).OrderByDescending(s => s.Rank)
+                    .ThenByDescending(s => s.Date).Take(25);
+
 
                 ViewBag.Title = "search results";
 
@@ -92,24 +100,31 @@ namespace Voat.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
 
-                // show search results, default sorting by rank and date
-                var linkSubmissions = _db.Messages
-                    .Where(x => x.Name != "deleted" & x.Linkdescription.ToLower().Contains(q))
-                    .OrderByDescending(s => s.Rank)
-                    .ThenByDescending(s => s.Date).Take(100);
+                //// show search results, default sorting by rank and date
+                //var linkSubmissions = _db.Messages
+                //    .Where(x => x.Name != "deleted" & x.Linkdescription.ToLower().Contains(q))
+                //    .OrderByDescending(s => s.Rank)
+                //    .ThenByDescending(s => s.Date).Take(100);
 
-                var selfSubmissionsTitle = _db.Messages
-                    .Where(x => x.Name != "deleted" & x.Title.ToLower().Contains(q))
-                    .OrderByDescending(s => s.Rank)
-                    .ThenByDescending(s => s.Date).Take(100);
+                //var selfSubmissionsTitle = _db.Messages
+                //    .Where(x => x.Name != "deleted" & x.Title.ToLower().Contains(q))
+                //    .OrderByDescending(s => s.Rank)
+                //    .ThenByDescending(s => s.Date).Take(100);
 
-                var selfSubmissionsMessageContent = _db.Messages
-                    .Where(x => x.Name != "deleted" & x.MessageContent.ToLower().Contains(q))
-                    .OrderByDescending(s => s.Rank)
-                    .ThenByDescending(s => s.Date).Take(100);
+                //var selfSubmissionsMessageContent = _db.Messages
+                //    .Where(x => x.Name != "deleted" & x.MessageContent.ToLower().Contains(q))
+                //    .OrderByDescending(s => s.Rank)
+                //    .ThenByDescending(s => s.Date).Take(100);
 
-                var results = linkSubmissions.Concat(selfSubmissionsTitle);
-                results = results.Concat(selfSubmissionsMessageContent).Distinct().OrderByDescending(s => s.Date);
+                //var results = linkSubmissions.Concat(selfSubmissionsTitle);
+                //results = results.Concat(selfSubmissionsMessageContent).Distinct().OrderByDescending(s => s.Date);
+
+                var results = _db.Messages
+                  .Where(x => x.Name != "deleted" &&
+                      (x.Linkdescription.ToLower().Contains(q) || x.MessageContent.ToLower().Contains(q) || x.Title.ToLower().Contains(q))
+                  ).OrderByDescending(s => s.Rank)
+                  .ThenByDescending(s => s.Date).Take(25);
+
 
                 var paginatedResults = new PaginatedList<Message>(results, page ?? 0, pageSize);
 

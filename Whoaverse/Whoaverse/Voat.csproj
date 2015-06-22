@@ -312,6 +312,7 @@
     <Compile Include="Models\Viewstatistic.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\whoaverseEntities.cs" />
     <Compile Include="Utils\CommentCounter.cs" />
     <Compile Include="Utils\Components\ContentFilters.cs" />
     <Compile Include="Utils\Components\ContentProcessor.cs" />
@@ -510,6 +511,10 @@
     </Content>
     <Content Include="Graphics\WVSprite.png.css">
       <DependentUpon>WVSprite.png</DependentUpon>
+    </Content>
+    <Content Include="inactive.htm" />
+    <Content Include="inactive.min.htm">
+      <DependentUpon>inactive.htm</DependentUpon>
     </Content>
     <Content Include="oexchange.xrd" />
     <Content Include="Graphics\WVSprite.png.map">
