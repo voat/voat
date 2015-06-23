@@ -12,7 +12,7 @@
 
 @model Voat.Models.Message
 
-<!-- 1 user self submission with details without comments -->
+@* 1 user self submission with details without comments *@
 @{
     var commentCount = Model.Comments.Count(c => c.Name != "deleted");
     
@@ -39,10 +39,10 @@
                     <span class="domain">(<a href="/v/@Model.Subverse">self.@Model.Subverse</a>)</span>
                 </p>
 
-                <!-- EXPERIMENTAL EXPANDO BUTTON START -->
+                @* EXPERIMENTAL EXPANDO BUTTON START *@
                 <div class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.Id)"></div>
                 <div class="expando" style="display: none;" id="@Model.Id"></div>
-                <!-- EXPERIMENTAL EXPANDO BUTTON END -->
+                @* EXPERIMENTAL EXPANDO BUTTON END *@
 
                 <p class="tagline">
                     submitted
@@ -71,7 +71,7 @@
             </div>
             <div class="child"></div>
             <div class="clearleft">
-                <!--IE6fix-->
+                @*IE6fix*@
             </div>
         </div>
     }

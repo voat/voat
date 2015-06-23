@@ -46,7 +46,7 @@
                     @Html.Partial("_votingIconsSubmission", message, new ViewDataDictionary { { "CCP", Karma.CommentKarma(User.Identity.Name) } })
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", message)
                     <div class="child"></div>
-                    <div class="clearleft"><!--IE6fix--></div>
+                    <div class="clearleft">@*IE6fix*@</div>
                 </div>
             }
             if (comment != null)

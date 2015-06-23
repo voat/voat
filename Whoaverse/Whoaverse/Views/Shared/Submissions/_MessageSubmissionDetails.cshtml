@@ -21,10 +21,10 @@
     bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 }
 
-<!-- Link flair select modal placeholder -->
+@* Link flair select modal placeholder *@
 <div class="modal fade" id="linkFlairSelectModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true"></div>
-<!-- End link flair select modal placeholder -->
-<!-- 1 message submission details without comments -->
+@* End link flair select modal placeholder *@
+@* 1 message submission details without comments *@
 <div id="siteTable" class="sitetable linklisting">
     <div id="submissionid-@Model.Id" class="submission odd link self id-@Model.Id" data-fullname="@Model.Id" data-ups="" data-downs="">
         <a name="submissionTop"></a>
@@ -111,11 +111,11 @@
         </div>
         <div class="child"></div>
         <div class="clearleft">
-            <!--IE6fix-->
+            @*IE6fix*@
         </div>
     </div>
     <div class="clearleft">
-        <!--IE6fix-->
+        @*IE6fix*@
     </div>
 </div>
 

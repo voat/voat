@@ -11,7 +11,7 @@
     All Rights Reserved.*@
 
 <div class="markdownEditor">
-    <!-- Markdown Editor Main Menu -->
+    @* Markdown Editor Main Menu *@
     <div class="markdownEditorMainMenu">
         <a class="markdownEditorImgButton" style="background-position: 0px 0px;" alt="bold" title="Bold" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'**','**');"></a>
         <a class="markdownEditorImgButton" style="background-position: -32px 0px;" alt="italic" title="Italic" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'*','*');"></a>
@@ -29,12 +29,12 @@
 		<a class="markdownEditorImgButton" style="background-position: -192px -16px;" alt="spoiler" title="Superscript" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'<sup>','</sup>');"></a>
 		<a class="markdownEditorImgButton" style="background-position: -224px -16px;" alt="spoiler" title="Subscript" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'<sub>','</sub>');"></a>
     </div>
-    <!-- Markdown Editor Link Sub Menu -->
+    @* Markdown Editor Link Sub Menu *@
     <div class="markdownEditorSubMenu" id="linkSubMenu" style="display: none;">
         <input type="text" class="markdownEditorTextButton" id="url" placeholder="Enter the page url">
 		<a class="markdownEditorTextButton" alt="create" title="Create Link" onclick="addHyperlink($(this.parentElement.parentElement.parentElement).find('textarea')[0],$(this.parentElement).find('#url')[0].value);$(this.parentElement).hide();$(this.parentElement).find('#url')[0].value = '';">Create link</a>
     </div>
-    <!-- Markdown Editor Headings Sub Menu -->
+    @* Markdown Editor Headings Sub Menu *@
     <div class="markdownEditorSubMenu" id="headingsSubMenu" style="display: none;">
         <a class="markdownEditorImgButton" style="background-position: -0px -32px;" alt="h1" title="Heading Level 1" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'#','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -32px -32px;" alt="h2" title="Heading Level 2" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'##','');"></a>
@@ -43,7 +43,7 @@
         <a class="markdownEditorImgButton" style="background-position: -128px -32px;" alt="h5" title="Heading Level 5" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'#####','');"></a>
         <a class="markdownEditorImgButton" style="background-position: -160px -32px;" alt="h6" title="Heading Level 6" onclick="addTagsToSelectedText($(this.parentElement.parentElement.parentElement).find('textarea')[0],'######','');"></a>
     </div>
-    <!-- Markdown Editor Table Creator Sub Menu -->
+    @* Markdown Editor Table Creator Sub Menu *@
     <div class="markdownEditorSubMenu" id="tableCreatorSubMenu" style="display: none;">
         <input type="hidden" name="cols" id="numCols" value="1">
         <input type="hidden" name="rows" id="numRows" value="1">

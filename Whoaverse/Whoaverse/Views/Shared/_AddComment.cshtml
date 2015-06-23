@@ -22,7 +22,7 @@
     @Html.AntiForgeryToken()    
     @Html.ValidationSummary(true)
 
-    <!-- Setup default values -->
+    @* Setup default values *@
     @Html.Hidden("MessageId", messageId)
 
     @Html.MarkdownEditorFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
