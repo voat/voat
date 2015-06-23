@@ -552,6 +552,7 @@
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\voatweb03.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -630,7 +631,6 @@
     <Content Include="Graphics\WVSprite.sprite" />
     <Content Include="Areas\HelpPage\Views\Help\Index.cshtml" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
-    <None Include="Properties\PublishProfiles\OLD voat.co - Web Deploy.pubxml" />
     <Content Include="robots.txt" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\respond.js" />
