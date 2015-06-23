@@ -28,10 +28,10 @@
     string sortingMode = ViewBag.SortingMode;
     string selectedUser = ViewBag.userid;
 
-    ViewBag.Title = ViewBag.Title ?? ConfigurationManager.AppSettings["siteSlogan"];
-    ViewBag.Description = ViewBag.Description ?? ConfigurationManager.AppSettings["siteDescription"];
+    ViewBag.Title = ViewBag.Title ?? MvcApplication.SiteSlogan;
+    ViewBag.Description = ViewBag.Description ?? MvcApplication.SiteDescription;
     ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
-    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + ConfigurationManager.AppSettings["siteLogo"];
+    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + MvcApplication.SiteLogo;
 
     if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && ViewBag.PmView == null)
     {
@@ -64,7 +64,7 @@
     }
     else
     {
-        <meta name="description" content="@ConfigurationManager.AppSettings["siteSlogan"]" />
+        <meta name="description" content="@MvcApplication.SiteSlogan" />
     }
     @if (ViewBag.Keywords != null)
     {
@@ -72,7 +72,7 @@
     }
     else
     {
-        <meta name="keywords" content="@ConfigurationManager.AppSettings["siteKeywords"]" />
+        <meta name="keywords" content="@MvcApplication.SiteKeywords" />
     }
 
     <title>@ViewBag.Title</title>
@@ -80,7 +80,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="@Request.Url.ToString()" />
     <meta property="og:image" content="@ViewBag.Image" />
-    <meta property="og:site_name" content="@ConfigurationManager.AppSettings["siteName"]" />
+    <meta property="og:site_name" content="@MvcApplication.SiteName" />
     <meta property="og:description" content="@ViewBag.Description" />
 
     @if (theme != null)
@@ -151,8 +151,8 @@
         <div id="header-container">
             <div id="header-banner">
 
-                <a title="@ConfigurationManager.AppSettings["siteSlogan"]" href="/" id="header-img-a">
-                    <img id="header-img" src="@ConfigurationManager.AppSettings["siteLogo"]" alt="@ConfigurationManager.AppSettings["siteName"]" height="31" width="112">
+                <a title="@MvcApplication.SiteSlogan" href="/" id="header-img-a">
+                    <img id="header-img" src="@MvcApplication.SiteLogo" alt="@MvcApplication.SiteName" height="31" width="112">
                 </a>
 
                 <div id="show-menu-button"></div>
@@ -244,7 +244,7 @@
                         <h4 class="modal-title" id="notenoughccplabel">Hi! It looks like you are new around here</h4>
                     </div>
                     <div class="modal-body">
-                        <p>Welcome to @ConfigurationManager.AppSettings["siteName"]!</p>
+                        <p>Welcome to @MvcApplication.SiteName!</p>
                         <p>In order to downvote comments or submissions you need to have at least 100 comment contribution points.</p>
                         <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>
                         <p>You currently have @Karma.CommentKarma(User.Identity.Name) comment contribution points.</p>
@@ -266,7 +266,7 @@
                         <h4 class="modal-title" id="notenoughccpupvotelabel">Hi! It looks like you are new around here.</h4>
                     </div>
                     <div class="modal-body">
-                        <p>Welcome to @ConfigurationManager.AppSettings["siteName"]!</p>
+                        <p>Welcome to @MvcApplication.SiteName!</p>
                         <p>In order to be able to upvote comments or submissions without limitations, you need to have at least 20 comment contribution points.</p>
                         <p>You are currently limited to 10 upvotes per 24 hours.</p>
                         <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>

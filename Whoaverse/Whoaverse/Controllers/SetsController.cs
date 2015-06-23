@@ -267,7 +267,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> CreateSet([Bind(Include = "Name, Description")] AddSet setTmpModel)
         {
             if (!User.Identity.IsAuthenticated) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            int maximumOwnedSets = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSets"]);
+            int maximumOwnedSets = MvcApplication.MaximumOwnedSets;
 
             // TODO
             // ###############################################################################################

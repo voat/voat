@@ -124,8 +124,8 @@ namespace Voat.Controllers
             // abort if model state is invalid
             if (!ModelState.IsValid) return View();
 
-            int minimumCcp = Convert.ToInt32(ConfigurationManager.AppSettings["minimumCcp"]);
-            int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
+            int minimumCcp = MvcApplication.MinimumCcp;
+            int maximumOwnedSubs = MvcApplication.MaximumOwnedSubs;
 
             // verify recaptcha if user has less than minimum required CCP
             if (Karma.CommentKarma(User.Identity.Name) < minimumCcp)
@@ -827,7 +827,7 @@ namespace Voat.Controllers
             var subverseModel = _db.Subverses.FirstOrDefault(s => s.name.Equals(subverseAdmin.SubverseName, StringComparison.OrdinalIgnoreCase));
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
+            int maximumOwnedSubs = MvcApplication.MaximumOwnedSubs;
 
             // check if the user being added is not already a moderator of 10 subverses
             var currentlyModerating = _db.SubverseAdmins.Where(a => a.Username == subverseAdmin.Username).ToList();
@@ -912,7 +912,7 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult AcceptModInvitation(int invitationId)
         {
-            int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
+            int maximumOwnedSubs = MvcApplication.MaximumOwnedSubs;
 
             // check if there is an invitation for this user with this id
             var userInvitation = _db.Moderatorinvitations.Find(invitationId);

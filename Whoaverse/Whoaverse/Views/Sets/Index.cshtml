@@ -13,7 +13,7 @@
 @model Voat.Models.ViewModels.SingleSetViewModel
 
 @{
-    ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
+    ViewBag.Title = MvcApplication.SiteSlogan;
 }
 
 @using System.Configuration

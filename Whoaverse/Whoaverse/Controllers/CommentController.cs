@@ -38,7 +38,7 @@ namespace Voat.Controllers
         [Authorize]
         public JsonResult VoteComment(int commentId, int typeOfVote)
         {
-            int dailyVotingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyVotingQuota"]);
+            int dailyVotingQuota = MvcApplication.DailyVotingQuota;
             var loggedInUser = User.Identity.Name;
             var userCcp = Karma.CommentKarma(loggedInUser);
             var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
@@ -290,7 +290,7 @@ namespace Voat.Controllers
                     var quotaUsed = Utils.User.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
                     if (quotaUsed)
                     {
-                        ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + Convert.ToInt32(ConfigurationManager.AppSettings["dailyCommentPostingQuotaForNegativeScore"]) + " comment(s) per 24 hours.");
+                        ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + MvcApplication.DailyCommentPostingQuotaForNegativeScore + " comment(s) per 24 hours.");
                         return View();
                     }
                 }

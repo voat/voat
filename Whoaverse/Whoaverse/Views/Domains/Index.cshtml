@@ -15,7 +15,7 @@
 @using System.Configuration
 
 @{
-    ViewBag.Title = ConfigurationManager.AppSettings["siteSlogan"];
+    ViewBag.Title = MvcApplication.SiteSlogan;
 
     string sortingMode = ViewBag.SortingMode;
     string urlaction;

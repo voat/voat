@@ -79,8 +79,8 @@ else if (!User.Identity.IsAuthenticated)
             {
                 ViewBag.Title = Model.Title + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-                ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + ConfigurationManager.AppSettings["siteLogo"];
-                ViewBag.Description = ViewBag.Description ?? ConfigurationManager.AppSettings["siteSlogan"];
+                ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + MvcApplication.SiteLogo;
+                ViewBag.Description = ViewBag.Description ?? MvcApplication.SiteSlogan;
                 @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
 
@@ -89,7 +89,7 @@ else if (!User.Identity.IsAuthenticated)
             {
                 ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-                ViewBag.Description = ViewBag.Description ?? ConfigurationManager.AppSettings["siteSlogan"];
+                ViewBag.Description = ViewBag.Description ?? MvcApplication.SiteSlogan;
 
                 //check if submission has a thumb, otherwise point to site logo
                 if (Model.Thumbnail != null)
@@ -98,7 +98,7 @@ else if (!User.Identity.IsAuthenticated)
                 }
                 else
                 {
-                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + ConfigurationManager.AppSettings["siteLogo"];
+                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + MvcApplication.SiteLogo;
                 }
 
                 @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
