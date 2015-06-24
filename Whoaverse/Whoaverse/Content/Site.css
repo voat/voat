@@ -8373,7 +8373,7 @@ body:not(.gold) .allminus-link {
     }
 
 .users-online {
-    margin-bottom: .25em;
+    margin: .4em 0;
 }
 
     .users-online .word, .users-online .number:after {
