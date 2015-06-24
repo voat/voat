@@ -90,7 +90,7 @@ namespace Voat.Controllers
                     submission.Title,
                     submission.MessageContent + "</br>" + "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
                     commentsUrl,
-                    "Item ID",
+                    submission.Id.ToString(CultureInfo.InvariantCulture),
                     submission.Date);
                     feedItems.Add(item);
                 }
@@ -116,7 +116,7 @@ namespace Voat.Controllers
                                                 "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>" +
                                                 " | <a href='" + linkUrl + "'>link</a>",
                                                 commentsUrl,
-                                                "Item ID",
+                                                submission.Id.ToString(CultureInfo.InvariantCulture),
                                                 submission.Date);
 
                         feedItems.Add(item);
@@ -127,7 +127,7 @@ namespace Voat.Controllers
                                                 submission.Linkdescription,
                                                 "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
                                                 commentsUrl,
-                                                "Item ID",
+                                                submission.Id.ToString(CultureInfo.InvariantCulture),
                                                 submission.Date);
                         feedItems.Add(item);
                     }
