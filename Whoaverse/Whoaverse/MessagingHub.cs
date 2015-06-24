@@ -18,18 +18,58 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Voat.Utils;
+using System.Collections.Generic;
 
 namespace Voat
 {
     [HubName("messagingHub")]
     public class MessagingHub : Hub
     {
+        private static Dictionary<string, Tuple<string, DateTime>> messageCache;
+
+        public MessagingHub()
+        {
+            messageCache = new Dictionary<string,Tuple<string,DateTime>>();
+        }
+
         // send a chat message to all users in a subverse room
         [Authorize]
         public void SendChatMessage(string name, string message, string subverseName)
         {
             if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(message) && !String.IsNullOrEmpty(subverseName))
             {
+                // trim message to 200 characters
+                if (message.Length > 200)
+                {
+                    message = message.Substring(0, 200);
+                }
+
+                // discard message if it contains unicode
+                if (Submissions.ContainsUnicode(message))
+                {
+                    return;
+                }
+
+                // check if previous message from this user is in cache
+                //if (messageCache.ContainsKey(name))
+                //{
+                //    // discard duplicate message and update timestamp
+                //    if (message == messageCache[name].Item1)
+                //    {
+                //        messageCache.Remove(name);
+                //        messageCache.Add(name, new Tuple<string, DateTime>(message, DateTime.UtcNow));
+                //        return;
+                //    }
+
+                //    // check timestamp and discard if diff less than 5 seconds
+                //    var timestamp = messageCache[name].Item2;
+                //    if (timestamp.AddSeconds(5) < DateTime.UtcNow)
+                //    {
+                //        return;
+                //    }
+                //}
+
+                messageCache.Add(name, new Tuple<string, DateTime>(message, DateTime.UtcNow));
                 var htmlEncodedMessage = WebUtility.HtmlEncode(message);
                 Clients.Group(subverseName).appendChatMessage(Context.User.Identity.Name, htmlEncodedMessage);
             }
@@ -38,6 +78,16 @@ namespace Voat
         // add a user to a subverse chat room
         public Task JoinSubverseChatRoom(string subverseName)
         {
+            // reject join request if user is banned if user is authenticated
+            if (Context.User.Identity.IsAuthenticated)
+            {
+                if (User.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
+                {
+                    // abort join
+                    return null;
+                }
+            }            
+
             return Groups.Add(Context.ConnectionId, subverseName);
         }
 
@@ -47,4 +97,5 @@ namespace Voat
             return Groups.Remove(Context.ConnectionId, subverseName);
         }
     }
+
 }
