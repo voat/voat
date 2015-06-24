@@ -24,6 +24,14 @@ namespace Voat.Controllers
                 var subverse = _db.Subverses.Find(subverseName);
                 if (subverse != null)
                 {
+
+                    //HACK: Disable subverse
+                    if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+                    {
+                        ViewBag.Subverse = subverse.name;
+                        return View("~/Views/Errors/SubverseDisabled.cshtml");
+                    }
+
                     submissions = (from message in _db.Messages
                                    where message.Name != "deleted" && message.Subverse == subverse.name
                                    select message)

@@ -280,6 +280,7 @@
           <Property Name="last_submission_received" Type="datetime" />
           <Property Name="minimumdownvoteccp" Type="int" Nullable="false" />
           <Property Name="forced_private" Type="bit" Nullable="false" />
+          <Property Name="admin_disabled" Type="bit" />
         </EntityType>
         <EntityType Name="Survey">
           <Key>
@@ -1064,6 +1065,7 @@
           <Property Name="minimumdownvoteccp" Type="Int32" Nullable="false" />
           <Property Name="forced_private" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="UserBlockedSubverses" Relationship="whoaverseModel.FK_UserBlockedSubverses_Subverses" FromRole="Subverse" ToRole="UserBlockedSubvers" />
+          <Property Name="admin_disabled" Type="Boolean" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
           <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="0..1">
@@ -1697,6 +1699,7 @@
           <EntitySetMapping Name="Subverses">
             <EntityTypeMapping TypeName="whoaverseModel.Subverse">
               <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="admin_disabled" ColumnName="admin_disabled" />
                 <ScalarProperty Name="forced_private" ColumnName="forced_private" />
                 <ScalarProperty Name="minimumdownvoteccp" ColumnName="minimumdownvoteccp" />
                 <ScalarProperty Name="last_submission_received" ColumnName="last_submission_received" />

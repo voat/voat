@@ -63,6 +63,7 @@ namespace Voat.Models
         public Nullable<System.DateTime> last_submission_received { get; set; }
         public int minimumdownvoteccp { get; set; }
         public bool forced_private { get; set; }
+        public Nullable<bool> admin_disabled { get; set; }
     
         public virtual ICollection<Message> Messages { get; set; }
         public virtual Defaultsubverse Defaultsubvers { get; set; }
