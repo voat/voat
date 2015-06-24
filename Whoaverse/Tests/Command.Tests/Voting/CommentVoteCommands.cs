@@ -20,7 +20,8 @@
             dbContext.Set<Subverse>().Add(new Subverse
             {
                 title = "test",
-                name = "test"
+                name = "test",
+                minimumdownvoteccp = 4
             });
 
             var firstMessage = dbContext.Set<Message>().Add(new Message
@@ -34,6 +35,7 @@
                 Id = 2,
                 Name = "testuser",
                 Anonymized = false,
+                Subverse = "test"
             });
 
             dbContext.SaveChanges();
@@ -51,7 +53,7 @@
                 Id = 2,
                 CommentContent = "Empty",
                 Name = "testuser2",
-                Likes = 10,
+                Likes = 7,
                 Dislikes = 5,
                 Message = secondMessage
             });
@@ -101,7 +103,7 @@
                 VoteStatus = 1,
                 UserName = "yetAnotherUser"
             });
-
+            
             dbContext.Set<Commentvotingtracker>().Add(new Commentvotingtracker
             {
                 Id = 2,
@@ -110,6 +112,16 @@
                 VoteStatus = -1,
                 UserName = "yetAnotherUser"
             });
+
+            dbContext.Set<Commentvotingtracker>().Add(new Commentvotingtracker
+            {
+                Id = 3,
+                Comment = fifthComment,
+                ClientIpAddress = "hashedAddress",
+                VoteStatus = 1,
+                UserName = "abc"
+            });
+
 
             dbContext.SaveChanges();
         }
@@ -203,7 +215,51 @@
             var data = await dbContext.Set<Comment>().FindAsync(2);
             Assert.Equal(1, commentTrackingData.VoteStatus);
             Assert.Equal(4, data.Dislikes);
-            Assert.Equal(11, data.Likes);
+            Assert.Equal(8, data.Likes);
+        }
+
+        [Fact(DisplayName = "If the comment is anonymous, it should not be available for downvote.")]
+        public async Task CannotDownvoteIfAnonymous()
+        {
+            var result = await dbContext.DownvoteCommentAsync(3, "testuser", "hash");
+            Assert.Equal(VoteDirection.None, result);
+        }
+
+        [Fact(DisplayName = "If user doesn't have karma over a minimum downvote threshold, downvote is discarded.")]
+        public async Task CannotDownvoteIfBelowDownvoteThreshold()
+        {
+            var result = await dbContext.DownvoteCommentAsync(2, "testuser2", "hash");
+            Assert.Equal(VoteDirection.None, result);
+        }
+
+        [Fact(DisplayName = "Initial downvote after passing validation rules should be accepted.")]
+        public async Task RegularFirstDownvote()
+        {
+            var result = await dbContext.DownvoteCommentAsync(2, "abc", "hash");
+            Assert.Equal(VoteDirection.Downvote, result);
+        }
+
+        [Fact(DisplayName = "Removing the downvote should remove the 'dislike'")]
+        public async Task RemovingDownvoteShouldRemoveDislike()
+        {
+            var result = await dbContext.UpvoteCommentAsync(2, "yetAnotherUser", "hashedAddress");
+            Assert.Equal(VoteDirection.DownvoteToUpvote, result);
+
+            var data = await dbContext.Set<Comment>().FindAsync(2);
+
+            Assert.Equal(4, data.Dislikes);
+        }
+
+        [Fact(DisplayName = "Changing the upvote to downvote should remove the 'like' and add 'dislike'")]
+        public async Task SwitchingUpvoteToDownvote()
+        {
+            var result = await dbContext.DownvoteCommentAsync(5, "abc", "hashedAddress");
+            Assert.Equal(VoteDirection.UpvoteToDownvote, result);
+
+            var data = await dbContext.Set<Comment>().FindAsync(5);
+
+            Assert.Equal(1, data.Dislikes);
+            Assert.Equal(4, data.Likes);
         }
     }
 }
