@@ -258,6 +258,8 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Models\INotification.cs" />
+    <Compile Include="Models\Messaging\PrivateMessage.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AjaxGatewayController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
