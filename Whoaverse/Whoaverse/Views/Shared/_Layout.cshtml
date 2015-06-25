@@ -83,16 +83,13 @@
     <meta property="og:site_name" content="@MvcApplication.SiteName" />
     <meta property="og:description" content="@ViewBag.Description" />
 
-    @if (theme != null)
+    @if (theme == null || theme == "light")
     {
-        if (theme == "light")
-        {
-            @Styles.Render("~/Content/Light")
-        }
-        else
-        {
-            @Styles.Render("~/Content/Dark")
-        }
+        @Styles.Render("~/Content/Light")
+    }
+    else
+    {
+        @Styles.Render("~/Content/Dark")
     }
 
     <link rel=StyleSheet href="~/Content/ui-themes/autocomplete/autocompletebundle.min.css" type="text/css">

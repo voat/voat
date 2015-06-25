@@ -175,7 +175,8 @@ namespace Voat.Controllers
                     enable_thumbnails = true,
                     rated_adult = false,
                     private_subverse = false,
-                    minimumdownvoteccp = 0
+                    minimumdownvoteccp = 0,
+                    admin_disabled = false
                 };
 
                 _db.Subverses.Add(subverse);
@@ -393,6 +394,14 @@ namespace Voat.Controllers
                         ViewBag.SelectedSubverse = "404";
                         return View("~/Views/Errors/Subversenotfound.cshtml");
                     }
+                    //HACK: Disable subverse
+                    if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+                    {
+                        ViewBag.Subverse = subverse.name;
+                        return View("~/Views/Errors/SubverseDisabled.cshtml");
+                    }
+
+
 
                     ViewBag.SelectedSubverse = subverse.name;
                     ViewBag.Title = subverse.description;
@@ -1383,6 +1392,16 @@ namespace Voat.Controllers
 
             try
             {
+                var subverse = _db.Subverses.Find(subversetoshow);
+                if (subverse != null)
+                {
+                    //HACK: Disable subverse
+                    if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+                    {
+                        ViewBag.Subverse = subverse.name;
+                        return View("~/Views/Errors/SubverseDisabled.cshtml");
+                    }
+                }
                 var listOfRemovedSubmissions = new PaginatedList<SubmissionRemovalLog>(_db.SubmissionRemovalLogs.Where(rl => rl.Message.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).OrderByDescending(rl=>rl.RemovalTimestamp), page ?? 0, 20);
                 return View("SubmissionRemovalLog", listOfRemovedSubmissions);
             }
@@ -1423,6 +1442,13 @@ namespace Voat.Controllers
             var subverse = _db.Subverses.Find(subversetoshow);
             if (subverse == null) return View("~/Views/Errors/Subversenotfound.cshtml");
             ViewBag.Title = subverse.description;
+
+            //HACK: Disable subverse
+            if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+            {
+                ViewBag.Subverse = subverse.name;
+                return View("~/Views/Errors/SubverseDisabled.cshtml");
+            }
 
             // subverse is adult rated, check if user wants to see NSFW content
             PaginatedList<Message> paginatedSubmissionsByRank;

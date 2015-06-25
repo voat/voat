@@ -92,18 +92,54 @@ namespace Voat.Utils
         }
 
         // get session count for given subverse
+        //HACK: This query is expensive. Cache results.
         public static int ActiveSessionsForSubverse(string subverseName)
         {
             try
             {
-                using (var db = new whoaverseEntities())
-                {
-                    var result = from sessions in db.Sessiontrackers
-                                 where sessions.Subverse.Equals(subverseName)
-                                 select sessions;
+                string cacheKey = String.Format("activeSubSessions_{0}", subverseName);
 
-                    return result.Count();
+                object cacheData = System.Web.HttpContext.Current.Cache[cacheKey];
+                if (cacheData != null)
+                {
+                    return (int)cacheData;
                 }
+
+
+                int count = 0;
+                using (whoaverseEntities db = new whoaverseEntities())
+                {
+
+                    var cmd = db.Database.Connection.CreateCommand();
+                    cmd.CommandText = "SELECT ISNULL(COUNT(*),0) FROM [dbo].[Sessiontracker] WITH (NOLOCK) WHERE [Subverse] = @Subverse";
+                    var param = cmd.CreateParameter();
+                    param.ParameterName = "Subverse";
+                    param.DbType = System.Data.DbType.String;
+                    param.Value = subverseName;
+                    cmd.Parameters.Add(param);
+
+                    if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                    {
+                        cmd.Connection.Open();
+                    }
+                    count = (int)cmd.ExecuteScalar();
+                    System.Web.HttpContext.Current.Cache.Insert(cacheKey, count, null, DateTime.Now.AddSeconds(120), System.Web.Caching.Cache.NoSlidingExpiration);
+
+                }
+
+
+                return count;
+
+
+
+                //using (var db = new whoaverseEntities())
+                //{
+                //    var result = from sessions in db.Sessiontrackers
+                //                 where sessions.Subverse.Equals(subverseName)
+                //                 select sessions;
+
+                //    return result.Count();
+                //}
             }
             catch (Exception)
             {

@@ -24,6 +24,14 @@ namespace Voat.Controllers
                 var subverse = _db.Subverses.Find(subverseName);
                 if (subverse != null)
                 {
+
+                    //HACK: Disable subverse
+                    if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+                    {
+                        ViewBag.Subverse = subverse.name;
+                        return View("~/Views/Errors/SubverseDisabled.cshtml");
+                    }
+
                     submissions = (from message in _db.Messages
                                    where message.Name != "deleted" && message.Subverse == subverse.name
                                    select message)
@@ -82,7 +90,7 @@ namespace Voat.Controllers
                     submission.Title,
                     submission.MessageContent + "</br>" + "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
                     commentsUrl,
-                    "Item ID",
+                    submission.Id.ToString(CultureInfo.InvariantCulture),
                     submission.Date);
                     feedItems.Add(item);
                 }
@@ -108,7 +116,7 @@ namespace Voat.Controllers
                                                 "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>" +
                                                 " | <a href='" + linkUrl + "'>link</a>",
                                                 commentsUrl,
-                                                "Item ID",
+                                                submission.Id.ToString(CultureInfo.InvariantCulture),
                                                 submission.Date);
 
                         feedItems.Add(item);
@@ -119,7 +127,7 @@ namespace Voat.Controllers
                                                 submission.Linkdescription,
                                                 "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
                                                 commentsUrl,
-                                                "Item ID",
+                                                submission.Id.ToString(CultureInfo.InvariantCulture),
                                                 submission.Date);
                         feedItems.Add(item);
                     }
