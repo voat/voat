@@ -49,12 +49,9 @@ namespace Voat
 
 
             //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
-            bool siteDisabled = false;
-            if (bool.TryParse(ConfigurationManager.AppSettings["siteDisabled"], out siteDisabled)) {
-                if (siteDisabled) {
-                    Response.Redirect("~/inactive.min.htm", true);
-                    return;
-                }
+            if (MvcApplication.SiteDisabled) {
+                Response.Redirect("~/inactive.min.htm", true);
+                return;
             }
 
             if (MvcApplication.ForceHTTPS) {
@@ -115,5 +112,17 @@ namespace Voat
         public static readonly string SiteLogo = ConfigurationManager.AppSettings["siteLogo"];
         public static readonly string SiteName = ConfigurationManager.AppSettings["siteName"];
         public static readonly string SiteSlogan = ConfigurationManager.AppSettings["siteSlogan"];
+
+        //This setting was parsed differently from the others, it probably doesn't need to be.
+        public static bool SiteDisabled
+        {
+            get
+            {
+                bool disabled;
+                if (bool.TryParse(ConfigurationManager.AppSettings["siteDisabled"], out disabled))
+                    return disabled;
+                return false;
+            }
+        }
     }
 }
