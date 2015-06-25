@@ -21,7 +21,7 @@
     if (routeDataObject != null)
     {
         showingSubverse = ViewContext.RouteData.Values["activeSubverse"].ToString();
-        
+
         if (showingSubverse == "/")
         {
             selectedFrontpageClass = "selected";
@@ -39,6 +39,12 @@
         <div class="sr-list">
             <ul class="whoaSubscriptionMenu flat-list sr-bar hover">
                 @Html.Partial("_SubscriptionsHoverMenu")
+            </ul>
+            <ul class="flat-list sr-bar hover">
+                <li class="setsmenu">
+                    <span class="separator">-</span>
+                    <a href="/mysets">my sets</a>
+                </li>
             </ul>
             <ul class="flat-list sr-bar hover">
                 <li class="@selectedFrontpageClass">

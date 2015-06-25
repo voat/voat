@@ -54,7 +54,14 @@ namespace Voat.Utils
                 NewWindowForLocalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name)
             };
 
-            return m.Transform(originalMessage);
+            try
+            {
+                return m.Transform(originalMessage);
+            }
+            catch (Exception ex) 
+            {
+                return "Content contains unsafe or unknown tags.";
+            }
         }
 
         // credits to http://stackoverflow.com/questions/1613896/truncate-string-on-whole-words-in-net-c-sharp

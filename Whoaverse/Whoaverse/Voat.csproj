@@ -312,6 +312,7 @@
     <Compile Include="Models\Viewstatistic.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\whoaverseEntities.cs" />
     <Compile Include="Utils\CommentCounter.cs" />
     <Compile Include="Utils\Components\ContentFilters.cs" />
     <Compile Include="Utils\Components\ContentProcessor.cs" />
@@ -511,6 +512,10 @@
     <Content Include="Graphics\WVSprite.png.css">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
+    <Content Include="inactive.htm" />
+    <Content Include="inactive.min.htm">
+      <DependentUpon>inactive.htm</DependentUpon>
+    </Content>
     <Content Include="oexchange.xrd" />
     <Content Include="Graphics\WVSprite.png.map">
       <DependentUpon>WVSprite.png</DependentUpon>
@@ -547,6 +552,7 @@
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\voatweb03.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -625,7 +631,6 @@
     <Content Include="Graphics\WVSprite.sprite" />
     <Content Include="Areas\HelpPage\Views\Help\Index.cshtml" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
-    <None Include="Properties\PublishProfiles\OLD voat.co - Web Deploy.pubxml" />
     <Content Include="robots.txt" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\respond.js" />
@@ -811,6 +816,7 @@
     <Content Include="Views\AjaxViews\_BasicUserInfo.cshtml" />
     <Content Include="Views\Shared\_Captcha.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Errors\SubverseDisabled.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -127,6 +127,7 @@ label {
     cursor: default;
 }
 .md a[href="#s"]:hover::after,
+.md a[href="#s"]:focus::after,
 .md a[href="#s"]:active::after {
     color: #404040;
     background: #FFE3E3;
@@ -2050,6 +2051,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     margin: 0;
     overflow: hidden;
     padding: 0 8px 0 0;
+    word-wrap: break-word;
 }
 
 /* Flairs */

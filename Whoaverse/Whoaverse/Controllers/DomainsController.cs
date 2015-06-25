@@ -39,11 +39,19 @@ namespace Voat.Controllers
             ViewBag.SelectedDomain = domainname + "." + ext;
 
             // check if at least one submission for given domain was found, if not, send to a page not found error
-            IQueryable<Message> submissions = _db.Messages
-                .Where(
-                    x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
-                .OrderByDescending(s => s.Rank)
-                .ThenByDescending(s => s.Date);
+            //IQueryable<Message> submissions = 
+            //    _db.Messages
+            //    .Where(
+            //        x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
+            //    .OrderByDescending(s => s.Rank)
+            //    .ThenByDescending(s => s.Date);
+
+            //restrict disabled subs from result list
+            IQueryable<Message> submissions = (from m in _db.Messages
+                                               join s in _db.Subverses on m.Subverse equals s.name
+                                               where !s.admin_disabled.Value && m.Name != "deleted" & m.Type == 2 & m.MessageContent.ToLower().Contains(domainname + "." + ext)
+                                               orderby m.Rank descending, m.Date descending
+                                               select m);
 
             var paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
 
@@ -69,9 +77,15 @@ namespace Voat.Controllers
             }
 
             //check if at least one submission for given domain was found, if not, send to a page not found error
-            IQueryable<Message> submissions = _db.Messages
-                .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
-                .OrderByDescending(s => s.Date);
+            //IQueryable<Message> submissions = _db.Messages
+            //    .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
+            //    .OrderByDescending(s => s.Date);
+
+            IQueryable<Message> submissions = (from m in _db.Messages
+                                               join s in _db.Subverses on m.Subverse equals s.name
+                                               where !s.admin_disabled.Value && m.Name != "deleted" & m.Type == 2 & m.MessageContent.ToLower().Contains(domainname + "." + ext)
+                                               orderby m.Date descending
+                                               select m);
 
             var paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
 

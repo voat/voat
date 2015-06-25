@@ -105,6 +105,13 @@ namespace Voat.Controllers
             var subverse = _db.Subverses.Find(subversetoshow);
             if (subverse == null) return View("~/Views/Errors/Error_404.cshtml");
 
+            //HACK: Disable subverse
+            if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+            {
+                ViewBag.Subverse = subverse.name;
+                return View("~/Views/Errors/SubverseDisabled.cshtml");
+            }
+
             ViewBag.SelectedSubverse = subverse.name;
             ViewBag.SubverseAnonymized = subverse.anonymized_mode;
 
@@ -187,7 +194,7 @@ namespace Voat.Controllers
         // GET: comments for a given submission
         public ActionResult BucketOfComments(int? id, int? startingcommentid, int? startingpos, string sort)
         {
-            const int threadsToFetch = 10;
+            const int threadsToFetch = 5;
 
             if (id == null) return View("~/Views/Errors/Error.cshtml");
 
