@@ -110,6 +110,7 @@ label {
     cursor: default;
 }
 .md a[href="#s"]:hover::after,
+.md a[href="#s"]:focus::after,
 .md a[href="#s"]:active::after {
     color: #DFDFDF;
     background: #4E2E2E;

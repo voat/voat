@@ -45,6 +45,11 @@ $(document).ready(function () {
         $('#share-a-link-overlay').show();
     });
 
+    // prevent spoiler links from opening windows
+    $(document).on('click', 'a[href="#s"]', function (e) {
+        e.preventDefault();
+    });
+
     $('#share-a-link-overlay').on('dragleave', function (e) {
         if (e.originalEvent.pageX < 10 || e.originalEvent.pageY < 10 || $(window).width() - e.originalEvent.pageX < 10 || $(window).height - e.originalEvent.pageY < 10) {
             $("#share-a-link-overlay").hide();
