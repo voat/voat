@@ -2099,6 +2099,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     margin: 0;
     overflow: hidden;
     padding: 0 8px 0 0;
+    word-wrap: break-word;
 }
 
 /* Flairs */
