@@ -197,7 +197,7 @@ namespace Voat.Controllers
                 var quotaUsed = Utils.User.UserDailyPostingQuotaForNegativeScoreUsed(User.Identity.Name);
                 if (quotaUsed)
                 {
-                    ModelState.AddModelError("", "You have reached your daily submission quota. Your current quota is " + Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaForNegativeScore"]) + " submission(s) per 24 hours.");
+                    ModelState.AddModelError("", "You have reached your daily submission quota. Your current quota is " + MvcApplication.DailyPostingQuotaForNegativeScore + " submission(s) per 24 hours.");
                     return View();
                 }
             }

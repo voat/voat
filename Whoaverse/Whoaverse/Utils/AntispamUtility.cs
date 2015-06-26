@@ -165,7 +165,7 @@ namespace Voat.Utils
     {
         public static async Task<bool> Validate(HttpRequestBase request)
         {
-            string privateKey = ConfigurationManager.AppSettings["recaptchaPrivateKey"];
+            string privateKey = MvcApplication.RecaptchaPrivateKey;
             string encodedResponse = request.Form["g-Recaptcha-Response"];
 
             var client = new HttpClient();

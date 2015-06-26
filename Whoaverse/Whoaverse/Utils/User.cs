@@ -634,7 +634,7 @@ namespace Voat.Utils
             var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaPerSub"]);
+            int dpqps = MvcApplication.DailyPostingQuotaPerSub;
 
             using (var db = new whoaverseEntities())
             {
@@ -659,7 +659,7 @@ namespace Voat.Utils
             var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaForNegativeScore"]);
+            int dpqps = MvcApplication.DailyPostingQuotaForNegativeScore;
 
             using (var db = new whoaverseEntities())
             {
@@ -683,7 +683,7 @@ namespace Voat.Utils
             var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Convert.ToInt32(ConfigurationManager.AppSettings["dailyCommentPostingQuotaForNegativeScore"]);
+            int dpqps = MvcApplication.DailyCommentPostingQuotaForNegativeScore;
 
             using (var db = new whoaverseEntities())
             {
@@ -707,7 +707,7 @@ namespace Voat.Utils
             var startDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Convert.ToInt32(ConfigurationManager.AppSettings["hourlyPostingQuotaPerSub"]);
+            int dpqps = MvcApplication.HourlyPostingQuotaPerSub;
 
             using (var db = new whoaverseEntities())
             {
@@ -729,7 +729,7 @@ namespace Voat.Utils
         public static bool DailyCrossPostingQuotaUsed(string userName, string url)
         {
             // read daily crosspost quota from web.config
-            int dailyCrossPostQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyCrossPostingQuota"]);
+            int dailyCrossPostQuota = MvcApplication.DailyCrossPostingQuota;
 
             // set starting date to 24 hours ago from now
             var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));

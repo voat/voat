@@ -49,15 +49,12 @@ namespace Voat
 
 
             //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
-            bool siteDisabled = false;
-            if (bool.TryParse(ConfigurationManager.AppSettings["siteDisabled"], out siteDisabled)) {
-                if (siteDisabled) {
-                    Response.Redirect("~/inactive.min.htm", true);
-                    return;
-                }
+            if (MvcApplication.SiteDisabled) {
+                Response.Redirect("~/inactive.min.htm", true);
+                return;
             }
 
-            if (Convert.ToBoolean(ConfigurationManager.AppSettings["forceHTTPS"])) {
+            if (MvcApplication.ForceHTTPS) {
                 if (HttpContext.Current.Request.IsSecureConnection.Equals(false) && HttpContext.Current.Request.IsLocal.Equals(false)) {
                     Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + HttpContext.Current.Request.RawUrl);
                 }
@@ -97,7 +94,35 @@ namespace Voat
                 //
             }
         }
-    }
 
-    
+        public static readonly int DailyCommentPostingQuotaForNegativeScore = Convert.ToInt32(ConfigurationManager.AppSettings["dailyCommentPostingQuotaForNegativeScore"]);
+        public static readonly int DailyCrossPostingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyCrossPostingQuota"]);
+        public static readonly int DailyPostingQuotaForNegativeScore = Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaForNegativeScore"]);
+        public static readonly int DailyPostingQuotaPerSub = Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaPerSub"]);
+        public static readonly int DailyVotingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyVotingQuota"]);
+        public static readonly bool ForceHTTPS = Convert.ToBoolean(ConfigurationManager.AppSettings["forceHTTPS"]);
+        public static readonly int HourlyPostingQuotaPerSub = Convert.ToInt32(ConfigurationManager.AppSettings["hourlyPostingQuotaPerSub"]);
+        public static readonly int MaximumOwnedSets = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSets"]);
+        public static readonly int MaximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
+        public static readonly int MinimumCcp = Convert.ToInt32(ConfigurationManager.AppSettings["minimumCcp"]);
+        public static readonly string RecaptchaPrivateKey = ConfigurationManager.AppSettings["recaptchaPrivateKey"];
+        public static readonly string RecaptchaPublicKey = ConfigurationManager.AppSettings["recaptchaPublicKey"];
+        public static readonly string SiteDescription = ConfigurationManager.AppSettings["siteDescription"];
+        public static readonly string SiteKeywords = ConfigurationManager.AppSettings["siteKeywords"];
+        public static readonly string SiteLogo = ConfigurationManager.AppSettings["siteLogo"];
+        public static readonly string SiteName = ConfigurationManager.AppSettings["siteName"];
+        public static readonly string SiteSlogan = ConfigurationManager.AppSettings["siteSlogan"];
+
+        //This setting was parsed differently from the others, it probably doesn't need to be.
+        public static bool SiteDisabled
+        {
+            get
+            {
+                bool disabled;
+                if (bool.TryParse(ConfigurationManager.AppSettings["siteDisabled"], out disabled))
+                    return disabled;
+                return false;
+            }
+        }
+    }
 }

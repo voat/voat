@@ -125,7 +125,7 @@ namespace Voat.Controllers
         [Authorize]
         public JsonResult Vote(int messageId, int typeOfVote)
         {
-            int dailyVotingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyVotingQuota"]);
+            int dailyVotingQuota = MvcApplication.DailyVotingQuota;
             var loggedInUser = User.Identity.Name;
             var userCcp = Karma.CommentKarma(loggedInUser);
             var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
