@@ -37,7 +37,15 @@ namespace Voat
         public void SendChatMessage(string name, string message, string subverseName)
         {
             if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(message) && !String.IsNullOrEmpty(subverseName))
-            {
+            {                
+                // check if user is banned
+                if (User.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
+                {
+                    // message won't be processed
+                    // this is necessary because banning a user from a subverse doesn't kick them from chat
+                    return;
+                }
+
                 // trim message to 200 characters
                 if (message.Length > 200)
                 {
