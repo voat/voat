@@ -59,6 +59,9 @@
         <AssociationConnector Association="whoaverseModel.FK_Savingtracker_Messages" />
         <EntityTypeShape EntityType="whoaverseModel.UserBlockedSubverse" Width="1.5" PointX="3.625" PointY="33" />
         <AssociationConnector Association="whoaverseModel.FK_UserBlockedSubverses_Subverses" />
+        <EntityTypeShape EntityType="whoaverseModel.AllNotificationCount" Width="1.5" PointX="3.75" PointY="3.75" />
+        <EntityTypeShape EntityType="whoaverseModel.UnreadNotificationCount" Width="1.5" PointX="0.75" PointY="10.75" />
+        <EntityTypeShape EntityType="whoaverseModel.TotalKarma" Width="1.5" PointX="11.375" PointY="12.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

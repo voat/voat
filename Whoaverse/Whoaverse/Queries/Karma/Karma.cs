@@ -55,9 +55,10 @@ namespace Voat.Queries.Karma
             return baseQuery;
         }
 
-        public static async Task<CombinedKarma> GetCombinedKarmaAsync(this DbContext context, string userName, string subverse = null)
+        public static async Task<CombinedKarma> GetCombinedKarmaAsync(this IQueryable<TotalKarma> query, string userName,
+            string subverse = null)
         {
-            var linkKarma =
+            /*var linkKarma =
                 context.Set<Message>()
                     .PrepareLinkKarmaQuery(userName, subverse)
                     .GetRawKarmaQuery()
@@ -82,8 +83,25 @@ namespace Voat.Queries.Karma
                             })
                     .FirstAsync()
                     .ConfigureAwait(false);
+*/
+            var karma = query.Where(x => x.UserName == userName);
+            if (!string.IsNullOrEmpty(subverse))
+            {
+                karma = karma.Where(x => x.Subverse == subverse);
+            }
 
-            return new CombinedKarma(result.LinkKarma, result.CommentKarma);
+            var result =
+                await
+                    karma.GroupBy(x => x.UserName)
+                        .Select(
+                            g => new
+                            {
+                                LinkKarma = g.Sum(x => x.LinkKarma),
+                                CommentKarma = g.Sum(x => x.CommentKarma)
+                            })
+                        .FirstAsync()
+                        .ConfigureAwait(false);
+            return new CombinedKarma(result.LinkKarma ?? 0, result.CommentKarma ?? 0);
         }
 
         /// <summary>

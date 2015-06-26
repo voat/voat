@@ -380,6 +380,40 @@
           <Property Name="Timestamp" Type="datetime" />
           <Property Name="ClientIpAddress" Type="nvarchar" MaxLength="90" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'whoaverse.dbo.AllNotificationCount' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="AllNotificationCount">
+          <Key>
+            <PropertyRef Name="UserName" />
+          </Key>
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PrivateMessages" Type="int" />
+          <Property Name="CommentReplies" Type="int" />
+          <Property Name="PostReplies" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'whoaverse.dbo.TotalKarma' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="TotalKarma">
+          <Key>
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="Subverse" />
+          </Key>
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="LinkKarma" Type="bigint" />
+          <Property Name="CommentKarma" Type="bigint" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'whoaverse.dbo.UnreadNotificationCount' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="UnreadNotificationCount">
+          <Key>
+            <PropertyRef Name="UserName" />
+          </Key>
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PrivateMessages" Type="int" />
+          <Property Name="CommentReplies" Type="int" />
+          <Property Name="PostReplies" Type="int" />
+        </EntityType>
         <Association Name="FK_Comments_Messages">
           <End Role="Messages" Type="Self.Messages" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -701,6 +735,30 @@
           <EntitySet Name="Usersetsubscriptions" EntityType="Self.Usersetsubscriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Viewstatistics" EntityType="Self.Viewstatistics" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Votingtracker" EntityType="Self.Votingtracker" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AllNotificationCount" EntityType="Self.AllNotificationCount" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [AllNotificationCount].[UserName] AS [UserName], 
+    [AllNotificationCount].[PrivateMessages] AS [PrivateMessages], 
+    [AllNotificationCount].[CommentReplies] AS [CommentReplies], 
+    [AllNotificationCount].[PostReplies] AS [PostReplies]
+    FROM [dbo].[AllNotificationCount] AS [AllNotificationCount]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="TotalKarma" EntityType="Self.TotalKarma" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [TotalKarma].[UserName] AS [UserName], 
+    [TotalKarma].[Subverse] AS [Subverse], 
+    [TotalKarma].[LinkKarma] AS [LinkKarma], 
+    [TotalKarma].[CommentKarma] AS [CommentKarma]
+    FROM [dbo].[TotalKarma] AS [TotalKarma]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="UnreadNotificationCount" EntityType="Self.UnreadNotificationCount" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [UnreadNotificationCount].[UserName] AS [UserName], 
+    [UnreadNotificationCount].[PrivateMessages] AS [PrivateMessages], 
+    [UnreadNotificationCount].[CommentReplies] AS [CommentReplies], 
+    [UnreadNotificationCount].[PostReplies] AS [PostReplies]
+    FROM [dbo].[UnreadNotificationCount] AS [UnreadNotificationCount]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_Comments_Messages" Association="Self.FK_Comments_Messages">
             <End Role="Messages" EntitySet="Messages" />
             <End Role="Comments" EntitySet="Comments" />
@@ -1022,6 +1080,9 @@
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="UserBlockedSubvers" EntitySet="UserBlockedSubverses" />
           </AssociationSet>
+          <EntitySet Name="AllNotificationCounts" EntityType="whoaverseModel.AllNotificationCount" />
+          <EntitySet Name="UnreadNotificationCounts" EntityType="whoaverseModel.UnreadNotificationCount" />
+          <EntitySet Name="TotalKarmas" EntityType="whoaverseModel.TotalKarma" />
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -1621,6 +1682,34 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="AllNotificationCount">
+          <Key>
+            <PropertyRef Name="UserName" />
+          </Key>
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PrivateMessages" Type="Int32" />
+          <Property Name="CommentReplies" Type="Int32" />
+          <Property Name="PostReplies" Type="Int32" />
+        </EntityType>
+        <EntityType Name="UnreadNotificationCount">
+          <Key>
+            <PropertyRef Name="UserName" />
+          </Key>
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PrivateMessages" Type="Int32" />
+          <Property Name="CommentReplies" Type="Int32" />
+          <Property Name="PostReplies" Type="Int32" />
+        </EntityType>
+        <EntityType Name="TotalKarma">
+          <Key>
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="Subverse" />
+          </Key>
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LinkKarma" Type="Int64" />
+          <Property Name="CommentKarma" Type="Int64" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2029,6 +2118,36 @@
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AllNotificationCounts">
+            <EntityTypeMapping TypeName="whoaverseModel.AllNotificationCount">
+              <MappingFragment StoreEntitySet="AllNotificationCount">
+                <ScalarProperty Name="PostReplies" ColumnName="PostReplies" />
+                <ScalarProperty Name="CommentReplies" ColumnName="CommentReplies" />
+                <ScalarProperty Name="PrivateMessages" ColumnName="PrivateMessages" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnreadNotificationCounts">
+            <EntityTypeMapping TypeName="whoaverseModel.UnreadNotificationCount">
+              <MappingFragment StoreEntitySet="UnreadNotificationCount">
+                <ScalarProperty Name="PostReplies" ColumnName="PostReplies" />
+                <ScalarProperty Name="CommentReplies" ColumnName="CommentReplies" />
+                <ScalarProperty Name="PrivateMessages" ColumnName="PrivateMessages" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TotalKarmas">
+            <EntityTypeMapping TypeName="whoaverseModel.TotalKarma">
+              <MappingFragment StoreEntitySet="TotalKarma">
+                <ScalarProperty Name="CommentKarma" ColumnName="CommentKarma" />
+                <ScalarProperty Name="LinkKarma" ColumnName="LinkKarma" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

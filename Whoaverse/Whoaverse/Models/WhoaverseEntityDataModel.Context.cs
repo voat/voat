@@ -57,5 +57,8 @@ namespace Voat.Models
         public virtual DbSet<Commentsavingtracker> Commentsavingtrackers { get; set; }
         public virtual DbSet<Savingtracker> Savingtrackers { get; set; }
         public virtual DbSet<UserBlockedSubverse> UserBlockedSubverses { get; set; }
+        public virtual DbSet<AllNotificationCount> AllNotificationCounts { get; set; }
+        public virtual DbSet<UnreadNotificationCount> UnreadNotificationCounts { get; set; }
+        public virtual DbSet<TotalKarma> TotalKarmas { get; set; }
     }
 }

@@ -216,14 +216,54 @@
                 Username = "johnny"
             });
 
-            try
+            // Creating the view values manually which, in case of regular DB, will be automatically derived from tables.
+            context.Set<UnreadNotificationCount>().Add(new UnreadNotificationCount
             {
-                context.SaveChanges();
-            }
-            catch (Exception e)
+                UserName = "harry",
+                PostReplies = 1,
+                CommentReplies = 2
+            });
+
+            context.Set<UnreadNotificationCount>().Add(new UnreadNotificationCount
             {
-                Console.WriteLine(e);
-            }
+                UserName = "henry",
+                PrivateMessages = 5
+            });
+
+            context.Set<UnreadNotificationCount>().Add(new UnreadNotificationCount
+            {
+                UserName = "joan",
+                PostReplies = 12
+            });
+
+            context.Set<UnreadNotificationCount>().Add(new UnreadNotificationCount
+            {
+                UserName = "dan",
+                CommentReplies = 0,
+                PostReplies = 0,
+                PrivateMessages = 0
+            });
+
+            context.Set<UnreadNotificationCount>().Add(new UnreadNotificationCount
+            {
+                UserName = "dorothy"
+            });
+
+            context.Set<AllNotificationCount>().Add(new AllNotificationCount
+            {
+                UserName = "dorothy",
+                PostReplies = 1,
+                CommentReplies = 0,
+                PrivateMessages = 2
+            });
+
+            context.Set<AllNotificationCount>().Add(new AllNotificationCount
+            {
+                UserName = "dan",
+                PostReplies = 0
+            });
+
+            context.SaveChanges();
         }
 
         [Theory(DisplayName = "Subverse admin check correctly identifies admins")]
@@ -363,9 +403,49 @@
         [InlineData("doesntexist", false)]
         public async Task NewMessagesCheck(string userName, bool expectedResult)
         {
-            var result = await context.HasNewMessagesAsync(userName);
+            var result = await context.Set<UnreadNotificationCount>().HasMessagesAsync(userName);
 
             Assert.Equal(expectedResult, result);
+        }
+
+        public static IEnumerable<object[]> ExpectedUnreadNotificationCounts
+        {
+            get
+            {
+                yield return new object[] {"harry", new NotificationCountModel(2, 1, 0)};
+                yield return new object[] {"henry", new NotificationCountModel(0, 0, 5)};
+                yield return new object[] {"joan", new NotificationCountModel(0, 12, 0)};
+                yield return new object[] {"dan", new NotificationCountModel()};
+                yield return new object[] {"doesntexist", new NotificationCountModel()};
+            }
+        }
+
+        public static IEnumerable<object[]> ExpectedAllNotificationCounts
+        {
+            get
+            {
+                yield return new object[] {"dorothy", new NotificationCountModel(0, 1, 2)};
+                yield return new object[] { "dan", new NotificationCountModel() };
+                yield return new object[] { "doesntexist", new NotificationCountModel() };
+            }
+        }
+
+        [Theory(DisplayName = "Correct unread notification counts are retrieved from the view")]
+        [MemberData("ExpectedUnreadNotificationCounts")]
+        public async Task UnreadNotificationCountRetrieval(string userName, NotificationCountModel expectedModel)
+        {
+            var result = await context.Set<UnreadNotificationCount>().GetNotificationCountAsync(userName);
+
+            Assert.Equal(expectedModel, result);
+        }
+
+        [Theory(DisplayName = "Correct all notification counts are retrieved from the view")]
+        [MemberData("ExpectedAllNotificationCounts")]
+        public async Task AllNotificationCountRetrieval(string userName, NotificationCountModel expectedModel)
+        {
+            var result = await context.Set<AllNotificationCount>().GetNotificationCountAsync(userName);
+
+            Assert.Equal(expectedModel, result);
         }
 
         public void Dispose()

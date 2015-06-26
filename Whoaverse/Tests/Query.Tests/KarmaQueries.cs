@@ -1,6 +1,7 @@
 ﻿namespace Query.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Threading.Tasks;
     using Voat.Models;
@@ -138,6 +139,23 @@
                 VoteStatus = 0
             });
 
+            // Setting up the views
+            dbContext.Set<TotalKarma>().Add(new TotalKarma
+            {
+                UserName = "testName",
+                Subverse = "subverse1",
+                LinkKarma = 22-10,
+                CommentKarma = 23-22
+            });
+
+            dbContext.Set<TotalKarma>().Add(new TotalKarma
+            {
+                UserName = "testName",
+                Subverse = "subverse2",
+                LinkKarma = 32-3,
+                CommentKarma = 40-2
+            });
+
             dbContext.SaveChanges();
         }
 
@@ -190,19 +208,23 @@
             Assert.Equal(expectedUpvotes, result);
         }
 
-        // TODO: Change it to theory and add a data source that cannot be inline (split the test body into separate test cases)
-        [Fact(DisplayName = "Combined link & comment karma should be properly retrieved for a given user and (optionally) subverse.")]
-        public async Task CombinedKarmaRetrieval()
+        public static IEnumerable<object[]> CombinedKarmaData
         {
-            var result = await dbContext.GetCombinedKarmaAsync("testName", "subverse1");
+            get
+            {
+                yield return new object[] {"testName", "subverse1", new CombinedKarma(22-10, 23-22) };
+                yield return
+                    new object[] {"testName", null, new CombinedKarma((22 - 10) + (32 - 3), (23 - 22) + (40 - 2))};
+            }
+        }
 
-            Assert.Equal(result.LinkKarma, 22 - 10);
-            Assert.Equal(result.CommentKarma, 23 - 22);
+        [Theory(DisplayName = "Combined link & comment karma should be properly retrieved for a given user and (optionally) subverse.")]
+        [MemberData("CombinedKarmaData")]
+        public async Task CombinedKarmaRetrieval(string userName, string subverse, CombinedKarma expectedResult)
+        {
+            var result = await dbContext.Set<TotalKarma>().GetCombinedKarmaAsync(userName, subverse);
 
-            result = await dbContext.GetCombinedKarmaAsync("testName");
-
-            Assert.Equal(result.LinkKarma, (22 - 10) + (32 - 3));
-            Assert.Equal(result.CommentKarma, (23 - 22) + (40 - 2));
+            Assert.Equal(expectedResult, result);
         }
 
         public void Dispose()

@@ -258,6 +258,9 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Models\AllNotificationCount.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\INotification.cs" />
     <Compile Include="Models\Messaging\PrivateMessage.cs" />
     <Compile Include="Controllers\AccountController.cs" />

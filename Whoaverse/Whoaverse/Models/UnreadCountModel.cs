@@ -2,7 +2,7 @@
 {
     using System;
 
-    public sealed class CombinedKarma : IEquatable<CombinedKarma>
+    public class NotificationCountModel : IEquatable<NotificationCountModel>
     {
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -11,11 +11,11 @@
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(CombinedKarma other)
+        public bool Equals(NotificationCountModel other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return LinkKarma == other.LinkKarma && CommentKarma == other.CommentKarma;
+            return CommentReplies == other.CommentReplies && PostReplies == other.PostReplies && PrivateMessages == other.PrivateMessages;
         }
 
         /// <summary>
@@ -29,7 +29,8 @@
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is CombinedKarma && Equals((CombinedKarma) obj);
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((NotificationCountModel) obj);
         }
 
         /// <summary>
@@ -42,17 +43,25 @@
         {
             unchecked
             {
-                return (LinkKarma.GetHashCode()*397) ^ CommentKarma.GetHashCode();
+                var hashCode = CommentReplies;
+                hashCode = (hashCode*397) ^ PostReplies;
+                hashCode = (hashCode*397) ^ PrivateMessages;
+                return hashCode;
             }
         }
 
-        public CombinedKarma(long linkKarma, long commentKarma)
+        public NotificationCountModel(int commentReplies, int postReplies, int privateMessages)
         {
-            LinkKarma = linkKarma;
-            CommentKarma = commentKarma;
+            CommentReplies = commentReplies;
+            PostReplies = postReplies;
+            PrivateMessages = privateMessages;
         }
 
-        public long LinkKarma { get; private set; }
-        public long CommentKarma { get; private set; }
+        public NotificationCountModel() : this(0, 0, 0) { }
+
+        public int CommentReplies { get; private set; }
+        public int PostReplies { get; private set; }
+        public int PrivateMessages { get; private set; }
+        public int Total { get { return CommentReplies + PostReplies + PrivateMessages; } }
     }
 }
