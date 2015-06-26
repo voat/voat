@@ -209,7 +209,119 @@ $(document).ready(function () {
             }
         });
     });
+    
+    var key = {};
 
+    // List of the inputs the user use when creating a new discussion
+    var submitInputs = {
+      post: [
+        '#Title',
+        '#Subverse',
+        '#MessageContent'
+      ],
+      reply: [
+        '#CommentContent'
+      ]
+    };
+    
+    document.onkeydown = function(evt) {
+      var evt = evt || window.event;
+      var charCode = evt.keyCode || evt.which;
+      var charStr = String.fromCharCode(charCode);
+      
+      // Turn key numbers into readable string
+      switch(charCode) {
+        case 13:
+          key.Enter = true;
+          break;
+        case 17:
+          key.Ctrl = true;
+          break;
+        case 18:
+          key.Alt = true;
+          break;
+        case 27:
+          key.Esc = true;
+          break;
+        case 32:
+          key.Space = true;
+          break;
+        case 37:
+          key.Left = true;
+          break;
+        case 38:
+          key.Top = true;
+          break;
+        case 39:
+          key.Right = true;
+          break;
+        case 40:
+          key.Bottom = true;
+          break;
+        default:
+          key[charStr] = true;
+      }
+      
+      if(key.Enter && key.Enter === true && key.Ctrl && key.Ctrl === true) {
+        submitInputs.post.forEach(function(selector) {
+          if(document.querySelector(selector) == document.activeElement) {
+            document.querySelector('input.btn-whoaverse[type="submit"]').click();
+          }
+        });
+        
+        submitInputs.reply.forEach(function(selector) {
+          var inputs = document.querySelectorAll(selector);
+          
+          for(var i=0; i<inputs.length; i++) {
+            if(inputs[i] == document.activeElement) {
+              inputs[i].form.querySelector('#submitbutton').click();
+            }
+          }
+        });
+      }
+    };
+    
+    window.onkeyup = function(evt){
+      var evt = evt || window.event;
+      var charCode = evt.keyCode || evt.which;
+      var charStr = String.fromCharCode(charCode);
+      
+      // Turn key numbers into readable string
+      switch(charCode) {
+        case 13:
+          key.Enter = false;
+          break;
+        case 17:
+          key.Ctrl = false;
+          break;
+        case 18:
+          key.Alt = false;
+          break;
+        case 27:
+          key.Esc = false;
+          break;
+        case 32:
+          key.Space = false;
+          break;
+        case 37:
+          key.Left = false;
+          break;
+        case 38:
+          key.Top = false;
+          break;
+        case 39:
+          key.Right = false;
+          break;
+        case 40:
+          key.Bottom = false;
+          break;
+        default:
+          key[charStr] = false;
+      }
+      
+      console.log(charCode);
+      console.log(key);
+    };
 });
 
 // a function which handles mouse drop events (sharing links by dragging and dropping)
