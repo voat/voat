@@ -943,6 +943,9 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
+            // check if logged in user is actually the invited user
+            if (User.Identity.Name != userInvitation.Sent_to) { return new HttpStatusCodeResult(HttpStatusCode.Unauthorized); }
+
             // check if user is over modding limits
             var amountOfSubsUserModerates = _db.SubverseAdmins.Where(s => s.Username.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
             if (amountOfSubsUserModerates.Any())
