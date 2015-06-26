@@ -11,23 +11,30 @@
 
     public static class UserAppQueries
     {
-        public static Task<bool> IsSubverseAdminAsync(this IQueryable<SubverseAdmin> query, SubverseUserData userData)
-        {
-            return
-                query
-                    .AnyAsync(
-                        a => a.Username == userData.UserName && a.SubverseName == userData.Subverse && a.Power == 1);
-        }
-
-        public static Task<bool> IsSubverseModeratorAsync(this IQueryable<SubverseAdmin> query,
+        public static async Task<Permissions?> GetHighestPermissionsAsync(this IQueryable<SubverseAdmin> query,
             SubverseUserData userData)
         {
-            return
-                query
-                    .AnyAsync(
-                        a => a.Username == userData.UserName && a.SubverseName == userData.Subverse && a.Power == 2);
-        }
+            var result =
+                await
+                    query.Where(x => x.Username == userData.UserName && x.SubverseName == userData.Subverse)
+                        .GroupBy(x => new {x.Username, x.SubverseName})
+                        .SelectMany(x => x.Select(y => (int?)y.Power).OrderBy(y => y))
+                        .FirstOrDefaultAsync()
+                        .ConfigureAwait(false);
 
+            if (!result.HasValue)
+            {
+                return null;
+            }
+
+            if (!Enum.IsDefined(typeof(Permissions), result))
+            {
+                throw new InvalidOperationException("Unknown power level: " + result);
+            }
+
+            return (Permissions) result;
+        }
+     
         public static Task<bool> IsSubverseSubscriberAsync(this IQueryable<Subscription> query,
             SubverseUserData userData)
         {

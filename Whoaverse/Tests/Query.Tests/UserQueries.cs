@@ -65,7 +65,6 @@
         }
     }
 
-
     [Trait("Category", "Semi-integration"), Trait("Subcategory", "Queries")]
     public class UserQueries : IDisposable
     {
@@ -266,32 +265,48 @@
             context.SaveChanges();
         }
 
-        [Theory(DisplayName = "Subverse admin check correctly identifies admins")]
-        [InlineData("test1", "johnny", true)]
-        [InlineData("test2", "johnny", false)]
-        [InlineData("test2", "jane", false)]
-        [InlineData("doesntexist", "jane", false)]
-        [InlineData("test1", "doesntexist", false)]
-        public async Task SubverseAdminCheck(string subverse, string username, bool expectedResult)
+        public static IEnumerable<object[]> PermissionCheckData
         {
-            var result =
-                await context.Set<SubverseAdmin>().IsSubverseAdminAsync(new SubverseUserData(username, subverse));
-
-            Assert.Equal(expectedResult, result);
+            get
+            {
+                yield return new object[] {"test1", "johnny", Permissions.Admin};
+                yield return new object[] { "test2", "jane", Permissions.Moderator };
+                yield return new object[] { "test1", "jane", null};
+                yield return new object[] {"doesntexist", "johnny", null};
+                yield return new object[] {"test1", "doesntexist", null};
+            }
         }
 
-        [Theory(DisplayName = "Subverse moderator check correctly identifies moderators")]
-        [InlineData("test1", "johnny", false)]
-        [InlineData("test2", "johnny", false)]
-        [InlineData("test2", "jane", true)]
-        [InlineData("doesntexist", "jane", false)]
-        [InlineData("test1", "doesntexist", false)]
-        public async Task SubverseModeratorCheck(string subverse, string username, bool expectedResult)
+        public static IEnumerable<object[]> ElevatedAccessCheckData
+        {
+            get
+            {
+                yield return new object[] { "test1", "johnny", true };
+                yield return new object[] { "test2", "jane", true};
+                yield return new object[] { "test1", "jane", false };
+                yield return new object[] { "doesntexist", "johnny", false };
+                yield return new object[] { "test1", "doesntexist", false };
+            }
+        }
+
+        [Theory(DisplayName = "Subverse admin check correctly identifies admins")]
+        [MemberData("PermissionCheckData")]
+        public async Task SubversePermissionsCheck(string subverse, string username, Permissions? expectedPermissions)
         {
             var result =
-                await context.Set<SubverseAdmin>().IsSubverseModeratorAsync(new SubverseUserData(username, subverse));
+                await context.Set<SubverseAdmin>().GetHighestPermissionsAsync(new SubverseUserData(username, subverse));
 
-            Assert.Equal(expectedResult, result);
+            Assert.Equal(expectedPermissions, result);
+        }
+
+        [Theory(DisplayName = "Only moderators or admins have elevated access")]
+        [MemberData("ElevatedAccessCheckData")]
+        public async Task AdminOrModeratorHasElevatedAccess(string subverse, string userName, bool isElevated)
+        {
+            var result =
+               await context.Set<SubverseAdmin>().GetHighestPermissionsAsync(new SubverseUserData(userName, subverse));
+
+            Assert.Equal(isElevated, result.IsElevatedAccess());
         }
 
         [Theory(DisplayName = "Subverse subscription check correctly identifies subscribers")]

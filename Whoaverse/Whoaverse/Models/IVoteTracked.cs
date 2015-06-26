@@ -6,7 +6,7 @@
     {
         string UserName { get; set; } // this should probably be in a separate interface, IAuthenticated or something...
         int? VoteStatus { get; set; }
-        DateTime Timestamp { get; set; }
+        DateTime? Timestamp { get; set; }
     }
 
     public partial class Votingtracker : IVoteTracked
