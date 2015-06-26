@@ -318,6 +318,8 @@
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Permissions.cs" />
+    <Compile Include="Models\Quotas\Restrictions.cs" />
+    <Compile Include="Models\Quotas\UserQuotaModel.cs" />
     <Compile Include="Utils\Components\ContentFilters.cs" />
     <Compile Include="Utils\Components\ContentProcessor.cs" />
     <Compile Include="Utils\Components\NotificationManager.cs" />

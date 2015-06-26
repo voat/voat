@@ -7,6 +7,7 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Models;
+    using Models.Quotas;
     using Models.ViewModels;
 
     public static class UserAppQueries
@@ -18,7 +19,7 @@
                 await
                     query.Where(x => x.Username == userData.UserName && x.SubverseName == userData.Subverse)
                         .GroupBy(x => new {x.Username, x.SubverseName})
-                        .SelectMany(x => x.Select(y => (int?)y.Power).OrderBy(y => y))
+                        .SelectMany(x => x.Select(y => (int?) y.Power).OrderBy(y => y))
                         .FirstOrDefaultAsync()
                         .ConfigureAwait(false);
 
@@ -27,14 +28,14 @@
                 return null;
             }
 
-            if (!Enum.IsDefined(typeof(Permissions), result))
+            if (!Enum.IsDefined(typeof (Permissions), result))
             {
                 throw new InvalidOperationException("Unknown power level: " + result);
             }
 
             return (Permissions) result;
         }
-     
+
         public static Task<bool> IsSubverseSubscriberAsync(this IQueryable<Subscription> query,
             SubverseUserData userData)
         {
@@ -137,5 +138,71 @@
                     .DefaultIfEmpty(0)
                     .FirstAsync();
         }
+
+        public static async Task<CommentCountModel> GetCommentCountAsync(this IQueryable<Comment> query, string userName)
+        {
+            var now = DateTime.Now;
+            var lastDay = now.AddDays(-1);
+            var count =
+                await
+                    query.CountAsync(x => x.Name == userName && x.Date >= lastDay && x.Date <= now)
+                        .ConfigureAwait(false);
+            return new CommentCountModel {LastDayTotalCommentCount = count};
+        }
+
+        public static Task<PostCountModel> GetPostCountAsync(this IQueryable<Message> query, QuotaRetrievalData data)
+        {
+            var now = DateTime.Now;
+            var lastDay = now.AddDays(-1);
+            var lastHour = now.AddHours(-1);
+
+            return query.GroupBy(_ => 1)
+                .Select(g =>
+                    new PostCountModel
+                    {
+                        DailyCrossPostCount =
+                            g.Count(
+                                x =>
+                                    x.MessageContent == data.Url
+                                    && x.Name == data.UserName
+                                    && x.Date >= lastDay
+                                    && x.Date <= now),
+                        LastHourSubPostCount =
+                            g.Count(
+                                x =>
+                                    x.Subverse == data.Subverse
+                                    && x.Name == data.UserName
+                                    && x.Date >= lastHour
+                                    && x.Date <= now),
+                        LastDaySubPostCount =
+                            g.Count(
+                                x =>
+                                    x.Subverse == data.Subverse
+                                    && x.Name == data.UserName
+                                    && x.Date >= lastDay
+                                    && x.Date <= now),
+                        LastDayTotalPostCount =
+                            g.Count(
+                                x =>
+                                    x.Name == data.UserName
+                                    && x.Date >= lastDay
+                                    && x.Date <= now)
+                    })
+                .FirstAsync();
+        }
+    }
+
+    public class QuotaRetrievalData
+    {
+        public QuotaRetrievalData(string userName, string subverse, string url)
+        {
+            UserName = userName;
+            Subverse = subverse;
+            Url = url;
+        }
+
+        public string UserName { get; private set; }
+        public string Subverse { get; private set; }
+        public string Url { get; private set; }
     }
 }
