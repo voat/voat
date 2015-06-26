@@ -54,6 +54,14 @@
                 {
                     <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="return subscribe(this, '@Model.name')">subscribe</button>
                 }
+                if (Voat.Utils.User.IsUserBlockingSubverse(User.Identity.Name, ViewBag.SelectedSubverse))
+                {
+                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return toggleBlockSubverse(this, '@Model.name')">unblock</button>
+                }
+                else
+                {
+                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return toggleBlockSubverse(this, '@Model.name')">block</button>
+                }
             }
             else
             {
