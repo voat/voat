@@ -1,8 +1,10 @@
 ﻿namespace Voat.Queries.User
 {
+    using System;
     using System.Collections.Generic;
     using System.Data.Entity;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Models;
     using Models.ViewModels;
@@ -103,6 +105,30 @@
                 ? new NotificationCountModel()
                 : new NotificationCountModel(notificationCount.CommentReplies ?? 0, notificationCount.PostReplies ?? 0,
                     notificationCount.PrivateMessages ?? 0);
+        }
+
+        public static Task<int> VotesUsedAsync(this DbContext context, string userName)
+        {
+            var now = DateTime.Now;
+            var startDate = now.Add(TimeSpan.FromHours(-24));
+
+            Expression<Func<IVoteTracked, bool>> filter =
+                tracked => tracked.Timestamp >= startDate && tracked.Timestamp <= now && tracked.UserName == userName;
+
+            var commentVotesUsed =
+                context.Set<Commentvotingtracker>()
+                    .Where(filter)
+                    .Select(x => new {Vote = 1});
+            var submissionVotesUsed =
+                context.Set<Votingtracker>()
+                    .Where(filter)
+                    .Select(x => new {Vote = 1});
+            return
+                commentVotesUsed.Concat(submissionVotesUsed)
+                    .GroupBy(_ => 1)
+                    .Select(x => x.Count())
+                    .DefaultIfEmpty(0)
+                    .FirstAsync();
         }
     }
 }
