@@ -689,7 +689,7 @@ namespace Voat.Controllers
                 {
                     subverse = from subverses in _db.Subverses
                               .Where(s => s.subscribers > 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase) && s.last_submission_received != null
-                                     && !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(s.name) select ubs.Username).Contains(User.Identity.Name) !s.admin_disabled.Value)
+                                     && !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(s.name) select ubs.Username).Contains(User.Identity.Name) && !s.admin_disabled.Value)
                                select subverses;
                 }
                 else
