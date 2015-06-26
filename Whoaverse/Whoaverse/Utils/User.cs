@@ -79,7 +79,6 @@ namespace Voat.Utils
                             c.Name = "deleted";
                             c.CommentContent = "deleted by user";
                         }
-                        db.SaveChanges();
 
                         // remove all submissions
                         var submissions = db.Messages.Where(c => c.Name == userName).ToList();
@@ -96,6 +95,19 @@ namespace Voat.Utils
                                 s.Name = "deleted";
                                 s.Linkdescription = "deleted by user";
                                 s.MessageContent = "http://voat.co";
+                            }
+                        }
+
+                        // get all verses where use is admin
+                        var adminedVerses = db.SubverseAdmins.Where(a => a.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && a.Power.Equals(1));
+                        foreach (SubverseAdmin v in adminedVerses)
+                        {
+                            // find the moderator with highest power. if multiple users have same power, pick oldest mod.
+                            var bestMatch = db.SubverseAdmins.Where(bm => bm.SubverseName.Equals(v.SubverseName) && !bm.Username.Equals(userName)).OrderBy(bm => bm.Power).ThenBy(bm => bm.Added_on).FirstOrDefault();
+                            if (bestMatch != null)
+                            {
+                                // set the best user as admin
+                                bestMatch.Power = 1;
                             }
                         }
 
