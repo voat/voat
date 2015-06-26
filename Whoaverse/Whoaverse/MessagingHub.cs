@@ -1,4 +1,4 @@
-﻿/*
+/*
 This source file is subject to version 3 of the GPL license, 
 that is bundled with this package in the file LICENSE, and is 
 available online at http://www.gnu.org/licenses/gpl.txt; 
@@ -36,8 +36,16 @@ namespace Voat
         [Authorize]
         public void SendChatMessage(string name, string message, string subverseName)
         {
-            if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(message) && !String.IsNullOrEmpty(subverseName))
-            {                
+            if (message == null)
+            {
+                return;
+            }
+
+            message = message.Trim();
+
+            if (!String.IsNullOrEmpty(name) && message != String.Empty && !String.IsNullOrEmpty(subverseName))
+            {
+
                 // check if user is banned
                 if (User.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
                 {
@@ -46,16 +54,16 @@ namespace Voat
                     return;
                 }
 
-                // trim message to 200 characters
-                if (message.Length > 200)
-                {
-                    message = message.Substring(0, 200);
-                }
-
                 // discard message if it contains unicode
                 if (Submissions.ContainsUnicode(message))
                 {
                     return;
+                }
+
+                // trim message to 200 characters
+                if (message.Length > 200)
+                {
+                    message = message.Substring(0, 200);
                 }
 
                 // check if previous message from this user is in cache
