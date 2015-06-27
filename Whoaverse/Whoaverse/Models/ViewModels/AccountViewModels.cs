@@ -34,7 +34,6 @@ namespace Voat.Models.ViewModels
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
-        [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
         public string NewPassword { get; set; }
@@ -130,7 +129,6 @@ namespace Voat.Models.ViewModels
 
         [Required(ErrorMessage = "A password is required. Please fill this field.")]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]        
-        [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -151,7 +149,6 @@ namespace Voat.Models.ViewModels
         [Display(Name = "Answer")]
         public string InputAnswer { get; set; }
 
-        [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
