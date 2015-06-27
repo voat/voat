@@ -826,7 +826,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Storage\Avatars\" />
-    <Folder Include="Views\User\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -682,10 +682,23 @@ namespace Voat.Controllers
         {
             try
             {
+                IQueryable<Subverse> subverse;
+
                 // fetch a random subverse with minimum number of subscribers where last subverse activity was evident
-                var subverse = from subverses in _db.Subverses
-                          .Where(s => s.subscribers > 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase) && s.last_submission_received != null)
+                if (Utils.User.AdultContentEnabled(User.Identity.Name))
+                {
+                    subverse = from subverses in _db.Subverses
+                              .Where(s => s.subscribers > 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase) && s.last_submission_received != null
+                                     && !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(s.name) select ubs.Username).Contains(User.Identity.Name) && !s.admin_disabled.Value)
                                select subverses;
+                }
+                else
+                {
+                    subverse = from subverses in _db.Subverses
+                              .Where(s => s.subscribers > 10 && !s.name.Equals("all", StringComparison.OrdinalIgnoreCase) && s.last_submission_received != null
+                                     && !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(s.name) select ubs.Username).Contains(User.Identity.Name) && !s.rated_adult && !s.admin_disabled.Value)
+                               select subverses;
+                }
 
                 var submissionCount = 0;
                 Subverse randomSubverse;
@@ -929,6 +942,9 @@ namespace Voat.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            // check if logged in user is actually the invited user
+            if (User.Identity.Name != userInvitation.Sent_to) { return new HttpStatusCodeResult(HttpStatusCode.Unauthorized); }
 
             // check if user is over modding limits
             var amountOfSubsUserModerates = _db.SubverseAdmins.Where(s => s.Username.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
@@ -1629,6 +1645,8 @@ namespace Voat.Controllers
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                         where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                        where !subverse.admin_disabled.Value
+                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                         select message
                                                                         ).OrderByDescending(s => s.Date).AsNoTracking();
 
@@ -1641,6 +1659,8 @@ namespace Voat.Controllers
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                         where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                        where !subverse.admin_disabled.Value
+                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                         select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByRank;
@@ -1652,6 +1672,8 @@ namespace Voat.Controllers
                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                        where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                       where !subverse.admin_disabled.Value
+                                                                       where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                        select message).OrderByDescending(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
                                                                        .AsNoTracking();
 
@@ -1665,12 +1687,9 @@ namespace Voat.Controllers
                                                                                 join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                                 where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && message.Date >= startDate && message.Date <= DateTime.Now
                                                                                 where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                                select message)
-                                                                                .OrderByDescending(s => s.Views)
-                                                                                .DistinctBy(m => m.Subverse)
-                                                                                .Take(5)
-                                                                                .AsQueryable()
-                                                                                .AsNoTracking();
+                                                                                where !subverse.admin_disabled.Value
+                                                                                where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
+                                                                                select message).OrderByDescending(s => s.Views).DistinctBy(m => m.Subverse).Take(5).AsQueryable().AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByViews24Hours;
         }
@@ -1683,6 +1702,8 @@ namespace Voat.Controllers
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                      where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                     where !subverse.admin_disabled.Value
+                                                                     where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                      select message).OrderByDescending(s => s.Date).AsNoTracking();
 
             return submissionsFromAllSubversesByDate;
@@ -1694,6 +1715,8 @@ namespace Voat.Controllers
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                      where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                     where !subverse.admin_disabled.Value
+                                                                     where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                      select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
             return submissionsFromAllSubversesByRank;
@@ -1705,6 +1728,8 @@ namespace Voat.Controllers
                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                     where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
                                                                     where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                    where !subverse.admin_disabled.Value
+                                                                    where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
                                                                     select message).OrderByDescending(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
                                                                     .AsNoTracking();
 
