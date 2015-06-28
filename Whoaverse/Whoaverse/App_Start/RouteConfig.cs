@@ -486,6 +486,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "CommentRemovalLog" }
             );
 
+            // v/subverse/modlog/bannedusers
+            routes.MapRoute(
+                name: "subverseBannedUsersLog",
+                url: "v/{subversetoshow}/modlog/bannedusers",
+                defaults: new { controller = "Subverses", action = "BannedUsersLog" }
+            );
+
             // v/subversetoedit/about/edit
             routes.MapRoute(
                 name: "subverseSettings",

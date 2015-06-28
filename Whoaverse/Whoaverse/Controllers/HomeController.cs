@@ -36,49 +36,6 @@ namespace Voat.Controllers
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
 
-        [HttpPost]
-        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateCaptcha]
-        public async Task<ActionResult> ClaSubmit(Cla claModel)
-        {
-            if (!ModelState.IsValid) return View("~/Views/Legal/Cla.cshtml");
-
-            var from = new MailAddress(claModel.Email);
-            var to = new MailAddress("legal@voat.co");
-            var sb = new StringBuilder();
-            var msg = new MailMessage(@from, to) { Subject = "New CLA Submission from " + claModel.FullName };
-
-            // format CLA email
-            sb.Append("Full name: " + claModel.FullName);
-            sb.Append(Environment.NewLine);
-            sb.Append("Email: " + claModel.Email);
-            sb.Append(Environment.NewLine);
-            sb.Append("Mailing address: " + claModel.MailingAddress);
-            sb.Append(Environment.NewLine);
-            sb.Append("City: " + claModel.City);
-            sb.Append(Environment.NewLine);
-            sb.Append("Country: " + claModel.Country);
-            sb.Append(Environment.NewLine);
-            sb.Append("Phone number: " + claModel.PhoneNumber);
-            sb.Append(Environment.NewLine);
-            sb.Append("Corporate contributor information: " + claModel.CorpContrInfo);
-            sb.Append(Environment.NewLine);
-            sb.Append("Electronic signature: " + claModel.ElectronicSignature);
-            sb.Append(Environment.NewLine);
-
-            msg.Body = sb.ToString();
-
-            // send the email with CLA data
-            if (EmailUtility.SendEmail(msg))
-            {
-                msg.Dispose();
-                ViewBag.SelectedSubverse = string.Empty;
-                return View("~/Views/Legal/ClaSent.cshtml");
-            }
-            ViewBag.SelectedSubverse = string.Empty;
-            return View("~/Views/Legal/ClaFailed.cshtml");
-        }
-
         // GET: submit
         [Authorize]
         public ActionResult Submit(string selectedsubverse)

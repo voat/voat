@@ -52,7 +52,7 @@
                         <div class="submission id-@logItem.Message.Id link @submissionClass" data-fullname="@logItem.Message.Id" data-ups="@logItem.Message.Votes" data-downs="">
                             <p class="parent"></p>
 
-                            @Html.Partial("_votingIconsSubmission", logItem.Message, new ViewDataDictionary { { "CCP", 0 } })
+                            @Html.Partial("_votingIconsSubmission", logItem.Message, new ViewDataDictionary {{"CCP", 0}})
                             @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", logItem.Message)
 
                             <div class="child"></div>
@@ -61,6 +61,23 @@
                     }
                 </div>
             }
+        </div>
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", "subverseSubmissionRemovalLog", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", "subverseSubmissionRemovalLog", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
         </div>
     </div>
 </div>

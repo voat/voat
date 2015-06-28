@@ -1,0 +1,87 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model PaginatedList<Voat.Models.SubverseBan>
+
+@{
+    ViewBag.Title = "Moderator user ban log";
+}
+
+<div id="container">
+    <div class="side">
+        <div class="spacersection spacer">
+            <div class="alert-h1">
+                Moderator user ban log
+            </div>
+            <div>
+                <span>
+                    Total users banned by moderators in this subverse: @Model.Count
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content" role="main">
+        <div class="sitetable linklisting">
+            @if (Model.Count < 1)
+            {
+                <span>There are no moderator-banned users in this subverse.</span>
+            }
+            else
+            {
+                <div id="removedCommentsList" class="">
+                    <div class="alert alert-info">
+                        <p>Showing users banned by moderators for subverse: @ViewBag.SelectedSubverse.</p>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Banned by</th>
+                            <th>Ban reason</th>
+                            <th>Timestamp</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var logItem in Model)
+                        {
+                            <tr>
+                                <td>@logItem.Username</td>
+                                <td>@logItem.BannedBy</td>
+                                <td>@logItem.BanReason</td>
+                                <td>@logItem.BanAddedOn</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", "subverseBannedUsersLog", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", "subverseBannedUsersLog", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
