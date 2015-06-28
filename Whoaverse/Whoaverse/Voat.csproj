@@ -272,6 +272,9 @@
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
+    <Compile Include="Models\CommentRemovalLog.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SavedItem.cs" />
     <Compile Include="Models\Commentsavingtracker.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
@@ -817,6 +820,7 @@
     <Content Include="Views\Shared\_Captcha.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Errors\SubverseDisabled.cshtml" />
+    <Content Include="Views\Subverses\CommentRemovalLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

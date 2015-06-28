@@ -479,6 +479,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "SubmissionRemovalLog" }
             );
 
+            // v/subverse/modlog/deletedcomments
+            routes.MapRoute(
+                name: "subverseCommentRemovalLog",
+                url: "v/{subversetoshow}/modlog/deletedcomments",
+                defaults: new { controller = "Subverses", action = "CommentRemovalLog" }
+            );
+
             // v/subversetoedit/about/edit
             routes.MapRoute(
                 name: "subverseSettings",

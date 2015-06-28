@@ -14,8 +14,6 @@ All Rights Reserved.
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -410,6 +408,7 @@ namespace Voat.Controllers
                     commentToDelete.CommentContent = "deleted by author at " + DateTime.Now;
                     await _db.SaveChangesAsync();
                 }
+
                 // delete comment if delete request is issued by subverse moderator
                 else if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
                 {
@@ -426,6 +425,18 @@ namespace Voat.Controllers
                         );
 
                     commentToDelete.Name = "deleted";
+
+                    // move the comment to removal log
+                    var removalLog = new CommentRemovalLog
+                    {
+                        CommentId = commentToDelete.Id,
+                        Moderator = User.Identity.Name,
+                        ReasonForRemoval = "This feature is not yet implemented",
+                        RemovalTimestamp = DateTime.Now
+                    };
+
+                    _db.CommentRemovalLogs.Add(removalLog);
+
                     commentToDelete.CommentContent = "deleted by a moderator at " + DateTime.Now;
                     await _db.SaveChangesAsync();
                 }

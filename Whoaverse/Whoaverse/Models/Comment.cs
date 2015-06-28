@@ -39,5 +39,6 @@ namespace Voat.Models
         public virtual Message Message { get; set; }
         public virtual ICollection<Commentvotingtracker> Commentvotingtrackers { get; set; }
         public virtual ICollection<Commentsavingtracker> Commentsavingtrackers { get; set; }
+        public virtual CommentRemovalLog CommentRemovalLog { get; set; }
     }
 }

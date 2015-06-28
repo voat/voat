@@ -1427,6 +1427,32 @@ namespace Voat.Controllers
             }
         }
 
+        // GET: show comment removal log
+        public ActionResult CommentRemovalLog(int? page, string subversetoshow)
+        {
+            ViewBag.SelectedSubverse = subversetoshow;
+
+            try
+            {
+                var subverse = _db.Subverses.Find(subversetoshow);
+                if (subverse != null)
+                {
+                    //HACK: Disable subverse
+                    if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+                    {
+                        ViewBag.Subverse = subverse.name;
+                        return View("~/Views/Errors/SubverseDisabled.cshtml");
+                    }
+                }
+                var listOfRemovedComments = new PaginatedList<CommentRemovalLog>(_db.CommentRemovalLogs.Where(rl => rl.Comment.Message.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).OrderByDescending(rl => rl.RemovalTimestamp), page ?? 0, 20);
+                return View("CommentRemovalLog", listOfRemovedComments);
+            }
+            catch (Exception)
+            {
+                return new EmptyResult();
+            }
+        }
+
         // POST: block a subverse
         [Authorize]
         public JsonResult BlockSubverse(string subverseName)
