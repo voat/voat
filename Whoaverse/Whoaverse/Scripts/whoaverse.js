@@ -1552,6 +1552,23 @@ function toggleBlockSubverse(obj, subverseName) {
     }
 }
 
+// a function to toggle subverse style
+function toggleSubverseStyle(obj, subverseName) {
+    var checkbox = $(obj);
+    if (checkbox.exists()) {
+        checkbox.prop('checked', !checkbox.prop('checked'));
+        // submit request
+        $.ajax({
+            type: "POST",
+            url: "/subverses/togglestyle/" + subverseName,
+            complete: function () {
+                //Reload Page to get new styles
+                window.location.reload();
+            }
+        });
+    }
+}
+
 // a function to check username availability
 function checkUsernameAvailability(obj) {
     if ($(obj).val().length > 1) {

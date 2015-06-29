@@ -311,6 +311,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "BlockSubverse" }
             );
 
+            // toggle a subverse's style for a user
+            routes.MapRoute(
+                name: "togglesubversestyle",
+                url: "subverses/togglestyle/{subverseName}",
+                defaults: new { controller = "Subverses", action = "ToggleSubverseStyle" }
+            );
+
             // subscribe to set
             routes.MapRoute(
                 name: "subscribetoset",

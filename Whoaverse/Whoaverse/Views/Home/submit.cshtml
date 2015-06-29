@@ -21,7 +21,7 @@
 }
 
 <style type="text/css" id="custom_css">
-@if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
+@if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name) && !Voat.Utils.User.DidUserDisableSubverseStyle(User.Identity.Name, selectedSubverse))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
 } else if (!User.Identity.IsAuthenticated)

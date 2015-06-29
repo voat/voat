@@ -1739,6 +1739,13 @@ pre, code {
     color: #666;
 }
 
+.disable-style-checkbox {
+    display: block;
+}
+    .disable-style-checkbox input {
+        margin-right: 5px;
+    }
+
 /* ! Sidebar : Search
 ------------------------------------------------------------------------------------ */
 
