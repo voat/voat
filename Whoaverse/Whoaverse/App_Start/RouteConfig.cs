@@ -241,7 +241,7 @@ namespace Voat
                 defaults: new { controller = "Messaging", action = "SendPrivateMessage" }
             );
 
-            // compose
+            // sent
             routes.MapRoute(
                 name: "Sent",
                 url: "messaging/sent",
