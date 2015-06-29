@@ -2,7 +2,6 @@
 {
     using System.Data.Entity;
     using System.Threading.Tasks;
-    using Query.Tests;
     using Voat.Commands.Voting;
     using Voat.Models;
     using Xunit;

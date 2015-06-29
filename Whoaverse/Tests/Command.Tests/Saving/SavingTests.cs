@@ -4,7 +4,6 @@
     using System.Data.Entity;
     using System.Linq;
     using System.Threading.Tasks;
-    using Query.Tests;
     using Voat.Commands.Saving;
     using Voat.Models;
     using Xunit;

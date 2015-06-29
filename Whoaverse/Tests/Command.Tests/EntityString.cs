@@ -1,4 +1,4 @@
-﻿namespace Query.Tests
+﻿namespace Command.Tests
 {
     public static class EntityString
     {
