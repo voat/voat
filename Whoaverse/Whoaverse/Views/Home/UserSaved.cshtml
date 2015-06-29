@@ -43,8 +43,7 @@
                 }
                 <div class="submission id-@message.Id odd link @submissionClass" data-fullname="@message.Id" data-ups="@message.Votes" data-downs="">
                     <p class="parent"></p>
-                    @*TODO: DB call in a view? That's a no-no. Appropriate property should be in the model.*@
-                    @Html.Partial("_votingIconsSubmission", message, new ViewDataDictionary { { "CCP",0 /*Karma.CommentKarma(User.Identity.Name) */} })
+                    @Html.Partial("_votingIconsSubmission", message, new ViewDataDictionary { { "CCP", Karma.CommentKarma(User.Identity.Name) } })
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", message)
                     <div class="child"></div>
                     <div class="clearleft">@*IE6fix*@</div>
@@ -53,8 +52,7 @@
             if (comment != null)
             {
                 //Is a comment
-                //TODO: DB call in a view? That's a no-no. Appropriate property should be in the model.
-                @Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", 0/*Karma.CommentKarma(User.Identity.Name)*/ }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
+                @Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
             }
         }
 

@@ -23,9 +23,6 @@ using Voat.Utils;
 
 namespace Voat.Controllers
 {
-    using System.Threading.Tasks;
-    using Queries.Karma;
-
     public class WebApiController : ApiController
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
@@ -308,7 +305,7 @@ namespace Voat.Controllers
         /// </summary>
         /// <param name="userName">The username for which to fetch basic information.</param>
         [HttpGet]
-        public async Task<ApiUserInfo> UserInfo(string userName)
+        public ApiUserInfo UserInfo(string userName)
         {
             if (userName != "deleted" && !Utils.User.UserExists(userName))
             {
@@ -326,8 +323,8 @@ namespace Voat.Controllers
             var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge {Awarded = item.Awarded, BadgeName = item.Badge.BadgeName}).ToList();
 
             resultModel.Name = userName;
-            resultModel.CCP = await _db.Set<Comment>().GetCommentKarmaAsync(userName);
-            resultModel.LCP = await _db.Set<Message>().GetLinkKarmaAsync(userName);
+            resultModel.CCP = Karma.CommentKarma(userName);
+            resultModel.LCP = Karma.LinkKarma(userName);
             resultModel.RegistrationDate = Utils.User.GetUserRegistrationDateTime(userName);
             resultModel.Badges = resultBadgesList;
 

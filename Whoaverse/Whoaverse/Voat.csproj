@@ -335,6 +335,7 @@
     <Compile Include="Utils\DateTimeUtility.cs" />
     <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\HubMinifier.cs" />
+    <Compile Include="Queries\Karma\Karma.cs" />
     <Compile Include="Utils\PaginatedList.cs" />
     <Compile Include="Controllers\PartnerController.cs" />
     <Compile Include="Controllers\ReportController.cs" />

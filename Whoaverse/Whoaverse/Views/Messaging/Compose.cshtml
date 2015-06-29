@@ -59,9 +59,8 @@
                                 @Html.ValidationMessageFor(model => model.Body)
                             </div>
                         </div>
-                        @*TODO: DB call in a view? That's a no-no. Appropriate property should be in the model.*@
-                        @*@if (Karma.CommentKarma(User.Identity.Name) < 100)*@
-                        @if(false)
+
+                        @if (Karma.CommentKarma(User.Identity.Name) < 100)
                         {
                             <div class="panel panel-default">
                                 <div class="panel-heading">Are you a human?</div>

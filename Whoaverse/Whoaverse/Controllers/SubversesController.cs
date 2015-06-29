@@ -28,8 +28,6 @@ using Voat.Utils;
 
 namespace Voat.Controllers
 {
-    using Queries.Karma;
-
     public class SubversesController : Controller
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
@@ -128,9 +126,9 @@ namespace Voat.Controllers
 
             int minimumCcp = Convert.ToInt32(ConfigurationManager.AppSettings["minimumCcp"]);
             int maximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
-            var commentKarma = await _db.Set<Comment>().GetCommentKarmaAsync(User.Identity.Name);
+
             // verify recaptcha if user has less than minimum required CCP
-            if (commentKarma < minimumCcp)
+            if (Karma.CommentKarma(User.Identity.Name) < minimumCcp)
             {
                 // begin recaptcha check
                 bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);

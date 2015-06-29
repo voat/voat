@@ -1,4 +1,4 @@
-﻿/*
+/*
 This source file is subject to version 3 of the GPL license, 
 that is bundled with this package in the file LICENSE, and is 
 available online at http://www.gnu.org/licenses/gpl.txt; 
@@ -58,32 +58,6 @@ namespace Voat.Queries.Karma
         public static async Task<CombinedKarma> GetCombinedKarmaAsync(this IQueryable<TotalKarma> query, string userName,
             string subverse = null)
         {
-            /*var linkKarma =
-                context.Set<Message>()
-                    .PrepareLinkKarmaQuery(userName, subverse)
-                    .GetRawKarmaQuery()
-                    .Select(x => new {LinkKarma = x, CommentKarma = 0});
-
-            var commentKarma =
-                context.Set<Comment>()
-                    .PrepareCommentKarmaQuery(userName, subverse)
-                    .GetRawKarmaQuery()
-                    .Select(x => new {LinkKarma = 0, CommentKarma = x});
-
-            var result = await
-                linkKarma.Concat(commentKarma)
-                    // Unfortunately there's no way to do direct equivalent of SELECT SUM(...) FROM, so there has to be a dummy group that will enable the use of aggregates.
-                    .GroupBy(x => 1) 
-                    .Select(
-                        g =>
-                            new
-                            {
-                                CommentKarma = g.Sum(x => x.CommentKarma),
-                                LinkKarma = g.Sum(x => x.LinkKarma)
-                            })
-                    .FirstAsync()
-                    .ConfigureAwait(false);
-*/
             var karma = query.Where(x => x.UserName == userName);
             if (!string.IsNullOrEmpty(subverse))
             {
@@ -146,8 +120,8 @@ namespace Voat.Queries.Karma
 
             // Concat is the equivalent of UNION ALL
             return
-                comments.Select(x => new {x.UserName, x.VoteStatus})
-                    .Concat(submissionUpvotes.Select(x => new {x.UserName, x.VoteStatus}))
+                comments.Select(x => new { x.UserName, x.VoteStatus })
+                    .Concat(submissionUpvotes.Select(x => new { x.UserName, x.VoteStatus }))
                     .CountAsync();
         }
     }

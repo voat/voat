@@ -92,9 +92,7 @@
             </div>
         </div>
 
-        @*TODO: DB call in a view? That's a no-no. Appropriate property should be in the model.*@
-        @*@if (Karma.CommentKarma(User.Identity.Name) < 25)*@
-        @if(false)
+        @if (Karma.CommentKarma(User.Identity.Name) < 25)
         {
             <div class="alert alert-info">Are you a human? Please solve the reCAPTCHA challenge below (sorry, this is to prevent spam):</div>
 

@@ -30,7 +30,6 @@ using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
-    using Queries.Karma;
 
 
     public class HomeController : Controller
@@ -175,7 +174,7 @@ namespace Voat.Controllers
             }
 
             // verify recaptcha if user has less than 25 CCP
-            var userCcp = await _db.Set<Comment>().GetCommentKarmaAsync(User.Identity.Name);
+            var userCcp = Karma.CommentKarma(User.Identity.Name);
             if (userCcp < 25)
             {
                 bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);
@@ -192,7 +191,7 @@ namespace Voat.Controllers
             }
 
             // if user CCP or SCP is less than -50, allow only X submissions per 24 hours
-            var userScp = await _db.Set<Message>().GetLinkKarmaAsync(User.Identity.Name);
+            var userScp = Karma.LinkKarma(User.Identity.Name);
             if (userCcp <= -50 || userScp <= -50)
             {
                 var quotaUsed = Utils.User.UserDailyPostingQuotaForNegativeScoreUsed(User.Identity.Name);

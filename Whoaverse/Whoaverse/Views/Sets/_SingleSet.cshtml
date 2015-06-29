@@ -18,8 +18,7 @@
 
     if (User.Identity.IsAuthenticated)
     {
-        //TODO: DB call in a view? That's a no-no. Appropriate property should be in the model.
-        commentContributionPoints = 0; //Karma.CommentKarma(User.Identity.Name);
+        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
     }
 }
 

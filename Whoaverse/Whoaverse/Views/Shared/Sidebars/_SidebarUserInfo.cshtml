@@ -60,13 +60,12 @@
             <h2 class="hover whoaversename">
                 Achievements and contributions
             </h2>
-            @*TODO: DB call in a view? That's a no-no. Appropriate property should be in the model.*@
             <div class="bottom">
                 <p class="h6">
-                    Submission contribution points: <b>0 @*@Karma.LinkKarma(userName)*@</b>
+                    Submission contribution points: <b>@Karma.LinkKarma(userName)</b>
                 </p>
                 <p class="h6">
-                    Comment contribution points: <b>0 @*@Karma.CommentKarma(userName)*@</b>
+                    Comment contribution points: <b>@Karma.CommentKarma(userName)</b>
                 </p>
             </div>
             <div class="titlebox footer rounded">

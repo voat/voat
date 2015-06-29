@@ -25,8 +25,6 @@ using Voat.Utils;
 
 namespace Voat.Controllers
 {
-    using Queries.Karma;
-
     public class MessagingController : Controller
     {
         private readonly whoaverseEntities _db = new whoaverseEntities();
@@ -277,8 +275,8 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid) return View();
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null) return RedirectToAction("Sent", "Messaging");
-            var commentKarma = await _db.Set<Comment>().GetCommentKarmaAsync(User.Identity.Name);
-            if (commentKarma < 100)
+
+            if (Karma.CommentKarma(User.Identity.Name) < 100)
             {
                 bool isCaptchaValid = await ReCaptchaUtility.Validate(Request);
 

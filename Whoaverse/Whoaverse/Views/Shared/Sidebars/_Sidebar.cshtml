@@ -113,8 +113,7 @@
                             Minimum CCP required to downvote in this sub: @Model.minimumdownvoteccp
                             @if (User.Identity.IsAuthenticated)
                             {
-                                /*TODO: DB call in a view? That's a no-no. Appropriate property should be in the model.*/
-                            <p>Your CCP for this sub: 0 @*@Karma.CommentKarmaForSubverse(User.Identity.Name, Model.name)*@</p>
+                            <p>Your CCP for this sub: @Karma.CommentKarmaForSubverse(User.Identity.Name, Model.name)</p>
                             }
                             </p>
                         </div>

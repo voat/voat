@@ -144,16 +144,16 @@
             {
                 UserName = "testName",
                 Subverse = "subverse1",
-                LinkKarma = 22-10,
-                CommentKarma = 23-22
+                LinkKarma = 22 - 10,
+                CommentKarma = 23 - 22
             });
 
             dbContext.Set<TotalKarma>().Add(new TotalKarma
             {
                 UserName = "testName",
                 Subverse = "subverse2",
-                LinkKarma = 32-3,
-                CommentKarma = 40-2
+                LinkKarma = 32 - 3,
+                CommentKarma = 40 - 2
             });
 
             dbContext.SaveChanges();
@@ -212,13 +212,16 @@
         {
             get
             {
-                yield return new object[] {"testName", "subverse1", new CombinedKarma(22-10, 23-22) };
+                yield return new object[] {"testName", "subverse1", new CombinedKarma(22 - 10, 23 - 22)};
                 yield return
                     new object[] {"testName", null, new CombinedKarma((22 - 10) + (32 - 3), (23 - 22) + (40 - 2))};
             }
         }
 
-        [Theory(DisplayName = "Combined link & comment karma should be properly retrieved for a given user and (optionally) subverse.")]
+        [Theory(
+            DisplayName =
+                "Combined link & comment karma should be properly retrieved for a given user and (optionally) subverse."
+            )]
         [MemberData("CombinedKarmaData")]
         public async Task CombinedKarmaRetrieval(string userName, string subverse, CombinedKarma expectedResult)
         {
