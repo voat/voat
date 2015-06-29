@@ -10,8 +10,14 @@
     using Models.Quotas;
     using Models.ViewModels;
 
-    public static class UserAppQueries
+    public static class MiscUserQueries
     {
+        public static Task<bool> IsBlockingSubverseAsync(this IQueryable<UserBlockedSubverse> query,
+            SubverseUserData userData)
+        {
+            return query.AnyAsync(s => s.SubverseName == userData.Subverse && s.Username == userData.UserName);
+        }
+
         public static async Task<Permissions?> GetHighestPermissionsAsync(this IQueryable<SubverseAdmin> query,
             SubverseUserData userData)
         {
@@ -34,42 +40,6 @@
             }
 
             return (Permissions) result;
-        }
-
-        public static Task<bool> IsSubverseSubscriberAsync(this IQueryable<Subscription> query,
-            SubverseUserData userData)
-        {
-            return query.AnyAsync(s => s.SubverseName == userData.Subverse && s.Username == userData.UserName);
-        }
-
-        public static Task<bool> IsBlockingSubverseAsync(this IQueryable<UserBlockedSubverse> query,
-            SubverseUserData userData)
-        {
-            return query.AnyAsync(s => s.SubverseName == userData.Subverse && s.Username == userData.UserName);
-        }
-
-        public static Task<bool> IsSetSubscriberAsync(this IQueryable<Usersetsubscription> query, string userName,
-            int setId)
-        {
-            return query.AnyAsync(x => x.Username == userName && x.Set_id == setId);
-        }
-
-        public static Task<int> GetSubscriptionCountAsync(this IQueryable<Subscription> query, string userName)
-        {
-            return query.CountAsync(x => x.Username == userName);
-        }
-
-        public static async Task<IReadOnlyList<SubverseDetailsViewModel>> GetSubscriptionsAsync(
-            this IQueryable<Subscription> query, string userName)
-        {
-            var list =
-                await query.Where(x => x.Username == userName)
-                    .OrderBy(x => x.SubverseName)
-                    .Select(x => new SubverseDetailsViewModel {Name = x.SubverseName})
-                    .ToListAsync()
-                    .ConfigureAwait(false);
-
-            return list;
         }
 
         public static async Task<IReadOnlyList<BadgeViewModel>> GetBadgesAsync(this IQueryable<Userbadge> query,
@@ -190,19 +160,5 @@
                     })
                 .FirstAsync();
         }
-    }
-
-    public class QuotaRetrievalData
-    {
-        public QuotaRetrievalData(string userName, string subverse, string url)
-        {
-            UserName = userName;
-            Subverse = subverse;
-            Url = url;
-        }
-
-        public string UserName { get; private set; }
-        public string Subverse { get; private set; }
-        public string Url { get; private set; }
     }
 }

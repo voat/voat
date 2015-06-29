@@ -12,13 +12,11 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Voat.Models
+namespace Voat.Models.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
+
     public class CommentViewModel
     {
         public CommentViewModel()

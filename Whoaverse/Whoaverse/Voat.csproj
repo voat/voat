@@ -258,6 +258,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Commands\User\Removal.cs" />
     <Compile Include="Models\AllNotificationCount.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -319,6 +320,9 @@
     </Compile>
     <Compile Include="Models\Permissions.cs" />
     <Compile Include="Models\Quotas\Restrictions.cs" />
+    <Compile Include="Models\QuotaRetrievalData.cs" />
+    <Compile Include="Queries\User\SubscriptionQueries.cs" />
+    <Compile Include="Queries\User\MiscUserQueries.cs" />
     <Compile Include="Models\Quotas\UserQuotaModel.cs" />
     <Compile Include="Utils\Components\ContentFilters.cs" />
     <Compile Include="Utils\Components\ContentProcessor.cs" />
