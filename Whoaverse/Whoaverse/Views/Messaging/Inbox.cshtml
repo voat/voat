@@ -36,7 +36,7 @@
 
             @if (Model.Count > 0)
             {
-                <p>Displaying newest @Model.Count message(s). Your Inbox contains a total of @ViewBag.InboxCount message(s).</p><p><a id="markAllPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAllPrivateMessagesAsRead(this)">mark all as read</a></p>
+                <p>Displaying newest @Model.Count message(s). Your Inbox contains a total of @ViewBag.InboxCount message(s).</p><p><a id="markAllPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAsRead(this, 'privateMessage', null, true)">mark all as read</a></p>
                 <hr />
                 foreach (var message in Model)
                 {
@@ -62,13 +62,13 @@
                                         <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this)">source</a>
                                     </li>
                                     <li>
-                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick=" return deleteprivatemessage(this, @message.Id ) ">delete</a>
+                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deletePrivateMessage(this, @message.Id)">delete</a>
                                     </li>
                                     @if (message.Status)
                                     {
                                         // status: true = unread, false = read
                                         <li>
-                                            <a id="markPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAsRead(this, @message.Id)">mark as read</a>
+                                            <a id="markPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAsRead(this, 'privateMessage', @message.Id, false)">mark as read</a>
                                         </li>
                                     }
                                 </ul>

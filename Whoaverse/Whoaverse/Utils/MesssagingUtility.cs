@@ -13,6 +13,8 @@ All Rights Reserved.
 */
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Voat.Models;
 
 namespace Voat.Utils
@@ -47,6 +49,52 @@ namespace Voat.Utils
                     return false;
                 }
             }
+        }
+
+        // a method to mark single or all private messages as read for a given user
+        public static async Task<bool> MarkPrivateMessagesAsRead(bool? markAll, string userName, int? itemId)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                try
+                {
+                    // mark all items as read
+                    if (markAll != null && (bool) markAll)
+                    {
+                        IQueryable<Privatemessage> unreadPrivateMessages = db.Privatemessages
+                                                                            .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status)
+                                                                            .OrderByDescending(s => s.Timestamp)
+                                                                            .ThenBy(s => s.Sender);
+
+                        if (!unreadPrivateMessages.Any()) return false;
+
+                        foreach (var singleMessage in unreadPrivateMessages.ToList())
+                        {
+                            singleMessage.Status = false;
+                        }
+                        await db.SaveChangesAsync();
+                        return true;
+                    }
+
+                    // mark single item as read
+                    if (itemId != null)
+                    {
+                        var privateMessageToMarkAsread = db.Privatemessages.FirstOrDefault(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Id == itemId);
+                        if (privateMessageToMarkAsread == null) return false;
+
+                        var item = db.Privatemessages.Find(itemId);
+                        item.Status = false;
+                        await db.SaveChangesAsync();
+                        return true;
+                    }
+                    return false;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+
         }
     }
 }

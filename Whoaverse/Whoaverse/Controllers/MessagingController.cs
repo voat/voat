@@ -89,25 +89,6 @@ namespace Voat.Controllers
                     .OrderByDescending(s => s.Timestamp)
                     .ThenBy(s => s.Sender);
 
-                if (privateMessages.Any())
-                {
-                    var unreadPrivateMessages = privateMessages.Where(s => s.Status && s.Markedasunread == false).ToList();
-
-                    // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
-                    if (unreadPrivateMessages.Count > 0)
-                    {
-                        // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
-                        foreach (var singleMessage in unreadPrivateMessages.ToList())
-                        {
-                            // status: true = unread, false = read
-                            singleMessage.Status = false;
-                        }
-                        _db.SaveChanges();
-                        // update notification icon
-                        UpdateNotificationCounts();
-                    }
-                }
-
                 ViewBag.InboxCount = privateMessages.Count();
                 return View("Inbox", privateMessages.ToPagedList(pageNumber, pageSize));
             }
@@ -137,6 +118,7 @@ namespace Voat.Controllers
                 IQueryable<Commentreplynotification> commentReplyNotifications = _db.Commentreplynotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
                 IQueryable<Comment> commentReplies = _db.Comments.Where(p => commentReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
 
+                // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
                 if (commentReplyNotifications.Any())
                 {
                     var unreadCommentReplies = commentReplyNotifications.Where(s => s.Status && s.Markedasunread == false);
@@ -144,7 +126,6 @@ namespace Voat.Controllers
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadCommentReplies.Any())
                     {
-                        // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
                         foreach (var singleCommentReply in unreadCommentReplies)
                         {
                             // status: true = unread, false = read
@@ -155,6 +136,7 @@ namespace Voat.Controllers
                         UpdateNotificationCounts();
                     }
                 }
+
                 ViewBag.CommentRepliesCount = commentReplyNotifications.Count();
 
                 PaginatedList<Comment> paginatedComments = new PaginatedList<Comment>(commentReplies, page ?? 0, pageSize);
@@ -186,6 +168,7 @@ namespace Voat.Controllers
                 IQueryable<Postreplynotification> postReplyNotifications = _db.Postreplynotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
                 IQueryable<Comment> postReplies = _db.Comments.Where(p => postReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
 
+                // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
                 if (postReplyNotifications.Any())
                 {
                     var unreadPostReplies = postReplyNotifications.Where(s => s.Status && s.Markedasunread == false);
@@ -193,7 +176,6 @@ namespace Voat.Controllers
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPostReplies.Any())
                     {
-                        // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
                         foreach (var singlePostReply in unreadPostReplies)
                         {
                             // status: true = unread, false = read
@@ -204,6 +186,7 @@ namespace Voat.Controllers
                         UpdateNotificationCounts();
                     }
                 }
+
                 ViewBag.PostRepliesCount = postReplyNotifications.Count();
 
                 PaginatedList<Comment> paginatedComments = new PaginatedList<Comment>(postReplies, page ?? 0, pageSize);
@@ -418,6 +401,33 @@ namespace Voat.Controllers
 
             var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
             hubContext.Clients.User(User.Identity.Name).setNotificationsPending(unreadNotifications);
+        }
+
+        [System.Web.Mvc.Authorize]
+        [HttpGet]
+        [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        public async Task<JsonResult> MarkAsRead(string itemType, bool? markAll, int? itemId)
+        {
+            if (markAll == null)
+            {
+                markAll = false;
+            }
+
+            // item status: true = unread, false = read
+            switch (itemType)
+            {
+                case "privateMessage":
+                    if (await MesssagingUtility.MarkPrivateMessagesAsRead((bool) markAll, User.Identity.Name, itemId))
+                    {
+                        UpdateNotificationCounts(); // update notification icon
+                        Response.StatusCode = 200;
+                        return Json("Item marked as read.", JsonRequestBehavior.AllowGet);
+                    }
+                    break;
+            }
+
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json("Bad request.", JsonRequestBehavior.AllowGet);
         }
     }
 }
