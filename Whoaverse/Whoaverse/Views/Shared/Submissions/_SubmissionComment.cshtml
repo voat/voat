@@ -25,7 +25,8 @@
 
     // depth level limit of 10 test
     int counter = Convert.ToInt32(ViewData["Counter"]);
-
+    int nestingLimit = Convert.ToInt32(ViewData["NestingLimit"]);
+    
     //find the comment based on the received comment id via ViewData
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
     var singleComment = from c in Model.Comments where c.Id == commentId select c;
@@ -259,7 +260,7 @@
             counter++;
         }
 
-        if (counter > 2)
+        if (counter > nestingLimit)
         {
             <br />
             <span class="deepthread"><a href="/v/@childComment.Message.Subverse/comments/@childComment.MessageId/@childComment.ParentId">Continue this thread &#8594;</a></span>
@@ -275,13 +276,13 @@
         if (parentIsHidden)
         {
             <div class="child id-@childComment.Id comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="display:none">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
             </div>
         }
         else
         {
             <div class="child id-@childComment.Id comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
             </div>
         }
 
