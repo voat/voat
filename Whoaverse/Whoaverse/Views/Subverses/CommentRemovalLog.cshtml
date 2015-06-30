@@ -10,22 +10,21 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Models.SubmissionRemovalLog>
+@model PaginatedList<Voat.Models.CommentRemovalLog>
 
 @{
-    ViewBag.Title = "Moderator submission removal log";
-    string submissionClass = "";
+    ViewBag.Title = "Moderator comment removal log";
 }
 
 <div id="container">
     <div class="side">
         <div class="spacersection spacer">
             <div class="alert-h1">
-                Moderator submission removal log
+                Moderator comment removal log
             </div>
             <div>
                 <span>
-                    Total moderator-removed submissions in this subverse: @Model.Count
+                    Total moderator-removed comments in this subverse: @Model.Count
                 </span>
             </div>
         </div>
@@ -35,28 +34,18 @@
         <div class="sitetable linklisting">
             @if (Model.Count < 1)
             {
-                <span>There are no moderator-removed submissions in this subverse.</span>
+                <span>There are no moderator-removed comments in this subverse.</span>
             }
             else
             {
-                <div id="removedSubmissionsList" class="">
+                <div id="removedCommentsList" class="">
                     @foreach (var logItem in Model)
                     {
                         <div id="logItem" class="logItem alert-singlethread">
                             <p>Removed by @logItem.Moderator at: @logItem.RemovalTimestamp. Reason given: @logItem.ReasonForRemoval</p>
                         </div>
-
-                        // type 2 = link, type 1 = message
-                        submissionClass = logItem.Message.Type == 1 ? "self" : "";
-
-                        <div class="submission id-@logItem.Message.Id link @submissionClass" data-fullname="@logItem.Message.Id" data-ups="@logItem.Message.Votes" data-downs="">
-                            <p class="parent"></p>
-
-                            @Html.Partial("_votingIconsSubmission", logItem.Message, new ViewDataDictionary {{"CCP", 0}})
-                            @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", logItem.Message)
-
-                            <div class="child"></div>
-                            <div class="clearleft">@*IE6fix*@</div>
+                        <div class="removedCommentContainer">
+                            @Html.Partial("Userprofile/_UserProfileComment", logItem.Comment)
                         </div>
                     }
                 </div>
@@ -67,14 +56,14 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", "subverseSubmissionRemovalLog", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                        @Html.RouteLink("‹ prev", "subverseCommentRemovalLog", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
                     </li>
                 }
 
                 @if (Model.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", "subverseSubmissionRemovalLog", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                        @Html.RouteLink("next ›", "subverseCommentRemovalLog", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
                     </li>
                 }
             </ul>

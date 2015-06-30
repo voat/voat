@@ -34,6 +34,15 @@
           <Property Name="Reason" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Banned_by" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="CommentRemovalLog">
+          <Key>
+            <PropertyRef Name="CommentId" />
+          </Key>
+          <Property Name="CommentId" Type="int" Nullable="false" />
+          <Property Name="Moderator" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RemovalTimestamp" Type="datetime" Nullable="false" />
+          <Property Name="ReasonForRemoval" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="Commentreplynotifications">
           <Key>
             <PropertyRef Name="Id" />
@@ -381,6 +390,20 @@
           <Property Name="Timestamp" Type="datetime" />
           <Property Name="ClientIpAddress" Type="nvarchar" MaxLength="90" />
         </EntityType>
+        <Association Name="FK_CommentRemovalLog_Comments">
+          <End Role="Comments" Type="Self.Comments" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CommentRemovalLog" Type="Self.CommentRemovalLog" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Comments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommentRemovalLog">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Comments_Messages">
           <End Role="Messages" Type="Self.Messages" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -673,6 +696,7 @@
           <EntitySet Name="Badges" EntityType="Self.Badges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Banneddomains" EntityType="Self.Banneddomains" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Bannedusers" EntityType="Self.Bannedusers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CommentRemovalLog" EntityType="Self.CommentRemovalLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Commentreplynotifications" EntityType="Self.Commentreplynotifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Commentsavingtracker" EntityType="Self.Commentsavingtracker" Schema="dbo" store:Type="Tables" />
@@ -702,6 +726,10 @@
           <EntitySet Name="Usersetsubscriptions" EntityType="Self.Usersetsubscriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Viewstatistics" EntityType="Self.Viewstatistics" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Votingtracker" EntityType="Self.Votingtracker" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CommentRemovalLog_Comments" Association="Self.FK_CommentRemovalLog_Comments">
+            <End Role="Comments" EntitySet="Comments" />
+            <End Role="CommentRemovalLog" EntitySet="CommentRemovalLog" />
+          </AssociationSet>
           <AssociationSet Name="FK_Comments_Messages" Association="Self.FK_Comments_Messages">
             <End Role="Messages" EntitySet="Messages" />
             <End Role="Comments" EntitySet="Comments" />
@@ -811,6 +839,7 @@
           <Property Name="IsDistinguished" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Commentsavingtrackers" Relationship="whoaverseModel.FK_Commentsavingtracker_Comments" FromRole="Comment" ToRole="Commentsavingtracker" />
           <Property Name="FormattedContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CommentRemovalLog" Relationship="whoaverseModel.FK_CommentRemovalLog_Comments" FromRole="Comment" ToRole="CommentRemovalLog" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -1022,6 +1051,11 @@
           <AssociationSet Name="FK_UserBlockedSubverses_Subverses" Association="whoaverseModel.FK_UserBlockedSubverses_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="UserBlockedSubvers" EntitySet="UserBlockedSubverses" />
+          </AssociationSet>
+          <EntitySet Name="CommentRemovalLogs" EntityType="whoaverseModel.CommentRemovalLog" />
+          <AssociationSet Name="FK_CommentRemovalLog_Comments" Association="whoaverseModel.FK_CommentRemovalLog_Comments">
+            <End Role="Comment" EntitySet="Comments" />
+            <End Role="CommentRemovalLog" EntitySet="CommentRemovalLogs" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Subverse">
@@ -1623,6 +1657,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="CommentRemovalLog">
+          <Key>
+            <PropertyRef Name="CommentId" />
+          </Key>
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="Moderator" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RemovalTimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ReasonForRemoval" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Comment" Relationship="whoaverseModel.FK_CommentRemovalLog_Comments" FromRole="CommentRemovalLog" ToRole="Comment" />
+        </EntityType>
+        <Association Name="FK_CommentRemovalLog_Comments">
+          <End Type="whoaverseModel.Comment" Role="Comment" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whoaverseModel.CommentRemovalLog" Role="CommentRemovalLog" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Comment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommentRemovalLog">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2032,6 +2090,16 @@
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CommentRemovalLogs">
+            <EntityTypeMapping TypeName="whoaverseModel.CommentRemovalLog">
+              <MappingFragment StoreEntitySet="CommentRemovalLog">
+                <ScalarProperty Name="ReasonForRemoval" ColumnName="ReasonForRemoval" />
+                <ScalarProperty Name="RemovalTimestamp" ColumnName="RemovalTimestamp" />
+                <ScalarProperty Name="Moderator" ColumnName="Moderator" />
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

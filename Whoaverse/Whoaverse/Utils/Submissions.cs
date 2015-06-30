@@ -30,10 +30,12 @@ namespace Voat.Utils
             var duration = currentDateTime - inPostingDateTime;
             return CalcSubmissionAge(duration);
         }
+        
         private static string IsPlural(int amount)
         {
             return (amount == 1 ? "" : "s");
         }
+        
         public static string CalcSubmissionAge(TimeSpan span)
         {
 

@@ -65,7 +65,7 @@ $(document).ready(function () {
     $('.userinfo').tooltipster({
         content: 'Loading user info...',
         contentAsHTML: 'true',
-        
+
         functionBefore: function (origin, continueTooltip) {
 
             // make this asynchronous and allow the tooltip to show
@@ -1100,7 +1100,7 @@ function loadSelfText(obj, messageId) {
 
     $(obj).toggleClass("collapsed");
     $(obj).toggleClass("expanded");
-    
+
     // toggle message content display
     $(obj).parent().find(".expando").toggle();
 }
@@ -1586,6 +1586,46 @@ function checkUsernameAvailability(obj) {
                     }
                 }
             });
-        }        
-    }    
+        }
+    }
+}
+
+// a function to call mark as read messaging endpoint
+function markAsRead(obj, itemType, itemId, markAll) {
+    // mark single item as read
+    if (itemId != null && markAll === false) {
+        var markAsReadRequest = $.ajax({
+            type: "GET",
+            url: "/messaging/markasread",
+            data: {
+                itemType: itemType,
+                itemId: itemId,
+                markAll: markAll
+            },
+            success: function (data) {
+                // inform the user
+                $(obj).text("marked.");
+            },
+            error: function (data) {
+                $(obj).text("something went wrong.");
+            }
+        });
+    } else {
+        // mark all items as read
+        var markAllAsReadRequest = $.ajax({
+            type: "GET",
+            url: "/messaging/markasread",
+            data: {
+                itemType: itemType,
+                markAll: markAll
+            },
+            success: function (data) {
+                // inform the user
+                $(obj).text("marked.");
+            },
+            error: function (data) {
+                $(obj).text("something went wrong.");
+            }
+        });
+    }
 }

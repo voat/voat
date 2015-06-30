@@ -18,6 +18,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -149,6 +150,14 @@ namespace Voat.Controllers
             {
                 // get user IP address
                 string clientIpAddress = Utils.User.UserIpAddress(Request);
+
+                // check the number of accounts already in database with this IP address, if number is higher than max conf, refuse registration request
+                var accountsWithSameIp = UserManager.Users.Count(x => x.LastLoginFromIp == clientIpAddress);
+                if (accountsWithSameIp >= MvcApplication.MaxAllowedAccountsFromSingleIP)
+                {
+                    ModelState.AddModelError(string.Empty, "This device can not be used to create a voat account.");
+                    return View(model);
+                }
 
                 var user = new WhoaVerseUser
                 {

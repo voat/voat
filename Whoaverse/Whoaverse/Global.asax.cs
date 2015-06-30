@@ -105,6 +105,7 @@ namespace Voat
         public static readonly int MaximumOwnedSets = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSets"]);
         public static readonly int MaximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
         public static readonly int MinimumCcp = Convert.ToInt32(ConfigurationManager.AppSettings["minimumCcp"]);
+        public static readonly int MaxAllowedAccountsFromSingleIP = Convert.ToInt32(ConfigurationManager.AppSettings["maxAllowedAccountsFromSingleIP"]);
         public static readonly string RecaptchaPrivateKey = ConfigurationManager.AppSettings["recaptchaPrivateKey"];
         public static readonly string RecaptchaPublicKey = ConfigurationManager.AppSettings["recaptchaPublicKey"];
         public static readonly string SiteDescription = ConfigurationManager.AppSettings["siteDescription"];

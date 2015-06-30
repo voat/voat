@@ -491,6 +491,11 @@
              This API returns a list of banned hostnames for link type submissions.
             </summary>
         </member>
+        <member name="M:Voat.Controllers.WebApiController.IsHostnameGloballyBanned(System.String)">
+            <summary>
+             This API checks if a hostname is globally banned for link type submissions.
+            </summary>
+        </member>
         <member name="M:Voat.Controllers.WebApiController.Top200Subverses">
             <summary>
              This API returns top 200 subverses ordered by subscriber count.

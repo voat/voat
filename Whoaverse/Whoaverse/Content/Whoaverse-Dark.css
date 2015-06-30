@@ -5,6 +5,14 @@
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
+.unreadInboxItem {
+    background: #2E2E2E;
+}
+
+.removedCommentContainer {
+    margin: 10px 10px 0px;
+}
+
 .even {
     background: #2E2E2E;
 }

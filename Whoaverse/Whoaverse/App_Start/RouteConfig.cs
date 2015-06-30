@@ -241,7 +241,7 @@ namespace Voat
                 defaults: new { controller = "Messaging", action = "SendPrivateMessage" }
             );
 
-            // compose
+            // sent
             routes.MapRoute(
                 name: "Sent",
                 url: "messaging/sent",
@@ -274,7 +274,14 @@ namespace Voat
                 name: "DeletePrivateMessageFromSent",
                 url: "messaging/deletesent",
                 defaults: new { controller = "Messaging", action = "DeletePrivateMessageFromSent" }
-            );            
+            );
+
+            // markinboxitemasread
+            routes.MapRoute(
+                name: "MarkInboxItemAsRead",
+                url: "messaging/markasread",
+                defaults: new { controller = "Messaging", action = "MarkAsRead" }
+            ); 
 
             // help/pagetoshow
             routes.MapRoute(
@@ -484,6 +491,20 @@ namespace Voat
                 name: "subverseSubmissionRemovalLog",
                 url: "v/{subversetoshow}/modlog/deleted",
                 defaults: new { controller = "Subverses", action = "SubmissionRemovalLog" }
+            );
+
+            // v/subverse/modlog/deletedcomments
+            routes.MapRoute(
+                name: "subverseCommentRemovalLog",
+                url: "v/{subversetoshow}/modlog/deletedcomments",
+                defaults: new { controller = "Subverses", action = "CommentRemovalLog" }
+            );
+
+            // v/subverse/modlog/bannedusers
+            routes.MapRoute(
+                name: "subverseBannedUsersLog",
+                url: "v/{subversetoshow}/modlog/bannedusers",
+                defaults: new { controller = "Subverses", action = "BannedUsersLog" }
             );
 
             // v/subversetoedit/about/edit

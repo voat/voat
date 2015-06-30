@@ -39,7 +39,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Voat.XML</DocumentationFile>
+    <DocumentationFile>App_Data\VoatLegacyDocumentation.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
@@ -272,6 +273,9 @@
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
+    <Compile Include="Models\CommentRemovalLog.cs">
+      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SavedItem.cs" />
     <Compile Include="Models\Commentsavingtracker.cs">
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
@@ -492,7 +496,6 @@
     <Content Include="Graphics\Icons\apple-touch-icon-72x72-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-76x76-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-precomposed.png" />
-    <Content Include="App_Data\WhoaverseDocumentation.xml" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\markdownEditor.css" />
     <Content Include="Content\PagedList.css" />
@@ -691,9 +694,6 @@
     <Content Include="Views\Home\UserComments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
     <Content Include="Views\Subverses\SubverseIndex.cshtml" />
-    <Content Include="Views\Legal\Cla.cshtml" />
-    <Content Include="Views\Legal\ClaSent.cshtml" />
-    <Content Include="Views\Legal\ClaFailed.cshtml" />
     <Content Include="Views\Help\SpeedyGonzales.cshtml" />
     <Content Include="Views\Subverses\Subverses.cshtml" />
     <Content Include="Views\Shared\_SubverseDetails.cshtml" />
@@ -817,6 +817,8 @@
     <Content Include="Views\Shared\_Captcha.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Errors\SubverseDisabled.cshtml" />
+    <Content Include="Views\Subverses\CommentRemovalLog.cshtml" />
+    <Content Include="Views\Subverses\BannedUsersLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -825,6 +827,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Storage\Avatars\" />
   </ItemGroup>
   <PropertyGroup>
