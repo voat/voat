@@ -26,19 +26,22 @@ The following 3rd party libraries/extensions are used:
 ### Installation instructions
 Follow these steps to get up and running:
 
+#### step 0
+- Download and install Visual Studio. [Visual Studio Community 2013](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) is a recent, free edition. Be sure to install the included Web Developer Tools.
+- Download SQL Server. [SQL Server 2014 Express with Tools](https://www.microsoft.com/en-us/server-cloud/products/sql-server-editions/sql-server-express.aspx) is a recent, free edition.
+
 #### step 1
-- Create databases and database owners.
-Voat uses 2 SQL databases to store messages, comments, votes, users etc. 
-Default database names are whoaverse and whoaverse_users.
-You can use whoaverse.sql and whoaverse_user.sql to generate necessary tables for each respective database.
+- In SQL Server setup, create an instance of SQL server by following the prompts to configure a server. For server authentication, choose SQL Server and Windows Authentication mode.
+- Launch SQL Server Management Studio and connect to the server you set up.
+- In the Object Explorer pane, right-click "Databases", choose "New Database...", name it `voat` and hit OK. Also create `voatUsers`.
+- Expand "Security", right-click "Logins", and add the login `voat` using SQL Server authentication. Uncheck "User must change password at next login". In the same dialog, open the "User Mapping" page, check "Map" for both databases, and select at least the "db_datareader" and "db_datawriter" role memberships for both databases.
+- Open `whoaverse.sql` and `whoaverse_users.sql`. Press Execute <kbd>F5</kbd> for each file to generate the tables.
 
 #### step 2
-- After cloning this repository, you will need to modify and place Web.config file in WhoaVerse folder (the same folder where the file packages.config is located). You need to modify the following 2 connection strings in this file to reflect your SQL server address, port, database names and database usernames: 
-whoaverseUsers and whoaverseEntities
-```
-<add name="whoaverseUsers" connectionString="Data Source=yourdomain.com, 1433;Initial Catalog=whoaverse_users;Persist Security Info=True;User ID=yourusername;Password=yourpassword" providerName="System.Data.SqlClient" />
-<add name="whoaverseEntities" connectionString="metadata=res://*/Models.WhoaverseEntityDataModel.csdl|res://*/Models.WhoaverseEntityDataModel.ssdl|res://*/Models.WhoaverseEntityDataModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=yourdomain.com;initial catalog=whoaverse;persist security info=True;user id=yourusername;password=yourpassword;MultipleActiveResultSets=True;App=EntityFramework&quot;" providerName="System.Data.EntityClient" />
-```
+- Copy `Web.config` to Whoaverse/Whoaverse (the same folder where the file packages.config is located).
+- Open Whoaverse/Voat.sln in Visual Studio, and open the copied Web.config file.
+- Modify both `connectionStrings` so Data Source is as shown in SQL Server Management Studio (e.g., `MyComputer\SQLEXPRESS`), User ID is `voat`, and Password is the password you chose. Save Web.config.
+- Open the Server Explorer pane, right-click "Data Connections" and choose Refresh. If something is not working, you can troubleshoot the connection here.
 - You need to sign up for recaptcha service at https://www.google.com/recaptcha/admin#whyrecaptcha to get your public and private recaptcha keys
 - Once you have your recaptcha keys, you need to modify the Web.config file and in section `<appSettings>`, you need to add the following for your keys:
 ```
@@ -47,11 +50,15 @@ whoaverseUsers and whoaverseEntities
 ```
 #### step 3
 - Reinstall dependencies (binaries for NuGet packages) by issuing the following command in Package Manager Console (when asked to overwrite existing files, choose no for all:
+```
 Update-Package -Reinstall
+```
 
 ### After installation
+To start, choose "Debug" &rarr; "Start Debugging" <kbd>F5</kbd> or "Start Without Debugging" <kbd>Shift</kbd> + <kbd>F5</kbd>.
+
 Start by creating your user account. The frontpage will be empty, so you should start by creating a subverse.
-After creating your subverse, you can visit it (localhost/v/yourtestsubverse) and start posting stories or links. You can then comment on these stories and vote on them.
+After creating your subverse, you can visit it (localhost:port/v/yourtestsubverse) and start posting stories or links. You can then comment on these stories and vote on them.
 
 ### Why was this made?
 This was just a hobby project to help me get a better understanding of C# and ASP.NET MVC and Entity Framework.
