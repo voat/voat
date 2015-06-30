@@ -434,6 +434,7 @@ namespace Voat.Controllers
                     IQueryable<Message> submissions = (from m in _db.Messages.Include("Subverses").AsNoTracking()
                                                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
                                                        where m.Name != "deleted" && s.Username == User.Identity.Name
+                                                       where !(from bu in _db.Bannedusers select bu.Username).Contains(m.Name)
                                                        select m).OrderByDescending(s => s.Rank);
 
                     var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
@@ -447,6 +448,7 @@ namespace Voat.Controllers
                     // get only submissions from default subverses, order by rank
                     IQueryable<Message> submissions = (from message in _db.Messages.Include("Subverses").AsNoTracking()
                                                        where message.Name != "deleted"
+                                                       where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                                        select message).OrderByDescending(s => s.Rank);
 
@@ -577,6 +579,7 @@ namespace Voat.Controllers
                     IQueryable<Message> submissions = (from m in _db.Messages
                                                        join s in _db.Subscriptions on m.Subverse equals s.SubverseName
                                                        where m.Name != "deleted" && s.Username == User.Identity.Name
+                                                       where !(from bu in _db.Bannedusers select bu.Username).Contains(m.Name)
                                                        select m).OrderByDescending(s => s.Date);
 
                     var submissionsExcludingBlockedSubverses = submissions.Where(x => !blockedSubverses.Contains(x.Subverse));
@@ -589,6 +592,7 @@ namespace Voat.Controllers
                     // get only submissions from default subverses, sort by date
                     IQueryable<Message> submissions = (from message in _db.Messages
                                                        where message.Name != "deleted"
+                                                       where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                                        select message).OrderByDescending(s => s.Date);
 

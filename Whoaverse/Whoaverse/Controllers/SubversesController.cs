@@ -1104,12 +1104,15 @@ namespace Voat.Controllers
 
         // GET: show remove ban view for selected subverse
         [Authorize]
-        public ActionResult RemoveBan(int? id)
+        public ActionResult RemoveBan(string subversetoshow, int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            // check if caller is subverse owner, if not, deny listing
+            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
 
             var subverseBan = _db.SubverseBans.Find(id);
 
