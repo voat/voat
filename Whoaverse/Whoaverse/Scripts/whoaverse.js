@@ -270,6 +270,7 @@ function voteUpSubmission(submissionid) {
         //increment score likes counter        
         scoreLikes++;
         submission.find('.score.likes').html(scoreLikes);
+        submission.find('.score.unvoted').html(scoreLikes);
     } else if (submission.children(".midcol").is(".likes")) {
         //REMOVE LIKE IF LIKED
         submission.children(".midcol").toggleClass("unvoted", true); //add class unvoted
@@ -295,6 +296,7 @@ function voteUpSubmission(submissionid) {
         scoreLikes++;
         submission.find('.score.dislikes').html(scoreDislikes);
         submission.find('.score.likes').html(scoreLikes);
+        submission.find('.score.unvoted').html(scoreLikes);
     }
 
 }
