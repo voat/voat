@@ -57,8 +57,9 @@ Update-Package -Reinstall
 ### After installation
 To start, choose "Debug" &rarr; "Start Debugging" <kbd>F5</kbd> or "Start Without Debugging" <kbd>Shift</kbd> + <kbd>F5</kbd>.
 
-Start by creating your user account. The frontpage will be empty, so you should start by creating a subverse.
-After creating your subverse, you can visit it (localhost:port/v/yourtestsubverse) and start posting stories or links. You can then comment on these stories and vote on them.
+Start by creating your user account. If you have database issues at this stage, you may want to clear your browser's local data for `localhost` so Voat doesn't think you've already registered.
+
+The frontpage will be empty, so you should start by creating a subverse. After creating your subverse, you can visit it (localhost:port/v/yourtestsubverse) and start posting stories or links. You can then comment on these stories and vote on them.
 
 ### Why was this made?
 This was just a hobby project to help me get a better understanding of C# and ASP.NET MVC and Entity Framework.
