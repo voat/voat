@@ -241,7 +241,7 @@ namespace Voat
                 defaults: new { controller = "Messaging", action = "SendPrivateMessage" }
             );
 
-            // compose
+            // sent
             routes.MapRoute(
                 name: "Sent",
                 url: "messaging/sent",
@@ -274,7 +274,14 @@ namespace Voat
                 name: "DeletePrivateMessageFromSent",
                 url: "messaging/deletesent",
                 defaults: new { controller = "Messaging", action = "DeletePrivateMessageFromSent" }
-            );            
+            );
+
+            // markinboxitemasread
+            routes.MapRoute(
+                name: "MarkInboxItemAsRead",
+                url: "messaging/markasread",
+                defaults: new { controller = "Messaging", action = "MarkAsRead" }
+            ); 
 
             // help/pagetoshow
             routes.MapRoute(
