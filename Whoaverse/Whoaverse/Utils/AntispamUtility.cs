@@ -129,7 +129,7 @@ namespace Voat.Utils
             var cache = filterContext.HttpContext.Cache;
 
             // Grab the IP Address from the originating Request (very simple implementation for example purposes)
-            var originationInfo = request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? request.UserHostAddress;
+            var originationInfo = request.UserHostAddress;
 
             // Append the User Agent
             originationInfo += request.UserAgent;

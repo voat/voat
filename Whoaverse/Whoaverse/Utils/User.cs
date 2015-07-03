@@ -844,11 +844,7 @@ namespace Voat.Utils
         public static string UserIpAddress(HttpRequestBase request)
         {
             string clientIpAddress = String.Empty;
-            if (request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
-            {
-                clientIpAddress = request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            }
-            else if (request.UserHostAddress.Length != 0)
+            if (request.UserHostAddress.Length != 0)
             {
                 clientIpAddress = request.UserHostAddress;
             }
