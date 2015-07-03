@@ -800,10 +800,6 @@ a.btn-whoaverse {
         top: 1px;
     }
 
-    .btn-whoaverse-paging:focus {
-        color: #FFF;
-    }
-
     .btn-whoaverse-paging.disabled, .btn-whoaverse-paging[disabled], fieldset[disabled] .btn {
         cursor: not-allowed;
         pointer-events: none;
