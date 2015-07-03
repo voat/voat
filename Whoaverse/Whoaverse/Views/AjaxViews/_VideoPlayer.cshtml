@@ -29,12 +29,6 @@
         var vimeoVideoId = UrlUtility.GetVideoIdFromUrl(Model.MessageContent);
         <iframe src="https://player.vimeo.com/video/@(vimeoVideoId)" width="568" height="338" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
     }
-
-    if (domain == "coub.com")
-    {
-        var coubVideoId = UrlUtility.GetVideoIdFromUrl(Model.MessageContent);
-        <iframe src="https://coub.com/embed/@(coubVideoId)?autoplay=true&muted=true" width="568" height="338" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-    }
 }
 
 
