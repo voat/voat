@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Text;
 using System.Web;
 using Voat.Models;
 using Voat.Models.ViewModels;
@@ -79,7 +80,6 @@ namespace Voat.Utils
                             c.Name = "deleted";
                             c.CommentContent = "deleted by user";
                         }
-                        db.SaveChanges();
 
                         // remove all submissions
                         var submissions = db.Messages.Where(c => c.Name == userName).ToList();
@@ -96,6 +96,40 @@ namespace Voat.Utils
                                 s.Name = "deleted";
                                 s.Linkdescription = "deleted by user";
                                 s.MessageContent = "http://voat.co";
+                            }
+                        }
+
+                        // get all verses where use is admin
+                        var adminedVerses = db.SubverseAdmins.Where(a => a.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && a.Power.Equals(1));
+                        foreach (SubverseAdmin v in adminedVerses)
+                        {
+                            // get a list of moderators sorted by power and date added
+                            var mods = db.SubverseAdmins.Where(bm => bm.SubverseName.Equals(v.SubverseName) && !bm.Username.Equals(userName)).OrderBy(bm => bm.Power).ThenBy(bm => bm.Added_on).ToList();
+                            SubverseAdmin bestMatch = new SubverseAdmin();
+
+                            // loop through mods to find an active one
+                            for (int i = 0; i < mods.Count(); i++)
+                            {
+                                // set oldest active mod as best match
+                                if (IsUserActive(mods[i].Username))
+                                    bestMatch = mods[i];
+
+                                // if no mods are active, select oldest mod as best match
+                                if (i == mods.Count() - 1)
+                                    bestMatch = mods[0];
+                            }
+
+                            if (bestMatch != null)
+                            {
+                                // set the best match as admin
+                                bestMatch.Power = 1;
+
+                                var adminNotification = new StringBuilder();
+                                adminNotification.Append("Hello,");
+                                adminNotification.AppendLine();
+                                adminNotification.Append("The previous admin of /v/" + v.SubverseName + " has deleted their account. Your account was picked as the best replacement and has been promoted.");
+
+                                MesssagingUtility.SendPrivateMessage("Voat", bestMatch.Username, "/v/" + v.SubverseName + " admin promotion", adminNotification.ToString());
                             }
                         }
 
@@ -873,6 +907,37 @@ namespace Voat.Utils
                 var blockedSubverse = new UserBlockedSubverse { Username = userName, SubverseName = subverse };
                 db.UserBlockedSubverses.Add(blockedSubverse);
                 db.SaveChanges();
+            }
+        }
+
+        // check if user has any activity site-wide
+        public static bool IsUserActive(string userName)
+        {
+            var timeThreshold = DateTime.Now.AddDays(-30);
+
+            using (var db = new whoaverseEntities())
+            {
+                // check submissions, saves, and votes
+                if (db.Messages.Where(m => m.Name.Equals(userName) && m.Date >= timeThreshold).Count() >= 1)
+                    return true;
+                if (db.Savingtrackers.Where(st => st.UserName.Equals(userName) && st.Timestamp >= timeThreshold).Count() >= 1)
+                    return true;
+                if (db.Votingtrackers.Where(vt => vt.UserName.Equals(userName) && vt.Timestamp >= timeThreshold).Count() >= 1)
+                    return true;
+
+                // check comments, saves, and votes
+                if (db.Comments.Where(c => c.Name.Equals(userName) && c.Date >= timeThreshold).Count() >= 1)
+                    return true;
+                if (db.Commentsavingtrackers.Where(cst => cst.UserName.Equals(userName) && cst.Timestamp >= timeThreshold).Count() >= 1)
+                    return true;
+                if (db.Commentvotingtrackers.Where(cvt => cvt.UserName.Equals(userName) && cvt.Timestamp >= timeThreshold).Count() >= 1)
+                    return true;
+
+                // check sent pms
+                if (db.Privatemessages.Where(pm => pm.Sender.Equals(userName) && pm.Timestamp >= timeThreshold).Count() >= 1)
+                    return true;
+
+                return false;
             }
         }
     }
