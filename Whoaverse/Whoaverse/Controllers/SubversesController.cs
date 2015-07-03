@@ -30,8 +30,7 @@ namespace Voat.Controllers
 {
     public class SubversesController : Controller
     {
-        //IAmAGate: Move queries to read-only mirror
-        private readonly whoaverseEntities _db = new whoaverseEntities(true);
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments,

@@ -34,8 +34,7 @@ namespace Voat.Controllers
 
     public class HomeController : Controller
     {
-        //IAmAGate: Move queries to read-only mirror
-        private readonly whoaverseEntities _db = new whoaverseEntities(true);
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         // GET: submit
         [Authorize]

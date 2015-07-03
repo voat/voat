@@ -22,8 +22,7 @@ namespace Voat.Controllers
 {
     public class SearchController : Controller
     {
-        //IAmAGate: Move queries to read-only mirror
-        private readonly whoaverseEntities _db = new whoaverseEntities("whoaverseEntitiesReadOnly");
+        private readonly whoaverseEntities _db = new whoaverseEntities();
 
         [PreventSpam]
         [OutputCache(Duration = 600, VaryByParam = "*")]
