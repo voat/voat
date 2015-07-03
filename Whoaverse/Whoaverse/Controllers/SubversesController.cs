@@ -1492,6 +1492,16 @@ namespace Voat.Controllers
             return Json("Subverse block request was successful.", JsonRequestBehavior.AllowGet);
         }
 
+        // POST: toggle a subverse's for a user
+        [Authorize]
+        public JsonResult ToggleSubverseStyle(string subverseName)
+        {
+            var loggedInUser = User.Identity.Name;
+
+            Utils.User.ToggleSubverseStyle(loggedInUser, subverseName);
+            return Json("Subverse style toggle request was successful.", JsonRequestBehavior.AllowGet);
+        }
+
         [ChildActionOnly]
         private ActionResult HandleSortedSubverse(int? page, string subversetoshow, string sortingmode, string daterange)
         {

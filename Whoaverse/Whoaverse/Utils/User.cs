@@ -168,6 +168,16 @@ namespace Voat.Utils
             }
         }
 
+        // check if given user has disabled a subvere's style
+        public static bool DidUserDisableSubverseStyle(string userName, string subverse)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                var unstyledSubverse = db.UserUnstyledSubverses.FirstOrDefault(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username == userName);
+                return unstyledSubverse != null;
+            }
+        }
+
         // check if given user is subscribed to a given set
         public static bool IsUserSetSubscriber(string userName, int setId)
         {
@@ -872,6 +882,27 @@ namespace Voat.Utils
                 // add a new block
                 var blockedSubverse = new UserBlockedSubverse { Username = userName, SubverseName = subverse };
                 db.UserBlockedSubverses.Add(blockedSubverse);
+                db.SaveChanges();
+            }
+        }
+
+        //Toggle a subvere's style for a given use
+        public static void ToggleSubverseStyle(string userName, string subverse)
+        {
+            using (var db = new whoaverseEntities())
+            {
+                // Renable styles if styles have already been disabled.
+                if (DidUserDisableSubverseStyle(userName, subverse))
+                {
+                    var subverseStyle = db.UserUnstyledSubverses.FirstOrDefault(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username == userName);
+                    if (subverseStyle != null) db.UserUnstyledSubverses.Remove(subverseStyle);
+                    db.SaveChanges();
+                    return;
+                }
+
+                // Disable styles
+                var unStyledSubverse = new UserUnstyledSubverse { Username = userName, SubverseName = subverse };
+                db.UserUnstyledSubverses.Add(unStyledSubverse);
                 db.SaveChanges();
             }
         }
