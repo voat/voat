@@ -79,9 +79,11 @@ namespace Voat.Utils
         {
             Regex youtubeRegexPattern = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]+)", RegexOptions.IgnoreCase);
             Regex vimeoRegexPattern = new Regex(@"vimeo\.com/(?:.*#|.*/)?([0-9]+)", RegexOptions.IgnoreCase);
+            Regex coubRegexPattern = new Regex(@"coub\.com/(?:v|view|embed)/(\w+)", RegexOptions.IgnoreCase);
 
             Match youtubeRegexMatch = youtubeRegexPattern.Match(completeUri);
             Match vimeoRegexMatch = vimeoRegexPattern.Match(completeUri);
+            Match coubRegexMatch = coubRegexPattern.Match(completeUri);
 
             if (youtubeRegexMatch.Success)
             {
@@ -91,6 +93,11 @@ namespace Voat.Utils
             if (vimeoRegexMatch.Success)
             {
                 return vimeoRegexMatch.Groups[1].Value;
+            }
+
+            if (coubRegexMatch.Success)
+            {
+                return coubRegexMatch.Groups[1].Value;
             }
 
             // match not found

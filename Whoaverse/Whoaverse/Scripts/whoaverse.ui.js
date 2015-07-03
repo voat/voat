@@ -808,6 +808,28 @@ VimeoExpando.prototype.process = function (target) {
     });
 };
 
+/* COUB */
+var CoubExpando = function (options) {
+    IFrameEmbedderExpando.call(this, /coub\.com\/(?:v|view|embed)\/(\w+)/i, options);
+    this.getSrcUrl = function (id) { return '//coub.com/embed/' + id; };
+};
+CoubExpando.prototype = new IFrameEmbedderExpando();
+CoubExpando.prototype.constructor = CoubExpando;
+CoubExpando.prototype.process = function (target) {
+
+    var width = Math.min(560, UI.Common.availableWidth($(target).parent()));
+
+    //<iframe src="//coub.com/embed/cz1s" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    this.hook($(target), 'Coub', {
+        width: width.toString(),
+        height: (width * this.defaultRatio),
+        frameborder: '0',
+        webkitallowfullscreen: 1,
+        mozallowfullscreen: 1,
+        allowfullscreen: 1
+    });
+};
+
 /* SoundCloud */
 var SoundCloudExpando = function () {
     var clientId = 'ab19f68dc1985a1b24752d987c91b7aa';
@@ -911,6 +933,7 @@ $(document).ready(function () {
             new ImageLinkExpando(commentOptions),
             new YouTubeExpando(commentOptions),
             new VimeoExpando(commentOptions),
+            new CoubExpando(commentOptions),
             new GfycatExpando(commentOptions),
             //new SoundCloudExpando,
             new ImgurAlbumExpando(commentOptions),
