@@ -25,9 +25,7 @@
 
         @Html.Hidden("sub", selectedSubverse)
 
-        <input type="checkbox" name="l" value="true" id="l"
-               @Html.Raw((Model.L) ? "checked=\"checked\"" : "") />
-
+        <input type="checkbox" name="l" value="true" id="l" checked="@Model.L" />
         @Html.Label("Limit the search to current subverse")
     }
 </div>

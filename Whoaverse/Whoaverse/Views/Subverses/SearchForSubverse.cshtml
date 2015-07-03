@@ -24,8 +24,7 @@
                 @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Type a term to search for and press ENTER" })
                 @Html.ValidationMessage("q")
 
-                <input type="checkbox" name="d" value="true" id="d"
-                       @Html.Raw((Model.d) ? "checked=\"checked\"" : "") />
+                <input type="checkbox" name="d" value="true" id="d" checked="@Model.d" />
                 @Html.Label("Also search in subverse descriptions")
             }
         </div>
