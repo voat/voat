@@ -21,7 +21,6 @@ namespace Voat.Utils
 {
     public static class Submissions
     {
-        private const double Tolerance = 0.01;
 
         // calculate submission age in days, hours or minutes for use in views
         public static string CalcSubmissionAge(DateTime inPostingDateTime)
@@ -58,7 +57,7 @@ namespace Voat.Utils
                 //days 
                 result = String.Format("{0} day{1}", (int)span.TotalDays, IsPlural((int)span.TotalDays));
             }
-            else if (span.TotalHours > 1 || Math.Abs(span.TotalHours - 1) < Tolerance)
+            else if (span.TotalMinutes >= 60)
             {
                 //hours
                 result = String.Format("{0} hour{1}", (int)span.TotalHours, IsPlural((int)span.TotalHours));
