@@ -703,8 +703,7 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
         if (!id) {
             return;
         }
-
-        LinkExpando.dataProp(target, 'source', this.getSrcUrl(id));
+        
         target.prop('title', description);
         
         var me = this;
@@ -720,15 +719,27 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
                         me.options.loading(target);
                     }
 
-                    //<iframe width="560" height="315" src="//www.youtube.com/embed/JUDSeb2zHQ0" frameborder="0" allowfullscreen></iframe>
-                    iFrameSettings.src = LinkExpando.dataProp(target, 'source');
-                    var iFrame = $('<iframe/>', iFrameSettings);
-                    displayDiv.empty().html(iFrame);
-                    LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
-                    LinkExpando.isLoaded(target, true);
+                    var fnError = function(result) {
+                        //bail
+                        if (me.options.setTags) {
+                            LinkExpando.setTag(target, 'Error');
+                        }
+                        target.off('click');
+                    }
 
-                    //displayDiv.insertAfter(target);
-                    UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
+                    var displayIframe = function (src) {
+                        LinkExpando.dataProp(target, 'source', src);
+                        iFrameSettings.src = LinkExpando.dataProp(target, 'source');
+                        var iFrame = $('<iframe/>', iFrameSettings);
+                        displayDiv.empty().html(iFrame);
+                        LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
+                        LinkExpando.isLoaded(target, true);
+
+                        //displayDiv.insertAfter(target);
+                        UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
+                    };
+
+                    me.getSrcUrl(id, displayIframe, fnError);
                 }
                 LinkExpando.isVisible(target, !LinkExpando.isVisible(target));
                 me.options.toggle(target);
@@ -751,7 +762,7 @@ IFrameEmbedderExpando.prototype.constructor = IFrameEmbedderExpando;
 /* YouTube */
 var YouTubeExpando = function (options) {
     IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i, options);
-    this.getSrcUrl = function (id) { return '//www.youtube.com/embed/' + id; };
+    this.getSrcUrl = function (id, fn) { fn('//www.youtube.com/embed/' + id); };
 };
 YouTubeExpando.prototype = new IFrameEmbedderExpando();
 YouTubeExpando.prototype.constructor = YouTubeExpando;
@@ -771,7 +782,7 @@ YouTubeExpando.prototype.process = function (source) {
 /* Imgur Album */
 var ImgurAlbumExpando = function (options) {
     IFrameEmbedderExpando.call(this, /imgur\.com\/a\/(\w+)\/?/i, options);
-    this.getSrcUrl = function (id) { return '//imgur.com/a/' + id + '/embed'; };
+    this.getSrcUrl = function (id, fn) { fn('//imgur.com/a/' + id + '/embed'); };
 };
 ImgurAlbumExpando.prototype = new IFrameEmbedderExpando();
 ImgurAlbumExpando.prototype.constructor = ImgurAlbumExpando;
@@ -789,7 +800,7 @@ ImgurAlbumExpando.prototype.process = function (target) {
 /* VIMEO */
 var VimeoExpando = function (options) {
     IFrameEmbedderExpando.call(this, /vimeo\.com\/(?:.\*|.*\/)?([\d]+)\/?/i, options);
-    this.getSrcUrl = function (id) { return '//player.vimeo.com/video/' + id; };
+    this.getSrcUrl = function (id, fn) { fn('//player.vimeo.com/video/' + id); };
 };
 VimeoExpando.prototype = new IFrameEmbedderExpando();
 VimeoExpando.prototype.constructor = VimeoExpando;
@@ -809,15 +820,44 @@ VimeoExpando.prototype.process = function (target) {
 };
 
 /* SoundCloud */
-var SoundCloudExpando = function () {
-    var clientId = 'ab19f68dc1985a1b24752d987c91b7aa';
-    IFrameEmbedderExpando.call(this, /xxx/i);
+var SoundCloudExpando = function (options) {
+    
+    IFrameEmbedderExpando.call(this, /http(?:s{0,1}):\/\/(?:soundcloud\.com|snd\.sc)\/(.*)\/?/i, options);
+    this.getSrcUrl = function (id, fn, fnError) {
+
+        this.getSourceInfo = function (id, fnCallback, fnErrorHandler) {
+            $.getJSON(UI.Common.currentProtocol() + '//soundcloud.com/oembed', {
+                format: 'json',
+                url: 'https://soundcloud.com/' + id,
+                iframe: 'true'
+            }).done(function (json) {
+                if (!json.html) {
+                    fnErrorHandler();
+                    return;
+                }
+                var regex = /<iframe.*?src="(.*?)"/;
+                var src = regex.exec(json.html)[1];
+                fnCallback(src + '&auto_play=true');
+            }).fail(function (jqxhr, textStatus, error) {
+                fnErrorHandler();
+            });
+        };
+
+        this.getSourceInfo(id, fn, fnError);
+    };
+
 };
 SoundCloudExpando.prototype = new IFrameEmbedderExpando();
 SoundCloudExpando.prototype.constructor = SoundCloudExpando;
 SoundCloudExpando.prototype.process = function (target) {
-    //TODO
-    //<iframe width="100%" height="450" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/179814178&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>
+
+    var width = Math.min(560, UI.Common.availableWidth($(target).parent()));
+    
+    this.hook($(target), 'SoundCloud', {
+        width: width.toString(),
+        height: (width * this.defaultRatio),
+        frameborder: '0'
+    });
 };
 
 
@@ -912,7 +952,7 @@ $(document).ready(function () {
             new YouTubeExpando(commentOptions),
             new VimeoExpando(commentOptions),
             new GfycatExpando(commentOptions),
-            //new SoundCloudExpando,
+            new SoundCloudExpando(commentOptions),
             new ImgurAlbumExpando(commentOptions),
             new ImgurGifvExpando(commentOptions)
         ]);
@@ -974,7 +1014,7 @@ $(document).ready(function () {
             new YouTubeExpando(submissionOptions),
             new VimeoExpando(submissionOptions),
             new GfycatExpando(submissionOptions),
-            //new SoundCloudExpando,
+            new SoundCloudExpando(submissionOptions),
             new ImgurAlbumExpando(submissionOptions),
             new ImgurGifvExpando(submissionOptions)
         ]);
