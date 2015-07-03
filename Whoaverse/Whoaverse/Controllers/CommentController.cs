@@ -97,6 +97,19 @@ namespace Voat.Controllers
             }
             return vCache;
         }
+        private List<Commentsavingtracker> UserSavedCommentsBySubmission(int submissionID)
+        {
+            List<Commentsavingtracker> vCache = new List<Commentsavingtracker>();
+
+            if (User.Identity.IsAuthenticated)
+            {
+                vCache = (from cv in _db.Commentsavingtrackers.AsNoTracking()
+                          join c in _db.Comments on cv.CommentId equals c.Id
+                          where c.MessageId == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                          select cv).ToList();
+            }
+            return vCache;
+        }
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
         {
@@ -115,7 +128,7 @@ namespace Voat.Controllers
 
             //Temp cache user votes for this thread
             ViewBag.VoteCache = UserVotesBySubmission(id.Value);
-
+            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(id.Value);
 
             if (startingcommentid != null)
             {
@@ -201,7 +214,7 @@ namespace Voat.Controllers
 
             //Temp cache user votes for this thread
             ViewBag.VoteCache = UserVotesBySubmission(id.Value);
-
+            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(id.Value);
 
             ViewData["StartingPos"] = startingpos;
 

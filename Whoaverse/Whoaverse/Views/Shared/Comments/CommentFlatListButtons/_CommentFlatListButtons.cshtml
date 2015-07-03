@@ -24,7 +24,7 @@
             <a href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.MessageId/@Model.CommentModel.Id" class="bylink" rel="nofollow">permalink</a>
         </li>
     }
-    
+
     @if (Model.CommentModel.ParentId != null)
     {
         <li>
@@ -37,16 +37,36 @@
         string loggedInUserName = User.Identity.Name;
 
         //returns true if user has saved this post
-        var savedOrNot = SavingComments.CheckIfSavedComment(loggedInUserName, commentId);
+        //var savedOrNot = SavingComments.CheckIfSavedComment(loggedInUserName, commentId);
+        //What you see here is a major hack. Atko is 100% responsible for this too. ;)
+        //returns -1:downvoted, 1:upvoted, or 0:not voted
+        bool? savedOrNot = null;
+        if (ViewBag.SavedCommentCache != null)
+        {
+            foreach (var cv in ViewBag.SavedCommentCache)
+            {
+                if (cv.CommentId == commentId)
+                {
+                    savedOrNot = true;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            //backwards compat if ViewBad.VoteCache isn't populated as many code paths funnel here
+            savedOrNot = SavingComments.CheckIfSavedComment(loggedInUserName, commentId);
+            //throw new Exception("I WANT VOTECACHE");
+        }
         var saveString = savedOrNot == true ? "unsave" : "save";
-        
+
         if (commentAuthor != "deleted")
         {
             <li>
                 <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@commentId);">@saveString</a>
             </li>
         }
-        
+
         if (commentAuthor != "deleted" && User.Identity.Name != commentAuthor)
         {
             <li>
@@ -66,7 +86,7 @@
         // if user is comment author, show edit and delete buttons
         if (User.Identity.Name == commentAuthor)
         {
-			<li>
+            <li>
                 <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @Model.CommentModel.MessageId)">edit</a>
             </li>
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
@@ -90,3 +110,4 @@
     }
 
 </ul>
+

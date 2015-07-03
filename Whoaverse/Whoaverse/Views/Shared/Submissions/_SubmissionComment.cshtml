@@ -225,7 +225,7 @@
 
         </form>
         <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@commentModel.CommentContent</textarea>
-        @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", submissionViewModel)
+        @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", submissionViewModel, new ViewDataDictionary {{ "SavedCommentCache", ViewBag.SavedCommentCache }})
     </div>
 
 
@@ -276,13 +276,13 @@
         if (parentIsHidden)
         {
             <div class="child id-@childComment.Id comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="display:none">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "childTohiddenParent", true }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
             </div>
         }
         else
         {
             <div class="child id-@childComment.Id comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", childComment.Id }, { "CCP", commentContributionPoints }, { "SortingMode", sortingMode }, { "Counter", counter }, { "commentToHighlight", ViewBag.CommentToHighLight } })
             </div>
         }
 

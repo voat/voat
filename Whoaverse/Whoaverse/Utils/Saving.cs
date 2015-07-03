@@ -24,10 +24,39 @@ namespace Voat.Utils
         // returns true if saved, false otherwise
         public static bool? CheckIfSaved(string userToCheck, int messageId)
         {
-            using (var db = new whoaverseEntities())
+
+            using (whoaverseEntities db = new whoaverseEntities())
             {
-                return db.Savingtrackers.Where(u => u.UserName == userToCheck && u.MessageId == messageId).AsNoTracking().Any();
+
+                var cmd = db.Database.Connection.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM Savingtracker WITH (NOLOCK) WHERE UserName = @UserName AND MessageId = @MessageId";
+
+                var param = cmd.CreateParameter();
+                param.ParameterName = "UserName";
+                param.DbType = System.Data.DbType.String;
+                param.Value = userToCheck;
+                cmd.Parameters.Add(param);
+
+                param = cmd.CreateParameter();
+                param.ParameterName = "MessageId";
+                param.DbType = System.Data.DbType.String;
+                param.Value = messageId;
+                cmd.Parameters.Add(param);
+
+                if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                {
+                    cmd.Connection.Open();
+                }
+                
+                int count = (int)cmd.ExecuteScalar();
+
+                return count > 0;
             }
+
+            //using (var db = new whoaverseEntities())
+            //{
+            //    return db.Savingtrackers.Where(u => u.UserName == userToCheck && u.MessageId == messageId).AsNoTracking().Any();
+            //}
         }
 
         // a user wishes to save a submission, save it

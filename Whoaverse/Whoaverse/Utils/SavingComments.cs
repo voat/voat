@@ -25,10 +25,40 @@ namespace Voat.Utils
         // returns true if saved, false otherwise
         public static bool? CheckIfSavedComment(string userToCheck, int commentId)
         {
-            using (var db = new whoaverseEntities())
+
+            using (whoaverseEntities db = new whoaverseEntities())
             {
-                return db.Commentsavingtrackers.Where(b => b.CommentId == commentId && b.UserName == userToCheck).AsNoTracking().Any();
+
+                var cmd = db.Database.Connection.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM Commentsavingtracker WITH (NOLOCK) WHERE UserName = @UserName AND CommentId = @CommentId";
+
+                var param = cmd.CreateParameter();
+                param.ParameterName = "UserName";
+                param.DbType = System.Data.DbType.String;
+                param.Value = userToCheck;
+                cmd.Parameters.Add(param);
+
+                param = cmd.CreateParameter();
+                param.ParameterName = "CommentId";
+                param.DbType = System.Data.DbType.String;
+                param.Value = commentId;
+                cmd.Parameters.Add(param);
+
+                if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                {
+                    cmd.Connection.Open();
+                }
+
+                int count = (int)cmd.ExecuteScalar();
+
+                return count > 0;
             }
+
+
+            //using (var db = new whoaverseEntities())
+            //{
+            //    return db.Commentsavingtrackers.Where(b => b.CommentId == commentId && b.UserName == userToCheck).AsNoTracking().Any();
+            //}
 
         }
 
