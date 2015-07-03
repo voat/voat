@@ -69,7 +69,7 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> Top200Subverses()
         {
-            var top200Subverses = _db.Subverses.OrderByDescending(s => s.subscribers).ToList();
+            var top200Subverses = _db.Subverses.Where(s => s.admin_disabled != true).OrderByDescending(s => s.subscribers).ToList();
 
             return top200Subverses.Select(item => "Name: " + item.name + "," + "Description: " + item.description + "," + "Subscribers: " + item.subscribers + "," + "Created: " + item.creation_date);
         }
@@ -82,8 +82,8 @@ namespace Voat.Controllers
         public IEnumerable<ApiMessage> Frontpage()
         {
             // get only submissions from default subverses, order by rank
-            var frontpageSubmissions = (from message in _db.Messages
-                                        where message.Name != "deleted"
+            var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
+                                        where message.Name != "deleted" && message.Subverses.admin_disabled != true
                                         join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name                                        
                                         select message)
                                         .OrderByDescending(s => s.Rank)
@@ -134,15 +134,15 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<ApiMessage> SubverseFrontpage(string subverse)
         {
-            // get only submissions from given subverses, order by rank
-            var frontpageSubmissions = (from message in _db.Messages
-                                        where message.Name != "deleted" && message.Subverse == subverse
+            // get only submissions from given subverses, order by rank - ignoring messages in any given banned subverse
+            var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
+                                        where message.Name != "deleted" && message.Subverse == subverse && message.Subverses.admin_disabled != true
                                         select message)
                                         .OrderByDescending(s => s.Rank)
                                         .Take(100)
                                         .ToList();
 
-            if (frontpageSubmissions == null)
+            if (frontpageSubmissions == null || frontpageSubmissions.Count == 0)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
@@ -193,7 +193,7 @@ namespace Voat.Controllers
         {
             var submission = _db.Messages.Find(id);
 
-            if (submission == null)
+            if (submission == null || submission.Subverses.admin_disabled == true)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
@@ -366,7 +366,7 @@ namespace Voat.Controllers
         public IEnumerable<ApiComment> SubmissionComments(int submissionId) {
             var submission = _db.Messages.Find(submissionId);
 
-            if (submission == null)
+            if (submission == null || submission.Subverses.admin_disabled == true)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
