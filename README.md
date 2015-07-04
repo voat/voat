@@ -29,8 +29,8 @@ Follow these steps to get up and running:
 #### step 1
 - Create databases and database owners.
 Voat uses 2 SQL databases to store messages, comments, votes, users etc. 
-Default database names are whoaverse and whoaverse_users.
-You can use whoaverse.sql and whoaverse_user.sql to generate necessary tables for each respective database.
+Default database names are voat and voatUsers.
+You can use voat.sql and voatUsers.sql to generate necessary tables for each respective database.
 
 #### step 2
 - After cloning this repository, you will need to modify and place Web.config file in WhoaVerse folder (the same folder where the file packages.config is located). You need to modify the following 2 connection strings in this file to reflect your SQL server address, port, database names and database usernames: 
