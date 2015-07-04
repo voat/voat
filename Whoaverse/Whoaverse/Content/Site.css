@@ -520,6 +520,10 @@ ul.flat-vert {
         margin: 7px 0 12px 0;
     }
 
+    .side label {
+        vertical-align: middle;
+    }
+
     .side .side-message {
         background: #faf2ce no-repeat 10px 10px;
         border: 1px solid #edce42;
@@ -4560,7 +4564,7 @@ form .spacer + .spacer {
 }
 
 form input[type=checkbox], form input[type=radio] {
-    margin: 2px .5em 0 0;
+    margin: 2px .2em 0 0;
 }
 
 .pretty-form {
@@ -6010,6 +6014,10 @@ table.lined-table {
 
 .sidecontentbox a.helplink {
     float: right;
+}
+
+.sidecontentbox .accordian-inner {
+	margin: 5px 0 0;
 }
 
 .confirm-award-claim .md {
