@@ -88,114 +88,119 @@ $(document).ready(function () {
     // SignalR helper methods to start hub connection, update the page and send messages
     $(function () {
         // Reference the auto-generated proxy for the hub.
-        var proxy = $.connection.messagingHub;
+        if ($.connection != null) {
+            var proxy = $.connection.messagingHub;
 
-        // Hub accessed function to inform the user about new pending notifications
-        proxy.client.setNotificationsPending = function (count) {
-            var originalTitle = $('meta[property="og:title"]').attr('content');
-            if (count > 0) {
-                // set mail icon
-                if ($('#mail').hasClass('nohavemail')) {
-                    $('#mail').removeClass('nohavemail').addClass('havemail');
+            if (proxy != null) {
+
+                // Hub accessed function to inform the user about new pending notifications
+                proxy.client.setNotificationsPending = function (count) {
+                    var originalTitle = $('meta[property="og:title"]').attr('content');
+                    if (count > 0) {
+                        // set mail icon
+                        if ($('#mail').hasClass('nohavemail')) {
+                            $('#mail').removeClass('nohavemail').addClass('havemail');
+                        };
+                        $('#mail').prop('title', 'your have ' + count + ' unread notifications');
+                        // show mail counter
+                        $('#mailcounter').show();
+                        $('#mailcounter').html(count);
+                        // set browser title
+                        document.title = '(' + count + ') ' + originalTitle;
+                    } else {
+                        // set no new mail icon
+                        if ($('#mail').hasClass('havemail')) {
+                            $('#mail').removeClass('havemail').addClass('nohavemail');
+                        };
+                        $('#mail').prop('title', 'no new messages');
+                        // hide mail counter and set count to 0
+                        $('#mailcounter').html(0);
+                        $('#mailcounter').hide();
+                        // set browser title
+                        document.title = originalTitle;
+                    }
                 };
-                $('#mail').prop('title', 'your have ' + count + ' unread notifications');
-                // show mail counter
-                $('#mailcounter').show();
-                $('#mailcounter').html(count);
-                // set browser title
-                document.title = '(' + count + ') ' + originalTitle;
-            } else {
-                // set no new mail icon
-                if ($('#mail').hasClass('havemail')) {
-                    $('#mail').removeClass('havemail').addClass('nohavemail');
+
+                // Hub accessed function to inform the user about new incoming upvotes
+                proxy.client.incomingUpvote = function (type) {
+                    var currentValue = 0;
+                    if (type == 2) {
+                        // this is a comment vote notification
+                        // update CCP display
+                        currentValue = $('#ccp').html();
+                        currentValue++;
+                        $('#ccp').html(currentValue);
+                    } else {
+                        // update SCP display
+                        currentValue = $('#scp').html();
+                        currentValue++;
+                        $('#scp').html(currentValue);
+                    }
                 };
-                $('#mail').prop('title', 'no new messages');
-                // hide mail counter and set count to 0
-                $('#mailcounter').html(0);
-                $('#mailcounter').hide();
-                // set browser title
-                document.title = originalTitle;
+
+                // Hub accessed function to inform the user about new incoming downvotes
+                proxy.client.incomingDownvote = function (type) {
+                    var currentValue = 0;
+                    if (type == 2) {
+                        // this is a comment vote notification
+                        // update CCP display
+                        currentValue = $('#ccp').html();
+                        currentValue--;
+                        $('#ccp').html(currentValue);
+                    } else {
+                        // update SCP display
+                        currentValue = $('#scp').html();
+                        currentValue--;
+                        $('#scp').html(currentValue);
+                    }
+                };
+
+                // Hub accessed function to inform the user about new incoming down to upvote
+                proxy.client.incomingDownToUpvote = function (type) {
+                    var currentValue = 0;
+                    if (type == 2) {
+                        // this is a comment vote notification
+                        // update CCP display
+                        currentValue = $('#ccp').html();
+                        currentValue = currentValue + 2;
+                        $('#ccp').html(currentValue);
+                    } else {
+                        // update SCP display
+                        currentValue = $('#scp').html();
+                        currentValue = currentValue + 2;
+                        $('#scp').html(currentValue);
+                    }
+                };
+
+                // Hub accessed function to inform the user about new incoming up to downvote
+                proxy.client.incomingUpToDownvote = function (type) {
+                    var currentValue = 0;
+                    if (type == 2) {
+                        // this is a comment vote notification
+                        // update CCP display
+                        currentValue = $('#ccp').html();
+                        currentValue = currentValue - 2;
+                        $('#ccp').html(currentValue);
+                    } else {
+                        // update SCP display
+                        currentValue = $('#scp').html();
+                        currentValue = currentValue - 2;
+                        $('#scp').html(currentValue);
+                    }
+                };
+
+                // Hub accessed function to append incoming chat message
+                proxy.client.appendChatMessage = function (sender, chatMessage) {
+                    $("#subverseChatRoom").append('<p><b>' + sender + '</b>: ' + chatMessage + '</p>');
+                    scrollChatToBottom();
+                };
+
+                // Start the connection.
+                $.connection.hub.start().done(function () {
+                    //
+                });
             }
-        };
-
-        // Hub accessed function to inform the user about new incoming upvotes
-        proxy.client.incomingUpvote = function (type) {
-            var currentValue = 0;
-            if (type == 2) {
-                // this is a comment vote notification
-                // update CCP display
-                currentValue = $('#ccp').html();
-                currentValue++;
-                $('#ccp').html(currentValue);
-            } else {
-                // update SCP display
-                currentValue = $('#scp').html();
-                currentValue++;
-                $('#scp').html(currentValue);
-            }
-        };
-
-        // Hub accessed function to inform the user about new incoming downvotes
-        proxy.client.incomingDownvote = function (type) {
-            var currentValue = 0;
-            if (type == 2) {
-                // this is a comment vote notification
-                // update CCP display
-                currentValue = $('#ccp').html();
-                currentValue--;
-                $('#ccp').html(currentValue);
-            } else {
-                // update SCP display
-                currentValue = $('#scp').html();
-                currentValue--;
-                $('#scp').html(currentValue);
-            }
-        };
-
-        // Hub accessed function to inform the user about new incoming down to upvote
-        proxy.client.incomingDownToUpvote = function (type) {
-            var currentValue = 0;
-            if (type == 2) {
-                // this is a comment vote notification
-                // update CCP display
-                currentValue = $('#ccp').html();
-                currentValue = currentValue + 2;
-                $('#ccp').html(currentValue);
-            } else {
-                // update SCP display
-                currentValue = $('#scp').html();
-                currentValue = currentValue + 2;
-                $('#scp').html(currentValue);
-            }
-        };
-
-        // Hub accessed function to inform the user about new incoming up to downvote
-        proxy.client.incomingUpToDownvote = function (type) {
-            var currentValue = 0;
-            if (type == 2) {
-                // this is a comment vote notification
-                // update CCP display
-                currentValue = $('#ccp').html();
-                currentValue = currentValue - 2;
-                $('#ccp').html(currentValue);
-            } else {
-                // update SCP display
-                currentValue = $('#scp').html();
-                currentValue = currentValue - 2;
-                $('#scp').html(currentValue);
-            }
-        };
-
-        // Hub accessed function to append incoming chat message
-        proxy.client.appendChatMessage = function (sender, chatMessage) {
-            $("#subverseChatRoom").append('<p><b>' + sender + '</b>: ' + chatMessage + '</p>');
-            scrollChatToBottom();
-        };
-
-        // Start the connection.
-        $.connection.hub.start().done(function () {
-            //
-        });
+        }
     });
 
     // hook scroll event to load more button for endless scrolling
@@ -1476,21 +1481,25 @@ function scrollChatToBottom() {
 
 // a function to submit chat message to subverse chat room
 function sendChatMessage(userName, subverse) {
-    var messageToSend = $("#chatInputBox").val();
-    var chatProxy = $.connection.messagingHub;
-    chatProxy.server.sendChatMessage(userName, messageToSend, subverse);
-    scrollChatToBottom();
-    // clear input
-    $("#chatInputBox").val('');
+    if ($.connection != null) {
+        var messageToSend = $("#chatInputBox").val();
+        var chatProxy = $.connection.messagingHub;
+        chatProxy.server.sendChatMessage(userName, messageToSend, subverse);
+        scrollChatToBottom();
+        // clear input
+        $("#chatInputBox").val('');
+    }
 }
 
 // a function to add a client to a subverse chat room
 function joinSubverseChatRoom(subverseName) {
-    // Start the connection.
-    $.connection.hub.start().done(function () {
-        var chatProxy = $.connection.messagingHub;
-        chatProxy.server.joinSubverseChatRoom(subverseName);
-    });
+    if ($.connection != null) {
+        // Start the connection.
+        $.connection.hub.start().done(function () {
+            var chatProxy = $.connection.messagingHub;
+            chatProxy.server.joinSubverseChatRoom(subverseName);
+        });
+    }
 }
 
 function toggleNightMode() {

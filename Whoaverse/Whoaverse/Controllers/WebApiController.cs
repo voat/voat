@@ -81,49 +81,65 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<ApiMessage> Frontpage()
         {
-            // get only submissions from default subverses, order by rank
-            var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
-                                        where message.Name != "deleted" && message.Subverses.admin_disabled != true
-                                        join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name                                        
-                                        select message)
-                                        .OrderByDescending(s => s.Rank)
-                                        .Take(100)
-                                        .ToList();
 
-            var resultList = new List<ApiMessage>();
+            //IAmAGate: Perf mods for caching
+            string cacheKey = String.Format("LegacyApi.Frontpage").ToLower();
+            object cacheData = System.Web.HttpContext.Current.Cache[cacheKey];
 
-            foreach (var item in frontpageSubmissions)
+            if (cacheData == null)
             {
-                var resultModel = new ApiMessage
+                lock (typeof(WebApiController))
                 {
-                    CommentCount = item.Comments.Count,
-                    Date = item.Date,
-                    Dislikes = item.Dislikes,
-                    Id = item.Id,
-                    LastEditDate = item.LastEditDate,
-                    Likes = item.Likes,
-                    Linkdescription = item.Linkdescription,
-                    MessageContent = item.MessageContent
-                };
+                    if (cacheData == null)
+                    {
+                        // get only submissions from default subverses, order by rank
+                        var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
+                                                    where message.Name != "deleted" && message.Subverses.admin_disabled != true
+                                                    join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                                    select message)
+                                                    .OrderByDescending(s => s.Rank)
+                                                    .Take(100)
+                                                    .ToList();
 
-                if (item.Anonymized || item.Subverses.anonymized_mode)
-                {
-                    resultModel.Name = item.Id.ToString();
+                        var resultList = new List<ApiMessage>();
+
+                        foreach (var item in frontpageSubmissions)
+                        {
+                            var resultModel = new ApiMessage
+                            {
+                                CommentCount = item.Comments.Count,
+                                Date = item.Date,
+                                Dislikes = item.Dislikes,
+                                Id = item.Id,
+                                LastEditDate = item.LastEditDate,
+                                Likes = item.Likes,
+                                Linkdescription = item.Linkdescription,
+                                MessageContent = item.MessageContent
+                            };
+
+                            if (item.Anonymized || item.Subverses.anonymized_mode)
+                            {
+                                resultModel.Name = item.Id.ToString();
+                            }
+                            else
+                            {
+                                resultModel.Name = item.Name;
+                            }
+                            resultModel.Rank = item.Rank;
+                            resultModel.Subverse = item.Subverse;
+                            resultModel.Thumbnail = item.Thumbnail;
+                            resultModel.Title = item.Title;
+                            resultModel.Type = item.Type;
+
+                            resultList.Add(resultModel);
+                        }
+
+                        cacheData = resultList;
+                        System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, DateTime.Now.AddMinutes(5), System.Web.Caching.Cache.NoSlidingExpiration);
+                    }
                 }
-                else
-                {
-                    resultModel.Name = item.Name;
-                }                
-                resultModel.Rank = item.Rank;
-                resultModel.Subverse = item.Subverse;
-                resultModel.Thumbnail = item.Thumbnail;
-                resultModel.Title = item.Title;
-                resultModel.Type = item.Type;
-
-                resultList.Add(resultModel);
             }
-
-            return resultList;
+            return (IEnumerable<ApiMessage>)cacheData;
         }
 
         // GET api/subversefrontpage
@@ -134,53 +150,70 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<ApiMessage> SubverseFrontpage(string subverse)
         {
-            // get only submissions from given subverses, order by rank - ignoring messages in any given banned subverse
-            var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
-                                        where message.Name != "deleted" && message.Subverse == subverse && message.Subverses.admin_disabled != true
-                                        select message)
-                                        .OrderByDescending(s => s.Rank)
-                                        .Take(100)
-                                        .ToList();
 
-            if (frontpageSubmissions == null || frontpageSubmissions.Count == 0)
+            //IAmAGate: Perf mods for caching
+            string cacheKey = String.Format("LegacyApi.SubverseFrontpage.{0}", subverse).ToLower();
+            object cacheData = System.Web.HttpContext.Current.Cache[cacheKey];
+
+            if (cacheData == null)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
-            }
-
-            var resultList = new List<ApiMessage>();
-
-            foreach (var item in frontpageSubmissions)
-            {
-                var resultModel = new ApiMessage
+                lock (typeof(WebApiController))
                 {
-                    CommentCount = item.Comments.Count,
-                    Date = item.Date,
-                    Dislikes = item.Dislikes,
-                    Id = item.Id,
-                    LastEditDate = item.LastEditDate,
-                    Likes = item.Likes,
-                    Linkdescription = item.Linkdescription,
-                    MessageContent = item.MessageContent
-                };
+                    if (cacheData == null)
+                    {
 
-                if (item.Anonymized || item.Subverses.anonymized_mode)
-                {
-                    resultModel.Name = item.Id.ToString();
+                        // get only submissions from given subverses, order by rank - ignoring messages in any given banned subverse
+                        var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
+                                                    where message.Name != "deleted" && message.Subverse == subverse && message.Subverses.admin_disabled != true
+                                                    select message)
+                                                    .OrderByDescending(s => s.Rank)
+                                                    .Take(100)
+                                                    .ToList();
+
+                        if (frontpageSubmissions == null || frontpageSubmissions.Count == 0)
+                        {
+                            throw new HttpResponseException(HttpStatusCode.NotFound);
+                        }
+
+                        var resultList = new List<ApiMessage>();
+
+                        foreach (var item in frontpageSubmissions)
+                        {
+                            var resultModel = new ApiMessage
+                            {
+                                CommentCount = item.Comments.Count,
+                                Date = item.Date,
+                                Dislikes = item.Dislikes,
+                                Id = item.Id,
+                                LastEditDate = item.LastEditDate,
+                                Likes = item.Likes,
+                                Linkdescription = item.Linkdescription,
+                                MessageContent = item.MessageContent
+                            };
+
+                            if (item.Anonymized || item.Subverses.anonymized_mode)
+                            {
+                                resultModel.Name = item.Id.ToString();
+                            }
+                            else
+                            {
+                                resultModel.Name = item.Name;
+                            }
+                            resultModel.Rank = item.Rank;
+                            resultModel.Subverse = item.Subverse;
+                            resultModel.Thumbnail = item.Thumbnail;
+                            resultModel.Title = item.Title;
+                            resultModel.Type = item.Type;
+
+                            resultList.Add(resultModel);
+                        }
+
+                        cacheData = resultList;
+                        System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, DateTime.Now.AddMinutes(5), System.Web.Caching.Cache.NoSlidingExpiration);
+                    }
                 }
-                else
-                {
-                    resultModel.Name = item.Name;
-                }                
-                resultModel.Rank = item.Rank;
-                resultModel.Subverse = item.Subverse;
-                resultModel.Thumbnail = item.Thumbnail;
-                resultModel.Title = item.Title;
-                resultModel.Type = item.Type;
-
-                resultList.Add(resultModel);
             }
-
-            return resultList;
+            return (IEnumerable<ApiMessage>)cacheData;
         }
 
         // GET api/singlesubmission

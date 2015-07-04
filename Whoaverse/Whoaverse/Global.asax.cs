@@ -13,8 +13,10 @@ namespace Voat
     {
         protected void Application_Start()
         {
-            Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver.Register(typeof(Microsoft.AspNet.SignalR.Hubs.IJavaScriptMinifier), () => new Utils.HubMinifier());
-
+            if (!MvcApplication.SignalRDisabled)
+            {
+                Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver.Register(typeof(Microsoft.AspNet.SignalR.Hubs.IJavaScriptMinifier), () => new Utils.HubMinifier());
+            }
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -113,17 +115,18 @@ namespace Voat
         public static readonly string SiteLogo = ConfigurationManager.AppSettings["siteLogo"];
         public static readonly string SiteName = ConfigurationManager.AppSettings["siteName"];
         public static readonly string SiteSlogan = ConfigurationManager.AppSettings["siteSlogan"];
+        public static readonly bool SignalRDisabled = ParseBooleanSetting("signalrDisabled");
+        public static readonly bool SiteDisabled = ParseBooleanSetting("siteDisabled");
 
-        //This setting was parsed differently from the others, it probably doesn't need to be.
-        public static bool SiteDisabled
+       
+        private static bool ParseBooleanSetting(string settingKey)
         {
-            get
-            {
-                bool disabled;
-                if (bool.TryParse(ConfigurationManager.AppSettings["siteDisabled"], out disabled))
+                bool disabled = false;
+                if (bool.TryParse(ConfigurationManager.AppSettings[settingKey], out disabled))
+                {
                     return disabled;
+                }
                 return false;
-            }
         }
     }
 }
