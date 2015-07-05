@@ -56,7 +56,7 @@ namespace Voat
 
             //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
             if (MvcApplication.SiteDisabled) {
-                Response.Redirect("~/inactive.min.htm", true);
+                Server.Transfer("~/inactive.min.htm");
                 return;
             }
 
