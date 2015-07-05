@@ -34,6 +34,8 @@ namespace Voat.Controllers
 
     public class HomeController : Controller
     {
+        static Dictionary<string, object> lockObjects = new Dictionary<string,object>();
+        
         //IAmAGate: Move queries to read-only mirror
         private readonly whoaverseEntities _db = new whoaverseEntities(true);
 
@@ -454,8 +456,14 @@ namespace Voat.Controllers
 
                     if (cacheData == null)
                     {
-                        lock (typeof(HomeController))
+                        object o = (lockObjects.ContainsKey(cacheKey) ? lockObjects[cacheKey] : null);
+                        if (o == null) {
+                            o = new object();
+                            lockObjects[cacheKey] = o;
+                        }
+                        lock (o)
                         {
+                            cacheData = CacheHandler.GetData(cacheKey);
                             if (cacheData == null)
                             {
 
@@ -640,14 +648,18 @@ namespace Voat.Controllers
 
                     if (cacheData == null)
                     {
-                        lock (typeof(HomeController))
+                        object o = (lockObjects.ContainsKey(cacheKey) ? lockObjects[cacheKey] : null);
+                        if (o == null) {
+                            o = new object();
+                            lockObjects[cacheKey] = o;
+                        }
+                        lock (o)
                         {
+                            cacheData = CacheHandler.GetData(cacheKey);
                             if (cacheData == null)
                             {
-
                                 var getDataFunc = new Func<object>(() =>
                                 {
-
                                     // get only submissions from default subverses, order by rank
                                     IQueryable<Message> submissions = (from message in _db.Messages
                                                                        where message.Name != "deleted"
