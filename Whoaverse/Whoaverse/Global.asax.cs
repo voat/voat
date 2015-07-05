@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Web;
@@ -6,6 +7,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Voat.Utils;
 
 namespace Voat
 {
@@ -13,6 +15,9 @@ namespace Voat
     {
         protected void Application_Start()
         {
+            LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
+            LiveConfigurationManager.Start();
+
             if (!MvcApplication.SignalRDisabled)
             {
                 Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver.Register(typeof(Microsoft.AspNet.SignalR.Hubs.IJavaScriptMinifier), () => new Utils.HubMinifier());
@@ -49,7 +54,6 @@ namespace Voat
         // force SSL for every request if enabled in Web.config
         protected void Application_BeginRequest(Object sender, EventArgs e) {
 
-
             //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
             if (MvcApplication.SiteDisabled) {
                 Response.Redirect("~/inactive.min.htm", true);
@@ -70,16 +74,16 @@ namespace Voat
         // fire each time a new session is created     
         protected void Session_Start(object sender, EventArgs e)
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                // read style preference
-                Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
-            }
-            else
-            {
-                // set default theme to light
-                Session["UserTheme"] = "light";
-            }            
+            //if (User.Identity.IsAuthenticated)
+            //{
+            //    // read style preference
+            //    Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+            //}
+            //else
+            //{
+            //    // set default theme to light
+            //    Session["UserTheme"] = "light";
+            //}            
         }
 
         // fire when a session is abandoned or expires
@@ -97,36 +101,115 @@ namespace Voat
             }
         }
 
-        public static readonly int DailyCommentPostingQuotaForNegativeScore = Convert.ToInt32(ConfigurationManager.AppSettings["dailyCommentPostingQuotaForNegativeScore"]);
-        public static readonly int DailyCrossPostingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyCrossPostingQuota"]);
-        public static readonly int DailyPostingQuotaForNegativeScore = Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaForNegativeScore"]);
-        public static readonly int DailyPostingQuotaPerSub = Convert.ToInt32(ConfigurationManager.AppSettings["dailyPostingQuotaPerSub"]);
-        public static readonly int DailyVotingQuota = Convert.ToInt32(ConfigurationManager.AppSettings["dailyVotingQuota"]);
-        public static readonly bool ForceHTTPS = Convert.ToBoolean(ConfigurationManager.AppSettings["forceHTTPS"]);
-        public static readonly int HourlyPostingQuotaPerSub = Convert.ToInt32(ConfigurationManager.AppSettings["hourlyPostingQuotaPerSub"]);
-        public static readonly int MaximumOwnedSets = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSets"]);
-        public static readonly int MaximumOwnedSubs = Convert.ToInt32(ConfigurationManager.AppSettings["maximumOwnedSubs"]);
-        public static readonly int MinimumCcp = Convert.ToInt32(ConfigurationManager.AppSettings["minimumCcp"]);
-        public static readonly int MaxAllowedAccountsFromSingleIP = Convert.ToInt32(ConfigurationManager.AppSettings["maxAllowedAccountsFromSingleIP"]);
-        public static readonly string RecaptchaPrivateKey = ConfigurationManager.AppSettings["recaptchaPrivateKey"];
-        public static readonly string RecaptchaPublicKey = ConfigurationManager.AppSettings["recaptchaPublicKey"];
-        public static readonly string SiteDescription = ConfigurationManager.AppSettings["siteDescription"];
-        public static readonly string SiteKeywords = ConfigurationManager.AppSettings["siteKeywords"];
-        public static readonly string SiteLogo = ConfigurationManager.AppSettings["siteLogo"];
-        public static readonly string SiteName = ConfigurationManager.AppSettings["siteName"];
-        public static readonly string SiteSlogan = ConfigurationManager.AppSettings["siteSlogan"];
-        public static readonly bool SignalRDisabled = ParseBooleanSetting("signalrDisabled");
-        public static readonly bool SiteDisabled = ParseBooleanSetting("siteDisabled");
+        #region AppSettings Accessors 
 
-       
-        private static bool ParseBooleanSetting(string settingKey)
-        {
-                bool disabled = false;
-                if (bool.TryParse(ConfigurationManager.AppSettings[settingKey], out disabled))
-                {
-                    return disabled;
-                }
-                return false;
+        internal static Dictionary<string, object> configValues = new Dictionary<string, object>();
+
+
+        public static int DailyCommentPostingQuotaForNegativeScore {
+            get {
+                return (int)configValues[CONFIGURATION.DailyCommentPostingQuotaForNegativeScore];
+            }
         }
+        
+        public static int DailyCrossPostingQuota 
+            {
+            get {
+                return (int)configValues[CONFIGURATION.DailyCrossPostingQuota];
+            }
+        }
+        public static int DailyPostingQuotaForNegativeScore {
+            get {
+                return (int)configValues[CONFIGURATION.DailyPostingQuotaForNegativeScore];
+            }
+        }
+        public static int DailyPostingQuotaPerSub
+        {
+            get {
+                return (int)configValues[CONFIGURATION.DailyPostingQuotaPerSub];
+            }
+        }
+        public static int DailyVotingQuota {
+            get {
+                return (int)configValues[CONFIGURATION.DailyVotingQuota];
+            }
+        }
+        public static bool ForceHTTPS {
+            get {
+                return (bool)configValues[CONFIGURATION.ForceHTTPS];
+            }
+        }
+        public static int HourlyPostingQuotaPerSub {
+            get {
+                return (int)configValues[CONFIGURATION.HourlyPostingQuotaPerSub];
+            }
+        }
+        public static int MaximumOwnedSets {
+            get {
+                return (int)configValues[CONFIGURATION.MaximumOwnedSets];
+            }
+        }
+        public static int MaximumOwnedSubs {
+            get {
+                return (int)configValues[CONFIGURATION.MaximumOwnedSubs];
+            }
+        }
+        public static int MinimumCcp {
+            get {
+                return (int)configValues[CONFIGURATION.MinimumCcp];
+            }
+        }
+        public static int MaxAllowedAccountsFromSingleIP {
+            get {
+                return (int)configValues[CONFIGURATION.MaxAllowedAccountsFromSingleIP];
+            }
+        }
+        public static string RecaptchaPrivateKey {
+            get {
+                return (string)configValues[CONFIGURATION.RecaptchaPrivateKey];
+            }
+        }
+        public static string RecaptchaPublicKey {
+            get {
+                return (string)configValues[CONFIGURATION.RecaptchaPublicKey];
+            }
+        }
+        public static string SiteDescription {
+            get {
+                return (string)configValues[CONFIGURATION.SiteDescription];
+            }
+        }
+        public static string SiteKeywords {
+            get {
+                return (string)configValues[CONFIGURATION.SiteKeywords];
+            }
+        }
+        public static string SiteLogo {
+            get {
+                return (string)configValues[CONFIGURATION.SiteLogo];
+            }
+        }
+        public static string SiteName {
+            get {
+                return (string)configValues[CONFIGURATION.SiteName];
+            }
+        }
+        public static string SiteSlogan {
+            get {
+                return (string)configValues[CONFIGURATION.SiteSlogan];
+            }
+        }
+        public static bool SignalRDisabled {
+            get {
+                return (bool)configValues[CONFIGURATION.SignalRDisabled];
+            }
+        }
+        public static bool SiteDisabled {
+            get {
+                return (bool)configValues[CONFIGURATION.SiteDisabled];
+            }
+        }
+        #endregion 
+
     }
 }

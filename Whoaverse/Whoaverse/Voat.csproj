@@ -317,6 +317,7 @@
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\whoaverseEntities.cs" />
+    <Compile Include="Utils\CacheHandler.cs" />
     <Compile Include="Utils\CommentCounter.cs" />
     <Compile Include="Utils\Components\ContentFilters.cs" />
     <Compile Include="Utils\Components\ContentProcessor.cs" />
@@ -468,6 +469,7 @@
     <Compile Include="Utils\User.cs" />
     <Compile Include="Utils\Voting.cs" />
     <Compile Include="Utils\VotingComments.cs" />
+    <Compile Include="Utils\LiveConfigurationManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -643,9 +645,6 @@
     <Content Include="Scripts\whoaverse.js" />
     <Content Include="Scripts\whoaverse.ui.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="sitemap.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Thumbs\Placeholder.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -821,6 +820,7 @@
     <Content Include="Views\Errors\SubverseDisabled.cshtml" />
     <Content Include="Views\Subverses\CommentRemovalLog.cshtml" />
     <Content Include="Views\Subverses\BannedUsersLog.cshtml" />
+    <Content Include="Web.config.live" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

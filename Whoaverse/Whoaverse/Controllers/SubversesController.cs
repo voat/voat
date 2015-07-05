@@ -412,16 +412,34 @@ namespace Voat.Controllers
 
                     //IAmAGate: Perf mods for caching
                     string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
-                    Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)System.Web.HttpContext.Current.Cache[cacheKey];
+                    Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)CacheHandler.GetData(cacheKey);
 
                     if (cacheData == null)
                     {
-                        var x = SubmissionsFromASubverseByRank(subversetoshow);
-                        int count = x.Count();
-                        List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
-                        cacheData = new Tuple<IList<Message>, int>(content, count);
-                        System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, DateTime.Now.AddSeconds(subverseCacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                        var getDataFunc = new Func<object>(() =>
+                        {
+                            var x = SubmissionsFromASubverseByRank(subversetoshow);
+                            int count = x.Count();
+                            List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                            return new Tuple<IList<Message>, int>(content, count);
+                        });
+
+                        cacheData = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds));
                     }
+
+                    ////IAmAGate: Perf mods for caching
+                    //string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
+                    //Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)System.Web.HttpContext.Current.Cache[cacheKey];
+
+                    //if (cacheData == null)
+                    //{
+                    //    var x = SubmissionsFromASubverseByRank(subversetoshow);
+                    //    int count = x.Count();
+                    //    List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                    //    cacheData = new Tuple<IList<Message>, int>(content, count);
+                    //    System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, DateTime.Now.AddSeconds(subverseCacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                    //}
+
 
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(cacheData.Item1, pageNumber, pageSize, cacheData.Item2);
 
@@ -465,7 +483,7 @@ namespace Voat.Controllers
                         return View(paginatedSubmissionsFromAllSubverses);
                     }
 
-                    // return only sfw submissions
+                    // return only sfw submissions 
                     paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                     return View(paginatedSfwSubmissions);
                 }
@@ -477,9 +495,30 @@ namespace Voat.Controllers
                     return View(paginatedSubmissionsFromAllSubverses);
                 }
 
-                // return only sfw submissions
-                paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+
+                //NEW LOGIC
+                //IAmAGate: Perf mods for caching
+                string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "rank").ToLower();
+                Tuple<IList<Message>, int> cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.GetData(cacheKeyAll);
+
+                if (cacheDataAll == null)
+                {
+                    var getDataFunc = new Func<object>(() =>
+                    {
+                        var x = SfwSubmissionsFromAllSubversesByRank();
+                        int count = 50000;
+                        List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                        return new Tuple<IList<Message>, int>(content, count);
+                    });
+                    cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds));
+                }
+                paginatedSfwSubmissions = new PaginatedList<Message>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
                 return View(paginatedSfwSubmissions);
+
+                //OLD LOGIC
+                // return only sfw submissions
+                //paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                //return View(paginatedSfwSubmissions);
             }
             catch (Exception)
             {
@@ -1598,18 +1637,37 @@ namespace Voat.Controllers
             // subverse is safe for work
             if (sortingmode.Equals("new"))
             {
+
+
                 //IAmAGate: Perf mods for caching
                 string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
-                Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)System.Web.HttpContext.Current.Cache[cacheKey];
+                Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)CacheHandler.GetData(cacheKey);
 
                 if (cacheData == null)
                 {
-                    var x = SubmissionsFromASubverseByDate(subversetoshow);
-                    int count = x.Count();
-                    List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
-                    cacheData = new Tuple<IList<Message>, int>(content, count);
-                    System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, DateTime.Now.AddSeconds(subverseCacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                    var getDataFunc = new Func<object>(() =>
+                    {
+                        var x = SubmissionsFromASubverseByDate(subversetoshow);
+                        int count = x.Count();
+                        List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                        return new Tuple<IList<Message>, int>(content, count);
+                    });
+
+                    cacheData = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds));
                 }
+               
+                ////IAmAGate: Perf mods for caching
+                //string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
+                //Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)System.Web.HttpContext.Current.Cache[cacheKey];
+
+                //if (cacheData == null)
+                //{
+                //    var x = SubmissionsFromASubverseByDate(subversetoshow);
+                //    int count = x.Count();
+                //    List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                //    cacheData = new Tuple<IList<Message>, int>(content, count);
+                //    System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, DateTime.Now.AddSeconds(subverseCacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                //}
 
                 PaginatedList<Message> paginatedSubmissionsByDate = new PaginatedList<Message>(cacheData.Item1, pageNumber, pageSize, cacheData.Item2);
 
@@ -1694,7 +1752,26 @@ namespace Voat.Controllers
             {
                 if (sortingmode.Equals("new"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                    //IAmAGate: Perf mods for caching
+                    int pageNumber = page.HasValue ? page.Value : 0;
+                    string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "new").ToLower();
+                    Tuple<IList<Message>, int> cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.GetData(cacheKeyAll);
+
+                    if (cacheDataAll == null)
+                    {
+                        var getDataFunc = new Func<object>(() =>
+                        {
+                            var x = SfwSubmissionsFromAllSubversesByDate();
+                            int count = 50000;
+                            List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                            return new Tuple<IList<Message>, int>(content, count);
+                        });
+
+                        cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds));
+                    }
+                    paginatedSubmissions = new PaginatedList<Message>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
+
+                    //paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
                 if (sortingmode.Equals("top"))
@@ -1703,6 +1780,7 @@ namespace Voat.Controllers
                     return View("SubverseIndex", paginatedSubmissions);
                 }
 
+                //QUE: I don't think this code is reachable
                 // default sorting mode by rank
                 paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
@@ -1710,7 +1788,27 @@ namespace Voat.Controllers
 
             if (sortingmode.Equals("new"))
             {
-                paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+
+                //IAmAGate: Perf mods for caching
+                int pageNumber = page.HasValue ? page.Value : 0;
+                string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.nsfw", "all", pageNumber, "new").ToLower();
+                Tuple<IList<Message>, int> cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.GetData(cacheKeyAll);
+
+                if (cacheDataAll == null)
+                {
+                    var getDataFunc = new Func<object>(() =>
+                    {
+                        var x = SubmissionsFromAllSubversesByDate();
+                        int count = 50000;
+                        List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                        return new Tuple<IList<Message>, int>(content, count);
+                    });
+
+                    cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds));
+                }
+                paginatedSubmissions = new PaginatedList<Message>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
+
+                //paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
             if (sortingmode.Equals("top"))

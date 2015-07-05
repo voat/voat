@@ -15,8 +15,8 @@
 
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
-
-    var theme = Session["UserTheme"];
+    var theme = Voat.Utils.User.UserStylePreference(User.Identity.Name);
+    //var theme = Session["UserTheme"];
     var themeClass = theme == null || theme == "light" ? "light" : "dark";
 
     LoginViewModel loginViewModel = new LoginViewModel();

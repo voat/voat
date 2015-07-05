@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- 
+  The settings in this file are ignored when 
+  Application launches and only processed 
+  when the LastWrite date changes (file is saved).
+ -->
+<configuration>
+  <appSettings>
+    <add key="siteDisabled" value="false" />
+  </appSettings>
+</configuration>
