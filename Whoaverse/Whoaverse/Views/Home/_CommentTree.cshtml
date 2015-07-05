@@ -1,4 +1,4 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
     available online at http://www.gnu.org/licenses/gpl.txt;
     you may not use this file except in compliance with the License.
@@ -43,7 +43,21 @@
 {
     <div class="menuarea">
         <div class="spacer">
-            <span class="label label-default">want to join the discussion? <a href="javascript:void(0)" onclick="mustLogin();" class="login-required">login</a> or <a href="/account/register">register</a> in seconds.</span>
+            //Fix for Opera Mini and other mobile web browsers which don't handle the login window very well, this might also be good for other mobile browsers who can't display the login window properly so add them if you find them
+            if (Request.Browser.IsMobileDevice) //Checks if the page is being viewed on mobile
+            {
+                //Shows the mobile version
+                <span class="label label-default">Want to join the discussion? <a href="/account/login">login</a> or <a href="/account/register">register</a> in seconds.</span>
+            
+            }
+            else
+            {
+                //Shows the normal version
+               <span class="label label-default">Want to join the discussion? <a href="javascript:void(0)" onclick="mustLogin();" class="login-required">login</a> or <a href="/account/register">register</a> in seconds.</span>
+            }
+            
+            
+            
         </div>
     </div>
 }
