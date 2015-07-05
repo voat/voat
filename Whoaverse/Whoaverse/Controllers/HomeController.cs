@@ -34,7 +34,17 @@ namespace Voat.Controllers
 
     public class HomeController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly whoaverseEntities _db;
+
+        public HomeController()
+        {
+            this._db = new whoaverseEntities();
+        }
+
+        public HomeController(whoaverseEntities db)
+        {
+            this._db = db;
+        }
 
         // GET: submit
         [Authorize]
