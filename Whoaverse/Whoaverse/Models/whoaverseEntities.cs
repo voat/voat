@@ -14,7 +14,8 @@ namespace Voat.Models
         }
         //IAmAGate: Move queries to read-only mirror
         public whoaverseEntities(bool useReadOnlyOnUnAthenticated) : 
-            this(useReadOnlyOnUnAthenticated && !System.Web.HttpContext.Current.User.Identity.IsAuthenticated ? "whoaverseEntitiesReadOnly" : "whoaverseEntities") { 
+            this(useReadOnlyOnUnAthenticated && (System.Web.HttpContext.Current != null && !System.Web.HttpContext.Current.User.Identity.IsAuthenticated) 
+            ? "whoaverseEntitiesReadOnly" : "whoaverseEntities") { 
             /*no-op*/
         }
     }

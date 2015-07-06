@@ -323,6 +323,7 @@
     <Compile Include="Utils\Components\ContentProcessor.cs" />
     <Compile Include="Utils\Components\NotificationManager.cs" />
     <Compile Include="Utils\Components\RegExReplacer.cs" />
+    <Compile Include="Utils\CONSTANTS.cs" />
     <Compile Include="Utils\DateTimeUtility.cs" />
     <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\HubMinifier.cs" />
@@ -459,6 +460,7 @@
     <Compile Include="Utils\SavingComments.cs" />
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />
+    <Compile Include="Utils\SubverseCache.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\Karma.cs" />

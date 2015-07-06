@@ -15,22 +15,37 @@ namespace Voat.Utils
         {
             int count = 0;
 
-            using (whoaverseEntities db = new whoaverseEntities())
+            string cacheKey = String.Format("comment.count.{0}", submissionID).ToString();
+            object data = CacheHandler.GetData(cacheKey);
+            if (data == null)
             {
 
-                var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = "SELECT COUNT(*) FROM Comments WITH (NOLOCK) WHERE MessageID = @MessageID AND Name != 'deleted'";
-                var param = cmd.CreateParameter();
-                param.ParameterName = "MessageID";
-                param.DbType = System.Data.DbType.Int32;
-                param.Value = submissionID;
-                cmd.Parameters.Add(param);
-
-                if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                data = CacheHandler.Register(cacheKey, new Func<object>(() =>
                 {
-                    cmd.Connection.Open();
-                }
-                count = (int)cmd.ExecuteScalar();
+                    using (whoaverseEntities db = new whoaverseEntities())
+                    {
+
+                        var cmd = db.Database.Connection.CreateCommand();
+                        cmd.CommandText = "SELECT COUNT(*) FROM Comments WITH (NOLOCK) WHERE MessageID = @MessageID AND Name != 'deleted'";
+                        var param = cmd.CreateParameter();
+                        param.ParameterName = "MessageID";
+                        param.DbType = System.Data.DbType.Int32;
+                        param.Value = submissionID;
+                        cmd.Parameters.Add(param);
+
+                        if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                        {
+                            cmd.Connection.Open();
+                        }
+                        return (int)cmd.ExecuteScalar();
+                    }
+
+                }), TimeSpan.FromMinutes(2), false);
+
+                count = (int)data;
+            }
+            else {
+                count = (int)data;
             }
             return count;
         }

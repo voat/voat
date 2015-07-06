@@ -24,10 +24,10 @@
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
 
-    if (Model.Subverses != null)
-    {
-        anonymizedSubverse = Model.Subverses.anonymized_mode;
-    }
+    //if (Model.Subverses != null)
+    //{
+        anonymizedSubverse = SubverseCache.GetSubverseInfo(Model.Subverse).anonymized_mode;
+    //}
 
     //type 1 = message
     if (Model.Type == 1)
