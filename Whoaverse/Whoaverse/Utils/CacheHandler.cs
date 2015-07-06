@@ -4,14 +4,19 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
+using System.Collections.Concurrent;
 
 namespace Voat.Utils
 {
     public static class CacheHandler
     {
-        private static Dictionary<string, object> _cache = new Dictionary<string, object>();
-        private static Dictionary<string, Tuple<Func<object>, TimeSpan>> _meta = new Dictionary<string, Tuple<Func<object>, TimeSpan>>();
+
+        //System.Collections.Concurrent.ConcurrentDictionary<> 
+
+        private static ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
+        private static ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan>>();
         private static Dictionary<string, object> _lockObjects = new Dictionary<string, object>();
+        private static object sLock = new object();
 
         public static object GetData(string key) 
         {
@@ -30,21 +35,38 @@ namespace Voat.Utils
         {
             if (!String.IsNullOrEmpty(key))
             {
-                if (_cache.ContainsKey(key))
+                object o = GetLockObject(key);
+                lock (o)
                 {
-                    _cache.Remove(key);
-                }
-                if (_meta.ContainsKey(key))
-                {
-                    _meta.Remove(key);
-                }
-                if (_lockObjects.ContainsKey(key))
-                {
-                    _lockObjects.Remove(key);
+                    object x;
+                    _cache.TryRemove(key, out x);
+                    Tuple<Func<object>, TimeSpan> y;
+                    _meta.TryRemove(key, out y);
+
+                    //if (_cache.ContainsKey(key))
+                    //{
+                    //    _cache[key] = null;//.TryRemove(key);
+                    //}
+                    //if (_meta.ContainsKey(key))
+                    //{
+                    //    _meta[key] = null;//.Remove(key);
+                    //}
                 }
                 //System.Web.HttpContext.Current.Cache.Remove(key);
             }
-
+        }
+        private static object GetLockObject(string key) 
+        {
+            lock (sLock)
+            {
+                object o = (_lockObjects.ContainsKey(key) ? _lockObjects[key] : null);
+                if (o == null)
+                {
+                    o = new object();
+                    _lockObjects[key] = o;
+                }
+                return o;
+            }
         }
         public static object Register(string key, Func<object> getData, TimeSpan cacheTime, bool reloadUponExpiration = true) 
         {
@@ -53,12 +75,7 @@ namespace Voat.Utils
                 key = key.ToLower();
                 if (!_cache.ContainsKey(key))
                 {
-                    object o = (_lockObjects.ContainsKey(key) ? _lockObjects[key] : null);
-                    if (o == null)
-                    {
-                        o = new object();
-                        _lockObjects[key] = o;
-                    }
+                    object o = GetLockObject(key);
                     lock (o)
                     {
                         if (!_cache.ContainsKey(key))

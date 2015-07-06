@@ -55,7 +55,8 @@ namespace Voat
         protected void Application_BeginRequest(Object sender, EventArgs e) {
 
             //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
-            if (MvcApplication.SiteDisabled) {
+            if (MvcApplication.SiteDisabled && !HttpContext.Current.Request.IsLocal)
+            {
                 Server.Transfer("~/inactive.min.htm");
                 return;
             }
