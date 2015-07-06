@@ -822,6 +822,8 @@ VimeoExpando.prototype.process = function (target) {
 /* SoundCloud */
 var SoundCloudExpando = function (options) {
     
+    //Look for all http or https links to soundcloud.com (or their snd.sc shortcut).
+    //The regex will extract the URI as ID for the song. Case-insensitive.
     IFrameEmbedderExpando.call(this, /http(?:s{0,1}):\/\/(?:soundcloud\.com|snd\.sc)\/(.*)\/?/i, options);
     this.getSrcUrl = function (id, fn, fnError) {
 
