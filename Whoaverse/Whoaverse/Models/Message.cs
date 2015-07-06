@@ -43,6 +43,7 @@ namespace Voat.Models
         public string FlairCss { get; set; }
         public bool Anonymized { get; set; }
         public double Views { get; set; }
+        public bool IsArchived { get; set; }
     
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Votingtracker> Votingtrackers { get; set; }

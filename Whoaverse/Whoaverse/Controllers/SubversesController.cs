@@ -1860,7 +1860,7 @@ namespace Voat.Controllers
             }
             IQueryable<Message> sfwSubmissionsFromAllSubversesByDate = (from message in _db.Messages
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
+                                                                        where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                         where !subverse.admin_disabled.Value
                                                                         where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
@@ -1882,7 +1882,7 @@ namespace Voat.Controllers
             }
             IQueryable<Message> sfwSubmissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
+                                                                        where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                         where !subverse.admin_disabled.Value
                                                                         where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
@@ -1934,7 +1934,7 @@ namespace Voat.Controllers
             }
             IQueryable<Message> submissionsFromAllSubversesByDate = (from message in _db.Messages
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                     where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
+                                                                     where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                      where !subverse.admin_disabled.Value
                                                                      where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
@@ -1947,7 +1947,7 @@ namespace Voat.Controllers
         {
             IQueryable<Message> submissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                     where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
+                                                                     where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                      where !subverse.admin_disabled.Value
                                                                      where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)

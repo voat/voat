@@ -453,7 +453,7 @@ namespace Voat.Controllers
 
                                 IQueryable<Message> submissions = (from m in db.Messages.Include("Subverses").AsNoTracking()
                                                                    join s in db.Subscriptions on m.Subverse equals s.SubverseName
-                                                                   where m.Name != "deleted" && s.Username == User.Identity.Name
+                                                                   where !m.IsArchived && m.Name != "deleted" && s.Username == User.Identity.Name
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
                                                                    select m).OrderByDescending(s => s.Rank);
 
@@ -506,7 +506,7 @@ namespace Voat.Controllers
                                 
                                 // get only submissions from default subverses, order by rank
                                 IQueryable<Message> submissions = (from message in db.Messages.AsNoTracking()
-                                                                   where message.Name != "deleted"
+                                                                   where !message.IsArchived &&  message.Name != "deleted"
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(message.Name)
                                                                    join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                                                    select message).OrderByDescending(s => s.Rank);
@@ -657,7 +657,7 @@ namespace Voat.Controllers
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
                                 IQueryable<Message> submissions = (from m in db.Messages
                                                                    join s in db.Subscriptions on m.Subverse equals s.SubverseName
-                                                                   where m.Name != "deleted" && s.Username == User.Identity.Name
+                                                                   where !m.IsArchived && m.Name != "deleted" && s.Username == User.Identity.Name
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
                                                                    select m).OrderByDescending(s => s.Date);
                                 return submissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * 100).Take(recordsToTake).ToList();
@@ -686,7 +686,7 @@ namespace Voat.Controllers
                             {
                                 // get only submissions from default subverses, order by rank
                                 IQueryable<Message> submissions = (from message in db.Messages
-                                                                   where message.Name != "deleted"
+                                                                   where !message.IsArchived && message.Name != "deleted"
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(message.Name)
                                                                    join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                                                    select message).OrderByDescending(s => s.Date);

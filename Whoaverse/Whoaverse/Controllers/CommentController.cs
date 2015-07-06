@@ -195,8 +195,9 @@ namespace Voat.Controllers
             // this is a new view, register it for this submission
             var view = new Viewstatistic { submissionId = submission.Id, viewerId = ipHash };
             _db.Viewstatistics.Add(view);
-            submission.Views++;
 
+            submission.Views++;
+            
             _db.SaveChanges();
 
             return View("~/Views/Home/Comments.cshtml", submission);
