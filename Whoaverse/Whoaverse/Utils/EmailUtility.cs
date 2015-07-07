@@ -19,15 +19,19 @@ namespace Voat.Utils
 {
     public class EmailUtility
     {
+        private const string Host = "voat.co";
+        private const int Port = 25;
+        
         // handle email sending
         public static bool SendEmail(MailMessage message)
         {
             try
             {
-                var smtp = new SmtpClient {Host = "voat.co", Port = 25};
+                var smtp = new SmtpClient(Host, Port);
                 message.IsBodyHtml = false;
                 smtp.Send(message);
                 message.Dispose();
+                smtp.Dispose();
                 return true;
             }
             catch (Exception)
