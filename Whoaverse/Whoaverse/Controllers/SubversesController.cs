@@ -161,7 +161,7 @@ namespace Voat.Controllers
             }
 
             // check if subverse already exists
-            if (SubverseCache.Retrieve(subverseTmpModel.Name) == null)
+            if (SubverseCache.Retrieve(subverseTmpModel.Name) != null)
             {
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
                 return View();
