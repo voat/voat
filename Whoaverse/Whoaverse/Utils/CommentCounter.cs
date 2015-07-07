@@ -8,7 +8,7 @@ using Voat.Models;
 namespace Voat.Utils
 {
 
-    //THIS IS A TEMPORARY DEADLOCK WORKAROUND
+    //THIS IS A TEMPORARY DEADLOCK WORKAROUND (AND NOW CACHEABLE CONTENT)
     public static class CommentCounter
     {
         public static int CommentCount(int submissionID)
@@ -16,7 +16,7 @@ namespace Voat.Utils
             int count = 0;
 
             string cacheKey = String.Format("comment.count.{0}", submissionID).ToString();
-            object data = CacheHandler.GetData(cacheKey);
+            object data = CacheHandler.Retrieve(cacheKey);
             if (data == null)
             {
 
@@ -40,7 +40,7 @@ namespace Voat.Utils
                         return (int)cmd.ExecuteScalar();
                     }
 
-                }), TimeSpan.FromMinutes(2), false);
+                }), TimeSpan.FromMinutes(2), 1);
 
                 count = (int)data;
             }

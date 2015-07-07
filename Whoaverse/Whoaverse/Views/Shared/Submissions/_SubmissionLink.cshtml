@@ -30,7 +30,7 @@
 
     //if (Model.Subverses != null)
     //{
-        var sub = SubverseCache.GetSubverseInfo(Model.Subverse);
+        var sub = SubverseCache.Retrieve(Model.Subverse);
         ratedAdult = sub.rated_adult;
         anonymizedSubverse = sub.anonymized_mode;
     //}

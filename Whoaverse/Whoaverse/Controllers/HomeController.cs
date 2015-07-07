@@ -166,7 +166,8 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View("Submit");
 
             // check if subverse exists
-            var targetSubverse = _db.Subverses.Find(message.Subverse.Trim());
+            var targetSubverse = SubverseCache.Retrieve(message.Subverse);
+            //var targetSubverse = _db.Subverses.Find(message.Subverse.Trim());
             if (targetSubverse == null || message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
@@ -435,14 +436,17 @@ namespace Voat.Controllers
                 {
 
 
+                     
+
                     //IAmAGate: Perf mods for caching
-                    int subset = pageNumber / 4;
-                    string cacheKey = String.Format("front.{0}.set.{1}.sort.rank", User.Identity.Name, subset);
-                    object cacheData = CacheHandler.GetData(cacheKey);
+                    int pagesToTake = 2;
+                    int subset = pageNumber / pagesToTake;
+                    string cacheKey = String.Format("front.{0}.block.{1}.sort.rank", User.Identity.Name, subset);
+                    object cacheData = CacheHandler.Retrieve(cacheKey);
 
                     if (cacheData == null)
                     {
-                        int recordsToTake = 100; //4 pages worth
+                        int recordsToTake = pageSize * pagesToTake; //4 pages worth
 
                         var getDataFunc = new Func<object>(() =>
                         {
@@ -459,34 +463,16 @@ namespace Voat.Controllers
 
                                 var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
 
-                                return submissionsWithoutStickies.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * 100).Take(recordsToTake).ToList();
+                                return submissionsWithoutStickies.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
 
                             }
-                            //var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
-                            //IQueryable<Message> submissions = (from m in _db.Messages
-                            //                                   join s in _db.Subscriptions on m.Subverse equals s.SubverseName
-                            //                                   where m.Name != "deleted" && s.Username == User.Identity.Name
-                            //                                   where !(from bu in _db.Bannedusers select bu.Username).Contains(m.Name)
-                            //                                   select m).OrderByDescending(s => s.Date);
-                            //return submissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * 100).Take(recordsToTake).ToList();
+
                         });
                         //now with new and improved locking
-                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5), false);
+                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5));
                     }
-                    var set = ((IList<Message>)cacheData).Skip((pageNumber - (subset * 4)) * pageSize).Take(pageSize).ToList();
+                    var set = ((IList<Message>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(set, pageNumber, pageSize, 50000);
-
-
-                    //var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
-                    //IQueryable<Message> submissions = (from m in _db.Messages.Include("Subverses").AsNoTracking()
-                    //                                   join s in _db.Subscriptions on m.Subverse equals s.SubverseName
-                    //                                   where m.Name != "deleted" && s.Username == User.Identity.Name
-                    //                                   where !(from bu in _db.Bannedusers select bu.Username).Contains(m.Name)
-                    //                                   select m).OrderByDescending(s => s.Rank);
-
-                    //var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
-                    //var submissionsExcludingBlockedSubverses = submissionsWithoutStickies.Where(x => !blockedSubverses.Contains(x.Subverse));
-                    //PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
 
                     return View(paginatedSubmissions);
                 }
@@ -496,7 +482,7 @@ namespace Voat.Controllers
 
                     //IAmAGate: Perf mods for caching
                     string cacheKey = String.Format("front.guest.page.{0}.sort.rank", pageNumber);
-                    object cacheData = CacheHandler.GetData(cacheKey);
+                    object cacheData = CacheHandler.Retrieve(cacheKey);
                     if (cacheData == null)
                     {
 
@@ -516,7 +502,7 @@ namespace Voat.Controllers
                             }
                         });
                         //Now with it's own locking!
-                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), true);                               
+                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));                               
                     }
 
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>((IList<Message>)cacheData, pageNumber, pageSize, 50000);
@@ -642,13 +628,14 @@ namespace Voat.Controllers
                 {
 
                     //IAmAGate: Perf mods for caching
-                    int subset = pageNumber / 4;
-                    string cacheKey = String.Format("front.{0}.set.{1}.sort.new", User.Identity.Name, subset);
-                    object cacheData = CacheHandler.GetData(cacheKey);
+                    int pagesToTake = 2;
+                    int subset = pageNumber / pagesToTake;
+                    string cacheKey = String.Format("front.{0}.block.{1}.sort.new", User.Identity.Name, subset);
+                    object cacheData = CacheHandler.Retrieve(cacheKey);
                     
                     if (cacheData == null)
                     {
-                        int recordsToTake = 100; //4 pages worth
+                        int recordsToTake = 25 * pagesToTake; //pages worth
                        
                         var getDataFunc = new Func<object>(() =>
                         {
@@ -660,13 +647,13 @@ namespace Voat.Controllers
                                                                    where !m.IsArchived && m.Name != "deleted" && s.Username == User.Identity.Name
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
                                                                    select m).OrderByDescending(s => s.Date);
-                                return submissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * 100).Take(recordsToTake).ToList();
+                                return submissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
                             }
                         });
                         //now with new and improved locking
-                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5), false);
+                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5), 1);
                     }
-                    var set = ((IList<Message>)cacheData).Skip((pageNumber - (subset * 4)) * pageSize).Take(pageSize).ToList();
+                    var set = ((IList<Message>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
 
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(set, pageNumber, pageSize, 50000);
                     return View("Index", paginatedSubmissions);
@@ -676,7 +663,7 @@ namespace Voat.Controllers
 
                     //IAmAGate: Perf mods for caching
                     string cacheKey = String.Format("front.guest.page.{0}.sort.new", pageNumber);
-                    object cacheData = CacheHandler.GetData(cacheKey);
+                    object cacheData = CacheHandler.Retrieve(cacheKey);
 
                     if (cacheData == null)
                     {
@@ -695,7 +682,7 @@ namespace Voat.Controllers
                         });
 
                         //now with new and improved locking
-                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), true);
+                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
                     }
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>((IList<Message>)cacheData, pageNumber, pageSize, 50000);
 

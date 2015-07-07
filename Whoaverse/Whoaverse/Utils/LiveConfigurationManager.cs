@@ -31,6 +31,7 @@ namespace Voat.Utils
         public const string SiteSlogan = "siteSlogan";
         public const string SignalRDisabled = "signalrDisabled";
         public const string SiteDisabled = "siteDisabled";
+        public const string SetsDisabled = "setsDisabled";
     }
 
     public class LiveConfigurationManager
@@ -117,6 +118,7 @@ namespace Voat.Utils
                 SetValueIfPresent<bool>(CONFIGURATION.ForceHTTPS, section[CONFIGURATION.ForceHTTPS]);
                 SetValueIfPresent<bool>(CONFIGURATION.SiteDisabled, section[CONFIGURATION.SiteDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.SignalRDisabled, section[CONFIGURATION.SignalRDisabled]);
+                SetValueIfPresent<bool>(CONFIGURATION.SetsDisabled, section[CONFIGURATION.SetsDisabled]);
             }
         }
 

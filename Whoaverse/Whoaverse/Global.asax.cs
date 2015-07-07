@@ -205,11 +205,21 @@ namespace Voat
                 return (bool)configValues[CONFIGURATION.SignalRDisabled];
             }
         }
-        public static bool SiteDisabled {
-            get {
+
+        public static bool SiteDisabled 
+        {
+            get 
+            {
                 return (bool)configValues[CONFIGURATION.SiteDisabled];
             }
         }
+
+        public static bool SetsDisabled {
+            get {
+                return (bool)configValues[CONFIGURATION.SetsDisabled];
+            }
+        }
+
         #endregion 
 
     }

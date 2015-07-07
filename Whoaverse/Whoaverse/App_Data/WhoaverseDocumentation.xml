@@ -451,7 +451,7 @@
             Complex types: POCO types.
             Nullables: <see cref="T:System.Nullable`1"/>.
             Arrays: arrays of simple types or complex types.
-            Key value pairs: <see cref="T:System.Collections.Generic.KeyValuePair`2"/>
+            Keys value pairs: <see cref="T:System.Collections.Generic.KeyValuePair`2"/>
             Tuples: <see cref="T:System.Tuple`1"/>, <see cref="T:System.Tuple`2"/>, etc
             Dictionaries: <see cref="T:System.Collections.Generic.IDictionary`2"/> or anything deriving from <see cref="T:System.Collections.Generic.IDictionary`2"/>.
             Collections: <see cref="T:System.Collections.Generic.IList`1"/>, <see cref="T:System.Collections.Generic.IEnumerable`1"/>, <see cref="T:System.Collections.Generic.ICollection`1"/>, <see cref="T:System.Collections.IList"/>, <see cref="T:System.Collections.IEnumerable"/>, <see cref="T:System.Collections.ICollection"/> or anything deriving from <see cref="T:System.Collections.Generic.ICollection`1"/> or <see cref="T:System.Collections.IList"/>.
@@ -480,6 +480,26 @@
             Initializes a new instance of the <see cref="T:Voat.Areas.HelpPage.XmlDocumentationProvider"/> class.
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
+        </member>
+        <member name="M:Voat.Utils.CacheHandler.Register(System.String,System.Func{System.Object},System.TimeSpan,System.Int32)">
+            <summary>
+            Registers a function for cache. Locks by key and generates data for return from function
+            </summary>
+            <param name="key">Unique Cache Keys</param>
+            <param name="getData">Function that returns data to be placed in cache</param>
+            <param name="cacheTime">The timespan in which to update or remove item from cache</param>
+            <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+            <returns></returns>
+        </member>
+        <member name="M:Voat.Utils.CacheHandler.Register``1(System.String,System.Func{``0},System.TimeSpan,System.Int32)">
+            <summary>
+            Registers a function for cache. Locks by key and generates data for return from function
+            </summary>
+            <param name="key">Unique Cache Keys</param>
+            <param name="getData">Function that returns data to be placed in cache</param>
+            <param name="cacheTime">The timespan in which to update or remove item from cache</param>
+            <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+            <returns></returns>
         </member>
         <member name="M:Voat.Controllers.WebApiController.DefaultSubverses">
             <summary>

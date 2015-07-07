@@ -8,13 +8,15 @@ namespace Voat.Utils
 {
     public static class SubverseCache
     {
-
-        public static Subverse GetSubverseInfo(string subverse) {
+        public static void Remove(string subverse) {
+            CacheHandler.Remove(CacheHandler.Keys.SubverseInfo(subverse));
+        }
+        public static Subverse Retrieve(string subverse) {
 
             if (!String.IsNullOrEmpty(subverse)) { 
-                string cacheKey = String.Format("sub.{0}.info", subverse).ToLower();
+                string cacheKey = CacheHandler.Keys.SubverseInfo(subverse);
 
-                Subverse sub = (Subverse)CacheHandler.GetData(cacheKey);
+                Subverse sub = (Subverse)CacheHandler.Retrieve(cacheKey);
                 if (sub == null) {
                     sub = (Subverse)CacheHandler.Register(cacheKey, new Func<object>(() => {
 
@@ -22,7 +24,7 @@ namespace Voat.Utils
                             return db.Subverses.Where(x => x.name == subverse).FirstOrDefault();
                         }
                 
-                    }), TimeSpan.FromMinutes(5), true);
+                    }), TimeSpan.FromMinutes(5), 50);
                 }
                 return sub;
             }

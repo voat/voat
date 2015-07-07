@@ -113,7 +113,9 @@ namespace Voat.Controllers
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
         {
-            var subverse = _db.Subverses.Find(subversetoshow);
+            var subverse = SubverseCache.Retrieve(subversetoshow);
+            //var subverse = _db.Subverses.Find(subversetoshow);
+
             if (subverse == null) return View("~/Views/Errors/Error_404.cshtml");
 
             //HACK: Disable subverse

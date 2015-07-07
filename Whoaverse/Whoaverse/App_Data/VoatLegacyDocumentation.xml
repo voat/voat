@@ -481,6 +481,26 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="M:Voat.Utils.CacheHandler.Register(System.String,System.Func{System.Object},System.TimeSpan,System.Int32)">
+            <summary>
+            Registers a function for cache. Locks by key and generates data for return from function
+            </summary>
+            <param name="key">Unique Cache Key</param>
+            <param name="getData">Function that returns data to be placed in cache</param>
+            <param name="cacheTime">The timespan in which to update or remove item from cache</param>
+            <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+            <returns></returns>
+        </member>
+        <member name="M:Voat.Utils.CacheHandler.Register``1(System.String,System.Func{``0},System.TimeSpan,System.Int32)">
+            <summary>
+            Registers a function for cache. Locks by key and generates data for return from function
+            </summary>
+            <param name="key">Unique Cache Key</param>
+            <param name="getData">Function that returns data to be placed in cache</param>
+            <param name="cacheTime">The timespan in which to update or remove item from cache</param>
+            <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+            <returns></returns>
+        </member>
         <member name="M:Voat.Controllers.WebApiController.DefaultSubverses">
             <summary>
              This API returns a list of default subverses shown to guests.
