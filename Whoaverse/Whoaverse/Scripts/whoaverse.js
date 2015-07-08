@@ -19,7 +19,7 @@ $(document).ready(function () {
     $('[data-toggle="popover"]').popover({ trigger: 'hover', 'placement': 'top' });
 
     // prepare auth tokens
-    securityToken = $('[name=__RequestVerificationToken]').val();
+    var securityToken = $('[name=__RequestVerificationToken]').val();
     $('body').bind('ajaxSend', function (elm, xhr, s) {
         if (s.type == 'POST' && typeof securityToken != 'undefined') {
             if (s.data.length > 0) {
@@ -98,7 +98,7 @@ $(document).ready(function () {
                 if ($('#mail').hasClass('nohavemail')) {
                     $('#mail').removeClass('nohavemail').addClass('havemail');
                 };
-                $('#mail').prop('title', 'your have ' + count + ' unread notifications');
+                $('#mail').prop('title', 'You have ' + count + ' unread notifications');
                 // show mail counter
                 $('#mailcounter').show();
                 $('#mailcounter').html(count);
