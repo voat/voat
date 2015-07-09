@@ -183,3 +183,5 @@ Whoaverse/Whoaverse/Web.config
 Whoaverse/Whoaverse/sitemap.xml
 Whoaverse/packages/
 Whoaverse/Whoaverse/Whoaverse.csproj
+*.ncrunchproject
+*.ncrunchsolution
