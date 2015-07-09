@@ -951,8 +951,8 @@ $.fn.exists = function () {
 
 // subscribe to subverse
 function subscribe(obj, subverseName) {
-    $(obj).attr("onclick", "unsubscribe(this)");
-    $(obj).html("unsubscribe");
+    $(obj).attr("onclick", "unsubscribe(this, "+JSON.stringify(subverseName)+")");
+    $(obj).toggleClass("btn-sub btn-unsub").html("unsubscribe");
 
     // call the subverse subscribe API
     $.ajax({
@@ -971,8 +971,8 @@ function subscribe(obj, subverseName) {
 
 // unsubscribe from subverse
 function unsubscribe(obj, subverseName) {
-    $(obj).attr("onclick", "subscribe(this)");
-    $(obj).html("subscribe");
+    $(obj).attr("onclick", "subscribe(this, "+JSON.stringify(subverseName)+")");
+    $(obj).toggleClass("btn-sub btn-unsub").html("subscribe");
 
     // call the subverse unsubscribe API
     $.ajax({
