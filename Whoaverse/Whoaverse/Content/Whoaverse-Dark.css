@@ -2357,6 +2357,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     border-radius: 3px;
     margin: 8px 0 0;
     padding: 5px 10px;
+    max-width: 60em;
 }
 
     .link .usertext .md blockquote {
@@ -2501,6 +2502,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
     .comment .md {
         font-size: 13px;
+        max-width: 60em;
     }
 
     /* ! Sitetable : Comments : Form
