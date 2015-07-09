@@ -126,7 +126,15 @@
     @* For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: *@
     <link rel="apple-touch-icon-precomposed" href="~/Graphics/Icons/apple-touch-icon-precomposed.png">
     @* 57×57px *@
+
+    @if (User.Identity.IsAuthenticated && Voat.Utils.User.UserHasNewMessages(User.Identity.Name))
+    {
+    <link rel='shortcut icon' href="/favicon_new_messages.ico" type="image/x-icon" />
+    }
+    else
+    {
     <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
+    }
 
 </head>
 <body ondrop="dropFunction(event);" ondragover="return false" class="@themeClass">
