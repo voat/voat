@@ -62,7 +62,7 @@ namespace Voat.Models
 
     public class ApplicationDbContext : IdentityDbContext<WhoaVerseUser>
     {
-        public ApplicationDbContext() : base("whoaverseUsers") { }
+        public ApplicationDbContext() : base("voatUsers") { }
 
         public DbSet<PartnerInformation> PartnerInformation { get; set; }
     }
