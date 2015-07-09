@@ -6,8 +6,21 @@ using System.Web;
 namespace Voat.Utils.Components {
     public class ContentProcessor {
 
+        // ensure no beforefieldinit - see http://csharpindepth.com/Articles/General/Beforefieldinit.aspx
+        static ContentProcessor() { }
+
         private List<ContentFilter> _filters = new List<ContentFilter>();
-        private static ContentProcessor _instance = null;
+        private static Lazy<ContentProcessor> _instance = new Lazy<ContentProcessor>(() => new ContentProcessor
+        {
+            Filters =
+            {
+                new UserMentionNotificationFilter(),
+                new UserMentionLinkFilter(),
+                new SubverseLinkFilter(),
+                new RawHyperlinkFilter(),
+                new RedditLinkFilter()
+            }
+        });
 
         public List<ContentFilter> Filters {
             get { return _filters; }
@@ -15,22 +28,9 @@ namespace Voat.Utils.Components {
         }
 
         public static ContentProcessor Instance {
-            get {
-                if (_instance == null) {
-                    lock (typeof(ContentProcessor)) {
-                        if (_instance == null) {
-                            var p = new ContentProcessor();
-                            p.Filters.AddRange(new ContentFilter[] {
-                                new UserMentionNotificationFilter(), 
-                                new UserMentionLinkFilter(),
-                                new SubverseLinkFilter(),
-                                new RawHyperlinkFilter(),
-                                new RedditLinkFilter()});
-                            _instance = p;
-                        }
-                    }
-                }
-                return _instance;
+            get
+            {
+                return _instance.Value;
             }
         }
         public bool HasStage(ProcessingStage stage) {
