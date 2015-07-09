@@ -26,28 +26,56 @@ The following 3rd party libraries/extensions are used:
 ### Installation instructions
 Follow these steps to get up and running:
 
-#### step 1
-- Create databases and database owners.
-Voat uses 2 SQL databases to store messages, comments, votes, users etc. 
-Default database names are whoaverse and whoaverse_users.
-You can use whoaverse.sql and whoaverse_user.sql to generate necessary tables for each respective database.
+#### Step 1: Install software
 
-#### step 2
-- After cloning this repository, you will need to modify and place Web.config file in WhoaVerse folder (the same folder where the file packages.config is located). You need to modify the following 2 connection strings in this file to reflect your SQL server address, port, database names and database usernames: 
+You'll need the following software installed to get up and running
+
+- Visual Studio 2015 Community Edition (https://www.visualstudio.com/en-us/downloads/visual-studio-2015-downloads-vs.aspx)
+- SQL Server 2015 Express Edition with Advanced Services (https://www.microsoft.com/en-us/server-cloud/products/sql-server-editions/sql-server-express.aspx)
+
+#### Step 1: Setup databases
+
+- Run SQL Server 2014 Management Studio
+- Click "File" -> "Open" and select createDB.sql in the root of the project. When it has loaded, click "Execute"
+- Do the same with whoaverse.sql and whoaverse_users.sql
+- Select the "Databases" item under the root of the "Object Explorer" pane and press F5 to refresh it.
+- Expand the "Databases" item under the root of the "Object Explorer" pane. Verify that you see both a "voat" and "voatUsers" item. If so, for each item
+  - Expand "Security" -> "Users" and verify that you see "voat" or "voatUsers," respectively
+  - Expand "Security" -> "Roles" -> "Database Roles." Double click "db_owner" and verify that "voat" or "voatUsers" in the "Role Members" box.
+- Right click your server in the "Object Explorer" pane (highest level item) and select "Properties." Select "Security" on the left and verify that "SQL Server and Windows Authentication mode" is selected. Press "OK."
+- Right click the server again and select "Restart" and accept the admin prompt. Select "Yes" in the next dialog to restart the server.
+- Right click the server again and select "New Query." Enter **SELECT @@SERVERNAME**, click "Execute" and copy the result to use in Step 2.
+
+#### Step 2: Setup project
+
+- After cloning this repository, copy the **Web.config** file from the root of the project folder into the **/Whoaverse/Whoaverse** folder (the same folder where the file **packages.config** is located). You need to modify the following 2 connection strings in this file to reflect your SQL server address, port, database names and database usernames: 
 whoaverseUsers and whoaverseEntities
 ```
 <add name="whoaverseUsers" connectionString="Data Source=yourdomain.com, 1433;Initial Catalog=whoaverse_users;Persist Security Info=True;User ID=yourusername;Password=yourpassword" providerName="System.Data.SqlClient" />
 <add name="whoaverseEntities" connectionString="metadata=res://*/Models.WhoaverseEntityDataModel.csdl|res://*/Models.WhoaverseEntityDataModel.ssdl|res://*/Models.WhoaverseEntityDataModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=yourdomain.com;initial catalog=whoaverse;persist security info=True;user id=yourusername;password=yourpassword;MultipleActiveResultSets=True;App=EntityFramework&quot;" providerName="System.Data.EntityClient" />
 ```
-- You need to sign up for recaptcha service at https://www.google.com/recaptcha/admin#whyrecaptcha to get your public and private recaptcha keys
+- (Following this guide, you'll have the following values for these attributes in the two entries above:
+  - Data Source: Replace "yourdomain.com" with the value you copied at the end of step 1. Should end up reading something like "NAME-PC\LOCALHOST, 1433".
+  - Initial Catalog: voatUsers/voat
+  - User ID: voatUsers/voat
+  - Password: secretpwd
+
+- You need to sign up for recaptcha service at https://www.google.com/recaptcha/admin#whyrecaptcha to get your public and private recaptcha keys. Use "localhost" for the domain, and your e-mail for the e-mail.
 - Once you have your recaptcha keys, you need to modify the Web.config file and in section `<appSettings>`, you need to add the following for your keys:
 ```
 <add key="recaptchaPublicKey" value="your public key goes here" />
 <add key="recaptchaPrivateKey" value="your private key goes here" />
 ```
-#### step 3
-- Reinstall dependencies (binaries for NuGet packages) by issuing the following command in Package Manager Console (when asked to overwrite existing files, choose no for all:
-Update-Package -Reinstall
+
+- Delete the folder **/Whoaverse/Whoaverse/packages/WebActivator.1.5.0** if it exists
+
+#### Step 3: Visual Studio Setup
+
+- Open **/Whoaverse/Voat.sln**
+- Go to Tools -> NuGet Package Manager -> Package Manager Console
+- If a yellow bar with a "Restore" button appears, click "Restore"
+- Reinstall dependencies (binaries for NuGet packages) by issuing the following command in Package Manager Console: "Update-Package -Reinstall" (when asked to overwrite existing files, choose "No To All")
+- Select Debug -> Start Debugging
 
 ### After installation
 Start by creating your user account. The frontpage will be empty, so you should start by creating a subverse.
