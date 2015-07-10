@@ -95,10 +95,10 @@ namespace Voat.Utils
                 key = key.ToLower();
                 if (!_cache.ContainsKey(key))
                 {
-                    if (!_cache.ContainsKey(key))
+                    object o = GetLockObject(key);
+                    lock (o)
                     {
-                        object o = GetLockObject(key);
-                        lock (o)
+                        if (!_cache.ContainsKey(key))
                         {
                             try
                             {
