@@ -34,9 +34,18 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> DefaultSubverses()
         {
-            var listOfDefaultSubverses = _db.Defaultsubverses.OrderBy(s => s.position).ToList();
 
-            return listOfDefaultSubverses.Select(item => item.name);
+            IEnumerable<string> defaultSubs = CacheHandler.Register<IEnumerable<string>>("LegacyApi.DefaultSubverses",
+               new Func<IList<string>>(() =>
+               {
+                   using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                   {
+                       var listOfDefaultSubverses = db.Defaultsubverses.OrderBy(s => s.position).ToList();
+                       return listOfDefaultSubverses.Select(item => item.name).ToList();
+                   }
+               }), TimeSpan.FromHours(12));
+            return defaultSubs;
+
         }
 
         // GET api/bannedhostnames
@@ -46,9 +55,16 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> BannedHostnames()
         {
-            var bannedHostnames = _db.Banneddomains.OrderBy(s => s.Added_on).ToList();
-
-            return bannedHostnames.Select(item => "Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by);
+            IEnumerable<string> bannedSubs = CacheHandler.Register<IEnumerable<string>>("LegacyApi.BannedHostnames",
+              new Func<IList<string>>(() =>
+              {
+                  using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                  {
+                      var bannedHostnames = db.Banneddomains.OrderBy(s => s.Added_on).ToList();
+                      return bannedHostnames.Select(item => "Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by).ToList();
+                  }
+              }), TimeSpan.FromHours(12));
+            return bannedSubs;
         }
 
         // GET api/ishostnamegloballybanned
@@ -69,9 +85,14 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> Top200Subverses()
         {
-            var top200Subverses = _db.Subverses.Where(s => s.admin_disabled != true).OrderByDescending(s => s.subscribers).ToList();
-
-            return top200Subverses.Select(item => "Name: " + item.name + "," + "Description: " + item.description + "," + "Subscribers: " + item.subscribers + "," + "Created: " + item.creation_date);
+            IEnumerable<string> top200 = CacheHandler.Register<IEnumerable<string>>("LegacyApi.Top200Subverses", 
+                new Func<IList<string>>(() => {
+                    using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY)) {
+                        var top200Subverses = db.Subverses.Where(s => s.admin_disabled != true).OrderByDescending(s => s.subscribers).Take(200);
+                        return top200Subverses.Select(item => "Name: " + item.name + "," + "Description: " + item.description + "," + "Subscribers: " + item.subscribers + "," + "Created: " + item.creation_date).ToList();
+                    }
+                }), TimeSpan.FromMinutes(90), 0);
+            return top200;
         }
 
         // GET api/frontpage
@@ -145,7 +166,9 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<ApiMessage> SubverseFrontpage(string subverse)
         {
-
+            if (String.IsNullOrEmpty(subverse)) {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
             //IAmAGate: Perf mods for caching
             string cacheKey = String.Format("LegacyApi.SubverseFrontpage.{0}", subverse).ToLower();
             object cacheData = CacheHandler.Retrieve(cacheKey);
@@ -164,7 +187,7 @@ namespace Voat.Controllers
 
                     if (frontpageSubmissions == null || frontpageSubmissions.Count == 0)
                     {
-                        throw new HttpResponseException(HttpStatusCode.NotFound);
+                        return null; // throw new HttpResponseException(HttpStatusCode.NotFound);
                     }
 
                     var resultList = new List<ApiMessage>();
@@ -202,6 +225,10 @@ namespace Voat.Controllers
                     return resultList;
                 }), TimeSpan.FromMinutes(5), 2);
             }
+            //means we didn't find one.
+            if (cacheData == null) {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
             return (IEnumerable<ApiMessage>)cacheData;
         }
         
@@ -213,40 +240,54 @@ namespace Voat.Controllers
         [HttpGet]
         public ApiMessage SingleSubmission(int id)
         {
-            var submission = _db.Messages.Find(id);
 
-            if (submission == null || submission.Subverses.admin_disabled == true)
-            {
+            ApiMessage singleSubmission = CacheHandler.Register<ApiMessage>(String.Format("LegacyApi.SingleSubmission.{0}", id),
+              new Func<ApiMessage>(() =>
+              {
+                  using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                  {
+                      var submission = db.Messages.Find(id);
+
+                      if (submission == null || submission.Subverses.admin_disabled == true)
+                      {
+                          return null; // throw new HttpResponseException(HttpStatusCode.NotFound);
+                      }
+
+                      var resultModel = new ApiMessage
+                      {
+                          CommentCount = submission.Comments.Count,
+                          Id = submission.Id,
+                          Date = submission.Date,
+                          LastEditDate = submission.LastEditDate,
+                          Likes = submission.Likes,
+                          Dislikes = submission.Dislikes
+                      };
+
+                      if (submission.Anonymized || submission.Subverses.anonymized_mode)
+                      {
+                          resultModel.Name = submission.Id.ToString();
+                      }
+                      else
+                      {
+                          resultModel.Name = submission.Name;
+                      }
+                      resultModel.Rank = submission.Rank;
+                      resultModel.Thumbnail = submission.Thumbnail;
+                      resultModel.Subverse = submission.Subverse;
+                      resultModel.Type = submission.Type;
+                      resultModel.Title = submission.Title;
+                      resultModel.Linkdescription = submission.Linkdescription;
+                      resultModel.MessageContent = submission.MessageContent;
+
+                      return resultModel;
+                  }
+              }), TimeSpan.FromMinutes(5), 2);
+
+            if (singleSubmission == null) {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
+            return singleSubmission;
 
-            var resultModel = new ApiMessage
-            {
-                CommentCount = submission.Comments.Count,
-                Id = submission.Id,
-                Date = submission.Date,
-                LastEditDate = submission.LastEditDate,
-                Likes = submission.Likes,
-                Dislikes = submission.Dislikes
-            };
-
-            if (submission.Anonymized || submission.Subverses.anonymized_mode)
-            {
-                resultModel.Name = submission.Id.ToString();
-            }
-            else
-            {
-                resultModel.Name = submission.Name;
-            }            
-            resultModel.Rank = submission.Rank;
-            resultModel.Thumbnail = submission.Thumbnail;
-            resultModel.Subverse = submission.Subverse;
-            resultModel.Type = submission.Type;
-            resultModel.Title = submission.Title;
-            resultModel.Linkdescription = submission.Linkdescription;
-            resultModel.MessageContent = submission.MessageContent;
-
-            return resultModel;
         }
 
         // GET api/singlecomment
@@ -329,6 +370,7 @@ namespace Voat.Controllers
         [HttpGet]
         public ApiUserInfo UserInfo(string userName)
         {
+
             if (userName != "deleted" && !Utils.User.UserExists(userName))
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
@@ -339,18 +381,27 @@ namespace Voat.Controllers
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            var resultModel = new ApiUserInfo();
+            ApiUserInfo userInfo = CacheHandler.Register<ApiUserInfo>(String.Format("LegacyApi.UserInfo.{0}", userName),
+              new Func<ApiUserInfo>(() =>
+              {
+                  using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                  {
+                      var resultModel = new ApiUserInfo();
 
-            var userBadgesList = Utils.User.UserBadges(userName);
-            var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge {Awarded = item.Awarded, BadgeName = item.Badge.BadgeName}).ToList();
+                      var userBadgesList = Utils.User.UserBadges(userName);
+                      var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge { Awarded = item.Awarded, BadgeName = item.Badge.BadgeName }).ToList();
 
-            resultModel.Name = userName;
-            resultModel.CCP = Karma.CommentKarma(userName);
-            resultModel.LCP = Karma.LinkKarma(userName);
-            resultModel.RegistrationDate = Utils.User.GetUserRegistrationDateTime(userName);
-            resultModel.Badges = resultBadgesList;
+                      resultModel.Name = userName;
+                      resultModel.CCP = Karma.CommentKarma(userName);
+                      resultModel.LCP = Karma.LinkKarma(userName);
+                      resultModel.RegistrationDate = Utils.User.GetUserRegistrationDateTime(userName);
+                      resultModel.Badges = resultBadgesList;
 
-            return resultModel;
+                      return resultModel;
+                  }
+              }), TimeSpan.FromMinutes(90));
+            return userInfo;
+
         }
 
         // GET api/badgeinfo
@@ -361,22 +412,33 @@ namespace Voat.Controllers
         [HttpGet]
         public ApiBadge BadgeInfo(string badgeId)
         {
-            var badge = _db.Badges.Find(badgeId);
 
-            if (badge == null)
-            {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
-            }
+            ApiBadge badgeInfo = CacheHandler.Register<ApiBadge>(String.Format("LegacyApi.ApiBadge.{0}", badgeId),
+             new Func<ApiBadge>(() =>
+             {
+                 using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                 {
+                     var badge = _db.Badges.Find(badgeId);
 
-            var resultModel = new ApiBadge
-            {
-                BadgeId = badge.BadgeId,
-                BadgeGraphics = badge.BadgeGraphics,
-                Name = badge.BadgeName,
-                Title = badge.BadgeTitle
-            };
+                     if (badge == null)
+                     {
+                         throw new HttpResponseException(HttpStatusCode.NotFound);
+                     }
 
-            return resultModel;
+                     var resultModel = new ApiBadge
+                     {
+                         BadgeId = badge.BadgeId,
+                         BadgeGraphics = badge.BadgeGraphics,
+                         Name = badge.BadgeName,
+                         Title = badge.BadgeTitle
+                     };
+
+                     return resultModel;
+                 }
+             }), TimeSpan.FromHours(5));
+            return badgeInfo;
+
+           
         }
 
         // GET api/submissioncomments

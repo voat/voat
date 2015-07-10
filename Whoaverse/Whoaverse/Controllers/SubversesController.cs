@@ -1851,8 +1851,16 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult TopViewedSubmissions24Hours()
         {
-            var submissions = SfwSubmissionsFromAllSubversesByViews24Hours();
-            return PartialView("_MostViewedSubmissions", submissions);
+            //var submissions = 
+            var cacheData = CacheHandler.Register("TopViewedSubmissions24Hours", new Func<object>(() => {
+                using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY)){
+                    return SfwSubmissionsFromAllSubversesByViews24Hours(db).ToList(); 
+                }
+            
+            }), TimeSpan.FromMinutes(60), 5);
+
+
+            return PartialView("_MostViewedSubmissions", cacheData);
         }
 
         #region sfw submissions from all subverses
@@ -1914,12 +1922,15 @@ namespace Voat.Controllers
             return sfwSubmissionsFromAllSubversesByTop;
         }
 
-        private IQueryable<Message> SfwSubmissionsFromAllSubversesByViews24Hours()
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByViews24Hours(whoaverseEntities _db)
         {
+            if (_db == null) {
+                _db = this._db;
+            }
             var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
             IQueryable<Message> sfwSubmissionsFromAllSubversesByViews24Hours = (from message in _db.Messages
                                                                                 join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                                where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && message.Date >= startDate && message.Date <= DateTime.Now
+                                                                                where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && message.Date >= startDate && message.Date <= DateTime.Now
                                                                                 where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                                 where !subverse.admin_disabled.Value
                                                                                 where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
