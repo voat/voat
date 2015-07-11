@@ -214,12 +214,20 @@ namespace Voat
             }
         }
 
-        public static bool SetsDisabled {
-            get {
+        public static bool SetsDisabled
+        {
+            get
+            {
                 return (bool)configValues[CONFIGURATION.SetsDisabled];
             }
         }
-
+        public static bool CacheDisabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.CacheDisabled];
+            }
+        }
         #endregion 
 
     }

@@ -24,7 +24,6 @@ namespace Voat.Utils
                 {
                     using (whoaverseEntities db = new whoaverseEntities())
                     {
-
                         var cmd = db.Database.Connection.CreateCommand();
                         cmd.CommandText = "SELECT COUNT(*) FROM Comments WITH (NOLOCK) WHERE MessageID = @MessageID AND Name != 'deleted'";
                         var param = cmd.CreateParameter();

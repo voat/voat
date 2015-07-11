@@ -32,6 +32,7 @@ namespace Voat.Utils
         public const string SignalRDisabled = "signalrDisabled";
         public const string SiteDisabled = "siteDisabled";
         public const string SetsDisabled = "setsDisabled";
+        public const string CacheDisabled = "cacheDisabled";
     }
 
     public class LiveConfigurationManager
@@ -119,6 +120,10 @@ namespace Voat.Utils
                 SetValueIfPresent<bool>(CONFIGURATION.SiteDisabled, section[CONFIGURATION.SiteDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.SignalRDisabled, section[CONFIGURATION.SignalRDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.SetsDisabled, section[CONFIGURATION.SetsDisabled]);
+                SetValueIfPresent<bool>(CONFIGURATION.CacheDisabled, section[CONFIGURATION.CacheDisabled]);
+
+                //HACK ATTACK
+                CacheHandler.CacheEnabled = !MvcApplication.CacheDisabled;
             }
         }
 

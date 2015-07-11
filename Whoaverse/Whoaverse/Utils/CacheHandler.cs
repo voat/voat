@@ -25,6 +25,18 @@ namespace Voat.Utils
 
         }
 
+        private static bool cacheEnabled = true;
+
+        public static bool CacheEnabled 
+        {
+            get {
+                return cacheEnabled;
+            }
+            set {
+                cacheEnabled = value;
+            }
+        }
+
         //data kept in dictionary to serve as hot cache
         private static ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
 
@@ -92,6 +104,11 @@ namespace Voat.Utils
         {
             if (!String.IsNullOrEmpty(key))
             {
+                //allow devs to turn off local cache for testing
+                if (!CacheEnabled) {
+                    return getData();
+                }
+
                 key = key.ToLower();
                 if (!_cache.ContainsKey(key))
                 {
