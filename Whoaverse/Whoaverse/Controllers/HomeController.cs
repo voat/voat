@@ -34,8 +34,6 @@ namespace Voat.Controllers
 
     public class HomeController : Controller
     {
-        //static Dictionary<string, object> lockObjects = new Dictionary<string,object>();
-        
         //IAmAGate: Move queries to read-only mirror
         private readonly whoaverseEntities _db = new whoaverseEntities(true);
 
