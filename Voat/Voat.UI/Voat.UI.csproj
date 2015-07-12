@@ -1,0 +1,878 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1D1F318C-EB40-4E3B-96EB-E9AB0D66DE30}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Voat</RootNamespace>
+    <AssemblyName>Voat.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>44300</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>App_Data\VoatDocumentation.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>App_Data\VoatLegacyDocumentation.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Kaliko.ImageLibrary, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageLibrary.2.0.5\lib\net45\Kaliko.ImageLibrary.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MarkdownDeep">
+      <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Facebook, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.3.0.1\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Google.3.0.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.3.0.1\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.3.0.1\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenGraph-Net">
+      <HintPath>..\packages\OpenGraph-Net.1.2.0.1\lib\net45\OpenGraph-Net.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList.Mvc">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="RouteDebugger">
+      <HintPath>..\packages\routedebugger.2.1.4.0\lib\net40\RouteDebugger.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.5\lib\net40\WebActivator.dll</HintPath>
+    </Reference>
+    <Reference Include="WebApiThrottle, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebApiThrottle.1.4.0\lib\net45\WebApiThrottle.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
+    <Compile Include="Areas\HelpPage\App_Start\HelpPageConfig.cs" />
+    <Compile Include="Areas\HelpPage\Controllers\HelpController.cs" />
+    <Compile Include="Areas\HelpPage\HelpPageAreaRegistration.cs" />
+    <Compile Include="Areas\HelpPage\HelpPageConfigurationExtensions.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\CollectionModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ComplexTypeModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\DictionaryModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\EnumTypeModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\EnumValueDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\IModelDocumentationProvider.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\KeyValuePairModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelDescriptionGenerator.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelNameAttribute.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelNameHelper.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ParameterAnnotation.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ParameterDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\SimpleTypeModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\Models\HelpPageApiModel.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleGenerator.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleKey.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\ImageSample.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\InvalidSample.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\ObjectGenerator.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
+    <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AjaxGatewayController.cs" />
+    <Compile Include="Controllers\CommentController.cs" />
+    <Compile Include="Controllers\DomainsController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\HtmlElementsController.cs" />
+    <Compile Include="Controllers\ManagementController.cs" />
+    <Compile Include="Controllers\MessagingController.cs" />
+    <Compile Include="Controllers\NavController.cs" />
+    <Compile Include="Controllers\SetsController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="MessagingHub.cs" />
+    <Compile Include="Models\AddSet.cs" />
+    <Compile Include="Models\AddSubmissionSelfpost.cs" />
+    <Compile Include="Models\CommentRemovalLog.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SavedItem.cs" />
+    <Compile Include="Models\Commentsavingtracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MarkdownPreviewModel.cs" />
+    <Compile Include="Models\Moderatorinvitation.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Savingtracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubmissionRemovalLog.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubverseBan.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserBlockedSubverse.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
+    <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
+    <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
+    <Compile Include="Models\Userset.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Usersetdefinition.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Usersetsubscription.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
+    <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
+    <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
+    <Compile Include="Models\SetSubmission.cs" />
+    <Compile Include="Models\ViewModels\SubverseBanViewModel.cs" />
+    <Compile Include="Models\Viewstatistic.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\voatEntities.cs" />
+    <Compile Include="Utils\CacheHandler.cs" />
+    <Compile Include="Utils\CommentCounter.cs" />
+    <Compile Include="Utils\Components\ContentFilters.cs" />
+    <Compile Include="Utils\Components\ContentProcessor.cs" />
+    <Compile Include="Utils\Components\NotificationManager.cs" />
+    <Compile Include="Utils\Components\RegExReplacer.cs" />
+    <Compile Include="Utils\CONSTANTS.cs" />
+    <Compile Include="Utils\DateTimeUtility.cs" />
+    <Compile Include="Utils\HtmlHelperExtensions.cs" />
+    <Compile Include="Utils\HubMinifier.cs" />
+    <Compile Include="Utils\PaginatedList.cs" />
+    <Compile Include="Controllers\PartnerController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\RSSController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
+    <Compile Include="Controllers\SubmissionsController.cs" />
+    <Compile Include="Controllers\SubversesController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\WebApiController.cs" />
+    <Compile Include="Models\Featuredsub.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AddPrivateMessage.cs" />
+    <Compile Include="Models\ApiModels\ApiUserBadge.cs" />
+    <Compile Include="Models\ApiModels\ApiComment.cs" />
+    <Compile Include="Models\ApiModels\ApiMessage.cs" />
+    <Compile Include="Models\ApiModels\ApiBadge.cs" />
+    <Compile Include="Models\ApiModels\ApiUserInfo.cs" />
+    <Compile Include="Models\ApiModels\ApiSubverseInfo.cs" />
+    <Compile Include="Models\Badge.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Banneddomain.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Banneduser.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PartnerIntent.cs" />
+    <Compile Include="Models\Comment.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Commentreplynotification.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Commentvotingtracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Defaultsubverse.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Message.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Postreplynotification.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Privatemessage.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Promotedsubmission.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Sessiontracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Stickiedsubmission.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Subscription.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Subverse.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubverseAdmin.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Subverseflairsetting.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Survey.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Userbadge.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Userpreference.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ViewModels\AccountViewModels.cs" />
+    <Compile Include="Models\AddSubverse.cs" />
+    <Compile Include="Models\AddComment.cs" />
+    <Compile Include="Models\AddSubmissionLinkpost.cs" />
+    <Compile Include="Models\SubmissionMetaData.cs" />
+    <Compile Include="Models\Cla.cs" />
+    <Compile Include="Models\ViewModels\ActiveSubverseViewModel.cs" />
+    <Compile Include="Models\ViewModels\CommentViewModel.cs" />
+    <Compile Include="Models\EditSubmission.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
+    <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
+    <Compile Include="Models\ViewModels\SearchSubverseViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubmissionViewModel.cs" />
+    <Compile Include="Models\ViewModels\UserStatsModel.cs" />
+    <Compile Include="Models\ViewModels\SubverseLinkFlairViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubverseModeratorViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubverseSettingsViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubverseDetailsViewModel.cs" />
+    <Compile Include="Models\ViewModels\SearchViewModel.cs" />
+    <Compile Include="Models\Votingtracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\VoatEntityDataModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VoatEntityDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\VoatEntityDataModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\VoatEntityDataModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
+    <Compile Include="Utils\AntispamUtility.cs" />
+    <Compile Include="Utils\BanningUtility.cs" />
+    <Compile Include="Utils\EmailUtility.cs" />
+    <Compile Include="Utils\MesssagingUtility.cs" />
+    <Compile Include="Utils\IpHashUtility.cs" />
+    <Compile Include="Utils\RSSUtility.cs" />
+    <Compile Include="Utils\Saving.cs" />
+    <Compile Include="Utils\SavingComments.cs" />
+    <Compile Include="Utils\SessionTracker.cs" />
+    <Compile Include="Utils\SetsUtility.cs" />
+    <Compile Include="Utils\SubverseCache.cs" />
+    <Compile Include="Utils\UrlUtility.cs" />
+    <Compile Include="Utils\Formatting.cs" />
+    <Compile Include="Utils\Karma.cs" />
+    <Compile Include="Utils\PagerOptions.cs" />
+    <Compile Include="Utils\Ranking.cs" />
+    <Compile Include="Utils\Submissions.cs" />
+    <Compile Include="Utils\ThumbGenerator.cs" />
+    <Compile Include="Utils\User.cs" />
+    <Compile Include="Utils\Voting.cs" />
+    <Compile Include="Utils\VotingComments.cs" />
+    <Compile Include="Utils\LiveConfigurationManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\VoatLegacyDocumentation.xml" />
+    <Content Include="App_Data\VoatDocumentation.xml" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\markdownEditor.min.css">
+      <DependentUpon>markdownEditor.css</DependentUpon>
+    </Content>
+    <Content Include="Content\tooltipster.css" />
+    <Content Include="Content\tooltipster.min.css">
+      <DependentUpon>tooltipster.css</DependentUpon>
+    </Content>
+    <Content Include="Content\ui-themes\autocomplete\autocomplete.css" />
+    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css" />
+    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.min.css" />
+    <Content Include="Content\ui-themes\autocomplete\core.css" />
+    <Content Include="Content\ui-themes\autocomplete\menu.css" />
+    <Content Include="Content\ui-themes\autocomplete\theme.css" />
+    <Content Include="Content\Voat-Dark.min.css">
+      <DependentUpon>Voat-Dark.css</DependentUpon>
+    </Content>
+    <Content Include="Content\Voat.min.css">
+      <DependentUpon>Voat.css</DependentUpon>
+    </Content>
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-144x144-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-152x152-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-180x180-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-72x72-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-76x76-precomposed.png" />
+    <Content Include="Graphics\Icons\apple-touch-icon-precomposed.png" />
+    <Content Include="Areas\HelpPage\HelpPage.css" />
+    <Content Include="Content\markdownEditor.css" />
+    <Content Include="Content\PagedList.css" />
+    <Content Include="Graphics\Badges\donor_level_2.png" />
+    <Content Include="Graphics\Badges\voat_cakeday.png" />
+    <Content Include="Graphics\edit.png" />
+    <Content Include="Graphics\Icons\touch-icon-192x192.png" />
+    <Content Include="Graphics\markdownEditorSprite.png" />
+    <Content Include="Graphics\missing_image.png" />
+    <Content Include="Graphics\v2_ad.png" />
+    <Content Include="Graphics\voat-goat.png" />
+    <Content Include="Graphics\voat-logo.png" />
+    <Content Include="Graphics\voat-32x32.png" />
+    <Content Include="Graphics\WVSprite.png">
+      <DependentUpon>WVSprite.sprite</DependentUpon>
+    </Content>
+    <Content Include="Graphics\WVSprite.png.css">
+      <DependentUpon>WVSprite.png</DependentUpon>
+    </Content>
+    <Content Include="inactive.htm" />
+    <Content Include="inactive.min.htm">
+      <DependentUpon>inactive.htm</DependentUpon>
+    </Content>
+    <Content Include="oexchange.xrd" />
+    <Content Include="Graphics\WVSprite.png.map">
+      <DependentUpon>WVSprite.png</DependentUpon>
+    </Content>
+    <Content Include="Graphics\WVSprite.png.less">
+      <DependentUpon>WVSprite.png</DependentUpon>
+    </Content>
+    <Content Include="Graphics\WVSprite.png.scss">
+      <DependentUpon>WVSprite.png</DependentUpon>
+    </Content>
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\ResourceModel.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\TextSample.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\SimpleTypeModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Samples.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Parameters.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ModelDescriptionLink.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\KeyValuePairModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\InvalidSample.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ImageSample.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\HelpPageApiModel.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\EnumTypeModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\DictionaryModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ComplexTypeModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
+    <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
+    <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\voatweb03.pubxml" />
+    <None Include="Properties\PublishProfiles\voatWeb04.pubxml" />
+    <None Include="Properties\PublishProfiles\voatweb05.pubxml" />
+    <None Include="Properties\PublishProfiles\voatWeb06.pubxml" />
+    <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\jquery-2.1.4.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.map" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui.css" />
+    <Content Include="Scripts\jquery-ui.js" />
+    <Content Include="Scripts\jquery-ui.min.css" />
+    <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery-ui.structure.css" />
+    <Content Include="Scripts\jquery-ui.structure.min.css" />
+    <Content Include="Scripts\jquery.signalR-2.2.0.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
+    <Content Include="Scripts\jquery.tooltipster.js" />
+    <Content Include="Scripts\jquery.tooltipster.min.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\markdownEditor.js" />
+    <Content Include="Scripts\npm.js" />
+    <Content Include="Storage\Avatars\Placeholder.txt" />
+    <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
+    <Content Include="Content\PagedList.min.css">
+      <DependentUpon>PagedList.css</DependentUpon>
+    </Content>
+    <Content Include="Content\Site.min.css">
+      <DependentUpon>Site.css</DependentUpon>
+    </Content>
+    <Content Include="Content\Voat-Dark.css" />
+    <Content Include="Content\Voat.css" />
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Graphics\Badges\admin.png" />
+    <Content Include="Graphics\Badges\alpha_user.png" />
+    <Content Include="Graphics\Badges\mysteriouscake.png" />
+    <Content Include="Graphics\Badges\contributor.png" />
+    <Content Include="Graphics\Badges\css_guru.png" />
+    <Content Include="Graphics\Badges\developer.png" />
+    <Content Include="Graphics\Badges\donor.png" />
+    <Content Include="Graphics\Badges\tinkerer.png" />
+    <Content Include="Graphics\Dark-SpriteSheet.png" />
+    <Content Include="Graphics\feed-icon-14x14.png" />
+    <Content Include="Graphics\group_edit.png" />
+    <Content Include="Graphics\Light-SpriteSheet.png" />
+    <Content Include="Graphics\nsfw-thumb.png" />
+    <Content Include="Graphics\thumb-placeholder.png" />
+    <Content Include="Graphics\404.png" />
+    <EntityDeploy Include="Models\VoatEntityDataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>VoatEntityDataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\VoatEntityDataModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+      <LastGenOutput>VoatEntityDataModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\VoatEntityDataModel.edmx.diagram">
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+    </Content>
+    <Content Include="Models\VoatEntityDataModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+      <LastGenOutput>VoatEntityDataModel.cs</LastGenOutput>
+    </Content>
+    <Content Include="Graphics\WVSprite.sprite" />
+    <Content Include="Areas\HelpPage\Views\Help\Index.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Web.config" />
+    <Content Include="robots.txt" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\voat.js" />
+    <Content Include="Scripts\voat.ui.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="Thumbs\Placeholder.txt" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Errors\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\About\About.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Account\_ChangeAccountSettings.cshtml" />
+    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
+    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
+    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Manage.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Home\Submit.cshtml" />
+    <Content Include="Views\Home\Comments.cshtml" />
+    <Content Include="Views\Shared\_VotingIconsSubmission.cshtml" />
+    <Content Include="Views\Shared\Submissions\_Submission.cshtml" />
+    <Content Include="Views\Shared\Submissions\_MessageSubmissionDetails.cshtml" />
+    <Content Include="Views\Shared\Submissions\_LinkSubmissionDetails.cshtml" />
+    <Content Include="Views\Shared\Submissions\_SubmissionComment.cshtml" />
+    <Content Include="Views\Home\UserProfile.cshtml" />
+    <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
+    <Content Include="Views\Help\Privacy.cshtml" />
+    <Content Include="Views\Shared\_AddSubmissionLinkpost.cshtml" />
+    <Content Include="Views\Shared\_AddSubmissionSelfpost.cshtml" />
+    <Content Include="Views\Help\Markdown.cshtml" />
+    <Content Include="Views\Help\Index.cshtml" />
+    <Content Include="Views\Errors\Subversenotfound.cshtml" />
+    <Content Include="Views\Shared\_ListOfDefaultSubverses.cshtml" />
+    <Content Include="Views\Shared\_AddComment.cshtml" />
+    <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
+    <Content Include="Views\Errors\Error_404.cshtml" />
+    <Content Include="Views\Home\UserComments.cshtml" />
+    <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
+    <Content Include="Views\Subverses\SubverseIndex.cshtml" />
+    <Content Include="Views\Help\SpeedyGonzales.cshtml" />
+    <Content Include="Views\Subverses\Subverses.cshtml" />
+    <Content Include="Views\Shared\_SubverseDetails.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_Sidebar.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarFrontpage.cshtml" />
+    <Content Include="Views\Subverses\CreateSubverse.cshtml" />
+    <Content Include="Views\Subverses\_AddNewSubverse.cshtml" />
+    <Content Include="Views\Errors\SubverseExists.cshtml" />
+    <Content Include="Views\Help\UserAgreement.cshtml" />
+    <Content Include="Views\Subverses\Admin\SubverseSettings.cshtml" />
+    <Content Include="Views\Home\_CommentTree.cshtml" />
+    <Content Include="Views\About\Intro.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarSubmissionInfo.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarUserInfo.cshtml" />
+    <Content Include="Views\Account\_DeleteAccount.cshtml" />
+    <Content Include="Views\Account\AccountDeleted.cshtml" />
+    <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionLink.cshtml" />
+    <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionSelf.cshtml" />
+    <Content Include="Views\Shared\Submissions\_SubmissionSelf.cshtml" />
+    <Content Include="Views\Shared\Submissions\_SubmissionLink.cshtml" />
+    <Content Include="Views\Shared\_SearchMinimal.cshtml" />
+    <Content Include="Views\Shared\_SearchInSubverse.cshtml" />
+    <Content Include="Views\Search\Index.cshtml" />
+    <Content Include="Views\Help\Faq.cshtml" />
+    <Content Include="Views\Shared\_Footer.cshtml" />
+    <Content Include="Views\Domains\Index.cshtml" />
+    <Content Include="Views\Subverses\SubscribedSubverses.cshtml" />
+    <Content Include="Views\Subverses\_SubscribedSubverseDetails.cshtml" />
+    <Content Include="Views\Shared\Userprofile\_SidebarSubsUserModerates.cshtml" />
+    <Content Include="Views\Account\RecoverPassword.cshtml" />
+    <Content Include="Views\Errors\DbNotResponding.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarComments.cshtml" />
+    <Content Include="Views\Subverses\Admin\AddModerator.cshtml" />
+    <Content Include="Views\Subverses\Admin\RemoveModerator.cshtml" />
+    <Content Include="Views\Subverses\Admin\SubverseModerators.cshtml" />
+    <Content Include="Views\AjaxViews\_CommentReplyForm.cshtml" />
+    <Content Include="Views\AjaxViews\_MessageContent.cshtml" />
+    <Content Include="Views\Messaging\Inbox.cshtml" />
+    <Content Include="Views\Messaging\Compose.cshtml" />
+    <Content Include="Views\Messaging\Sent.cshtml" />
+    <Content Include="Views\Shared\_SubscriptionsHoverMenu.cshtml" />
+    <Content Include="Views\Messaging\InboxCommentReplies.cshtml" />
+    <Content Include="Views\Account\_LoginModal.cshtml" />
+    <Content Include="Views\Welcome\Welcome.cshtml" />
+    <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
+    <Content Include="Views\Home\UserSubmitted.cshtml" />
+    <Content Include="Views\Home\_SingleCommentTree.cshtml" />
+    <Content Include="Views\Account\_UserPreferences.cshtml" />
+    <Content Include="Views\Subverses\Admin\Flair\FlairSettings.cshtml" />
+    <Content Include="Views\Subverses\Admin\Flair\AddLinkFlair.cshtml" />
+    <Content Include="Views\Subverses\Admin\Flair\RemoveLinkFlair.cshtml" />
+    <Content Include="Views\AjaxViews\_LinkFlairSelectDialog.cshtml" />
+    <Content Include="Views\Subverses\_SubverseModerators.cshtml" />
+    <Content Include="Views\Subverses\Admin\ResignAsModerator.cshtml" />
+    <Content Include="Views\Subverses\AdultContentFiltered.cshtml" />
+    <Content Include="Views\AjaxViews\_PrivateMessageReplyForm.cshtml" />
+    <Content Include="Views\Shared\Navigation\_TabMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_PmMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_UserProfileMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_SubversesMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_DomainsMenu.cshtml" />
+    <Content Include="Views\Shared\Submissions\_StickiedSubmission.cshtml" />
+    <Content Include="Views\Subverses\_Stickied.cshtml" />
+    <Content Include="Views\Shared\_DefaultMessage.cshtml" />
+    <Content Include="Views\Subverses\SearchForSubverse.cshtml" />
+    <Content Include="Views\Search\FindSubverseSearchResult.cshtml" />
+    <Content Include="Views\AjaxViews\_SingleSubmissionComment.cshtml" />
+    <Content Include="Views\Partner\PartnerProgramInformation.cshtml" />
+    <Content Include="Views\Partner\PartnerIntentRegistration.cshtml" />
+    <Content Include="Views\Partner\PartnerProgramIntentSent.cshtml" />
+    <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CommentFlatListButtons.cshtml" />
+    <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonDelete.cshtml" />
+    <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonReport.cshtml" />
+    <Content Include="Views\Shared\Userprofile\_SidebarSubsUserIsSubscribedTo.cshtml" />
+    <Content Include="Views\Shared\_ListOfSubscribedToSubverses.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_LSFLButtons.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonDelete.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonFlair.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_MSFLButtons.cshtml" />
+    <Content Include="Views\Account\_UserPreferencesAbout.cshtml" />
+    <Content Include="Views\AjaxViews\_VideoPlayer.cshtml" />
+    <Content Include="Views\Home\IndexV2.cshtml" />
+    <Content Include="Views\Sets\_SetTitle.cshtml" />
+    <Content Include="Views\Sets\_SingleSet.cshtml" />
+    <Content Include="Views\Sets\Index.cshtml" />
+    <Content Include="Views\Sets\MySets.cshtml" />
+    <Content Include="Views\Sets\_PopularSets.cshtml" />
+    <Content Include="Views\Sets\EditSet.cshtml" />
+    <Content Include="Views\Shared\_MarkdownEditor.cshtml" />
+    <Content Include="Views\Sets\Sets.cshtml" />
+    <Content Include="Views\Sets\_SetDetails.cshtml" />
+    <Content Include="Views\Shared\_MostViewedSubmissions.cshtml" />
+    <Content Include="Views\Sets\_SingleSetPage.cshtml" />
+    <Content Include="Views\Welcome\_FirstTimeVisitorWelcome.cshtml" />
+    <Content Include="Views\Shared\UserDistinctions\_SubmitterModeratorDistinction.cshtml" />
+    <Content Include="Views\Shared\UserDistinctions\_SubmitterDistinction.cshtml" />
+    <Content Include="Views\Shared\UserDistinctions\_ModeratorDistinction.cshtml" />
+    <Content Include="Views\Shared\UserDistinctions\_UserDistinction.cshtml" />
+    <Content Include="Views\Sets\CreateSet.cshtml" />
+    <Content Include="Views\Sets\ManageMySets.cshtml" />
+    <Content Include="Views\Errors\UnAuthorized.cshtml" />
+    <Content Include="Views\AjaxViews\_SubverseInfo.cshtml" />
+    <Content Include="Views\Subverses\Admin\SubverseBans.cshtml" />
+    <Content Include="Views\Subverses\Admin\AddBan.cshtml" />
+    <Content Include="Views\Subverses\Admin\RemoveBan.cshtml" />
+    <Content Include="Views\Management\Dashboard.cshtml" />
+    <Content Include="Views\Subverses\Admin\_ModeratorInvitations.cshtml" />
+    <Content Include="Views\Subverses\Admin\RecallModeratorInvitation.cshtml" />
+    <Content Include="Views\Shared\Comments\_CommentBucket.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarOwnerToolbox.cshtml" />
+    <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
+    <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarChat.cshtml" />
+    <Content Include="Views\Subverses\SubmissionRemovalLog.cshtml" />
+    <Content Include="Views\Search\Jaje.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSave.cshtml" />
+    <Content Include="Views\Home\UserSaved.cshtml" />
+    <Content Include="Views\AjaxViews\_BasicUserInfo.cshtml" />
+    <Content Include="Views\Shared\_Captcha.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Errors\SubverseDisabled.cshtml" />
+    <Content Include="Views\Subverses\CommentRemovalLog.cshtml" />
+    <Content Include="Views\Subverses\BannedUsersLog.cshtml" />
+    <Content Include="Web.config.live" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>54242</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:54113/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>
