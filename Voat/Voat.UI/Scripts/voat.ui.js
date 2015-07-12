@@ -1,4 +1,4 @@
-﻿//Whoaverse UI JS framework - Version 0.8beta - 12/09/2014
+﻿//Voat UI JS framework
 //Tested only with the latest version of IE, FF, & Chrome
 
 var UI = window.UI || {};

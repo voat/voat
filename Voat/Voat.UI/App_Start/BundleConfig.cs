@@ -29,8 +29,8 @@ namespace Voat
                         "~/Scripts/jquery.tooltipster.js",
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*",
-                        "~/Scripts/whoaverse.ui.js",
-                        "~/Scripts/whoaverse.js",
+                        "~/Scripts/voat.ui.js",
+                        "~/Scripts/voat.js",
                         "~/Scripts/markdownEditor.js"
                         ));
 
@@ -47,7 +47,7 @@ namespace Voat
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css",
                       "~/Content/tooltipster.css",
-                      "~/Content/Whoaverse.css",
+                      "~/Content/Voat.css",
                       "~/Content/PagedList.css",
                       "~/Content/markdownEditor.css"
                       ));
@@ -56,7 +56,7 @@ namespace Voat
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css",
                       "~/Content/tooltipster.css",
-                      "~/Content/Whoaverse-Dark.css",
+                      "~/Content/Voat-Dark.css",
                       "~/Content/PagedList.css",
                       "~/Content/markdownEditor.css"
                       ));

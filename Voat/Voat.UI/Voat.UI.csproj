@@ -29,7 +29,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>App_Data\WhoaverseDocumentation.xml</DocumentationFile>
+    <DocumentationFile>App_Data\VoatDocumentation.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -496,6 +496,12 @@
     <Content Include="Content\ui-themes\autocomplete\core.css" />
     <Content Include="Content\ui-themes\autocomplete\menu.css" />
     <Content Include="Content\ui-themes\autocomplete\theme.css" />
+    <Content Include="Content\Voat-Dark.min.css">
+      <DependentUpon>Voat-Dark.css</DependentUpon>
+    </Content>
+    <Content Include="Content\Voat.min.css">
+      <DependentUpon>Voat.css</DependentUpon>
+    </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
@@ -601,14 +607,8 @@
     <Content Include="Content\Site.min.css">
       <DependentUpon>Site.css</DependentUpon>
     </Content>
-    <Content Include="Content\Whoaverse-Dark.css" />
-    <Content Include="Content\Whoaverse-Dark.min.css">
-      <DependentUpon>Whoaverse-Dark.css</DependentUpon>
-    </Content>
-    <Content Include="Content\Whoaverse.css" />
-    <Content Include="Content\Whoaverse.min.css">
-      <DependentUpon>Whoaverse.css</DependentUpon>
-    </Content>
+    <Content Include="Content\Voat-Dark.css" />
+    <Content Include="Content\Voat.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -653,8 +653,8 @@
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Scripts\whoaverse.js" />
-    <Content Include="Scripts\whoaverse.ui.js" />
+    <Content Include="Scripts\voat.js" />
+    <Content Include="Scripts\voat.ui.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Thumbs\Placeholder.txt" />
     <Content Include="Web.config">
