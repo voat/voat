@@ -29,7 +29,15 @@ namespace Voat.Utils
             {
                 originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
             }
-            
+
+            var newWindow = false;
+
+            if (System.Web.HttpContext.Current != null && System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            {
+                newWindow = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name);
+            }
+
+
             var m = new Markdown
             {
                 PrepareLink = new Func<HtmlTag, bool>(x =>
@@ -50,8 +58,8 @@ namespace Voat.Utils
                 }),
                 ExtraMode = true, 
                 SafeMode = true,
-                NewWindowForExternalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name),
-                NewWindowForLocalLinks = User.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name)
+                NewWindowForExternalLinks = newWindow,
+                NewWindowForLocalLinks = newWindow
             };
 
             try
