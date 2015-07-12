@@ -387,19 +387,37 @@ namespace Voat.Utils
                 return result != null && result.Disable_custom_css;
             }
         }
-
+        // check which theme style user selected
+        public static void SetUserStylePreferenceCookie(string theme)
+        {
+            var cookie = new HttpCookie("theme", theme);
+            cookie.Expires = DateTime.Now.AddDays(14);
+            System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+        }        
         // check which theme style user selected
         public static string UserStylePreference(string userName)
         {
-            using (var db = new whoaverseEntities())
+            string theme = "light";
+
+            var tc = System.Web.HttpContext.Current.Request.Cookies["theme"];
+            if (tc != null && !String.IsNullOrEmpty(tc.Value))
             {
-                var result = db.Userpreferences.Find(userName);
-                if (result != null)
-                {
-                    return result.Night_mode ? "dark" : "light";
-                }
-                return "light";
+                theme = tc.Value;
             }
+            else
+            {
+                if (!String.IsNullOrEmpty(userName)) { 
+                    using (var db = new whoaverseEntities())
+                    {
+                        var result = db.Userpreferences.Find(userName);
+                        if (result != null)
+                        {
+                            theme = result.Night_mode ? "dark" : "light";
+                        }
+                    }
+                }
+            }
+            return theme;
         }
 
         // check if a given user wants to see NSFW (adult) content

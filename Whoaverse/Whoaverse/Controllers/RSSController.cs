@@ -21,7 +21,7 @@ namespace Voat.Controllers
             if (subverseName != null && subverseName != "all")
             {
                 // return only frontpage submissions from a given subverse
-                var subverse = _db.Subverses.Find(subverseName);
+                var subverse = SubverseCache.Retrieve(subverseName); // _db.Subverses.Find(subverseName);
                 if (subverse != null)
                 {
 

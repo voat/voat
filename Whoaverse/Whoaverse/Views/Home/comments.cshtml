@@ -154,11 +154,11 @@ else if (!User.Identity.IsAuthenticated)
         @if (ViewBag.StartingCommentId != null)
         {
             // show comment tree for a single thread starting at passed starting comment id
-            @Html.Partial("~/Views/Home/_SingleCommentTree.cshtml", Model, new ViewDataDictionary { {"VoteCache", ViewBag.VoteCache}, {"CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode }, { "commentToHighlight", ViewBag.CommentToHighLight } })
+            @Html.Partial("~/Views/Home/_SingleCommentTree.cshtml", Model, new ViewDataDictionary { { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode }, { "commentToHighlight", ViewBag.CommentToHighLight } })
         }
         else
         {
-            @Html.Partial("~/Views/Home/_CommentTree.cshtml", Model, new ViewDataDictionary { { "VoteCache", ViewBag.VoteCache }, { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
+            @Html.Partial("~/Views/Home/_CommentTree.cshtml", Model, new ViewDataDictionary { { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
         }
     </div>
 </div>

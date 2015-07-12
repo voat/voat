@@ -12,6 +12,8 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -22,13 +24,18 @@ namespace Voat.Controllers
 {
     public class SearchController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        //IAmAGate: Move queries to read-only mirror
+        private readonly whoaverseEntities _db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY);
 
         [PreventSpam]
-        [OutputCache(Duration = 600, VaryByParam = "*")]
+        //[OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
+            
             if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            //sanitize
+            q = q.Trim();
 
             if (q == "rick roll")
             {
@@ -53,17 +60,28 @@ namespace Voat.Controllers
                 {
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
+                
+                string cacheKey = CacheHandler.Keys.Search(sub, q);
+                IList<Message> cacheData = (IList<Message>)CacheHandler.Retrieve(cacheKey);
+                if (cacheData == null) {
 
-                var results = (from m in _db.Messages
-                               join s in _db.Subverses on m.Subverse equals s.name
-                               where
-                                !s.admin_disabled.Value &&
-                                m.Name != "deleted" &&
-                                m.Subverse == sub &&
-                                (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
-                               orderby m.Rank ascending, m.Date descending
-                               select m
-                              ).Take(25);
+
+                    cacheData = (IList<Message>)CacheHandler.Register(cacheKey, new Func<object>(() =>
+                    {
+                        var results = (from m in _db.Messages
+                                       join s in _db.Subverses on m.Subverse equals s.name
+                                       where
+                                        !s.admin_disabled.Value &&
+                                        m.Name != "deleted" &&
+                                        m.Subverse == sub &&
+                                        (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                       orderby m.Rank ascending, m.Date descending
+                                       select m).Take(25).ToList();
+                        return results;
+                    }), TimeSpan.FromMinutes(10));
+
+                }
+
 
                 //var resultsx = _db.Messages
                 //    .Where(x => x.Name != "deleted" && x.Subverse == sub &&
@@ -74,7 +92,7 @@ namespace Voat.Controllers
 
                 ViewBag.Title = "search results";
 
-                var paginatedResults = new PaginatedList<Message>(results, page ?? 0, pageSize);
+                var paginatedResults = new PaginatedList<Message>(cacheData, 0, pageSize, 24); //HACK: To turn off paging 
 
                 return View("~/Views/Search/Index.cshtml", paginatedResults);
             }
@@ -91,19 +109,28 @@ namespace Voat.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
 
-                var results = (from m in _db.Messages
-                               join s in _db.Subverses on m.Subverse equals s.name
-                               where
-                                !s.admin_disabled.Value &&
-                                m.Name != "deleted" &&
-                                //m.Subverse == sub &&
-                                (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
-                               orderby m.Rank ascending, m.Date descending
-                               select m
-                              ).Take(25);
+                string cacheKey = CacheHandler.Keys.Search(q);
+                IList<Message> cacheData = (IList<Message>)CacheHandler.Retrieve(cacheKey);
+                if (cacheData == null)
+                {
+                    cacheData = (IList<Message>)CacheHandler.Register(cacheKey, new Func<object>(() =>
+                    {
+                        var results = (from m in _db.Messages
+                                       join s in _db.Subverses on m.Subverse equals s.name
+                                       where
+                                        !s.admin_disabled.Value &&
+                                        m.Name != "deleted" &&
+                                           //m.Subverse == sub &&
+                                        (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                       orderby m.Rank ascending, m.Date descending
+                                       select m
+                                ).Take(25).ToList();
+                        return results;
+                    }), TimeSpan.FromMinutes(10));
 
+                }
 
-                var paginatedResults = new PaginatedList<Message>(results, page ?? 0, pageSize);
+                var paginatedResults = new PaginatedList<Message>(cacheData, 0, pageSize, 24);//HACK to stop paging
 
                 ViewBag.Title = "search results";
 

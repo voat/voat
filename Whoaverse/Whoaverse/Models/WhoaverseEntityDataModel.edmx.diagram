@@ -25,7 +25,7 @@
         <AssociationConnector Association="whoaverseModel.FK_Userbadges_Badges" />
         <EntityTypeShape EntityType="whoaverseModel.Banneddomain" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Privatemessage" Width="1.5" PointX="5.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="whoaverseModel.Commentreplynotification" Width="2.125" PointX="7.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="whoaverseModel.Commentreplynotification" Width="2.125" PointX="8" PointY="3.75" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Postreplynotification" Width="2.125" PointX="0.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Userpreference" Width="1.5" PointX="10.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="whoaverseModel.Subverseflairsetting" Width="1.5" PointX="3.625" PointY="39.125" IsExpanded="true" />

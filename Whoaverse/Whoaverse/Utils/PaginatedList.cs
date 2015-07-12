@@ -36,6 +36,17 @@ namespace Voat.Utils
             AddRange(source.Skip(PageIndex * PageSize).Take(PageSize));
         }
 
+        //IAmAGate: Perf mods for caching
+        public PaginatedList(IList<T> source, int pageIndex, int pageSize, int totalCount = 50000)
+        {
+            PageIndex = pageIndex;
+            PageSize = pageSize;
+            TotalCount = totalCount;
+            TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
+
+            AddRange(source);
+        }
+
         public bool HasPreviousPage
         {
             get

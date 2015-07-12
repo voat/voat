@@ -54,13 +54,15 @@
             </a>
         </div>
     </div>
-    <div class="spacer">
-        <div class="sidebox">
-            <a href="/sets" class="btn-whoaverse btn-block">
-                Explore Sets
-            </a>
+    @if (!MvcApplication.SetsDisabled) { 
+        <div class="spacer">
+            <div class="sidebox">
+                <a href="/sets" class="btn-whoaverse btn-block">
+                    Explore Sets
+                </a>
+            </div>
         </div>
-    </div>
+    }
     <div class="spacer spacersection">
         <div class="alert-h1">
             Most viewed in the past 24 hours

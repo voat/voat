@@ -47,6 +47,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="Dapper">
+      <HintPath>..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -317,11 +320,13 @@
       <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\whoaverseEntities.cs" />
+    <Compile Include="Utils\CacheHandler.cs" />
     <Compile Include="Utils\CommentCounter.cs" />
     <Compile Include="Utils\Components\ContentFilters.cs" />
     <Compile Include="Utils\Components\ContentProcessor.cs" />
     <Compile Include="Utils\Components\NotificationManager.cs" />
     <Compile Include="Utils\Components\RegExReplacer.cs" />
+    <Compile Include="Utils\CONSTANTS.cs" />
     <Compile Include="Utils\DateTimeUtility.cs" />
     <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\HubMinifier.cs" />
@@ -458,6 +463,7 @@
     <Compile Include="Utils\SavingComments.cs" />
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />
+    <Compile Include="Utils\SubverseCache.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\Karma.cs" />
@@ -468,8 +474,11 @@
     <Compile Include="Utils\User.cs" />
     <Compile Include="Utils\Voting.cs" />
     <Compile Include="Utils\VotingComments.cs" />
+    <Compile Include="Utils\LiveConfigurationManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\VoatLegacyDocumentation.xml" />
+    <Content Include="App_Data\WhoaverseDocumentation.xml" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -556,6 +565,9 @@
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\voatweb03.pubxml" />
+    <None Include="Properties\PublishProfiles\voatWeb04.pubxml" />
+    <None Include="Properties\PublishProfiles\voatweb05.pubxml" />
+    <None Include="Properties\PublishProfiles\voatWeb06.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -581,6 +593,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\markdownEditor.js" />
     <Content Include="Scripts\npm.js" />
+    <Content Include="Storage\Avatars\Placeholder.txt" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
     <Content Include="Content\PagedList.min.css">
       <DependentUpon>PagedList.css</DependentUpon>
@@ -643,9 +656,6 @@
     <Content Include="Scripts\whoaverse.js" />
     <Content Include="Scripts\whoaverse.ui.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="sitemap.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Thumbs\Placeholder.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -655,8 +665,11 @@
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Errors\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -819,6 +832,7 @@
     <Content Include="Views\Errors\SubverseDisabled.cshtml" />
     <Content Include="Views\Subverses\CommentRemovalLog.cshtml" />
     <Content Include="Views\Subverses\BannedUsersLog.cshtml" />
+    <Content Include="Web.config.live" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -826,10 +840,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-    <Folder Include="Storage\Avatars\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

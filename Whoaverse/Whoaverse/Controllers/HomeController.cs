@@ -34,7 +34,8 @@ namespace Voat.Controllers
 
     public class HomeController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        //IAmAGate: Move queries to read-only mirror
+        private readonly whoaverseEntities _db = new whoaverseEntities(true);
 
         // GET: submit
         [Authorize]
@@ -163,7 +164,8 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View("Submit");
 
             // check if subverse exists
-            var targetSubverse = _db.Subverses.Find(message.Subverse.Trim());
+            var targetSubverse = SubverseCache.Retrieve(message.Subverse);
+            //var targetSubverse = _db.Subverses.Find(message.Subverse.Trim());
             if (targetSubverse == null || message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
@@ -430,31 +432,78 @@ namespace Voat.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
-                    var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
-                    IQueryable<Message> submissions = (from m in _db.Messages.Include("Subverses").AsNoTracking()
-                                                       join s in _db.Subscriptions on m.Subverse equals s.SubverseName
-                                                       where m.Name != "deleted" && s.Username == User.Identity.Name
-                                                       where !(from bu in _db.Bannedusers select bu.Username).Contains(m.Name)
-                                                       select m).OrderByDescending(s => s.Rank);
 
-                    var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
-                    var submissionsExcludingBlockedSubverses = submissionsWithoutStickies.Where(x => !blockedSubverses.Contains(x.Subverse));
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
+
+                     
+
+                    //IAmAGate: Perf mods for caching
+                    int pagesToTake = 2;
+                    int subset = pageNumber / pagesToTake;
+                    string cacheKey = String.Format("front.{0}.block.{1}.sort.rank", User.Identity.Name, subset);
+                    object cacheData = CacheHandler.Retrieve(cacheKey);
+
+                    if (cacheData == null)
+                    {
+                        int recordsToTake = pageSize * pagesToTake; //4 pages worth
+
+                        var getDataFunc = new Func<object>(() =>
+                        {
+                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                            {
+                                
+                                var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
+
+                                IQueryable<Message> submissions = (from m in db.Messages.Include("Subverses").AsNoTracking()
+                                                                   join s in db.Subscriptions on m.Subverse equals s.SubverseName
+                                                                   where !m.IsArchived && m.Name != "deleted" && s.Username == User.Identity.Name
+                                                                   where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
+                                                                   select m).OrderByDescending(s => s.Rank);
+
+                                var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
+
+                                return submissionsWithoutStickies.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
+
+                            }
+
+                        });
+                        //now with new and improved locking
+                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5));
+                    }
+                    var set = ((IList<Message>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(set, pageNumber, pageSize, 50000);
 
                     return View(paginatedSubmissions);
                 }
                 else
                 {
-                    // get only submissions from default subverses, order by rank
-                    IQueryable<Message> submissions = (from message in _db.Messages.Include("Subverses").AsNoTracking()
-                                                       where message.Name != "deleted"
-                                                       where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                       join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                                       select message).OrderByDescending(s => s.Rank);
 
-                    var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
 
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissionsWithoutStickies, page ?? 0, pageSize);
+                    //IAmAGate: Perf mods for caching
+                    string cacheKey = String.Format("front.guest.page.{0}.sort.rank", pageNumber);
+                    object cacheData = CacheHandler.Retrieve(cacheKey);
+                    if (cacheData == null)
+                    {
+
+                        var getDataFunc = new Func<object>(() => {
+                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                            {
+                                
+                                // get only submissions from default subverses, order by rank
+                                IQueryable<Message> submissions = (from message in db.Messages.AsNoTracking()
+                                                                   where !message.IsArchived &&  message.Name != "deleted"
+                                                                   where !(from bu in db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                   join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                                                   select message).OrderByDescending(s => s.Rank);
+
+                                return submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id).Skip(pageNumber * pageSize).Take(pageSize).ToList();
+
+                            }
+                        });
+                        //Now with it's own locking!
+                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));                               
+                    }
+
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>((IList<Message>)cacheData, pageNumber, pageSize, 50000);
 
                     return View(paginatedSubmissions);
                 }
@@ -575,28 +624,74 @@ namespace Voat.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
-                    var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
-                    IQueryable<Message> submissions = (from m in _db.Messages
-                                                       join s in _db.Subscriptions on m.Subverse equals s.SubverseName
-                                                       where m.Name != "deleted" && s.Username == User.Identity.Name
-                                                       where !(from bu in _db.Bannedusers select bu.Username).Contains(m.Name)
-                                                       select m).OrderByDescending(s => s.Date);
 
-                    var submissionsExcludingBlockedSubverses = submissions.Where(x => !blockedSubverses.Contains(x.Subverse));
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
+                    //IAmAGate: Perf mods for caching
+                    int pagesToTake = 2;
+                    int subset = pageNumber / pagesToTake;
+                    string cacheKey = String.Format("front.{0}.block.{1}.sort.new", User.Identity.Name, subset);
+                    object cacheData = CacheHandler.Retrieve(cacheKey);
                     
+                    if (cacheData == null)
+                    {
+                        int recordsToTake = 25 * pagesToTake; //pages worth
+                       
+                        var getDataFunc = new Func<object>(() =>
+                        {
+                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                            {
+                                var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
+                                IQueryable<Message> submissions = (from m in db.Messages
+                                                                   join s in db.Subscriptions on m.Subverse equals s.SubverseName
+                                                                   where !m.IsArchived && m.Name != "deleted" && s.Username == User.Identity.Name
+                                                                   where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
+                                                                   select m).OrderByDescending(s => s.Date);
+                                return submissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
+                            }
+                        });
+                        //now with new and improved locking
+                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5), 1);
+                    }
+                    var set = ((IList<Message>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
+
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(set, pageNumber, pageSize, 50000);
                     return View("Index", paginatedSubmissions);
                 }
                 else
                 {
-                    // get only submissions from default subverses, sort by date
-                    IQueryable<Message> submissions = (from message in _db.Messages
-                                                       where message.Name != "deleted"
-                                                       where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                       join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                                       select message).OrderByDescending(s => s.Date);
 
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
+                    //IAmAGate: Perf mods for caching
+                    string cacheKey = String.Format("front.guest.page.{0}.sort.new", pageNumber);
+                    object cacheData = CacheHandler.Retrieve(cacheKey);
+
+                    if (cacheData == null)
+                    {
+                        var getDataFunc = new Func<object>(() =>
+                        {
+                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                            {
+                                // get only submissions from default subverses, order by rank
+                                IQueryable<Message> submissions = (from message in db.Messages
+                                                                   where !message.IsArchived && message.Name != "deleted"
+                                                                   where !(from bu in db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                   join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                                                   select message).OrderByDescending(s => s.Date);
+                                return submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id).Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                            }
+                        });
+
+                        //now with new and improved locking
+                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
+                    }
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>((IList<Message>)cacheData, pageNumber, pageSize, 50000);
+
+                    //// get only submissions from default subverses, sort by date
+                    //IQueryable<Message> submissions = (from message in _db.Messages
+                    //                              where message.Name != "deleted"
+                    //                              where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                    //                              join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                    //                              select message).OrderByDescending(s => s.Date);
+
+                    //PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
 
                     return View("Index", paginatedSubmissions);
                 }

@@ -10,9 +10,12 @@ namespace Voat
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            
-            // wire up SignalR
-            app.MapSignalR();
+
+            if (!MvcApplication.SignalRDisabled)
+            {
+                // wire up SignalR
+                app.MapSignalR();
+            }
         }
     }
 }

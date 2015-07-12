@@ -100,28 +100,7 @@ namespace Voat
                 url: "acceptmodinvitation/{invitationId}",
                 defaults: new { controller = "Subverses", action = "AcceptModInvitation" }
             );
-
-            // /sets
-            routes.MapRoute(
-                name: "Sets",
-                url: "sets/",
-                defaults: new { controller = "Sets", action = "Sets" }
-            );
-
-            // /sets/recommended
-            routes.MapRoute(
-                name: "RecommendedSets",
-                url: "sets/recommended",
-                defaults: new { controller = "Sets", action = "RecommendedSets" }
-            );
-
-            // /sets/create
-            routes.MapRoute(
-                name: "CreateSet",
-                url: "sets/create",
-                defaults: new { controller = "Sets", action = "CreateSet" }
-            );
-
+           
             // /subverses/search
             routes.MapRoute(
                 name: "SearchSubverseForm",
@@ -204,20 +183,6 @@ namespace Voat
                 name: "usershortroute",
                 url: "u/{id}",
                 defaults: new { controller = "Home", action = "UserProfile" }
-            );
-
-            // /mysets
-            routes.MapRoute(
-                name: "UserSets",
-                url: "mysets",
-                defaults: new { controller = "Sets", action = "UserSets" }
-            );
-
-            // /mysets/manage
-            routes.MapRoute(
-                name: "UserSetsManage",
-                url: "mysets/manage",
-                defaults: new { controller = "Sets", action = "ManageUserSets" }
             );
 
             // inbox
@@ -339,33 +304,6 @@ namespace Voat
                 defaults: new { controller = "Sets", action = "UnSubscribe" }
             );
 
-            // add subverse to set
-            routes.MapRoute(
-                name: "addsubversetoset",
-                url: "sets/addsubverse/{setId}/{subverseName}",
-                defaults: new { controller = "Sets", action = "AddSubverseToSet" }
-            );
-
-            // remove subverse from set
-            routes.MapRoute(
-                name: "removesubversefromset",
-                url: "sets/removesubverse/{setId}/{subverseName}",
-                defaults: new { controller = "Sets", action = "RemoveSubverseFromSet" }
-            );
-
-            // change set name
-            routes.MapRoute(
-                name: "changesetinfo",
-                url: "sets/modify/{setId}/{newSetName}",
-                defaults: new { controller = "Sets", action = "ChangeSetInfo" }
-            );
-
-            // delete a set
-            routes.MapRoute(
-                name: "deleteset",
-                url: "sets/delete/{setId}",
-                defaults: new { controller = "Sets", action = "DeleteSet" }
-            );
 
             // vote
             routes.MapRoute(
@@ -729,6 +667,73 @@ namespace Voat
                 url: "p/partnerprogram",
                 defaults: new { controller = "Partner", action = "PartnerProgramInformation" }
             );
+
+            if (!MvcApplication.SetsDisabled)
+            {
+                // /sets
+                routes.MapRoute(
+                    name: "Sets",
+                    url: "sets/",
+                    defaults: new { controller = "Sets", action = "Sets" }
+                );
+
+                // /sets/recommended
+                routes.MapRoute(
+                    name: "RecommendedSets",
+                    url: "sets/recommended",
+                    defaults: new { controller = "Sets", action = "RecommendedSets" }
+                );
+
+                // /sets/create
+                routes.MapRoute(
+                    name: "CreateSet",
+                    url: "sets/create",
+                    defaults: new { controller = "Sets", action = "CreateSet" }
+                );
+
+                // add subverse to set
+                routes.MapRoute(
+                    name: "addsubversetoset",
+                    url: "sets/addsubverse/{setId}/{subverseName}",
+                    defaults: new { controller = "Sets", action = "AddSubverseToSet" }
+                );
+
+                // remove subverse from set
+                routes.MapRoute(
+                    name: "removesubversefromset",
+                    url: "sets/removesubverse/{setId}/{subverseName}",
+                    defaults: new { controller = "Sets", action = "RemoveSubverseFromSet" }
+                );
+
+                // change set name
+                routes.MapRoute(
+                    name: "changesetinfo",
+                    url: "sets/modify/{setId}/{newSetName}",
+                    defaults: new { controller = "Sets", action = "ChangeSetInfo" }
+                );
+
+                // delete a set
+                routes.MapRoute(
+                    name: "deleteset",
+                    url: "sets/delete/{setId}",
+                    defaults: new { controller = "Sets", action = "DeleteSet" }
+                );
+
+                // /mysets
+                routes.MapRoute(
+                    name: "UserSets",
+                    url: "mysets",
+                    defaults: new { controller = "Sets", action = "UserSets" }
+                );
+
+                // /mysets/manage
+                routes.MapRoute(
+                    name: "UserSetsManage",
+                    url: "mysets/manage",
+                    defaults: new { controller = "Sets", action = "ManageUserSets" }
+                );
+
+            }
 
             // p/partnerintent
             //routes.MapRoute(

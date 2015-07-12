@@ -97,10 +97,25 @@ namespace Voat.Controllers
             }
             return vCache;
         }
+        private List<Commentsavingtracker> UserSavedCommentsBySubmission(int submissionID)
+        {
+            List<Commentsavingtracker> vCache = new List<Commentsavingtracker>();
+
+            if (User.Identity.IsAuthenticated)
+            {
+                vCache = (from cv in _db.Commentsavingtrackers.AsNoTracking()
+                          join c in _db.Comments on cv.CommentId equals c.Id
+                          where c.MessageId == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                          select cv).ToList();
+            }
+            return vCache;
+        }
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
         {
-            var subverse = _db.Subverses.Find(subversetoshow);
+            var subverse = SubverseCache.Retrieve(subversetoshow);
+            //var subverse = _db.Subverses.Find(subversetoshow);
+
             if (subverse == null) return View("~/Views/Errors/Error_404.cshtml");
 
             //HACK: Disable subverse
@@ -115,7 +130,7 @@ namespace Voat.Controllers
 
             //Temp cache user votes for this thread
             ViewBag.VoteCache = UserVotesBySubmission(id.Value);
-
+            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(id.Value);
 
             if (startingcommentid != null)
             {
@@ -182,8 +197,9 @@ namespace Voat.Controllers
             // this is a new view, register it for this submission
             var view = new Viewstatistic { submissionId = submission.Id, viewerId = ipHash };
             _db.Viewstatistics.Add(view);
-            submission.Views++;
 
+            submission.Views++;
+            
             _db.SaveChanges();
 
             return View("~/Views/Home/Comments.cshtml", submission);
@@ -195,13 +211,14 @@ namespace Voat.Controllers
             const int threadsToFetch = 5;
 
             if (id == null) return View("~/Views/Errors/Error.cshtml");
+            if (startingpos == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             var submission = _db.Messages.Find(id);
             if (submission == null) return View("~/Views/Errors/Error_404.cshtml");
 
             //Temp cache user votes for this thread
             ViewBag.VoteCache = UserVotesBySubmission(id.Value);
-
+            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(id.Value);
 
             ViewData["StartingPos"] = startingpos;
 
@@ -222,33 +239,45 @@ namespace Voat.Controllers
                 ViewBag.SortingMode = sort;
             }
 
-            // load first comments
-            IEnumerable<Comment> firstComments;
 
-            if (sort == "new")
-            {
-                firstComments = from f in submission.Comments
-                                let commentScore = f.Likes - f.Dislikes
-                                where f.ParentId == null
-                                orderby f.Date descending
-                                select f;
+
+            string cacheKey = String.Format("comments.bucket.{0}.{1}.{2}.{3}", id, startingcommentid, startingpos, sort);
+
+            CommentBucketViewModel cbvm = CacheHandler.Retrieve<CommentBucketViewModel>(cacheKey);
+
+            if (cbvm == null) {
+
+                //This can not be recached
+                cbvm = CacheHandler.Register<CommentBucketViewModel>(cacheKey, new Func<CommentBucketViewModel>(() => {
+
+                    // load first comments
+                    IEnumerable<Comment> firstComments;
+                    if (sort == "new")
+                    {
+                        firstComments = from f in submission.Comments
+                                        let commentScore = f.Likes - f.Dislikes
+                                        where f.ParentId == null
+                                        orderby f.Date descending
+                                        select f;
+                    }
+                    else
+                    {
+                        firstComments = from f in submission.Comments
+                                        let commentScore = f.Likes - f.Dislikes
+                                        where f.ParentId == null
+                                        orderby commentScore descending
+                                        select f;
+                    }
+
+                    var x = new CommentBucketViewModel
+                    {
+                        FirstComments = firstComments.Skip((int)startingpos * threadsToFetch).Take(threadsToFetch),
+                        Submission = submission
+                    };
+                    return x;
+                }), TimeSpan.FromSeconds(60));
             }
-            else
-            {
-                firstComments = from f in submission.Comments
-                                let commentScore = f.Likes - f.Dislikes
-                                where f.ParentId == null
-                                orderby commentScore descending
-                                select f;
-            }
-
-            if (startingpos == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            var cbvm = new CommentBucketViewModel
-            {
-                FirstComments = firstComments.Skip((int)startingpos * threadsToFetch).Take(threadsToFetch),
-                Submission = submission
-            };
+           
 
             if (!cbvm.FirstComments.Any())
             {

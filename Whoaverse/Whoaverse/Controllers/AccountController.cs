@@ -117,9 +117,8 @@ namespace Voat.Controllers
 
             // sign in and continue
             await SignInAsync(user, model.RememberMe);
-
-            // read User Theme preference and set value to session variable
-            Session["UserTheme"] = Utils.User.UserStylePreference(user.UserName);
+            // read User Theme preference and set value to cookie 
+            Voat.Utils.User.SetUserStylePreferenceCookie(Utils.User.UserStylePreference(user.UserName));            
             return RedirectToLocal(returnUrl);
         }
 
@@ -358,7 +357,7 @@ namespace Voat.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
-            Session["UserTheme"] = "light";
+            //Session["UserTheme"] = "light";
             return RedirectToAction("Index", "Home");
         }
 
@@ -590,6 +589,7 @@ namespace Voat.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
+            var newTheme = "light";
             // save changes
             using (var db = new whoaverseEntities())
             {
@@ -607,7 +607,8 @@ namespace Voat.Controllers
 
                     await db.SaveChangesAsync();
                     // apply theme change
-                    Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                    newTheme = userPreferences.Night_mode ? "dark" : "light";
+                    //Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
                 }
                 else
                 {
@@ -625,12 +626,14 @@ namespace Voat.Controllers
                     db.Userpreferences.Add(tmpModel);
 
                     await db.SaveChangesAsync();
+                    newTheme = userPreferences.Night_mode ? "dark" : "light";
                     // apply theme change
-                    Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                    //Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
                 }
             }
 
             //return RedirectToAction("Manage", new { Message = "Your user preferences have been saved." });
+            Utils.User.SetUserStylePreferenceCookie(newTheme);
             return RedirectToAction("Manage");
         }
 
@@ -638,6 +641,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> ToggleNightMode()
         {
+            string newTheme = "light";
             // save changes
             using (var db = new whoaverseEntities())
             {
@@ -647,10 +651,10 @@ namespace Voat.Controllers
                 {
                     // modify existing preferences
                     userPreferences.Night_mode = !userPreferences.Night_mode;
-
                     await db.SaveChangesAsync();
+                    newTheme = userPreferences.Night_mode ? "dark" : "light";
                     // apply theme change
-                    Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                    //Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
                 }
                 else
                 {
@@ -670,10 +674,12 @@ namespace Voat.Controllers
 
                     await db.SaveChangesAsync();
                     // apply theme change
-                    Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                    newTheme = "dark";
+                    //Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
                 }
             }
 
+            Utils.User.SetUserStylePreferenceCookie(newTheme);
             Response.StatusCode = 200;
             return Json("Toggled Night Mode", JsonRequestBehavior.AllowGet);
         }

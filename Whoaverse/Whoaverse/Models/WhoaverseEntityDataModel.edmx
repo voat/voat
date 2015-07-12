@@ -118,6 +118,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsArchived" Type="bit" Nullable="false" />
           <Property Name="Votes" Type="int" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="MessageContent" Type="nvarchar(max)" />
@@ -882,6 +883,7 @@
           <NavigationProperty Name="Viewstatistics" Relationship="whoaverseModel.FK_Viewstatistics_Messages" FromRole="Message" ToRole="Viewstatistic" />
           <NavigationProperty Name="SubmissionRemovalLog" Relationship="whoaverseModel.FK_SubmissionRemovalLog_Messages" FromRole="Message" ToRole="SubmissionRemovalLog" />
           <NavigationProperty Name="Savingtrackers" Relationship="whoaverseModel.FK_Savingtracker_Messages" FromRole="Message" ToRole="Savingtracker" />
+          <Property Name="IsArchived" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Votingtracker">
           <Key>
@@ -1721,6 +1723,7 @@
           <EntitySetMapping Name="Messages">
             <EntityTypeMapping TypeName="whoaverseModel.Message">
               <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="IsArchived" ColumnName="IsArchived" />
                 <ScalarProperty Name="Views" ColumnName="Views" />
                 <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
                 <ScalarProperty Name="FlairCss" ColumnName="FlairCss" />

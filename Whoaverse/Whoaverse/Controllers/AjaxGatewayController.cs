@@ -71,7 +71,8 @@ namespace Voat.Controllers
         public ActionResult SubverseLinkFlairs(string subversetoshow, int? messageId)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subversetoshow);
+            var subverseModel = SubverseCache.Retrieve(subversetoshow);
+            //var subverseModel = _db.Subverses.Find(subversetoshow);
 
             if (subverseModel == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             var submissionId = _db.Messages.Find(messageId);

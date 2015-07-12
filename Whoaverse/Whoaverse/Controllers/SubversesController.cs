@@ -25,18 +25,23 @@ using Microsoft.Ajax.Utilities;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utils;
+using System.Collections.Generic;
 
 namespace Voat.Controllers
 {
     public class SubversesController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        //IAmAGate: Move queries to read-only mirror
+        private readonly whoaverseEntities _db = new whoaverseEntities(true);
+        private int subverseCacheTimeInSeconds = 240;
 
         // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments,
             string name, DateTime? date, DateTime? lastEditDate, int? submissionId, int? likes, int? dislikes,
             bool anonymized, int? views)
         {
+
+            //Can't cache as view is using model to query
             var subverse = _db.Subverses.Find(selectedSubverse);
 
             //don't return a sidebar since subverse doesn't exist or is a system subverse
@@ -82,6 +87,7 @@ namespace Voat.Controllers
         // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverse(string selectedSubverse)
         {
+            //Can't cache as view is using Model to query
             var subverse = _db.Subverses.Find(selectedSubverse);
 
             // don't return a sidebar since subverse doesn't exist or is a system subverse
@@ -108,7 +114,7 @@ namespace Voat.Controllers
         // GET: stylesheet for selected subverse
         public ActionResult StylesheetForSelectedSubverse(string selectedSubverse)
         {
-            var subverse = _db.Subverses.FirstOrDefault(i => i.name == selectedSubverse);
+            var subverse = SubverseCache.Retrieve(selectedSubverse);
 
             return Content(subverse != null ? subverse.stylesheet : string.Empty);
         }
@@ -155,7 +161,7 @@ namespace Voat.Controllers
             }
 
             // check if subverse already exists
-            if (_db.Subverses.Find(subverseTmpModel.Name) != null)
+            if (SubverseCache.Retrieve(subverseTmpModel.Name) != null)
             {
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
                 return View();
@@ -216,7 +222,8 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult SubverseSettings(string subversetoshow)
         {
-            var subverse = _db.Subverses.Find(subversetoshow);
+            var subverse = SubverseCache.Retrieve(subversetoshow);
+ 
             if (subverse == null)
             {
                 ViewBag.SelectedSubverse = "404";
@@ -326,7 +333,7 @@ namespace Voat.Controllers
                     existingSubverse.anonymized_mode = updatedModel.anonymized_mode;
 
                     await _db.SaveChangesAsync();
-
+                    SubverseCache.Remove(existingSubverse.name);
                     // go back to this subverse
                     return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.name });
                     // user was not authorized to commit the changes, drop attempt
@@ -345,7 +352,7 @@ namespace Voat.Controllers
         public ActionResult SubverseIndex(int? page, string subversetoshow)
         {
             const string cookieName = "NSFWEnabled";
-            const int pageSize = 25;
+            int pageSize = 25;
             int pageNumber = (page ?? 0);
 
             if (pageNumber < 0)
@@ -388,7 +395,10 @@ namespace Voat.Controllers
                 if (!subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
                 {
                     // check if subverse exists, if not, send to a page not found error
+                    
+                    //Can't use cached, view using to query db
                     var subverse = _db.Subverses.Find(subversetoshow);
+                    
                     if (subverse == null)
                     {
                         ViewBag.SelectedSubverse = "404";
@@ -406,7 +416,44 @@ namespace Voat.Controllers
                     ViewBag.SelectedSubverse = subverse.name;
                     ViewBag.Title = subverse.description;
 
-                    var paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
+
+                    //IAmAGate: Perf mods for caching
+                    string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
+                    Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)CacheHandler.Retrieve(cacheKey);
+
+                    if (cacheData == null)
+                    {
+                        var getDataFunc = new Func<object>(() =>
+                        {
+                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                            {
+                                var x = SubmissionsFromASubverseByRank(subversetoshow, db);
+                                int count = x.Count();
+                                List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                                return new Tuple<IList<Message>, int>(content, count);
+                            }
+                        });
+
+                        cacheData = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                    }
+
+                    ////IAmAGate: Perf mods for caching
+                    //string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
+                    //Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)System.Web.HttpContext.Current.Cache[cacheKey];
+
+                    //if (cacheData == null)
+                    //{
+                    //    var x = SubmissionsFromASubverseByRank(subversetoshow);
+                    //    int count = x.Count();
+                    //    List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                    //    cacheData = new Tuple<IList<Message>, int>(content, count);
+                    //    System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, DateTime.Now.AddSeconds(subverseCacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                    //}
+
+
+                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(cacheData.Item1, pageNumber, pageSize, cacheData.Item2);
+
+                    //var paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
 
                     // check if subverse is rated adult, show a NSFW warning page before entering
                     if (!subverse.rated_adult) return View(paginatedSubmissions);
@@ -446,8 +493,8 @@ namespace Voat.Controllers
                         return View(paginatedSubmissionsFromAllSubverses);
                     }
 
-                    // return only sfw submissions
-                    paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                    // return only sfw submissions 
+                    paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(_db), page ?? 0, pageSize);
                     return View(paginatedSfwSubmissions);
                 }
 
@@ -458,9 +505,33 @@ namespace Voat.Controllers
                     return View(paginatedSubmissionsFromAllSubverses);
                 }
 
-                // return only sfw submissions
-                paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+
+                //NEW LOGIC
+                //IAmAGate: Perf mods for caching
+                string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "rank").ToLower();
+                Tuple<IList<Message>, int> cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.Retrieve(cacheKeyAll);
+
+                if (cacheDataAll == null)
+                {
+                    var getDataFunc = new Func<object>(() =>
+                    {
+                        using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                        {
+                            var x = SfwSubmissionsFromAllSubversesByRank(db);
+                            int count = 50000;
+                            List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                            return new Tuple<IList<Message>, int>(content, count);
+                        }
+                    });
+                    cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber > 2) ? 5 : 0);
+                }
+                paginatedSfwSubmissions = new PaginatedList<Message>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
                 return View(paginatedSfwSubmissions);
+
+                //OLD LOGIC
+                // return only sfw submissions
+                //paginatedSfwSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                //return View(paginatedSfwSubmissions);
             }
             catch (Exception)
             {
@@ -589,7 +660,7 @@ namespace Voat.Controllers
         // GET: sidebar for selected subverse
         public ActionResult DetailsForSelectedSubverse(string selectedSubverse)
         {
-            var subverse = _db.Subverses.Find(selectedSubverse);
+            var subverse = SubverseCache.Retrieve(selectedSubverse);
 
             if (subverse == null) return new EmptyResult();
             // get subscriber count for selected subverse
@@ -735,7 +806,7 @@ namespace Voat.Controllers
         public ActionResult SubverseModerators(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.FirstOrDefault(s => s.name.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase));
+            var subverseModel = SubverseCache.Retrieve(subversetoshow);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
@@ -759,7 +830,7 @@ namespace Voat.Controllers
         public ActionResult ModeratorInvitations(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.FirstOrDefault(s => s.name.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase));
+            var subverseModel = SubverseCache.Retrieve(subversetoshow);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
@@ -782,7 +853,7 @@ namespace Voat.Controllers
         public ActionResult SubverseBans(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subversetoshow);
+            var subverseModel = SubverseCache.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -807,7 +878,7 @@ namespace Voat.Controllers
         public ActionResult AddModerator(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.FirstOrDefault(s => s.name.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase));
+            var subverseModel = SubverseCache.Retrieve(subversetoshow);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
@@ -824,7 +895,7 @@ namespace Voat.Controllers
         public ActionResult AddBan(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subversetoshow);
+            var subverseModel = SubverseCache.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -846,7 +917,7 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View(subverseAdmin);
 
             // get model for selected subverse
-            var subverseModel = _db.Subverses.FirstOrDefault(s => s.name.Equals(subverseAdmin.SubverseName, StringComparison.OrdinalIgnoreCase));
+            var subverseModel = SubverseCache.Retrieve(subverseAdmin.SubverseName);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             int maximumOwnedSubs = MvcApplication.MaximumOwnedSubs;
@@ -1005,7 +1076,7 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View(subverseBan);
 
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subverseBan.SubverseName);
+            var subverseModel = SubverseCache.Retrieve(subverseBan.SubverseName);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -1090,7 +1161,7 @@ namespace Voat.Controllers
             if (invitationToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if subverse exists
-            var subverse = _db.Subverses.FirstOrDefault(s => s.name.Equals(invitationToBeRemoved.Subverse, StringComparison.OrdinalIgnoreCase));
+            var subverse = SubverseCache.Retrieve(invitationToBeRemoved.Subverse);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a moderator invitation
@@ -1159,7 +1230,7 @@ namespace Voat.Controllers
             var moderatorToBeRemoved = _db.SubverseAdmins.FirstOrDefault(s => s.SubverseName == subversetoresignfrom && s.Username == User.Identity.Name && s.Power != 1);
 
             if (moderatorToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var subverse = _db.Subverses.Find(moderatorToBeRemoved.SubverseName);
+            var subverse = SubverseCache.Retrieve(moderatorToBeRemoved.SubverseName);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // execute removal                    
             _db.SubverseAdmins.Remove(moderatorToBeRemoved);
@@ -1176,7 +1247,7 @@ namespace Voat.Controllers
             // get moderator name for selected subverse
             var moderatorToBeRemoved = await _db.SubverseAdmins.FindAsync(id);
             if (moderatorToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var subverse = _db.Subverses.Find(moderatorToBeRemoved.SubverseName);
+            var subverse = SubverseCache.Retrieve(moderatorToBeRemoved.SubverseName);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a moderator
@@ -1200,7 +1271,7 @@ namespace Voat.Controllers
 
             if (banToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var subverse = _db.Subverses.Find(banToBeRemoved.SubverseName);
+            var subverse = SubverseCache.Retrieve(banToBeRemoved.SubverseName);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a ban
@@ -1217,7 +1288,7 @@ namespace Voat.Controllers
         public ActionResult SubverseFlairSettings(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subversetoshow);
+            var subverseModel = SubverseCache.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse owner, if not, deny listing
@@ -1242,9 +1313,10 @@ namespace Voat.Controllers
         public ActionResult AddLinkFlair(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subversetoshow);
+            var subverseModel = SubverseCache.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
             // check if caller is subverse owner, if not, deny listing
             if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) &&
                 !Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
@@ -1263,9 +1335,9 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid) return View(subverseFlairSetting);
             // get model for selected subverse
-            var subverseModel = _db.Subverses.Find(subverseFlairSetting.Subversename);
-
+            var subverseModel = SubverseCache.Retrieve(subverseFlairSetting.Subversename);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            
             // check if caller is subverse owner, if not, deny posting
             if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseFlairSetting.Subversename) &&
                 !Utils.User.IsUserSubverseModerator(User.Identity.Name, subverseFlairSetting.Subversename))
@@ -1306,7 +1378,7 @@ namespace Voat.Controllers
             // get link flair for selected subverse
             var linkFlairToRemove = await _db.Subverseflairsettings.FindAsync(id);
             if (linkFlairToRemove == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var subverse = _db.Subverses.Find(linkFlairToRemove.Subversename);
+            var subverse = SubverseCache.Retrieve(linkFlairToRemove.Subversename);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller has clearance to remove a link flair
             if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) &&
@@ -1348,7 +1420,7 @@ namespace Voat.Controllers
 
             if (stickiedSubmission != null)
             {
-                var subverse = _db.Subverses.Find(subverseName);
+                var subverse = SubverseCache.Retrieve(subverseName);
                 if (subverse.anonymized_mode)
                 {
                     ViewBag.SubverseAnonymized = true;
@@ -1411,7 +1483,7 @@ namespace Voat.Controllers
 
             try
             {
-                var subverse = _db.Subverses.Find(subversetoshow);
+                var subverse = SubverseCache.Retrieve(subversetoshow); 
                 if (subverse != null)
                 {
                     //HACK: Disable subverse
@@ -1437,7 +1509,7 @@ namespace Voat.Controllers
 
             try
             {
-                var subverse = _db.Subverses.Find(subversetoshow);
+                var subverse = SubverseCache.Retrieve(subversetoshow); 
                 if (subverse != null)
                 {
                     //HACK: Disable subverse
@@ -1463,7 +1535,7 @@ namespace Voat.Controllers
 
             try
             {
-                var subverse = _db.Subverses.Find(subversetoshow);
+                var subverse = SubverseCache.Retrieve(subversetoshow); 
                 if (subverse != null)
                 {
                     //HACK: Disable subverse
@@ -1510,8 +1582,9 @@ namespace Voat.Controllers
             }
 
             // check if subverse exists, if not, send to a page not found error
-            var subverse = _db.Subverses.Find(subversetoshow);
+            var subverse = SubverseCache.Retrieve(subversetoshow);
             if (subverse == null) return View("~/Views/Errors/Subversenotfound.cshtml");
+
             ViewBag.Title = subverse.description;
 
             //HACK: Disable subverse
@@ -1533,6 +1606,7 @@ namespace Voat.Controllers
                     {
                         if (sortingmode.Equals("new"))
                         {
+
                             var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
                             return View("SubverseIndex", paginatedSubmissionsByDate);
                         }
@@ -1544,7 +1618,7 @@ namespace Voat.Controllers
                         }
 
                         // default sorting mode by rank
-                        paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
+                        paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow, _db), page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissionsByRank);
                     }
                     return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
@@ -1559,6 +1633,7 @@ namespace Voat.Controllers
 
                 if (sortingmode.Equals("new"))
                 {
+
                     var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissionsByDate);
                 }
@@ -1577,12 +1652,52 @@ namespace Voat.Controllers
             // subverse is safe for work
             if (sortingmode.Equals("new"))
             {
-                var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
+
+
+                //IAmAGate: Perf mods for caching
+                string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
+                Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)CacheHandler.Retrieve(cacheKey);
+
+                if (cacheData == null)
+                {
+                    var getDataFunc = new Func<object>(() =>
+                    {
+                        using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                        {
+                            var x = SubmissionsFromASubverseByDate(subversetoshow, db);
+                            int count = x.Count();
+                            List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                            return new Tuple<IList<Message>, int>(content, count);
+                        }
+                    });
+
+                    cacheData = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                }
+               
+                ////IAmAGate: Perf mods for caching
+                //string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
+                //Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)System.Web.HttpContext.Current.Cache[cacheKey];
+
+                //if (cacheData == null)
+                //{
+                //    var x = SubmissionsFromASubverseByDate(subversetoshow);
+                //    int count = x.Count();
+                //    List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                //    cacheData = new Tuple<IList<Message>, int>(content, count);
+                //    System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, DateTime.Now.AddSeconds(subverseCacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                //}
+
+                PaginatedList<Message> paginatedSubmissionsByDate = new PaginatedList<Message>(cacheData.Item1, pageNumber, pageSize, cacheData.Item2);
+
                 return View("SubverseIndex", paginatedSubmissionsByDate);
+
+                //var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
+                //return View("SubverseIndex", paginatedSubmissionsByDate);
             }
 
             if (sortingmode.Equals("top"))
             {
+
                 var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByTop(subversetoshow, startDate), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissionsByDate);
             }
@@ -1645,7 +1760,7 @@ namespace Voat.Controllers
                 }
 
                 // default sorting mode by rank
-                submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByRank().Where(x => !blockedSubverses.Contains(x.Subverse));
+                submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByRank(_db).Where(x => !blockedSubverses.Contains(x.Subverse));
                 paginatedSubmissions = new PaginatedList<Message>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
@@ -1655,7 +1770,30 @@ namespace Voat.Controllers
             {
                 if (sortingmode.Equals("new"))
                 {
-                    paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                    //IAmAGate: Perf mods for caching
+                    int pageNumber = page.HasValue ? page.Value : 0;
+                    int size = pageSize;
+                    string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "new").ToLower();
+                    Tuple<IList<Message>, int> cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.Retrieve(cacheKeyAll);
+
+                    if (cacheDataAll == null)
+                    {
+                        var getDataFunc = new Func<object>(() =>
+                        {
+                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE)) 
+                            {
+                                var x = SfwSubmissionsFromAllSubversesByDate(db);
+                                int count = 50000;
+                                List<Message> content = x.Skip(pageNumber * size).Take(size).ToList();
+                                return new Tuple<IList<Message>, int>(content, count);
+                            }
+                        });
+
+                        cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                    }
+                    paginatedSubmissions = new PaginatedList<Message>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
+
+                    //paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
                 if (sortingmode.Equals("top"))
@@ -1664,14 +1802,38 @@ namespace Voat.Controllers
                     return View("SubverseIndex", paginatedSubmissions);
                 }
 
+                //QUE: I don't think this code is reachable
                 // default sorting mode by rank
-                paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                paginatedSubmissions = new PaginatedList<Message>(SfwSubmissionsFromAllSubversesByRank(_db), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
 
             if (sortingmode.Equals("new"))
             {
-                paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+
+                //IAmAGate: Perf mods for caching
+                int pageNumber = page.HasValue ? page.Value : 0;
+                string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.nsfw", "all", pageNumber, "new").ToLower();
+                Tuple<IList<Message>, int> cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.Retrieve(cacheKeyAll);
+
+                if (cacheDataAll == null)
+                {
+                    var getDataFunc = new Func<object>(() =>
+                    {
+                        using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                        {
+                            var x = SubmissionsFromAllSubversesByDate(db);
+                            int count = 50000;
+                            List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                            return new Tuple<IList<Message>, int>(content, count);
+                        }
+                    });
+
+                    cacheDataAll = (Tuple<IList<Message>, int>)CacheHandler.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                }
+                paginatedSubmissions = new PaginatedList<Message>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
+
+                //paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
             if (sortingmode.Equals("top"))
@@ -1689,33 +1851,58 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult TopViewedSubmissions24Hours()
         {
-            var submissions = SfwSubmissionsFromAllSubversesByViews24Hours();
-            return PartialView("_MostViewedSubmissions", submissions);
+            //var submissions = 
+            var cacheData = CacheHandler.Register("TopViewedSubmissions24Hours", new Func<object>(() => {
+                using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY)){
+                    return SfwSubmissionsFromAllSubversesByViews24Hours(db).ToList(); 
+                }
+            
+            }), TimeSpan.FromMinutes(60), 5);
+
+
+            return PartialView("_MostViewedSubmissions", cacheData);
         }
 
         #region sfw submissions from all subverses
-        private IQueryable<Message> SfwSubmissionsFromAllSubversesByDate()
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByDate(whoaverseEntities _db = null)
         {
+            if (_db == null) 
+            {
+                _db = this._db;
+            }
+            string userName = "";
+            if (User != null) 
+            {
+                userName = User.Identity.Name;
+            }
             IQueryable<Message> sfwSubmissionsFromAllSubversesByDate = (from message in _db.Messages
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
+                                                                        where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                         where !subverse.admin_disabled.Value
-                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
+                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
                                                                         select message
                                                                         ).OrderByDescending(s => s.Date).AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByDate;
         }
 
-        private IQueryable<Message> SfwSubmissionsFromAllSubversesByRank()
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByRank(whoaverseEntities _db)
         {
+            if (_db == null) {
+                _db = this._db;
+            }
+            string userName = "";
+            if (User != null)
+            {
+                userName = User.Identity.Name;
+            }
             IQueryable<Message> sfwSubmissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                        where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
+                                                                        where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                         where !subverse.admin_disabled.Value
-                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
+                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
                                                                         select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByRank;
@@ -1735,12 +1922,15 @@ namespace Voat.Controllers
             return sfwSubmissionsFromAllSubversesByTop;
         }
 
-        private IQueryable<Message> SfwSubmissionsFromAllSubversesByViews24Hours()
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByViews24Hours(whoaverseEntities _db)
         {
+            if (_db == null) {
+                _db = this._db;
+            }
             var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
             IQueryable<Message> sfwSubmissionsFromAllSubversesByViews24Hours = (from message in _db.Messages
                                                                                 join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                                where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && message.Date >= startDate && message.Date <= DateTime.Now
+                                                                                where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && message.Date >= startDate && message.Date <= DateTime.Now
                                                                                 where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                                 where !subverse.admin_disabled.Value
                                                                                 where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
@@ -1751,14 +1941,23 @@ namespace Voat.Controllers
         #endregion
 
         #region unfiltered submissions from all subverses
-        private IQueryable<Message> SubmissionsFromAllSubversesByDate()
+        private IQueryable<Message> SubmissionsFromAllSubversesByDate(whoaverseEntities _db = null)
         {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+            string userName = "";
+            if (User != null)
+            {
+                userName = User.Identity.Name;
+            }
             IQueryable<Message> submissionsFromAllSubversesByDate = (from message in _db.Messages
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                     where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
+                                                                     where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                      where !subverse.admin_disabled.Value
-                                                                     where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
+                                                                     where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
                                                                      select message).OrderByDescending(s => s.Date).AsNoTracking();
 
             return submissionsFromAllSubversesByDate;
@@ -1768,7 +1967,7 @@ namespace Voat.Controllers
         {
             IQueryable<Message> submissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                     where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
+                                                                     where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                      where !subverse.admin_disabled.Value
                                                                      where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
@@ -1793,8 +1992,11 @@ namespace Voat.Controllers
         #endregion
 
         #region submissions from a single subverse
-        private IQueryable<Message> SubmissionsFromASubverseByDate(string subverseName)
+        private IQueryable<Message> SubmissionsFromASubverseByDate(string subverseName, whoaverseEntities _db = null)
         {
+            if (_db == null) {
+                _db = this._db;
+            }
             var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             IQueryable<Message> submissionsFromASubverseByDate = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
@@ -1809,8 +2011,11 @@ namespace Voat.Controllers
             return submissionsFromASubverseByDate;
         }
 
-        private IQueryable<Message> SubmissionsFromASubverseByRank(string subverseName)
+        private IQueryable<Message> SubmissionsFromASubverseByRank(string subverseName, whoaverseEntities _db = null)
         {
+            if (_db == null) {
+                _db = this._db;
+            }
             var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             IQueryable<Message> submissionsFromASubverseByRank = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
@@ -1842,5 +2047,4 @@ namespace Voat.Controllers
         }
         #endregion
     }
-
 }

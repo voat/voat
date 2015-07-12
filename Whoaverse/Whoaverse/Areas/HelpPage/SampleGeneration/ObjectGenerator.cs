@@ -22,7 +22,7 @@ namespace Voat.Areas.HelpPage
         /// Complex types: POCO types.
         /// Nullables: <see cref="Nullable{T}"/>.
         /// Arrays: arrays of simple types or complex types.
-        /// Key value pairs: <see cref="KeyValuePair{TKey,TValue}"/>
+        /// Keys value pairs: <see cref="KeyValuePair{TKey,TValue}"/>
         /// Tuples: <see cref="Tuple{T1}"/>, <see cref="Tuple{T1,T2}"/>, etc
         /// Dictionaries: <see cref="IDictionary{TKey,TValue}"/> or anything deriving from <see cref="IDictionary{TKey,TValue}"/>.
         /// Collections: <see cref="IList{T}"/>, <see cref="IEnumerable{T}"/>, <see cref="ICollection{T}"/>, <see cref="IList"/>, <see cref="IEnumerable"/>, <see cref="ICollection"/> or anything deriving from <see cref="ICollection{T}"/> or <see cref="IList"/>.
