@@ -25,7 +25,7 @@ namespace Voat.Utils
         public static bool? CheckIfSaved(string userToCheck, int messageId)
         {
 
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (voatEntities db = new voatEntities())
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
@@ -53,7 +53,7 @@ namespace Voat.Utils
                 return count > 0;
             }
 
-            //using (var db = new whoaverseEntities())
+            //using (var db = new voatEntities())
             //{
             //    return db.Savingtrackers.Where(u => u.UserName == userToCheck && u.MessageId == messageId).AsNoTracking().Any();
             //}
@@ -64,7 +64,7 @@ namespace Voat.Utils
         {
             var result = CheckIfSaved(userWhichSaved, submissionId);
 
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 if (result == true)
                 {
@@ -90,7 +90,7 @@ namespace Voat.Utils
         // a user has saved this submission earlier and wishes to unsave it, delete the record
         private static void UnSaveSubmission(string userWhichSaved, int messageId)
         {
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var saveTracker = db.Savingtrackers.FirstOrDefault(b => b.MessageId == messageId && b.UserName == userWhichSaved);
 

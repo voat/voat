@@ -99,7 +99,7 @@ namespace Voat.Utils
             {
                 Comment incomingComment = (Comment)filterContext.ActionParameters["comment"];
 
-                using (whoaverseEntities db = new whoaverseEntities())
+                using (voatEntities db = new voatEntities())
                 {
                     var relatedMessage = db.Messages.Find(incomingComment.MessageId);
                     if (relatedMessage != null)

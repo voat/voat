@@ -61,7 +61,7 @@ namespace Voat.Utils
 
 
             int count = 0;
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (voatEntities db = new voatEntities())
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
@@ -86,7 +86,7 @@ namespace Voat.Utils
             return count;
 
 
-            //using (var db = new whoaverseEntities())
+            //using (var db = new voatEntities())
             //{
             //    try
             //    {
@@ -115,7 +115,7 @@ namespace Voat.Utils
 
 
             int count = 0;
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (voatEntities db = new voatEntities())
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
@@ -147,7 +147,7 @@ namespace Voat.Utils
             return count;
 
 
-            //using (var db = new whoaverseEntities())
+            //using (var db = new voatEntities())
             //{
             //    try
             //    {
@@ -176,7 +176,7 @@ namespace Voat.Utils
 
 
             int count = 0;
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (voatEntities db = new voatEntities())
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
@@ -201,7 +201,7 @@ namespace Voat.Utils
 
             return count;
 
-            //using (var db = new whoaverseEntities())
+            //using (var db = new voatEntities())
             //{
             //    try
             //    {
@@ -230,7 +230,7 @@ namespace Voat.Utils
 
 
             int count = 0;
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (voatEntities db = new voatEntities())
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
@@ -265,7 +265,7 @@ namespace Voat.Utils
 
             return count;
 
-            //using (var db = new whoaverseEntities())
+            //using (var db = new voatEntities())
             //{
             //    try
             //    {
@@ -299,7 +299,7 @@ namespace Voat.Utils
 
 
             int count = 0;
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (voatEntities db = new voatEntities())
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
@@ -328,7 +328,7 @@ namespace Voat.Utils
             return count;
 
 
-            //using (var db = new whoaverseEntities())
+            //using (var db = new voatEntities())
             //{
             //    try
             //    {

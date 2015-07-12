@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="whoaverseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="voatModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Badges">
           <Key>
             <PropertyRef Name="BadgeId" />
@@ -307,7 +307,7 @@
           <Property Name="Date_submitted" Type="datetime" Nullable="false" />
           <Property Name="Wants_to_be_contacted_at_service_launch" Type="bit" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Wants_to_subscribe_to_whoaverse_news" Type="bit" Nullable="false" />
+          <Property Name="Wants_to_subscribe_to_voat_news" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Userbadges">
           <Key>
@@ -693,7 +693,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="whoaverseModelStoreContainer">
+        <EntityContainer Name="voatModelStoreContainer">
           <EntitySet Name="Badges" EntityType="Self.Badges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Banneddomains" EntityType="Self.Banneddomains" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Bannedusers" EntityType="Self.Bannedusers" Schema="dbo" store:Type="Tables" />
@@ -819,7 +819,7 @@
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="whoaverseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="voatModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="Comment">
           <Key>
             <PropertyRef Name="Id" />
@@ -838,9 +838,9 @@
           <Property Name="LastEditDate" Type="DateTime" Precision="3" />
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
           <Property Name="IsDistinguished" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Commentsavingtrackers" Relationship="whoaverseModel.FK_Commentsavingtracker_Comments" FromRole="Comment" ToRole="Commentsavingtracker" />
+          <NavigationProperty Name="Commentsavingtrackers" Relationship="voatModel.FK_Commentsavingtracker_Comments" FromRole="Comment" ToRole="Commentsavingtracker" />
           <Property Name="FormattedContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="CommentRemovalLog" Relationship="whoaverseModel.FK_CommentRemovalLog_Comments" FromRole="Comment" ToRole="CommentRemovalLog" />
+          <NavigationProperty Name="CommentRemovalLog" Relationship="voatModel.FK_CommentRemovalLog_Comments" FromRole="Comment" ToRole="CommentRemovalLog" />
         </EntityType>
         <EntityType Name="Commentvotingtracker">
           <Key>
@@ -870,19 +870,19 @@
           <NavigationProperty Name="Votingtrackers" Relationship="Self.FK_Votingtracker_Messages" FromRole="Messages" ToRole="Votingtracker" />
           <Property Name="MessageContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Subverses" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Message" ToRole="Subverse" />
+          <NavigationProperty Name="Subverses" Relationship="voatModel.FK_Messages_Subverses" FromRole="Message" ToRole="Subverse" />
           <Property Name="Likes" Type="Int16" Nullable="false" DefaultValue="1" />
           <Property Name="Dislikes" Type="Int16" Nullable="false" DefaultValue="0" />
           <Property Name="Thumbnail" Type="String" MaxLength="40" FixedLength="true" Unicode="true" />
           <Property Name="LastEditDate" Type="DateTime" Precision="3" />
           <Property Name="FlairLabel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="FlairCss" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Stickiedsubmission" Relationship="whoaverseModel.FK_Stickiedsubmissions_Messages" FromRole="Message" ToRole="Stickiedsubmission" />
+          <NavigationProperty Name="Stickiedsubmission" Relationship="voatModel.FK_Stickiedsubmissions_Messages" FromRole="Message" ToRole="Stickiedsubmission" />
           <Property Name="Anonymized" Type="Boolean" Nullable="false" />
           <Property Name="Views" Type="Double" Nullable="false" />
-          <NavigationProperty Name="Viewstatistics" Relationship="whoaverseModel.FK_Viewstatistics_Messages" FromRole="Message" ToRole="Viewstatistic" />
-          <NavigationProperty Name="SubmissionRemovalLog" Relationship="whoaverseModel.FK_SubmissionRemovalLog_Messages" FromRole="Message" ToRole="SubmissionRemovalLog" />
-          <NavigationProperty Name="Savingtrackers" Relationship="whoaverseModel.FK_Savingtracker_Messages" FromRole="Message" ToRole="Savingtracker" />
+          <NavigationProperty Name="Viewstatistics" Relationship="voatModel.FK_Viewstatistics_Messages" FromRole="Message" ToRole="Viewstatistic" />
+          <NavigationProperty Name="SubmissionRemovalLog" Relationship="voatModel.FK_SubmissionRemovalLog_Messages" FromRole="Message" ToRole="SubmissionRemovalLog" />
+          <NavigationProperty Name="Savingtrackers" Relationship="voatModel.FK_Savingtracker_Messages" FromRole="Message" ToRole="Savingtracker" />
           <Property Name="IsArchived" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Votingtracker">
@@ -933,7 +933,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="whoaverseEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="voatEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Comments" EntityType="Self.Comment" />
           <EntitySet Name="Commentvotingtrackers" EntityType="Self.Commentvotingtracker" />
           <EntitySet Name="Messages" EntityType="Self.Message" />
@@ -950,112 +950,112 @@
             <End Role="Messages" EntitySet="Messages" />
             <End Role="Votingtracker" EntitySet="Votingtrackers" />
           </AssociationSet>
-          <EntitySet Name="Subverses" EntityType="whoaverseModel.Subverse" />
-          <AssociationSet Name="FK_Messages_Subverses" Association="whoaverseModel.FK_Messages_Subverses">
+          <EntitySet Name="Subverses" EntityType="voatModel.Subverse" />
+          <AssociationSet Name="FK_Messages_Subverses" Association="voatModel.FK_Messages_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Message" EntitySet="Messages" />
           </AssociationSet>
-          <EntitySet Name="Defaultsubverses" EntityType="whoaverseModel.Defaultsubverse" />
-          <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="whoaverseModel.FK_Defaultsubverses_Subverses">
+          <EntitySet Name="Defaultsubverses" EntityType="voatModel.Defaultsubverse" />
+          <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="voatModel.FK_Defaultsubverses_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Defaultsubvers" EntitySet="Defaultsubverses" />
           </AssociationSet>
-          <EntitySet Name="SubverseAdmins" EntityType="whoaverseModel.SubverseAdmin" />
-          <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="whoaverseModel.FK_SubverseAdmins_Subverses">
+          <EntitySet Name="SubverseAdmins" EntityType="voatModel.SubverseAdmin" />
+          <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="voatModel.FK_SubverseAdmins_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="SubverseAdmin" EntitySet="SubverseAdmins" />
           </AssociationSet>
-          <EntitySet Name="Promotedsubmissions" EntityType="whoaverseModel.Promotedsubmission" />
-          <EntitySet Name="Subscriptions" EntityType="whoaverseModel.Subscription" />
-          <EntitySet Name="Badges" EntityType="whoaverseModel.Badge" />
-          <EntitySet Name="Userbadges" EntityType="whoaverseModel.Userbadge" />
-          <AssociationSet Name="FK_Userbadges_Badges" Association="whoaverseModel.FK_Userbadges_Badges">
+          <EntitySet Name="Promotedsubmissions" EntityType="voatModel.Promotedsubmission" />
+          <EntitySet Name="Subscriptions" EntityType="voatModel.Subscription" />
+          <EntitySet Name="Badges" EntityType="voatModel.Badge" />
+          <EntitySet Name="Userbadges" EntityType="voatModel.Userbadge" />
+          <AssociationSet Name="FK_Userbadges_Badges" Association="voatModel.FK_Userbadges_Badges">
             <End Role="Badge" EntitySet="Badges" />
             <End Role="Userbadge" EntitySet="Userbadges" />
           </AssociationSet>
-          <EntitySet Name="Banneddomains" EntityType="whoaverseModel.Banneddomain" />
-          <EntitySet Name="Privatemessages" EntityType="whoaverseModel.Privatemessage" />
-          <EntitySet Name="Commentreplynotifications" EntityType="whoaverseModel.Commentreplynotification" />
-          <EntitySet Name="Postreplynotifications" EntityType="whoaverseModel.Postreplynotification" />
-          <EntitySet Name="Userpreferences" EntityType="whoaverseModel.Userpreference" />
-          <EntitySet Name="Subverseflairsettings" EntityType="whoaverseModel.Subverseflairsetting" />
-          <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="whoaverseModel.FK_Subverseflairsettings_Subverses1">
+          <EntitySet Name="Banneddomains" EntityType="voatModel.Banneddomain" />
+          <EntitySet Name="Privatemessages" EntityType="voatModel.Privatemessage" />
+          <EntitySet Name="Commentreplynotifications" EntityType="voatModel.Commentreplynotification" />
+          <EntitySet Name="Postreplynotifications" EntityType="voatModel.Postreplynotification" />
+          <EntitySet Name="Userpreferences" EntityType="voatModel.Userpreference" />
+          <EntitySet Name="Subverseflairsettings" EntityType="voatModel.Subverseflairsetting" />
+          <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="voatModel.FK_Subverseflairsettings_Subverses1">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Subverseflairsetting" EntitySet="Subverseflairsettings" />
           </AssociationSet>
-          <EntitySet Name="Stickiedsubmissions" EntityType="whoaverseModel.Stickiedsubmission" />
-          <AssociationSet Name="FK_Stickiedsubmissions_Messages" Association="whoaverseModel.FK_Stickiedsubmissions_Messages">
+          <EntitySet Name="Stickiedsubmissions" EntityType="voatModel.Stickiedsubmission" />
+          <AssociationSet Name="FK_Stickiedsubmissions_Messages" Association="voatModel.FK_Stickiedsubmissions_Messages">
             <End Role="Message" EntitySet="Messages" />
             <End Role="Stickiedsubmission" EntitySet="Stickiedsubmissions" />
           </AssociationSet>
-          <AssociationSet Name="FK_Stickiedsubmissions_Subverses" Association="whoaverseModel.FK_Stickiedsubmissions_Subverses">
+          <AssociationSet Name="FK_Stickiedsubmissions_Subverses" Association="voatModel.FK_Stickiedsubmissions_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Stickiedsubmission" EntitySet="Stickiedsubmissions" />
           </AssociationSet>
-          <EntitySet Name="Bannedusers" EntityType="whoaverseModel.Banneduser" />
-          <EntitySet Name="Surveys" EntityType="whoaverseModel.Survey" />
-          <AssociationSet Name="FK_Messages_Messages" Association="whoaverseModel.FK_Messages_Messages">
+          <EntitySet Name="Bannedusers" EntityType="voatModel.Banneduser" />
+          <EntitySet Name="Surveys" EntityType="voatModel.Survey" />
+          <AssociationSet Name="FK_Messages_Messages" Association="voatModel.FK_Messages_Messages">
             <End Role="Message" EntitySet="Messages" />
             <End Role="Message1" EntitySet="Messages" />
           </AssociationSet>
-          <AssociationSet Name="FK_Subscriptions_Subverses" Association="whoaverseModel.FK_Subscriptions_Subverses">
+          <AssociationSet Name="FK_Subscriptions_Subverses" Association="voatModel.FK_Subscriptions_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Subscription" EntitySet="Subscriptions" />
           </AssociationSet>
-          <EntitySet Name="Featuredsubs" EntityType="whoaverseModel.Featuredsub" />
-          <AssociationSet Name="FK_Featuredsubs_Subverses" Association="whoaverseModel.FK_Featuredsubs_Subverses">
+          <EntitySet Name="Featuredsubs" EntityType="voatModel.Featuredsub" />
+          <AssociationSet Name="FK_Featuredsubs_Subverses" Association="voatModel.FK_Featuredsubs_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Featuredsub" EntitySet="Featuredsubs" />
           </AssociationSet>
-          <EntitySet Name="Viewstatistics" EntityType="whoaverseModel.Viewstatistic" />
-          <AssociationSet Name="FK_Viewstatistics_Messages" Association="whoaverseModel.FK_Viewstatistics_Messages">
+          <EntitySet Name="Viewstatistics" EntityType="voatModel.Viewstatistic" />
+          <AssociationSet Name="FK_Viewstatistics_Messages" Association="voatModel.FK_Viewstatistics_Messages">
             <End Role="Message" EntitySet="Messages" />
             <End Role="Viewstatistic" EntitySet="Viewstatistics" />
           </AssociationSet>
-          <EntitySet Name="Usersetdefinitions" EntityType="whoaverseModel.Usersetdefinition" />
-          <EntitySet Name="Usersets" EntityType="whoaverseModel.Userset" />
-          <EntitySet Name="Usersetsubscriptions" EntityType="whoaverseModel.Usersetsubscription" />
-          <AssociationSet Name="FK_Usersetdefinitions_Subverses" Association="whoaverseModel.FK_Usersetdefinitions_Subverses">
+          <EntitySet Name="Usersetdefinitions" EntityType="voatModel.Usersetdefinition" />
+          <EntitySet Name="Usersets" EntityType="voatModel.Userset" />
+          <EntitySet Name="Usersetsubscriptions" EntityType="voatModel.Usersetsubscription" />
+          <AssociationSet Name="FK_Usersetdefinitions_Subverses" Association="voatModel.FK_Usersetdefinitions_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="Usersetdefinition" EntitySet="Usersetdefinitions" />
           </AssociationSet>
-          <AssociationSet Name="FK_Usersetdefinitions_Usersets" Association="whoaverseModel.FK_Usersetdefinitions_Usersets">
+          <AssociationSet Name="FK_Usersetdefinitions_Usersets" Association="voatModel.FK_Usersetdefinitions_Usersets">
             <End Role="Userset" EntitySet="Usersets" />
             <End Role="Usersetdefinition" EntitySet="Usersetdefinitions" />
           </AssociationSet>
-          <AssociationSet Name="FK_Usersetsubscriptions_Usersets" Association="whoaverseModel.FK_Usersetsubscriptions_Usersets">
+          <AssociationSet Name="FK_Usersetsubscriptions_Usersets" Association="voatModel.FK_Usersetsubscriptions_Usersets">
             <End Role="Userset" EntitySet="Usersets" />
             <End Role="Usersetsubscription" EntitySet="Usersetsubscriptions" />
           </AssociationSet>
-          <EntitySet Name="SubverseBans" EntityType="whoaverseModel.SubverseBan" />
-          <AssociationSet Name="FK_SubverseBans_Subverses" Association="whoaverseModel.FK_SubverseBans_Subverses">
+          <EntitySet Name="SubverseBans" EntityType="voatModel.SubverseBan" />
+          <AssociationSet Name="FK_SubverseBans_Subverses" Association="voatModel.FK_SubverseBans_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="SubverseBan" EntitySet="SubverseBans" />
           </AssociationSet>
-          <EntitySet Name="Moderatorinvitations" EntityType="whoaverseModel.Moderatorinvitation" />
-          <EntitySet Name="Sessiontrackers" EntityType="whoaverseModel.Sessiontracker" />
-          <EntitySet Name="SubmissionRemovalLogs" EntityType="whoaverseModel.SubmissionRemovalLog" />
-          <AssociationSet Name="FK_SubmissionRemovalLog_Messages" Association="whoaverseModel.FK_SubmissionRemovalLog_Messages">
+          <EntitySet Name="Moderatorinvitations" EntityType="voatModel.Moderatorinvitation" />
+          <EntitySet Name="Sessiontrackers" EntityType="voatModel.Sessiontracker" />
+          <EntitySet Name="SubmissionRemovalLogs" EntityType="voatModel.SubmissionRemovalLog" />
+          <AssociationSet Name="FK_SubmissionRemovalLog_Messages" Association="voatModel.FK_SubmissionRemovalLog_Messages">
             <End Role="Message" EntitySet="Messages" />
             <End Role="SubmissionRemovalLog" EntitySet="SubmissionRemovalLogs" />
           </AssociationSet>
-          <EntitySet Name="Commentsavingtrackers" EntityType="whoaverseModel.Commentsavingtracker" />
-          <EntitySet Name="Savingtrackers" EntityType="whoaverseModel.Savingtracker" />
-          <AssociationSet Name="FK_Commentsavingtracker_Comments" Association="whoaverseModel.FK_Commentsavingtracker_Comments">
+          <EntitySet Name="Commentsavingtrackers" EntityType="voatModel.Commentsavingtracker" />
+          <EntitySet Name="Savingtrackers" EntityType="voatModel.Savingtracker" />
+          <AssociationSet Name="FK_Commentsavingtracker_Comments" Association="voatModel.FK_Commentsavingtracker_Comments">
             <End Role="Comment" EntitySet="Comments" />
             <End Role="Commentsavingtracker" EntitySet="Commentsavingtrackers" />
           </AssociationSet>
-          <AssociationSet Name="FK_Savingtracker_Messages" Association="whoaverseModel.FK_Savingtracker_Messages">
+          <AssociationSet Name="FK_Savingtracker_Messages" Association="voatModel.FK_Savingtracker_Messages">
             <End Role="Message" EntitySet="Messages" />
             <End Role="Savingtracker" EntitySet="Savingtrackers" />
           </AssociationSet>
-          <EntitySet Name="UserBlockedSubverses" EntityType="whoaverseModel.UserBlockedSubverse" />
-          <AssociationSet Name="FK_UserBlockedSubverses_Subverses" Association="whoaverseModel.FK_UserBlockedSubverses_Subverses">
+          <EntitySet Name="UserBlockedSubverses" EntityType="voatModel.UserBlockedSubverse" />
+          <AssociationSet Name="FK_UserBlockedSubverses_Subverses" Association="voatModel.FK_UserBlockedSubverses_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="UserBlockedSubvers" EntitySet="UserBlockedSubverses" />
           </AssociationSet>
-          <EntitySet Name="CommentRemovalLogs" EntityType="whoaverseModel.CommentRemovalLog" />
-          <AssociationSet Name="FK_CommentRemovalLog_Comments" Association="whoaverseModel.FK_CommentRemovalLog_Comments">
+          <EntitySet Name="CommentRemovalLogs" EntityType="voatModel.CommentRemovalLog" />
+          <AssociationSet Name="FK_CommentRemovalLog_Comments" Association="voatModel.FK_CommentRemovalLog_Comments">
             <End Role="Comment" EntitySet="Comments" />
             <End Role="CommentRemovalLog" EntitySet="CommentRemovalLogs" />
           </AssociationSet>
@@ -1081,33 +1081,33 @@
           <Property Name="exclude_sitewide_bans" Type="Boolean" DefaultValue="false" Nullable="false" />
           <Property Name="traffic_stats_public" Type="Boolean" DefaultValue="false" />
           <Property Name="minutes_to_hide_comments" Type="Int32" />
-          <NavigationProperty Name="Messages" Relationship="whoaverseModel.FK_Messages_Subverses" FromRole="Subverse" ToRole="Message" />
+          <NavigationProperty Name="Messages" Relationship="voatModel.FK_Messages_Subverses" FromRole="Subverse" ToRole="Message" />
           <Property Name="creation_date" Type="DateTime" Precision="3" Nullable="false" />
-          <NavigationProperty Name="Defaultsubvers" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="Defaultsubvers" />
+          <NavigationProperty Name="Defaultsubvers" Relationship="voatModel.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="Defaultsubvers" />
           <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="SubverseAdmins" Relationship="whoaverseModel.FK_SubverseAdmins_Subverses" FromRole="Subverse" ToRole="SubverseAdmin" />
+          <NavigationProperty Name="SubverseAdmins" Relationship="voatModel.FK_SubverseAdmins_Subverses" FromRole="Subverse" ToRole="SubverseAdmin" />
           <Property Name="stylesheet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="subscribers" Type="Int32" DefaultValue="1" />
           <Property Name="private_subverse" Type="Boolean" DefaultValue="false" Nullable="false" />
-          <NavigationProperty Name="Subverseflairsettings" Relationship="whoaverseModel.FK_Subverseflairsettings_Subverses1" FromRole="Subverse" ToRole="Subverseflairsetting" />
-          <NavigationProperty Name="Stickiedsubmissions" Relationship="whoaverseModel.FK_Stickiedsubmissions_Subverses" FromRole="Subverse" ToRole="Stickiedsubmission" />
+          <NavigationProperty Name="Subverseflairsettings" Relationship="voatModel.FK_Subverseflairsettings_Subverses1" FromRole="Subverse" ToRole="Subverseflairsetting" />
+          <NavigationProperty Name="Stickiedsubmissions" Relationship="voatModel.FK_Stickiedsubmissions_Subverses" FromRole="Subverse" ToRole="Stickiedsubmission" />
           <Property Name="authorized_submitters_only" Type="Boolean" Nullable="false" DefaultValue="false" />
           <Property Name="anonymized_mode" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Subscriptions" Relationship="whoaverseModel.FK_Subscriptions_Subverses" FromRole="Subverse" ToRole="Subscription" />
-          <NavigationProperty Name="Featuredsubs" Relationship="whoaverseModel.FK_Featuredsubs_Subverses" FromRole="Subverse" ToRole="Featuredsub" />
+          <NavigationProperty Name="Subscriptions" Relationship="voatModel.FK_Subscriptions_Subverses" FromRole="Subverse" ToRole="Subscription" />
+          <NavigationProperty Name="Featuredsubs" Relationship="voatModel.FK_Featuredsubs_Subverses" FromRole="Subverse" ToRole="Featuredsub" />
           <Property Name="last_submission_received" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Usersetdefinitions" Relationship="whoaverseModel.FK_Usersetdefinitions_Subverses" FromRole="Subverse" ToRole="Usersetdefinition" />
-          <NavigationProperty Name="SubverseBans" Relationship="whoaverseModel.FK_SubverseBans_Subverses" FromRole="Subverse" ToRole="SubverseBan" />
+          <NavigationProperty Name="Usersetdefinitions" Relationship="voatModel.FK_Usersetdefinitions_Subverses" FromRole="Subverse" ToRole="Usersetdefinition" />
+          <NavigationProperty Name="SubverseBans" Relationship="voatModel.FK_SubverseBans_Subverses" FromRole="Subverse" ToRole="SubverseBan" />
           <Property Name="minimumdownvoteccp" Type="Int32" Nullable="false" />
           <Property Name="forced_private" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="UserBlockedSubverses" Relationship="whoaverseModel.FK_UserBlockedSubverses_Subverses" FromRole="Subverse" ToRole="UserBlockedSubvers" />
+          <NavigationProperty Name="UserBlockedSubverses" Relationship="voatModel.FK_UserBlockedSubverses_Subverses" FromRole="Subverse" ToRole="UserBlockedSubvers" />
           <Property Name="admin_disabled" Type="Boolean" />
           </EntityType>
         <Association Name="FK_Messages_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="0..1">
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="*" />
+          <End Type="voatModel.Message" Role="Message" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1123,13 +1123,13 @@
           </Key>
           <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="position" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Defaultsubverses_Subverses" FromRole="Defaultsubvers" ToRole="Subverse" />
+          <NavigationProperty Name="Subverse" Relationship="voatModel.FK_Defaultsubverses_Subverses" FromRole="Defaultsubvers" ToRole="Subverse" />
         </EntityType>
         <Association Name="FK_Defaultsubverses_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Defaultsubverse" Role="Defaultsubvers" Multiplicity="0..1" />
+          <End Type="voatModel.Defaultsubverse" Role="Defaultsubvers" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1147,15 +1147,15 @@
           <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Power" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_SubverseAdmins_Subverses" FromRole="SubverseAdmin" ToRole="Subverse" />
+          <NavigationProperty Name="Subverse" Relationship="voatModel.FK_SubverseAdmins_Subverses" FromRole="SubverseAdmin" ToRole="Subverse" />
           <Property Name="Added_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Added_on" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_SubverseAdmins_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.SubverseAdmin" Role="SubverseAdmin" Multiplicity="*" />
+          <End Type="voatModel.SubverseAdmin" Role="SubverseAdmin" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1179,7 +1179,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Subscriptions_Subverses" FromRole="Subscription" ToRole="Subverse" />
+          <NavigationProperty Name="Subverse" Relationship="voatModel.FK_Subscriptions_Subverses" FromRole="Subscription" ToRole="Subverse" />
         </EntityType>
         <EntityType Name="Badge">
           <Key>
@@ -1189,7 +1189,7 @@
           <Property Name="BadgeGraphics" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="BadgeTitle" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="true" />
           <Property Name="BadgeName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Userbadges" Relationship="whoaverseModel.FK_Userbadges_Badges" FromRole="Badge" ToRole="Userbadge" />
+          <NavigationProperty Name="Userbadges" Relationship="voatModel.FK_Userbadges_Badges" FromRole="Badge" ToRole="Userbadge" />
         </EntityType>
         <EntityType Name="Userbadge">
           <Key>
@@ -1199,13 +1199,13 @@
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="BadgeId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Awarded" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Badge" Relationship="whoaverseModel.FK_Userbadges_Badges" FromRole="Userbadge" ToRole="Badge" />
+          <NavigationProperty Name="Badge" Relationship="voatModel.FK_Userbadges_Badges" FromRole="Userbadge" ToRole="Badge" />
         </EntityType>
         <Association Name="FK_Userbadges_Badges">
-          <End Type="whoaverseModel.Badge" Role="Badge" Multiplicity="1">
+          <End Type="voatModel.Badge" Role="Badge" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Userbadge" Role="Userbadge" Multiplicity="*" />
+          <End Type="voatModel.Userbadge" Role="Userbadge" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Badge">
               <PropertyRef Name="BadgeId" />
@@ -1294,13 +1294,13 @@
           <Property Name="Subversename" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Label" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CssClass" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Subverseflairsettings_Subverses1" FromRole="Subverseflairsetting" ToRole="Subverse" />
+          <NavigationProperty Name="Subverse" Relationship="voatModel.FK_Subverseflairsettings_Subverses1" FromRole="Subverseflairsetting" ToRole="Subverse" />
         </EntityType>
         <Association Name="FK_Subverseflairsettings_Subverses1">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Subverseflairsetting" Role="Subverseflairsetting" Multiplicity="*" />
+          <End Type="voatModel.Subverseflairsetting" Role="Subverseflairsetting" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1318,12 +1318,12 @@
           <Property Name="Subversename" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Stickied_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Stickied_date" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Message" Relationship="whoaverseModel.FK_Stickiedsubmissions_Messages" FromRole="Stickiedsubmission" ToRole="Message" />
-          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Stickiedsubmissions_Subverses" FromRole="Stickiedsubmission" ToRole="Subverse" />
+          <NavigationProperty Name="Message" Relationship="voatModel.FK_Stickiedsubmissions_Messages" FromRole="Stickiedsubmission" ToRole="Message" />
+          <NavigationProperty Name="Subverse" Relationship="voatModel.FK_Stickiedsubmissions_Subverses" FromRole="Stickiedsubmission" ToRole="Subverse" />
         </EntityType>
         <Association Name="FK_Stickiedsubmissions_Messages">
-          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="1" />
-          <End Type="whoaverseModel.Stickiedsubmission" Role="Stickiedsubmission" Multiplicity="0..1" />
+          <End Type="voatModel.Message" Role="Message" Multiplicity="1" />
+          <End Type="voatModel.Stickiedsubmission" Role="Stickiedsubmission" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="Message">
               <PropertyRef Name="Id" />
@@ -1334,8 +1334,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Stickiedsubmissions_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1" />
-          <End Type="whoaverseModel.Stickiedsubmission" Role="Stickiedsubmission" Multiplicity="*" />
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="1" />
+          <End Type="voatModel.Stickiedsubmission" Role="Stickiedsubmission" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1370,11 +1370,11 @@
           <Property Name="Date_submitted" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Wants_to_be_contacted_at_service_launch" Type="Boolean" Nullable="false" />
           <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Wants_to_subscribe_to_whoaverse_news" Type="Boolean" Nullable="false" />
+          <Property Name="Wants_to_subscribe_to_voat_news" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_Messages_Messages">
-          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="1" />
-          <End Type="whoaverseModel.Message" Role="Message1" Multiplicity="0..1" />
+          <End Type="voatModel.Message" Role="Message" Multiplicity="1" />
+          <End Type="voatModel.Message" Role="Message1" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="Message">
               <PropertyRef Name="Id" />
@@ -1385,10 +1385,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Subscriptions_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Subscription" Role="Subscription" Multiplicity="*" />
+          <End Type="voatModel.Subscription" Role="Subscription" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1406,11 +1406,11 @@
           <Property Name="Subname" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Featured_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Featured_on" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Featuredsubs_Subverses" FromRole="Featuredsub" ToRole="Subverse" />
+          <NavigationProperty Name="Subverse" Relationship="voatModel.FK_Featuredsubs_Subverses" FromRole="Featuredsub" ToRole="Subverse" />
         </EntityType>
         <Association Name="FK_Featuredsubs_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1" />
-          <End Type="whoaverseModel.Featuredsub" Role="Featuredsub" Multiplicity="*" />
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="1" />
+          <End Type="voatModel.Featuredsub" Role="Featuredsub" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1427,13 +1427,13 @@
           </Key>
           <Property Name="submissionId" Type="Int32" Nullable="false" />
           <Property Name="viewerId" Type="String" Nullable="false" MaxLength="90" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Message" Relationship="whoaverseModel.FK_Viewstatistics_Messages" FromRole="Viewstatistic" ToRole="Message" />
+          <NavigationProperty Name="Message" Relationship="voatModel.FK_Viewstatistics_Messages" FromRole="Viewstatistic" ToRole="Message" />
         </EntityType>
         <Association Name="FK_Viewstatistics_Messages">
-          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="1">
+          <End Type="voatModel.Message" Role="Message" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Viewstatistic" Role="Viewstatistic" Multiplicity="*" />
+          <End Type="voatModel.Viewstatistic" Role="Viewstatistic" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Message">
               <PropertyRef Name="Id" />
@@ -1450,8 +1450,8 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Set_id" Type="Int32" Nullable="false" />
           <Property Name="Subversename" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_Usersetdefinitions_Subverses" FromRole="Usersetdefinition" ToRole="Subverse" />
-          <NavigationProperty Name="Userset" Relationship="whoaverseModel.FK_Usersetdefinitions_Usersets" FromRole="Usersetdefinition" ToRole="Userset" />
+          <NavigationProperty Name="Subverse" Relationship="voatModel.FK_Usersetdefinitions_Subverses" FromRole="Usersetdefinition" ToRole="Subverse" />
+          <NavigationProperty Name="Userset" Relationship="voatModel.FK_Usersetdefinitions_Usersets" FromRole="Usersetdefinition" ToRole="Userset" />
         </EntityType>
         <EntityType Name="Userset">
           <Key>
@@ -1464,8 +1464,8 @@
           <Property Name="Created_on" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Public" Type="Boolean" Nullable="false" />
           <Property Name="Subscribers" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Usersetdefinitions" Relationship="whoaverseModel.FK_Usersetdefinitions_Usersets" FromRole="Userset" ToRole="Usersetdefinition" />
-          <NavigationProperty Name="Usersetsubscriptions" Relationship="whoaverseModel.FK_Usersetsubscriptions_Usersets" FromRole="Userset" ToRole="Usersetsubscription" />
+          <NavigationProperty Name="Usersetdefinitions" Relationship="voatModel.FK_Usersetdefinitions_Usersets" FromRole="Userset" ToRole="Usersetdefinition" />
+          <NavigationProperty Name="Usersetsubscriptions" Relationship="voatModel.FK_Usersetsubscriptions_Usersets" FromRole="Userset" ToRole="Usersetsubscription" />
           <Property Name="Default" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Usersetsubscription">
@@ -1476,13 +1476,13 @@
           <Property Name="Set_id" Type="Int32" Nullable="false" />
           <Property Name="Order" Type="Int32" Nullable="false" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Userset" Relationship="whoaverseModel.FK_Usersetsubscriptions_Usersets" FromRole="Usersetsubscription" ToRole="Userset" />
+          <NavigationProperty Name="Userset" Relationship="voatModel.FK_Usersetsubscriptions_Usersets" FromRole="Usersetsubscription" ToRole="Userset" />
         </EntityType>
         <Association Name="FK_Usersetdefinitions_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Usersetdefinition" Role="Usersetdefinition" Multiplicity="*" />
+          <End Type="voatModel.Usersetdefinition" Role="Usersetdefinition" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1493,10 +1493,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Usersetdefinitions_Usersets">
-          <End Type="whoaverseModel.Userset" Role="Userset" Multiplicity="1">
+          <End Type="voatModel.Userset" Role="Userset" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Usersetdefinition" Role="Usersetdefinition" Multiplicity="*" />
+          <End Type="voatModel.Usersetdefinition" Role="Usersetdefinition" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Userset">
               <PropertyRef Name="Set_id" />
@@ -1507,10 +1507,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Usersetsubscriptions_Usersets">
-          <End Type="whoaverseModel.Userset" Role="Userset" Multiplicity="1">
+          <End Type="voatModel.Userset" Role="Userset" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Usersetsubscription" Role="Usersetsubscription" Multiplicity="*" />
+          <End Type="voatModel.Usersetsubscription" Role="Usersetsubscription" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Userset">
               <PropertyRef Name="Set_id" />
@@ -1529,12 +1529,12 @@
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="BannedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="BanAddedOn" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_SubverseBans_Subverses" FromRole="SubverseBan" ToRole="Subverse" />
+          <NavigationProperty Name="Subverse" Relationship="voatModel.FK_SubverseBans_Subverses" FromRole="SubverseBan" ToRole="Subverse" />
           <Property Name="BanReason" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_SubverseBans_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1" />
-          <End Type="whoaverseModel.SubverseBan" Role="SubverseBan" Multiplicity="*" />
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="1" />
+          <End Type="voatModel.SubverseBan" Role="SubverseBan" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1572,13 +1572,13 @@
           <Property Name="Moderator" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="RemovalTimestamp" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ReasonForRemoval" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Message" Relationship="whoaverseModel.FK_SubmissionRemovalLog_Messages" FromRole="SubmissionRemovalLog" ToRole="Message" />
+          <NavigationProperty Name="Message" Relationship="voatModel.FK_SubmissionRemovalLog_Messages" FromRole="SubmissionRemovalLog" ToRole="Message" />
         </EntityType>
         <Association Name="FK_SubmissionRemovalLog_Messages">
-          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="1">
+          <End Type="voatModel.Message" Role="Message" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.SubmissionRemovalLog" Role="SubmissionRemovalLog" Multiplicity="0..1" />
+          <End Type="voatModel.SubmissionRemovalLog" Role="SubmissionRemovalLog" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="Message">
               <PropertyRef Name="Id" />
@@ -1596,7 +1596,7 @@
           <Property Name="CommentId" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Comment" Relationship="whoaverseModel.FK_Commentsavingtracker_Comments" FromRole="Commentsavingtracker" ToRole="Comment" />
+          <NavigationProperty Name="Comment" Relationship="voatModel.FK_Commentsavingtracker_Comments" FromRole="Commentsavingtracker" ToRole="Comment" />
         </EntityType>
         <EntityType Name="Savingtracker">
           <Key>
@@ -1606,13 +1606,13 @@
           <Property Name="MessageId" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Message" Relationship="whoaverseModel.FK_Savingtracker_Messages" FromRole="Savingtracker" ToRole="Message" />
+          <NavigationProperty Name="Message" Relationship="voatModel.FK_Savingtracker_Messages" FromRole="Savingtracker" ToRole="Message" />
         </EntityType>
         <Association Name="FK_Commentsavingtracker_Comments">
-          <End Type="whoaverseModel.Comment" Role="Comment" Multiplicity="1">
+          <End Type="voatModel.Comment" Role="Comment" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Commentsavingtracker" Role="Commentsavingtracker" Multiplicity="*" />
+          <End Type="voatModel.Commentsavingtracker" Role="Commentsavingtracker" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Comment">
               <PropertyRef Name="Id" />
@@ -1623,10 +1623,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Savingtracker_Messages">
-          <End Type="whoaverseModel.Message" Role="Message" Multiplicity="1">
+          <End Type="voatModel.Message" Role="Message" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.Savingtracker" Role="Savingtracker" Multiplicity="*" />
+          <End Type="voatModel.Savingtracker" Role="Savingtracker" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Message">
               <PropertyRef Name="Id" />
@@ -1643,13 +1643,13 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="SubverseName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Subverse" Relationship="whoaverseModel.FK_UserBlockedSubverses_Subverses" FromRole="UserBlockedSubvers" ToRole="Subverse" />
+          <NavigationProperty Name="Subverse" Relationship="voatModel.FK_UserBlockedSubverses_Subverses" FromRole="UserBlockedSubvers" ToRole="Subverse" />
         </EntityType>
         <Association Name="FK_UserBlockedSubverses_Subverses">
-          <End Type="whoaverseModel.Subverse" Role="Subverse" Multiplicity="1">
+          <End Type="voatModel.Subverse" Role="Subverse" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.UserBlockedSubverse" Role="UserBlockedSubvers" Multiplicity="*" />
+          <End Type="voatModel.UserBlockedSubverse" Role="UserBlockedSubvers" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subverse">
               <PropertyRef Name="name" />
@@ -1667,13 +1667,13 @@
           <Property Name="Moderator" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="RemovalTimestamp" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ReasonForRemoval" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Comment" Relationship="whoaverseModel.FK_CommentRemovalLog_Comments" FromRole="CommentRemovalLog" ToRole="Comment" />
+          <NavigationProperty Name="Comment" Relationship="voatModel.FK_CommentRemovalLog_Comments" FromRole="CommentRemovalLog" ToRole="Comment" />
         </EntityType>
         <Association Name="FK_CommentRemovalLog_Comments">
-          <End Type="whoaverseModel.Comment" Role="Comment" Multiplicity="1">
+          <End Type="voatModel.Comment" Role="Comment" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="whoaverseModel.CommentRemovalLog" Role="CommentRemovalLog" Multiplicity="0..1" />
+          <End Type="voatModel.CommentRemovalLog" Role="CommentRemovalLog" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="Comment">
               <PropertyRef Name="Id" />
@@ -1688,9 +1688,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="whoaverseModelStoreContainer" CdmEntityContainer="whoaverseEntities">
+        <EntityContainerMapping StorageEntityContainer="voatModelStoreContainer" CdmEntityContainer="voatEntities">
           <EntitySetMapping Name="Comments">
-            <EntityTypeMapping TypeName="whoaverseModel.Comment">
+            <EntityTypeMapping TypeName="voatModel.Comment">
               <MappingFragment StoreEntitySet="Comments">
                 <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
                 <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
@@ -1709,7 +1709,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Commentvotingtrackers">
-            <EntityTypeMapping TypeName="whoaverseModel.Commentvotingtracker">
+            <EntityTypeMapping TypeName="voatModel.Commentvotingtracker">
               <MappingFragment StoreEntitySet="Commentvotingtracker">
                 <ScalarProperty Name="ClientIpAddress" ColumnName="ClientIpAddress" />
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
@@ -1721,7 +1721,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Messages">
-            <EntityTypeMapping TypeName="whoaverseModel.Message">
+            <EntityTypeMapping TypeName="voatModel.Message">
               <MappingFragment StoreEntitySet="Messages">
                 <ScalarProperty Name="IsArchived" ColumnName="IsArchived" />
                 <ScalarProperty Name="Views" ColumnName="Views" />
@@ -1746,7 +1746,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Votingtrackers">
-            <EntityTypeMapping TypeName="whoaverseModel.Votingtracker">
+            <EntityTypeMapping TypeName="voatModel.Votingtracker">
               <MappingFragment StoreEntitySet="Votingtracker">
                 <ScalarProperty Name="ClientIpAddress" ColumnName="ClientIpAddress" />
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
@@ -1758,7 +1758,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Subverses">
-            <EntityTypeMapping TypeName="whoaverseModel.Subverse">
+            <EntityTypeMapping TypeName="voatModel.Subverse">
               <MappingFragment StoreEntitySet="Subverses">
                 <ScalarProperty Name="admin_disabled" ColumnName="admin_disabled" />
                 <ScalarProperty Name="forced_private" ColumnName="forced_private" />
@@ -1792,7 +1792,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Defaultsubverses">
-            <EntityTypeMapping TypeName="whoaverseModel.Defaultsubverse">
+            <EntityTypeMapping TypeName="voatModel.Defaultsubverse">
               <MappingFragment StoreEntitySet="Defaultsubverses">
                 <ScalarProperty Name="position" ColumnName="position" />
                 <ScalarProperty Name="name" ColumnName="name" />
@@ -1800,7 +1800,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SubverseAdmins">
-            <EntityTypeMapping TypeName="whoaverseModel.SubverseAdmin">
+            <EntityTypeMapping TypeName="voatModel.SubverseAdmin">
               <MappingFragment StoreEntitySet="SubverseAdmins">
                 <ScalarProperty Name="Added_on" ColumnName="Added_on" />
                 <ScalarProperty Name="Added_by" ColumnName="Added_by" />
@@ -1812,7 +1812,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Promotedsubmissions">
-            <EntityTypeMapping TypeName="whoaverseModel.Promotedsubmission">
+            <EntityTypeMapping TypeName="voatModel.Promotedsubmission">
               <MappingFragment StoreEntitySet="Promotedsubmissions">
                 <ScalarProperty Name="promoted_by" ColumnName="promoted_by" />
                 <ScalarProperty Name="promoted_submission_id" ColumnName="promoted_submission_id" />
@@ -1820,7 +1820,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Subscriptions">
-            <EntityTypeMapping TypeName="whoaverseModel.Subscription">
+            <EntityTypeMapping TypeName="voatModel.Subscription">
               <MappingFragment StoreEntitySet="Subscriptions">
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
@@ -1829,7 +1829,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Badges">
-            <EntityTypeMapping TypeName="whoaverseModel.Badge">
+            <EntityTypeMapping TypeName="voatModel.Badge">
               <MappingFragment StoreEntitySet="Badges">
                 <ScalarProperty Name="BadgeName" ColumnName="BadgeName" />
                 <ScalarProperty Name="BadgeTitle" ColumnName="BadgeTitle" />
@@ -1839,7 +1839,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Userbadges">
-            <EntityTypeMapping TypeName="whoaverseModel.Userbadge">
+            <EntityTypeMapping TypeName="voatModel.Userbadge">
               <MappingFragment StoreEntitySet="Userbadges">
                 <ScalarProperty Name="Awarded" ColumnName="Awarded" />
                 <ScalarProperty Name="BadgeId" ColumnName="BadgeId" />
@@ -1849,7 +1849,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Banneddomains">
-            <EntityTypeMapping TypeName="whoaverseModel.Banneddomain">
+            <EntityTypeMapping TypeName="voatModel.Banneddomain">
               <MappingFragment StoreEntitySet="Banneddomains">
                 <ScalarProperty Name="Reason" ColumnName="Reason" />
                 <ScalarProperty Name="Added_on" ColumnName="Added_on" />
@@ -1860,7 +1860,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Privatemessages">
-            <EntityTypeMapping TypeName="whoaverseModel.Privatemessage">
+            <EntityTypeMapping TypeName="voatModel.Privatemessage">
               <MappingFragment StoreEntitySet="Privatemessages">
                 <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
@@ -1874,7 +1874,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Commentreplynotifications">
-            <EntityTypeMapping TypeName="whoaverseModel.Commentreplynotification">
+            <EntityTypeMapping TypeName="voatModel.Commentreplynotification">
               <MappingFragment StoreEntitySet="Commentreplynotifications">
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="Subject" ColumnName="Subject" />
@@ -1891,7 +1891,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Postreplynotifications">
-            <EntityTypeMapping TypeName="whoaverseModel.Postreplynotification">
+            <EntityTypeMapping TypeName="voatModel.Postreplynotification">
               <MappingFragment StoreEntitySet="Postreplynotifications">
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
@@ -1908,7 +1908,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Userpreferences">
-            <EntityTypeMapping TypeName="whoaverseModel.Userpreference">
+            <EntityTypeMapping TypeName="voatModel.Userpreference">
               <MappingFragment StoreEntitySet="Userpreferences">
                 <ScalarProperty Name="Avatar" ColumnName="Avatar" />
                 <ScalarProperty Name="Shortbio" ColumnName="Shortbio" />
@@ -1925,7 +1925,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Subverseflairsettings">
-            <EntityTypeMapping TypeName="whoaverseModel.Subverseflairsetting">
+            <EntityTypeMapping TypeName="voatModel.Subverseflairsetting">
               <MappingFragment StoreEntitySet="Subverseflairsettings">
                 <ScalarProperty Name="CssClass" ColumnName="CssClass" />
                 <ScalarProperty Name="Label" ColumnName="Label" />
@@ -1935,7 +1935,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Stickiedsubmissions">
-            <EntityTypeMapping TypeName="whoaverseModel.Stickiedsubmission">
+            <EntityTypeMapping TypeName="voatModel.Stickiedsubmission">
               <MappingFragment StoreEntitySet="Stickiedsubmissions">
                 <ScalarProperty Name="Stickied_date" ColumnName="Stickied_date" />
                 <ScalarProperty Name="Stickied_by" ColumnName="Stickied_by" />
@@ -1945,7 +1945,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Bannedusers">
-            <EntityTypeMapping TypeName="whoaverseModel.Banneduser">
+            <EntityTypeMapping TypeName="voatModel.Banneduser">
               <MappingFragment StoreEntitySet="Bannedusers">
                 <ScalarProperty Name="Banned_by" ColumnName="Banned_by" />
                 <ScalarProperty Name="Reason" ColumnName="Reason" />
@@ -1956,9 +1956,9 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Surveys">
-            <EntityTypeMapping TypeName="whoaverseModel.Survey">
+            <EntityTypeMapping TypeName="voatModel.Survey">
               <MappingFragment StoreEntitySet="Survey">
-                <ScalarProperty Name="Wants_to_subscribe_to_whoaverse_news" ColumnName="Wants_to_subscribe_to_whoaverse_news" />
+                <ScalarProperty Name="Wants_to_subscribe_to_voat_news" ColumnName="Wants_to_subscribe_to_voat_news" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Wants_to_be_contacted_at_service_launch" ColumnName="Wants_to_be_contacted_at_service_launch" />
                 <ScalarProperty Name="Date_submitted" ColumnName="Date_submitted" />
@@ -1974,7 +1974,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Featuredsubs">
-            <EntityTypeMapping TypeName="whoaverseModel.Featuredsub">
+            <EntityTypeMapping TypeName="voatModel.Featuredsub">
               <MappingFragment StoreEntitySet="Featuredsubs">
                 <ScalarProperty Name="Featured_on" ColumnName="Featured_on" />
                 <ScalarProperty Name="Featured_by" ColumnName="Featured_by" />
@@ -1984,7 +1984,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Viewstatistics">
-            <EntityTypeMapping TypeName="whoaverseModel.Viewstatistic">
+            <EntityTypeMapping TypeName="voatModel.Viewstatistic">
               <MappingFragment StoreEntitySet="Viewstatistics">
                 <ScalarProperty Name="viewerId" ColumnName="viewerId" />
                 <ScalarProperty Name="submissionId" ColumnName="submissionId" />
@@ -1992,7 +1992,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Usersetdefinitions">
-            <EntityTypeMapping TypeName="whoaverseModel.Usersetdefinition">
+            <EntityTypeMapping TypeName="voatModel.Usersetdefinition">
               <MappingFragment StoreEntitySet="Usersetdefinitions">
                 <ScalarProperty Name="Subversename" ColumnName="Subversename" />
                 <ScalarProperty Name="Set_id" ColumnName="Set_id" />
@@ -2001,7 +2001,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Usersets">
-            <EntityTypeMapping TypeName="whoaverseModel.Userset">
+            <EntityTypeMapping TypeName="voatModel.Userset">
               <MappingFragment StoreEntitySet="Usersets">
                 <ScalarProperty Name="Default" ColumnName="Default" />
                 <ScalarProperty Name="Subscribers" ColumnName="Subscribers" />
@@ -2015,7 +2015,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Usersetsubscriptions">
-            <EntityTypeMapping TypeName="whoaverseModel.Usersetsubscription">
+            <EntityTypeMapping TypeName="voatModel.Usersetsubscription">
               <MappingFragment StoreEntitySet="Usersetsubscriptions">
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="Order" ColumnName="Order" />
@@ -2025,7 +2025,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SubverseBans">
-            <EntityTypeMapping TypeName="whoaverseModel.SubverseBan">
+            <EntityTypeMapping TypeName="voatModel.SubverseBan">
               <MappingFragment StoreEntitySet="SubverseBans">
                 <ScalarProperty Name="BanReason" ColumnName="BanReason" />
                 <ScalarProperty Name="BanAddedOn" ColumnName="BanAddedOn" />
@@ -2037,7 +2037,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Moderatorinvitations">
-            <EntityTypeMapping TypeName="whoaverseModel.Moderatorinvitation">
+            <EntityTypeMapping TypeName="voatModel.Moderatorinvitation">
               <MappingFragment StoreEntitySet="Moderatorinvitations">
                 <ScalarProperty Name="Power" ColumnName="Power" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
@@ -2049,7 +2049,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Sessiontrackers">
-            <EntityTypeMapping TypeName="whoaverseModel.Sessiontracker">
+            <EntityTypeMapping TypeName="voatModel.Sessiontracker">
               <MappingFragment StoreEntitySet="Sessiontracker">
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
@@ -2058,7 +2058,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SubmissionRemovalLogs">
-            <EntityTypeMapping TypeName="whoaverseModel.SubmissionRemovalLog">
+            <EntityTypeMapping TypeName="voatModel.SubmissionRemovalLog">
               <MappingFragment StoreEntitySet="SubmissionRemovalLog">
                 <ScalarProperty Name="ReasonForRemoval" ColumnName="ReasonForRemoval" />
                 <ScalarProperty Name="RemovalTimestamp" ColumnName="RemovalTimestamp" />
@@ -2068,7 +2068,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Commentsavingtrackers">
-            <EntityTypeMapping TypeName="whoaverseModel.Commentsavingtracker">
+            <EntityTypeMapping TypeName="voatModel.Commentsavingtracker">
               <MappingFragment StoreEntitySet="Commentsavingtracker">
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
@@ -2078,7 +2078,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Savingtrackers">
-            <EntityTypeMapping TypeName="whoaverseModel.Savingtracker">
+            <EntityTypeMapping TypeName="voatModel.Savingtracker">
               <MappingFragment StoreEntitySet="Savingtracker">
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
@@ -2088,7 +2088,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="UserBlockedSubverses">
-            <EntityTypeMapping TypeName="whoaverseModel.UserBlockedSubverse">
+            <EntityTypeMapping TypeName="voatModel.UserBlockedSubverse">
               <MappingFragment StoreEntitySet="UserBlockedSubverses">
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
@@ -2097,7 +2097,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="CommentRemovalLogs">
-            <EntityTypeMapping TypeName="whoaverseModel.CommentRemovalLog">
+            <EntityTypeMapping TypeName="voatModel.CommentRemovalLog">
               <MappingFragment StoreEntitySet="CommentRemovalLog">
                 <ScalarProperty Name="ReasonForRemoval" ColumnName="ReasonForRemoval" />
                 <ScalarProperty Name="RemovalTimestamp" ColumnName="RemovalTimestamp" />

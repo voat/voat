@@ -12,7 +12,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Voat</RootNamespace>
-    <AssemblyName>Voat</AssemblyName>
+    <AssemblyName>Voat.UI</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
@@ -277,39 +277,39 @@
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
     <Compile Include="Models\CommentRemovalLog.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SavedItem.cs" />
     <Compile Include="Models\Commentsavingtracker.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\MarkdownPreviewModel.cs" />
     <Compile Include="Models\Moderatorinvitation.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Savingtracker.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubmissionRemovalLog.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubverseBan.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserBlockedSubverse.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
     <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\Userset.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Usersetdefinition.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Usersetsubscription.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
@@ -317,9 +317,9 @@
     <Compile Include="Models\SetSubmission.cs" />
     <Compile Include="Models\ViewModels\SubverseBanViewModel.cs" />
     <Compile Include="Models\Viewstatistic.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\whoaverseEntities.cs" />
+    <Compile Include="Models\voatEntities.cs" />
     <Compile Include="Utils\CacheHandler.cs" />
     <Compile Include="Utils\CommentCounter.cs" />
     <Compile Include="Utils\Components\ContentFilters.cs" />
@@ -340,7 +340,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WebApiController.cs" />
     <Compile Include="Models\Featuredsub.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -353,65 +353,65 @@
     <Compile Include="Models\ApiModels\ApiUserInfo.cs" />
     <Compile Include="Models\ApiModels\ApiSubverseInfo.cs" />
     <Compile Include="Models\Badge.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Banneddomain.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Banneduser.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PartnerIntent.cs" />
     <Compile Include="Models\Comment.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Commentreplynotification.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Commentvotingtracker.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Defaultsubverse.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Message.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Postreplynotification.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Privatemessage.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Promotedsubmission.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Sessiontracker.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Stickiedsubmission.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Subscription.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Subverse.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubverseAdmin.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Subverseflairsetting.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Survey.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Userbadge.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Userpreference.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\AddSubverse.cs" />
@@ -434,22 +434,22 @@
     <Compile Include="Models\ViewModels\SubverseDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchViewModel.cs" />
     <Compile Include="Models\Votingtracker.cs">
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\WhoaverseEntityDataModel.Context.cs">
+    <Compile Include="Models\VoatEntityDataModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>WhoaverseEntityDataModel.Context.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\WhoaverseEntityDataModel.cs">
+    <Compile Include="Models\VoatEntityDataModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>WhoaverseEntityDataModel.tt</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\WhoaverseEntityDataModel.Designer.cs">
+    <Compile Include="Models\VoatEntityDataModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>WhoaverseEntityDataModel.edmx</DependentUpon>
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -478,7 +478,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\VoatLegacyDocumentation.xml" />
-    <Content Include="App_Data\WhoaverseDocumentation.xml" />
+    <Content Include="App_Data\VoatDocumentation.xml" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -627,22 +627,22 @@
     <Content Include="Graphics\nsfw-thumb.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\404.png" />
-    <EntityDeploy Include="Models\WhoaverseEntityDataModel.edmx">
+    <EntityDeploy Include="Models\VoatEntityDataModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>WhoaverseEntityDataModel.Designer.cs</LastGenOutput>
+      <LastGenOutput>VoatEntityDataModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\WhoaverseEntityDataModel.Context.tt">
+    <Content Include="Models\VoatEntityDataModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>WhoaverseEntityDataModel.edmx</DependentUpon>
-      <LastGenOutput>WhoaverseEntityDataModel.Context.cs</LastGenOutput>
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+      <LastGenOutput>VoatEntityDataModel.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\WhoaverseEntityDataModel.edmx.diagram">
-      <DependentUpon>WhoaverseEntityDataModel.edmx</DependentUpon>
+    <Content Include="Models\VoatEntityDataModel.edmx.diagram">
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
     </Content>
-    <Content Include="Models\WhoaverseEntityDataModel.tt">
+    <Content Include="Models\VoatEntityDataModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>WhoaverseEntityDataModel.edmx</DependentUpon>
-      <LastGenOutput>WhoaverseEntityDataModel.cs</LastGenOutput>
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+      <LastGenOutput>VoatEntityDataModel.cs</LastGenOutput>
     </Content>
     <Content Include="Graphics\WVSprite.sprite" />
     <Content Include="Areas\HelpPage\Views\Help\Index.cshtml" />

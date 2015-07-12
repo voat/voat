@@ -19,7 +19,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Voat.Models
 {
-    public class WhoaVerseUser : IdentityUser
+    public class VoatUser : IdentityUser
     {
         public DateTime RegistrationDateTime { get; set; }
         public DateTime LastLoginDateTime { get; set; }
@@ -31,7 +31,7 @@ namespace Voat.Models
         public bool Partner { get; set; }       
     }
 
-    public class WhoaVersePartner : IdentityUser
+    public class VoatPartner : IdentityUser
     {
         public virtual PartnerInformation PartnerInformation { get; set; }
     }
@@ -60,9 +60,9 @@ namespace Voat.Models
         public DateTime PartnerLastPaymentDate { get; set; }
     }
 
-    public class ApplicationDbContext : IdentityDbContext<WhoaVerseUser>
+    public class ApplicationDbContext : IdentityDbContext<VoatUser>
     {
-        public ApplicationDbContext() : base("whoaverseUsers") { }
+        public ApplicationDbContext() : base("voatUsers") { }
 
         public DbSet<PartnerInformation> PartnerInformation { get; set; }
     }

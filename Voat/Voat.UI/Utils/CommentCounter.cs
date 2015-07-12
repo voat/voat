@@ -22,7 +22,7 @@ namespace Voat.Utils
 
                 data = CacheHandler.Register(cacheKey, new Func<object>(() =>
                 {
-                    using (whoaverseEntities db = new whoaverseEntities())
+                    using (voatEntities db = new voatEntities())
                     {
                         var cmd = db.Database.Connection.CreateCommand();
                         cmd.CommandText = "SELECT COUNT(*) FROM Comments WITH (NOLOCK) WHERE MessageID = @MessageID AND Name != 'deleted'";

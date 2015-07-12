@@ -33,12 +33,12 @@ namespace Voat.Controllers
     public class AccountController : AsyncController
     {
         public AccountController()
-            : this(new UserManager<WhoaVerseUser>(new UserStore<WhoaVerseUser>(new ApplicationDbContext())))
+            : this(new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
         {
-            UserManager.UserValidator = new UserValidator<WhoaVerseUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
+            UserManager.UserValidator = new UserValidator<VoatUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
         }
 
-        public AccountController(UserManager<WhoaVerseUser> userManager)
+        public AccountController(UserManager<VoatUser> userManager)
         {
             UserManager = userManager;
 
@@ -48,7 +48,7 @@ namespace Voat.Controllers
             UserManager.MaxFailedAccessAttemptsBeforeLockout = 5;
         }
 
-        public UserManager<WhoaVerseUser> UserManager { get; private set; }
+        public UserManager<VoatUser> UserManager { get; private set; }
 
         // GET: /Account/Login
         [AllowAnonymous]
@@ -158,7 +158,7 @@ namespace Voat.Controllers
                     return View(model);
                 }
 
-                var user = new WhoaVerseUser
+                var user = new VoatUser
                 {
                     UserName = model.UserName, 
                     RegistrationDateTime = DateTime.Now,
@@ -333,7 +333,7 @@ namespace Voat.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new WhoaVerseUser { UserName = model.UserName };
+                var user = new VoatUser { UserName = model.UserName };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -425,7 +425,7 @@ namespace Voat.Controllers
         {
             try
             {
-                using (var db = new whoaverseEntities())
+                using (var db = new voatEntities())
                 {
                     var userPreferences = db.Userpreferences.Find(User.Identity.Name);
 
@@ -461,7 +461,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Shortbio, Avatarfile")] UserAboutViewModel model)
         {
             // save changes
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var userPreferences = db.Userpreferences.Find(User.Identity.Name);
                 var tmpModel = new Userpreference();
@@ -550,7 +550,7 @@ namespace Voat.Controllers
         {
             try
             {
-                using (var db = new whoaverseEntities())
+                using (var db = new voatEntities())
                 {
                     var userPreferences = db.Userpreferences.Find(User.Identity.Name);
 
@@ -591,7 +591,7 @@ namespace Voat.Controllers
         {
             var newTheme = "light";
             // save changes
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var userPreferences = db.Userpreferences.Find(User.Identity.Name);
 
@@ -643,7 +643,7 @@ namespace Voat.Controllers
         {
             string newTheme = "light";
             // save changes
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var userPreferences = db.Userpreferences.Find(User.Identity.Name);
 
@@ -773,7 +773,7 @@ namespace Voat.Controllers
             }
         }
 
-        private async Task SignInAsync(WhoaVerseUser user, bool isPersistent)
+        private async Task SignInAsync(VoatUser user, bool isPersistent)
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
             var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);

@@ -22,7 +22,7 @@ namespace Voat.Controllers
 {
     public class HtmlElementsController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         // GET: CommentReplyForm
         public ActionResult CommentReplyForm(int? parentCommentId, int? messageId)

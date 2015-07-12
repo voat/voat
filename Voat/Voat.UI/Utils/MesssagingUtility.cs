@@ -24,7 +24,7 @@ namespace Voat.Utils
         // a method to send a private message to a user, invoked by other methods
         public static bool SendPrivateMessage(string sender, string recipient, string subject, string body)
         {
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 try
                 {
@@ -54,7 +54,7 @@ namespace Voat.Utils
         // a method to mark single or all private messages as read for a given user
         public static async Task<bool> MarkPrivateMessagesAsRead(bool? markAll, string userName, int? itemId)
         {
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 try
                 {

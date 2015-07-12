@@ -25,7 +25,7 @@ namespace Voat.Controllers
 {
     public class ReportController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         // POST: reportcomment
         [HttpPost]

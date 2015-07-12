@@ -26,7 +26,7 @@ namespace Voat.Utils
         public static bool? CheckIfSavedComment(string userToCheck, int commentId)
         {
 
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (voatEntities db = new voatEntities())
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
@@ -55,7 +55,7 @@ namespace Voat.Utils
             }
 
 
-            //using (var db = new whoaverseEntities())
+            //using (var db = new voatEntities())
             //{
             //    return db.Commentsavingtrackers.Where(b => b.CommentId == commentId && b.UserName == userToCheck).AsNoTracking().Any();
             //}
@@ -67,7 +67,7 @@ namespace Voat.Utils
         {
             var result = CheckIfSavedComment(userWhichSaved, commentId);
 
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 if (result == true)
                 {
@@ -93,7 +93,7 @@ namespace Voat.Utils
         // a user has saved this comment earlier and wishes to unsave it, delete the record
         private static void UnSaveComment(string userWhichSaved, int commentId)
         {
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var votingTracker = db.Commentsavingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userWhichSaved);
 

@@ -35,7 +35,7 @@ namespace Voat.Controllers
     public class HomeController : Controller
     {
         //IAmAGate: Move queries to read-only mirror
-        private readonly whoaverseEntities _db = new whoaverseEntities(true);
+        private readonly voatEntities _db = new voatEntities(true);
 
         // GET: submit
         [Authorize]
@@ -448,7 +448,7 @@ namespace Voat.Controllers
 
                         var getDataFunc = new Func<object>(() =>
                         {
-                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                            using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
                                 
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
@@ -485,7 +485,7 @@ namespace Voat.Controllers
                     {
 
                         var getDataFunc = new Func<object>(() => {
-                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                            using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                             {
                                 
                                 // get only submissions from default subverses, order by rank
@@ -637,7 +637,7 @@ namespace Voat.Controllers
                        
                         var getDataFunc = new Func<object>(() =>
                         {
-                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                            using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
                                 IQueryable<Message> submissions = (from m in db.Messages
@@ -667,7 +667,7 @@ namespace Voat.Controllers
                     {
                         var getDataFunc = new Func<object>(() =>
                         {
-                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                            using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                             {
                                 // get only submissions from default subverses, order by rank
                                 IQueryable<Message> submissions = (from message in db.Messages

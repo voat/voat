@@ -32,7 +32,7 @@ namespace Voat.Controllers
     public class SubversesController : Controller
     {
         //IAmAGate: Move queries to read-only mirror
-        private readonly whoaverseEntities _db = new whoaverseEntities(true);
+        private readonly voatEntities _db = new voatEntities(true);
         private int subverseCacheTimeInSeconds = 240;
 
         // GET: sidebar for selected subverse
@@ -425,7 +425,7 @@ namespace Voat.Controllers
                     {
                         var getDataFunc = new Func<object>(() =>
                         {
-                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                            using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
                                 var x = SubmissionsFromASubverseByRank(subversetoshow, db);
                                 int count = x.Count();
@@ -515,7 +515,7 @@ namespace Voat.Controllers
                 {
                     var getDataFunc = new Func<object>(() =>
                     {
-                        using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
                             var x = SfwSubmissionsFromAllSubversesByRank(db);
                             int count = 50000;
@@ -1662,7 +1662,7 @@ namespace Voat.Controllers
                 {
                     var getDataFunc = new Func<object>(() =>
                     {
-                        using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
                             var x = SubmissionsFromASubverseByDate(subversetoshow, db);
                             int count = x.Count();
@@ -1780,7 +1780,7 @@ namespace Voat.Controllers
                     {
                         var getDataFunc = new Func<object>(() =>
                         {
-                            using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE)) 
+                            using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE)) 
                             {
                                 var x = SfwSubmissionsFromAllSubversesByDate(db);
                                 int count = 50000;
@@ -1820,7 +1820,7 @@ namespace Voat.Controllers
                 {
                     var getDataFunc = new Func<object>(() =>
                     {
-                        using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_LIVE))
+                        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
                             var x = SubmissionsFromAllSubversesByDate(db);
                             int count = 50000;
@@ -1853,7 +1853,7 @@ namespace Voat.Controllers
         {
             //var submissions = 
             var cacheData = CacheHandler.Register("TopViewedSubmissions24Hours", new Func<object>(() => {
-                using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY)){
+                using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY)){
                     return SfwSubmissionsFromAllSubversesByViews24Hours(db).ToList(); 
                 }
             
@@ -1864,7 +1864,7 @@ namespace Voat.Controllers
         }
 
         #region sfw submissions from all subverses
-        private IQueryable<Message> SfwSubmissionsFromAllSubversesByDate(whoaverseEntities _db = null)
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByDate(voatEntities _db = null)
         {
             if (_db == null) 
             {
@@ -1887,7 +1887,7 @@ namespace Voat.Controllers
             return sfwSubmissionsFromAllSubversesByDate;
         }
 
-        private IQueryable<Message> SfwSubmissionsFromAllSubversesByRank(whoaverseEntities _db)
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByRank(voatEntities _db)
         {
             if (_db == null) {
                 _db = this._db;
@@ -1922,7 +1922,7 @@ namespace Voat.Controllers
             return sfwSubmissionsFromAllSubversesByTop;
         }
 
-        private IQueryable<Message> SfwSubmissionsFromAllSubversesByViews24Hours(whoaverseEntities _db)
+        private IQueryable<Message> SfwSubmissionsFromAllSubversesByViews24Hours(voatEntities _db)
         {
             if (_db == null) {
                 _db = this._db;
@@ -1941,7 +1941,7 @@ namespace Voat.Controllers
         #endregion
 
         #region unfiltered submissions from all subverses
-        private IQueryable<Message> SubmissionsFromAllSubversesByDate(whoaverseEntities _db = null)
+        private IQueryable<Message> SubmissionsFromAllSubversesByDate(voatEntities _db = null)
         {
             if (_db == null)
             {
@@ -1992,7 +1992,7 @@ namespace Voat.Controllers
         #endregion
 
         #region submissions from a single subverse
-        private IQueryable<Message> SubmissionsFromASubverseByDate(string subverseName, whoaverseEntities _db = null)
+        private IQueryable<Message> SubmissionsFromASubverseByDate(string subverseName, voatEntities _db = null)
         {
             if (_db == null) {
                 _db = this._db;
@@ -2011,7 +2011,7 @@ namespace Voat.Controllers
             return submissionsFromASubverseByDate;
         }
 
-        private IQueryable<Message> SubmissionsFromASubverseByRank(string subverseName, whoaverseEntities _db = null)
+        private IQueryable<Message> SubmissionsFromASubverseByRank(string subverseName, voatEntities _db = null)
         {
             if (_db == null) {
                 _db = this._db;

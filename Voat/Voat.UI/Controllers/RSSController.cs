@@ -11,7 +11,7 @@ namespace Voat.Controllers
 {
     public class RssController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         // GET: rss/{subverseName}
         public ActionResult Rss(string subverseName)

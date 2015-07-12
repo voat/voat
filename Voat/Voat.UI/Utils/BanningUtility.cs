@@ -23,7 +23,7 @@ namespace Voat.Utils
 
         public static bool IsHostnameBanned(string hostnameToCheck)
         {
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var bannedHostname = db.Banneddomains.FirstOrDefault(r => r.Hostname.Equals(hostnameToCheck, StringComparison.OrdinalIgnoreCase));
 

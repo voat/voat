@@ -27,7 +27,7 @@ namespace Voat.Controllers
 {
     public class MessagingController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         private void SetViewBagCounts()
         {

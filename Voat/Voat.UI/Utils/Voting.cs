@@ -25,7 +25,7 @@ namespace Voat.Utils
         // returns -1:downvoted, 1:upvoted, 0:not voted
         public static int CheckIfVoted(string userToCheck, int messageId)
         {
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var checkResult = db.Votingtrackers.Where(u => u.UserName == userToCheck && u.MessageId == messageId)
                         .AsNoTracking()
@@ -39,7 +39,7 @@ namespace Voat.Utils
         // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetMessageVote(string userWhichVoted, int messageId)
         {
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var votingTracker = db.Votingtrackers.FirstOrDefault(b => b.MessageId == messageId && b.UserName == userWhichVoted);
 
@@ -56,7 +56,7 @@ namespace Voat.Utils
             // user account voting check
             int result = CheckIfVoted(userWhichUpvoted, submissionId);
 
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 Message submission = db.Messages.Find(submissionId);
 
@@ -157,7 +157,7 @@ namespace Voat.Utils
         {
             int result = CheckIfVoted(userWhichDownvoted, submissionId);
 
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 Message submission = db.Messages.Find(submissionId);
 

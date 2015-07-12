@@ -25,7 +25,7 @@ namespace Voat.Controllers
 {
     public class AjaxGatewayController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         // GET: MessageContent
         public ActionResult MessageContent(int? messageId)

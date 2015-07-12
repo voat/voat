@@ -25,7 +25,7 @@ namespace Voat.Controllers
 {
     public class SubmissionsController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         // POST: apply a link flair to given submission
         [Authorize]

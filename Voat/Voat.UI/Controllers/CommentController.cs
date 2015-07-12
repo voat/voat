@@ -30,7 +30,7 @@ namespace Voat.Controllers
 
     public class CommentController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         // POST: votecomment/{commentId}/{typeOfVote}
         [Authorize]

@@ -11,7 +11,7 @@ namespace Voat.Controllers
 {
     public class UserController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
         const int pageSize = 25;
 
         // GET: show user submissions

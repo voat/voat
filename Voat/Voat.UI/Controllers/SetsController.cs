@@ -28,7 +28,7 @@ namespace Voat.Controllers
 {
     public class SetsController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         // GET: /set/setid
         // show single set frontpage

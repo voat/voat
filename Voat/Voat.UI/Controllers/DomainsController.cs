@@ -21,7 +21,7 @@ namespace Voat.Controllers
 {
     public class DomainsController : Controller
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         // GET: Domains
         // GET: all submissions which link to given domain

@@ -27,7 +27,7 @@ namespace Voat.Utils
         {
             try
             {
-                using (var db = new whoaverseEntities())
+                using (var db = new voatEntities())
                 {
                     // remove all records for given session id
                     db.Sessiontrackers.RemoveRange(db.Sessiontrackers.Where(s => s.SessionId == sessionIdToRemove));
@@ -45,7 +45,7 @@ namespace Voat.Utils
         {
             try
             {
-                using (var db = new whoaverseEntities())
+                using (var db = new voatEntities())
                 {
                     db.Database.ExecuteSqlCommand("TRUNCATE TABLE SESSIONTRACKER");
                     db.SaveChanges();
@@ -63,7 +63,7 @@ namespace Voat.Utils
             try
             {
                 if (SessionExists(sessionId, subverseName)) return;
-                using (var db = new whoaverseEntities())
+                using (var db = new voatEntities())
                 {
                     var newSession = new Sessiontracker { SessionId = sessionId, Subverse = subverseName, Timestamp = DateTime.Now };
 
@@ -81,7 +81,7 @@ namespace Voat.Utils
         // check if session exists
         public static bool SessionExists(string sessionId, string subverseName)
         {
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var result = from sessions in db.Sessiontrackers
                              where sessions.Subverse.Equals(subverseName) && sessions.SessionId.Equals(sessionId)
@@ -107,7 +107,7 @@ namespace Voat.Utils
 
 
                 int count = 0;
-                using (whoaverseEntities db = new whoaverseEntities())
+                using (voatEntities db = new voatEntities())
                 {
 
                     var cmd = db.Database.Connection.CreateCommand();
@@ -132,7 +132,7 @@ namespace Voat.Utils
 
 
 
-                //using (var db = new whoaverseEntities())
+                //using (var db = new voatEntities())
                 //{
                 //    var result = from sessions in db.Sessiontrackers
                 //                 where sessions.Subverse.Equals(subverseName)
@@ -152,7 +152,7 @@ namespace Voat.Utils
         {
             try
             {
-                using (var db = new whoaverseEntities())
+                using (var db = new voatEntities())
                 {
                     var groups = db.Sessiontrackers
                                 .GroupBy(n => n.Subverse)

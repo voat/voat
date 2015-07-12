@@ -35,7 +35,7 @@ namespace Voat.Utils.Components
                 string recipient = User.OriginalUsername(user);
 
                 var commentReplyNotification = new Commentreplynotification();
-                using (var _db = new whoaverseEntities())
+                using (var _db = new voatEntities())
                 {
 
                     commentReplyNotification.CommentId = comment.Id;
@@ -81,7 +81,7 @@ namespace Voat.Utils.Components
                 string recipient = User.OriginalUsername(user);
 
                 var commentReplyNotification = new Commentreplynotification();
-                using (var _db = new whoaverseEntities())
+                using (var _db = new voatEntities())
                 {
                     //commentReplyNotification.CommentId = comment.Id;
                     commentReplyNotification.SubmissionId = message.Id;
@@ -117,7 +117,7 @@ namespace Voat.Utils.Components
         public static async Task SendCommentNotification(Comment comment)
         {
 
-            whoaverseEntities _db = new whoaverseEntities();
+            voatEntities _db = new voatEntities();
             Random _rnd = new Random();
 
             if (comment.ParentId != null && comment.CommentContent != null)

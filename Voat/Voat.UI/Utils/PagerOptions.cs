@@ -17,7 +17,7 @@ using PagedList.Mvc;
 namespace Voat.Utils
 {
     
-    public static class WhoaversePagerOptions
+    public static class VoatPagerOptions
     {
 
         private static readonly PagedListRenderOptions Plro = new PagedListRenderOptions();

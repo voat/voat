@@ -25,7 +25,7 @@ namespace Voat.Controllers
 {
     public class WebApiController : ApiController
     {
-        private readonly whoaverseEntities _db = new whoaverseEntities();
+        private readonly voatEntities _db = new voatEntities();
 
         // GET api/defaultsubverses
         /// <summary>
@@ -38,7 +38,7 @@ namespace Voat.Controllers
             IEnumerable<string> defaultSubs = CacheHandler.Register<IEnumerable<string>>("LegacyApi.DefaultSubverses",
                new Func<IList<string>>(() =>
                {
-                   using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                    {
                        var listOfDefaultSubverses = db.Defaultsubverses.OrderBy(s => s.position).ToList();
                        return listOfDefaultSubverses.Select(item => item.name).ToList();
@@ -58,7 +58,7 @@ namespace Voat.Controllers
             IEnumerable<string> bannedSubs = CacheHandler.Register<IEnumerable<string>>("LegacyApi.BannedHostnames",
               new Func<IList<string>>(() =>
               {
-                  using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                  using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                   {
                       var bannedHostnames = db.Banneddomains.OrderBy(s => s.Added_on).ToList();
                       return bannedHostnames.Select(item => "Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by).ToList();
@@ -87,7 +87,7 @@ namespace Voat.Controllers
         {
             IEnumerable<string> top200 = CacheHandler.Register<IEnumerable<string>>("LegacyApi.Top200Subverses", 
                 new Func<IList<string>>(() => {
-                    using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY)) {
+                    using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY)) {
                         var top200Subverses = db.Subverses.Where(s => s.admin_disabled != true).OrderByDescending(s => s.subscribers).Take(200);
                         return top200Subverses.Select(item => "Name: " + item.name + "," + "Description: " + item.description + "," + "Subscribers: " + item.subscribers + "," + "Created: " + item.creation_date).ToList();
                     }
@@ -244,7 +244,7 @@ namespace Voat.Controllers
             ApiMessage singleSubmission = CacheHandler.Register<ApiMessage>(String.Format("LegacyApi.SingleSubmission.{0}", id),
               new Func<ApiMessage>(() =>
               {
-                  using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                  using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                   {
                       var submission = db.Messages.Find(id);
 
@@ -384,7 +384,7 @@ namespace Voat.Controllers
             ApiUserInfo userInfo = CacheHandler.Register<ApiUserInfo>(String.Format("LegacyApi.UserInfo.{0}", userName),
               new Func<ApiUserInfo>(() =>
               {
-                  using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                  using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                   {
                       var resultModel = new ApiUserInfo();
 
@@ -416,7 +416,7 @@ namespace Voat.Controllers
             ApiBadge badgeInfo = CacheHandler.Register<ApiBadge>(String.Format("LegacyApi.ApiBadge.{0}", badgeId),
              new Func<ApiBadge>(() =>
              {
-                 using (whoaverseEntities db = new whoaverseEntities(CONSTANTS.CONNECTION_READONLY))
+                 using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                  {
                      var badge = _db.Badges.Find(badgeId);
 

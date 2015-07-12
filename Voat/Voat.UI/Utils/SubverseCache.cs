@@ -20,7 +20,7 @@ namespace Voat.Utils
                 if (sub == null) {
                     sub = (Subverse)CacheHandler.Register(cacheKey, new Func<object>(() => {
 
-                        using (whoaverseEntities db = new whoaverseEntities()) {
+                        using (voatEntities db = new voatEntities()) {
                             return db.Subverses.Where(x => x.name == subverse).FirstOrDefault();
                         }
                 

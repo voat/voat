@@ -13,10 +13,10 @@ namespace Voat.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class whoaverseEntities : DbContext
+    public partial class voatEntities : DbContext
     {
-        public whoaverseEntities()
-            : base("name=whoaverseEntities")
+        public voatEntities()
+            : base("name=voatEntities")
         {
         }
     

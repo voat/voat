@@ -26,7 +26,7 @@ namespace Voat.Utils
         {
             int result = CheckIfVotedComment(userWhichUpvoted, commentId);
 
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (voatEntities db = new voatEntities())
             {
                 Comment comment = db.Comments.Find(commentId);
 
@@ -110,7 +110,7 @@ namespace Voat.Utils
         {
             int result = CheckIfVotedComment(userWhichDownvoted, commentId);
 
-            using (whoaverseEntities db = new whoaverseEntities())
+            using (voatEntities db = new voatEntities())
             {
                 Comment comment = db.Comments.Find(commentId);
 
@@ -203,7 +203,7 @@ namespace Voat.Utils
         {
             int intCheckResult = 0;
 
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var checkResult = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userToCheck);
 
@@ -217,7 +217,7 @@ namespace Voat.Utils
         // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetCommentVote(string userWhichVoted, int commentId)
         {
-            using (var db = new whoaverseEntities())
+            using (var db = new voatEntities())
             {
                 var votingTracker = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userWhichVoted);
 
