@@ -1,0 +1,114 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@using System.Configuration
+@model Voat.Models.PartnerIntent
+
+    @{
+        ViewBag.Title = "Voat Partner Intent Registration";
+    }
+
+    <style>
+        body ol {
+            margin: 1em 0;
+            padding: 0 0 0 40px;
+        }
+
+            body ol li {
+                list-style-type: decimal;
+            }
+
+        div .centerblock {
+            margin: 0 auto;
+            position: relative;
+            vertical-align: middle;
+            width: 800px;
+        }
+    </style>
+
+    <div id="container">
+        <div id="about-main" class="content about-page" role="main">
+
+            <h1>Voat Partner Intent Registration</h1>
+            <br />
+            <p>
+                Thank you for your interest in the Voat partnership program. By filling out and submitting this form, you agree to be contacted by Voat staff in regard to Voat partnership program.
+                If you have questions about this partnership program, please send us an e-mail: team@voat.co.
+            </p>
+            <br /><br />
+            @using (Html.BeginForm("PartnerIntentRegistration", "Partner", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
+                @Html.HiddenFor(m => m.UserName)
+                <div class="form-group">
+                    @Html.LabelFor(m => m.FullName, "Full name*", new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.FullName)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Email, "E-mail*", new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Email)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.MailingAddress, "Mailing address*", new { @class = "col-md-2 control-label" })
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(m => m.MailingAddress, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.MailingAddress)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.City, "City*", new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(m => m.City, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.City)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Country, "Country*", new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(m => m.Country, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Country)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.PhoneNumber, "Phone number*", new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.PhoneNumber)
+                    </div>
+                </div>
+
+                <p>Privacy notice: we will keep all personal information you entrust to us strictly confidential.</p>
+                <br />
+
+                <div class="panel panel-transparent">
+                    @Html.Label("Please re-type this code", new { @class = "col-md-2 control-label" })
+                    @{Html.RenderPartial("_Captcha");}
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-3">
+                        <input type="submit" class="btn-whoaverse" value="Submit" />
+                    </div>
+                </div>
+            }
+            @section Scripts {
+                @Scripts.Render("~/bundles/jqueryval")
+            }
+        </div>
+    </div>

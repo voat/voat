@@ -1,0 +1,164 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@using System.Configuration
+@model Voat.Models.Message
+
+@{
+    string highLight = "";
+    string selectedSubverse = ViewBag.SelectedSubverse;
+    int commentContributionPoints = 0;
+    if (User.Identity.IsAuthenticated)
+    {
+        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
+    }
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<style type="text/css" id="custom_css">
+@if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+}
+else if (!User.Identity.IsAuthenticated)
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+}
+</style>
+
+<div id="container">
+
+    @*
+        display 1 submission with details and comments
+    *@
+    @if (!selectedSubverse.Equals("user"))
+    {
+        @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new
+       {
+           selectedSubverse = selectedSubverse,
+           showingComments = true,
+           name = Model.Name,
+           date = Model.Date,
+           lastEditDate = Model.LastEditDate,
+           submissionId = Model.Id,
+           likes = Model.Likes,
+           dislikes = Model.Dislikes,
+           anonymized = Model.Anonymized,
+           views = Model.Views
+       })
+    }
+
+    <style type="text/css" id="custom_css">
+@if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
+{
+    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+}
+    </style>
+
+    <div class="content" role="main">
+        <br /><br />
+        @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
+
+        @{
+            //type 1 = message submission
+            if (Model.Type == 1)
+            {
+                ViewBag.Title = Model.Title + " | " + selectedSubverse;
+                ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
+                ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + MvcApplication.SiteLogo;
+                ViewBag.Description = ViewBag.Description ?? MvcApplication.SiteSlogan;
+                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+            }
+
+            //type 2 = link submission
+            if (Model.Type == 2)
+            {
+                ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
+                ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
+                ViewBag.Description = ViewBag.Description ?? MvcApplication.SiteSlogan;
+
+                //check if submission has a thumb, otherwise point to site logo
+                if (Model.Thumbnail != null)
+                {
+                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + "/Thumbs/" + @Model.Thumbnail;
+                }
+                else
+                {
+                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + MvcApplication.SiteLogo;
+                }
+
+                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+            }
+        }
+
+        @if (User.Identity.IsAuthenticated)
+        //if user logged in, show add comment form
+        {
+            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
+        }
+
+        <div class="horizontal-line"></div>
+        <div class="menuarea">
+            <div class="spacer">
+                <span class="dropdown-title lightdrop">sort by: </span>
+                <div class="dropdown lightdrop">
+                    @if (ViewBag.StartingCommentId != null)
+                    {
+                        if (ViewBag.SortingMode != null)
+                        {
+                            <span class="selected">
+                                <a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId" class="bylink" rel="nofollow">top</a>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="selected">
+                                <a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId?sort=new" class="bylink" rel="nofollow">new</a>
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        if (ViewBag.SortingMode != null)
+                        {
+                            <span class="selected">
+                                <a href="/v/@Model.Subverse/comments/@Model.Id/" class="bylink" rel="nofollow">top</a>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="selected">
+                                <a href="/v/@Model.Subverse/comments/@Model.Id/?sort=new" class="bylink" rel="nofollow">new</a>
+                            </span>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="spacer"></div>
+        </div>
+
+        @if (ViewBag.StartingCommentId != null)
+        {
+            // show comment tree for a single thread starting at passed starting comment id
+            @Html.Partial("~/Views/Home/_SingleCommentTree.cshtml", Model, new ViewDataDictionary { { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode }, { "commentToHighlight", ViewBag.CommentToHighLight } })
+        }
+        else
+        {
+            @Html.Partial("~/Views/Home/_CommentTree.cshtml", Model, new ViewDataDictionary { { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
+        }
+    </div>
+</div>
