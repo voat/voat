@@ -167,7 +167,7 @@ namespace Voat.Controllers
                     .Where(s => s.description.ToLower().Contains(q))
                     .OrderByDescending(s => s.subscribers);
 
-                results = subversesByName.Concat(subversesByDescription).OrderByDescending(s=>s.subscribers);
+                results = subversesByName.Union(subversesByDescription).OrderByDescending(s=>s.subscribers);
             }
             else
             {
