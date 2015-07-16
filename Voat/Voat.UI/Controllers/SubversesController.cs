@@ -1125,6 +1125,9 @@ namespace Voat.Controllers
                 return HttpNotFound();
             }
 
+            // check if caller has clearance to access this area
+            if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName)) return RedirectToAction("Index", "Home");
+
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.SubverseName = subverseAdmin.SubverseName;
             return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subverseAdmin);
