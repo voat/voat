@@ -31,12 +31,19 @@ namespace Voat.Utils
             try
             {
                 var tmpUri = new Uri(completeUri);
-                return tmpUri.GetLeftPart(UriPartial.Authority).Replace("/www.", "/").Replace("http://", "").Replace("https://", "");      
+                return tmpUri.GetLeftPart(UriPartial.Authority).Replace("/www.", "/").Replace("http://", "").Replace("https://", "");
             }
             catch (Exception)
             {
-                return "http://voat.co";
-            }                  
+                return null;
+            }
+        }
+
+        // check if a URI is valid HTTP or HTTPS URI
+        public static bool IsUriValid(string completeUri)
+        {
+            Uri uriResult;
+            return Uri.TryCreate(completeUri, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
 
         // return remote page title from URI
@@ -71,7 +78,7 @@ namespace Voat.Utils
             catch (Exception ex)
             {
                 return null;
-            }            
+            }
         }
 
         // return youtube video id from url
@@ -98,5 +105,5 @@ namespace Voat.Utils
         }
     }
 
-    
+
 }

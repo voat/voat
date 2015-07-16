@@ -12,14 +12,9 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
-
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -30,8 +25,6 @@ using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
-
-
     public class HomeController : Controller
     {
         //IAmAGate: Move queries to read-only mirror
@@ -165,7 +158,7 @@ namespace Voat.Controllers
 
             // check if subverse exists
             var targetSubverse = SubverseCache.Retrieve(message.Subverse);
-            //var targetSubverse = _db.Subverses.Find(message.Subverse.Trim());
+
             if (targetSubverse == null || message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
@@ -197,7 +190,8 @@ namespace Voat.Controllers
                 {
                     message.Linkdescription = Submissions.StripUnicode(message.Linkdescription);
                 }
-                // abort if title less than 10 characters
+
+                // abort if title is < than 10 characters
                 if (message.Linkdescription.Length < 10)
                 {
                     ModelState.AddModelError(string.Empty, "Sorry, the title may not be less than 10 characters.");
@@ -205,6 +199,13 @@ namespace Voat.Controllers
                 }
 
                 var domain = UrlUtility.GetDomainFromUri(message.MessageContent);
+
+                // make sure the input URI is valid
+                if (!UrlUtility.IsUriValid(message.MessageContent))
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, the URI you are trying to submit is invalid.");
+                    return View("Submit");
+                }
 
                 // check if target subvere allows submissions from globally banned hostnames
                 if (!targetSubverse.exclude_sitewide_bans)

@@ -122,6 +122,15 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void TestIsUriValid()
+        {
+            Uri testUri = new Uri("https://youtube.com");
+
+            bool result = UrlUtility.IsUriValid(testUri.ToString());
+            Assert.AreEqual(true, result, "The input URI was invalid.");
+        }
+
+        [TestMethod]
         public void TestGetOpenGraphImageFromUri()
         {
             Uri testUri = new Uri("http://www.bbc.com/news/technology-32194196");
