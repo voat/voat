@@ -12,14 +12,9 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
-
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -30,8 +25,6 @@ using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
-
-
     public class HomeController : Controller
     {
         //IAmAGate: Move queries to read-only mirror
@@ -99,33 +92,33 @@ namespace Voat.Controllers
         [Authorize]
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
-        public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message message)
+        public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message submission)
         {
             // abort if model state is invalid
             if (!ModelState.IsValid) return View();
 
             // save temp values for the view in case submission fails
-            ViewBag.selectedSubverse = message.Subverse;
-            ViewBag.message = message.MessageContent;
-            ViewBag.title = message.Title;
-            ViewBag.linkDescription = message.Linkdescription;
+            ViewBag.selectedSubverse = submission.Subverse;
+            ViewBag.message = submission.MessageContent;
+            ViewBag.title = submission.Title;
+            ViewBag.linkDescription = submission.Linkdescription;
 
             // check if user is banned
-            if (Utils.User.IsUserGloballyBanned(message.Name) || Utils.User.IsUserBannedFromSubverse(User.Identity.Name, message.Subverse))
+            if (Utils.User.IsUserGloballyBanned(submission.Name) || Utils.User.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
             {
-                ViewBag.SelectedSubverse = message.Subverse;
-                return View("~/Views/Home/Comments.cshtml", message);
+                ViewBag.SelectedSubverse = submission.Subverse;
+                return View("~/Views/Home/Comments.cshtml", submission);
             }
 
             // check if user has reached hourly posting quota for target subverse
-            if (Utils.User.UserHourlyPostingQuotaForSubUsed(User.Identity.Name, message.Subverse))
+            if (Utils.User.UserHourlyPostingQuotaForSubUsed(User.Identity.Name, submission.Subverse))
             {
                 ModelState.AddModelError("", "You have reached your hourly submission quota for this subverse.");
                 return View();
             }
 
             // check if user has reached daily posting quota for target subverse
-            if (Utils.User.UserDailyPostingQuotaForSubUsed(User.Identity.Name, message.Subverse))
+            if (Utils.User.UserDailyPostingQuotaForSubUsed(User.Identity.Name, submission.Subverse))
             {
                 ModelState.AddModelError("", "You have reached your daily submission quota for this subverse.");
                 return View();
@@ -164,9 +157,9 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View("Submit");
 
             // check if subverse exists
-            var targetSubverse = DataCache.Subverse.Retrieve(message.Subverse);
-            //var targetSubverse = _db.Subverse.Find(submission.Subverse.Trim());
-            if (targetSubverse == null || message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
+            var targetSubverse = _db.Subverses.Find(submission.Subverse.Trim());
+
+            if (targetSubverse == null || submission.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
                 return View("Submit");
@@ -190,21 +183,29 @@ namespace Voat.Controllers
 
             // submission is a link post
             // generate a thumbnail if submission is a direct link to image or video
-            if (message.Type == 2 && message.MessageContent != null && message.Linkdescription != null)
+            if (submission.Type == 2 && submission.MessageContent != null && submission.Linkdescription != null)
             {
                 // strip unicode if title contains unicode
-                if (Submissions.ContainsUnicode(message.Linkdescription))
+                if (Submissions.ContainsUnicode(submission.Linkdescription))
                 {
-                    message.Linkdescription = Submissions.StripUnicode(message.Linkdescription);
+                    submission.Linkdescription = Submissions.StripUnicode(submission.Linkdescription);
                 }
-                // abort if title less than 10 characters
-                if (message.Linkdescription.Length < 10)
+
+                // abort if title is < than 10 characters
+                if (submission.Linkdescription.Length < 10)
                 {
                     ModelState.AddModelError(string.Empty, "Sorry, the title may not be less than 10 characters.");
                     return View("Submit");
                 }
 
-                var domain = UrlUtility.GetDomainFromUri(message.MessageContent);
+                var domain = UrlUtility.GetDomainFromUri(submission.MessageContent);
+
+                // make sure the input URI is valid
+                if (!UrlUtility.IsUriValid(submission.MessageContent))
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, the URI you are trying to submit is invalid.");
+                    return View("Submit");
+                }
 
                 // check if target subvere allows submissions from globally banned hostnames
                 if (!targetSubverse.exclude_sitewide_bans)
@@ -218,7 +219,7 @@ namespace Voat.Controllers
                 }
 
                 // check if same link was submitted before and deny submission
-                var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(message.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(message.Subverse, StringComparison.OrdinalIgnoreCase));
+                var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(submission.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
                 // submission is a repost, discard it and inform the user
                 if (existingSubmission != null)
@@ -239,7 +240,7 @@ namespace Voat.Controllers
                 }
 
                 // check if user has reached daily crossposting quota
-                if (Utils.User.DailyCrossPostingQuotaUsed(User.Identity.Name, message.MessageContent))
+                if (Utils.User.DailyCrossPostingQuotaUsed(User.Identity.Name, submission.MessageContent))
                 {
                     ModelState.AddModelError("", "You have reached your daily crossposting quota for this URL.");
                     return View();
@@ -249,42 +250,42 @@ namespace Voat.Controllers
                 if (targetSubverse.enable_thumbnails)
                 {
                     // try to generate and assign a thumbnail to submission model
-                    message.Thumbnail = ThumbGenerator.ThumbnailFromSubmissionModel(message);
+                    submission.Thumbnail = ThumbGenerator.ThumbnailFromSubmissionModel(submission);
                 }
 
                 // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
                 if (targetSubverse.anonymized_mode)
                 {
-                    message.Anonymized = true;
+                    submission.Anonymized = true;
                 }
                 else
                 {
-                    message.Name = User.Identity.Name;
+                    submission.Name = User.Identity.Name;
                 }
 
                 // accept submission and save it to the database
-                message.Subverse = targetSubverse.name;
+                submission.Subverse = targetSubverse.name;
 
                 // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                message.Date = DateTime.Now;
-                message.Likes = 1;
-                _db.Messages.Add(message);
+                submission.Date = DateTime.Now;
+                submission.Likes = 1;
+                _db.Messages.Add(submission);
 
                 // update last submission received date for target subverse
                 targetSubverse.last_submission_received = DateTime.Now;
                 _db.SaveChanges();
             }
-            else if (message.Type == 1 && message.Title != null)
+            else if (submission.Type == 1 && submission.Title != null)
             {
                 // submission is a self post
 
                 // strip unicode if submission contains unicode
-                if (Submissions.ContainsUnicode(message.Title))
+                if (Submissions.ContainsUnicode(submission.Title))
                 {
-                    message.Title = Submissions.StripUnicode(message.Title);
+                    submission.Title = Submissions.StripUnicode(submission.Title);
                 }
                 // abort if title less than 10 characters
-                if (message.Title.Length < 10)
+                if (submission.Title.Length < 10)
                 {
                     ModelState.AddModelError(string.Empty, "Sorry, the the submission title may not be less than 10 characters.");
                     return View("Submit");
@@ -292,34 +293,34 @@ namespace Voat.Controllers
 
                 // accept submission and save it to the database
                 // trim trailing blanks from subverse name if a user mistakenly types them
-                message.Subverse = targetSubverse.name;
+                submission.Subverse = targetSubverse.name;
 
                 // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
                 if (targetSubverse.anonymized_mode)
                 {
-                    message.Anonymized = true;
+                    submission.Anonymized = true;
                 }
                 else
                 {
-                    message.Name = User.Identity.Name;
+                    submission.Name = User.Identity.Name;
                 }
                 // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                message.Date = DateTime.Now;
-                message.Likes = 1;
-                _db.Messages.Add(message);
+                submission.Date = DateTime.Now;
+                submission.Likes = 1;
+                _db.Messages.Add(submission);
                 // update last submission received date for target subverse
                 targetSubverse.last_submission_received = DateTime.Now;
 
                 if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                 {
-                    message.MessageContent = ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPreSave, message);
+                    submission.MessageContent = ContentProcessor.Instance.Process(submission.MessageContent, ProcessingStage.InboundPreSave, submission);
                 }
 
                 _db.SaveChanges();
 
                 if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
                 {
-                    ContentProcessor.Instance.Process(message.MessageContent, ProcessingStage.InboundPostSave, message);
+                    ContentProcessor.Instance.Process(submission.MessageContent, ProcessingStage.InboundPostSave, submission);
                 }
             }
 
@@ -329,8 +330,8 @@ namespace Voat.Controllers
                 {
                     controller = "Comment",
                     action = "Comments",
-                    id = message.Id,
-                    subversetoshow = message.Subverse
+                    id = submission.Id,
+                    subversetoshow = submission.Subverse
                 }
                 );
         }
