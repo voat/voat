@@ -1390,7 +1390,7 @@ pre, code {
             z-index: 99;
             overflow-x: hidden;
             overflow-y: scroll;
-            height: 80vh;
+            max-height: 80vh;
         }
 
             .whoaSubscriptionMenu li ul li {
