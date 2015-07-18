@@ -202,7 +202,7 @@ namespace Voat.Controllers
                 await _db.SaveChangesAsync();
 
                 // go to newly created Subverse
-                return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = subverseTmpModel.Name });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverseTmpModel.Name });
             }
             catch (Exception)
             {
@@ -335,7 +335,7 @@ namespace Voat.Controllers
                     await _db.SaveChangesAsync();
                     DataCache.Subverse.Remove(existingSubverse.name);
                     // go back to this subverse
-                    return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = updatedModel.name });
+                    return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.name });
                     // user was not authorized to commit the changes, drop attempt
                 }
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
@@ -467,13 +467,13 @@ namespace Voat.Controllers
                         }
 
                         // display a view explaining that account preference is set to NO NSFW and why this subverse can not be shown
-                        return RedirectToAction("AdultContentFiltered", "Subverse", new { destination = subverse.name });
+                        return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
                     }
 
                     // check if user wants to see NSFW content by reading NSFW cookie
                     if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                     {
-                        return RedirectToAction("AdultContentWarning", "Subverse", new { destination = subverse.name, nsfwok = false });
+                        return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
                     }
                     return View(paginatedSubmissions);
                 }
@@ -742,7 +742,7 @@ namespace Voat.Controllers
                 System.Web.HttpContext.Current.Response.Cookies.Add(hc);
 
                 // redirect to destination subverse
-                return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = destination });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = destination });
             }
             ViewBag.Destination = destination;
             return View("~/Views/Subverses/AdultContentWarning.cshtml");
@@ -793,7 +793,7 @@ namespace Voat.Controllers
                     }
                 } while (submissionCount == 0);
 
-                return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = randomSubverse.name });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = randomSubverse.name });
             }
             catch (Exception)
             {
@@ -1064,7 +1064,7 @@ namespace Voat.Controllers
             _db.Moderatorinvitations.Remove(userInvitation);
             _db.SaveChanges();
 
-            return RedirectToAction("SubverseSettings", "Subverse", new { subversetoshow = userInvitation.Subverse });
+            return RedirectToAction("SubverseSettings", "Subverses", new { subversetoshow = userInvitation.Subverse });
         }
 
         // POST: add a user ban to given subverse
@@ -1238,7 +1238,7 @@ namespace Voat.Controllers
             // execute removal                    
             _db.SubverseAdmins.Remove(moderatorToBeRemoved);
             await _db.SaveChangesAsync();
-            return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = subversetoresignfrom });
+            return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subversetoresignfrom });
         }
 
         // POST: remove a moderator from given subverse
@@ -1624,13 +1624,13 @@ namespace Voat.Controllers
                         paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow, _db), page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissionsByRank);
                     }
-                    return RedirectToAction("AdultContentFiltered", "Subverse", new { destination = subverse.name });
+                    return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
                 }
 
                 // check if user wants to see NSFW content by reading NSFW cookie
                 if (!HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                 {
-                    return RedirectToAction("AdultContentWarning", "Subverse",
+                    return RedirectToAction("AdultContentWarning", "Subverses",
                         new { destination = subverse.name, nsfwok = false });
                 }
 

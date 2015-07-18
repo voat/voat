@@ -25,9 +25,6 @@ using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
-
-    
-
     public class CommentController : Controller
     {
         private readonly voatEntities _db = new voatEntities();

@@ -328,6 +328,7 @@
     <Compile Include="Utils\Components\RegExReplacer.cs" />
     <Compile Include="Utils\CONSTANTS.cs" />
     <Compile Include="Utils\DateTimeUtility.cs" />
+    <Compile Include="Utils\HashHandler.cs" />
     <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\HubMinifier.cs" />
     <Compile Include="Utils\DataCache.cs" />
@@ -835,6 +836,7 @@
     <Content Include="Views\Subverses\CommentRemovalLog.cshtml" />
     <Content Include="Views\Subverses\BannedUsersLog.cshtml" />
     <Content Include="Web.config.live" />
+    <Content Include="Views\Account\RegistrationDisabled.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
