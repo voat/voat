@@ -164,8 +164,8 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View("Submit");
 
             // check if subverse exists
-            var targetSubverse = SubverseCache.Retrieve(message.Subverse);
-            //var targetSubverse = _db.Subverses.Find(message.Subverse.Trim());
+            var targetSubverse = DataCache.Subverse.Retrieve(message.Subverse);
+            //var targetSubverse = _db.Subverse.Find(submission.Subverse.Trim());
             if (targetSubverse == null || message.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
@@ -278,7 +278,7 @@ namespace Voat.Controllers
             {
                 // submission is a self post
 
-                // strip unicode if message contains unicode
+                // strip unicode if submission contains unicode
                 if (Submissions.ContainsUnicode(message.Title))
                 {
                     message.Title = Submissions.StripUnicode(message.Title);
@@ -286,7 +286,7 @@ namespace Voat.Controllers
                 // abort if title less than 10 characters
                 if (message.Title.Length < 10)
                 {
-                    ModelState.AddModelError(string.Empty, "Sorry, the the message title may not be less than 10 characters.");
+                    ModelState.AddModelError(string.Empty, "Sorry, the the submission title may not be less than 10 characters.");
                     return View("Submit");
                 }
 
@@ -453,7 +453,7 @@ namespace Voat.Controllers
                                 
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
 
-                                IQueryable<Message> submissions = (from m in db.Messages.Include("Subverses").AsNoTracking()
+                                IQueryable<Message> submissions = (from m in db.Messages.Include("Subverse").AsNoTracking()
                                                                    join s in db.Subscriptions on m.Subverse equals s.SubverseName
                                                                    where !m.IsArchived && m.Name != "deleted" && s.Username == User.Identity.Name
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
@@ -685,11 +685,11 @@ namespace Voat.Controllers
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>((IList<Message>)cacheData, pageNumber, pageSize, 50000);
 
                     //// get only submissions from default subverses, sort by date
-                    //IQueryable<Message> submissions = (from message in _db.Messages
-                    //                              where message.Name != "deleted"
-                    //                              where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                    //                              join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                    //                              select message).OrderByDescending(s => s.Date);
+                    //IQueryable<Message> submissions = (from submission in _db.Messages
+                    //                              where submission.Name != "deleted"
+                    //                              where !(from bu in _db.Bannedusers select bu.Username).Contains(submission.Name)
+                    //                              join defaultsubverse in _db.Defaultsubverses on submission.Subverse equals defaultsubverse.name
+                    //                              select submission).OrderByDescending(s => s.Date);
 
                     //PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
 
@@ -759,13 +759,14 @@ namespace Voat.Controllers
 
         // GET: stickied submission from /v/announcements for the frontpage
         [ChildActionOnly]
+        [OutputCache(Duration=600)]
         public ActionResult StickiedSubmission()
         {
             var stickiedSubmissions = _db.Stickiedsubmissions.FirstOrDefault(s => s.Subversename == "announcements");
 
             if (stickiedSubmissions == null) return new EmptyResult();
 
-            var stickiedSubmission = _db.Messages.Find(stickiedSubmissions.Submission_id);
+            var stickiedSubmission = DataCache.Submission.Retrieve(stickiedSubmissions.Submission_id);
 
             if (stickiedSubmission != null)
             {

@@ -30,7 +30,8 @@ namespace Voat.Controllers
         // GET: MessageContent
         public ActionResult MessageContent(int? messageId)
         {
-            var message = _db.Messages.Find(messageId);
+            
+            var message = DataCache.Submission.Retrieve(messageId);
 
             if (message != null)
             {
@@ -41,17 +42,18 @@ namespace Voat.Controllers
                     mpm.MessageContent = message.MessageContent;
                     return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
                 }
-                
-                mpm.MessageContent = "This message only has a title.";
+
+                mpm.MessageContent = "This submission only has a title.";
                 return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
             }
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
         // GET: EmbedVideo
         public ActionResult VideoPlayer(int? messageId)
         {
-            var message = _db.Messages.Find(messageId);
+           
+            var message =  DataCache.Submission.Retrieve(messageId.Value);
 
             if (message != null)
             {
@@ -71,13 +73,17 @@ namespace Voat.Controllers
         public ActionResult SubverseLinkFlairs(string subversetoshow, int? messageId)
         {
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subversetoshow);
-            //var subverseModel = _db.Subverses.Find(subversetoshow);
+            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
+            //var subverseModel = _db.Subverse.Find(subversetoshow);
 
             if (subverseModel == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var submissionId = _db.Messages.Find(messageId);
-            if (submissionId == null || submissionId.Subverses.name != subversetoshow)
+
+
+            Message submission = DataCache.Submission.Retrieve(messageId);
+            
+            if (submission == null || submission.Subverses.name != subversetoshow)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
             // check if caller is subverse owner or moderator, if not, deny listing
             if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow) &&
                 !Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))

@@ -34,7 +34,6 @@
         <AssociationConnector Association="voatModel.FK_Stickiedsubmissions_Messages" />
         <AssociationConnector Association="voatModel.FK_Stickiedsubmissions_Subverses" />
         <EntityTypeShape EntityType="voatModel.Banneduser" Width="1.5" PointX="10.75" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="voatModel.Survey" Width="1.5" PointX="11.75" PointY="7.75" IsExpanded="true" />
         <AssociationConnector Association="voatModel.FK_Messages_Messages" />
         <AssociationConnector Association="voatModel.FK_Subscriptions_Subverses" />
         <EntityTypeShape EntityType="voatModel.Featuredsub" Width="1.5" PointX="3.625" PointY="41.875" IsExpanded="true" />

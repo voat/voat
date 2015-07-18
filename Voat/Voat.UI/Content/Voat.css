@@ -2776,6 +2776,10 @@ textarea.form-control {
     width: 100%;
 }
 
+.inline-loadcomments-btn { 
+    padding: 5px 0 5px 0;
+}
+
 /* ! 404 Error
 -------------------------------------------------------------------------------- */
 
@@ -2926,6 +2930,7 @@ textarea.form-control {
 }
 
 @media ( max-width: 750px ) {
+
     .pagename {
         display: none;
     }
@@ -3025,6 +3030,29 @@ textarea.form-control {
     .menuarea {
         font-size: 13px;
     }
+
+    .inline-loadcomments-btn {
+
+        /*from btn-whoaverse*/
+        background: #F8F8F8;
+        background: -webkit-linear-gradient( top,#FDFDFD,#F7F7F7 );
+        background: -moz-linear-gradient( top,#FDFDFD,#F7F7F7 );
+        background: -ms-linear-gradient( top,#FDFDFD,#F7F7F7 );
+        background: -o-linear-gradient( top,#FDFDFD,#F7F7F7 );
+        border: solid #D1D1D1;
+        border-width: 1px 1px 2px;
+        border-radius: 3px;
+        color: #4C4C4C;
+        /*display: inline-block;*/
+        font-size: 12px;
+        font-weight: bold;
+        padding: 5px 12px;
+        text-align: center;
+
+        /*from btn-block*/
+        display: block;
+        width: 100%;
+	}
 }
 
 @media ( max-width: 550px ) {

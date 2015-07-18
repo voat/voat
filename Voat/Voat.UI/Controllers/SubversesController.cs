@@ -114,7 +114,7 @@ namespace Voat.Controllers
         // GET: stylesheet for selected subverse
         public ActionResult StylesheetForSelectedSubverse(string selectedSubverse)
         {
-            var subverse = SubverseCache.Retrieve(selectedSubverse);
+            var subverse = DataCache.Subverse.Retrieve(selectedSubverse);
 
             return Content(subverse != null ? subverse.stylesheet : string.Empty);
         }
@@ -161,7 +161,7 @@ namespace Voat.Controllers
             }
 
             // check if subverse already exists
-            if (SubverseCache.Retrieve(subverseTmpModel.Name) != null)
+            if (DataCache.Subverse.Retrieve(subverseTmpModel.Name) != null)
             {
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
                 return View();
@@ -202,7 +202,7 @@ namespace Voat.Controllers
                 await _db.SaveChangesAsync();
 
                 // go to newly created Subverse
-                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverseTmpModel.Name });
+                return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = subverseTmpModel.Name });
             }
             catch (Exception)
             {
@@ -222,7 +222,7 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult SubverseSettings(string subversetoshow)
         {
-            var subverse = SubverseCache.Retrieve(subversetoshow);
+            var subverse = DataCache.Subverse.Retrieve(subversetoshow);
  
             if (subverse == null)
             {
@@ -333,9 +333,9 @@ namespace Voat.Controllers
                     existingSubverse.anonymized_mode = updatedModel.anonymized_mode;
 
                     await _db.SaveChangesAsync();
-                    SubverseCache.Remove(existingSubverse.name);
+                    DataCache.Subverse.Remove(existingSubverse.name);
                     // go back to this subverse
-                    return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.name });
+                    return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = updatedModel.name });
                     // user was not authorized to commit the changes, drop attempt
                 }
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
@@ -467,13 +467,13 @@ namespace Voat.Controllers
                         }
 
                         // display a view explaining that account preference is set to NO NSFW and why this subverse can not be shown
-                        return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
+                        return RedirectToAction("AdultContentFiltered", "Subverse", new { destination = subverse.name });
                     }
 
                     // check if user wants to see NSFW content by reading NSFW cookie
                     if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                     {
-                        return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.name, nsfwok = false });
+                        return RedirectToAction("AdultContentWarning", "Subverse", new { destination = subverse.name, nsfwok = false });
                     }
                     return View(paginatedSubmissions);
                 }
@@ -660,7 +660,7 @@ namespace Voat.Controllers
         // GET: sidebar for selected subverse
         public ActionResult DetailsForSelectedSubverse(string selectedSubverse)
         {
-            var subverse = SubverseCache.Retrieve(selectedSubverse);
+            var subverse = DataCache.Subverse.Retrieve(selectedSubverse);
 
             if (subverse == null) return new EmptyResult();
             // get subscriber count for selected subverse
@@ -690,7 +690,7 @@ namespace Voat.Controllers
 
             var paginatedNewestSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
 
-            return View("~/Views/Subverses/Subverses.cshtml", paginatedNewestSubverses);
+            return View("~/Views/Subverses/Subverse.cshtml", paginatedNewestSubverses);
         }
 
         // show subverses ordered by last received submission
@@ -713,7 +713,7 @@ namespace Voat.Controllers
 
             var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
 
-            return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
+            return View("~/Views/Subverses/Subverse.cshtml", paginatedActiveSubverses);
         }
 
         [OutputCache(Duration = 3600, VaryByParam = "none")]
@@ -742,7 +742,7 @@ namespace Voat.Controllers
                 System.Web.HttpContext.Current.Response.Cookies.Add(hc);
 
                 // redirect to destination subverse
-                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = destination });
+                return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = destination });
             }
             ViewBag.Destination = destination;
             return View("~/Views/Subverses/AdultContentWarning.cshtml");
@@ -793,7 +793,7 @@ namespace Voat.Controllers
                     }
                 } while (submissionCount == 0);
 
-                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = randomSubverse.name });
+                return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = randomSubverse.name });
             }
             catch (Exception)
             {
@@ -806,7 +806,7 @@ namespace Voat.Controllers
         public ActionResult SubverseModerators(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subversetoshow);
+            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
@@ -830,7 +830,7 @@ namespace Voat.Controllers
         public ActionResult ModeratorInvitations(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subversetoshow);
+            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
@@ -853,7 +853,7 @@ namespace Voat.Controllers
         public ActionResult SubverseBans(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subversetoshow);
+            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -878,7 +878,7 @@ namespace Voat.Controllers
         public ActionResult AddModerator(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subversetoshow);
+            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
@@ -895,7 +895,7 @@ namespace Voat.Controllers
         public ActionResult AddBan(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subversetoshow);
+            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -917,7 +917,7 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View(subverseAdmin);
 
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subverseAdmin.SubverseName);
+            var subverseModel = DataCache.Subverse.Retrieve(subverseAdmin.SubverseName);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             int maximumOwnedSubs = MvcApplication.MaximumOwnedSubs;
@@ -1064,7 +1064,7 @@ namespace Voat.Controllers
             _db.Moderatorinvitations.Remove(userInvitation);
             _db.SaveChanges();
 
-            return RedirectToAction("SubverseSettings", "Subverses", new { subversetoshow = userInvitation.Subverse });
+            return RedirectToAction("SubverseSettings", "Subverse", new { subversetoshow = userInvitation.Subverse });
         }
 
         // POST: add a user ban to given subverse
@@ -1076,7 +1076,7 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return View(subverseBan);
 
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subverseBan.SubverseName);
+            var subverseModel = DataCache.Subverse.Retrieve(subverseBan.SubverseName);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -1161,7 +1161,7 @@ namespace Voat.Controllers
             if (invitationToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if subverse exists
-            var subverse = SubverseCache.Retrieve(invitationToBeRemoved.Subverse);
+            var subverse = DataCache.Subverse.Retrieve(invitationToBeRemoved.Subverse);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a moderator invitation
@@ -1230,12 +1230,12 @@ namespace Voat.Controllers
             var moderatorToBeRemoved = _db.SubverseAdmins.FirstOrDefault(s => s.SubverseName == subversetoresignfrom && s.Username == User.Identity.Name && s.Power != 1);
 
             if (moderatorToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var subverse = SubverseCache.Retrieve(moderatorToBeRemoved.SubverseName);
+            var subverse = DataCache.Subverse.Retrieve(moderatorToBeRemoved.SubverseName);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // execute removal                    
             _db.SubverseAdmins.Remove(moderatorToBeRemoved);
             await _db.SaveChangesAsync();
-            return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subversetoresignfrom });
+            return RedirectToAction("SubverseIndex", "Subverse", new { subversetoshow = subversetoresignfrom });
         }
 
         // POST: remove a moderator from given subverse
@@ -1247,7 +1247,7 @@ namespace Voat.Controllers
             // get moderator name for selected subverse
             var moderatorToBeRemoved = await _db.SubverseAdmins.FindAsync(id);
             if (moderatorToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var subverse = SubverseCache.Retrieve(moderatorToBeRemoved.SubverseName);
+            var subverse = DataCache.Subverse.Retrieve(moderatorToBeRemoved.SubverseName);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a moderator
@@ -1271,7 +1271,7 @@ namespace Voat.Controllers
 
             if (banToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var subverse = SubverseCache.Retrieve(banToBeRemoved.SubverseName);
+            var subverse = DataCache.Subverse.Retrieve(banToBeRemoved.SubverseName);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a ban
@@ -1288,7 +1288,7 @@ namespace Voat.Controllers
         public ActionResult SubverseFlairSettings(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subversetoshow);
+            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse owner, if not, deny listing
@@ -1313,7 +1313,7 @@ namespace Voat.Controllers
         public ActionResult AddLinkFlair(string subversetoshow)
         {
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subversetoshow);
+            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -1335,7 +1335,7 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid) return View(subverseFlairSetting);
             // get model for selected subverse
-            var subverseModel = SubverseCache.Retrieve(subverseFlairSetting.Subversename);
+            var subverseModel = DataCache.Subverse.Retrieve(subverseFlairSetting.Subversename);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             
             // check if caller is subverse owner, if not, deny posting
@@ -1378,7 +1378,7 @@ namespace Voat.Controllers
             // get link flair for selected subverse
             var linkFlairToRemove = await _db.Subverseflairsettings.FindAsync(id);
             if (linkFlairToRemove == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var subverse = SubverseCache.Retrieve(linkFlairToRemove.Subversename);
+            var subverse = DataCache.Subverse.Retrieve(linkFlairToRemove.Subversename);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller has clearance to remove a link flair
             if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, subverse.name) &&
@@ -1416,11 +1416,11 @@ namespace Voat.Controllers
 
             if (stickiedSubmissions == null) return new EmptyResult();
 
-            var stickiedSubmission = _db.Messages.Find(stickiedSubmissions.Submission_id);
+            var stickiedSubmission = DataCache.Submission.Retrieve(stickiedSubmissions.Submission_id);
 
             if (stickiedSubmission != null)
             {
-                var subverse = SubverseCache.Retrieve(subverseName);
+                var subverse = DataCache.Subverse.Retrieve(subverseName);
                 if (subverse.anonymized_mode)
                 {
                     ViewBag.SubverseAnonymized = true;
@@ -1483,7 +1483,7 @@ namespace Voat.Controllers
 
             try
             {
-                var subverse = SubverseCache.Retrieve(subversetoshow); 
+                var subverse = DataCache.Subverse.Retrieve(subversetoshow); 
                 if (subverse != null)
                 {
                     //HACK: Disable subverse
@@ -1509,7 +1509,7 @@ namespace Voat.Controllers
 
             try
             {
-                var subverse = SubverseCache.Retrieve(subversetoshow); 
+                var subverse = DataCache.Subverse.Retrieve(subversetoshow); 
                 if (subverse != null)
                 {
                     //HACK: Disable subverse
@@ -1535,7 +1535,7 @@ namespace Voat.Controllers
 
             try
             {
-                var subverse = SubverseCache.Retrieve(subversetoshow); 
+                var subverse = DataCache.Subverse.Retrieve(subversetoshow); 
                 if (subverse != null)
                 {
                     //HACK: Disable subverse
@@ -1582,7 +1582,7 @@ namespace Voat.Controllers
             }
 
             // check if subverse exists, if not, send to a page not found error
-            var subverse = SubverseCache.Retrieve(subversetoshow);
+            var subverse = DataCache.Subverse.Retrieve(subversetoshow);
             if (subverse == null) return View("~/Views/Errors/Subversenotfound.cshtml");
 
             ViewBag.Title = subverse.description;
@@ -1621,13 +1621,13 @@ namespace Voat.Controllers
                         paginatedSubmissionsByRank = new PaginatedList<Message>(SubmissionsFromASubverseByRank(subversetoshow, _db), page ?? 0, pageSize);
                         return View("SubverseIndex", paginatedSubmissionsByRank);
                     }
-                    return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.name });
+                    return RedirectToAction("AdultContentFiltered", "Subverse", new { destination = subverse.name });
                 }
 
                 // check if user wants to see NSFW content by reading NSFW cookie
                 if (!HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
                 {
-                    return RedirectToAction("AdultContentWarning", "Subverses",
+                    return RedirectToAction("AdultContentWarning", "Subverse",
                         new { destination = subverse.name, nsfwok = false });
                 }
 

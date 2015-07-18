@@ -11,22 +11,22 @@
     All Rights Reserved.*@
 
 @using System.Configuration
-@model Voat.Models.Message
+@using Voat.Models.ViewModels;
+
+@model CommentBucketViewModel
 
 @{
     string highLight = "";
     string selectedSubverse = ViewBag.SelectedSubverse;
-    int commentContributionPoints = 0;
-    if (User.Identity.IsAuthenticated)
-    {
-        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
-    }
+    int commentContributionPoints = ViewBag.CCP ?? 0;
+    //if (User.Identity.IsAuthenticated)
+    //{
+    //    commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
+    //}
 }
 
 <style type="text/css">
-    body > .content .link .rank {
-        width: 3.2ex;
-    }
+    body > .content .link .rank { width: 3.2ex; }
 </style>
 
 <style type="text/css" id="custom_css">
@@ -51,14 +51,14 @@ else if (!User.Identity.IsAuthenticated)
        {
            selectedSubverse = selectedSubverse,
            showingComments = true,
-           name = Model.Name,
-           date = Model.Date,
-           lastEditDate = Model.LastEditDate,
-           submissionId = Model.Id,
-           likes = Model.Likes,
-           dislikes = Model.Dislikes,
-           anonymized = Model.Anonymized,
-           views = Model.Views
+           name = Model.Submission.Name,
+           date = Model.Submission.Date,
+           lastEditDate = Model.Submission.LastEditDate,
+           submissionId = Model.Submission.Id,
+           likes = Model.Submission.Likes,
+           dislikes = Model.Submission.Dislikes,
+           anonymized = Model.Submission.Anonymized,
+           views = Model.Submission.Views
        })
     }
 
@@ -75,90 +75,69 @@ else if (!User.Identity.IsAuthenticated)
 
         @{
             //type 1 = message submission
-            if (Model.Type == 1)
+            if (Model.Submission.Type == 1)
             {
-                ViewBag.Title = Model.Title + " | " + selectedSubverse;
+                ViewBag.Title = Model.Submission.Title + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + MvcApplication.SiteLogo;
                 ViewBag.Description = ViewBag.Description ?? MvcApplication.SiteSlogan;
-                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", Model.Submission, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
 
             //type 2 = link submission
-            if (Model.Type == 2)
+            if (Model.Submission.Type == 2)
             {
-                ViewBag.Title = Model.Linkdescription + " | " + selectedSubverse;
+                ViewBag.Title = Model.Submission.Linkdescription + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Description = ViewBag.Description ?? MvcApplication.SiteSlogan;
 
                 //check if submission has a thumb, otherwise point to site logo
-                if (Model.Thumbnail != null)
+                if (Model.Submission.Thumbnail != null)
                 {
-                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + "/Thumbs/" + @Model.Thumbnail;
+                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + "/Thumbs/" + @Model.Submission.Thumbnail;
                 }
                 else
                 {
                     ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + MvcApplication.SiteLogo;
                 }
 
-                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", Model, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", Model.Submission, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
         }
 
         @if (User.Identity.IsAuthenticated)
         //if user logged in, show add comment form
         {
-            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Id } })
+            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Submission.Id } })
         }
 
         <div class="horizontal-line"></div>
-        <div class="menuarea">
-            <div class="spacer">
-                <span class="dropdown-title lightdrop">sort by: </span>
-                <div class="dropdown lightdrop">
-                    @if (ViewBag.StartingCommentId != null)
-                    {
-                        if (ViewBag.SortingMode != null)
-                        {
-                            <span class="selected">
-                                <a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId" class="bylink" rel="nofollow">top</a>
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="selected">
-                                <a href="/v/@Model.Subverse/comments/@Model.Id/@ViewBag.StartingCommentId?sort=new" class="bylink" rel="nofollow">new</a>
-                            </span>
-                        }
-                    }
-                    else
-                    {
-                        if (ViewBag.SortingMode != null)
-                        {
-                            <span class="selected">
-                                <a href="/v/@Model.Subverse/comments/@Model.Id/" class="bylink" rel="nofollow">top</a>
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="selected">
-                                <a href="/v/@Model.Subverse/comments/@Model.Id/?sort=new" class="bylink" rel="nofollow">new</a>
-                            </span>
-                        }
-                    }
+        @* Show sort only if viewing all comments *@
+        @if (ViewBag.StartingCommentId == null) {
+            var sort = (Model.Sort == CommentSort.Top ? "new" : "top"); 
+            <div class="menuarea">
+                <div class="spacer">
+                    <span class="dropdown-title lightdrop">sort by: </span>
+                    <div class="dropdown lightdrop">
+                        <span class="selected">
+                            <a href="/v/@Model.Subverse.name/comments/@Model.Submission.Id/@sort" class="bylink" rel="nofollow">@sort</a>
+                        </span>
+                    </div>
                 </div>
+                <div class="spacer"></div>
             </div>
-            <div class="spacer"></div>
-        </div>
-
-        @if (ViewBag.StartingCommentId != null)
-        {
-            // show comment tree for a single thread starting at passed starting comment id
-            @Html.Partial("~/Views/Home/_SingleCommentTree.cshtml", Model, new ViewDataDictionary { { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CCP", commentContributionPoints }, { "StartingCommentId", ViewBag.StartingCommentId }, { "SortingMode", ViewBag.SortingMode }, { "commentToHighlight", ViewBag.CommentToHighLight } })
         }
-        else
-        {
-            @Html.Partial("~/Views/Home/_CommentTree.cshtml", Model, new ViewDataDictionary { { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CCP", commentContributionPoints }, { "SortingMode", ViewBag.SortingMode } })
+        @{
+            string view = (ViewBag.StartingCommentId != null ? "~/Views/Home/_SingleCommentTree.cshtml" : "~/Views/Home/_CommentTree.cshtml");
         }
+        @Html.Partial(view, Model, new ViewDataDictionary {
+                    { "SavedCommentCache", ViewBag.SavedCommentCache },
+                    { "VoteCache", ViewBag.VoteCache },
+                    { "CCP", ViewBag.CCP },
+                    { "SortingMode", ViewBag.SortingMode },
+                    { "NestingCount", 0 },
+                    { "StartingCommentId", ViewBag.StartingCommentId },
+                    { "CommentToHighlight", ViewBag.CommentToHighLight } }
+            )
     </div>
 </div>

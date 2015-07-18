@@ -178,7 +178,7 @@ namespace Voat.Controllers
             }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Something bad happened. You broke Whoaverse.");
+                ModelState.AddModelError(string.Empty, "Something bad happened. You broke Voat.");
             }
 
             // If we got this far, something failed, redisplay form

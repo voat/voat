@@ -17,6 +17,8 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Voat.Models;
+using Voat.Models.ViewModels;
+using Voat.Utils;
 
 namespace Voat.Controllers
 {
@@ -51,24 +53,55 @@ namespace Voat.Controllers
         {
             if (userName == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
+            //var comment = _db.Comments
+            //    .Where(c => c.Name == userName && c.MessageId == messageId)
+            //    .OrderByDescending(c => c.Id)
+            //    .FirstOrDefault();
+
+            //if (comment == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //ViewBag.CommentId = comment.Id;
+
+            //if (comment.Message.Anonymized || comment.Message.Subverse.anonymized_mode)
+            //{
+            //    comment.Name = comment.Id.ToString(CultureInfo.InvariantCulture);
+            //}
+            //if (comment.ParentId != null)
+            //{
+            //    return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
+            //}
+            //ViewBag.rootComment = true;
+            //return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
+
+
+
+
             var comment = _db.Comments
                 .Where(c => c.Name == userName && c.MessageId == messageId)
                 .OrderByDescending(c => c.Id)
                 .FirstOrDefault();
 
-            if (comment == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            ViewBag.CommentId = comment.Id;
+            if (comment == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
-            if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
+            ViewBag.CommentId = comment.Id; //why?
+            ViewBag.rootComment = comment.ParentId == null; //why?
+
+            var submission = DataCache.Submission.Retrieve(comment.MessageId.Value);
+            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+
+            if (submission.Anonymized || subverse.anonymized_mode)
             {
                 comment.Name = comment.Id.ToString(CultureInfo.InvariantCulture);
             }
-            if (comment.ParentId != null)
-            {
-                return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
-            }
-            ViewBag.rootComment = true;
-            return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
+
+            //COPYPASTA EVERYWHERE!!!!!!!!!!!!!!! Left, right, up down. EVERYWHERE. 
+
+            var model = new CommentBucketViewModel(comment);
+            
+            return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", model);
+
         }
     }
 }

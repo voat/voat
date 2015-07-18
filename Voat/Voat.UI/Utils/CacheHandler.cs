@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Voat.Utils
 {
@@ -13,6 +14,14 @@ namespace Voat.Utils
 
         public static class Keys {
 
+            public static string CommentTree(int submissionID)
+            {
+                return String.Format("Comment.Tree.{0}", submissionID).ToLower();
+            }
+            public static string Submission(int submissionID)
+            {
+                return String.Format("submission.{0}", submissionID).ToLower();
+            }
             public static string SubverseInfo(string subverse) {
                 return String.Format("subverse.{0}.info", subverse).ToLower();
             }
@@ -48,7 +57,16 @@ namespace Voat.Utils
 
         private static object sLock = new object();
 
-       
+        public static void Replace<T>(string key, Func<T,T> replaceAlg)
+        {
+            if (!String.IsNullOrEmpty(key))
+            {
+                lock (GetLockObject(key))
+                {
+                    _cache[key] = replaceAlg(Retrieve<T>(key));
+                }
+            }
+        }
         public static object Retrieve(string key) 
         {
             if (!String.IsNullOrEmpty(key)) 
@@ -76,7 +94,7 @@ namespace Voat.Utils
                 }
             }
         }
-        private static object GetLockObject(string key) 
+        internal static object GetLockObject(string key) 
         {
             lock (sLock) {
                 
@@ -147,6 +165,24 @@ namespace Voat.Utils
             {
                 throw new ArgumentException("Keys can not be null or empty");
             }
+        }
+        public static Task Refresh(string key) {
+
+            var task = new Task(() => {
+                if (_cache.ContainsKey(key))
+                {
+                    object o = GetLockObject(key);
+                    lock (o)
+                    {
+                        var meta = _meta[key];
+                        var data = meta.Item1(); //get new data
+                        _cache[key] = data;
+                    }
+                }
+            });
+            task.Start();
+            return task;
+
         }
         private static void RefetchItem(string key, CacheItemUpdateReason reason, out object value, out CacheDependency dependency, out DateTime exipriation, out TimeSpan slidingExpiration)
         {

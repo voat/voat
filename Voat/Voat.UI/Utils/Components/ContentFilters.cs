@@ -109,7 +109,7 @@ namespace Voat.Utils.Components {
             MatchProcessingReplacer replacer = new MatchProcessingReplacer(@"(?<=\s{1,}|^)((/v/)(?'sub'[a-zA-Z0-9]+))", 
                 delegate(Match m, object state) {
                     var u = new UrlHelper(HttpContext.Current.Request.RequestContext, RouteTable.Routes);
-                    return String.Format("[{0}]({0})", u.Action("SubverseIndex", "Subverses", new { subversetoshow = m.Groups["sub"] }));
+                    return String.Format("[{0}]({0})", u.Action("SubverseIndex", "Subverse", new { subversetoshow = m.Groups["sub"] }));
                 }
             );
             return replacer.Replace(content, context);

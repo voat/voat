@@ -273,6 +273,7 @@
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
+    <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
     <Compile Include="Models\CommentRemovalLog.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -296,8 +297,10 @@
     <Compile Include="Models\UserBlockedSubverse.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\usp_CommentTree_Result.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
-    <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\Userset.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
@@ -327,6 +330,7 @@
     <Compile Include="Utils\DateTimeUtility.cs" />
     <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\HubMinifier.cs" />
+    <Compile Include="Utils\DataCache.cs" />
     <Compile Include="Utils\PaginatedList.cs" />
     <Compile Include="Controllers\PartnerController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
@@ -401,9 +405,6 @@
     <Compile Include="Models\Subverseflairsetting.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Survey.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Userbadge.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -423,7 +424,7 @@
     <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchSubverseViewModel.cs" />
-    <Compile Include="Models\ViewModels\SubmissionViewModel.cs" />
+    <Compile Include="Models\ViewModels\CommentSingleViewModel.cs" />
     <Compile Include="Models\ViewModels\UserStatsModel.cs" />
     <Compile Include="Models\ViewModels\SubverseLinkFlairViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseModeratorViewModel.cs" />
@@ -460,7 +461,6 @@
     <Compile Include="Utils\SavingComments.cs" />
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />
-    <Compile Include="Utils\SubverseCache.cs" />
     <Compile Include="Utils\UrlUtility.cs" />
     <Compile Include="Utils\Formatting.cs" />
     <Compile Include="Utils\Karma.cs" />
@@ -499,6 +499,9 @@
     <Content Include="Content\Voat.min.css">
       <DependentUpon>Voat.css</DependentUpon>
     </Content>
+    <Content Include="ddos.min.htm">
+      <DependentUpon>ddos.htm</DependentUpon>
+    </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
@@ -527,6 +530,7 @@
     <Content Include="Graphics\WVSprite.png.css">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
+    <Content Include="ddos.htm" />
     <Content Include="inactive.htm" />
     <Content Include="inactive.min.htm">
       <DependentUpon>inactive.htm</DependentUpon>
@@ -571,6 +575,7 @@
     <None Include="Properties\PublishProfiles\voatWeb04.pubxml" />
     <None Include="Properties\PublishProfiles\voatweb05.pubxml" />
     <None Include="Properties\PublishProfiles\voatWeb06.pubxml" />
+    <None Include="Properties\PublishProfiles\voatweb07.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -860,6 +865,8 @@
           <DevelopmentServerPort>54242</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:54113/</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:54113/v/news/comments/247736</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
