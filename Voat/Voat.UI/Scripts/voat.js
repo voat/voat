@@ -742,6 +742,7 @@ function editsubmission(submissionid) {
 
 // remove submission edit form for given submission id and replace it with original content
 function removesubmissioneditform(submissionid) {
+    //BUG: This code makes previews after a submission edit not display. Low Priority.
     $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
     $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);
 }

@@ -4,26 +4,35 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 
-namespace Voat.Utils.Components {
-    public interface IReplacer {
+namespace Voat.Utils.Components
+{
+    public interface IReplacer
+    {
         string Replace(string content, object state);
     }
 
-    public class RegExReplacer : IReplacer {
+    public class RegExReplacer : IReplacer
+    {
         private List<IReplacer> _replacers = new List<IReplacer>();
 
-        public List<IReplacer> Replacers {
+        public List<IReplacer> Replacers
+        {
             get { return this._replacers; }
             set { this._replacers = value; }
         }
-        public RegExReplacer(List<IReplacer> Replacers) {
+        public RegExReplacer(List<IReplacer> Replacers)
+        {
             this._replacers = Replacers;
         }
-        public RegExReplacer() {
+        public RegExReplacer()
+        {
         }
-        public string Replace(string content, object state) {
-            foreach (IReplacer ir in _replacers) {
-                if (content != null) {
+        public string Replace(string content, object state)
+        {
+            foreach (IReplacer ir in _replacers)
+            {
+                if (content != null)
+                {
                     content = ir.Replace(content, state);
                 }
             }
@@ -31,119 +40,157 @@ namespace Voat.Utils.Components {
         }
     }
 
-    public class MatchStripper : MatchReplacer {
-        private bool _stripwhitespacerepetitions = true;
-        private bool _stripreplacementrepetitions = true;
-
-        public bool StripReplacementRepetitions {
-            get { return _stripreplacementrepetitions; }
-            set { _stripreplacementrepetitions = value; }
-        }
-        private bool _trim = true;
-
-        public bool Trim {
-            get { return _trim; }
-            set { _trim = value; }
-        }
-
-        public MatchStripper(string ReplacementRegEx, string ReplacementValue) : base(ReplacementRegEx, ReplacementValue) { }
-
-        public bool StripWhitespaceRepetitions {
-            get { return _stripwhitespacerepetitions; }
-            set { _stripwhitespacerepetitions = value; }
-        }
-
-        public override string Replace(string content, object state) {
-            if (content == null) {
-                return content;
-            }
-
-            string val = base.Replace(content, state);
-            if (StripWhitespaceRepetitions) {
-                val = Regex.Replace(val, "\\s+", " ");
-            }
-            if (StripReplacementRepetitions && ReplacementValue != " " && !String.IsNullOrEmpty(ReplacementValue)) {
-                val = Regex.Replace(val, String.Format("({0})+", ReplacementValue), ReplacementValue);
-            }
-
-            return (Trim ? val.Trim() : val);
-        }
-    }
-    public class NullReplacer : IReplacer {
-        public string Replace(string Content, object state) {
-            return Content;
-        }
-    }
-    public class MatchReplacer : IReplacer {
+    public class MatchProcessingReplacer : IReplacer
+    {
         #region IReplacer Members
         private string _regex = "";
-        private string _replacementvalue = "";
-
-        public MatchReplacer(string ReplacementRegEx, string ReplacementValue) {
-            this.ReplacementRegEx = ReplacementRegEx;
-            this.ReplacementValue = ReplacementValue;
-        }
-        public string ReplacementRegEx {
-            get { return _regex; }
-            set { _regex = value; }
-        }
-        public string ReplacementValue {
-            get { return _replacementvalue; }
-            set { _replacementvalue = value; }
-        }
-        public virtual string Replace(string content, object state) {
-            if (content == null) {
-                return content;
-            }
-
-            return Regex.Replace(content, this.ReplacementRegEx, this.ReplacementValue);
-        }
-
-        #endregion
-    }
-    public class MatchProcessingReplacer : IReplacer {
-        #region IReplacer Members
-        private string _regex = "";
-        private Func<Match, object, string> _func;
+        private Func<Match, string, object, string> _replacementFunc;
         private int _matchThreshold = 0;
         private bool _ignoreDuplicateMatches = false;
 
-        public bool IgnoreDuplicateMatches {
+        public bool IgnoreDuplicateMatches
+        {
             get { return _ignoreDuplicateMatches; }
             set { _ignoreDuplicateMatches = value; }
         }
 
-        public int MatchThreshold {
+        public int MatchThreshold
+        {
             get { return _matchThreshold; }
             set { _matchThreshold = value; }
         }
 
-        public MatchProcessingReplacer(string RegEx, Func<Match, object, string> Func) {
+        public MatchProcessingReplacer(string RegEx, Func<Match, string, object, string> Func)
+        {
             this.RegEx = RegEx;
-            this._func = Func;
+            this._replacementFunc = Func;
         }
-        public string RegEx {
+        public string RegEx
+        {
             get { return _regex; }
             set { _regex = value; }
         }
+        public bool IsInMarkDownAnchor(Match m, string content)
+        {
+            var markdownAnchors = Regex.Matches(content, @"\[.*?\]\(.+?\)");
+            foreach (Match anchor in markdownAnchors)
+            {
+                if (m.Index > anchor.Index && m.Index < (anchor.Index + anchor.Length))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool HasAnyTokens(string content, params string[] blockTokens)
+        {
 
-        public virtual string Replace(string content, object state) {
-            if (content == null) {
+            foreach (string blockToken in blockTokens)
+            {
+                if (content.Contains(blockToken))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+
+        }
+        public bool IsInBlock(Match m, string content, params string[] blockTokens)
+        {
+
+            foreach (string blockToken in blockTokens)
+            {
+                //determine if match is in block
+                if (content.IndexOf(blockToken) >= 0)
+                {
+
+                    //we have codeblocks in comment
+                    int blockIndex = content.IndexOf(blockToken); //find first block start
+                    if (m.Index < blockIndex)
+                    {
+                        //match is before the first block, we continue processing the match
+                        return false;
+                    }
+                    else
+                    {
+
+                        int start = blockIndex;
+                        while (start >= 0)
+                        {
+
+                            int end = content.IndexOf(blockToken, start + 1);
+                            if (end >= 0)
+                            {
+                                if (m.Index > start && m.Index < end)
+                                {
+                                    return true;
+                                }
+                                else if (m.Index < start)
+                                {
+                                    return false;
+                                }
+                                start = content.IndexOf(blockToken, end + 1);
+                            }
+                            else
+                            {
+                                //open codeblock with no end, we bail on this catastrophe of a formatting nightmare
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+            return false;
+        }
+        public virtual string Replace(string content, object state)
+        {
+            if (content == null)
+            {
                 return content;
             }
             MatchCollection matches = Regex.Matches(content, RegEx);
             string result = content;
+            string[] escapeBlocks = { "~~~", "`" };
+
+
             int offset = 0;
             List<string> matchvalues = new List<string>();
             int maxIndex = (MatchThreshold > 0) ? Math.Min(MatchThreshold, matches.Count) : matches.Count;
 
-            for (int i = 0; i < maxIndex; i++ ) {
+            //flag content as having ignored areas if it has more than 1 match 
+            bool requiresAdditionalProcecessing = (maxIndex > 0) ? HasAnyTokens(content, escapeBlocks) : false;
+
+            for (int i = 0; i < maxIndex; i++)
+            {
                 Match m = matches[i];
-                if (!IgnoreDuplicateMatches || IgnoreDuplicateMatches && !matchvalues.Contains(m.Value)) { 
-                    string substitution = _func(m, state);
-                    result = result.Remove(m.Index + offset, m.Length).Insert(m.Index + offset, substitution);
-                    offset += substitution.Length - m.Length;
-                    matchvalues.Add(m.Value);
+                //make sure this match isn't in a block
+                if (!requiresAdditionalProcecessing || (requiresAdditionalProcecessing && !IsInBlock(m, content, escapeBlocks)))
+                {
+
+                    //make sure this match isn't in an anchor
+                    if (!IsInMarkDownAnchor(m, content))
+                    {
+
+                        if (!IgnoreDuplicateMatches || IgnoreDuplicateMatches && !matchvalues.Contains(m.Value))
+                        {
+
+                            //get the replacement value for match 
+                            string substitution = _replacementFunc(m, content, state);
+
+                            //Concat method (fractions of milliseconds faster)
+                            result = String.Concat(result.Substring(0, m.Index + offset), substitution, result.Substring(m.Index + m.Length + offset, result.Length - (m.Length + m.Index + offset)));
+                            //Replace method
+                            //result = result.Remove(m.Index + offset, m.Length).Insert(m.Index + offset, substitution);
+
+                            offset += substitution.Length - m.Length;
+
+                            matchvalues.Add(m.Value);
+
+                        }
+
+                    }
                 }
             }
             return result;
@@ -151,39 +198,5 @@ namespace Voat.Utils.Components {
 
         #endregion
     }
-    public class DateReplacer : IReplacer {
-        private string regex = @"\[[dD]{1}[aA]{1}[tT]{1}[eE]{1}:(?<format>[a-zA-Z_0-9\.-]+)\]";
 
-        public string Replace(string content, object state) {
-            if (content == null) {
-                return content;
-            }
-
-            string val = content.ToString();
-            MatchCollection col = Regex.Matches(val, regex);
-            if (col.Count > 0) {
-                foreach (Match match in col) {
-                    string cmd = match.Value;
-                    string format = match.Groups[1].Value;
-
-                    val = val.Remove(match.Index, match.Length);
-                    //format
-                    DateTime dt = DateTime.Now;
-                    format = Regex.Replace(format, "([mM]{1}[nN]{1})", dt.Minute.ToString());
-                    format = Regex.Replace(format, "[mM]{2}", dt.Month.ToString().PadLeft(2, '0'));
-                    format = Regex.Replace(format, "[mM]{1}", dt.Month.ToString());
-                    format = Regex.Replace(format, "([dD]{2})", dt.Day.ToString().PadLeft(2, '0'));
-                    format = Regex.Replace(format, "([dD]{1})", dt.Day.ToString());
-                    format = Regex.Replace(format, "([yY]{4})", dt.Year.ToString());
-                    format = Regex.Replace(format, "([yY]{2})", dt.Year.ToString().Substring(2, 2));
-                    format = Regex.Replace(format, "([yY]{1})", dt.Year.ToString());
-                    format = Regex.Replace(format, "([hH]{1,2})", dt.Hour.ToString());
-                    format = Regex.Replace(format, "([sS]{1,2})", dt.Second.ToString());
-                    val = val.Insert(match.Index, format);
-                }
-            }
-            return val;
-        }
-    }
-   
 }

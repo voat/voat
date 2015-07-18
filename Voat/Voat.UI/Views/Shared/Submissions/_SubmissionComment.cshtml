@@ -295,7 +295,7 @@
             if (showMoreSiblings)
             {
                 <div class="child comment" style="@uncollapsedComment">
-                    <a style="cursor:pointer;" id="loadmore-@commentId" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@commentId'),$('.id-@commentId'),@Model.Submission.Id,@commentId,'siblings',@childComments.Count(),'@Model.Sort.ToString()')">Load more comments (@remaining remaining)</a>
+                    <a style="cursor:pointer;" id="loadmore-@commentId" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@commentId'),$('.id-@commentId'),@Model.Submission.Id,@commentId,'siblings',@childComments.Count(),'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
                 </div>
             }
         }

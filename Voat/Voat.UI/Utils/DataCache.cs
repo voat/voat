@@ -80,7 +80,8 @@ namespace Voat.Utils
                     {
                         using (voatEntities db = new voatEntities())
                         {
-                            var flatTree = db.usp_CommentTree(submissionID, depth, (parentID.HasValue && parentID.Value > 0 ? parentID : null)).ToList();
+                            //currently only working on the full tree, so params are nulled out
+                            var flatTree = db.usp_CommentTree(submissionID, null, null).ToList();
                             return flatTree;
                         }
                     }), TimeSpan.FromSeconds(cacheTimeInSeconds), 10);
