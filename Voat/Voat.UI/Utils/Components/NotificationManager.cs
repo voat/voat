@@ -31,198 +31,221 @@ namespace Voat.Utils.Components
                 {
                     return;
                 }
-
-                string recipient = User.OriginalUsername(user);
-
-                var commentReplyNotification = new Commentreplynotification();
-                using (var _db = new voatEntities())
+                try
                 {
+                    string recipient = User.OriginalUsername(user);
 
-                    commentReplyNotification.CommentId = comment.Id;
-                    commentReplyNotification.SubmissionId = comment.Message.Id;
-                    commentReplyNotification.Recipient = recipient;
-                    if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
+                    var commentReplyNotification = new Commentreplynotification();
+                    using (var _db = new voatEntities())
                     {
-                        commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        commentReplyNotification.Sender = comment.Name;
-                    }
-                    commentReplyNotification.Body = comment.CommentContent;
-                    commentReplyNotification.Subverse = comment.Message.Subverse;
-                    commentReplyNotification.Status = true;
-                    commentReplyNotification.Timestamp = DateTime.Now;
+                        var submission = DataCache.Submission.Retrieve(comment.MessageId);
+                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
-                    commentReplyNotification.Subject = String.Format("@{0} mentioned you in a comment", comment.Name, comment.Message.Title);
+                        commentReplyNotification.CommentId = comment.Id;
+                        commentReplyNotification.SubmissionId = comment.MessageId.Value;
+                        commentReplyNotification.Recipient = recipient;
+                        if (submission.Anonymized || subverse.anonymized_mode)
+                        {
+                            commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            commentReplyNotification.Sender = comment.Name;
+                        }
+                        commentReplyNotification.Body = comment.CommentContent;
+                        commentReplyNotification.Subverse = subverse.name;
+                        commentReplyNotification.Status = true;
+                        commentReplyNotification.Timestamp = DateTime.Now;
 
-                    _db.Commentreplynotifications.Add(commentReplyNotification);
-                    await _db.SaveChangesAsync();
+                        commentReplyNotification.Subject = String.Format("@{0} mentioned you in a comment", comment.Name, submission.Title);
+
+                        _db.Commentreplynotifications.Add(commentReplyNotification);
+                       
+                        await _db.SaveChangesAsync();
+                    }
+
+                    // get count of unread notifications
+                    int unreadNotifications = User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
+
+                    // send SignalR realtime notification to recipient
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
                 }
-
-                // get count of unread notifications
-                int unreadNotifications = User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
-
-                // send SignalR realtime notification to recipient
-                var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
+                catch (Exception ex) {
+                    throw ex;
+                }
             }
         }
 
-        public static async Task SendUserMentionNotification(string user, Message message)
+        public static async Task SendUserMentionNotification(string user, Message submission)
         {
-            if (message != null)
+            if (submission != null)
             {
                 if (!User.UserExists(user))
                 {
                     return;
                 }
+                try { 
+                    string recipient = User.OriginalUsername(user);
 
-                string recipient = User.OriginalUsername(user);
-
-                var commentReplyNotification = new Commentreplynotification();
-                using (var _db = new voatEntities())
-                {
-                    //commentReplyNotification.CommentId = comment.Id;
-                    commentReplyNotification.SubmissionId = message.Id;
-                    commentReplyNotification.Recipient = recipient;
-                    if (message.Anonymized || message.Subverses.anonymized_mode)
+                    var commentReplyNotification = new Commentreplynotification();
+                    using (var _db = new voatEntities())
                     {
-                        commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        commentReplyNotification.Sender = message.Name;
-                    }
-                    commentReplyNotification.Body = message.MessageContent;
-                    commentReplyNotification.Subverse = message.Subverse;
-                    commentReplyNotification.Status = true;
-                    commentReplyNotification.Timestamp = DateTime.Now;
+                    
+                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
-                    commentReplyNotification.Subject = String.Format("@{0} mentioned you in post '{1}'", message.Name, message.Title);
+                        commentReplyNotification.SubmissionId = submission.Id;
+                        commentReplyNotification.Recipient = recipient;
+                        if (submission.Anonymized || subverse.anonymized_mode)
+                        {
+                            commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            commentReplyNotification.Sender = submission.Name;
+                        }
+                        commentReplyNotification.Body = submission.MessageContent;
+                        commentReplyNotification.Subverse = subverse.name;
+                        commentReplyNotification.Status = true;
+                        commentReplyNotification.Timestamp = DateTime.Now;
 
-                    _db.Commentreplynotifications.Add(commentReplyNotification);
-                    await _db.SaveChangesAsync();
+                        commentReplyNotification.Subject = String.Format("@{0} mentioned you in post '{1}'", submission.Name, submission.Title);
+
+                        _db.Commentreplynotifications.Add(commentReplyNotification);
+                        await _db.SaveChangesAsync();
+                    }
+
+                    // get count of unread notifications
+                    int unreadNotifications = User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
+
+                    // send SignalR realtime notification to recipient
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
                 }
-
-                // get count of unread notifications
-                int unreadNotifications = User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
-
-                // send SignalR realtime notification to recipient
-                var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
         }
 
         public static async Task SendCommentNotification(Comment comment)
         {
-
-            using (var _db = new voatEntities())
-            {
-                Random _rnd = new Random();
-
-                if (comment.ParentId != null && comment.CommentContent != null)
+            try 
+            { 
+                using (var _db = new voatEntities())
                 {
-                    // find the parent comment and its author
-                    var parentComment = _db.Comments.Find(comment.ParentId);
-                    if (parentComment != null)
-                    {
-                        // check if recipient exists
-                        if (User.UserExists(parentComment.Name))
-                        {
-                            // do not send notification if author is the same as comment author
-                            if (parentComment.Name != HttpContext.Current.User.Identity.Name)
-                            {
-                                // send the message
+                    Random _rnd = new Random();
 
-                                var submission = DataCache.Submission.Retrieve(comment.MessageId);
-                                if (submission != null)
+                    if (comment.ParentId != null && comment.CommentContent != null)
+                    {
+                        // find the parent comment and its author
+                        var parentComment = _db.Comments.Find(comment.ParentId);
+                        if (parentComment != null)
+                        {
+                            // check if recipient exists
+                            if (User.UserExists(parentComment.Name))
+                            {
+                                // do not send notification if author is the same as comment author
+                                if (parentComment.Name != HttpContext.Current.User.Identity.Name)
                                 {
-                                    var commentReplyNotification = new Commentreplynotification();
-                                    commentReplyNotification.CommentId = comment.Id;
-                                    commentReplyNotification.SubmissionId = submission.Id;
-                                    commentReplyNotification.Recipient = parentComment.Name;
-                                    if (parentComment.Message.Anonymized || parentComment.Message.Subverses.anonymized_mode)
+                                    // send the message
+
+                                    var submission = DataCache.Submission.Retrieve(comment.MessageId);
+                                    if (submission != null)
                                     {
-                                        commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+
+                                        var commentReplyNotification = new Commentreplynotification();
+                                        commentReplyNotification.CommentId = comment.Id;
+                                        commentReplyNotification.SubmissionId = submission.Id;
+                                        commentReplyNotification.Recipient = parentComment.Name;
+                                        if (submission.Anonymized || subverse.anonymized_mode)
+                                        {
+                                            commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                                        }
+                                        else
+                                        {
+                                            commentReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
+                                        }
+                                        commentReplyNotification.Body = comment.CommentContent;
+                                        commentReplyNotification.Subverse = subverse.name;
+                                        commentReplyNotification.Status = true;
+                                        commentReplyNotification.Timestamp = DateTime.Now;
+
+                                        // self = type 1, url = type 2
+                                        commentReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.Linkdescription;
+
+                                        _db.Commentreplynotifications.Add(commentReplyNotification);
+
+                                        await _db.SaveChangesAsync();
+
+                                        // get count of unread notifications
+                                        int unreadNotifications = User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
+
+                                        // send SignalR realtime notification to recipient
+                                        var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                                        hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // comment reply is sent to a root comment which has no parent id, trigger post reply notification
+                        var submission = DataCache.Submission.Retrieve(comment.MessageId);
+                        if (submission != null)
+                        {
+                            // check if recipient exists
+                            if (User.UserExists(submission.Name))
+                            {
+                                // do not send notification if author is the same as comment author
+                                if (submission.Name != HttpContext.Current.User.Identity.Name)
+                                {
+                                    // send the message
+                                    var postReplyNotification = new Postreplynotification();
+
+                                    postReplyNotification.CommentId = comment.Id;
+                                    postReplyNotification.SubmissionId = submission.Id;
+                                    postReplyNotification.Recipient = submission.Name;
+                                    var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                                    if (submission.Anonymized || subverse.anonymized_mode)
+                                    {
+                                        postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
                                     }
                                     else
                                     {
-                                        commentReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
+                                        postReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
                                     }
-                                    commentReplyNotification.Body = comment.CommentContent;
-                                    commentReplyNotification.Subverse = submission.Subverse;
-                                    commentReplyNotification.Status = true;
-                                    commentReplyNotification.Timestamp = DateTime.Now;
+
+                                    postReplyNotification.Body = comment.CommentContent;
+                                    postReplyNotification.Subverse = submission.Subverse;
+                                    postReplyNotification.Status = true;
+                                    postReplyNotification.Timestamp = DateTime.Now;
 
                                     // self = type 1, url = type 2
-                                    commentReplyNotification.Subject = parentComment.Message.Type == 1 ? parentComment.Message.Title : parentComment.Message.Linkdescription;
+                                    postReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.Linkdescription;
 
-                                    _db.Commentreplynotifications.Add(commentReplyNotification);
+                                    _db.Postreplynotifications.Add(postReplyNotification);
 
                                     await _db.SaveChangesAsync();
 
                                     // get count of unread notifications
-                                    int unreadNotifications = User.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
+                                    int unreadNotifications = User.UnreadTotalNotificationsCount(postReplyNotification.Recipient);
 
                                     // send SignalR realtime notification to recipient
                                     var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                                    hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
+                                    hubContext.Clients.User(postReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
                                 }
                             }
                         }
                     }
                 }
-                else
-                {
-                    // comment reply is sent to a root comment which has no parent id, trigger post reply notification
-                    var submission = DataCache.Submission.Retrieve(comment.MessageId);
-                    if (submission != null)
-                    {
-                        // check if recipient exists
-                        if (User.UserExists(submission.Name))
-                        {
-                            // do not send notification if author is the same as comment author
-                            if (submission.Name != HttpContext.Current.User.Identity.Name)
-                            {
-                                // send the message
-                                var postReplyNotification = new Postreplynotification();
-
-                                postReplyNotification.CommentId = comment.Id;
-                                postReplyNotification.SubmissionId = submission.Id;
-                                postReplyNotification.Recipient = submission.Name;
-                                var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-                                if (submission.Anonymized || subverse.anonymized_mode)
-                                {
-                                    postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                                }
-                                else
-                                {
-                                    postReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
-                                }
-
-                                postReplyNotification.Body = comment.CommentContent;
-                                postReplyNotification.Subverse = submission.Subverse;
-                                postReplyNotification.Status = true;
-                                postReplyNotification.Timestamp = DateTime.Now;
-
-                                // self = type 1, url = type 2
-                                postReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.Linkdescription;
-
-                                _db.Postreplynotifications.Add(postReplyNotification);
-
-                                await _db.SaveChangesAsync();
-
-                                // get count of unread notifications
-                                int unreadNotifications = User.UnreadTotalNotificationsCount(postReplyNotification.Recipient);
-
-                                // send SignalR realtime notification to recipient
-                                var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                                hubContext.Clients.User(postReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
-                            }
-                        }
-                    }
-                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }

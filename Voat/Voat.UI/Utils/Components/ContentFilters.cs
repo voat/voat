@@ -102,13 +102,13 @@ namespace Voat.Utils.Components
                 Comment c = context as Comment;
                 if (c != null && c.LastEditDate == null)
                 {
-                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, c).RunSynchronously();
+                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, c);
                 }
                 //Message mentions
                 Message m = context as Message;
                 if (m != null && m.LastEditDate == null)
                 {
-                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, m).RunSynchronously();
+                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, m);
                 }
             }
             return match.Value;

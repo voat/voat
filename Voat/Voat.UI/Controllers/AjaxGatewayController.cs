@@ -81,13 +81,16 @@ namespace Voat.Controllers
 
             Message submission = DataCache.Submission.Retrieve(messageId);
             
-            if (submission == null || submission.Subverses.name != subversetoshow)
+            if (submission == null || submission.Subverse != subversetoshow)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner or moderator, if not, deny listing
             if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow) &&
                 !Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+            {
                 return new HttpUnauthorizedResult();
+            }
+
             var subverseLinkFlairs = _db.Subverseflairsettings
                 .Where(n => n.Subversename == subversetoshow)
                 .Take(10)
