@@ -1398,11 +1398,10 @@ namespace Voat.Controllers
         [ChildActionOnly]
         public ActionResult SubverseModeratorsList(string subverseName)
         {
-            // get 10 administration members for a subverse
+            // get administration members for a subverse
             var subverseAdministration =
                 _db.SubverseAdmins
                 .Where(n => n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
-                .Take(10)
                 .ToList()
                 .OrderBy(s => s.Username);
 
