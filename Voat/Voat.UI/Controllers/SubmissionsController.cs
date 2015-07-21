@@ -34,21 +34,23 @@ namespace Voat.Controllers
         {
             if (submissionId == null || flairId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var submissionModel = _db.Messages.Find(submissionId);
-            if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
+            var submission = _db.Messages.Find(submissionId);
+            if (submission == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            } 
             // check if caller is subverse moderator, if not, deny posting
-            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) &&
-                !Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, submission.Subverse) &&
+                !Utils.User.IsUserSubverseAdmin(User.Identity.Name, submission.Subverse))
                 return new HttpUnauthorizedResult();
 
             // find flair by id, apply it to submission
             var flairModel = _db.Subverseflairsettings.Find(flairId);
-            if (flairModel == null || flairModel.Subversename != submissionModel.Subverse) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (flairModel == null || flairModel.Subversename != submission.Subverse) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // apply flair and save submission
-            submissionModel.FlairCss = flairModel.CssClass;
-            submissionModel.FlairLabel = flairModel.Label;
+            submission.FlairCss = flairModel.CssClass;
+            submission.FlairLabel = flairModel.Label;
             _db.SaveChanges();
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
@@ -61,7 +63,7 @@ namespace Voat.Controllers
         {
             if (submissionId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // get model for selected submission
-            var submissionModel = _db.Messages.Find(submissionId);
+            var submissionModel = DataCache.Submission.Retrieve(submissionId);
 
             if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse moderator, if not, deny posting
@@ -187,6 +189,7 @@ namespace Voat.Controllers
             existingSubmission.LastEditDate = DateTime.Now;
 
             _db.SaveChanges();
+            DataCache.Submission.Remove(model.SubmissionId);
 
             // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
             var formattedSubmission = Formatting.FormatMessage(model.SubmissionContent);
@@ -224,6 +227,8 @@ namespace Voat.Controllers
                     }
 
                     await _db.SaveChangesAsync();
+                    DataCache.Submission.Remove(submissionId);
+
                 }
 
                 // delete submission if delete request is issued by subverse moderator
@@ -282,6 +287,8 @@ namespace Voat.Controllers
                     }
 
                     await _db.SaveChangesAsync();
+                    DataCache.Submission.Remove(submissionId);
+
                 }
             }
 

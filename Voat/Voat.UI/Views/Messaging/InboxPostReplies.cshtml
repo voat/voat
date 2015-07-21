@@ -19,9 +19,7 @@
 @Html.AntiForgeryToken()
 
 <style>
-    .comment {
-        margin: 0px 0px 0px;
-    }
+    .comment { margin: 0px 0px 0px; }
 </style>
 
 <div id="container">
@@ -58,7 +56,7 @@
                             commentAuthorName = comment.Name;
                         }
                     }
-                    
+
                     <div id="commentContainer-@comment.Id">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
@@ -75,7 +73,10 @@
                                 }
                             </div>
                             <div class="panel-message-body">
-                                @Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" } })
+                                @*@Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" } })*@
+                                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", new Voat.Models.ViewModels.CommentBucketViewModel(comment), new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
+
+
                             </div>
                         </div>
                     </div>

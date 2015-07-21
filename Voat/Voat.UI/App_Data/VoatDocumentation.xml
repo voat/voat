@@ -501,6 +501,12 @@
             <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
             <returns></returns>
         </member>
+        <member name="M:Voat.Utils.DataCache.Submission.Retrieve(System.Nullable{System.Int32})">
+            <summary>
+            </summary>
+            <param name="submissionID">Using Nullable because everything seems to be nullable in this entire project</param>
+            <returns></returns>
+        </member>
         <member name="M:Voat.Controllers.WebApiController.DefaultSubverses">
             <summary>
              This API returns a list of default subverses shown to guests.
@@ -566,7 +572,7 @@
             <summary>
              This API returns comments for a given submission id.
             </summary>
-            <param name="submissionId">The submission Id for which to fetch comments.</param>
+            <param name="submission">The submission Id for which to fetch comments.</param>
         </member>
     </members>
 </doc>

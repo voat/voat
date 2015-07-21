@@ -21,7 +21,7 @@ namespace Voat.Controllers
             if (subverseName != null && subverseName != "all")
             {
                 // return only frontpage submissions from a given subverse
-                var subverse = SubverseCache.Retrieve(subverseName); // _db.Subverses.Find(subverseName);
+                var subverse = DataCache.Subverse.Retrieve(subverseName); // _db.Subverse.Find(subverseName);
                 if (subverse != null)
                 {
 
@@ -80,7 +80,7 @@ namespace Voat.Controllers
 
                 if (submission.Type == 1)
                 {
-                    // message type submission
+                    // submission type submission
                     if (submission.Anonymized || submission.Subverses.anonymized_mode)
                     {
                         authorName = submission.Id.ToString(CultureInfo.InvariantCulture);

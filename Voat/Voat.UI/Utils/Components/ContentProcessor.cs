@@ -25,7 +25,8 @@ namespace Voat.Utils.Components {
                                 new UserMentionLinkFilter(),
                                 new SubverseLinkFilter(),
                                 new RawHyperlinkFilter(),
-                                new RedditLinkFilter()});
+                                new RedditLinkFilter()
+                            });
                             _instance = p;
                         }
                     }

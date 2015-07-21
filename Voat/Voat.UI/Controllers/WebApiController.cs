@@ -337,7 +337,7 @@ namespace Voat.Controllers
         [HttpGet]
         public ApiSubverseInfo SubverseInfo(string subverseName)
         {
-            var subverse = SubverseCache.Retrieve(subverseName);
+            var subverse = DataCache.Subverse.Retrieve(subverseName);
 
             if (subverse == null)
             {
@@ -445,11 +445,11 @@ namespace Voat.Controllers
         /// <summary>
         ///  This API returns comments for a given submission id.
         /// </summary>
-        /// <param name="submissionId">The submission Id for which to fetch comments.</param>
+        /// <param name="submission">The submission Id for which to fetch comments.</param>
         [HttpGet]
         public IEnumerable<ApiComment> SubmissionComments(int submissionId)
         {
-            var submission = _db.Messages.Find(submissionId);
+            var submission = DataCache.Submission.Retrieve(submissionId);
 
             if (submission == null || submission.Subverses.admin_disabled == true)
             {

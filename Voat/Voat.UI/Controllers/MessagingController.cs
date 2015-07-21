@@ -273,7 +273,7 @@ namespace Voat.Controllers
             // check if recipient exists
             if (Utils.User.UserExists(privateMessage.Recipient) && !Utils.User.IsUserGloballyBanned(User.Identity.Name))
             {
-                // send the message
+                // send the submission
                 privateMessage.Timestamp = DateTime.Now;
                 privateMessage.Sender = User.Identity.Name;
                 privateMessage.Status = true;
@@ -303,7 +303,7 @@ namespace Voat.Controllers
             return RedirectToAction("Sent", "Messaging");
         }
 
-        // POST: Send new private message or reply
+        // POST: Send new private submission or reply
         [System.Web.Mvc.Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
@@ -316,7 +316,7 @@ namespace Voat.Controllers
             // check if recipient exists
             if (Utils.User.UserExists(privateMessage.Recipient))
             {
-                // send the message
+                // send the submission
                 privateMessage.Timestamp = DateTime.Now;
                 privateMessage.Sender = User.Identity.Name;
                 privateMessage.Status = true;
@@ -352,14 +352,14 @@ namespace Voat.Controllers
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessage(int privateMessageId)
         {
-            // check that the message is owned by logged in user executing delete action
+            // check that the submission is owned by logged in user executing delete action
             var loggedInUser = User.Identity.Name;
 
             var privateMessageToDelete = _db.Privatemessages.FirstOrDefault(s => s.Recipient.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId);
 
             if (privateMessageToDelete != null)
             {
-                // delete the message
+                // delete the submission
                 var privateMessage = _db.Privatemessages.Find(privateMessageId);
                 _db.Privatemessages.Remove(privateMessage);
                 _db.SaveChangesAsync();
@@ -375,14 +375,14 @@ namespace Voat.Controllers
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessageFromSent(int privateMessageId)
         {
-            // check that the message is owned by logged in user executing delete action
+            // check that the submission is owned by logged in user executing delete action
             var loggedInUser = User.Identity.Name;
 
             var privateMessageToDelete = _db.Privatemessages.FirstOrDefault(s => s.Sender.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId);
 
             if (privateMessageToDelete != null)
             {
-                // delete the message
+                // delete the submission
                 var privateMessage = _db.Privatemessages.Find(privateMessageId);
                 _db.Privatemessages.Remove(privateMessage);
                 _db.SaveChangesAsync();

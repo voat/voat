@@ -15,7 +15,7 @@
 @{
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
 
-    var commentCount = Model.Comments.Count(c => c.Name != "deleted");
+    var commentCount = CommentCounter.CommentCount(Model.Id);
 
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);

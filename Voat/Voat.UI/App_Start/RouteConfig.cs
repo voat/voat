@@ -38,6 +38,13 @@ namespace Voat
                 defaults: new { controller = "RSS", action = "RSS", subverseName = UrlParameter.Optional }                
             );
 
+            // /random
+            routes.MapRoute(
+                name: "randomSubverse",
+                url: "random/",
+                defaults: new { controller = "Subverses", action = "Random" }
+            );
+
             // /v2, disabled until further notice
             //routes.MapRoute(
             //    name: "v2",
@@ -149,6 +156,47 @@ namespace Voat
                 url: "comments/{id}",
                 defaults: new { controller = "Comment", action = "Comments" }
             );
+            
+            // /comments/submission/startingpos
+            //"/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + startIndex + "/" + sort + "/",
+            routes.MapRoute(
+                name: "BucketOfComments",
+                url: "comments/{submissionId}/{parentId}/{command}/{startingIndex}/{sort}",
+                defaults: new { controller = "Comment", action = "BucketOfComments" }
+            );
+            // v/subversetoshow/comments/123456/new
+            routes.MapRoute(
+                name: "SubverseCommentsWithSort",
+                url: "v/{subversetoshow}/comments/{id}/{sort}",
+                constraints: new
+                {
+                    sort = "new|top"
+                },
+                defaults: new
+                {
+                    controller = "Comment",
+                    action = "Comments",
+                    startingcommentid = UrlParameter.Optional,
+                    commentToHighLight = UrlParameter.Optional
+                }
+            );        
+            // v/subversetoshow/comments/123456
+            routes.MapRoute(
+                name: "SubverseComments",
+                url: "v/{subversetoshow}/comments/{id}/{startingcommentid}/{commentToHighLight}",
+                defaults: new
+                {
+                    controller = "Comment",
+                    action = "Comments",
+                    startingcommentid = UrlParameter.Optional,
+                    commentToHighLight = UrlParameter.Optional,
+                    sort = "top"
+                }
+            );
+           
+
+           
+
 
             // comments/distinguish/412
             routes.MapRoute(
@@ -156,14 +204,6 @@ namespace Voat
                 url: "comments/distinguish/{commentId}",
                 defaults: new { controller = "Comment", action = "DistinguishComment" }
             );
-
-            // /comments/submissionId/startingpos
-            routes.MapRoute(
-                name: "BucketOfComments",
-                url: "comments/{id}/{startingpos}",
-                defaults: new { controller = "Comment", action = "BucketOfComments" }
-            );
-
             // user/someuserhere/thingtoshow
             routes.MapRoute(
                 name: "UserProfile",
@@ -396,12 +436,7 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "SubmitComment" }
             );
 
-            // /random
-            routes.MapRoute(
-                name: "randomSubverse",
-                url: "random/",
-                defaults: new { controller = "Subverses", action = "Random" }
-            );
+           
 
             // /new
             routes.MapRoute(
@@ -542,19 +577,7 @@ namespace Voat
                 url: "domains/{domainname}.{ext}/{sortingmode}",
                 defaults: new { controller = "Domains", action = "New", sortingmode = UrlParameter.Optional }
             );
-
-            // v/subversetoshow/comments/123456
-            routes.MapRoute(
-                name: "SubverseComments",
-                url: "v/{subversetoshow}/comments/{id}/{startingcommentid}/{commentToHighLight}",
-                defaults: new
-                {
-                    controller = "Comment", 
-                    action = "Comments", 
-                    startingcommentid = UrlParameter.Optional,
-                    commentToHighLight = UrlParameter.Optional
-                }
-            );            
+    
 
             // v/subversetoshow/sortingmode
             routes.MapRoute(

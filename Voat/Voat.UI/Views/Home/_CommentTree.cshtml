@@ -11,33 +11,9 @@
     All Rights Reserved.*@
 
 @using Voat.Models
-@model Message
+@using Voat.Models.ViewModels
 
-@{
-    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
-    string sortingMode = Convert.ToString(ViewData["SortingMode"]);
-    const int threadsToFetch = 5;
-    int nestingLimit = 2;
-    
-    IEnumerable<Comment> firstComments;
-
-    if (sortingMode == "new")
-    {
-        firstComments = from f in Model.Comments
-                        let commentScore = f.Likes - f.Dislikes
-                        where f.ParentId == null
-                        orderby f.Date descending
-                        select f;
-    }
-    else
-    {
-        firstComments = from f in Model.Comments
-                        let commentScore = f.Likes - f.Dislikes
-                        where f.ParentId == null
-                        orderby commentScore descending
-                        select f;
-    }
-}
+@model CommentBucketViewModel
 
 @if (!User.Identity.IsAuthenticated)
 {
@@ -47,43 +23,13 @@
         </div>
     </div>
 }
-
 <div class="menuarea">
-    <h2><span class="label label-default">top comments</span></h2>
+    <h2><span class="label label-default">@(Model.Sort == CommentSort.New ? "newest" : "top") comments</span></h2>
 </div>
-
-@* show top submission comments, orderby number of votes each comment has received *@
 <div class='commentarea'>
-
     <div id="siteTable" class="sitetable nestedlisting">
-
-        @foreach (var firstComment in firstComments.Take(threadsToFetch))
-        {
-            // do not show deleted comments unless they have replies
-            if (firstComment.Name == "deleted" && Model.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
-            {
-                continue;
-            }
-
-            if (firstComment.Likes - firstComment.Dislikes < -3)
-            {
-                <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
-                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode } })
-                </div>
-            }
-            else
-            {
-                <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
-                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "SavedCommentCache", ViewBag.SavedCommentCache }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
-                </div>
-            }
-        }
-        <div class="spacer">
-        </div>
-        <div id="comments-@Model.Id-page" style="display: none">0</div>
-        <a href="javascript:void(0)" onclick='loadMoreComments(this,@Model.Id)' class="btn-whoaverse btn-block" id="loadmorebutton">
-            load more &#9660;
-        </a>
+        @Html.Partial("~/Views/Shared/Comments/_CommentBucket.cshtml", Model, new ViewDataDictionary {
+            { "VoteCache", ViewBag.VoteCache },
+            { "CCP", ViewBag.CCP }})
     </div>
-
 </div>

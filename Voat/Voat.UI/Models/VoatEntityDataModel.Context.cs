@@ -12,6 +12,8 @@ namespace Voat.Models
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class voatEntities : DbContext
     {
@@ -44,7 +46,6 @@ namespace Voat.Models
         public virtual DbSet<Subverseflairsetting> Subverseflairsettings { get; set; }
         public virtual DbSet<Stickiedsubmission> Stickiedsubmissions { get; set; }
         public virtual DbSet<Banneduser> Bannedusers { get; set; }
-        public virtual DbSet<Survey> Surveys { get; set; }
         public virtual DbSet<Featuredsub> Featuredsubs { get; set; }
         public virtual DbSet<Viewstatistic> Viewstatistics { get; set; }
         public virtual DbSet<Usersetdefinition> Usersetdefinitions { get; set; }
@@ -58,5 +59,22 @@ namespace Voat.Models
         public virtual DbSet<Savingtracker> Savingtrackers { get; set; }
         public virtual DbSet<UserBlockedSubverse> UserBlockedSubverses { get; set; }
         public virtual DbSet<CommentRemovalLog> CommentRemovalLogs { get; set; }
+    
+        public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
+        {
+            var submissionIDParameter = submissionID.HasValue ?
+                new ObjectParameter("SubmissionID", submissionID) :
+                new ObjectParameter("SubmissionID", typeof(int));
+    
+            var depthParameter = depth.HasValue ?
+                new ObjectParameter("Depth", depth) :
+                new ObjectParameter("Depth", typeof(int));
+    
+            var parentIDParameter = parentID.HasValue ?
+                new ObjectParameter("ParentID", parentID) :
+                new ObjectParameter("ParentID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_CommentTree_Result>("usp_CommentTree", submissionIDParameter, depthParameter, parentIDParameter);
+        }
     }
 }

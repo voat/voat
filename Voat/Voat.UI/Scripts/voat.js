@@ -594,22 +594,18 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
                 $form.find("#errorMessage").toggle(true);
             },
             success: function (response) {
-                // remove reply form
-                removereplyform(parentcommentid);
-
+             
                 // load rendered comment that was just posted and append it
                 $.get(
                     "/ajaxhelpers/singlesubmissioncomment/" + messageId + "/" + userName,
                     null,
                     function (data) {
+                        // remove reply form
+                        removereplyform(parentcommentid);
                         $(".id-" + parentcommentid).append(data);
-
-                        // TODO: use prepend or append after element entry unvoted
-                        // $('#div_' + element_id)[0].scrollIntoView(true);
 
                         //notify UI framework of DOM insertion async
                         window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentcommentid).last('div')); });
-                        //Waiting until the second request comes back before allowing more replies
                     }
                  );
             }
@@ -746,6 +742,7 @@ function editsubmission(submissionid) {
 
 // remove submission edit form for given submission id and replace it with original content
 function removesubmissioneditform(submissionid) {
+    //BUG: This code makes previews after a submission edit not display. Low Priority.
     $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
     $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);
 }
@@ -1428,6 +1425,37 @@ function deleteSetExecute(obj, setId) {
         },
         error: function () {
             $(obj).html('Nope.');
+        }
+    });
+}
+
+// a function to fetch 1 comment bucket for a submission and append to the bottom of the page
+var loadCommentsRequest2;
+function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, command, startingIndex, sort) {
+    if (loadCommentsRequest2) { return; }
+    eventSource.html('Sit tight...');
+
+    // try to see if this request is a subsequent request
+    var currentPage = $("#comments-" + submissionId + "-page").html();
+    if (currentPage == null) {
+        currentPage = 1;
+    } else {
+        currentPage++;
+    }
+    var bucketUrl =  "/comments/" + submissionId + "/" + (parentId == null ? 'null' : parentId) + "/" + command + "/" + startingIndex + "/" + sort;
+    loadCommentsRequest2 = $.ajax({
+        url: bucketUrl,
+        success: function (data) {
+            //$("#comments-" + submissionId + "-page").remove();
+            appendTarget.append(data);
+            window.setTimeout(function () { UI.Notifications.raise('DOM', appendTarget); });
+            eventSource.parent().remove();
+        },
+        error: function () {
+            eventSource.html('A problem happened.');
+        },
+        complete: function () {
+            loadCommentsRequest2 = null;
         }
     });
 }

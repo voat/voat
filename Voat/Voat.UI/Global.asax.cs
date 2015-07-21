@@ -228,6 +228,14 @@ namespace Voat
                 return (bool)configValues[CONFIGURATION.CacheDisabled];
             }
         }
+
+        public static bool RegistrationDisabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.RegistrationDisabled];
+            }
+        }
         #endregion 
 
     }

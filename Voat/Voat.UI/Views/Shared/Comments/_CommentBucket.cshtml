@@ -13,32 +13,43 @@
 @model Voat.Models.ViewModels.CommentBucketViewModel
 
 @{
-    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
-    int startingPos = Convert.ToInt32(ViewData["StartingPos"]);
-    string sortingMode = Convert.ToString(ViewData["SortingMode"]);
-    int nestingLimit = 2;
-    
-    foreach (var firstComment in Model.FirstComments)
+    //this comment tree should only contain the filtered parents
+    foreach (var comment in Model.DisplayTree)
     {
         //do not show deleted comments unless they have replies
-        if (firstComment.Name == "deleted" && Model.Submission.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
+        if (comment.Name == "deleted" && comment.ChildCount <= 0)
         {
             continue;
         }
-
-        if (firstComment.Likes - firstComment.Dislikes < -3)
-        {
-            <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model.Submission, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", true }, { "SortingMode", sortingMode } })
-            </div>
-        }
-        else
-        {
-            <div class="thread id-@firstComment.Id comment " data-fullname="" data-ups="" data-downs="">
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model.Submission, new ViewDataDictionary { { "NestingLimit", nestingLimit }, { "VoteCache", ViewBag.VoteCache }, { "CommentId", firstComment.Id }, { "CCP", commentContributionPoints }, { "parentIsHidden", false }, { "SortingMode", sortingMode } })
-            </div>
-        }
+        bool hidden = (comment.Likes - comment.Dislikes < Model.NegativeScoreThreshold);
+        @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, 
+        new ViewDataDictionary { 
+            { "VoteCache", ViewBag.VoteCache }, 
+            { "CommentId", comment.Id }, 
+            { "CCP", ViewBag.CCP }, 
+            { "NestingCount", 0 },
+            { "ParentIsHidden", hidden } 
+        })
     }
+    if (Model.TotalInDisplayBranch > @Model.EndingIndex)
+    {
+        int remaining = Model.TotalInDisplayBranch - @Model.EndingIndex;
+        <div>
+            <br />
+            @if (Model.ParentID == null)
+            {
+                //this is root comments
+                <div class="spacer"></div>
+                <a href="javascript:void(0)" id="loadmorebutton" class="btn-whoaverse btn-block" onclick="javascript:loadMoreComments2($('#loadmorebutton'), $('.commentarea > #siteTable'),@Model.Submission.Id,null,'siblings',@Model.EndingIndex,'@Model.Sort.ToString()')">
+                    load more comments &#9660; (@remaining remaining)
+                </a>
+            }
+            else
+            {
+                //this is non-root comments
+                <a style="cursor:pointer;" id="loadmore-@Model.ParentID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@Model.ParentID'),$('.id-@Model.ParentID'),@Model.Submission.Id,@Model.ParentID,'siblings',@Model.EndingIndex,'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
+            }
 
-    <div id="comments-@Model.Submission.Id-page" style="display: none">@startingPos</div>
+        </div>
+    }
 }

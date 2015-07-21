@@ -292,23 +292,6 @@
           <Property Name="forced_private" Type="bit" Nullable="false" />
           <Property Name="admin_disabled" Type="bit" />
         </EntityType>
-        <EntityType Name="Survey">
-          <Key>
-            <PropertyRef Name="Username" />
-          </Key>
-          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Interested_in_content_creation" Type="bit" Nullable="false" />
-          <Property Name="Interested_in_commenting" Type="bit" Nullable="false" />
-          <Property Name="Interested_in_donating_earnings" Type="bit" Nullable="false" />
-          <Property Name="Preferred_payment_method" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Interested_in_bitcoin_payout" Type="bit" Nullable="false" />
-          <Property Name="Country" Type="nvarchar" MaxLength="50" />
-          <Property Name="City" Type="nvarchar" MaxLength="50" />
-          <Property Name="Date_submitted" Type="datetime" Nullable="false" />
-          <Property Name="Wants_to_be_contacted_at_service_launch" Type="bit" Nullable="false" />
-          <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Wants_to_subscribe_to_voat_news" Type="bit" Nullable="false" />
-        </EntityType>
         <EntityType Name="Userbadges">
           <Key>
             <PropertyRef Name="Id" />
@@ -693,6 +676,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="usp_CommentTree" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SubmissionID" Type="int" Mode="In" />
+          <Parameter Name="Depth" Type="int" Mode="In" />
+          <Parameter Name="ParentID" Type="int" Mode="In" />
+        </Function>
         <EntityContainer Name="voatModelStoreContainer">
           <EntitySet Name="Badges" EntityType="Self.Badges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Banneddomains" EntityType="Self.Banneddomains" Schema="dbo" store:Type="Tables" />
@@ -718,7 +706,6 @@
           <EntitySet Name="SubverseBans" EntityType="Self.SubverseBans" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverseflairsettings" EntityType="Self.Subverseflairsettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userbadges" EntityType="Self.Userbadges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserBlockedSubverses" EntityType="Self.UserBlockedSubverses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Userpreferences" EntityType="Self.Userpreferences" Schema="dbo" store:Type="Tables" />
@@ -993,7 +980,6 @@
             <End Role="Stickiedsubmission" EntitySet="Stickiedsubmissions" />
           </AssociationSet>
           <EntitySet Name="Bannedusers" EntityType="voatModel.Banneduser" />
-          <EntitySet Name="Surveys" EntityType="voatModel.Survey" />
           <AssociationSet Name="FK_Messages_Messages" Association="voatModel.FK_Messages_Messages">
             <End Role="Message" EntitySet="Messages" />
             <End Role="Message1" EntitySet="Messages" />
@@ -1059,6 +1045,11 @@
             <End Role="Comment" EntitySet="Comments" />
             <End Role="CommentRemovalLog" EntitySet="CommentRemovalLogs" />
           </AssociationSet>
+          <FunctionImport Name="usp_CommentTree" ReturnType="Collection(voatModel.usp_CommentTree_Result)">
+            <Parameter Name="SubmissionID" Mode="In" Type="Int32" />
+            <Parameter Name="Depth" Mode="In" Type="Int32" />
+            <Parameter Name="ParentID" Mode="In" Type="Int32" />
+          </FunctionImport>
           </EntityContainer>
         <EntityType Name="Subverse">
           <Key>
@@ -1354,23 +1345,6 @@
           <Property Name="Date_banned" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Reason" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Banned_by" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="Survey">
-          <Key>
-            <PropertyRef Name="Username" />
-          </Key>
-          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Interested_in_content_creation" Type="Boolean" Nullable="false" />
-          <Property Name="Interested_in_commenting" Type="Boolean" Nullable="false" />
-          <Property Name="Interested_in_donating_earnings" Type="Boolean" Nullable="false" />
-          <Property Name="Preferred_payment_method" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Interested_in_bitcoin_payout" Type="Boolean" Nullable="false" />
-          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Date_submitted" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Wants_to_be_contacted_at_service_launch" Type="Boolean" Nullable="false" />
-          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Wants_to_subscribe_to_voat_news" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_Messages_Messages">
           <End Type="voatModel.Message" Role="Message" Multiplicity="1" />
@@ -1683,6 +1657,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <ComplexType Name="usp_CommentTree_Result">
+          <Property Type="Int32" Name="ChildCount" Nullable="true" />
+          <Property Type="Int32" Name="Depth" Nullable="true" />
+          <Property Type="String" Name="Path" Nullable="true" />
+          <Property Type="String" Name="Subverse" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="Votes" Nullable="true" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="CommentContent" Nullable="false" />
+          <Property Type="DateTime" Name="Date" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastEditDate" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="MessageId" Nullable="true" />
+          <Property Type="Int64" Name="Likes" Nullable="false" />
+          <Property Type="Int64" Name="Dislikes" Nullable="false" />
+          <Property Type="Int32" Name="ParentId" Nullable="true" />
+          <Property Type="Boolean" Name="Anonymized" Nullable="false" />
+          <Property Type="Boolean" Name="IsDistinguished" Nullable="false" />
+          <Property Type="String" Name="FormattedContent" Nullable="true" />
+        </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1955,24 +1948,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Surveys">
-            <EntityTypeMapping TypeName="voatModel.Survey">
-              <MappingFragment StoreEntitySet="Survey">
-                <ScalarProperty Name="Wants_to_subscribe_to_voat_news" ColumnName="Wants_to_subscribe_to_voat_news" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Wants_to_be_contacted_at_service_launch" ColumnName="Wants_to_be_contacted_at_service_launch" />
-                <ScalarProperty Name="Date_submitted" ColumnName="Date_submitted" />
-                <ScalarProperty Name="City" ColumnName="City" />
-                <ScalarProperty Name="Country" ColumnName="Country" />
-                <ScalarProperty Name="Interested_in_bitcoin_payout" ColumnName="Interested_in_bitcoin_payout" />
-                <ScalarProperty Name="Preferred_payment_method" ColumnName="Preferred_payment_method" />
-                <ScalarProperty Name="Interested_in_donating_earnings" ColumnName="Interested_in_donating_earnings" />
-                <ScalarProperty Name="Interested_in_commenting" ColumnName="Interested_in_commenting" />
-                <ScalarProperty Name="Interested_in_content_creation" ColumnName="Interested_in_content_creation" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Featuredsubs">
             <EntityTypeMapping TypeName="voatModel.Featuredsub">
               <MappingFragment StoreEntitySet="Featuredsubs">
@@ -2106,6 +2081,29 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="usp_CommentTree" FunctionName="voatModel.Store.usp_CommentTree">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="voatModel.usp_CommentTree_Result">
+                <ScalarProperty Name="ChildCount" ColumnName="ChildCount" />
+                <ScalarProperty Name="Depth" ColumnName="Depth" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Votes" ColumnName="Votes" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="Likes" ColumnName="Likes" />
+                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
+                <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
+                <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -16,9 +16,11 @@ using System;
 
 namespace Voat.Models.ViewModels
 {
-    public class SubmissionViewModel
+    public class CommentSingleViewModel
     {
         public Message SubmissionModel { get; set; }
-        public Comment CommentModel { get; set; }
+        public Subverse SubverseModel { get; set; }
+        public usp_CommentTree_Result CommentModel { get; set; }
+
     }
 }

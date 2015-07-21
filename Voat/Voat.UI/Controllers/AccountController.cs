@@ -126,6 +126,11 @@ namespace Voat.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            if (MvcApplication.RegistrationDisabled)
+            {
+                return View("RegistrationDisabled");
+            }
+
             if (User.Identity.IsAuthenticated)
             {
                 //deny access to registered users
@@ -143,6 +148,12 @@ namespace Voat.Controllers
         [ValidateCaptcha]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
+
+            if (MvcApplication.RegistrationDisabled)
+            {
+                return View("RegistrationDisabled");
+            }
+
             if (!ModelState.IsValid) return View(model);
 
             try
@@ -178,7 +189,7 @@ namespace Voat.Controllers
             }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Something bad happened. You broke Whoaverse.");
+                ModelState.AddModelError(string.Empty, "Something bad happened. You broke Voat.");
             }
 
             // If we got this far, something failed, redisplay form
