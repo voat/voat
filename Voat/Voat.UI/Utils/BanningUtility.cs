@@ -23,15 +23,15 @@ namespace Voat.Utils
 
         public static bool IsHostnameBanned(string hostnameToCheck)
         {
+            // manual ban for blogspot
+            if (hostnameToCheck.Contains("blogspot"))
+            {
+                return true;
+            }
+
             using (var db = new voatEntities())
             {
                 var bannedHostname = db.Banneddomains.FirstOrDefault(r => r.Hostname.Equals(hostnameToCheck, StringComparison.OrdinalIgnoreCase));
-
-                // manual ban for blogspot
-                if (hostnameToCheck.Contains("blogspot"))
-                {
-                    return true;
-                }
 
                 // look for exact match
                 return bannedHostname != null;
