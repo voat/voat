@@ -236,6 +236,14 @@ namespace Voat
                 return (bool)configValues[CONFIGURATION.RegistrationDisabled];
             }
         }
+
+        public static bool UseContentDeliveryNetwork
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.UseContentDeliveryNetwork];
+            }
+        }
         #endregion 
 
     }

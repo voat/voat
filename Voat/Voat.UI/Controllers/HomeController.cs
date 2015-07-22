@@ -250,7 +250,7 @@ namespace Voat.Controllers
                 if (targetSubverse.enable_thumbnails)
                 {
                     // try to generate and assign a thumbnail to submission model
-                    submission.Thumbnail = ThumbGenerator.ThumbnailFromSubmissionModel(submission);
+                    submission.Thumbnail = await ThumbGenerator.ThumbnailFromSubmissionModel(submission);
                 }
 
                 // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode

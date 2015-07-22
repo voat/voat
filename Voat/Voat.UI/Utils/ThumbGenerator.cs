@@ -5,7 +5,11 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
+using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Message = Voat.Models.Message;
 
 namespace Voat.Utils
@@ -20,7 +24,7 @@ namespace Voat.Utils
         private const int MaxWidth = 70;
 
         // generate a thumbnail while removing transparency and preserving aspect ratio
-        public static string GenerateThumbFromUrl(string sourceUrl)
+        public static async Task<string> GenerateThumbFromUrl(string sourceUrl)
         {
             var randomFileName = GenerateRandomFilename();
 
@@ -29,11 +33,27 @@ namespace Voat.Utils
             var response = request.GetResponse();
 
             var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
+            
             originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPath + '\\' + randomFileName + ".jpg", 90);
+            
+            // call upload to storage method if CDN config is enabled
+            if (MvcApplication.UseContentDeliveryNetwork)
+            {
+                string tempThumbLocation = DestinationPath + '\\' + randomFileName + ".jpg";
+
+                if (FileExists(tempThumbLocation))
+                {
+                    await UploadBlobToStorageAsync(tempThumbLocation);
+
+                    // delete local file after uploading to CDN
+                    File.Delete(tempThumbLocation);
+                }
+            }
 
             return randomFileName + ".jpg";
         }
 
+        // TODO: implement CDN routing for avatars
         public static bool GenerateAvatar(Image inputImage, string userName, string mimetype)
         {
             try
@@ -52,15 +72,29 @@ namespace Voat.Utils
             }
         }
 
-        // Generate a random filename and make sure that the file does not exist.
+        // Generate a random filename for a thumbnail and make sure that the file does not exist.
         private static string GenerateRandomFilename()
         {
             string rndFileName;
 
-            do
+            // if CDN flag is active, check if file exists on CDN, otherwise check if file exists on local storage
+            if (MvcApplication.UseContentDeliveryNetwork)
             {
+                // make sure blob with same name doesn't exist already
+                do
+                {
+                    rndFileName = Guid.NewGuid().ToString();
+                } while (BlobExists(rndFileName));
+
                 rndFileName = Guid.NewGuid().ToString();
-            } while (FileExists(rndFileName));
+            }
+            else
+            {
+                do
+                {
+                    rndFileName = Guid.NewGuid().ToString();
+                } while (FileExists(rndFileName));
+            }
 
             return rndFileName;
         }
@@ -73,7 +107,7 @@ namespace Voat.Utils
             return (File.Exists(location));
         }
 
-        public static string ThumbnailFromSubmissionModel(Message submissionModel)
+        public static async Task<string> ThumbnailFromSubmissionModel(Message submissionModel)
         {
             var extension = Path.GetExtension(submissionModel.MessageContent);
 
@@ -84,7 +118,7 @@ namespace Voat.Utils
                 {
                     try
                     {
-                        var thumbFileName = GenerateThumbFromUrl(submissionModel.MessageContent);
+                        var thumbFileName = await GenerateThumbFromUrl(submissionModel.MessageContent);
                         return thumbFileName;
                     }
                     catch (Exception)
@@ -103,7 +137,7 @@ namespace Voat.Utils
                     // open graph failed to find og:image element, abort thumbnail generation
                     if (graph.Image == null) return null;
 
-                    var thumbFileName = GenerateThumbFromUrl(graph.Image.ToString());
+                    var thumbFileName = await GenerateThumbFromUrl(graph.Image.ToString());
                     return thumbFileName;
                 }
                 catch (Exception)
@@ -123,7 +157,7 @@ namespace Voat.Utils
                 // open graph failed to find og:image element, abort thumbnail generation
                 if (graph.Image == null) return null;
 
-                var thumbFileName = GenerateThumbFromUrl(graph.Image.ToString());
+                var thumbFileName = await GenerateThumbFromUrl(graph.Image.ToString());
                 return thumbFileName;
             }
             catch (Exception)
@@ -132,6 +166,63 @@ namespace Voat.Utils
                 return null;
             }
         }
-    }
 
+        // upload a blob to storage, requires full path
+        private static async Task UploadBlobToStorageAsync(string blobToUpload)
+        {
+            // Retrieve storage account information from connection string
+            CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
+
+            // Create a blob client for interacting with the blob service.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            // Create a container for organizing blobs within the storage account.
+            CloudBlobContainer container = blobClient.GetContainerReference("thumbs");
+            try
+            {
+                await container.CreateIfNotExistsAsync();
+            }
+            catch (StorageException)
+            {
+                throw;
+            }
+
+            // allow public access to blobs in this container
+            await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+
+            // Upload a BlockBlob to the newly created container
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(Path.GetFileName(blobToUpload));
+            await blockBlob.UploadFromFileAsync(blobToUpload, FileMode.Open);
+        }
+
+        private static bool BlobExists(string blobName)
+        {
+            CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            return blobClient.GetContainerReference("thumbs").GetBlockBlobReference(blobName).Exists();  
+        }
+
+        // validate the connection string information
+        private static CloudStorageAccount CreateStorageAccountFromConnectionString(string storageConnectionString)
+        {
+            CloudStorageAccount storageAccount;
+            try
+            {
+                storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Invalid storage account information provided. Please confirm the AccountName and AccountKey are valid in the app.config file - then restart the sample.");
+                throw;
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine("Invalid storage account information provided. Please confirm the AccountName and AccountKey are valid in the app.config file - then restart the sample.");
+                throw;
+            }
+
+            return storageAccount;
+        }
+    }
 }
