@@ -825,15 +825,7 @@ namespace Voat.Utils
                 var commentUpvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
                 var commentDownvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
-                var totalCommentVotes = commentUpvotes + commentDownvotes;
-
-                // downvote ratio
-                var downvotePercentage = (double)commentDownvotes / totalCommentVotes * 100;
-
-                // upvote ratio
-                var upvotePercentage = (double)commentUpvotes / totalCommentVotes * 100;
-
-                return downvotePercentage > upvotePercentage;
+                return commentDownvotes > commentUpvotes;
             }
         }
 
@@ -846,15 +838,7 @@ namespace Voat.Utils
                 var submissionUpvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
                 var submissionDownvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
-                var totalSubmissionVotes = submissionUpvotes + submissionDownvotes;
-
-                // downvote ratio
-                var downvotePercentage = (double)submissionDownvotes / totalSubmissionVotes * 100;
-
-                // upvote ratio
-                var upvotePercentage = (double)submissionUpvotes / totalSubmissionVotes * 100;
-
-                return downvotePercentage > upvotePercentage;
+                return submissionDownvotes > submissionUpvotes;
             }
         }
 
