@@ -690,7 +690,7 @@ namespace Voat.Controllers
 
             var paginatedNewestSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
 
-            return View("~/Views/Subverses/Subverse.cshtml", paginatedNewestSubverses);
+            return View("~/Views/Subverses/Subverses.cshtml", paginatedNewestSubverses);
         }
 
         // show subverses ordered by last received submission
@@ -713,7 +713,7 @@ namespace Voat.Controllers
 
             var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
 
-            return View("~/Views/Subverses/Subverse.cshtml", paginatedActiveSubverses);
+            return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
         }
 
         [OutputCache(Duration = 3600, VaryByParam = "none")]
