@@ -1612,6 +1612,7 @@ function checkUsernameAvailability(obj) {
 
 // a function to call mark as read messaging endpoint
 function markAsRead(obj, itemType, itemId, markAll) {
+    $(obj).attr("onclick", "");
     // mark single item as read
     if (itemId != null && markAll === false) {
         var markAsReadRequest = $.ajax({
