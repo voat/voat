@@ -108,7 +108,17 @@ namespace Voat.Controllers
                     // add a thumbnail if submission has one
                     if (submission.Thumbnail != null)
                     {
-                        var thumbnailUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Thumbs/" + submission.Thumbnail).ToString();
+                        string thumbnailUrl;
+
+                        if (MvcApplication.UseContentDeliveryNetwork)
+                        {
+                            thumbnailUrl = new Uri("http://cdn." + System.Web.HttpContext.Current.Request.Url.Authority + "/thumbs/" + submission.Thumbnail).ToString();
+                        }
+                        else
+                        {
+                            thumbnailUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Thumbs/" + submission.Thumbnail).ToString();
+                        }
+                        
                         var item = new SyndicationItem(
                                                 submission.Linkdescription,
                                                 "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='" + submission.Linkdescription + "' alt='" + submission.Linkdescription + "' src='" + thumbnailUrl + "' /></a>" +
