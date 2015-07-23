@@ -955,6 +955,7 @@ $.fn.exists = function () {
 function subscribe(obj, subverseName) {
     $(obj).attr("onclick", "unsubscribe(this)");
     $(obj).html("unsubscribe");
+    $(obj).toggleClass("btn-sub btn-unsub");
 
     // call the subverse subscribe API
     $.ajax({
@@ -975,6 +976,7 @@ function subscribe(obj, subverseName) {
 function unsubscribe(obj, subverseName) {
     $(obj).attr("onclick", "subscribe(this)");
     $(obj).html("subscribe");
+    $(obj).toggleClass("btn-sub btn-unsub");
 
     // call the subverse unsubscribe API
     $.ajax({
@@ -1573,6 +1575,7 @@ function toggleSaveComment(commentId) {
 
 // a function to submit subverse block/unblock request
 function toggleBlockSubverse(obj, subverseName) {
+    $(obj).toggleClass("btn-blocksubverse btn-unblocksubverse");
     var blockButton = $(obj);
     if (blockButton.exists()) {
         if (blockButton.text() === "block") {

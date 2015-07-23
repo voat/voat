@@ -868,6 +868,25 @@ a.btn-whoaverse {
     color: #5B46BE;
 }
 
+.btn-unblocksubverse {
+    background: #F8F8F8;
+    background: -webkit-linear-gradient( top,#F8F8F8,#F0F0F0 );
+    background: -moz-linear-gradient( top,#F8F8F8,#F0F0F0 );
+    background: -ms-linear-gradient( top,#F8F8F8,#F0F0F0 );
+    background: -o-linear-gradient( top,#F8F8F8,#F0F0F0 );
+    border: 1px solid #C9C9C9;
+    color: #5A5A5A;
+}
+.btn-unblocksubverse:hover,.btn-unblocksubverse:active,.btn-unblocksubverse:focus {
+    background: #C4B7FF;
+    background: -webkit-linear-gradient( top,#C4B7FF,#BDAEFF );
+    background: -moz-linear-gradient( top,#C4B7FF,#BDAEFF );
+    background: -ms-linear-gradient( top,#C4B7FF,#BDAEFF );
+    background: -o-linear-gradient( top,#C4B7FF,#BDAEFF );
+    border-color: #9B85FF;
+    color: #5B46BE;
+}
+
 /* ! Body : Forms
 ------------------------------------------------------------------------------------ */
 
