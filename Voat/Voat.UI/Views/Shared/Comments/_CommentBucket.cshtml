@@ -21,14 +21,13 @@
         {
             continue;
         }
-        bool hidden = (comment.Likes - comment.Dislikes < Model.NegativeScoreThreshold);
         @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, 
         new ViewDataDictionary { 
             { "VoteCache", ViewBag.VoteCache }, 
             { "CommentId", comment.Id }, 
             { "CCP", ViewBag.CCP }, 
             { "NestingCount", 0 },
-            { "ParentIsHidden", hidden } 
+            { "ParentIsHidden", false } 
         })
     }
     if (Model.TotalInDisplayBranch > @Model.EndingIndex)
