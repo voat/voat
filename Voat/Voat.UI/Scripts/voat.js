@@ -41,9 +41,9 @@ $(document).ready(function () {
         });
 
     // drag'n'drop link sharing
-    $(document).on('dragenter', function () {
-        $('#share-a-link-overlay').show();
-    });
+    //$(document).on('dragenter', function () {
+    //    $('#share-a-link-overlay').show();
+    //});
 
     // prevent spoiler links from opening windows
     $(document).on('click', 'a[href="#s"]', function (e) {
