@@ -496,7 +496,7 @@ namespace Voat.Controllers
                                 if (img.RawFormat.Equals(ImageFormat.Jpeg) || img.RawFormat.Equals(ImageFormat.Png))
                                 {
                                     // resize uploaded file
-                                    var thumbnailResult = ThumbGenerator.GenerateAvatar(img, User.Identity.Name, model.Avatarfile.ContentType);
+                                    var thumbnailResult = await ThumbGenerator.GenerateAvatar(img, User.Identity.Name, model.Avatarfile.ContentType);
                                     if (thumbnailResult)
                                     {
                                         if (userPreferences == null)

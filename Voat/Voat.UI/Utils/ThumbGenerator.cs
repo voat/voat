@@ -17,7 +17,8 @@ namespace Voat.Utils
     public static class ThumbGenerator
     {
         // public folder where thumbs should be saved
-        private static readonly string DestinationPath = HttpContext.Current.Server.MapPath("~/Thumbs");
+        private static readonly string DestinationPathThumbs = HttpContext.Current.Server.MapPath("~/Thumbs");
+        private static readonly string DestinationPathAvatars = HttpContext.Current.Server.MapPath("~/Storage/Avatars");
 
         // setup default thumb resolution
         private const int MaxHeight = 70;
@@ -33,17 +34,17 @@ namespace Voat.Utils
             var response = request.GetResponse();
 
             var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
-            
-            originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPath + '\\' + randomFileName + ".jpg", 90);
+
+            originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathThumbs + '\\' + randomFileName + ".jpg", 90);
             
             // call upload to storage method if CDN config is enabled
             if (MvcApplication.UseContentDeliveryNetwork)
             {
-                string tempThumbLocation = DestinationPath + '\\' + randomFileName + ".jpg";
+                string tempThumbLocation = DestinationPathThumbs + '\\' + randomFileName + ".jpg";
 
-                if (FileExists(tempThumbLocation))
+                if (FileExists(tempThumbLocation, DestinationPathThumbs))
                 {
-                    await UploadBlobToStorageAsync(tempThumbLocation);
+                    await UploadBlobToStorageAsync(tempThumbLocation, "thumbs");
 
                     // delete local file after uploading to CDN
                     File.Delete(tempThumbLocation);
@@ -53,17 +54,28 @@ namespace Voat.Utils
             return randomFileName + ".jpg";
         }
 
-        // TODO: implement CDN routing for avatars
-        public static bool GenerateAvatar(Image inputImage, string userName, string mimetype)
+        // store uploaded avatar
+        public static async Task<bool> GenerateAvatar(Image inputImage, string userName, string mimetype)
         {
             try
             {
-                string DestinationPath = HttpContext.Current.Server.MapPath("~/Storage/Avatars");
+                // call upload to storage if CDN config is enabled
+                if (MvcApplication.UseContentDeliveryNetwork)
+                {
+                    string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";
+                    if (FileExists(tempAvatarLocation, DestinationPathAvatars))
+                    {
+                        await UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
 
+                        // delete local file after uploading to CDN
+                        File.Delete(tempAvatarLocation);
+                    }
+                    return true;
+                }
+                
+                // store avatar locally
                 var originalImage = new KalikoImage(inputImage);
-
-                originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPath + '\\' + userName + ".jpg", 90);
-
+                originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathAvatars + '\\' + userName + ".jpg", 90);
                 return true;
             }
             catch (Exception ex)
@@ -93,16 +105,16 @@ namespace Voat.Utils
                 do
                 {
                     rndFileName = Guid.NewGuid().ToString();
-                } while (FileExists(rndFileName));
+                } while (FileExists(rndFileName, DestinationPathThumbs));
             }
 
             return rndFileName;
         }
 
         // Check if a file exists at given location.
-        private static bool FileExists(string fileName)
+        private static bool FileExists(string fileName, string destinationPath)
         {
-            var location = Path.Combine(DestinationPath, fileName);
+            var location = Path.Combine(destinationPath, fileName);
 
             return (File.Exists(location));
         }
@@ -168,7 +180,7 @@ namespace Voat.Utils
         }
 
         // upload a blob to storage, requires full path
-        private static async Task UploadBlobToStorageAsync(string blobToUpload)
+        private static async Task UploadBlobToStorageAsync(string blobToUpload, string containerName)
         {
             // Retrieve storage account information from connection string
             CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
@@ -177,7 +189,7 @@ namespace Voat.Utils
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
             // Create a container for organizing blobs within the storage account.
-            CloudBlobContainer container = blobClient.GetContainerReference("thumbs");
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
             try
             {
                 await container.CreateIfNotExistsAsync();
@@ -190,7 +202,7 @@ namespace Voat.Utils
             // allow public access to blobs in this container
             await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
-            // Upload a BlockBlob to the newly created container
+            // Upload a BlockBlob to the newly created container, default mode: overwrite existing
             CloudBlockBlob blockBlob = container.GetBlockBlobReference(Path.GetFileName(blobToUpload));
             await blockBlob.UploadFromFileAsync(blobToUpload, FileMode.Open);
         }
