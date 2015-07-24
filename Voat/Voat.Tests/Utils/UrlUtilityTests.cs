@@ -12,10 +12,11 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Voat.Utils;
 
-namespace UnitTests.Utils
+namespace Voat.Tests.Utils
 {
     [TestClass]
     public class UrlUtilityTests
@@ -32,6 +33,33 @@ namespace UnitTests.Utils
             var miniUrl = "https://youtu.be/Gjk5udJY_gM?t=11s";
             output = UrlUtility.GetVideoIdFromUrl(miniUrl);
             Assert.AreEqual(expected, output);
+        }
+
+        [TestMethod]
+        public void TestGetDomainFromUri()
+        {
+            Uri testUri = new Uri("http://www.youtube.com");
+
+            string result = UrlUtility.GetDomainFromUri(testUri.ToString());
+            Assert.AreEqual("youtube.com", result, "Unable to extract domain from given Uri.");
+        }
+
+        [TestMethod]
+        public void TestGetTitleFromUri()
+        {
+            const string testUri = "http://www.google.com";
+            string result = UrlUtility.GetTitleFromUri(testUri);
+
+            Assert.AreEqual("Google", result, "Unable to extract title from given Uri.");
+        }
+
+        [TestMethod]
+        public void TestIsUriValid()
+        {
+            Uri testUri = new Uri("https://youtube.com");
+
+            bool result = UrlUtility.IsUriValid(testUri.ToString());
+            Assert.AreEqual(true, result, "The input URI was invalid.");
         }
     }
 }

@@ -102,34 +102,6 @@ namespace UnitTests
     [TestClass]
     public class Misc_Tests
     {
-
-        [TestMethod]
-        public void TestGetDomainFromUri()
-        {
-            Uri testUri = new Uri("http://www.youtube.com");
-
-            string result = UrlUtility.GetDomainFromUri(testUri.ToString());
-            Assert.AreEqual("youtube.com", result, "Unable to extract domain from given Uri.");
-        }
-
-        [TestMethod]
-        public void TestGetTitleFromUri()
-        {
-            const string testUri = "http://www.google.com";
-            string result = UrlUtility.GetTitleFromUri(testUri);
-
-            Assert.AreEqual("Google", result, "Unable to extract title from given Uri.");
-        }
-
-        [TestMethod]
-        public void TestIsUriValid()
-        {
-            Uri testUri = new Uri("https://youtube.com");
-
-            bool result = UrlUtility.IsUriValid(testUri.ToString());
-            Assert.AreEqual(true, result, "The input URI was invalid.");
-        }
-
         [TestMethod]
         public void TestGetOpenGraphImageFromUri()
         {
