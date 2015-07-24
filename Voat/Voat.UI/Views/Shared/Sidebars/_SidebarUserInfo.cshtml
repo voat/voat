@@ -25,7 +25,14 @@
             <div class="thumbnail may-blank user-avatar">
                 @if (Voat.Utils.User.HasAvatar(userName) != null)
                 {
-                    <img src="~/Storage/Avatars/@(userName).jpg" alt="" class="user-avatar">
+                    if (MvcApplication.UseContentDeliveryNetwork)
+                    {
+                        <img src="https://cdn.voat.co/avatars/@(userName).jpg" alt="" class="user-avatar">
+                    }
+                    else
+                    {
+                        <img src="~/Storage/Avatars/@(userName).jpg" alt="" class="user-avatar">
+                    }
                 }
                 else
                 {
