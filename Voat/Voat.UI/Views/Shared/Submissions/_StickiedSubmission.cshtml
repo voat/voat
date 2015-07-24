@@ -30,7 +30,14 @@
         if (Model.Thumbnail != null)
         {
             <a class="thumbnail may-blank" href="@Model.MessageContent">
-                <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
+                @if (MvcApplication.UseContentDeliveryNetwork)
+                {
+                    <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
+                }
+                else
+                {
+                    <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
+                }
             </a>
         }
 
