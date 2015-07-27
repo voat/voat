@@ -480,6 +480,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "SubverseSettings" }
             );
 
+            // v/subversetoedit/about/edit/stylesheet
+            routes.MapRoute(
+                name: "subverseStylesheetEditor",
+                url: "v/{subversetoshow}/about/edit/stylesheet",
+                defaults: new { controller = "Subverses", action = "SubverseStylesheetEditor" }
+            );
+
             // v/subversetoedit/about/flair
             routes.MapRoute(
                 name: "subverseFlairSettings",
@@ -633,6 +640,13 @@ namespace Voat
                 name: "RenderSubmission",
                 url: "ajaxhelpers/rendersubmission",
                 defaults: new { controller = "AjaxGateway", action = "RenderSubmission" }
+            );
+
+            // ajaxhelpers/previewstylesheet
+            routes.MapRoute(
+                name: "PreviewStylesheet",
+                url: "ajaxhelpers/previewstylesheet",
+                defaults: new { controller = "AjaxGateway", action = "PreviewStylesheet" }
             );
 
             // ajaxhelpers/linkflairselectdialog

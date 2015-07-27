@@ -152,6 +152,18 @@ namespace Voat.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
+        // GET: preview stylesheet
+        [Authorize]
+        [HttpPost]
+        public ActionResult PreviewStylesheet(StylesheetPreviewModel stylesheetModel)
+        {
+            if (stylesheetModel != null)
+            {
+                return RedirectToRoute("SubverseIndex", new { subversetoshow = stylesheetModel.SubverseName, tempStylesheet = stylesheetModel.TempStylesheet });
+            }
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
         // GET: subverse basic info used for V2 sets layout
         public ActionResult SubverseBasicInfo(int setId, string subverseName)
         {

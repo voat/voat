@@ -13,7 +13,6 @@ All Rights Reserved.
 */
 
 using System;
-using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -348,9 +347,95 @@ namespace Voat.Controllers
             }
         }
 
-        // GET: show a subverse index
-        public ActionResult SubverseIndex(int? page, string subversetoshow)
+        // GET: subverse stylesheet editor
+        [Authorize]
+        public ActionResult SubverseStylesheetEditor(string subversetoshow)
         {
+            var subverse = DataCache.Subverse.Retrieve(subversetoshow);
+
+            if (subverse == null)
+            {
+                ViewBag.SelectedSubverse = "404";
+                return View("~/Views/Errors/Subversenotfound.cshtml");
+            }
+
+            // check that the user requesting to edit subverse settings is subverse owner!
+            var subAdmin = _db.SubverseAdmins.FirstOrDefault(x => x.SubverseName == subversetoshow && x.Username == User.Identity.Name && x.Power <= 2);
+
+            if (subAdmin == null) return RedirectToAction("Index", "Home");
+
+            // map existing data to view model for editing and pass it to frontend
+            var viewModel = new SubverseStylesheetViewModel
+            {
+                Name = subverse.name,
+                Stylesheet = subverse.stylesheet
+            };
+
+            ViewBag.SelectedSubverse = string.Empty;
+            ViewBag.SubverseName = subverse.name;
+            return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml", viewModel);
+        }
+
+        [HttpPost]
+        [PreventSpam(DelayRequest = 30,
+        ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> SubverseStylesheetEditor(Subverse updatedModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid) return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                var existingSubverse = _db.Subverses.Find(updatedModel.name);
+
+                // check if subverse exists before attempting to edit it
+                if (existingSubverse != null)
+                {
+                    // check if user requesting edit is authorized to do so for current subverse
+                    // check that the user requesting to edit subverse settings is subverse owner!
+                    var subAdmin = _db.SubverseAdmins.FirstOrDefault(x => x.SubverseName == updatedModel.name && x.Username == User.Identity.Name && x.Power <= 2);
+                    
+                    // user was not authorized to commit the changes, drop attempt
+                    if (subAdmin == null) return new EmptyResult();
+
+                    if (updatedModel.stylesheet != null)
+                    {
+                        if (updatedModel.stylesheet.Length < 50001)
+                        {
+                            existingSubverse.stylesheet = updatedModel.stylesheet;
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 50000 characters.");
+                            return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                        }
+                    }
+                    else
+                    {
+                        existingSubverse.stylesheet = updatedModel.stylesheet;
+                    }
+
+                    await _db.SaveChangesAsync();
+                    DataCache.Subverse.Remove(existingSubverse.name);
+
+                    // go back to this subverse
+                    return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.name });
+                }
+
+                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
+                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Something bad happened.");
+                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+            }
+        }
+
+        // GET: show a subverse index
+        public ActionResult SubverseIndex(int? page, string subversetoshow, string tempStylesheet)
+        {
+            ViewBag.tempStylesheet = tempStylesheet;
+
             const string cookieName = "NSFWEnabled";
             int pageSize = 25;
             int pageNumber = (page ?? 0);
@@ -411,11 +496,8 @@ namespace Voat.Controllers
                         return View("~/Views/Errors/SubverseDisabled.cshtml");
                     }
 
-
-
                     ViewBag.SelectedSubverse = subverse.name;
                     ViewBag.Title = subverse.description;
-
 
                     //IAmAGate: Perf mods for caching
                     string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();

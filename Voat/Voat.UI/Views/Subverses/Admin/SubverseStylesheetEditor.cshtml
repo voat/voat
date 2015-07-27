@@ -1,0 +1,55 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model Voat.Models.ViewModels.SubverseStylesheetViewModel
+
+@{
+    ViewBag.Title = "Subverse stylesheet editor";
+}
+
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+
+        <h1>Subverse stylesheet editor for: <a href="/v/@ViewBag.SubverseName">@ViewBag.SubverseName</a></h1>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.Name)
+
+                <div class="form-group">
+                    @Html.Label("Custom stylesheet, max 50000 characters", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(model => model.Stylesheet, new { @class = "form-control", @rows = "20" })
+                        @Html.ValidationMessageFor(model => model.Stylesheet, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn-whoaverse btn-default"/>
+                        <button type="button" class="btn-whoaverse btn-default" onclick="previewStylesheet(this, '@ViewBag.SubverseName')">Preview</button>
+                    </div>
+                </div>
+
+            </div>
+        }
+
+    </div>
+</div>
+<hr/>
+
+<div id="stylesheetpreviewarea"></div>

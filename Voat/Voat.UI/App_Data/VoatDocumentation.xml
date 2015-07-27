@@ -572,7 +572,7 @@
             <summary>
              This API returns comments for a given submission id.
             </summary>
-            <param name="submission">The submission Id for which to fetch comments.</param>
+            <param name="submissionId">The submission Id for which to fetch comments.</param>
         </member>
     </members>
 </doc>

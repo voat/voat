@@ -36,6 +36,11 @@
             urlaction = "SubverseIndex";
             break;
     }
+
+    if (ViewBag.tempStylesheet != null)
+    {
+        Layout = null;
+    }
 }
 
 <style type="text/css">
@@ -55,7 +60,12 @@
     }
 
     <style type="text/css" id="custom_css">
-        @if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
+        @if (ViewBag.tempStylesheet != null)
+        {
+            @ViewBag.tempStylesheet
+        }
+
+         @if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
         {
             Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new {selectedSubverse = selectedSubverse});
         }

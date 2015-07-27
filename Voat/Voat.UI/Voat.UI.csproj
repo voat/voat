@@ -297,6 +297,7 @@
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
+    <Compile Include="Models\StylesheetPreviewModel.cs" />
     <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
     <Compile Include="Models\CommentRemovalLog.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
@@ -340,6 +341,7 @@
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
     <Compile Include="Models\ViewModels\SubverseBanViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubverseStylesheetViewModel.cs" />
     <Compile Include="Models\Viewstatistic.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -687,13 +689,6 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Views\Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -861,6 +856,7 @@
     <Content Include="Views\Subverses\BannedUsersLog.cshtml" />
     <Content Include="Web.config.live" />
     <Content Include="Views\Account\RegistrationDisabled.cshtml" />
+    <Content Include="Views\Subverses\Admin\SubverseStylesheetEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

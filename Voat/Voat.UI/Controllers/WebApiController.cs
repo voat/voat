@@ -445,7 +445,7 @@ namespace Voat.Controllers
         /// <summary>
         ///  This API returns comments for a given submission id.
         /// </summary>
-        /// <param name="submission">The submission Id for which to fetch comments.</param>
+        /// <param name="submissionId">The submission Id for which to fetch comments.</param>
         [HttpGet]
         public IEnumerable<ApiComment> SubmissionComments(int submissionId)
         {

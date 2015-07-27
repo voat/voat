@@ -1653,3 +1653,25 @@ function markAsRead(obj, itemType, itemId, markAll) {
         });
     }
 }
+
+// a function to preview stylesheet called from subverse stylesheet editor
+function previewStylesheet(obj, subverseName) {
+    var sendingButton = $(obj);
+    sendingButton.html("Hold on...");
+    sendingButton.prop('disabled', true);
+
+    var stylesheetPreviewModel = { "TempStylesheet": $("#Stylesheet").val(), "SubverseName": subverseName };
+
+    $.ajax({
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(stylesheetPreviewModel),
+        url: '/ajaxhelpers/previewstylesheet',
+        dataType: 'html',
+        success: function (data) {
+            $("#stylesheetpreviewarea").html(data);
+            sendingButton.html("Preview");
+            sendingButton.prop('disabled', false);
+        }
+    });
+}
