@@ -111,10 +111,17 @@ namespace Voat.Utils
                         // delete private messages
                         db.Privatemessages.RemoveRange(db.Privatemessages.Where(pm => pm.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
+                        // delete short bio
+                        var userPrefs = db.Userpreferences.Find(userName);
+                        userPrefs.Shortbio = null;
+
+                        // TODO: delete avatar
+                        // userPrefs.Avatar = ""
+                        
                         // TODO:
                         // keep this updated as new features are added (delete sets etc)
 
-                        // username will stay permanently reserved
+                        // username will stay permanently reserved to prevent someone else from registering it and impersonating
 
                         db.SaveChanges();
 

@@ -18,6 +18,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -26,6 +27,8 @@ using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utils;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Voat.Controllers
 {
@@ -419,6 +422,17 @@ namespace Voat.Controllers
                 // execute delete action
                 if (Utils.User.DeleteUser(User.Identity.Name))
                 {
+                    // delete email address and set password to something random
+                    UserManager.SetEmail(User.Identity.GetUserId(), null);
+                    
+                    string randomPassword = "";
+                    using (SHA512 shaM = new SHA512Managed())
+                    {
+                        randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
+                    }
+
+                    UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
+
                     AuthenticationManager.SignOut();
                     return View("~/Views/Account/AccountDeleted.cshtml");
                 }
