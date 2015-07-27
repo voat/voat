@@ -345,7 +345,7 @@ namespace Voat.Controllers
             }
 
             // get subscriber count for selected subverse
-            var subscriberCount = _db.Subscriptions.AsEnumerable().Count(r => r.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            var subscriberCount = subverse.subscribers ?? 0;
 
             var resultModel = new ApiSubverseInfo
             {
