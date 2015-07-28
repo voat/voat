@@ -1660,18 +1660,24 @@ function previewStylesheet(obj, subverseName) {
     sendingButton.html("Hold on...");
     sendingButton.prop('disabled', true);
 
-    var stylesheetPreviewModel = { "TempStylesheet": $("#Stylesheet").val(), "SubverseName": subverseName };
-
     $.ajax({
-        type: 'POST',
-        contentType: 'application/json; charset=utf-8',
-        data: JSON.stringify(stylesheetPreviewModel),
-        url: '/ajaxhelpers/previewstylesheet',
+        type: 'GET',
+        url: '/ajaxhelpers/previewstylesheet?subversetoshow=' + subverseName + '&previewMode=true',
         dataType: 'html',
         success: function (data) {
             $("#stylesheetpreviewarea").html(data);
             sendingButton.html("Preview");
             sendingButton.prop('disabled', false);
+
+            // remove the old stylesheet from document
+            var sheetToRemove = document.getElementById('custom_css');
+            var sheetParent = sheetToRemove.parentNode;
+            sheetParent.removeChild(sheetToRemove);
+
+            // inject the new stylesheet
+            var sheetToAdd = document.createElement('style');
+            sheetToAdd.innerHTML = $("#Stylesheet").val();
+            document.body.appendChild(sheetToAdd);
         }
     });
 }

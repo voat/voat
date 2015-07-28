@@ -37,7 +37,7 @@
             break;
     }
 
-    if (ViewBag.tempStylesheet != null)
+    if (ViewBag.previewMode != null && ViewBag.previewMode)
     {
         Layout = null;
     }
@@ -60,11 +60,6 @@
     }
 
     <style type="text/css" id="custom_css">
-        @if (ViewBag.tempStylesheet != null)
-        {
-            @ViewBag.tempStylesheet
-        }
-
          @if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
         {
             Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new {selectedSubverse = selectedSubverse});

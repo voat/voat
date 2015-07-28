@@ -265,8 +265,7 @@ namespace Voat.Controllers
         // POST: Eddit a Subverse
         // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
-        [PreventSpam(DelayRequest = 30,
-        ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
+        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseSettings(Subverse updatedModel)
         {
@@ -377,8 +376,7 @@ namespace Voat.Controllers
         }
 
         [HttpPost]
-        [PreventSpam(DelayRequest = 30,
-        ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
+        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseStylesheetEditor(Subverse updatedModel)
         {
@@ -432,9 +430,9 @@ namespace Voat.Controllers
         }
 
         // GET: show a subverse index
-        public ActionResult SubverseIndex(int? page, string subversetoshow, string tempStylesheet)
+        public ActionResult SubverseIndex(int? page, string subversetoshow, bool? previewMode)
         {
-            ViewBag.tempStylesheet = tempStylesheet;
+            ViewBag.previewMode = previewMode ?? false;
 
             const string cookieName = "NSFWEnabled";
             int pageSize = 25;

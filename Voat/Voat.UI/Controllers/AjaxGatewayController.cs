@@ -30,7 +30,7 @@ namespace Voat.Controllers
         // GET: MessageContent
         public ActionResult MessageContent(int? messageId)
         {
-            
+
             var message = DataCache.Submission.Retrieve(messageId);
 
             if (message != null)
@@ -46,14 +46,14 @@ namespace Voat.Controllers
                 mpm.MessageContent = "This submission only has a title.";
                 return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
             }
-             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
         // GET: EmbedVideo
         public ActionResult VideoPlayer(int? messageId)
         {
-           
-            var message =  DataCache.Submission.Retrieve(messageId.Value);
+
+            var message = DataCache.Submission.Retrieve(messageId.Value);
 
             if (message != null)
             {
@@ -80,7 +80,7 @@ namespace Voat.Controllers
 
 
             Message submission = DataCache.Submission.Retrieve(messageId);
-            
+
             if (submission == null || submission.Subverse != subversetoshow)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -152,16 +152,11 @@ namespace Voat.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
-        // GET: preview stylesheet
+        // POST: preview stylesheet
         [Authorize]
-        [HttpPost]
-        public ActionResult PreviewStylesheet(StylesheetPreviewModel stylesheetModel)
+        public ActionResult PreviewStylesheet(string subversetoshow, bool previewMode)
         {
-            if (stylesheetModel != null)
-            {
-                return RedirectToRoute("SubverseIndex", new { subversetoshow = stylesheetModel.SubverseName, tempStylesheet = stylesheetModel.TempStylesheet });
-            }
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            return RedirectToRoute("SubverseIndex", new { subversetoshow, previewMode });
         }
 
         // GET: subverse basic info used for V2 sets layout

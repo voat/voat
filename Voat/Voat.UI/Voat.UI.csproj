@@ -297,7 +297,6 @@
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
-    <Compile Include="Models\StylesheetPreviewModel.cs" />
     <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
     <Compile Include="Models\CommentRemovalLog.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
