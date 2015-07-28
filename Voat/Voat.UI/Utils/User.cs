@@ -16,7 +16,6 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Web;
 using Voat.Models;
@@ -656,7 +655,8 @@ namespace Voat.Utils
         public static bool UserDailyPostingQuotaForSubUsed(string userName, string subverse)
         {
             // set starting date to 24 hours ago from now
-            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = DateTime.Now;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = MvcApplication.DailyPostingQuotaPerSub;
@@ -667,7 +667,7 @@ namespace Voat.Utils
                 var userSubmissionsToTargetSub = db.Messages.Count(
                     m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                         && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                        && m.Date >= startDate && m.Date <= DateTime.Now);
+                        && m.Date >= fromDate && m.Date <= toDate);
 
                 if (dpqps <= userSubmissionsToTargetSub)
                 {
@@ -681,7 +681,8 @@ namespace Voat.Utils
         public static bool UserDailyPostingQuotaForNegativeScoreUsed(string userName)
         {
             // set starting date to 24 hours ago from now
-            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = DateTime.Now;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = MvcApplication.DailyPostingQuotaForNegativeScore;
@@ -691,7 +692,7 @@ namespace Voat.Utils
                 // check how many submission user made today
                 var userSubmissionsInPast24Hours = db.Messages.Count(
                     m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                        && m.Date >= startDate && m.Date <= DateTime.Now);
+                        && m.Date >= fromDate && m.Date <= toDate);
 
                 if (dpqps <= userSubmissionsInPast24Hours)
                 {
@@ -705,7 +706,8 @@ namespace Voat.Utils
         public static bool UserDailyCommentPostingQuotaForNegativeScoreUsed(string userName)
         {
             // set starting date to 24 hours ago from now
-            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = DateTime.Now;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = MvcApplication.DailyCommentPostingQuotaForNegativeScore;
@@ -715,7 +717,7 @@ namespace Voat.Utils
                 // check how many submission user made today
                 var userCommentSubmissionsInPast24Hours = db.Comments.Count(
                     m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                        && m.Date >= startDate && m.Date <= DateTime.Now);
+                        && m.Date >= fromDate && m.Date <= toDate);
 
                 if (dpqps <= userCommentSubmissionsInPast24Hours)
                 {
@@ -729,7 +731,8 @@ namespace Voat.Utils
         public static bool UserHourlyPostingQuotaForSubUsed(string userName, string subverse)
         {
             // set starting date to 1 hours ago from now
-            var startDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
+            var toDate = DateTime.Now;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = MvcApplication.HourlyPostingQuotaPerSub;
@@ -740,7 +743,7 @@ namespace Voat.Utils
                 var userSubmissionsToTargetSub = db.Messages.Count(
                     m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                         && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                        && m.Date >= startDate && m.Date <= DateTime.Now);
+                        && m.Date >= fromDate && m.Date <= toDate);
 
                 if (dpqps <= userSubmissionsToTargetSub)
                 {
@@ -757,16 +760,19 @@ namespace Voat.Utils
             int dailyCrossPostQuota = MvcApplication.DailyCrossPostingQuota;
 
             // set starting date to 24 hours ago from now
-            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = DateTime.Now;
 
             using (var db = new voatEntities())
             {
-                var numberOfTimesSubmitted = db.Messages.Count(
-                    m => m.MessageContent.Equals(url, StringComparison.OrdinalIgnoreCase)
-                        && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                        && m.Date >= startDate && m.Date <= DateTime.Now);
+                var numberOfTimesSubmitted = db.Messages
+                    .Where(m => m.MessageContent.Equals(url, StringComparison.OrdinalIgnoreCase) 
+                    && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                    && m.Date >= fromDate && m.Date <= toDate);
 
-                if (dailyCrossPostQuota <= numberOfTimesSubmitted)
+                int nrtimessubmitted = numberOfTimesSubmitted.Count();
+
+                if (dailyCrossPostQuota <= nrtimessubmitted)
                 {
                     return true;
                 }

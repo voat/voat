@@ -14,8 +14,9 @@ All Rights Reserved.
 
 using System;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Voat.Models;
 
 namespace Voat.Utils
 {
@@ -30,12 +31,12 @@ namespace Voat.Utils
             var duration = currentDateTime - inPostingDateTime;
             return CalcSubmissionAge(duration);
         }
-        
+
         private static string IsPlural(int amount)
         {
             return (amount == 1 ? "" : "s");
         }
-        
+
         public static string CalcSubmissionAge(TimeSpan span)
         {
 
@@ -99,5 +100,79 @@ namespace Voat.Utils
             return Regex.Replace(stringToClean, @"[^\u0000-\u007F]", string.Empty);
         }
 
+        // add new link submission
+        public static async Task<string> AddNewLinkSubmission(Message submissionModel, Subverse targetSubverse, string userName)
+        {
+            using (var db = new voatEntities())
+            {
+                // strip unicode if title contains unicode
+                if (ContainsUnicode(submissionModel.Linkdescription))
+                {
+                    submissionModel.Linkdescription = StripUnicode(submissionModel.Linkdescription);
+                }
+
+                // abort if title is < than 10 characters
+                if (submissionModel.Linkdescription.Length < 10)
+                {
+                    // ABORT
+                    return ("The title may not be less than 10 characters.");
+                }
+
+                // make sure the input URI is valid
+                if (!UrlUtility.IsUriValid(submissionModel.MessageContent))
+                {
+                    // ABORT
+                    return ("The URI you are trying to submit is invalid.");
+                }
+
+                // check if target subvere allows submissions from globally banned hostnames
+                if (!targetSubverse.exclude_sitewide_bans)
+                {
+                    // check if hostname is banned before accepting submission
+                    var domain = UrlUtility.GetDomainFromUri(submissionModel.MessageContent);
+                    if (BanningUtility.IsHostnameBanned(domain))
+                    {
+                        // ABORT
+                        return ("The hostname you are trying to submit is banned.");
+                    }
+                }
+
+                // check if user has reached daily crossposting quota
+                if (User.DailyCrossPostingQuotaUsed(userName, submissionModel.MessageContent))
+                {
+                    // ABORT
+                    return ("You have reached your daily crossposting quota for this URL.");
+                }
+
+                // check if target subverse has thumbnails setting enabled before generating a thumbnail
+                if (targetSubverse.enable_thumbnails)
+                {
+                    // try to generate and assign a thumbnail to submission model
+                    submissionModel.Thumbnail = await ThumbGenerator.ThumbnailFromSubmissionModel(submissionModel);
+                }
+
+                // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                if (targetSubverse.anonymized_mode)
+                {
+                    submissionModel.Anonymized = true;
+                }
+                else
+                {
+                    submissionModel.Name = userName;
+                }
+
+                // accept submission and save it to the database
+                submissionModel.Subverse = targetSubverse.name;
+                submissionModel.Likes = 1;
+                db.Messages.Add(submissionModel);
+
+                // update last submission received date for target subverse
+                targetSubverse.last_submission_received = DateTime.Now;
+                await db.SaveChangesAsync();
+            }
+            
+            // null is returned if no errors were raised
+            return null;
+        }
     }
 }

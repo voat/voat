@@ -103,8 +103,11 @@ namespace Voat.Controllers
             ViewBag.title = submission.Title;
             ViewBag.linkDescription = submission.Linkdescription;
 
+            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+            submission.Date = DateTime.Now;
+
             // check if user is banned
-            if (Utils.User.IsUserGloballyBanned(submission.Name) || Utils.User.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
+            if (Utils.User.IsUserGloballyBanned(User.Identity.Name) || Utils.User.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
             {
                 ViewBag.SelectedSubverse = submission.Subverse;
                 return View("~/Views/Home/Comments.cshtml", submission);
@@ -179,45 +182,12 @@ namespace Voat.Controllers
                 }
             }
 
-            // everything was okay, process incoming submission
+            // everything was okay so far, try to process incoming submission
 
             // submission is a link post
             // generate a thumbnail if submission is a direct link to image or video
             if (submission.Type == 2 && submission.MessageContent != null && submission.Linkdescription != null)
             {
-                // strip unicode if title contains unicode
-                if (Submissions.ContainsUnicode(submission.Linkdescription))
-                {
-                    submission.Linkdescription = Submissions.StripUnicode(submission.Linkdescription);
-                }
-
-                // abort if title is < than 10 characters
-                if (submission.Linkdescription.Length < 10)
-                {
-                    ModelState.AddModelError(string.Empty, "Sorry, the title may not be less than 10 characters.");
-                    return View("Submit");
-                }
-
-                var domain = UrlUtility.GetDomainFromUri(submission.MessageContent);
-
-                // make sure the input URI is valid
-                if (!UrlUtility.IsUriValid(submission.MessageContent))
-                {
-                    ModelState.AddModelError(string.Empty, "Sorry, the URI you are trying to submit is invalid.");
-                    return View("Submit");
-                }
-
-                // check if target subvere allows submissions from globally banned hostnames
-                if (!targetSubverse.exclude_sitewide_bans)
-                {
-                    // check if hostname is banned before accepting submission
-                    if (BanningUtility.IsHostnameBanned(domain))
-                    {
-                        ModelState.AddModelError(string.Empty, "Sorry, the hostname you are trying to submit is banned.");
-                        return View("Submit");
-                    }
-                }
-
                 // check if same link was submitted before and deny submission
                 var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(submission.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
@@ -239,41 +209,13 @@ namespace Voat.Controllers
                         );
                 }
 
-                // check if user has reached daily crossposting quota
-                if (Utils.User.DailyCrossPostingQuotaUsed(User.Identity.Name, submission.MessageContent))
+                // process new link submission
+                var addLinkSubmissionResult = await Submissions.AddNewLinkSubmission(submission,targetSubverse,User.Identity.Name);
+                if (addLinkSubmissionResult != null)
                 {
-                    ModelState.AddModelError("", "You have reached your daily crossposting quota for this URL.");
-                    return View();
+                    ModelState.AddModelError(string.Empty, addLinkSubmissionResult);
+                    return View("Submit");
                 }
-
-                // check if target subverse has thumbnails setting enabled before generating a thumbnail
-                if (targetSubverse.enable_thumbnails)
-                {
-                    // try to generate and assign a thumbnail to submission model
-                    submission.Thumbnail = await ThumbGenerator.ThumbnailFromSubmissionModel(submission);
-                }
-
-                // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                if (targetSubverse.anonymized_mode)
-                {
-                    submission.Anonymized = true;
-                }
-                else
-                {
-                    submission.Name = User.Identity.Name;
-                }
-
-                // accept submission and save it to the database
-                submission.Subverse = targetSubverse.name;
-
-                // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                submission.Date = DateTime.Now;
-                submission.Likes = 1;
-                _db.Messages.Add(submission);
-
-                // update last submission received date for target subverse
-                targetSubverse.last_submission_received = DateTime.Now;
-                _db.SaveChanges();
             }
             else if (submission.Type == 1 && submission.Title != null)
             {
@@ -291,8 +233,7 @@ namespace Voat.Controllers
                     return View("Submit");
                 }
 
-                // accept submission and save it to the database
-                // trim trailing blanks from subverse name if a user mistakenly types them
+                // use subverse name from subverses table
                 submission.Subverse = targetSubverse.name;
 
                 // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
@@ -304,10 +245,12 @@ namespace Voat.Controllers
                 {
                     submission.Name = User.Identity.Name;
                 }
+
                 // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
                 submission.Date = DateTime.Now;
                 submission.Likes = 1;
                 _db.Messages.Add(submission);
+
                 // update last submission received date for target subverse
                 targetSubverse.last_submission_received = DateTime.Now;
 
@@ -435,7 +378,7 @@ namespace Voat.Controllers
                 {
 
 
-                     
+
 
                     //IAmAGate: Perf mods for caching
                     int pagesToTake = 2;
@@ -451,7 +394,7 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
-                                
+
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
 
                                 IQueryable<Message> submissions = (from m in db.Messages.Include("Subverse").AsNoTracking()
@@ -485,13 +428,14 @@ namespace Voat.Controllers
                     if (cacheData == null)
                     {
 
-                        var getDataFunc = new Func<object>(() => {
+                        var getDataFunc = new Func<object>(() =>
+                        {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                             {
-                                
+
                                 // get only submissions from default subverses, order by rank
                                 IQueryable<Message> submissions = (from message in db.Messages.AsNoTracking()
-                                                                   where !message.IsArchived &&  message.Name != "deleted"
+                                                                   where !message.IsArchived && message.Name != "deleted"
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(message.Name)
                                                                    join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                                                    select message).OrderByDescending(s => s.Rank);
@@ -501,7 +445,7 @@ namespace Voat.Controllers
                             }
                         });
                         //Now with it's own locking!
-                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));                               
+                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
                     }
 
                     PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>((IList<Message>)cacheData, pageNumber, pageSize, 50000);
@@ -631,11 +575,11 @@ namespace Voat.Controllers
                     int subset = pageNumber / pagesToTake;
                     string cacheKey = String.Format("front.{0}.block.{1}.sort.new", User.Identity.Name, subset);
                     object cacheData = CacheHandler.Retrieve(cacheKey);
-                    
+
                     if (cacheData == null)
                     {
                         int recordsToTake = 25 * pagesToTake; //pages worth
-                       
+
                         var getDataFunc = new Func<object>(() =>
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
@@ -760,7 +704,7 @@ namespace Voat.Controllers
 
         // GET: stickied submission from /v/announcements for the frontpage
         [ChildActionOnly]
-        [OutputCache(Duration=600)]
+        [OutputCache(Duration = 600)]
         public ActionResult StickiedSubmission()
         {
             var stickiedSubmissions = _db.Stickiedsubmissions.FirstOrDefault(s => s.Subversename == "announcements");
