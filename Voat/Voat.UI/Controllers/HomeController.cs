@@ -21,7 +21,6 @@ using System.Web.Mvc;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utils;
-using Voat.Utils.Components;
 
 namespace Voat.Controllers
 {
@@ -185,7 +184,6 @@ namespace Voat.Controllers
             // everything was okay so far, try to process incoming submission
 
             // submission is a link post
-            // generate a thumbnail if submission is a direct link to image or video
             if (submission.Type == 2 && submission.MessageContent != null && submission.Linkdescription != null)
             {
                 // check if same link was submitted before and deny submission
@@ -210,63 +208,26 @@ namespace Voat.Controllers
                 }
 
                 // process new link submission
-                var addLinkSubmissionResult = await Submissions.AddNewLinkSubmission(submission,targetSubverse,User.Identity.Name);
+                var addLinkSubmissionResult = await Submissions.AddNewSubmission(submission, targetSubverse, User.Identity.Name);
                 if (addLinkSubmissionResult != null)
                 {
                     ModelState.AddModelError(string.Empty, addLinkSubmissionResult);
                     return View("Submit");
                 }
             }
+            // submission is a message type submission
             else if (submission.Type == 1 && submission.Title != null)
             {
-                // submission is a self post
-
-                // strip unicode if submission contains unicode
-                if (Submissions.ContainsUnicode(submission.Title))
+                // process new message type submission
+                var addMessageSubmissionResult = await Submissions.AddNewSubmission(submission, targetSubverse, User.Identity.Name);
+                if (addMessageSubmissionResult != null)
                 {
-                    submission.Title = Submissions.StripUnicode(submission.Title);
-                }
-                // abort if title less than 10 characters
-                if (submission.Title.Length < 10)
-                {
-                    ModelState.AddModelError(string.Empty, "Sorry, the the submission title may not be less than 10 characters.");
+                    ModelState.AddModelError(string.Empty, addMessageSubmissionResult);
                     return View("Submit");
-                }
-
-                // use subverse name from subverses table
-                submission.Subverse = targetSubverse.name;
-
-                // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                if (targetSubverse.anonymized_mode)
-                {
-                    submission.Anonymized = true;
-                }
-                else
-                {
-                    submission.Name = User.Identity.Name;
-                }
-
-                // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                submission.Date = DateTime.Now;
-                submission.Likes = 1;
-                _db.Messages.Add(submission);
-
-                // update last submission received date for target subverse
-                targetSubverse.last_submission_received = DateTime.Now;
-
-                if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
-                {
-                    submission.MessageContent = ContentProcessor.Instance.Process(submission.MessageContent, ProcessingStage.InboundPreSave, submission);
-                }
-
-                _db.SaveChanges();
-
-                if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-                {
-                    ContentProcessor.Instance.Process(submission.MessageContent, ProcessingStage.InboundPostSave, submission);
                 }
             }
 
+            // redirect to comments section of newly posted submission
             return RedirectToRoute(
                 "SubverseComments",
                 new
@@ -376,10 +337,6 @@ namespace Voat.Controllers
                 // also do a check so that user actually has subscriptions
                 if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
                 {
-
-
-
-
                     //IAmAGate: Perf mods for caching
                     int pagesToTake = 2;
                     int subset = pageNumber / pagesToTake;
@@ -420,8 +377,6 @@ namespace Voat.Controllers
                 }
                 else
                 {
-
-
                     //IAmAGate: Perf mods for caching
                     string cacheKey = String.Format("front.guest.page.{0}.sort.rank", pageNumber);
                     object cacheData = CacheHandler.Retrieve(cacheKey);
@@ -659,14 +614,6 @@ namespace Voat.Controllers
                 default:
                     return View("~/Views/About/About.cshtml");
             }
-        }
-
-        // GET: /cla
-        public ActionResult Cla()
-        {
-            ViewBag.SelectedSubverse = string.Empty;
-            ViewBag.Message = "Voat CLA";
-            return View("~/Views/Legal/Cla.cshtml");
         }
 
         public ActionResult Welcome()

@@ -119,6 +119,7 @@ namespace Voat.Utils
             return (File.Exists(location));
         }
 
+        // generate a thumbnail if submission is a direct link to image or video
         public static async Task<string> ThumbnailFromSubmissionModel(Message submissionModel)
         {
             var extension = Path.GetExtension(submissionModel.MessageContent);

@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Voat.Models;
+using Voat.Utils.Components;
 
 namespace Voat.Utils
 {
@@ -101,78 +102,129 @@ namespace Voat.Utils
         }
 
         // add new link submission
-        public static async Task<string> AddNewLinkSubmission(Message submissionModel, Subverse targetSubverse, string userName)
+        public static async Task<string> AddNewSubmission(Message submissionModel, Subverse targetSubverse, string userName)
         {
             using (var db = new voatEntities())
             {
-                // strip unicode if title contains unicode
-                if (ContainsUnicode(submissionModel.Linkdescription))
+                // LINK TYPE SUBMISSION
+                if (submissionModel.Type == 2)
                 {
-                    submissionModel.Linkdescription = StripUnicode(submissionModel.Linkdescription);
-                }
+                    // strip unicode if title contains unicode
+                    if (ContainsUnicode(submissionModel.Linkdescription))
+                    {
+                        submissionModel.Linkdescription = StripUnicode(submissionModel.Linkdescription);
+                    }
 
-                // abort if title is < than 10 characters
-                if (submissionModel.Linkdescription.Length < 10)
-                {
-                    // ABORT
-                    return ("The title may not be less than 10 characters.");
-                }
-
-                // make sure the input URI is valid
-                if (!UrlUtility.IsUriValid(submissionModel.MessageContent))
-                {
-                    // ABORT
-                    return ("The URI you are trying to submit is invalid.");
-                }
-
-                // check if target subvere allows submissions from globally banned hostnames
-                if (!targetSubverse.exclude_sitewide_bans)
-                {
-                    // check if hostname is banned before accepting submission
-                    var domain = UrlUtility.GetDomainFromUri(submissionModel.MessageContent);
-                    if (BanningUtility.IsHostnameBanned(domain))
+                    // abort if title is < than 10 characters
+                    if (submissionModel.Linkdescription.Length < 10)
                     {
                         // ABORT
-                        return ("The hostname you are trying to submit is banned.");
+                        return ("The title may not be less than 10 characters.");
                     }
-                }
 
-                // check if user has reached daily crossposting quota
-                if (User.DailyCrossPostingQuotaUsed(userName, submissionModel.MessageContent))
-                {
-                    // ABORT
-                    return ("You have reached your daily crossposting quota for this URL.");
-                }
+                    // make sure the input URI is valid
+                    if (!UrlUtility.IsUriValid(submissionModel.MessageContent))
+                    {
+                        // ABORT
+                        return ("The URI you are trying to submit is invalid.");
+                    }
 
-                // check if target subverse has thumbnails setting enabled before generating a thumbnail
-                if (targetSubverse.enable_thumbnails)
-                {
-                    // try to generate and assign a thumbnail to submission model
-                    submissionModel.Thumbnail = await ThumbGenerator.ThumbnailFromSubmissionModel(submissionModel);
-                }
+                    // check if target subvere allows submissions from globally banned hostnames
+                    if (!targetSubverse.exclude_sitewide_bans)
+                    {
+                        // check if hostname is banned before accepting submission
+                        var domain = UrlUtility.GetDomainFromUri(submissionModel.MessageContent);
+                        if (BanningUtility.IsHostnameBanned(domain))
+                        {
+                            // ABORT
+                            return ("The hostname you are trying to submit is banned.");
+                        }
+                    }
 
-                // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                if (targetSubverse.anonymized_mode)
-                {
-                    submissionModel.Anonymized = true;
+                    // check if user has reached daily crossposting quota
+                    if (User.DailyCrossPostingQuotaUsed(userName, submissionModel.MessageContent))
+                    {
+                        // ABORT
+                        return ("You have reached your daily crossposting quota for this URL.");
+                    }
+
+                    // check if target subverse has thumbnails setting enabled before generating a thumbnail
+                    if (targetSubverse.enable_thumbnails)
+                    {
+                        // try to generate and assign a thumbnail to submission model
+                        submissionModel.Thumbnail = await ThumbGenerator.ThumbnailFromSubmissionModel(submissionModel);
+                    }
+
+                    // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                    if (targetSubverse.anonymized_mode)
+                    {
+                        submissionModel.Anonymized = true;
+                    }
+                    else
+                    {
+                        submissionModel.Name = userName;
+                    }
+
+                    // accept submission and save it to the database
+                    submissionModel.Subverse = targetSubverse.name;
+                    submissionModel.Likes = 1;
+                    db.Messages.Add(submissionModel);
+
+                    // update last submission received date for target subverse
+                    targetSubverse.last_submission_received = DateTime.Now;
+                    await db.SaveChangesAsync();
                 }
                 else
+                // MESSAGE TYPE SUBMISSION
                 {
-                    submissionModel.Name = userName;
+                    // strip unicode if submission contains unicode
+                    if (ContainsUnicode(submissionModel.Title))
+                    {
+                        submissionModel.Title = StripUnicode(submissionModel.Title);
+                    }
+
+                    // abort if title less than 10 characters
+                    if (submissionModel.Title.Length < 10)
+                    {
+                        return ("Sorry, the the submission title may not be less than 10 characters.");
+                    }
+
+                    // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
+                    if (targetSubverse.anonymized_mode)
+                    {
+                        submissionModel.Anonymized = true;
+                    }
+                    else
+                    {
+                        submissionModel.Name = userName;
+                    }
+
+                    // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                    submissionModel.Subverse = targetSubverse.name;
+                    submissionModel.Date = DateTime.Now;
+                    submissionModel.Likes = 1;
+                    db.Messages.Add(submissionModel);
+
+                    // update last submission received date for target subverse
+                    targetSubverse.last_submission_received = DateTime.Now;
+
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                    {
+                        submissionModel.MessageContent = ContentProcessor.Instance.Process(submissionModel.MessageContent, ProcessingStage.InboundPreSave, submissionModel);
+                    }
+
+                    await db.SaveChangesAsync();
+
+                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+                    {
+                        ContentProcessor.Instance.Process(submissionModel.MessageContent, ProcessingStage.InboundPostSave, submissionModel);
+                    }
                 }
-
-                // accept submission and save it to the database
-                submissionModel.Subverse = targetSubverse.name;
-                submissionModel.Likes = 1;
-                db.Messages.Add(submissionModel);
-
-                // update last submission received date for target subverse
-                targetSubverse.last_submission_received = DateTime.Now;
-                await db.SaveChangesAsync();
             }
             
             // null is returned if no errors were raised
             return null;
         }
+
     }
 }
