@@ -16,6 +16,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using Voat.Models;
 using Voat.Utils.Components;
 
@@ -226,5 +227,60 @@ namespace Voat.Utils
             return null;
         }
 
+        // various spam checks, to be replaced with new rule engine
+        public static async Task<string> PreAddSubmissionCheck(Message submissionModel, HttpRequestBase request, string userName, Subverse targetSubverse)
+        {
+            // check if user has reached hourly posting quota for target subverse
+            if (User.UserHourlyPostingQuotaForSubUsed(userName, submissionModel.Subverse))
+            {
+                return ("You have reached your hourly submission quota for this subverse.");
+            }
+
+            // check if user has reached daily posting quota for target subverse
+            if (User.UserDailyPostingQuotaForSubUsed(userName, submissionModel.Subverse))
+            {
+                return ("You have reached your daily submission quota for this subverse.");
+            }
+
+            // verify recaptcha if user has less than 25 CCP
+            var userCcp = Karma.CommentKarma(userName);
+            if (userCcp < 25)
+            {
+                bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(request);
+
+                if (!isCaptchaCodeValid)
+                {
+                    // TODO: SET PREVENT SPAM DELAY TO 0
+                    return ("Incorrect recaptcha answer.");
+                }
+            }
+
+            // if user CCP or SCP is less than -50, allow only X submissions per 24 hours
+            var userScp = Karma.LinkKarma(userName);
+            if (userCcp <= -50 || userScp <= -50)
+            {
+                var quotaUsed = User.UserDailyPostingQuotaForNegativeScoreUsed(userName);
+                if (quotaUsed)
+                {
+                    return ("You have reached your daily submission quota. Your current quota is " + MvcApplication.DailyPostingQuotaForNegativeScore + " submission(s) per 24 hours.");
+                }
+            }
+
+            // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
+            if (targetSubverse.authorized_submitters_only)
+            {
+                if (!User.IsUserSubverseModerator(userName, targetSubverse.name))
+                {
+                    // user is not a moderator, check if user is an administrator
+                    if (!User.IsUserSubverseAdmin(userName, targetSubverse.name))
+                    {
+                        return ("You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
+                    }
+                }
+            }
+
+            // null is returned if all checks have passed
+            return null;
+        }
     }
 }

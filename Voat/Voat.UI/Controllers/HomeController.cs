@@ -112,52 +112,6 @@ namespace Voat.Controllers
                 return View("~/Views/Home/Comments.cshtml", submission);
             }
 
-            // check if user has reached hourly posting quota for target subverse
-            if (Utils.User.UserHourlyPostingQuotaForSubUsed(User.Identity.Name, submission.Subverse))
-            {
-                ModelState.AddModelError("", "You have reached your hourly submission quota for this subverse.");
-                return View();
-            }
-
-            // check if user has reached daily posting quota for target subverse
-            if (Utils.User.UserDailyPostingQuotaForSubUsed(User.Identity.Name, submission.Subverse))
-            {
-                ModelState.AddModelError("", "You have reached your daily submission quota for this subverse.");
-                return View();
-            }
-
-            // verify recaptcha if user has less than 25 CCP
-            var userCcp = Karma.CommentKarma(User.Identity.Name);
-            if (userCcp < 25)
-            {
-                bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);
-
-                if (!isCaptchaCodeValid)
-                {
-                    ModelState.AddModelError("", "Incorrect recaptcha answer.");
-
-                    // TODO 
-                    // SET PREVENT SPAM DELAY TO 0
-
-                    return View();
-                }
-            }
-
-            // if user CCP or SCP is less than -50, allow only X submissions per 24 hours
-            var userScp = Karma.LinkKarma(User.Identity.Name);
-            if (userCcp <= -50 || userScp <= -50)
-            {
-                var quotaUsed = Utils.User.UserDailyPostingQuotaForNegativeScoreUsed(User.Identity.Name);
-                if (quotaUsed)
-                {
-                    ModelState.AddModelError("", "You have reached your daily submission quota. Your current quota is " + MvcApplication.DailyPostingQuotaForNegativeScore + " submission(s) per 24 hours.");
-                    return View();
-                }
-            }
-
-            // abort if model state is invalid
-            if (!ModelState.IsValid) return View("Submit");
-
             // check if subverse exists
             var targetSubverse = _db.Subverses.Find(submission.Subverse.Trim());
 
@@ -167,21 +121,13 @@ namespace Voat.Controllers
                 return View("Submit");
             }
 
-            // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
-            if (targetSubverse.authorized_submitters_only)
+            // check if this submission is valid and good to go
+            var preProcessCheckResult = await Submissions.PreAddSubmissionCheck(submission, Request, User.Identity.Name, targetSubverse);
+            if (preProcessCheckResult != null)
             {
-                if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, targetSubverse.name))
-                {
-                    // user is not a moderator, check if user is an administrator
-                    if (!Utils.User.IsUserSubverseAdmin(User.Identity.Name, targetSubverse.name))
-                    {
-                        ModelState.AddModelError("", "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
-                        return View("Submit");
-                    }
-                }
+                ModelState.AddModelError(string.Empty, preProcessCheckResult);
+                return View("Submit");
             }
-
-            // everything was okay so far, try to process incoming submission
 
             // submission is a link post
             if (submission.Type == 2 && submission.MessageContent != null && submission.Linkdescription != null)
