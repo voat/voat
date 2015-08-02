@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Models.Message>
+@model PaginatedList<Voat.Data.Models.Message>
 
 @{
     string selectedSubverse = ViewBag.SelectedSubverse;
@@ -60,7 +60,7 @@
     }
 
     <style type="text/css" id="custom_css">
-         @if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
+         @if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
         {
             Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new {selectedSubverse = selectedSubverse});
         }

@@ -53,7 +53,7 @@
             {
                 //Is a comment
                 //@Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", new Voat.Models.ViewModels.CommentBucketViewModel(comment), new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", new Voat.Models.CommentBucketViewModel(comment), new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
             }
         }
 

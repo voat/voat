@@ -14,19 +14,20 @@ All Rights Reserved.
 
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using Voat.Data.Models;
 
-namespace Voat.Models
+namespace Voat.Data.Models
 {
-    [MetadataType(typeof(DiscussionMetaData))]
-    public partial class Message
-    {
+    //[MetadataType(typeof(DiscussionMetaData))]
+    //public partial class Message
+    //{
 
-    }
+    //}
 
-    public class DiscussionMetaData
-    {
-        [AllowHtml]
-        [StringLength(10000, ErrorMessage = "Submission text is limited to 10.000 characters.")]
-        public string MessageContent { get; set; }
-    }
+    //public class DiscussionMetaData
+    //{
+    //    [AllowHtml]
+    //    [StringLength(10000, ErrorMessage = "Submission text is limited to 10.000 characters.")]
+    //    public string MessageContent { get; set; }
+    //}
 }

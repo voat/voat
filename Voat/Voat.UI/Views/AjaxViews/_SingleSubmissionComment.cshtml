@@ -227,7 +227,7 @@
                     // if user is sub admin or sub mod but not comment author, show delete button
                     if (User.Identity.Name != commentAuthor)
                     {
-                        if (Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse) || Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
+                        if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
                         {
                             <li>
                                 <form class="toggle del-button " action="#" method="get">
@@ -246,7 +246,7 @@
                     // if user is comment author, show edit and delete buttons. additionally, if he is sub admin or mod, show distinguish button
                     if (User.Identity.Name == commentAuthor)
                     {
-						if (Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse) || Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
+						if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, Model.Message.Subverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
                         {
                             <li>
                                 <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.Id, @Model.MessageId)">distinguish</a>

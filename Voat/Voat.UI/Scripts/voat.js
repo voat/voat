@@ -595,19 +595,11 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
             },
             success: function (response) {
              
-                // load rendered comment that was just posted and append it
-                $.get(
-                    "/ajaxhelpers/singlesubmissioncomment/" + messageId + "/" + userName,
-                    null,
-                    function (data) {
-                        // remove reply form
-                        removereplyform(parentcommentid);
-                        $(".id-" + parentcommentid).append(data);
+                removereplyform(parentcommentid);
+                $(".id-" + parentcommentid).append(response);
 
-                        //notify UI framework of DOM insertion async
-                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentcommentid).last('div')); });
-                    }
-                 );
+                //notify UI framework of DOM insertion async
+                window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentcommentid).last('div')); });
             }
         });
 
@@ -637,30 +629,17 @@ function postCommentAjax(senderButton, messageId, userName) {
                 $form.find("#errorMessage").html("You are doing that too fast. Please wait 30 seconds before trying again.");
                 $form.find("#errorMessage").toggle(true);
             },
-
+            //response now contains the comment html
             success: function (response) {
-                // load rendered comment that was just posted
-                $.get(
-                    "/ajaxhelpers/singlesubmissioncomment/" + messageId + "/" + userName,
-                    null,
-                    function (data) {
-                        // append rendered comment
-                        $(".sitetable.nestedlisting").prepend(data);
 
-                        // reset submit button
-                        $form.find("#submitbutton").val("Submit comment");
-                        $form.find("#submitbutton").prop('disabled', false);
-
-                        // reset textbox
-                        $form.find("#CommentContent").val("");
-
-                        //notify UI framework of DOM insertion async
-                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
-
-                        // TODO: scroll to the newly posted comment
-                        // $('#div_' + element_id)[0].scrollIntoView(true);
-                    }
-                 );
+                $(".sitetable.nestedlisting").prepend(response);
+                // reset submit button
+                $form.find("#submitbutton").val("Submit comment");
+                $form.find("#submitbutton").prop('disabled', false);
+                // reset textbox
+                $form.find("#CommentContent").val("");
+                //notify UI framework of DOM insertion async
+                window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
             }
         });
 

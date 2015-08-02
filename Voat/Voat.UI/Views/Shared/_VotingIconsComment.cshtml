@@ -66,7 +66,7 @@
         <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
             @if (commentContributionPoints < 20)
             {
-                if (Voat.Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                if (UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
                 {
                     <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
                 }

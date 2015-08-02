@@ -17,8 +17,11 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Voat.Configuration;
+using Voat.Data.Models;
 using Voat.Models;
-using Voat.Utils;
+using Voat.Utilities;
+
 
 namespace Voat.Controllers
 {
@@ -39,8 +42,8 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             } 
             // check if caller is subverse moderator, if not, deny posting
-            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, submission.Subverse) &&
-                !Utils.User.IsUserSubverseAdmin(User.Identity.Name, submission.Subverse))
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submission.Subverse) &&
+                !UserHelper.IsUserSubverseAdmin(User.Identity.Name, submission.Subverse))
                 return new HttpUnauthorizedResult();
 
             // find flair by id, apply it to submission
@@ -66,7 +69,7 @@ namespace Voat.Controllers
 
             if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse moderator, if not, deny posting
-            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) && !Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse)) return new HttpUnauthorizedResult();
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) && !UserHelper.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse)) return new HttpUnauthorizedResult();
             // clear flair and save submission
             submissionModel.FlairCss = null;
             submissionModel.FlairLabel = null;
@@ -84,8 +87,8 @@ namespace Voat.Controllers
 
             if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse moderator, if not, deny change
-            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) &&
-                !Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) &&
+                !UserHelper.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
                 return new HttpUnauthorizedResult();
             try
             {
@@ -126,11 +129,11 @@ namespace Voat.Controllers
         [Authorize]
         public JsonResult Vote(int messageId, int typeOfVote)
         {
-            int dailyVotingQuota = MvcApplication.DailyVotingQuota;
+            int dailyVotingQuota = Settings.DailyVotingQuota;
             var loggedInUser = User.Identity.Name;
             var userCcp = Karma.CommentKarma(loggedInUser);
             var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
-            var totalVotesUsedInPast24Hours = Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name);
+            var totalVotesUsedInPast24Hours = UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name);
 
             switch (typeOfVote)
             {
@@ -140,13 +143,13 @@ namespace Voat.Controllers
                         if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {
                             // perform upvoting or resetting
-                            Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(Utils.User.UserIpAddress(Request)));
+                            Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                         }
                     }
                     else if (totalVotesUsedInPast24Hours < 11)
                     {
                         // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
-                        Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(Utils.User.UserIpAddress(Request)));
+                        Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                     }
                     break;
                 case -1:
@@ -155,7 +158,7 @@ namespace Voat.Controllers
                         if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {
                             // perform downvoting or resetting
-                            Voting.DownvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(Utils.User.UserIpAddress(Request)));
+                            Voting.DownvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                         }
                     }
                     break;
@@ -231,7 +234,7 @@ namespace Voat.Controllers
                 }
 
                 // delete submission if delete request is issued by subverse moderator
-                else if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
+                else if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
                 {
                     // mark submission as deleted (TODO: don't use name, add a new bit field to messages table instead)
                     submissionToDelete.Name = "deleted";

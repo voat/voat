@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Collections.Generic;
+using Voat.Data.Models;
 
 namespace Voat.Models.ViewModels
 {

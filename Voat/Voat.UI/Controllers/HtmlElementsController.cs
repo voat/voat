@@ -16,9 +16,11 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Voat.Data.Models;
 using Voat.Models;
 using Voat.Models.ViewModels;
-using Voat.Utils;
+using Voat.Utilities;
+
 
 namespace Voat.Controllers
 {
@@ -48,60 +50,39 @@ namespace Voat.Controllers
             return PartialView("~/Views/AjaxViews/_PrivateMessageReplyForm.cshtml");
         }
 
-        // GET: latest single submission comment for given user
-        public ActionResult SingleMostRecentCommentByUser(string userName, int? messageId)
-        {
-            if (userName == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //// GET: latest single submission comment for given user
+        ////HACK: The comment process needs redone. 
+        //public ActionResult SingleMostRecentCommentByUser(string userName, int? messageId)
+        //{
+        //    if (userName == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            //var comment = _db.Comments
-            //    .Where(c => c.Name == userName && c.MessageId == messageId)
-            //    .OrderByDescending(c => c.Id)
-            //    .FirstOrDefault();
+        //    var comment = _db.Comments
+        //        .Where(c => c.Name == userName && c.MessageId == messageId)
+        //        .OrderByDescending(c => c.Id)
+        //        .FirstOrDefault();
 
-            //if (comment == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            //ViewBag.CommentId = comment.Id;
+        //    if (comment == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
 
-            //if (comment.Message.Anonymized || comment.Message.Subverse.anonymized_mode)
-            //{
-            //    comment.Name = comment.Id.ToString(CultureInfo.InvariantCulture);
-            //}
-            //if (comment.ParentId != null)
-            //{
-            //    return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
-            //}
-            //ViewBag.rootComment = true;
-            //return PartialView("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment);
+        //    ViewBag.CommentId = comment.Id; //why?
+        //    ViewBag.rootComment = comment.ParentId == null; //why?
 
+        //    var submission = DataCache.Submission.Retrieve(comment.MessageId.Value);
+        //    var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
+        //    if (submission.Anonymized || subverse.anonymized_mode)
+        //    {
+        //        comment.Name = comment.Id.ToString(CultureInfo.InvariantCulture);
+        //    }
 
+        //    //COPYPASTA EVERYWHERE!!!!!!!!!!!!!!! Left, right, up down. EVERYWHERE. 
 
-            var comment = _db.Comments
-                .Where(c => c.Name == userName && c.MessageId == messageId)
-                .OrderByDescending(c => c.Id)
-                .FirstOrDefault();
-
-            if (comment == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            ViewBag.CommentId = comment.Id; //why?
-            ViewBag.rootComment = comment.ParentId == null; //why?
-
-            var submission = DataCache.Submission.Retrieve(comment.MessageId.Value);
-            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-
-            if (submission.Anonymized || subverse.anonymized_mode)
-            {
-                comment.Name = comment.Id.ToString(CultureInfo.InvariantCulture);
-            }
-
-            //COPYPASTA EVERYWHERE!!!!!!!!!!!!!!! Left, right, up down. EVERYWHERE. 
-
-            var model = new CommentBucketViewModel(comment);
+        //    var model = new CommentBucketViewModel(comment);
             
-            return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", model);
+        //    return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", model);
 
-        }
+        //}
     }
 }

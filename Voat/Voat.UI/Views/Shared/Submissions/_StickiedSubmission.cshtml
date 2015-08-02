@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Models.Message
+@model Voat.Data.Models.Message
 
 @{
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
@@ -30,7 +30,7 @@
         if (Model.Thumbnail != null)
         {
             <a class="thumbnail may-blank" href="@Model.MessageContent">
-                @if (MvcApplication.UseContentDeliveryNetwork)
+                @if (Settings.UseContentDeliveryNetwork)
                 {
                     <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
                 }

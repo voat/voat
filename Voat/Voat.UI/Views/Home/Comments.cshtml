@@ -11,7 +11,7 @@
     All Rights Reserved.*@
 
 @using System.Configuration
-@using Voat.Models.ViewModels;
+@using Voat.Models;
 
 @model CommentBucketViewModel
 
@@ -30,7 +30,7 @@
 </style>
 
 <style type="text/css" id="custom_css">
-@if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
+@if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
 }
@@ -63,7 +63,7 @@ else if (!User.Identity.IsAuthenticated)
     }
 
     <style type="text/css" id="custom_css">
-@if (User.Identity.IsAuthenticated && !Voat.Utils.User.CustomCssDisabledForUser(User.Identity.Name))
+@if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
 }
@@ -79,8 +79,8 @@ else if (!User.Identity.IsAuthenticated)
             {
                 ViewBag.Title = Model.Submission.Title + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-                ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + MvcApplication.SiteLogo;
-                ViewBag.Description = ViewBag.Description ?? MvcApplication.SiteSlogan;
+                ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
+                ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
                 @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", Model.Submission, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
 
@@ -89,12 +89,12 @@ else if (!User.Identity.IsAuthenticated)
             {
                 ViewBag.Title = Model.Submission.Linkdescription + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-                ViewBag.Description = ViewBag.Description ?? MvcApplication.SiteSlogan;
+                ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
 
                 //check if submission has a thumb, otherwise point to site logo
                 if (Model.Submission.Thumbnail != null)
                 {
-                    if (MvcApplication.UseContentDeliveryNetwork)
+                    if (Settings.UseContentDeliveryNetwork)
                     {
                         ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://cdn." + HttpContext.Current.Request.Url.Authority + "/thumbs/" + @Model.Submission.Thumbnail;
                     }
@@ -105,7 +105,7 @@ else if (!User.Identity.IsAuthenticated)
                 }
                 else
                 {
-                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + MvcApplication.SiteLogo;
+                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
                 }
 
                 @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", Model.Submission, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })

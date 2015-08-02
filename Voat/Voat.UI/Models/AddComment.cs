@@ -17,17 +17,18 @@ using System.Web.Mvc;
 
 namespace Voat.Models
 {
-    [MetadataType(typeof(CommentMetaData))]
-    public partial class Comment
-    {
+    //MIGRATION HACK: 
+    //[MetadataType(typeof(CommentMetaData))]
+    //public partial class Comment
+    //{
 
-    }
+    //}
 
-    public class CommentMetaData
-    {
-        [Required(ErrorMessage = "Comment text is required. Please fill this field.")]
-        [StringLength(10000, ErrorMessage = "Comment text is limited to 10.000 characters.")]
-        [AllowHtml]
-        public string CommentContent { get; set; }
-    }
+    //public class CommentMetaData
+    //{
+    //    [Required(ErrorMessage = "Comment text is required. Please fill this field.")]
+    //    [StringLength(10000, ErrorMessage = "Comment text is limited to 10.000 characters.")]
+    //    [AllowHtml]
+    //    public string CommentContent { get; set; }
+    //}
 }

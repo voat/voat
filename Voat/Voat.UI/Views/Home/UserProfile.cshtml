@@ -24,7 +24,7 @@
             <div class="userstats-heading-1">Submission statistics</div>
             <div class="userstats-body">
                 @{
-                    var userStatsModel = Voat.Utils.User.UserStatsModel(@ViewBag.userid);
+                    var userStatsModel = UserHelper.UserStatsModel(@ViewBag.userid);
 
                     if (userStatsModel.TopSubversesUserContributedTo.Count > 0)
                     {

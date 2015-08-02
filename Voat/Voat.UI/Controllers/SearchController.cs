@@ -17,8 +17,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Voat.Data.Models;
 using Voat.Models;
-using Voat.Utils;
+using Voat.UI.Utilities;
+using Voat.Utilities;
+
 
 namespace Voat.Controllers
 {

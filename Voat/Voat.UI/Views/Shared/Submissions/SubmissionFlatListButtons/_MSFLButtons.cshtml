@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Models.Message
+@model Voat.Data.Models.Message
 
 @{
     int commentCount = Convert.ToInt32(ViewData["commentCount"]);
@@ -42,14 +42,14 @@
             </li>
             <li>
                 @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
-                @if (Model.Name != "deleted" && Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
+                @if (Model.Name != "deleted" && UserHelper.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
                 {
                     @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id }, { "submissionSubverse", Model.Subverse } })
                     @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
                 }
             </li>
         }
-        else if (Model.Name != "deleted" && Voat.Utils.User.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && Voat.Utils.User.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
+        else if (Model.Name != "deleted" && UserHelper.IsUserSubverseAdmin(User.Identity.Name, Model.Subverse) || Model.Name != "deleted" && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
         {
             <li>
                 @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })

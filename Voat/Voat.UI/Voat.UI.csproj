@@ -13,13 +13,15 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Voat</RootNamespace>
     <AssemblyName>Voat.UI</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,9 +64,6 @@
     <Reference Include="Kaliko.ImageLibrary, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ImageLibrary.2.0.5\lib\net45\Kaliko.ImageLibrary.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="MarkdownDeep">
-      <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -161,6 +160,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -177,8 +177,7 @@
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
       <Private>True</Private>
@@ -215,9 +214,7 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
@@ -232,6 +229,7 @@
     </Reference>
     <Reference Include="System.Net.Http.WebRequest">
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebActivator">
       <HintPath>..\packages\WebActivator.1.5\lib\net40\WebActivator.dll</HintPath>
     </Reference>
@@ -297,67 +295,18 @@
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
     <Compile Include="Models\AddSubmissionSelfpost.cs" />
-    <Compile Include="Models\ViewModels\CommentBucketViewModel.cs" />
-    <Compile Include="Models\CommentRemovalLog.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\SavedItem.cs" />
-    <Compile Include="Models\Commentsavingtracker.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\MarkdownPreviewModel.cs" />
-    <Compile Include="Models\Moderatorinvitation.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Savingtracker.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\SubmissionRemovalLog.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\SubverseBan.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\UserBlockedSubverse.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\usp_CommentTree_Result.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
-    <Compile Include="Models\Userset.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Usersetdefinition.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Usersetsubscription.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
     <Compile Include="Models\ViewModels\SubverseBanViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseStylesheetViewModel.cs" />
-    <Compile Include="Models\Viewstatistic.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\voatEntities.cs" />
-    <Compile Include="Utils\CacheHandler.cs" />
-    <Compile Include="Utils\CommentCounter.cs" />
-    <Compile Include="Utils\Components\ContentFilters.cs" />
-    <Compile Include="Utils\Components\ContentProcessor.cs" />
-    <Compile Include="Utils\Components\NotificationManager.cs" />
-    <Compile Include="Utils\Components\RegExReplacer.cs" />
-    <Compile Include="Utils\CONSTANTS.cs" />
-    <Compile Include="Utils\DateTimeUtility.cs" />
-    <Compile Include="Utils\HashHandler.cs" />
     <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\HubMinifier.cs" />
-    <Compile Include="Utils\DataCache.cs" />
-    <Compile Include="Utils\PaginatedList.cs" />
     <Compile Include="Controllers\PartnerController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\RSSController.cs" />
@@ -366,9 +315,6 @@
     <Compile Include="Controllers\SubversesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WebApiController.cs" />
-    <Compile Include="Models\Featuredsub.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -379,64 +325,7 @@
     <Compile Include="Models\ApiModels\ApiBadge.cs" />
     <Compile Include="Models\ApiModels\ApiUserInfo.cs" />
     <Compile Include="Models\ApiModels\ApiSubverseInfo.cs" />
-    <Compile Include="Models\Badge.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Banneddomain.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Banneduser.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\PartnerIntent.cs" />
-    <Compile Include="Models\Comment.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Commentreplynotification.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Commentvotingtracker.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Defaultsubverse.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Message.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Postreplynotification.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Privatemessage.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Promotedsubmission.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Sessiontracker.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Stickiedsubmission.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Subscription.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Subverse.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\SubverseAdmin.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Subverseflairsetting.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Userbadge.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Userpreference.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\AddSubverse.cs" />
     <Compile Include="Models\AddComment.cs" />
@@ -446,58 +335,22 @@
     <Compile Include="Models\ViewModels\ActiveSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentViewModel.cs" />
     <Compile Include="Models\EditSubmission.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentSingleViewModel.cs" />
-    <Compile Include="Models\ViewModels\UserStatsModel.cs" />
     <Compile Include="Models\ViewModels\SubverseLinkFlairViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseModeratorViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseSettingsViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchViewModel.cs" />
-    <Compile Include="Models\Votingtracker.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\VoatEntityDataModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>VoatEntityDataModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\VoatEntityDataModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\VoatEntityDataModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\AntispamUtility.cs" />
-    <Compile Include="Utils\BanningUtility.cs" />
-    <Compile Include="Utils\EmailUtility.cs" />
-    <Compile Include="Utils\MesssagingUtility.cs" />
-    <Compile Include="Utils\IpHashUtility.cs" />
     <Compile Include="Utils\RSSUtility.cs" />
-    <Compile Include="Utils\Saving.cs" />
-    <Compile Include="Utils\SavingComments.cs" />
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />
-    <Compile Include="Utils\UrlUtility.cs" />
-    <Compile Include="Utils\Formatting.cs" />
-    <Compile Include="Utils\Karma.cs" />
     <Compile Include="Utils\PagerOptions.cs" />
-    <Compile Include="Utils\Ranking.cs" />
-    <Compile Include="Utils\Submissions.cs" />
-    <Compile Include="Utils\ThumbGenerator.cs" />
-    <Compile Include="Utils\User.cs" />
-    <Compile Include="Utils\Voting.cs" />
-    <Compile Include="Utils\VotingComments.cs" />
-    <Compile Include="Utils\LiveConfigurationManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\VoatLegacyDocumentation.xml" />
@@ -655,23 +508,6 @@
     <Content Include="Graphics\nsfw-thumb.png" />
     <Content Include="Graphics\thumb-placeholder.png" />
     <Content Include="Graphics\404.png" />
-    <EntityDeploy Include="Models\VoatEntityDataModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>VoatEntityDataModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\VoatEntityDataModel.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
-      <LastGenOutput>VoatEntityDataModel.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Models\VoatEntityDataModel.edmx.diagram">
-      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
-    </Content>
-    <Content Include="Models\VoatEntityDataModel.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
-      <LastGenOutput>VoatEntityDataModel.cs</LastGenOutput>
-    </Content>
     <Content Include="Graphics\WVSprite.sprite" />
     <Content Include="Areas\HelpPage\Views\Help\Index.cshtml" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
@@ -856,6 +692,12 @@
     <Content Include="Web.config.live" />
     <Content Include="Views\Account\RegistrationDisabled.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseStylesheetEditor.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -863,7 +705,20 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Voat.Business\Voat.Business.csproj">
+      <Project>{a0da6d93-b070-485f-8e46-2f3e30982898}</Project>
+      <Name>Voat.Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Voat.Data\Voat.Data.csproj">
+      <Project>{1e367cda-5508-47e1-9e95-ed100aee42d0}</Project>
+      <Name>Voat.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj">
+      <Project>{dd358253-041f-4feb-9714-1164127780f8}</Project>
+      <Name>Voat.RulesEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

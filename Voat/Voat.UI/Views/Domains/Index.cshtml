@@ -10,12 +10,12 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Models.Message>
+@model PaginatedList<Voat.Data.Models.Message>
 
 @using System.Configuration
 
 @{
-    ViewBag.Title = MvcApplication.SiteSlogan;
+    ViewBag.Title = Settings.SiteSlogan;
 
     string sortingMode = ViewBag.SortingMode;
     string urlaction;

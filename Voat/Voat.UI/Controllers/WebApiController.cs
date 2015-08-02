@@ -17,9 +17,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
+using Voat.Data.Models;
 using Voat.Models;
 using Voat.Models.ApiModels;
-using Voat.Utils;
+using Voat.Utilities;
+
 
 namespace Voat.Controllers
 {
@@ -371,7 +373,7 @@ namespace Voat.Controllers
         public ApiUserInfo UserInfo(string userName)
         {
 
-            if (userName != "deleted" && !Utils.User.UserExists(userName))
+            if (userName != "deleted" && !UserHelper.UserExists(userName))
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
@@ -388,13 +390,13 @@ namespace Voat.Controllers
                   {
                       var resultModel = new ApiUserInfo();
 
-                      var userBadgesList = Utils.User.UserBadges(userName);
+                      var userBadgesList = UserHelper.UserBadges(userName);
                       var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge { Awarded = item.Awarded, BadgeName = item.Badge.BadgeName }).ToList();
 
                       resultModel.Name = userName;
                       resultModel.CCP = Karma.CommentKarma(userName);
                       resultModel.LCP = Karma.LinkKarma(userName);
-                      resultModel.RegistrationDate = Utils.User.GetUserRegistrationDateTime(userName);
+                      resultModel.RegistrationDate = UserHelper.GetUserRegistrationDateTime(userName);
                       resultModel.Badges = resultBadgesList;
 
                       return resultModel;

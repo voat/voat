@@ -19,7 +19,7 @@
 <div class="midcol">
     @if (User.Identity.IsAuthenticated)
     {
-        if (Voat.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, Model.Name))
+        if (UserHelper.IsUserSubverseSubscriber(User.Identity.Name, Model.Name))
         {
             <button type="button" onclick="return unsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
         }

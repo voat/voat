@@ -17,7 +17,7 @@ using System.Globalization;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenGraph_Net;
-using Voat.Utils;
+using Voat.Utilities;
 
 namespace UnitTests
 {

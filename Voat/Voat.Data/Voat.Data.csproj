@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1E367CDA-5508-47E1-9E95-ED100AEE42D0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Voat.Data</RootNamespace>
+    <AssemblyName>Voat.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\Badge.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Banneddomain.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Banneduser.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Comment.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CommentRemovalLog.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Commentreplynotification.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Commentsavingtracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Commentvotingtracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Defaultsubverse.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Featuredsub.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\fnActiveUserCounts_Result.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Message.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Moderatorinvitation.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PartnerInformation.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Postreplynotification.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Privatemessage.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Promotedsubmission.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Savingtracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Session.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Sessiontracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sp_perf_stats_azure_Result.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Stickiedsubmission.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubmissionRemovalLog.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Subscription.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Subverse.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubverseAdmin.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubverseBan.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Subverseflairsetting.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Userbadge.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserBlockedSubverse.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Userpreference.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Userscore.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Userset.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Usersetdefinition.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Usersetsubscription.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\usp_ActiveUsers_Result.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\usp_CommentTree_Result.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\usp_WhoVotesForUsersComments_Result.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Viewstatistic.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\VoatEntityDataModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VoatEntityDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\VoatEntityDataModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\VoatEntityDataModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Votingtracker.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\voatEntities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="Models\VoatEntityDataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>VoatEntityDataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Models\VoatEntityDataModel.edmx.diagram">
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Voat.Common\Voat.Common.csproj">
+      <Project>{fa876562-324e-4091-8311-f26465487017}</Project>
+      <Name>Voat.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Models\VoatEntityDataModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+      <LastGenOutput>VoatEntityDataModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\VoatEntityDataModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
+      <LastGenOutput>VoatEntityDataModel.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
