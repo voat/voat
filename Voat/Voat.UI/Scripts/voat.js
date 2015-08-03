@@ -1585,11 +1585,31 @@ function toggleBlockSubverse(obj, subverseName) {
         }
 
         // submit block request
-        $.ajax({
-            type: "POST",
-            url: "/subverses/block/" + subverseName
-        });
+        postBlockSubverse(subverseName);
     }
+}
+
+// a function to submit subverse block/unblock request via SFLButtonBlockSubverse
+function toggleBlockSubverseFLButton(obj, subverseName) {
+    var blockButton = $(obj);
+    if (blockButton.exists()) {
+        if (blockButton.text() === "block subverse") {
+            blockButton.text("undo");
+        } else {
+            blockButton.text("block subverse");
+        }
+
+        // submit block request
+        postBlockSubverse(subverseName);
+    }
+}
+
+// a function to post subverse block request
+function postBlockSubverse(subverseName) {
+    $.ajax({
+        type: "POST",
+        url: "/subverses/block/" + subverseName
+    });
 }
 
 // a function to check username availability
