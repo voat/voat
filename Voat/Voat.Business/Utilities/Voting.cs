@@ -263,7 +263,7 @@ namespace Voat.Utilities
         }
 
         // send SignalR realtime notification of incoming vote to the author
-        private static void SendVoteNotification(string userName, string notificationType)
+        public static void SendVoteNotification(string userName, string notificationType)
         {
             //MIGRATION HACK: 
             //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();

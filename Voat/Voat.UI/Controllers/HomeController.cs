@@ -124,8 +124,13 @@ namespace Voat.Controllers
                 return View("Submit");
             }
 
+            //wrap captcha check in anon method as following method is in non UI dll
+            var captchaCheck = new Func<HttpRequestBase, Task<bool>>(request => {
+                return ReCaptchaUtility.Validate(request);
+            });
+
             // check if this submission is valid and good to go
-            var preProcessCheckResult = await Submissions.PreAddSubmissionCheck(submission, Request, User.Identity.Name, targetSubverse);
+            var preProcessCheckResult = await Submissions.PreAddSubmissionCheck(submission, Request, User.Identity.Name, targetSubverse, captchaCheck);
             if (preProcessCheckResult != null)
             {
                 ModelState.AddModelError(string.Empty, preProcessCheckResult);

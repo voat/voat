@@ -328,7 +328,6 @@
     <Compile Include="Models\PartnerIntent.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\AddSubverse.cs" />
-    <Compile Include="Models\AddComment.cs" />
     <Compile Include="Models\AddSubmissionLinkpost.cs" />
     <Compile Include="Models\SubmissionMetaData.cs" />
     <Compile Include="Models\Cla.cs" />

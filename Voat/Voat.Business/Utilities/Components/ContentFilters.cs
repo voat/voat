@@ -85,6 +85,7 @@ namespace Voat.Utilities.Components
         public UserMentionNotificationFilter()
             : base(5, true)
         {
+            
             Priority = 1;
             ProcessingStage = ProcessingStage.InboundPostSave;
             IsReadOnly = true;
@@ -99,13 +100,13 @@ namespace Voat.Utilities.Components
                 Comment c = context as Comment;
                 if (c != null && c.LastEditDate == null)
                 {
-                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, c);
+                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, c, ContentProcessor.UserNotificationChanged);
                 }
                 //Message mentions
                 Message m = context as Message;
                 if (m != null && m.LastEditDate == null)
                 {
-                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, m);
+                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, m, ContentProcessor.UserNotificationChanged);
                 }
             }
             return match.Value;

@@ -24,7 +24,7 @@ namespace Voat.Utilities.Components
 {
     public static class NotificationManager
     {
-        public static async Task SendUserMentionNotification(string user, Comment comment)
+        public static async Task SendUserMentionNotification(string user, Comment comment, Action<string> onSuccess)
         {
             if (comment != null)
             {
@@ -65,12 +65,10 @@ namespace Voat.Utilities.Components
                         await _db.SaveChangesAsync();
                     }
 
-                    // get count of unread notifications
-                    int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
-                    //MIGRATION HACK:
-                    //// send SignalR realtime notification to recipient
-                    //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                    //hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
+                    if (onSuccess != null)
+                    {
+                        onSuccess(recipient);
+                    }
                 }
                 catch (Exception ex) {
                     throw ex;
@@ -78,7 +76,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendUserMentionNotification(string user, Message submission)
+        public static async Task SendUserMentionNotification(string user, Message submission, Action<string> onSuccess)
         {
             if (submission != null)
             {
@@ -116,13 +114,10 @@ namespace Voat.Utilities.Components
                         await _db.SaveChangesAsync();
                     }
 
-                    // get count of unread notifications
-                    int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
-
-                    //MIGRATION HACK: 
-                    //// send SignalR realtime notification to recipient
-                    //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                    //hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
+                    if (onSuccess != null)
+                    {
+                        onSuccess(recipient);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -131,7 +126,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendCommentNotification(Comment comment)
+        public static async Task SendCommentNotification(Comment comment, Action<string> onSuccess)
         {
             try 
             { 
@@ -182,13 +177,10 @@ namespace Voat.Utilities.Components
 
                                         await _db.SaveChangesAsync();
 
-                                        // get count of unread notifications
-                                        int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(commentReplyNotification.Recipient);
-
-                                        //MIGRATION HACK:
-                                        //// send SignalR realtime notification to recipient
-                                        //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                                        //hubContext.Clients.User(commentReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
+                                        if (onSuccess != null)
+                                        {
+                                            onSuccess(commentReplyNotification.Recipient);
+                                        }
                                     }
                                 }
                             }
@@ -234,13 +226,10 @@ namespace Voat.Utilities.Components
 
                                     await _db.SaveChangesAsync();
 
-                                    // get count of unread notifications
-                                    int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(postReplyNotification.Recipient);
-
-                                    //MIGRATION HACK:
-                                    //// send SignalR realtime notification to recipient
-                                    //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                                    //hubContext.Clients.User(postReplyNotification.Recipient).setNotificationsPending(unreadNotifications);
+                                    if (onSuccess != null)
+                                    {
+                                        onSuccess(postReplyNotification.Recipient);
+                                    }
                                 }
                             }
                         }

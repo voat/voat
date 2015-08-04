@@ -229,7 +229,7 @@ namespace Voat.Utilities
         }
 
         // various spam checks, to be replaced with new rule engine
-        public static async Task<string> PreAddSubmissionCheck(Message submissionModel, HttpRequestBase request, string userName, Subverse targetSubverse)
+        public static async Task<string> PreAddSubmissionCheck(Message submissionModel, HttpRequestBase request, string userName, Subverse targetSubverse, Func<HttpRequestBase, Task<bool>> captchaValidator)
         {
             // check if user has reached hourly posting quota for target subverse
             if (UserHelper.UserHourlyPostingQuotaForSubUsed(userName, submissionModel.Subverse))
@@ -247,14 +247,13 @@ namespace Voat.Utilities
             var userCcp = Karma.CommentKarma(userName);
             if (userCcp < 25)
             {
-                //MIGRATION HACK:
-                //bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(request);
+                bool isCaptchaCodeValid = await captchaValidator(request);
 
-                //if (!isCaptchaCodeValid)
-                //{
-                //    // TODO: SET PREVENT SPAM DELAY TO 0
-                //    return ("Incorrect recaptcha answer.");
-                //}
+                if (!isCaptchaCodeValid)
+                {
+                    // TODO: SET PREVENT SPAM DELAY TO 0
+                    return ("Incorrect recaptcha answer.");
+                }
             }
 
             // if user CCP or SCP is less than -50, allow only X submissions per 24 hours

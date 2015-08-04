@@ -61,7 +61,7 @@ namespace Voat.Utilities
                             db.Commentvotingtrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
 
-                            SendVoteNotification(comment.Name, "upvote");
+                            Voting.SendVoteNotification(comment.Name, "upvote");
                         }
 
                         break;
@@ -84,7 +84,7 @@ namespace Voat.Utilities
                             }
                             db.SaveChanges();
 
-                            SendVoteNotification(comment.Name, "downtoupvote");
+                            Voting.SendVoteNotification(comment.Name, "downtoupvote");
                         }
 
                         break;
@@ -95,7 +95,7 @@ namespace Voat.Utilities
                         comment.Likes--;
                         db.SaveChanges();
 
-                        SendVoteNotification(comment.Name, "downvote");
+                        Voting.SendVoteNotification(comment.Name, "downvote");
 
                         ResetCommentVote(userWhichUpvoted, commentId);
 
@@ -156,7 +156,7 @@ namespace Voat.Utilities
                         db.Commentvotingtrackers.Add(tmpVotingTracker);
                         db.SaveChanges();
 
-                        SendVoteNotification(comment.Name, "downvote");
+                            Voting.SendVoteNotification(comment.Name, "downvote");
                     }
 
                         break;
@@ -178,7 +178,7 @@ namespace Voat.Utilities
                         }
                         db.SaveChanges();
 
-                        SendVoteNotification(comment.Name, "uptodownvote");
+                            Voting.SendVoteNotification(comment.Name, "uptodownvote");
                     }
 
                         break;
@@ -190,7 +190,7 @@ namespace Voat.Utilities
                         db.SaveChanges();
                         ResetCommentVote(userWhichDownvoted, commentId);
 
-                        SendVoteNotification(comment.Name, "upvote");
+                        Voting.SendVoteNotification(comment.Name, "upvote");
 
                         break;
                 }
@@ -228,35 +228,36 @@ namespace Voat.Utilities
             }
         }
 
-        // send SignalR realtime notification of incoming commentvote to the author
-        private static void SendVoteNotification(string userName, string notificationType)
-        {
-            ////MIGRATION HACK
-            //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+        //This code is repeated in Voating.cs
+        //// send SignalR realtime notification of incoming commentvote to the author
+        //private static void SendVoteNotification(string userName, string notificationType)
+        //{
+        //    ////MIGRATION HACK
+        //    //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
 
-            //switch (notificationType)
-            //{
-            //    case "downvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingDownvote(2);
-            //        }
-            //        break;
-            //    case "upvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingUpvote(2);
-            //        }
-            //        break;
-            //    case "downtoupvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingDownToUpvote(2);
-            //        }
-            //        break;
-            //    case "uptodownvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingUpToDownvote(2);
-            //        }
-            //        break;
-            //}
-        }
+        //    //switch (notificationType)
+        //    //{
+        //    //    case "downvote":
+        //    //        {
+        //    //            hubContext.Clients.User(userName).incomingDownvote(2);
+        //    //        }
+        //    //        break;
+        //    //    case "upvote":
+        //    //        {
+        //    //            hubContext.Clients.User(userName).incomingUpvote(2);
+        //    //        }
+        //    //        break;
+        //    //    case "downtoupvote":
+        //    //        {
+        //    //            hubContext.Clients.User(userName).incomingDownToUpvote(2);
+        //    //        }
+        //    //        break;
+        //    //    case "uptodownvote":
+        //    //        {
+        //    //            hubContext.Clients.User(userName).incomingUpToDownvote(2);
+        //    //        }
+        //    //        break;
+        //    //}
+        //}
     }
 }

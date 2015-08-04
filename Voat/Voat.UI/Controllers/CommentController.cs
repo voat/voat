@@ -12,6 +12,7 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
+//using Microsoft.AspNet.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -389,7 +390,15 @@ namespace Voat.Controllers
                     }
 
                     // send comment reply notification to parent comment author if the comment is not a new root comment
-                    await NotificationManager.SendCommentNotification(commentModel);
+                    await NotificationManager.SendCommentNotification(commentModel, 
+                        new Action<string>(recipient => {
+                            //get count of unread notifications
+                            int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(recipient);
+                            // send SignalR realtime notification to recipient
+                            var hubContext = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                            hubContext.Clients.User(recipient).setNotificationsPending(unreadNotifications);
+                        })
+                    );
                 }
                 if (Request.IsAjaxRequest()) 
                 {

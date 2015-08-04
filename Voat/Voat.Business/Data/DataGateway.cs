@@ -1100,7 +1100,7 @@ namespace Voat.Data {
                 }
 
                 // send comment reply notification to parent comment author if the comment is not a new root comment
-                NotificationManager.SendCommentNotification(c);
+                NotificationManager.SendCommentNotification(c, null);
             }
 
             return c;  

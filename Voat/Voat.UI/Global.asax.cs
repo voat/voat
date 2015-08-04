@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.SignalR;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
@@ -10,7 +11,7 @@ using System.Web.Routing;
 using Voat.Configuration;
 using Voat.UI.Utilities;
 using Voat.Utilities;
-
+using Voat.Utilities.Components;
 
 namespace Voat
 {
@@ -18,6 +19,7 @@ namespace Voat
     {
         protected void Application_Start()
         {
+
             LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
             LiveConfigurationManager.Start();
 
@@ -35,6 +37,14 @@ namespace Voat
             ViewEngines.Engines.Add(new RazorViewEngine());
 
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
+
+            ContentProcessor.UserNotificationChanged = new Action<string>(recipient => {
+                //get count of unread notifications
+                int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(recipient);
+                // send SignalR realtime notification to recipient
+                var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                hubContext.Clients.User(recipient).setNotificationsPending(unreadNotifications);
+            });
 
             // USE ONLY FOR DEBUG: clear all sessions used for online users count
             // SessionTracker.RemoveAllSessions();
