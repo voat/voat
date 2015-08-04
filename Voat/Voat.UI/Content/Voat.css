@@ -1391,6 +1391,7 @@ pre, code {
             overflow-x: hidden;
             overflow-y: scroll;
             max-height: 80vh;
+            height: 80vh;
         }
 
             .whoaSubscriptionMenu li ul li {
