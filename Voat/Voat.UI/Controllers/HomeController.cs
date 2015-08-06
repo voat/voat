@@ -18,9 +18,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Voat.Data.Models;
 using Voat.Models;
 using Voat.Models.ViewModels;
-using Voat.Utils;
+using Voat.UI.Utilities;
+using Voat.Utilities;
+
 
 namespace Voat.Controllers
 {
@@ -106,7 +109,7 @@ namespace Voat.Controllers
             submission.Date = DateTime.Now;
 
             // check if user is banned
-            if (Utils.User.IsUserGloballyBanned(User.Identity.Name) || Utils.User.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
+            if (UserHelper.IsUserGloballyBanned(User.Identity.Name) || UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
             {
                 ViewBag.SelectedSubverse = submission.Subverse;
                 return View("~/Views/Home/Comments.cshtml", submission);
@@ -121,8 +124,13 @@ namespace Voat.Controllers
                 return View("Submit");
             }
 
+            //wrap captcha check in anon method as following method is in non UI dll
+            var captchaCheck = new Func<HttpRequestBase, Task<bool>>(request => {
+                return ReCaptchaUtility.Validate(request);
+            });
+
             // check if this submission is valid and good to go
-            var preProcessCheckResult = await Submissions.PreAddSubmissionCheck(submission, Request, User.Identity.Name, targetSubverse);
+            var preProcessCheckResult = await Submissions.PreAddSubmissionCheck(submission, Request, User.Identity.Name, targetSubverse, captchaCheck);
             if (preProcessCheckResult != null)
             {
                 ModelState.AddModelError(string.Empty, preProcessCheckResult);
@@ -199,9 +207,9 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            if (!Utils.User.UserExists(id) || id == "deleted") return View("~/Views/Errors/Error_404.cshtml");
+            if (!UserHelper.UserExists(id) || id == "deleted") return View("~/Views/Errors/Error_404.cshtml");
 
-            ViewBag.userid = Utils.User.OriginalUsername(id);
+            ViewBag.userid = UserHelper.OriginalUsername(id);
 
             // show comments
             if (whattodisplay != null && whattodisplay == "comments")
@@ -281,7 +289,7 @@ namespace Voat.Controllers
             {
                 // show only submissions from subverses that user is subscribed to if user is logged in
                 // also do a check so that user actually has subscriptions
-                if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                if (User.Identity.IsAuthenticated && UserHelper.SubscriptionCount(User.Identity.Name) > 0)
                 {
                     //IAmAGate: Perf mods for caching
                     int pagesToTake = 2;
@@ -374,7 +382,7 @@ namespace Voat.Controllers
                 // get names of each set that user is subscribed to
                 // for each set name, get list of subverses that define the set
                 // for each subverse, get top ranked submissions
-                if (User.Identity.IsAuthenticated && Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
+                if (User.Identity.IsAuthenticated && UserHelper.SetsSubscriptionCount(User.Identity.Name) > 0)
                 {
                     var userSetSubscriptions = _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name);
                     var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
@@ -468,7 +476,7 @@ namespace Voat.Controllers
             {
                 // show only submissions from subverses that user is subscribed to if user is logged in
                 // also do a check so that user actually has subscriptions
-                if (User.Identity.IsAuthenticated && Utils.User.SubscriptionCount(User.Identity.Name) > 0)
+                if (User.Identity.IsAuthenticated && UserHelper.SubscriptionCount(User.Identity.Name) > 0)
                 {
 
                     //IAmAGate: Perf mods for caching

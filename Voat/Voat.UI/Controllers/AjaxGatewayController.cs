@@ -19,7 +19,9 @@ using System.Net;
 using System.Web.Mvc;
 using Voat.Models;
 using Voat.Models.ViewModels;
-using Voat.Utils;
+
+using Voat.Data.Models;
+using Voat.Utilities;
 
 namespace Voat.Controllers
 {
@@ -85,8 +87,8 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner or moderator, if not, deny listing
-            if (!Utils.User.IsUserSubverseModerator(User.Identity.Name, subversetoshow) &&
-                !Utils.User.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow) &&
+                !UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -171,7 +173,7 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserBasicInfo(string userName)
         {
-            var userRegistrationDateTime = Utils.User.GetUserRegistrationDateTime(userName);
+            var userRegistrationDateTime = UserHelper.GetUserRegistrationDateTime(userName);
             var memberFor = Submissions.CalcSubmissionAge(userRegistrationDateTime);
             var scp = Karma.LinkKarma(userName);
             var ccp = Karma.CommentKarma(userName);

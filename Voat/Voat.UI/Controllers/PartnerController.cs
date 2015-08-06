@@ -17,7 +17,8 @@ using System.Net.Mail;
 using System.Text;
 using System.Web.Mvc;
 using Voat.Models;
-using Voat.Utils;
+using Voat.UI.Utilities;
+using Voat.Utilities;
 
 namespace Voat.Controllers
 {

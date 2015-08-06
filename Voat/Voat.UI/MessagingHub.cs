@@ -17,8 +17,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
-using Voat.Utils;
+
 using System.Collections.Generic;
+using Voat.Utilities;
 
 namespace Voat
 {
@@ -45,9 +46,8 @@ namespace Voat
 
             if (!String.IsNullOrEmpty(name) && message != String.Empty && !String.IsNullOrEmpty(subverseName))
             {
-
                 // check if user is banned
-                if (User.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
+                if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
                 {
                     // message won't be processed
                     // this is necessary because banning a user from a subverse doesn't kick them from chat
@@ -97,7 +97,7 @@ namespace Voat
             // reject join request if user is banned if user is authenticated
             if (Context.User.Identity.IsAuthenticated)
             {
-                if (User.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
+                if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
                 {
                     // abort join
                     return null;

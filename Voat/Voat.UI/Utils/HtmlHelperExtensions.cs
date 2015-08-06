@@ -7,7 +7,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.WebPages;
 
-namespace Voat.Utils {
+namespace Voat.UI.Utilities {
     public static class HtmlHelperExtensions {
 
         public static MvcHtmlString MarkdownEditorFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes) {

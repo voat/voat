@@ -1,0 +1,4 @@
+Markdowndeep.dll:
+Voat uses a compilation of MarkDownDeep with certain options turned off. The source itself has not changed.
+
+http://www.toptensoftware.com/markdowndeep/

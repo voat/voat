@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Models.Message
+@model Voat.Data.Models.Message
 
 @{
     int score = (Model.Likes - Model.Dislikes);
@@ -50,7 +50,7 @@
 
             @if (commentContributionPoints < 20)
             {
-                if (Voat.Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                if (UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
                 {
                     <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
                 }

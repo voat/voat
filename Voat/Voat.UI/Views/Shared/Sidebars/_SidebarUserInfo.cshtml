@@ -12,7 +12,7 @@
 
 @{
     string userName = ViewBag.userid;
-    DateTime userRegistrationDateTime = Voat.Utils.User.GetUserRegistrationDateTime(ViewBag.userid);
+    DateTime userRegistrationDateTime = UserHelper.GetUserRegistrationDateTime(ViewBag.userid);
 
     <style>
         .titlebox {
@@ -23,9 +23,9 @@
     <div class="side">
         <div class="titlebox footer rounded">
             <div class="thumbnail may-blank user-avatar">
-                @if (Voat.Utils.User.HasAvatar(userName) != null)
+                @if (UserHelper.HasAvatar(userName) != null)
                 {
-                    if (MvcApplication.UseContentDeliveryNetwork)
+                    if (Settings.UseContentDeliveryNetwork)
                     {
                         <img src="https://cdn.voat.co/avatars/@(userName).jpg" alt="" class="user-avatar">
                     }
@@ -41,14 +41,14 @@
             </div>
             &ldquo;
             <span class="user-quote">
-                @Voat.Utils.User.UserShortbio(userName)
+                @UserHelper.UserShortbio(userName)
             </span>
             &rdquo;
         </div>
         <div class="bottom">
             <p class="h6">
                 Member for: <b>@Submissions.CalcSubmissionAge(userRegistrationDateTime)</b><br />
-                <span class="bottommenu">(joined on: @Voat.Utils.User.GetUserRegistrationDateTime(userName).ToShortDateString())</span>
+                <span class="bottommenu">(joined on: @UserHelper.GetUserRegistrationDateTime(userName).ToShortDateString())</span>
             </p>
             <a href="#" class="btn-whoaverse-paging disabled">
                 Follow
@@ -80,9 +80,9 @@
                     Badges and trophies
                 </h2>
                 <div class="bottom">
-                    @if (Voat.Utils.User.UserBadges(userName).Count > 0)
+                    @if (UserHelper.UserBadges(userName).Count > 0)
                     {
-                        foreach (var badge in Voat.Utils.User.UserBadges(userName))
+                        foreach (var badge in UserHelper.UserBadges(userName))
                         {
                             if (badge.Badge.BadgeGraphics != null)
                             {
@@ -119,7 +119,7 @@
         </div>
         @Html.Action("SubversesUserModerates", "Home", new { userName = userName })
 
-        @if (Voat.Utils.User.PublicSubscriptionsEnabled(userName))
+        @if (UserHelper.PublicSubscriptionsEnabled(userName))
         {
             @Html.Action("SubversesUserIsSubscribedTo", "Home", new { userName = userName })
         }

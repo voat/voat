@@ -36,11 +36,11 @@
                 <span class="separator">|</span>
                 <a id="nightmodetoggle" onclick="toggleNightMode()" title="Toggle Night Mode"></a>
                 <span class="separator">|</span>
-                @if (Voat.Utils.User.UserHasNewMessages(User.Identity.Name))
+                @if (UserHelper.UserHasNewMessages(User.Identity.Name))
                 {
                     <span class="notification-container">
                         <a title="you have new messages" href="/messaging/inbox" class="havemail" id="mail">messages</a>
-                        <span class="notification-counter" id="mailcounter">@Voat.Utils.User.UnreadTotalNotificationsCount(User.Identity.Name)</span>
+                        <span class="notification-counter" id="mailcounter">@UserHelper.UnreadTotalNotificationsCount(User.Identity.Name)</span>
                     </span>
                 }
                 else

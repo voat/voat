@@ -14,8 +14,10 @@ All Rights Reserved.
 
 using System.Linq;
 using System.Web.Mvc;
+using Voat.Data.Models;
 using Voat.Models;
-using Voat.Utils;
+using Voat.Utilities;
+
 
 namespace Voat.Controllers
 {

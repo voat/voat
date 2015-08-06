@@ -62,6 +62,10 @@
     <Compile Include="UnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Voat.Business\Voat.Business.csproj">
+      <Project>{a0da6d93-b070-485f-8e46-2f3e30982898}</Project>
+      <Name>Voat.Business</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Voat.UI\Voat.UI.csproj">
       <Project>{1d1f318c-eb40-4e3b-96eb-e9ab0d66de30}</Project>
       <Name>Voat.UI</Name>

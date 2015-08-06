@@ -22,7 +22,11 @@ using System.Web.Mvc;
 using Microsoft.Ajax.Utilities;
 using Voat.Models;
 using Voat.Models.ViewModels;
-using Voat.Utils;
+
+using Voat.Utilities;
+using Voat.Data.Models;
+using Voat.Configuration;
+using Voat.UI.Utilities;
 
 namespace Voat.Controllers
 {
@@ -160,7 +164,7 @@ namespace Voat.Controllers
             if (setToEdit != null)
             {
                 // check if user owns the set and abort
-                if (!Utils.User.IsUserSetOwner(User.Identity.Name, setToEdit.Set_id)) return RedirectToAction("UnAuthorized", "Error");
+                if (!UserHelper.IsUserSetOwner(User.Identity.Name, setToEdit.Set_id)) return RedirectToAction("UnAuthorized", "Error");
 
                 // get list of subverses for the set
                 var setSubversesList = _db.Usersetdefinitions.Where(s => s.Set_id == setToEdit.Set_id).ToList();
@@ -187,7 +191,7 @@ namespace Voat.Controllers
         public ActionResult ReorderSet(string setName, int direction)
         {
             // check if user is subscribed to given set
-            if (Utils.User.IsUserSubscribedToSet(User.Identity.Name, setName))
+            if (UserHelper.IsUserSubscribedToSet(User.Identity.Name, setName))
             {
                 // reorder the set for logged in user using given direction
                 // TODO: reorder
@@ -267,7 +271,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> CreateSet([Bind(Include = "Name, Description")] AddSet setTmpModel)
         {
             if (!User.Identity.IsAuthenticated) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            int maximumOwnedSets = MvcApplication.MaximumOwnedSets;
+            int maximumOwnedSets = Settings.MaximumOwnedSets;
 
             // TODO
             // ###############################################################################################
@@ -299,7 +303,7 @@ namespace Voat.Controllers
                     await _db.SaveChangesAsync();
 
                     // subscribe user to the newly created set
-                    Utils.User.SubscribeToSet(User.Identity.Name, set.Set_id);
+                    UserHelper.SubscribeToSet(User.Identity.Name, set.Set_id);
 
                     // go to newly created Set
                     return RedirectToAction("EditSet", "Sets", new { setId = set.Set_id });
@@ -372,7 +376,7 @@ namespace Voat.Controllers
         {
             var loggedInUser = User.Identity.Name;
 
-            Utils.User.SubscribeToSet(loggedInUser, setId);
+            UserHelper.SubscribeToSet(loggedInUser, setId);
             return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
         }
 
@@ -383,7 +387,7 @@ namespace Voat.Controllers
         {
             var loggedInUser = User.Identity.Name;
 
-            Utils.User.UnSubscribeFromSet(loggedInUser, setId);
+            UserHelper.UnSubscribeFromSet(loggedInUser, setId);
             return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
         }
 
@@ -401,7 +405,7 @@ namespace Voat.Controllers
             }
 
             // check if user is set owner
-            if (!Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Json("Unauthorized request.", JsonRequestBehavior.AllowGet);
@@ -441,7 +445,7 @@ namespace Voat.Controllers
         public JsonResult RemoveSubverseFromSet(string subverseName, int setId)
         {
             // check if user is set owner
-            if (!Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Json(new List<string> { "Unauthorized request." });
@@ -467,7 +471,7 @@ namespace Voat.Controllers
         public JsonResult ChangeSetInfo(int setId, string newSetName)
         {
             // check if user is set owner
-            if (!Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Json(new List<string> { "Unauthorized request." });
@@ -503,7 +507,7 @@ namespace Voat.Controllers
         public JsonResult DeleteSet(int setId)
         {
             // check if user is set owner
-            if (!Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Json(new List<string> { "Unauthorized request." });

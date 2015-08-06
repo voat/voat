@@ -30,8 +30,11 @@ using System.Web.Caching;
 using System.Web.Mvc;
 using Voat.Models;
 using Newtonsoft.Json;
+using Voat.Data.Models;
+using Voat.Utilities;
+using Voat.Configuration;
 
-namespace Voat.Utils
+namespace Voat.UI.Utilities
 {
     public class ValidateCaptchaAttribute : ActionFilterAttribute
     {
@@ -87,7 +90,7 @@ namespace Voat.Utils
                         // lower DelayRequest time
                         DelayRequest = 10;
                     }
-                    else if (User.IsUserSubverseModerator(loggedInUser, targetSubverse))
+                    else if (UserHelper.IsUserSubverseModerator(loggedInUser, targetSubverse))
                     {
                         // lower DelayRequest time
                         DelayRequest = 10;
@@ -113,7 +116,7 @@ namespace Voat.Utils
                             // lower DelayRequest time
                             DelayRequest = 10;
                         }
-                        else if (User.IsUserSubverseModerator(loggedInUser, targetSubverseName))
+                        else if (UserHelper.IsUserSubverseModerator(loggedInUser, targetSubverseName))
                         {
                             // lower DelayRequest time
                             DelayRequest = 10;
@@ -165,7 +168,7 @@ namespace Voat.Utils
     {
         public static async Task<bool> Validate(HttpRequestBase request)
         {
-            string privateKey = MvcApplication.RecaptchaPrivateKey;
+            string privateKey = Settings.RecaptchaPrivateKey;
             string encodedResponse = request.Form["g-Recaptcha-Response"];
 
             var client = new HttpClient();

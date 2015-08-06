@@ -21,7 +21,10 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Models;
-using Voat.Utils;
+
+using Voat.Utilities;
+using Voat.Data.Models;
+using Voat.UI.Utilities;
 
 namespace Voat.Controllers
 {
@@ -32,23 +35,23 @@ namespace Voat.Controllers
         private void SetViewBagCounts()
         {
             // set unread counts
-            ViewBag.UnreadCommentReplies = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPostReplies = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
-            ViewBag.UnreadPrivateMessages = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+            ViewBag.UnreadCommentReplies = Voat.Utilities.UserHelper.UnreadCommentRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPostReplies = Voat.Utilities.UserHelper.UnreadPostRepliesCount(User.Identity.Name);
+            ViewBag.UnreadPrivateMessages = Voat.Utilities.UserHelper.UnreadPrivateMessagesCount(User.Identity.Name);
 
             // set total counts
-            ViewBag.PostRepliesCount = Utils.User.PostRepliesCount(User.Identity.Name);
-            ViewBag.CommentRepliesCount = Utils.User.CommentRepliesCount(User.Identity.Name);
-            ViewBag.InboxCount = Utils.User.PrivateMessageCount(User.Identity.Name);
+            ViewBag.PostRepliesCount = Voat.Utilities.UserHelper.PostRepliesCount(User.Identity.Name);
+            ViewBag.CommentRepliesCount = Voat.Utilities.UserHelper.CommentRepliesCount(User.Identity.Name);
+            ViewBag.InboxCount = Voat.Utilities.UserHelper.PrivateMessageCount(User.Identity.Name);
         }
 
         // GET: Inbox
         [System.Web.Mvc.Authorize]
         public ActionResult Inbox(int? page)
         {
-            int unreadCommentCount = Utils.User.UnreadCommentRepliesCount(User.Identity.Name);
-            int unreadPostCount = Utils.User.UnreadPostRepliesCount(User.Identity.Name);
-            int unreadPMCount = Utils.User.UnreadPrivateMessagesCount(User.Identity.Name);
+            int unreadCommentCount = Voat.Utilities.UserHelper.UnreadCommentRepliesCount(User.Identity.Name);
+            int unreadPostCount = Voat.Utilities.UserHelper.UnreadPostRepliesCount(User.Identity.Name);
+            int unreadPMCount = Voat.Utilities.UserHelper.UnreadPrivateMessagesCount(User.Identity.Name);
 
             if (unreadPMCount > 0)
             {
@@ -271,20 +274,20 @@ namespace Voat.Controllers
             }
 
             // check if recipient exists
-            if (Utils.User.UserExists(privateMessage.Recipient) && !Utils.User.IsUserGloballyBanned(User.Identity.Name))
+            if (Voat.Utilities.UserHelper.UserExists(privateMessage.Recipient) && !Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name))
             {
                 // send the submission
                 privateMessage.Timestamp = DateTime.Now;
                 privateMessage.Sender = User.Identity.Name;
                 privateMessage.Status = true;
-                if (Utils.User.IsUserGloballyBanned(User.Identity.Name)) return RedirectToAction("Sent", "Messaging");
+                if (Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name)) return RedirectToAction("Sent", "Messaging");
                 _db.Privatemessages.Add(privateMessage);
                 try
                 {
                     await _db.SaveChangesAsync();
 
                     // get count of unread notifications
-                    int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(privateMessage.Recipient);
+                    int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(privateMessage.Recipient);
 
                     // send SignalR realtime notification to recipient
                     var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
@@ -314,13 +317,13 @@ namespace Voat.Controllers
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             // check if recipient exists
-            if (Utils.User.UserExists(privateMessage.Recipient))
+            if (UserHelper.UserExists(privateMessage.Recipient))
             {
                 // send the submission
                 privateMessage.Timestamp = DateTime.Now;
                 privateMessage.Sender = User.Identity.Name;
                 privateMessage.Status = true;
-                if (Utils.User.IsUserGloballyBanned(User.Identity.Name)) return new HttpStatusCodeResult(HttpStatusCode.OK);
+                if (Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name)) return new HttpStatusCodeResult(HttpStatusCode.OK);
                 _db.Privatemessages.Add(privateMessage);
 
                 try
@@ -328,7 +331,7 @@ namespace Voat.Controllers
                     await _db.SaveChangesAsync();
 
                     // get count of unread notifications
-                    int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(privateMessage.Recipient);
+                    int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(privateMessage.Recipient);
 
                     // send SignalR realtime notification to recipient
                     var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
@@ -397,7 +400,7 @@ namespace Voat.Controllers
         private void UpdateNotificationCounts()
         {
             // get count of unread notifications
-            int unreadNotifications = Utils.User.UnreadTotalNotificationsCount(User.Identity.Name);
+            int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(User.Identity.Name);
 
             var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
             hubContext.Clients.User(User.Identity.Name).setNotificationsPending(unreadNotifications);

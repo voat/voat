@@ -15,10 +15,11 @@ All Rights Reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Voat.Data.Models;
 using Voat.Models;
 using Voat.Models.ViewModels;
 
-namespace Voat.Utils
+namespace Voat.UI.Utilities
 {
     public static class SessionTracker
     {

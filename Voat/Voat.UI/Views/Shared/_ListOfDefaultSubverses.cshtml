@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model IEnumerable<Voat.Models.Defaultsubverse>
+@model IEnumerable<Voat.Data.Models.Defaultsubverse>
 
 @{
     string showingSubverse;
@@ -41,7 +41,7 @@
                 @Html.Partial("_SubscriptionsHoverMenu")
             </ul>
 
-            @if (!MvcApplication.SetsDisabled) {
+            @if (!Settings.SetsDisabled) {
                 <ul class="flat-list sr-bar hover">
                     <li class="setsmenu">
                         <span class="separator">-</span>

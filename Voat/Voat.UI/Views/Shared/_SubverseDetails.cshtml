@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Models.Subverse
+@model Voat.Data.Models.Subverse
 
 @{
     string subverseAge = Submissions.CalcSubmissionAge(Model.creation_date);
@@ -19,7 +19,7 @@
 <div class="midcol">
     @if (User.Identity.IsAuthenticated)
     {
-        if (Voat.Utils.User.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
+        if (UserHelper.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
         {
             <button type="button" onclick="return unsubscribe(this, '@Model.name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
         }

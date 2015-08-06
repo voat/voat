@@ -12,16 +12,20 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
+//using Microsoft.AspNet.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Voat.Configuration;
+using Voat.Data.Models;
 using Voat.Models;
-using Voat.Models.ViewModels;
-using Voat.Utils;
-using Voat.Utils.Components;
+using Voat.UI.Utilities;
+using Voat.Utilities;
+using Voat.Utilities.Components;
 
 namespace Voat.Controllers
 {
@@ -33,11 +37,11 @@ namespace Voat.Controllers
         [Authorize]
         public JsonResult VoteComment(int commentId, int typeOfVote)
         {
-            int dailyVotingQuota = MvcApplication.DailyVotingQuota;
+            int dailyVotingQuota = Settings.DailyVotingQuota;
             var loggedInUser = User.Identity.Name;
             var userCcp = Karma.CommentKarma(loggedInUser);
             var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
-            var totalVotesUsedInPast24Hours = Utils.User.TotalVotesUsedInPast24Hours(User.Identity.Name);
+            var totalVotesUsedInPast24Hours = UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name);
 
             switch (typeOfVote)
             {
@@ -47,13 +51,13 @@ namespace Voat.Controllers
                         if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {
                             // perform upvoting or resetting
-                            VotingComments.UpvoteComment(commentId, loggedInUser, IpHash.CreateHash(Utils.User.UserIpAddress(Request)));
+                            VotingComments.UpvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                         }
                     }
                     else if (totalVotesUsedInPast24Hours < 11)
                     {
                         // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
-                        VotingComments.UpvoteComment(commentId, loggedInUser, IpHash.CreateHash(Utils.User.UserIpAddress(Request)));
+                        VotingComments.UpvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                     }
                     break;
                 case -1:
@@ -62,7 +66,7 @@ namespace Voat.Controllers
                         if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {
                             // perform downvoting or resetting
-                            VotingComments.DownvoteComment(commentId, loggedInUser, IpHash.CreateHash(Utils.User.UserIpAddress(Request)));
+                            VotingComments.DownvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                         }
                     }
                     break;
@@ -354,16 +358,16 @@ namespace Voat.Controllers
                 var userCcp = Karma.CommentKarma(User.Identity.Name);
                 if (userCcp <= -50)
                 {
-                    var quotaUsed = Utils.User.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
+                    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
                     if (quotaUsed)
                     {
-                        ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + MvcApplication.DailyCommentPostingQuotaForNegativeScore + " comment(s) per 24 hours.");
+                        ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore + " comment(s) per 24 hours.");
                         return View();
                     }
                 }
 
                 // check if author is banned, don't save the comment or send notifications if true
-                if (!Utils.User.IsUserGloballyBanned(User.Identity.Name) && !Utils.User.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
+                if (!UserHelper.IsUserGloballyBanned(User.Identity.Name) && !UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
                 {
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                     {
@@ -386,11 +390,35 @@ namespace Voat.Controllers
                     }
 
                     // send comment reply notification to parent comment author if the comment is not a new root comment
-                    await NotificationManager.SendCommentNotification(commentModel);
+                    await NotificationManager.SendCommentNotification(commentModel, 
+                        new Action<string>(recipient => {
+                            //get count of unread notifications
+                            int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(recipient);
+                            // send SignalR realtime notification to recipient
+                            var hubContext = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                            hubContext.Clients.User(recipient).setNotificationsPending(unreadNotifications);
+                        })
+                    );
                 }
                 if (Request.IsAjaxRequest()) 
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.OK);
+                    var comment = commentModel;
+
+                    ViewBag.CommentId = comment.Id; //why?
+                    ViewBag.rootComment = comment.ParentId == null; //why?
+
+                    //var submission = DataCache.Submission.Retrieve(comment.MessageId.Value);
+                    var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+
+                    if (submission.Anonymized || subverse.anonymized_mode)
+                    {
+                        comment.Name = comment.Id.ToString(CultureInfo.InvariantCulture);
+                    }
+
+                    var model = new CommentBucketViewModel(comment);
+
+                    return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", model);
+                    //return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
                 if (Request.UrlReferrer != null)
                 {
@@ -477,7 +505,7 @@ namespace Voat.Controllers
                 }
 
                 // delete comment if delete request is issued by subverse moderator
-                else if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
+                else if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
                 {
                     // notify comment author that his comment has been deleted by a moderator
                     MesssagingUtility.SendPrivateMessage(
@@ -528,7 +556,7 @@ namespace Voat.Controllers
                 if (User.Identity.Name == commentToDistinguish.Name)
                 {
                     // check to see if comment author is also sub mod or sub admin for comment sub
-                    if (Utils.User.IsUserSubverseAdmin(User.Identity.Name, commentToDistinguish.Message.Subverse) || Utils.User.IsUserSubverseModerator(User.Identity.Name, commentToDistinguish.Message.Subverse))
+                    if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, commentToDistinguish.Message.Subverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, commentToDistinguish.Message.Subverse))
                     {
                         // mark the comment as distinguished and save to db
                         if (commentToDistinguish.IsDistinguished)

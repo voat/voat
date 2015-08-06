@@ -25,10 +25,14 @@ using System.Web;
 using System.Web.Mvc;
 using Voat.Models;
 using Voat.Models.ViewModels;
-using Voat.Utils;
+
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using Voat.Data.Models;
+using Voat.Utilities;
+using Voat.Configuration;
+using Voat.UI.Utilities;
 
 namespace Voat.Controllers
 {
@@ -111,7 +115,7 @@ namespace Voat.Controllers
             await UserManager.ResetAccessFailedCountAsync(user.Id);
 
             // get user IP address
-            string clientIpAddress = Utils.User.UserIpAddress(Request);
+            string clientIpAddress = UserHelper.UserIpAddress(Request);
 
             // save last login ip and timestamp
             user.LastLoginFromIp = clientIpAddress;
@@ -121,7 +125,7 @@ namespace Voat.Controllers
             // sign in and continue
             await SignInAsync(user, model.RememberMe);
             // read User Theme preference and set value to cookie 
-            Voat.Utils.User.SetUserStylePreferenceCookie(Utils.User.UserStylePreference(user.UserName));            
+            UserHelper.SetUserStylePreferenceCookie(UserHelper.UserStylePreference(user.UserName));            
             return RedirectToLocal(returnUrl);
         }
 
@@ -129,7 +133,7 @@ namespace Voat.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            if (MvcApplication.RegistrationDisabled)
+            if (Settings.RegistrationDisabled)
             {
                 return View("RegistrationDisabled");
             }
@@ -152,7 +156,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
 
-            if (MvcApplication.RegistrationDisabled)
+            if (Settings.RegistrationDisabled)
             {
                 return View("RegistrationDisabled");
             }
@@ -162,11 +166,11 @@ namespace Voat.Controllers
             try
             {
                 // get user IP address
-                string clientIpAddress = Utils.User.UserIpAddress(Request);
+                string clientIpAddress = UserHelper.UserIpAddress(Request);
 
                 // check the number of accounts already in database with this IP address, if number is higher than max conf, refuse registration request
                 var accountsWithSameIp = UserManager.Users.Count(x => x.LastLoginFromIp == clientIpAddress);
-                if (accountsWithSameIp >= MvcApplication.MaxAllowedAccountsFromSingleIP)
+                if (accountsWithSameIp >= Settings.MaxAllowedAccountsFromSingleIP)
                 {
                     ModelState.AddModelError(string.Empty, "This device can not be used to create a voat account.");
                     return View(model);
@@ -420,7 +424,7 @@ namespace Voat.Controllers
             if (user != null)
             {
                 // execute delete action
-                if (Utils.User.DeleteUser(User.Identity.Name))
+                if (UserHelper.DeleteUser(User.Identity.Name))
                 {
                     // delete email address and set password to something random
                     UserManager.SetEmail(User.Identity.GetUserId(), null);
@@ -633,7 +637,7 @@ namespace Voat.Controllers
                     await db.SaveChangesAsync();
                     // apply theme change
                     newTheme = userPreferences.Night_mode ? "dark" : "light";
-                    //Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
                 }
                 else
                 {
@@ -653,12 +657,12 @@ namespace Voat.Controllers
                     await db.SaveChangesAsync();
                     newTheme = userPreferences.Night_mode ? "dark" : "light";
                     // apply theme change
-                    //Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
                 }
             }
 
             //return RedirectToAction("Manage", new { Message = "Your user preferences have been saved." });
-            Utils.User.SetUserStylePreferenceCookie(newTheme);
+            UserHelper.SetUserStylePreferenceCookie(newTheme);
             return RedirectToAction("Manage");
         }
 
@@ -679,7 +683,7 @@ namespace Voat.Controllers
                     await db.SaveChangesAsync();
                     newTheme = userPreferences.Night_mode ? "dark" : "light";
                     // apply theme change
-                    //Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
                 }
                 else
                 {
@@ -700,11 +704,11 @@ namespace Voat.Controllers
                     await db.SaveChangesAsync();
                     // apply theme change
                     newTheme = "dark";
-                    //Session["UserTheme"] = Utils.User.UserStylePreference(User.Identity.Name);
+                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
                 }
             }
 
-            Utils.User.SetUserStylePreferenceCookie(newTheme);
+            UserHelper.SetUserStylePreferenceCookie(newTheme);
             Response.StatusCode = 200;
             return Json("Toggled Night Mode", JsonRequestBehavior.AllowGet);
         }
