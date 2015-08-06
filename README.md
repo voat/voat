@@ -1,7 +1,7 @@
 # Voat
+[![Build status](https://ci.appveyor.com/api/projects/status/gmrwwisseq07emb4/branch/master?svg=true)](https://ci.appveyor.com/project/voat/voat/branch/master)
 
-<img height="252" width="345" src="http://voat.co/Graphics/voat-goat.png"
- alt="Voat mascot" title="Voat" align="right" />
+<img height="252" width="345" src="https://voat.co/Graphics/voat-goat.png" alt="Voat mascot" title="Voat" align="right" />
 
 This is the code behind http://www.voat.co.
 
