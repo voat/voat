@@ -691,6 +691,7 @@
     <Content Include="Web.config.live" />
     <Content Include="Views\Account\RegistrationDisabled.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseStylesheetEditor.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonBlockSubverse.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
