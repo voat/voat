@@ -233,12 +233,6 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Voat.Common\Voat.Common.csproj">
-      <Project>{fa876562-324e-4091-8311-f26465487017}</Project>
-      <Name>Voat.Common</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <Content Include="Models\VoatEntityDataModel.Context.tt">
