@@ -41,6 +41,7 @@
 
     DateTime submissionDate = Model.Date;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    string submissionUrl = Model.MessageContent;
 
     //type 2 = urls
     if (Model.Type == 2)
@@ -149,6 +150,7 @@
                     {
                         <a href="@commentsUrl" class="comments may-blank">discuss</a>
                     }
+                    <a href="javascript:void(0)" onclick="window.open('@submissionUrl', '_blank');window.open('@commentsUrl', '_blank');" class="comments may-blank">[l+c]</a>
 
                 </li>
                 @if (User.Identity.IsAuthenticated)
