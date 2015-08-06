@@ -10,10 +10,10 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Models.Usersetsubscription>
+@model PaginatedList<Voat.Data.Models.Usersetsubscription>
 
 @{
-    ViewBag.Title = MvcApplication.SiteSlogan;
+    ViewBag.Title = Settings.SiteSlogan;
 }
 
 @using System.Configuration
@@ -59,7 +59,7 @@
                 This feature is under development. Feel free to look around but don't expect things to be working.
             </div>
 
-            @if (Voat.Utils.User.SetsSubscriptionCount(User.Identity.Name) > 0)
+            @if (UserHelper.SetsSubscriptionCount(User.Identity.Name) > 0)
             {
                 <div class="alert-title">Your set subscriptions</div>
 

@@ -4,8 +4,11 @@ using System.Globalization;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
+using Voat.Configuration;
+using Voat.Data.Models;
 using Voat.Models;
-using Voat.Utils;
+using Voat.UI.Utilities;
+using Voat.Utilities;
 
 namespace Voat.Controllers
 {
@@ -110,7 +113,7 @@ namespace Voat.Controllers
                     {
                         string thumbnailUrl;
 
-                        if (MvcApplication.UseContentDeliveryNetwork)
+                        if (Settings.UseContentDeliveryNetwork)
                         {
                             thumbnailUrl = new Uri("http://cdn." + System.Web.HttpContext.Current.Request.Url.Authority + "/thumbs/" + submission.Thumbnail).ToString();
                         }

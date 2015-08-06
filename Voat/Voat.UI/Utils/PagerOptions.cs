@@ -14,7 +14,7 @@ All Rights Reserved.
 
 using PagedList.Mvc;
 
-namespace Voat.Utils
+namespace Voat.UI.Utilities
 {
     
     public static class VoatPagerOptions

@@ -37,7 +37,7 @@
             <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer" onclick="moveSetDown();">
                 ↧
             </span>
-            @if (Voat.Utils.User.IsUserSetOwner(User.Identity.Name, setId))
+            @if (UserHelper.IsUserSetOwner(User.Identity.Name, setId))
             {
                 <span class="label label-default" style="float: right; margin-right: 2px; cursor: pointer">
                     <a href="@setUrl/edit">edit</a>

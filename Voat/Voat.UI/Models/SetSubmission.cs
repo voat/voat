@@ -12,9 +12,11 @@ All portions of the code written by Voat are Copyright (c) 2014 Voat
 All Rights Reserved.
 */
 
+using Voat.Data.Models;
+
 namespace Voat.Models
 {
-    public class SetSubmission:Message
+    public class SetSubmission : Message
     {
         public string ParentSet { get; set; }
     }

@@ -1,4 +1,4 @@
-﻿﻿/*
+﻿/*
 This source file is subject to version 3 of the GPL license,
 that is bundled with this package in the file LICENSE, and is
 available online at http://www.gnu.org/licenses/gpl.txt;
@@ -14,7 +14,7 @@ All Rights Reserved.
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Voat.Utils;
+using Voat.Utilities;
 
 namespace Voat.Tests.Utils
 {

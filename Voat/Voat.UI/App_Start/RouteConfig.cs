@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System.Web.Mvc;
 using System.Web.Routing;
+using Voat.Configuration;
 
 namespace Voat
 {
@@ -600,12 +601,12 @@ namespace Voat
                 defaults: new { controller = "HtmlElements", action = "CommentReplyForm" }
             );
 
-            // ajaxhelpers/singlesubmissioncomment
-            routes.MapRoute(
-                name: "SingleSubmissionComment",
-                url: "ajaxhelpers/singlesubmissioncomment/{messageId}/{userName}",
-                defaults: new { controller = "HtmlElements", action = "SingleMostRecentCommentByUser" }
-            );
+            //// ajaxhelpers/singlesubmissioncomment
+            //routes.MapRoute(
+            //    name: "SingleSubmissionComment",
+            //    url: "ajaxhelpers/singlesubmissioncomment/{messageId}/{userName}",
+            //    defaults: new { controller = "HtmlElements", action = "SingleMostRecentCommentByUser" }
+            //);
 
             // ajaxhelpers/privatemessagereplyform
             routes.MapRoute(
@@ -705,7 +706,7 @@ namespace Voat
                 defaults: new { controller = "Partner", action = "PartnerProgramInformation" }
             );
 
-            if (!MvcApplication.SetsDisabled)
+            if (!Settings.SetsDisabled)
             {
                 // /sets
                 routes.MapRoute(

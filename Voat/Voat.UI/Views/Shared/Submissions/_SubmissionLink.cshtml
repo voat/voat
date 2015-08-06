@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Models.Message
+@model Voat.Data.Models.Message
 
 @{
     string ahrefTarget = "_self";
@@ -19,7 +19,7 @@
 
     if (User.Identity.IsAuthenticated)
     {
-        if (Voat.Utils.User.LinksInNewWindow(User.Identity.Name))
+        if (UserHelper.LinksInNewWindow(User.Identity.Name))
         {
             ahrefTarget = "_blank";
         }
@@ -62,7 +62,7 @@
                 else
                 {
                     <a class="thumbnail may-blank" href="@Model.MessageContent" target="@ahrefTarget">
-                        @if (MvcApplication.UseContentDeliveryNetwork)
+                        @if (Settings.UseContentDeliveryNetwork)
                         {
                             <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
                         }
@@ -86,7 +86,7 @@
                 else
                 {
                     <a class="thumbnail may-blank" href="@Model.MessageContent" target="@ahrefTarget">
-                        @if (MvcApplication.UseContentDeliveryNetwork)
+                        @if (Settings.UseContentDeliveryNetwork)
                         {
                             <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
                         }

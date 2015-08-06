@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Models.Comment>
+@model PaginatedList<Voat.Data.Models.Comment>
 
 @{
     ViewBag.Title = "Inbox - comment replies";
@@ -76,7 +76,7 @@
                             <div class="panel-message-body">
                                 
                                 @*@Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })*@
-                                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", new Voat.Models.ViewModels.CommentBucketViewModel(comment), new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
+                                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", new Voat.Models.CommentBucketViewModel(comment), new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
                             </div>
                         </div>
                     </div>

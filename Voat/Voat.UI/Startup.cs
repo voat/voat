@@ -1,6 +1,7 @@
 ﻿using Microsoft.Owin;
 using Owin;
 using Voat;
+using Voat.Configuration;
 
 [assembly: OwinStartup(typeof(Startup))]
 namespace Voat
@@ -11,7 +12,7 @@ namespace Voat
         {
             ConfigureAuth(app);
 
-            if (!MvcApplication.SignalRDisabled)
+            if (!Settings.SignalRDisabled)
             {
                 // wire up SignalR
                 app.MapSignalR();

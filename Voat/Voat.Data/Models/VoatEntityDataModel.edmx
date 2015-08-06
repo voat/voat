@@ -1,0 +1,2531 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Models.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Badges">
+          <Key>
+            <PropertyRef Name="BadgeId" />
+          </Key>
+          <Property Name="BadgeId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BadgeGraphics" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BadgeTitle" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="BadgeName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Banneddomains">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Hostname" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Added_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Added_on" Type="datetime" Nullable="false" />
+          <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Bannedusers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Date_banned" Type="datetime" Nullable="false" />
+          <Property Name="Reason" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Banned_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CommentRemovalLog">
+          <Key>
+            <PropertyRef Name="CommentId" />
+          </Key>
+          <Property Name="CommentId" Type="int" Nullable="false" />
+          <Property Name="Moderator" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RemovalTimestamp" Type="datetime" Nullable="false" />
+          <Property Name="ReasonForRemoval" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Commentreplynotifications">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CommentId" Type="int" Nullable="false" />
+          <Property Name="SubmissionId" Type="int" Nullable="false" />
+          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="Status" Type="bit" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+          <Property Name="Markedasunread" Type="bit" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Comments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Votes" Type="int" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CommentContent" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="LastEditDate" Type="datetime" />
+          <Property Name="MessageId" Type="int" />
+          <Property Name="Likes" Type="bigint" Nullable="false" />
+          <Property Name="Dislikes" Type="bigint" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
+          <Property Name="Anonymized" Type="bit" Nullable="false" />
+          <Property Name="IsDistinguished" Type="bit" Nullable="false" />
+          <Property Name="FormattedContent" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Commentsavingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CommentId" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Commentvotingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CommentId" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="VoteStatus" Type="int" />
+          <Property Name="Timestamp" Type="datetime" />
+          <Property Name="ClientIpAddress" Type="nvarchar" MaxLength="90" />
+        </EntityType>
+        <EntityType Name="Defaultsubverses">
+          <Key>
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="position" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Featuredsubs">
+          <Key>
+            <PropertyRef Name="Feature_id" />
+          </Key>
+          <Property Name="Feature_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Subname" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Featured_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Featured_on" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Messages">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsArchived" Type="bit" Nullable="false" />
+          <Property Name="Votes" Type="int" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="MessageContent" Type="nvarchar(max)" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="Type" Type="int" Nullable="false" />
+          <Property Name="Linkdescription" Type="nvarchar" MaxLength="200" />
+          <Property Name="Title" Type="nvarchar" MaxLength="200" />
+          <Property Name="Rank" Type="float" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="20" />
+          <Property Name="Likes" Type="bigint" Nullable="false" />
+          <Property Name="Dislikes" Type="bigint" Nullable="false" />
+          <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
+          <Property Name="LastEditDate" Type="datetime" />
+          <Property Name="FlairLabel" Type="nvarchar" MaxLength="50" />
+          <Property Name="FlairCss" Type="nvarchar" MaxLength="50" />
+          <Property Name="Anonymized" Type="bit" Nullable="false" />
+          <Property Name="Views" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Moderatorinvitations">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Sent_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Sent_on" Type="datetime" Nullable="false" />
+          <Property Name="Sent_to" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Power" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PartnerInformations">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar(max)" />
+          <Property Name="LastName" Type="nvarchar(max)" />
+          <Property Name="PartnerPaymentForm" Type="nvarchar(max)" />
+          <Property Name="PartnerBankAccountNumber" Type="nvarchar(max)" />
+          <Property Name="PartnerNameOfAccountHolder" Type="nvarchar(max)" />
+          <Property Name="PartnerSwiftCode" Type="nvarchar(max)" />
+          <Property Name="PartnerBankName" Type="nvarchar(max)" />
+          <Property Name="PartnerIFSC" Type="nvarchar(max)" />
+          <Property Name="PartnerBIK" Type="nvarchar(max)" />
+          <Property Name="PartnerPaymentCurrency" Type="nvarchar(max)" />
+          <Property Name="PartnerPhoneNumber" Type="nvarchar(max)" />
+          <Property Name="PartnerPayeeName" Type="nvarchar(max)" />
+          <Property Name="PartnerCity" Type="nvarchar(max)" />
+          <Property Name="PartnerCountry" Type="nvarchar(max)" />
+          <Property Name="PartnerZip" Type="nvarchar(max)" />
+          <Property Name="PartnerStreet" Type="nvarchar(max)" />
+          <Property Name="PartnerLastPaymentDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Postreplynotifications">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CommentId" Type="int" Nullable="false" />
+          <Property Name="SubmissionId" Type="int" Nullable="false" />
+          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="Status" Type="bit" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+          <Property Name="Markedasunread" Type="bit" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Privatemessages">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="Status" Type="bit" Nullable="false" />
+          <Property Name="Markedasunread" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Promotedsubmissions">
+          <Key>
+            <PropertyRef Name="promoted_submission_id" />
+          </Key>
+          <Property Name="promoted_submission_id" Type="int" Nullable="false" />
+          <Property Name="promoted_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Savingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MessageId" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sessions">
+          <Key>
+            <PropertyRef Name="SessionId" />
+          </Key>
+          <Property Name="SessionId" Type="nvarchar" MaxLength="88" Nullable="false" />
+          <Property Name="Created" Type="datetime" Nullable="false" />
+          <Property Name="Expires" Type="datetime" Nullable="false" />
+          <Property Name="LockDate" Type="datetime" Nullable="false" />
+          <Property Name="LockCookie" Type="int" Nullable="false" />
+          <Property Name="Locked" Type="bit" Nullable="false" />
+          <Property Name="SessionItem" Type="image" />
+          <Property Name="Flags" Type="int" Nullable="false" />
+          <Property Name="Timeout" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sessiontracker">
+          <Key>
+            <PropertyRef Name="SessionId" />
+            <PropertyRef Name="Subverse" />
+          </Key>
+          <Property Name="SessionId" Type="nvarchar" MaxLength="90" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stickiedsubmissions">
+          <Key>
+            <PropertyRef Name="Submission_id" />
+          </Key>
+          <Property Name="Submission_id" Type="int" Nullable="false" />
+          <Property Name="Subversename" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Stickied_by" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Stickied_date" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SubmissionRemovalLog">
+          <Key>
+            <PropertyRef Name="SubmissionId" />
+          </Key>
+          <Property Name="SubmissionId" Type="int" Nullable="false" />
+          <Property Name="Moderator" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RemovalTimestamp" Type="datetime" Nullable="false" />
+          <Property Name="ReasonForRemoval" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Subscriptions">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SubverseAdmins">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Power" Type="int" Nullable="false" />
+          <Property Name="Added_by" Type="nvarchar" MaxLength="50" />
+          <Property Name="Added_on" Type="datetime" />
+        </EntityType>
+        <EntityType Name="SubverseBans">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BannedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BanAddedOn" Type="datetime" Nullable="false" />
+          <Property Name="BanReason" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Subverseflairsettings">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Subversename" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Label" Type="nvarchar" MaxLength="50" />
+          <Property Name="CssClass" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Subverses">
+          <Key>
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="title" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="description" Type="nvarchar" MaxLength="500" />
+          <Property Name="sidebar" Type="nvarchar" MaxLength="4000" />
+          <Property Name="submission_text" Type="nvarchar" MaxLength="500" />
+          <Property Name="language" Type="nvarchar" MaxLength="10" />
+          <Property Name="type" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="label_submit_new_link" Type="nvarchar" MaxLength="50" />
+          <Property Name="label_sumit_new_selfpost" Type="nvarchar" MaxLength="50" />
+          <Property Name="spam_filter_links" Type="nvarchar" MaxLength="10" />
+          <Property Name="spam_filter_selfpost" Type="nvarchar" MaxLength="10" />
+          <Property Name="spam_filter_comments" Type="nvarchar" MaxLength="10" />
+          <Property Name="rated_adult" Type="bit" Nullable="false" />
+          <Property Name="allow_default" Type="bit" Nullable="false" />
+          <Property Name="enable_thumbnails" Type="bit" Nullable="false" />
+          <Property Name="exclude_sitewide_bans" Type="bit" Nullable="false" />
+          <Property Name="traffic_stats_public" Type="bit" />
+          <Property Name="minutes_to_hide_comments" Type="int" />
+          <Property Name="creation_date" Type="datetime" Nullable="false" />
+          <Property Name="stylesheet" Type="nvarchar(max)" />
+          <Property Name="subscribers" Type="int" />
+          <Property Name="private_subverse" Type="bit" Nullable="false" />
+          <Property Name="authorized_submitters_only" Type="bit" Nullable="false" />
+          <Property Name="anonymized_mode" Type="bit" Nullable="false" />
+          <Property Name="last_submission_received" Type="datetime" />
+          <Property Name="minimumdownvoteccp" Type="int" Nullable="false" />
+          <Property Name="forced_private" Type="bit" Nullable="false" />
+          <Property Name="admin_disabled" Type="bit" />
+        </EntityType>
+        <EntityType Name="Userbadges">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BadgeId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Awarded" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserBlockedSubverses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubverseName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Userpreferences">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Disable_custom_css" Type="bit" Nullable="false" />
+          <Property Name="Night_mode" Type="bit" Nullable="false" />
+          <Property Name="Language" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Clicking_mode" Type="bit" Nullable="false" />
+          <Property Name="Enable_adult_content" Type="bit" Nullable="false" />
+          <Property Name="Public_votes" Type="bit" Nullable="false" />
+          <Property Name="Public_subscriptions" Type="bit" Nullable="false" />
+          <Property Name="Topmenu_from_subscriptions" Type="bit" Nullable="false" />
+          <Property Name="Shortbio" Type="nvarchar" MaxLength="100" />
+          <Property Name="Avatar" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Userscore">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CCP" Type="int" Nullable="false" />
+          <Property Name="SCP" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Usersetdefinitions">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Set_id" Type="int" Nullable="false" />
+          <Property Name="Subversename" Type="nvarchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Usersets">
+          <Key>
+            <PropertyRef Name="Set_id" />
+          </Key>
+          <Property Name="Set_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Created_by" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Created_on" Type="datetime" Nullable="false" />
+          <Property Name="Public" Type="bit" Nullable="false" />
+          <Property Name="Subscribers" Type="int" Nullable="false" />
+          <Property Name="Default" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Usersetsubscriptions">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Set_id" Type="int" Nullable="false" />
+          <Property Name="Order" Type="int" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Viewstatistics">
+          <Key>
+            <PropertyRef Name="submissionId" />
+            <PropertyRef Name="viewerId" />
+          </Key>
+          <Property Name="submissionId" Type="int" Nullable="false" />
+          <Property Name="viewerId" Type="nvarchar" MaxLength="90" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Votingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MessageId" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="VoteStatus" Type="int" />
+          <Property Name="Timestamp" Type="datetime" />
+          <Property Name="ClientIpAddress" Type="nvarchar" MaxLength="90" />
+        </EntityType>
+        <Association Name="FK_CommentRemovalLog_Comments">
+          <End Role="Comments" Type="Self.Comments" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CommentRemovalLog" Type="Self.CommentRemovalLog" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Comments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommentRemovalLog">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Comments_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Comments" Type="Self.Comments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Comments">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Commentsavingtracker_Comments">
+          <End Role="Comments" Type="Self.Comments" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Commentsavingtracker" Type="Self.Commentsavingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Comments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Commentsavingtracker">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Commentvotingtracker_Comments">
+          <End Role="Comments" Type="Self.Comments" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Commentvotingtracker" Type="Self.Commentvotingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Comments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Commentvotingtracker">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Defaultsubverses_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Defaultsubverses" Type="Self.Defaultsubverses" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Defaultsubverses">
+              <PropertyRef Name="name" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Featuredsubs_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1" />
+          <End Role="Featuredsubs" Type="Self.Featuredsubs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Featuredsubs">
+              <PropertyRef Name="Subname" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="Subverse" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Savingtracker_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Savingtracker" Type="Self.Savingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Savingtracker">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Stickiedsubmissions_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
+          <End Role="Stickiedsubmissions" Type="Self.Stickiedsubmissions" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Stickiedsubmissions">
+              <PropertyRef Name="Submission_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Stickiedsubmissions_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Stickiedsubmissions" Type="Self.Stickiedsubmissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Stickiedsubmissions">
+              <PropertyRef Name="Subversename" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SubmissionRemovalLog_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SubmissionRemovalLog" Type="Self.SubmissionRemovalLog" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SubmissionRemovalLog">
+              <PropertyRef Name="SubmissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subscriptions_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Subscriptions" Type="Self.Subscriptions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Subscriptions">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SubverseAdmins_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SubverseAdmins" Type="Self.SubverseAdmins" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="SubverseAdmins">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SubverseBans_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SubverseBans" Type="Self.SubverseBans" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="SubverseBans">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subverseflairsettings_Subverses1">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Subverseflairsettings" Type="Self.Subverseflairsettings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Subverseflairsettings">
+              <PropertyRef Name="Subversename" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Userbadges_Badges">
+          <End Role="Badges" Type="Self.Badges" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Userbadges" Type="Self.Userbadges" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Badges">
+              <PropertyRef Name="BadgeId" />
+            </Principal>
+            <Dependent Role="Userbadges">
+              <PropertyRef Name="BadgeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserBlockedSubverses_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserBlockedSubverses" Type="Self.UserBlockedSubverses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="UserBlockedSubverses">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Usersetdefinitions_Subverses">
+          <End Role="Subverses" Type="Self.Subverses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Usersetdefinitions" Type="Self.Usersetdefinitions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Usersetdefinitions">
+              <PropertyRef Name="Subversename" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Usersetdefinitions_Usersets">
+          <End Role="Usersets" Type="Self.Usersets" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Usersetdefinitions" Type="Self.Usersetdefinitions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usersets">
+              <PropertyRef Name="Set_id" />
+            </Principal>
+            <Dependent Role="Usersetdefinitions">
+              <PropertyRef Name="Set_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Usersetsubscriptions_Usersets">
+          <End Role="Usersets" Type="Self.Usersets" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Usersetsubscriptions" Type="Self.Usersetsubscriptions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usersets">
+              <PropertyRef Name="Set_id" />
+            </Principal>
+            <Dependent Role="Usersetsubscriptions">
+              <PropertyRef Name="Set_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Viewstatistics_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Viewstatistics" Type="Self.Viewstatistics" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Viewstatistics">
+              <PropertyRef Name="submissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Votingtracker_Messages">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
+          <End Role="Votingtracker" Type="Self.Votingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Votingtracker">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="fnActiveUserCounts" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SpanInHours" Type="int" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="Date" Type="nvarchar" MaxLength="25" />
+                <Property Name="Hours" Type="int" />
+                <Property Name="Days" Type="int" />
+                <Property Name="Count" Type="int" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
+        <Function Name="sp_perf_stats_azure" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="appname" Type="nvarchar" Mode="In" />
+          <Parameter Name="runtime" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="sp_perf_stats_azure_infrequent11" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="runtime" Type="datetime" Mode="In" />
+          <Parameter Name="firstrun" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_ActiveUsers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_CommentTree" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SubmissionID" Type="int" Mode="In" />
+          <Parameter Name="Depth" Type="int" Mode="In" />
+          <Parameter Name="ParentID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_MarkArchived" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_PurgeInactiveSessions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Minutes" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_PurgeInactiveSubverses" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Hours" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_RankSubmissions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Count" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_RankSubmissions_CTE" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Count" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_TransferSubverse" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Subverse" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="TransferedBy" Type="nvarchar" Mode="In" />
+          <Parameter Name="SubmissionID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_WhoVotesForUsersComments" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="CountLimit" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="ModelsStoreContainer">
+          <EntitySet Name="Badges" EntityType="Self.Badges" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Banneddomains" EntityType="Self.Banneddomains" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Bannedusers" EntityType="Self.Bannedusers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CommentRemovalLog" EntityType="Self.CommentRemovalLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Commentreplynotifications" EntityType="Self.Commentreplynotifications" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Comments" EntityType="Self.Comments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Commentsavingtracker" EntityType="Self.Commentsavingtracker" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Commentvotingtracker" EntityType="Self.Commentvotingtracker" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Defaultsubverses" EntityType="Self.Defaultsubverses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Featuredsubs" EntityType="Self.Featuredsubs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Moderatorinvitations" EntityType="Self.Moderatorinvitations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PartnerInformations" EntityType="Self.PartnerInformations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Postreplynotifications" EntityType="Self.Postreplynotifications" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Privatemessages" EntityType="Self.Privatemessages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Promotedsubmissions" EntityType="Self.Promotedsubmissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Savingtracker" EntityType="Self.Savingtracker" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sessions" EntityType="Self.Sessions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sessiontracker" EntityType="Self.Sessiontracker" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Stickiedsubmissions" EntityType="Self.Stickiedsubmissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubmissionRemovalLog" EntityType="Self.SubmissionRemovalLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmins" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubverseBans" EntityType="Self.SubverseBans" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subverseflairsettings" EntityType="Self.Subverseflairsettings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subverses" EntityType="Self.Subverses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Userbadges" EntityType="Self.Userbadges" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserBlockedSubverses" EntityType="Self.UserBlockedSubverses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Userpreferences" EntityType="Self.Userpreferences" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Userscore" EntityType="Self.Userscore" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Usersetdefinitions" EntityType="Self.Usersetdefinitions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Usersets" EntityType="Self.Usersets" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Usersetsubscriptions" EntityType="Self.Usersetsubscriptions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Viewstatistics" EntityType="Self.Viewstatistics" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Votingtracker" EntityType="Self.Votingtracker" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CommentRemovalLog_Comments" Association="Self.FK_CommentRemovalLog_Comments">
+            <End Role="Comments" EntitySet="Comments" />
+            <End Role="CommentRemovalLog" EntitySet="CommentRemovalLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Comments_Messages" Association="Self.FK_Comments_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Comments" EntitySet="Comments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Commentsavingtracker_Comments" Association="Self.FK_Commentsavingtracker_Comments">
+            <End Role="Comments" EntitySet="Comments" />
+            <End Role="Commentsavingtracker" EntitySet="Commentsavingtracker" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Commentvotingtracker_Comments" Association="Self.FK_Commentvotingtracker_Comments">
+            <End Role="Comments" EntitySet="Comments" />
+            <End Role="Commentvotingtracker" EntitySet="Commentvotingtracker" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="Self.FK_Defaultsubverses_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Defaultsubverses" EntitySet="Defaultsubverses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Featuredsubs_Subverses" Association="Self.FK_Featuredsubs_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Featuredsubs" EntitySet="Featuredsubs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Subverses" Association="Self.FK_Messages_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Savingtracker_Messages" Association="Self.FK_Savingtracker_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Savingtracker" EntitySet="Savingtracker" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Stickiedsubmissions_Messages" Association="Self.FK_Stickiedsubmissions_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Stickiedsubmissions" EntitySet="Stickiedsubmissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Stickiedsubmissions_Subverses" Association="Self.FK_Stickiedsubmissions_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Stickiedsubmissions" EntitySet="Stickiedsubmissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubmissionRemovalLog_Messages" Association="Self.FK_SubmissionRemovalLog_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="SubmissionRemovalLog" EntitySet="SubmissionRemovalLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subscriptions_Subverses" Association="Self.FK_Subscriptions_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Subscriptions" EntitySet="Subscriptions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="Self.FK_SubverseAdmins_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="SubverseAdmins" EntitySet="SubverseAdmins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubverseBans_Subverses" Association="Self.FK_SubverseBans_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="SubverseBans" EntitySet="SubverseBans" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="Self.FK_Subverseflairsettings_Subverses1">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Subverseflairsettings" EntitySet="Subverseflairsettings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Userbadges_Badges" Association="Self.FK_Userbadges_Badges">
+            <End Role="Badges" EntitySet="Badges" />
+            <End Role="Userbadges" EntitySet="Userbadges" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserBlockedSubverses_Subverses" Association="Self.FK_UserBlockedSubverses_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="UserBlockedSubverses" EntitySet="UserBlockedSubverses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Usersetdefinitions_Subverses" Association="Self.FK_Usersetdefinitions_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Usersetdefinitions" EntitySet="Usersetdefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Usersetdefinitions_Usersets" Association="Self.FK_Usersetdefinitions_Usersets">
+            <End Role="Usersets" EntitySet="Usersets" />
+            <End Role="Usersetdefinitions" EntitySet="Usersetdefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Usersetsubscriptions_Usersets" Association="Self.FK_Usersetsubscriptions_Usersets">
+            <End Role="Usersets" EntitySet="Usersets" />
+            <End Role="Usersetsubscriptions" EntitySet="Usersetsubscriptions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Viewstatistics_Messages" Association="Self.FK_Viewstatistics_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Viewstatistics" EntitySet="Viewstatistics" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Votingtracker_Messages" Association="Self.FK_Votingtracker_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Votingtracker" EntitySet="Votingtracker" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Models" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <ComplexType Name="fnActiveUserCounts_Result">
+          <Property Name="Date" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
+          <Property Name="Hours" Type="Int32" />
+          <Property Name="Days" Type="Int32" />
+          <Property Name="Count" Type="Int32" />
+        </ComplexType>
+        <EntityType Name="Badge">
+          <Key>
+            <PropertyRef Name="BadgeId" />
+          </Key>
+          <Property Name="BadgeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BadgeGraphics" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BadgeTitle" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BadgeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Userbadges" Relationship="Self.FK_Userbadges_Badges" FromRole="Badges" ToRole="Userbadges" />
+        </EntityType>
+        <EntityType Name="Banneddomain">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Hostname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Added_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Added_on" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Reason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Banneduser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Date_banned" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Reason" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Banned_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CommentRemovalLog">
+          <Key>
+            <PropertyRef Name="CommentId" />
+          </Key>
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="Moderator" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RemovalTimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ReasonForRemoval" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Comment" Relationship="Self.FK_CommentRemovalLog_Comments" FromRole="CommentRemovalLog" ToRole="Comments" />
+        </EntityType>
+        <EntityType Name="Commentreplynotification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="SubmissionId" Type="Int32" Nullable="false" />
+          <Property Name="Recipient" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Sender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Subject" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Body" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Status" Type="Boolean" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Markedasunread" Type="Boolean" Nullable="false" />
+          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Comment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Votes" Type="Int32" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CommentContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastEditDate" Type="DateTime" Precision="3" />
+          <Property Name="MessageId" Type="Int32" />
+          <Property Name="Likes" Type="Int32" Nullable="false" />
+          <Property Name="Dislikes" Type="Int32" Nullable="false" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Anonymized" Type="Boolean" Nullable="false" />
+          <Property Name="IsDistinguished" Type="Boolean" Nullable="false" />
+          <Property Name="FormattedContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CommentRemovalLog" Relationship="Self.FK_CommentRemovalLog_Comments" FromRole="Comments" ToRole="CommentRemovalLog" />
+          <NavigationProperty Name="Message" Relationship="Self.FK_Comments_Messages" FromRole="Comments" ToRole="Messages" />
+          <NavigationProperty Name="Commentsavingtrackers" Relationship="Self.FK_Commentsavingtracker_Comments" FromRole="Comments" ToRole="Commentsavingtracker" />
+          <NavigationProperty Name="Commentvotingtrackers" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Comments" ToRole="Commentvotingtracker" />
+        </EntityType>
+        <EntityType Name="Commentsavingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Comment" Relationship="Self.FK_Commentsavingtracker_Comments" FromRole="Commentsavingtracker" ToRole="Comments" />
+        </EntityType>
+        <EntityType Name="Commentvotingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="VoteStatus" Type="Int32" />
+          <Property Name="Timestamp" Type="DateTime" Precision="3" />
+          <Property Name="ClientIpAddress" Type="String" MaxLength="90" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Comment" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Commentvotingtracker" ToRole="Comments" />
+        </EntityType>
+        <EntityType Name="Defaultsubverse">
+          <Key>
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="position" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Subverse" Relationship="Self.FK_Defaultsubverses_Subverses" FromRole="Defaultsubverses" ToRole="Subverses" />
+        </EntityType>
+        <EntityType Name="Featuredsub">
+          <Key>
+            <PropertyRef Name="Feature_id" />
+          </Key>
+          <Property Name="Feature_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Subname" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Featured_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Featured_on" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Subverse" Relationship="Self.FK_Featuredsubs_Subverses" FromRole="Featuredsubs" ToRole="Subverses" />
+        </EntityType>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IsArchived" Type="Boolean" Nullable="false" />
+          <Property Name="Votes" Type="Int32" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MessageContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <Property Name="Linkdescription" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Rank" Type="Double" Nullable="false" />
+          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Likes" Type="Int32" Nullable="false" />
+          <Property Name="Dislikes" Type="Int32" Nullable="false" />
+          <Property Name="Thumbnail" Type="String" MaxLength="40" FixedLength="true" Unicode="true" />
+          <Property Name="LastEditDate" Type="DateTime" Precision="3" />
+          <Property Name="FlairLabel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FlairCss" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Anonymized" Type="Boolean" Nullable="false" />
+          <Property Name="Views" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Comments" Relationship="Self.FK_Comments_Messages" FromRole="Messages" ToRole="Comments" />
+          <NavigationProperty Name="Subverses" Relationship="Self.FK_Messages_Subverses" FromRole="Messages" ToRole="Subverses" />
+          <NavigationProperty Name="Savingtrackers" Relationship="Self.FK_Savingtracker_Messages" FromRole="Messages" ToRole="Savingtracker" />
+          <NavigationProperty Name="Stickiedsubmission" Relationship="Self.FK_Stickiedsubmissions_Messages" FromRole="Messages" ToRole="Stickiedsubmissions" />
+          <NavigationProperty Name="SubmissionRemovalLog" Relationship="Self.FK_SubmissionRemovalLog_Messages" FromRole="Messages" ToRole="SubmissionRemovalLog" />
+          <NavigationProperty Name="Viewstatistics" Relationship="Self.FK_Viewstatistics_Messages" FromRole="Messages" ToRole="Viewstatistics" />
+          <NavigationProperty Name="Votingtrackers" Relationship="Self.FK_Votingtracker_Messages" FromRole="Messages" ToRole="Votingtracker" />
+        </EntityType>
+        <EntityType Name="Moderatorinvitation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Sent_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Sent_on" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Sent_to" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Subverse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Power" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PartnerInformation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerPaymentForm" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerBankAccountNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerNameOfAccountHolder" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerSwiftCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerBankName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerIFSC" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerBIK" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerPaymentCurrency" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerPhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerPayeeName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerCity" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerCountry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerZip" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerStreet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PartnerLastPaymentDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Postreplynotification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommentId" Type="Int32" Nullable="false" />
+          <Property Name="SubmissionId" Type="Int32" Nullable="false" />
+          <Property Name="Recipient" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Sender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Subject" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Body" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Status" Type="Boolean" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Markedasunread" Type="Boolean" Nullable="false" />
+          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Privatemessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Sender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Recipient" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Subject" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Body" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Status" Type="Boolean" Nullable="false" />
+          <Property Name="Markedasunread" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Promotedsubmission">
+          <Key>
+            <PropertyRef Name="promoted_submission_id" />
+          </Key>
+          <Property Name="promoted_submission_id" Type="Int32" Nullable="false" />
+          <Property Name="promoted_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Savingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MessageId" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Message" Relationship="Self.FK_Savingtracker_Messages" FromRole="Savingtracker" ToRole="Messages" />
+        </EntityType>
+        <EntityType Name="Session">
+          <Key>
+            <PropertyRef Name="SessionId" />
+          </Key>
+          <Property Name="SessionId" Type="String" MaxLength="88" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Created" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Expires" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LockDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LockCookie" Type="Int32" Nullable="false" />
+          <Property Name="Locked" Type="Boolean" Nullable="false" />
+          <Property Name="SessionItem" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="Flags" Type="Int32" Nullable="false" />
+          <Property Name="Timeout" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sessiontracker">
+          <Key>
+            <PropertyRef Name="SessionId" />
+            <PropertyRef Name="Subverse" />
+          </Key>
+          <Property Name="SessionId" Type="String" MaxLength="90" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Stickiedsubmission">
+          <Key>
+            <PropertyRef Name="Submission_id" />
+          </Key>
+          <Property Name="Submission_id" Type="Int32" Nullable="false" />
+          <Property Name="Subversename" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Stickied_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Stickied_date" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Message" Relationship="Self.FK_Stickiedsubmissions_Messages" FromRole="Stickiedsubmissions" ToRole="Messages" />
+          <NavigationProperty Name="Subverse" Relationship="Self.FK_Stickiedsubmissions_Subverses" FromRole="Stickiedsubmissions" ToRole="Subverses" />
+        </EntityType>
+        <EntityType Name="SubmissionRemovalLog">
+          <Key>
+            <PropertyRef Name="SubmissionId" />
+          </Key>
+          <Property Name="SubmissionId" Type="Int32" Nullable="false" />
+          <Property Name="Moderator" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RemovalTimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ReasonForRemoval" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Message" Relationship="Self.FK_SubmissionRemovalLog_Messages" FromRole="SubmissionRemovalLog" ToRole="Messages" />
+        </EntityType>
+        <EntityType Name="Subscription">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubverseName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Subverse" Relationship="Self.FK_Subscriptions_Subverses" FromRole="Subscriptions" ToRole="Subverses" />
+        </EntityType>
+        <EntityType Name="SubverseAdmin">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubverseName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Power" Type="Int32" Nullable="false" />
+          <Property Name="Added_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Added_on" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Subverse" Relationship="Self.FK_SubverseAdmins_Subverses" FromRole="SubverseAdmins" ToRole="Subverses" />
+        </EntityType>
+        <EntityType Name="SubverseBan">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubverseName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BannedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BanAddedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="BanReason" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Subverse" Relationship="Self.FK_SubverseBans_Subverses" FromRole="SubverseBans" ToRole="Subverses" />
+        </EntityType>
+        <EntityType Name="Subverseflairsetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Subversename" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Label" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CssClass" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Subverse" Relationship="Self.FK_Subverseflairsettings_Subverses1" FromRole="Subverseflairsettings" ToRole="Subverses" />
+        </EntityType>
+        <EntityType Name="Subverse">
+          <Key>
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="title" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="sidebar" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="submission_text" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="language" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="label_submit_new_link" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="label_sumit_new_selfpost" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="spam_filter_links" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="spam_filter_selfpost" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="spam_filter_comments" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="rated_adult" Type="Boolean" Nullable="false" />
+          <Property Name="allow_default" Type="Boolean" Nullable="false" />
+          <Property Name="enable_thumbnails" Type="Boolean" Nullable="false" />
+          <Property Name="exclude_sitewide_bans" Type="Boolean" Nullable="false" />
+          <Property Name="traffic_stats_public" Type="Boolean" />
+          <Property Name="minutes_to_hide_comments" Type="Int32" />
+          <Property Name="creation_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="stylesheet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="subscribers" Type="Int32" />
+          <Property Name="private_subverse" Type="Boolean" Nullable="false" />
+          <Property Name="authorized_submitters_only" Type="Boolean" Nullable="false" />
+          <Property Name="anonymized_mode" Type="Boolean" Nullable="false" />
+          <Property Name="last_submission_received" Type="DateTime" Precision="3" />
+          <Property Name="minimumdownvoteccp" Type="Int32" Nullable="false" />
+          <Property Name="forced_private" Type="Boolean" Nullable="false" />
+          <Property Name="admin_disabled" Type="Boolean" />
+          <NavigationProperty Name="Defaultsubvers" Relationship="Self.FK_Defaultsubverses_Subverses" FromRole="Subverses" ToRole="Defaultsubverses" />
+          <NavigationProperty Name="Featuredsubs" Relationship="Self.FK_Featuredsubs_Subverses" FromRole="Subverses" ToRole="Featuredsubs" />
+          <NavigationProperty Name="Messages" Relationship="Self.FK_Messages_Subverses" FromRole="Subverses" ToRole="Messages" />
+          <NavigationProperty Name="Stickiedsubmissions" Relationship="Self.FK_Stickiedsubmissions_Subverses" FromRole="Subverses" ToRole="Stickiedsubmissions" />
+          <NavigationProperty Name="Subscriptions" Relationship="Self.FK_Subscriptions_Subverses" FromRole="Subverses" ToRole="Subscriptions" />
+          <NavigationProperty Name="SubverseAdmins" Relationship="Self.FK_SubverseAdmins_Subverses" FromRole="Subverses" ToRole="SubverseAdmins" />
+          <NavigationProperty Name="SubverseBans" Relationship="Self.FK_SubverseBans_Subverses" FromRole="Subverses" ToRole="SubverseBans" />
+          <NavigationProperty Name="Subverseflairsettings" Relationship="Self.FK_Subverseflairsettings_Subverses1" FromRole="Subverses" ToRole="Subverseflairsettings" />
+          <NavigationProperty Name="UserBlockedSubverses" Relationship="Self.FK_UserBlockedSubverses_Subverses" FromRole="Subverses" ToRole="UserBlockedSubverses" />
+          <NavigationProperty Name="Usersetdefinitions" Relationship="Self.FK_Usersetdefinitions_Subverses" FromRole="Subverses" ToRole="Usersetdefinitions" />
+        </EntityType>
+        <EntityType Name="Userbadge">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BadgeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Awarded" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Badge" Relationship="Self.FK_Userbadges_Badges" FromRole="Userbadges" ToRole="Badges" />
+        </EntityType>
+        <EntityType Name="UserBlockedSubverse">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubverseName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Subverse" Relationship="Self.FK_UserBlockedSubverses_Subverses" FromRole="UserBlockedSubverses" ToRole="Subverses" />
+        </EntityType>
+        <EntityType Name="Userpreference">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Disable_custom_css" Type="Boolean" Nullable="false" />
+          <Property Name="Night_mode" Type="Boolean" Nullable="false" />
+          <Property Name="Language" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Clicking_mode" Type="Boolean" Nullable="false" />
+          <Property Name="Enable_adult_content" Type="Boolean" Nullable="false" />
+          <Property Name="Public_votes" Type="Boolean" Nullable="false" />
+          <Property Name="Public_subscriptions" Type="Boolean" Nullable="false" />
+          <Property Name="Topmenu_from_subscriptions" Type="Boolean" Nullable="false" />
+          <Property Name="Shortbio" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Avatar" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Userscore">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CCP" Type="Int32" Nullable="false" />
+          <Property Name="SCP" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Usersetdefinition">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Set_id" Type="Int32" Nullable="false" />
+          <Property Name="Subversename" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Subverse" Relationship="Self.FK_Usersetdefinitions_Subverses" FromRole="Usersetdefinitions" ToRole="Subverses" />
+          <NavigationProperty Name="Userset" Relationship="Self.FK_Usersetdefinitions_Usersets" FromRole="Usersetdefinitions" ToRole="Usersets" />
+        </EntityType>
+        <EntityType Name="Userset">
+          <Key>
+            <PropertyRef Name="Set_id" />
+          </Key>
+          <Property Name="Set_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Created_by" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Created_on" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Public" Type="Boolean" Nullable="false" />
+          <Property Name="Subscribers" Type="Int32" Nullable="false" />
+          <Property Name="Default" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Usersetdefinitions" Relationship="Self.FK_Usersetdefinitions_Usersets" FromRole="Usersets" ToRole="Usersetdefinitions" />
+          <NavigationProperty Name="Usersetsubscriptions" Relationship="Self.FK_Usersetsubscriptions_Usersets" FromRole="Usersets" ToRole="Usersetsubscriptions" />
+        </EntityType>
+        <EntityType Name="Usersetsubscription">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Set_id" Type="Int32" Nullable="false" />
+          <Property Name="Order" Type="Int32" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Userset" Relationship="Self.FK_Usersetsubscriptions_Usersets" FromRole="Usersetsubscriptions" ToRole="Usersets" />
+        </EntityType>
+        <EntityType Name="Viewstatistic">
+          <Key>
+            <PropertyRef Name="submissionId" />
+            <PropertyRef Name="viewerId" />
+          </Key>
+          <Property Name="submissionId" Type="Int32" Nullable="false" />
+          <Property Name="viewerId" Type="String" MaxLength="90" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Message" Relationship="Self.FK_Viewstatistics_Messages" FromRole="Viewstatistics" ToRole="Messages" />
+        </EntityType>
+        <EntityType Name="Votingtracker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MessageId" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="VoteStatus" Type="Int32" />
+          <Property Name="Timestamp" Type="DateTime" Precision="3" />
+          <Property Name="ClientIpAddress" Type="String" MaxLength="90" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Message" Relationship="Self.FK_Votingtracker_Messages" FromRole="Votingtracker" ToRole="Messages" />
+        </EntityType>
+        <Association Name="FK_Userbadges_Badges">
+          <End Role="Badges" Type="Self.Badge" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Userbadges" Type="Self.Userbadge" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Badges">
+              <PropertyRef Name="BadgeId" />
+            </Principal>
+            <Dependent Role="Userbadges">
+              <PropertyRef Name="BadgeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommentRemovalLog_Comments">
+          <End Role="Comments" Type="Self.Comment" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CommentRemovalLog" Type="Self.CommentRemovalLog" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Comments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommentRemovalLog">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Comments_Messages">
+          <End Role="Messages" Type="Self.Message" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Comments" Type="Self.Comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Comments">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Commentsavingtracker_Comments">
+          <End Role="Comments" Type="Self.Comment" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Commentsavingtracker" Type="Self.Commentsavingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Comments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Commentsavingtracker">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Commentvotingtracker_Comments">
+          <End Role="Comments" Type="Self.Comment" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Commentvotingtracker" Type="Self.Commentvotingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Comments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Commentvotingtracker">
+              <PropertyRef Name="CommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Defaultsubverses_Subverses">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Defaultsubverses" Type="Models.Defaultsubverse" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Defaultsubverses">
+              <PropertyRef Name="name" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Featuredsubs_Subverses">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="1" />
+          <End Role="Featuredsubs" Type="Self.Featuredsub" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Featuredsubs">
+              <PropertyRef Name="Subname" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_Subverses">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Messages" Type="Self.Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="Subverse" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Savingtracker_Messages">
+          <End Role="Messages" Type="Self.Message" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Savingtracker" Type="Self.Savingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Savingtracker">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Stickiedsubmissions_Messages">
+          <End Role="Messages" Type="Self.Message" Multiplicity="1" />
+          <End Role="Stickiedsubmissions" Type="Self.Stickiedsubmission" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Stickiedsubmissions">
+              <PropertyRef Name="Submission_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SubmissionRemovalLog_Messages">
+          <End Role="Messages" Type="Self.Message" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SubmissionRemovalLog" Type="Self.SubmissionRemovalLog" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SubmissionRemovalLog">
+              <PropertyRef Name="SubmissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Viewstatistics_Messages">
+          <End Role="Messages" Type="Self.Message" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Viewstatistics" Type="Self.Viewstatistic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Viewstatistics">
+              <PropertyRef Name="submissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Votingtracker_Messages">
+          <End Role="Messages" Type="Self.Message" Multiplicity="1" />
+          <End Role="Votingtracker" Type="Self.Votingtracker" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Votingtracker">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Stickiedsubmissions_Subverses">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Stickiedsubmissions" Type="Self.Stickiedsubmission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Stickiedsubmissions">
+              <PropertyRef Name="Subversename" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subscriptions_Subverses">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Subscriptions" Type="Self.Subscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Subscriptions">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SubverseAdmins_Subverses">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SubverseAdmins" Type="Self.SubverseAdmin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="SubverseAdmins">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SubverseBans_Subverses">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SubverseBans" Type="Self.SubverseBan" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="SubverseBans">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subverseflairsettings_Subverses1">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Subverseflairsettings" Type="Self.Subverseflairsetting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Subverseflairsettings">
+              <PropertyRef Name="Subversename" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserBlockedSubverses_Subverses">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserBlockedSubverses" Type="Models.UserBlockedSubverse" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="UserBlockedSubverses">
+              <PropertyRef Name="SubverseName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Usersetdefinitions_Subverses">
+          <End Role="Subverses" Type="Models.Subverse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Usersetdefinitions" Type="Self.Usersetdefinition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverses">
+              <PropertyRef Name="name" />
+            </Principal>
+            <Dependent Role="Usersetdefinitions">
+              <PropertyRef Name="Subversename" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Usersetdefinitions_Usersets">
+          <End Role="Usersets" Type="Self.Userset" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Usersetdefinitions" Type="Self.Usersetdefinition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usersets">
+              <PropertyRef Name="Set_id" />
+            </Principal>
+            <Dependent Role="Usersetdefinitions">
+              <PropertyRef Name="Set_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Usersetsubscriptions_Usersets">
+          <End Role="Usersets" Type="Self.Userset" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Usersetsubscriptions" Type="Self.Usersetsubscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usersets">
+              <PropertyRef Name="Set_id" />
+            </Principal>
+            <Dependent Role="Usersetsubscriptions">
+              <PropertyRef Name="Set_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="voatEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Badges" EntityType="Self.Badge" />
+          <EntitySet Name="Banneddomains" EntityType="Self.Banneddomain" />
+          <EntitySet Name="Bannedusers" EntityType="Self.Banneduser" />
+          <EntitySet Name="CommentRemovalLogs" EntityType="Self.CommentRemovalLog" />
+          <EntitySet Name="Commentreplynotifications" EntityType="Self.Commentreplynotification" />
+          <EntitySet Name="Comments" EntityType="Self.Comment" />
+          <EntitySet Name="Commentsavingtrackers" EntityType="Self.Commentsavingtracker" />
+          <EntitySet Name="Commentvotingtrackers" EntityType="Self.Commentvotingtracker" />
+          <EntitySet Name="Defaultsubverses" EntityType="Models.Defaultsubverse" />
+          <EntitySet Name="Featuredsubs" EntityType="Self.Featuredsub" />
+          <EntitySet Name="Messages" EntityType="Self.Message" />
+          <EntitySet Name="Moderatorinvitations" EntityType="Self.Moderatorinvitation" />
+          <EntitySet Name="PartnerInformations" EntityType="Self.PartnerInformation" />
+          <EntitySet Name="Postreplynotifications" EntityType="Self.Postreplynotification" />
+          <EntitySet Name="Privatemessages" EntityType="Self.Privatemessage" />
+          <EntitySet Name="Promotedsubmissions" EntityType="Self.Promotedsubmission" />
+          <EntitySet Name="Savingtrackers" EntityType="Self.Savingtracker" />
+          <EntitySet Name="Sessions" EntityType="Self.Session" />
+          <EntitySet Name="Sessiontrackers" EntityType="Self.Sessiontracker" />
+          <EntitySet Name="Stickiedsubmissions" EntityType="Self.Stickiedsubmission" />
+          <EntitySet Name="SubmissionRemovalLogs" EntityType="Self.SubmissionRemovalLog" />
+          <EntitySet Name="Subscriptions" EntityType="Self.Subscription" />
+          <EntitySet Name="SubverseAdmins" EntityType="Self.SubverseAdmin" />
+          <EntitySet Name="SubverseBans" EntityType="Self.SubverseBan" />
+          <EntitySet Name="Subverseflairsettings" EntityType="Self.Subverseflairsetting" />
+          <EntitySet Name="Subverses" EntityType="Models.Subverse" />
+          <EntitySet Name="Userbadges" EntityType="Self.Userbadge" />
+          <EntitySet Name="UserBlockedSubverses" EntityType="Models.UserBlockedSubverse" />
+          <EntitySet Name="Userpreferences" EntityType="Self.Userpreference" />
+          <EntitySet Name="Userscores" EntityType="Self.Userscore" />
+          <EntitySet Name="Usersetdefinitions" EntityType="Self.Usersetdefinition" />
+          <EntitySet Name="Usersets" EntityType="Self.Userset" />
+          <EntitySet Name="Usersetsubscriptions" EntityType="Self.Usersetsubscription" />
+          <EntitySet Name="Viewstatistics" EntityType="Self.Viewstatistic" />
+          <EntitySet Name="Votingtrackers" EntityType="Self.Votingtracker" />
+          <AssociationSet Name="FK_Userbadges_Badges" Association="Self.FK_Userbadges_Badges">
+            <End Role="Badges" EntitySet="Badges" />
+            <End Role="Userbadges" EntitySet="Userbadges" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommentRemovalLog_Comments" Association="Self.FK_CommentRemovalLog_Comments">
+            <End Role="Comments" EntitySet="Comments" />
+            <End Role="CommentRemovalLog" EntitySet="CommentRemovalLogs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Comments_Messages" Association="Self.FK_Comments_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Comments" EntitySet="Comments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Commentsavingtracker_Comments" Association="Self.FK_Commentsavingtracker_Comments">
+            <End Role="Comments" EntitySet="Comments" />
+            <End Role="Commentsavingtracker" EntitySet="Commentsavingtrackers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Commentvotingtracker_Comments" Association="Self.FK_Commentvotingtracker_Comments">
+            <End Role="Comments" EntitySet="Comments" />
+            <End Role="Commentvotingtracker" EntitySet="Commentvotingtrackers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="Self.FK_Defaultsubverses_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Defaultsubverses" EntitySet="Defaultsubverses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Featuredsubs_Subverses" Association="Self.FK_Featuredsubs_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Featuredsubs" EntitySet="Featuredsubs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Subverses" Association="Self.FK_Messages_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Savingtracker_Messages" Association="Self.FK_Savingtracker_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Savingtracker" EntitySet="Savingtrackers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Stickiedsubmissions_Messages" Association="Self.FK_Stickiedsubmissions_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Stickiedsubmissions" EntitySet="Stickiedsubmissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubmissionRemovalLog_Messages" Association="Self.FK_SubmissionRemovalLog_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="SubmissionRemovalLog" EntitySet="SubmissionRemovalLogs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Viewstatistics_Messages" Association="Self.FK_Viewstatistics_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Viewstatistics" EntitySet="Viewstatistics" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Votingtracker_Messages" Association="Self.FK_Votingtracker_Messages">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="Votingtracker" EntitySet="Votingtrackers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Stickiedsubmissions_Subverses" Association="Self.FK_Stickiedsubmissions_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Stickiedsubmissions" EntitySet="Stickiedsubmissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subscriptions_Subverses" Association="Self.FK_Subscriptions_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Subscriptions" EntitySet="Subscriptions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="Self.FK_SubverseAdmins_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="SubverseAdmins" EntitySet="SubverseAdmins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubverseBans_Subverses" Association="Self.FK_SubverseBans_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="SubverseBans" EntitySet="SubverseBans" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="Self.FK_Subverseflairsettings_Subverses1">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Subverseflairsettings" EntitySet="Subverseflairsettings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserBlockedSubverses_Subverses" Association="Self.FK_UserBlockedSubverses_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="UserBlockedSubverses" EntitySet="UserBlockedSubverses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Usersetdefinitions_Subverses" Association="Self.FK_Usersetdefinitions_Subverses">
+            <End Role="Subverses" EntitySet="Subverses" />
+            <End Role="Usersetdefinitions" EntitySet="Usersetdefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Usersetdefinitions_Usersets" Association="Self.FK_Usersetdefinitions_Usersets">
+            <End Role="Usersets" EntitySet="Usersets" />
+            <End Role="Usersetdefinitions" EntitySet="Usersetdefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Usersetsubscriptions_Usersets" Association="Self.FK_Usersetsubscriptions_Usersets">
+            <End Role="Usersets" EntitySet="Usersets" />
+            <End Role="Usersetsubscriptions" EntitySet="Usersetsubscriptions" />
+          </AssociationSet>
+          <FunctionImport Name="fnActiveUserCounts" IsComposable="true" ReturnType="Collection(Models.fnActiveUserCounts_Result)">
+          <Parameter Name="SpanInHours" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_perf_stats_azure" ReturnType="Collection(Models.sp_perf_stats_azure_Result)">
+            <Parameter Name="appname" Mode="In" Type="String" />
+            <Parameter Name="runtime" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="sp_perf_stats_azure_infrequent11">
+            <Parameter Name="runtime" Mode="In" Type="DateTime" />
+            <Parameter Name="firstrun" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_ActiveUsers" ReturnType="Collection(Models.usp_ActiveUsers_Result)" />
+          <FunctionImport Name="usp_CommentTree" ReturnType="Collection(Models.usp_CommentTree_Result)">
+            <Parameter Name="SubmissionID" Mode="In" Type="Int32" />
+            <Parameter Name="Depth" Mode="In" Type="Int32" />
+            <Parameter Name="ParentID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_MarkArchived" />
+          <FunctionImport Name="usp_PurgeInactiveSessions">
+          <Parameter Name="Minutes" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_PurgeInactiveSubverses">
+          <Parameter Name="Hours" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_RankSubmissions">
+          <Parameter Name="Count" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_RankSubmissions_CTE">
+          <Parameter Name="Count" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_TransferSubverse">
+            <Parameter Name="Subverse" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="TransferedBy" Mode="In" Type="String" />
+            <Parameter Name="SubmissionID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_WhoVotesForUsersComments" ReturnType="Collection(Models.usp_WhoVotesForUsersComments_Result)">
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="CountLimit" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="sp_perf_stats_azure_Result">
+          <Property Type="String" Name="runtime" Nullable="true" MaxLength="30" />
+          <Property Type="Int16" Name="session_id" Nullable="true" />
+          <Property Type="Int32" Name="request_id" Nullable="true" />
+          <Property Type="Int32" Name="ecid" Nullable="true" />
+          <Property Type="Int16" Name="blocking_session_id" Nullable="true" />
+          <Property Type="Int32" Name="blocking_ecid" Nullable="true" />
+          <Property Type="String" Name="task_state" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="wait_type" Nullable="true" MaxLength="60" />
+          <Property Type="Int64" Name="wait_duration_ms" Nullable="true" />
+          <Property Type="String" Name="wait_resource" Nullable="true" MaxLength="40" />
+          <Property Type="String" Name="resource_description" Nullable="true" MaxLength="140" />
+          <Property Type="String" Name="last_wait_type" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="open_trans" Nullable="true" />
+          <Property Type="String" Name="transaction_isolation_level" Nullable="true" MaxLength="30" />
+          <Property Type="Boolean" Name="is_user_process" Nullable="true" />
+          <Property Type="Int32" Name="request_cpu_time" Nullable="true" />
+          <Property Type="Int64" Name="request_logical_reads" Nullable="true" />
+          <Property Type="Int64" Name="request_reads" Nullable="true" />
+          <Property Type="Int64" Name="request_writes" Nullable="true" />
+          <Property Type="Int32" Name="memory_usage" Nullable="true" />
+          <Property Type="Int32" Name="session_cpu_time" Nullable="true" />
+          <Property Type="Int64" Name="session_reads" Nullable="true" />
+          <Property Type="Int64" Name="session_writes" Nullable="true" />
+          <Property Type="Int64" Name="session_logical_reads" Nullable="true" />
+          <Property Type="Int32" Name="total_scheduled_time" Nullable="true" />
+          <Property Type="Int32" Name="total_elapsed_time" Nullable="true" />
+          <Property Type="String" Name="last_request_start_time" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="last_request_end_time" Nullable="true" MaxLength="30" />
+          <Property Type="Int64" Name="session_row_count" Nullable="true" />
+          <Property Type="Int32" Name="prev_error" Nullable="true" />
+          <Property Type="Int32" Name="open_resultsets" Nullable="true" />
+          <Property Type="Int32" Name="request_total_elapsed_time" Nullable="true" />
+          <Property Type="Decimal" Name="percent_complete" Nullable="true" Precision="5" Scale="2" />
+          <Property Type="Int64" Name="est_completion_time" Nullable="true" />
+          <Property Type="String" Name="tran_name" Nullable="true" MaxLength="24" />
+          <Property Type="String" Name="transaction_begin_time" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="tran_type" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="tran_state" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="request_start_time" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="request_status" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="command" Nullable="true" MaxLength="16" />
+          <Property Type="Int32" Name="statement_start_offset" Nullable="true" />
+          <Property Type="Int32" Name="statement_end_offset" Nullable="true" />
+          <Property Type="Int16" Name="database_id" Nullable="true" />
+          <Property Type="Int32" Name="user_id" Nullable="true" />
+          <Property Type="Boolean" Name="executing_managed_code" Nullable="true" />
+          <Property Type="Int32" Name="pending_io_count" Nullable="true" />
+          <Property Type="String" Name="login_time" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="host_name" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="program_name" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="host_process_id" Nullable="true" />
+          <Property Type="Int32" Name="client_version" Nullable="true" />
+          <Property Type="String" Name="client_interface_name" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="login_name" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="nt_domain" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="nt_user_name" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="net_packet_size" Nullable="true" />
+          <Property Type="String" Name="client_net_address" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="session_status" Nullable="true" MaxLength="15" />
+          <Property Type="Int32" Name="scheduler_id" Nullable="true" />
+          <Property Type="Int32" Name="group_id" Nullable="true" />
+          <Property Type="Binary" Name="context_info" Nullable="true" MaxLength="128" />
+        </ComplexType>
+        <ComplexType Name="usp_ActiveUsers_Result">
+          <Property Type="String" Name="Date" Nullable="true" MaxLength="25" />
+          <Property Type="Int32" Name="Hours" Nullable="true" />
+          <Property Type="Int32" Name="Days" Nullable="true" />
+          <Property Type="Int32" Name="Count" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="usp_CommentTree_Result">
+          <Property Type="Int32" Name="ChildCount" Nullable="true" />
+          <Property Type="Int32" Name="Depth" Nullable="true" />
+          <Property Type="String" Name="Path" Nullable="true" />
+          <Property Type="String" Name="Subverse" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="Votes" Nullable="true" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="CommentContent" Nullable="false" />
+          <Property Type="DateTime" Name="Date" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastEditDate" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="MessageId" Nullable="true" />
+          <Property Type="Int64" Name="Likes" Nullable="false" />
+          <Property Type="Int64" Name="Dislikes" Nullable="false" />
+          <Property Type="Int32" Name="ParentId" Nullable="true" />
+          <Property Type="Boolean" Name="Anonymized" Nullable="false" />
+          <Property Type="Boolean" Name="IsDistinguished" Nullable="false" />
+          <Property Type="String" Name="FormattedContent" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="usp_WhoVotesForUsersComments_Result">
+          <Property Type="String" Name="UserName" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="VoteStatus" Nullable="true" />
+          <Property Type="Int32" Name="VoteCount" Nullable="true" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ModelsStoreContainer" CdmEntityContainer="voatEntities">
+          <EntitySetMapping Name="Badges">
+            <EntityTypeMapping TypeName="Models.Badge">
+              <MappingFragment StoreEntitySet="Badges">
+                <ScalarProperty Name="BadgeId" ColumnName="BadgeId" />
+                <ScalarProperty Name="BadgeGraphics" ColumnName="BadgeGraphics" />
+                <ScalarProperty Name="BadgeTitle" ColumnName="BadgeTitle" />
+                <ScalarProperty Name="BadgeName" ColumnName="BadgeName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Banneddomains">
+            <EntityTypeMapping TypeName="Models.Banneddomain">
+              <MappingFragment StoreEntitySet="Banneddomains">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Hostname" ColumnName="Hostname" />
+                <ScalarProperty Name="Added_by" ColumnName="Added_by" />
+                <ScalarProperty Name="Added_on" ColumnName="Added_on" />
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Bannedusers">
+            <EntityTypeMapping TypeName="Models.Banneduser">
+              <MappingFragment StoreEntitySet="Bannedusers">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Date_banned" ColumnName="Date_banned" />
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
+                <ScalarProperty Name="Banned_by" ColumnName="Banned_by" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CommentRemovalLogs">
+            <EntityTypeMapping TypeName="Models.CommentRemovalLog">
+              <MappingFragment StoreEntitySet="CommentRemovalLog">
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+                <ScalarProperty Name="Moderator" ColumnName="Moderator" />
+                <ScalarProperty Name="RemovalTimestamp" ColumnName="RemovalTimestamp" />
+                <ScalarProperty Name="ReasonForRemoval" ColumnName="ReasonForRemoval" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Commentreplynotifications">
+            <EntityTypeMapping TypeName="Models.Commentreplynotification">
+              <MappingFragment StoreEntitySet="Commentreplynotifications">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
+                <ScalarProperty Name="Sender" ColumnName="Sender" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Comments">
+            <EntityTypeMapping TypeName="Models.Comment">
+              <MappingFragment StoreEntitySet="Comments">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Votes" ColumnName="Votes" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="Likes" ColumnName="Likes" />
+                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
+                <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
+                <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Commentsavingtrackers">
+            <EntityTypeMapping TypeName="Models.Commentsavingtracker">
+              <MappingFragment StoreEntitySet="Commentsavingtracker">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Commentvotingtrackers">
+            <EntityTypeMapping TypeName="Models.Commentvotingtracker">
+              <MappingFragment StoreEntitySet="Commentvotingtracker">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="ClientIpAddress" ColumnName="ClientIpAddress" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Defaultsubverses">
+            <EntityTypeMapping TypeName="Models.Defaultsubverse">
+              <MappingFragment StoreEntitySet="Defaultsubverses">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="position" ColumnName="position" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Featuredsubs">
+            <EntityTypeMapping TypeName="Models.Featuredsub">
+              <MappingFragment StoreEntitySet="Featuredsubs">
+                <ScalarProperty Name="Feature_id" ColumnName="Feature_id" />
+                <ScalarProperty Name="Subname" ColumnName="Subname" />
+                <ScalarProperty Name="Featured_by" ColumnName="Featured_by" />
+                <ScalarProperty Name="Featured_on" ColumnName="Featured_on" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Messages">
+            <EntityTypeMapping TypeName="Models.Message">
+              <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="IsArchived" ColumnName="IsArchived" />
+                <ScalarProperty Name="Votes" ColumnName="Votes" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="MessageContent" ColumnName="MessageContent" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Linkdescription" ColumnName="Linkdescription" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Rank" ColumnName="Rank" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="Likes" ColumnName="Likes" />
+                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
+                <ScalarProperty Name="Thumbnail" ColumnName="Thumbnail" />
+                <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
+                <ScalarProperty Name="FlairLabel" ColumnName="FlairLabel" />
+                <ScalarProperty Name="FlairCss" ColumnName="FlairCss" />
+                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
+                <ScalarProperty Name="Views" ColumnName="Views" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Moderatorinvitations">
+            <EntityTypeMapping TypeName="Models.Moderatorinvitation">
+              <MappingFragment StoreEntitySet="Moderatorinvitations">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Sent_by" ColumnName="Sent_by" />
+                <ScalarProperty Name="Sent_on" ColumnName="Sent_on" />
+                <ScalarProperty Name="Sent_to" ColumnName="Sent_to" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="Power" ColumnName="Power" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PartnerInformations">
+            <EntityTypeMapping TypeName="Models.PartnerInformation">
+              <MappingFragment StoreEntitySet="PartnerInformations">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="PartnerPaymentForm" ColumnName="PartnerPaymentForm" />
+                <ScalarProperty Name="PartnerBankAccountNumber" ColumnName="PartnerBankAccountNumber" />
+                <ScalarProperty Name="PartnerNameOfAccountHolder" ColumnName="PartnerNameOfAccountHolder" />
+                <ScalarProperty Name="PartnerSwiftCode" ColumnName="PartnerSwiftCode" />
+                <ScalarProperty Name="PartnerBankName" ColumnName="PartnerBankName" />
+                <ScalarProperty Name="PartnerIFSC" ColumnName="PartnerIFSC" />
+                <ScalarProperty Name="PartnerBIK" ColumnName="PartnerBIK" />
+                <ScalarProperty Name="PartnerPaymentCurrency" ColumnName="PartnerPaymentCurrency" />
+                <ScalarProperty Name="PartnerPhoneNumber" ColumnName="PartnerPhoneNumber" />
+                <ScalarProperty Name="PartnerPayeeName" ColumnName="PartnerPayeeName" />
+                <ScalarProperty Name="PartnerCity" ColumnName="PartnerCity" />
+                <ScalarProperty Name="PartnerCountry" ColumnName="PartnerCountry" />
+                <ScalarProperty Name="PartnerZip" ColumnName="PartnerZip" />
+                <ScalarProperty Name="PartnerStreet" ColumnName="PartnerStreet" />
+                <ScalarProperty Name="PartnerLastPaymentDate" ColumnName="PartnerLastPaymentDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Postreplynotifications">
+            <EntityTypeMapping TypeName="Models.Postreplynotification">
+              <MappingFragment StoreEntitySet="Postreplynotifications">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
+                <ScalarProperty Name="Sender" ColumnName="Sender" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Privatemessages">
+            <EntityTypeMapping TypeName="Models.Privatemessage">
+              <MappingFragment StoreEntitySet="Privatemessages">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Sender" ColumnName="Sender" />
+                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Markedasunread" ColumnName="Markedasunread" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Promotedsubmissions">
+            <EntityTypeMapping TypeName="Models.Promotedsubmission">
+              <MappingFragment StoreEntitySet="Promotedsubmissions">
+                <ScalarProperty Name="promoted_submission_id" ColumnName="promoted_submission_id" />
+                <ScalarProperty Name="promoted_by" ColumnName="promoted_by" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Savingtrackers">
+            <EntityTypeMapping TypeName="Models.Savingtracker">
+              <MappingFragment StoreEntitySet="Savingtracker">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sessions">
+            <EntityTypeMapping TypeName="Models.Session">
+              <MappingFragment StoreEntitySet="Sessions">
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="Expires" ColumnName="Expires" />
+                <ScalarProperty Name="LockDate" ColumnName="LockDate" />
+                <ScalarProperty Name="LockCookie" ColumnName="LockCookie" />
+                <ScalarProperty Name="Locked" ColumnName="Locked" />
+                <ScalarProperty Name="SessionItem" ColumnName="SessionItem" />
+                <ScalarProperty Name="Flags" ColumnName="Flags" />
+                <ScalarProperty Name="Timeout" ColumnName="Timeout" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sessiontrackers">
+            <EntityTypeMapping TypeName="Models.Sessiontracker">
+              <MappingFragment StoreEntitySet="Sessiontracker">
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Stickiedsubmissions">
+            <EntityTypeMapping TypeName="Models.Stickiedsubmission">
+              <MappingFragment StoreEntitySet="Stickiedsubmissions">
+                <ScalarProperty Name="Submission_id" ColumnName="Submission_id" />
+                <ScalarProperty Name="Subversename" ColumnName="Subversename" />
+                <ScalarProperty Name="Stickied_by" ColumnName="Stickied_by" />
+                <ScalarProperty Name="Stickied_date" ColumnName="Stickied_date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubmissionRemovalLogs">
+            <EntityTypeMapping TypeName="Models.SubmissionRemovalLog">
+              <MappingFragment StoreEntitySet="SubmissionRemovalLog">
+                <ScalarProperty Name="SubmissionId" ColumnName="SubmissionId" />
+                <ScalarProperty Name="Moderator" ColumnName="Moderator" />
+                <ScalarProperty Name="RemovalTimestamp" ColumnName="RemovalTimestamp" />
+                <ScalarProperty Name="ReasonForRemoval" ColumnName="ReasonForRemoval" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subscriptions">
+            <EntityTypeMapping TypeName="Models.Subscription">
+              <MappingFragment StoreEntitySet="Subscriptions">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubverseAdmins">
+            <EntityTypeMapping TypeName="Models.SubverseAdmin">
+              <MappingFragment StoreEntitySet="SubverseAdmins">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Power" ColumnName="Power" />
+                <ScalarProperty Name="Added_by" ColumnName="Added_by" />
+                <ScalarProperty Name="Added_on" ColumnName="Added_on" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubverseBans">
+            <EntityTypeMapping TypeName="Models.SubverseBan">
+              <MappingFragment StoreEntitySet="SubverseBans">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="BannedBy" ColumnName="BannedBy" />
+                <ScalarProperty Name="BanAddedOn" ColumnName="BanAddedOn" />
+                <ScalarProperty Name="BanReason" ColumnName="BanReason" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subverseflairsettings">
+            <EntityTypeMapping TypeName="Models.Subverseflairsetting">
+              <MappingFragment StoreEntitySet="Subverseflairsettings">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Subversename" ColumnName="Subversename" />
+                <ScalarProperty Name="Label" ColumnName="Label" />
+                <ScalarProperty Name="CssClass" ColumnName="CssClass" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subverses">
+            <EntityTypeMapping TypeName="Models.Subverse">
+              <MappingFragment StoreEntitySet="Subverses">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="sidebar" ColumnName="sidebar" />
+                <ScalarProperty Name="submission_text" ColumnName="submission_text" />
+                <ScalarProperty Name="language" ColumnName="language" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="label_submit_new_link" ColumnName="label_submit_new_link" />
+                <ScalarProperty Name="label_sumit_new_selfpost" ColumnName="label_sumit_new_selfpost" />
+                <ScalarProperty Name="spam_filter_links" ColumnName="spam_filter_links" />
+                <ScalarProperty Name="spam_filter_selfpost" ColumnName="spam_filter_selfpost" />
+                <ScalarProperty Name="spam_filter_comments" ColumnName="spam_filter_comments" />
+                <ScalarProperty Name="rated_adult" ColumnName="rated_adult" />
+                <ScalarProperty Name="allow_default" ColumnName="allow_default" />
+                <ScalarProperty Name="enable_thumbnails" ColumnName="enable_thumbnails" />
+                <ScalarProperty Name="exclude_sitewide_bans" ColumnName="exclude_sitewide_bans" />
+                <ScalarProperty Name="traffic_stats_public" ColumnName="traffic_stats_public" />
+                <ScalarProperty Name="minutes_to_hide_comments" ColumnName="minutes_to_hide_comments" />
+                <ScalarProperty Name="creation_date" ColumnName="creation_date" />
+                <ScalarProperty Name="stylesheet" ColumnName="stylesheet" />
+                <ScalarProperty Name="subscribers" ColumnName="subscribers" />
+                <ScalarProperty Name="private_subverse" ColumnName="private_subverse" />
+                <ScalarProperty Name="authorized_submitters_only" ColumnName="authorized_submitters_only" />
+                <ScalarProperty Name="anonymized_mode" ColumnName="anonymized_mode" />
+                <ScalarProperty Name="last_submission_received" ColumnName="last_submission_received" />
+                <ScalarProperty Name="minimumdownvoteccp" ColumnName="minimumdownvoteccp" />
+                <ScalarProperty Name="forced_private" ColumnName="forced_private" />
+                <ScalarProperty Name="admin_disabled" ColumnName="admin_disabled" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Userbadges">
+            <EntityTypeMapping TypeName="Models.Userbadge">
+              <MappingFragment StoreEntitySet="Userbadges">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="BadgeId" ColumnName="BadgeId" />
+                <ScalarProperty Name="Awarded" ColumnName="Awarded" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserBlockedSubverses">
+            <EntityTypeMapping TypeName="Models.UserBlockedSubverse">
+              <MappingFragment StoreEntitySet="UserBlockedSubverses">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SubverseName" ColumnName="SubverseName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Userpreferences">
+            <EntityTypeMapping TypeName="Models.Userpreference">
+              <MappingFragment StoreEntitySet="Userpreferences">
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Disable_custom_css" ColumnName="Disable_custom_css" />
+                <ScalarProperty Name="Night_mode" ColumnName="Night_mode" />
+                <ScalarProperty Name="Language" ColumnName="Language" />
+                <ScalarProperty Name="Clicking_mode" ColumnName="Clicking_mode" />
+                <ScalarProperty Name="Enable_adult_content" ColumnName="Enable_adult_content" />
+                <ScalarProperty Name="Public_votes" ColumnName="Public_votes" />
+                <ScalarProperty Name="Public_subscriptions" ColumnName="Public_subscriptions" />
+                <ScalarProperty Name="Topmenu_from_subscriptions" ColumnName="Topmenu_from_subscriptions" />
+                <ScalarProperty Name="Shortbio" ColumnName="Shortbio" />
+                <ScalarProperty Name="Avatar" ColumnName="Avatar" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Userscores">
+            <EntityTypeMapping TypeName="Models.Userscore">
+              <MappingFragment StoreEntitySet="Userscore">
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="CCP" ColumnName="CCP" />
+                <ScalarProperty Name="SCP" ColumnName="SCP" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Usersetdefinitions">
+            <EntityTypeMapping TypeName="Models.Usersetdefinition">
+              <MappingFragment StoreEntitySet="Usersetdefinitions">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Set_id" ColumnName="Set_id" />
+                <ScalarProperty Name="Subversename" ColumnName="Subversename" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Usersets">
+            <EntityTypeMapping TypeName="Models.Userset">
+              <MappingFragment StoreEntitySet="Usersets">
+                <ScalarProperty Name="Set_id" ColumnName="Set_id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Created_by" ColumnName="Created_by" />
+                <ScalarProperty Name="Created_on" ColumnName="Created_on" />
+                <ScalarProperty Name="Public" ColumnName="Public" />
+                <ScalarProperty Name="Subscribers" ColumnName="Subscribers" />
+                <ScalarProperty Name="Default" ColumnName="Default" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Usersetsubscriptions">
+            <EntityTypeMapping TypeName="Models.Usersetsubscription">
+              <MappingFragment StoreEntitySet="Usersetsubscriptions">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Set_id" ColumnName="Set_id" />
+                <ScalarProperty Name="Order" ColumnName="Order" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Viewstatistics">
+            <EntityTypeMapping TypeName="Models.Viewstatistic">
+              <MappingFragment StoreEntitySet="Viewstatistics">
+                <ScalarProperty Name="submissionId" ColumnName="submissionId" />
+                <ScalarProperty Name="viewerId" ColumnName="viewerId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Votingtrackers">
+            <EntityTypeMapping TypeName="Models.Votingtracker">
+              <MappingFragment StoreEntitySet="Votingtracker">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="ClientIpAddress" ColumnName="ClientIpAddress" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionName="Models.Store.fnActiveUserCounts" FunctionImportName="fnActiveUserCounts">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="Models.fnActiveUserCounts_Result">
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Hours" ColumnName="Hours" />
+                <ScalarProperty Name="Days" ColumnName="Days" />
+                <ScalarProperty Name="Count" ColumnName="Count" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_perf_stats_azure" FunctionName="Models.Store.sp_perf_stats_azure">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="Models.sp_perf_stats_azure_Result">
+                <ScalarProperty Name="runtime" ColumnName="runtime" />
+                <ScalarProperty Name="session_id" ColumnName="session_id" />
+                <ScalarProperty Name="request_id" ColumnName="request_id" />
+                <ScalarProperty Name="ecid" ColumnName="ecid" />
+                <ScalarProperty Name="blocking_session_id" ColumnName="blocking_session_id" />
+                <ScalarProperty Name="blocking_ecid" ColumnName="blocking_ecid" />
+                <ScalarProperty Name="task_state" ColumnName="task_state" />
+                <ScalarProperty Name="wait_type" ColumnName="wait_type" />
+                <ScalarProperty Name="wait_duration_ms" ColumnName="wait_duration_ms" />
+                <ScalarProperty Name="wait_resource" ColumnName="wait_resource" />
+                <ScalarProperty Name="resource_description" ColumnName="resource_description" />
+                <ScalarProperty Name="last_wait_type" ColumnName="last_wait_type" />
+                <ScalarProperty Name="open_trans" ColumnName="open_trans" />
+                <ScalarProperty Name="transaction_isolation_level" ColumnName="transaction_isolation_level" />
+                <ScalarProperty Name="is_user_process" ColumnName="is_user_process" />
+                <ScalarProperty Name="request_cpu_time" ColumnName="request_cpu_time" />
+                <ScalarProperty Name="request_logical_reads" ColumnName="request_logical_reads" />
+                <ScalarProperty Name="request_reads" ColumnName="request_reads" />
+                <ScalarProperty Name="request_writes" ColumnName="request_writes" />
+                <ScalarProperty Name="memory_usage" ColumnName="memory_usage" />
+                <ScalarProperty Name="session_cpu_time" ColumnName="session_cpu_time" />
+                <ScalarProperty Name="session_reads" ColumnName="session_reads" />
+                <ScalarProperty Name="session_writes" ColumnName="session_writes" />
+                <ScalarProperty Name="session_logical_reads" ColumnName="session_logical_reads" />
+                <ScalarProperty Name="total_scheduled_time" ColumnName="total_scheduled_time" />
+                <ScalarProperty Name="total_elapsed_time" ColumnName="total_elapsed_time" />
+                <ScalarProperty Name="last_request_start_time" ColumnName="last_request_start_time" />
+                <ScalarProperty Name="last_request_end_time" ColumnName="last_request_end_time" />
+                <ScalarProperty Name="session_row_count" ColumnName="session_row_count" />
+                <ScalarProperty Name="prev_error" ColumnName="prev_error" />
+                <ScalarProperty Name="open_resultsets" ColumnName="open_resultsets" />
+                <ScalarProperty Name="request_total_elapsed_time" ColumnName="request_total_elapsed_time" />
+                <ScalarProperty Name="percent_complete" ColumnName="percent_complete" />
+                <ScalarProperty Name="est_completion_time" ColumnName="est_completion_time" />
+                <ScalarProperty Name="tran_name" ColumnName="tran_name" />
+                <ScalarProperty Name="transaction_begin_time" ColumnName="transaction_begin_time" />
+                <ScalarProperty Name="tran_type" ColumnName="tran_type" />
+                <ScalarProperty Name="tran_state" ColumnName="tran_state" />
+                <ScalarProperty Name="request_start_time" ColumnName="request_start_time" />
+                <ScalarProperty Name="request_status" ColumnName="request_status" />
+                <ScalarProperty Name="command" ColumnName="command" />
+                <ScalarProperty Name="statement_start_offset" ColumnName="statement_start_offset" />
+                <ScalarProperty Name="statement_end_offset" ColumnName="statement_end_offset" />
+                <ScalarProperty Name="database_id" ColumnName="database_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="executing_managed_code" ColumnName="executing_managed_code" />
+                <ScalarProperty Name="pending_io_count" ColumnName="pending_io_count" />
+                <ScalarProperty Name="login_time" ColumnName="login_time" />
+                <ScalarProperty Name="host_name" ColumnName="host_name" />
+                <ScalarProperty Name="program_name" ColumnName="program_name" />
+                <ScalarProperty Name="host_process_id" ColumnName="host_process_id" />
+                <ScalarProperty Name="client_version" ColumnName="client_version" />
+                <ScalarProperty Name="client_interface_name" ColumnName="client_interface_name" />
+                <ScalarProperty Name="login_name" ColumnName="login_name" />
+                <ScalarProperty Name="nt_domain" ColumnName="nt_domain" />
+                <ScalarProperty Name="nt_user_name" ColumnName="nt_user_name" />
+                <ScalarProperty Name="net_packet_size" ColumnName="net_packet_size" />
+                <ScalarProperty Name="client_net_address" ColumnName="client_net_address" />
+                <ScalarProperty Name="session_status" ColumnName="session_status" />
+                <ScalarProperty Name="scheduler_id" ColumnName="scheduler_id" />
+                <ScalarProperty Name="group_id" ColumnName="group_id" />
+                <ScalarProperty Name="context_info" ColumnName="context_info" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_perf_stats_azure_infrequent11" FunctionName="Models.Store.sp_perf_stats_azure_infrequent11" />
+          <FunctionImportMapping FunctionImportName="usp_ActiveUsers" FunctionName="Models.Store.usp_ActiveUsers">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="Models.usp_ActiveUsers_Result">
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Hours" ColumnName="Hours" />
+                <ScalarProperty Name="Days" ColumnName="Days" />
+                <ScalarProperty Name="Count" ColumnName="Count" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_CommentTree" FunctionName="Models.Store.usp_CommentTree">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="Models.usp_CommentTree_Result">
+                <ScalarProperty Name="ChildCount" ColumnName="ChildCount" />
+                <ScalarProperty Name="Depth" ColumnName="Depth" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Votes" ColumnName="Votes" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="Likes" ColumnName="Likes" />
+                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
+                <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
+                <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_MarkArchived" FunctionName="Models.Store.usp_MarkArchived" />
+          <FunctionImportMapping FunctionImportName="usp_PurgeInactiveSessions" FunctionName="Models.Store.usp_PurgeInactiveSessions" />
+          <FunctionImportMapping FunctionImportName="usp_PurgeInactiveSubverses" FunctionName="Models.Store.usp_PurgeInactiveSubverses" />
+          <FunctionImportMapping FunctionImportName="usp_RankSubmissions" FunctionName="Models.Store.usp_RankSubmissions" />
+          <FunctionImportMapping FunctionImportName="usp_RankSubmissions_CTE" FunctionName="Models.Store.usp_RankSubmissions_CTE" />
+          <FunctionImportMapping FunctionImportName="usp_TransferSubverse" FunctionName="Models.Store.usp_TransferSubverse" />
+          <FunctionImportMapping FunctionImportName="usp_WhoVotesForUsersComments" FunctionName="Models.Store.usp_WhoVotesForUsersComments">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="Models.usp_WhoVotesForUsersComments_Result">
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
+                <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

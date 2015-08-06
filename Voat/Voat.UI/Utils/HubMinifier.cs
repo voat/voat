@@ -14,7 +14,7 @@ All Rights Reserved.
 
 using Microsoft.Ajax.Utilities;
 
-namespace Voat.Utils
+namespace Voat.UI.Utilities
 {
     public class HubMinifier : Microsoft.AspNet.SignalR.Hubs.IJavaScriptMinifier
     {

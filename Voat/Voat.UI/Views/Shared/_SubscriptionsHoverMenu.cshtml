@@ -13,12 +13,12 @@
 @using Voat.Models.ViewModels
 
 @{
-    List<SubverseDetailsViewModel> subscriptionList = null;
+    List<string> subscriptionList = null;
 
     // get user subscriptions
     if (User.Identity.IsAuthenticated)
     {
-        subscriptionList = Voat.Utils.User.UserSubscriptions(User.Identity.Name);
+        subscriptionList = UserHelper.UserSubscriptions(User.Identity.Name);
     }
 }
 
@@ -32,7 +32,7 @@
         {
             foreach (var subverse in subscriptionList)
             {
-                <li><a href="/v/@subverse.Name">@subverse.Name</a></li>
+                <li><a href="/v/@subverse">@subverse</a></li>
             }
         }
         else

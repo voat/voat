@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using Voat.Data.Models;
 
 namespace Voat.Models
 {

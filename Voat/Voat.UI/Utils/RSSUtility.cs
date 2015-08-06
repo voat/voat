@@ -18,7 +18,7 @@ using System.Web.Mvc;
 using System.Xml;
 using System.ServiceModel.Syndication;
 
-namespace Voat.Utils
+namespace Voat.UI.Utilities
 {
     /* special thanks to Damien Guard for writing an article on Creating RSS feeds in ASP.NET MVC     
      * which helped me understand how to work with RSS in ASP.NET MVC

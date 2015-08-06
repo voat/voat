@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A0DA6D93-B070-485F-8E46-2F3E30982898}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Voat.Business</RootNamespace>
+    <AssemblyName>Voat.Business</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Kaliko.ImageLibrary, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageLibrary.2.0.5\lib\net45\Kaliko.ImageLibrary.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\MarkdownDeep.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=4.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenGraph-Net, Version=1.2.0.1, Culture=neutral, PublicKeyToken=2f6a5503306c493e, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenGraph-Net.1.2.0.1\lib\net45\OpenGraph-Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Age.cs" />
+    <Compile Include="Common\Score.cs" />
+    <Compile Include="Common\Exceptions.cs" />
+    <Compile Include="Data\DataGateway.cs" />
+    <Compile Include="Models\Api\FormattedContentContainer.cs" />
+    <Compile Include="Models\Api\Legacy\ApiBadge.cs" />
+    <Compile Include="Models\Api\Legacy\ApiComment.cs" />
+    <Compile Include="Models\Api\Legacy\ApiMessage.cs" />
+    <Compile Include="Models\Api\Legacy\ApiSubverseInfo.cs" />
+    <Compile Include="Models\Api\Legacy\ApiUserBadge.cs" />
+    <Compile Include="Models\Api\Legacy\ApiUserInfo.cs" />
+    <Compile Include="Models\Api\v1\ApiBadge.cs" />
+    <Compile Include="Models\Api\v1\ApiComment.cs" />
+    <Compile Include="Models\Api\v1\ApiSendUserMessage.cs" />
+    <Compile Include="Models\Api\v1\ApiSetInfo.cs" />
+    <Compile Include="Models\Api\v1\ApiSubmission.cs" />
+    <Compile Include="Models\Api\v1\ApiSubscription.cs" />
+    <Compile Include="Models\Api\v1\ApiSubverseInfo.cs" />
+    <Compile Include="Models\Api\v1\ApiUserBadge.cs" />
+    <Compile Include="Models\Api\v1\ApiUserInfo.cs" />
+    <Compile Include="Models\Api\v1\ApiUserMessage.cs" />
+    <Compile Include="Models\Api\v1\ApiUserPreferences.cs" />
+    <Compile Include="Models\Api\v1\IVoteStatus.cs" />
+    <Compile Include="Models\Api\v1\UserSubmission.cs" />
+    <Compile Include="Models\Api\v1\UserValue.cs" />
+    <Compile Include="Models\UserMessage.cs" />
+    <Compile Include="Data\SearchOptions.cs" />
+    <Compile Include="Data\Models\IdentityModels.cs" />
+    <Compile Include="Models\Enums.cs" />
+    <Compile Include="Models\VoteResponse.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rules\Base\BaseCCPRule.cs" />
+    <Compile Include="Rules\Base\BaseSubverseMinCCPRule.cs" />
+    <Compile Include="Rules\Base\BaseVoatRule.cs" />
+    <Compile Include="Rules\Base\MinCCPRule.cs" />
+    <Compile Include="Rules\RequestContextHandler.cs" />
+    <Compile Include="Rules\Rules.cs" />
+    <Compile Include="Rules\VoatRuleContext.cs" />
+    <Compile Include="Rules\VoatRuleExeception.cs" />
+    <Compile Include="Rules\VoatRulesEngine.cs" />
+    <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Utilities\BanningUtility.cs" />
+    <Compile Include="Utilities\CacheHandler.cs" />
+    <Compile Include="Utilities\CommentCounter.cs" />
+    <Compile Include="Utilities\Components\ContentFilters.cs" />
+    <Compile Include="Utilities\Components\ContentProcessor.cs" />
+    <Compile Include="Utilities\Components\NotificationManager.cs" />
+    <Compile Include="Utilities\Components\RegExReplacer.cs" />
+    <Compile Include="Utilities\CONSTANTS.cs" />
+    <Compile Include="Utilities\DataCache.cs" />
+    <Compile Include="Utilities\DateTimeUtility.cs" />
+    <Compile Include="Utilities\EmailUtility.cs" />
+    <Compile Include="Utilities\Formatting.cs" />
+    <Compile Include="Utilities\HashHandler.cs" />
+    <Compile Include="Utilities\IpHashUtility.cs" />
+    <Compile Include="Utilities\JsonUnprintableCharConverter.cs" />
+    <Compile Include="Utilities\Karma.cs" />
+    <Compile Include="Configuration\LiveConfigurationManager.cs" />
+    <Compile Include="Utilities\MesssagingUtility.cs" />
+    <Compile Include="Utilities\PaginatedList.cs" />
+    <Compile Include="Utilities\Ranking.cs" />
+    <Compile Include="Utilities\Saving.cs" />
+    <Compile Include="Utilities\SavingComments.cs" />
+    <Compile Include="Utilities\Submissions.cs" />
+    <Compile Include="Utilities\ThumbGenerator.cs" />
+    <Compile Include="Utilities\UrlUtility.cs" />
+    <Compile Include="Utilities\UserHelper.cs" />
+    <Compile Include="Utilities\VoatPathHelper.cs" />
+    <Compile Include="Utilities\Voting.cs" />
+    <Compile Include="Utilities\VotingComments.cs" />
+    <Compile Include="Models\CommentBucketViewModel.cs" />
+    <Compile Include="Models\UserStatsModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Voat.Data\Voat.Data.csproj">
+      <Project>{1e367cda-5508-47e1-9e95-ed100aee42d0}</Project>
+      <Name>Voat.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj">
+      <Project>{dd358253-041f-4feb-9714-1164127780f8}</Project>
+      <Name>Voat.RulesEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
