@@ -34,7 +34,7 @@
 
                 foreach (var message in Model)
                 {
-                    <div id="messageContainer-@message.Id">
+                    <div id="messageContainer-@message.Id" class="entry comment">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
                                 Recipient: <a href="/u/@message.Recipient">@message.Recipient</a> | Sent: @message.Timestamp
@@ -45,15 +45,17 @@
 
                             <div class="panel-message-body">
                                 @Html.Raw(Formatting.FormatMessage(message.Body))
+                                <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Html.Raw(message.Body)</textarea>
+                                <ul class="flat-list buttons">
+                                    <li>
+                                        <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this)">source</a>
+                                    </li>
+                                    <li>
+                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deletePrivateMessageFromSent(this, @message.Id)">delete and revoke</a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-
-                        <ul class="flat-list buttons">
-                            <li>
-                                <a class="btn-whoaverse-paging" href="javascript:void(0)" onclick="return deletePrivateMessageFromSent(this, @message.Id)">Delete and revoke</a>
-                            </li>
-                        </ul>
-                        <br /><br />
                     </div>
                 }
             }
