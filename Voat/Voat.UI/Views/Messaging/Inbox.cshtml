@@ -64,7 +64,7 @@
                                     <li class="option main">
                                         <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return togglePM(this, @message.Id)">delete</a>
                                     </li>
-                                    <li class="option error hidden">
+                                    <li class="option error" style="display: none;">
                                         are you sure?  <a href="javascript:void(0)" class="yes" onclick="return deletePrivateMessage($(this).parent(), @message.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return togglebackPM(this)">no</a>
                                     </li>
                                     @if (message.Status)

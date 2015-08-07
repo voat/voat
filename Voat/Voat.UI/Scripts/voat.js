@@ -888,7 +888,7 @@ function togglereport(commentid) {
 
 // toggle are you sure question for pm deletion
 function togglePM(obj) {
-    $(obj).parent().parent().find('.option, .main').toggleClass("hidden");
+    $(obj).parent().parent().find('.option, .main').toggle();
     return false;
 }
 
@@ -933,7 +933,7 @@ function togglesubmissionback(obj) {
 
 // togle back are you sure question
 function togglebackPM(obj) {
-    $(obj).parent().parent().find('.option, .error').toggleClass("hidden");
+    $(obj).parent().parent().find('.option, .error').toggle();
     return false;
 }
 

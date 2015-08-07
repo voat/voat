@@ -45,6 +45,11 @@ namespace Voat.Controllers
                 return new RedirectResult("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
             }
 
+            if (q == "0118 999 881 999 119 7253")
+            {
+                return new RedirectResult("https://www.youtube.com/watch?v=HWc3WY3fuZU");
+            }
+
             if (q == "spoon")
             {
                 return View("Jaje");
