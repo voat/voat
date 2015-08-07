@@ -886,6 +886,12 @@ function togglereport(commentid) {
     return false;
 }
 
+// toggle are you sure question for pm deletion
+function togglePM(obj) {
+    $(obj).parent().parent().find('.option, .main').toggleClass("hidden");
+    return false;
+}
+
 // submit report and replace report button with a "thank you" to the user
 function reportcomment(obj, commentid) {
     $(obj).parent().parent().find('.togglebutton').attr("onclick", "javascript:void(0)");
@@ -922,6 +928,12 @@ function togglesubmission(obj, submissionid) {
 // togle back are you sure question for submission deletion
 function togglesubmissionback(obj) {
     $(obj).parent().parent().find('.option, .error').toggleClass("active");
+    return false;
+}
+
+// togle back are you sure question
+function togglebackPM(obj) {
+    $(obj).parent().parent().find('.option, .error').toggleClass("hidden");
     return false;
 }
 
