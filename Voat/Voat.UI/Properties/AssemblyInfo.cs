@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Voat GmbH")]
 [assembly: AssemblyProduct("Voat")]
-[assembly: AssemblyCopyright("Copyright © voat.co 2015")]
+[assembly: AssemblyCopyright("Copyright © 2015 Voat, Inc.")]
 [assembly: AssemblyTrademark("voat")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
