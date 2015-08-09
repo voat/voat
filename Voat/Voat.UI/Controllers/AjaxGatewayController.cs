@@ -87,8 +87,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner or moderator, if not, deny listing
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow) &&
-                !UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
             {
                 return new HttpUnauthorizedResult();
             }

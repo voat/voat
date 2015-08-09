@@ -505,7 +505,7 @@ namespace Voat.Controllers
                 }
 
                 // delete comment if delete request is issued by subverse moderator
-                else if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
+                else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
                 {
                     // notify comment author that his comment has been deleted by a moderator
                     MesssagingUtility.SendPrivateMessage(
@@ -556,7 +556,7 @@ namespace Voat.Controllers
                 if (User.Identity.Name == commentToDistinguish.Name)
                 {
                     // check to see if comment author is also sub mod or sub admin for comment sub
-                    if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, commentToDistinguish.Message.Subverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, commentToDistinguish.Message.Subverse))
+                    if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentToDistinguish.Message.Subverse))
                     {
                         // mark the comment as distinguished and save to db
                         if (commentToDistinguish.IsDistinguished)

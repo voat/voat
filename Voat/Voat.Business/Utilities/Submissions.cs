@@ -272,11 +272,7 @@ namespace Voat.Utilities
             {
                 if (!UserHelper.IsUserSubverseModerator(userName, targetSubverse.name))
                 {
-                    // user is not a moderator, check if user is an administrator
-                    if (!UserHelper.IsUserSubverseAdmin(userName, targetSubverse.name))
-                    {
-                        return ("You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
-                    }
+                    return ("You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
                 }
             }
 

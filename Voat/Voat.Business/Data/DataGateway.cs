@@ -843,7 +843,7 @@ namespace Voat.Data {
                  }
 
                  // delete submission if delete request is issued by subverse moderator
-                 else if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse)) {
+                 else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse)) {
                      // mark submission as deleted (TODO: don't use name, add a new bit field to messages table instead)
                      submissionToDelete.Name = "deleted";
 
@@ -993,7 +993,7 @@ namespace Voat.Data {
                     comment.CommentContent = "deleted by author at " + CurrentDate.ToLongDateString();
                     comment.Name = "deleted";
                 }// delete comment if delete request is issued by subverse moderator
-                else if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, commentSubverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse)) {
+                else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse)) {
                     comment.Name = "deleted";
                     comment.CommentContent = "deleted by moderator at " + CurrentDate;
 
