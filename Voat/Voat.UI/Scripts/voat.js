@@ -869,8 +869,8 @@ function deletesubmission(senderButton, submissionid) {
 }
 
 // toggle are you sure question for comment deletion
-function toggle(obj, commentid) {
-    $(obj).parent().parent().find('.option, .main').toggleClass("active");
+function toggle(obj) {
+    $(obj).parent().parent().find('.option, .main').toggle();
     return false;
 }
 
@@ -883,12 +883,6 @@ function toggleblocksubverse(obj) {
 // toggle are you sure question for comment report
 function togglereport(commentid) {
     $("#" + commentid).find('.report').toggleClass("active");
-    return false;
-}
-
-// toggle are you sure question for pm deletion
-function togglePM(obj) {
-    $(obj).parent().parent().find('.option, .main').toggle();
     return false;
 }
 
@@ -915,7 +909,7 @@ function reportcomment(obj, commentid) {
 
 // togle back are you sure question
 function toggleback(obj) {
-    $(obj).parent().parent().find('.option, .error').toggleClass("active");
+    $(obj).parent().parent().find('.option, .error').toggle();
     return false;
 }
 
@@ -928,12 +922,6 @@ function togglesubmission(obj, submissionid) {
 // togle back are you sure question for submission deletion
 function togglesubmissionback(obj) {
     $(obj).parent().parent().find('.option, .error').toggleClass("active");
-    return false;
-}
-
-// togle back are you sure question
-function togglebackPM(obj) {
-    $(obj).parent().parent().find('.option, .error').toggle();
     return false;
 }
 
