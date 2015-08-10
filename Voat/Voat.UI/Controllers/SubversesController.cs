@@ -282,12 +282,11 @@ namespace Voat.Controllers
                 if (existingSubverse != null)
                 {
                     // check if user requesting edit is authorized to do so for current subverse
-                    // check that the user requesting to edit subverse settings is subverse owner!
-                    var subAdmin =
-                        _db.SubverseAdmins.FirstOrDefault(
-                            x => x.SubverseName == updatedModel.name && x.Username == User.Identity.Name && x.Power <= 2);
+                    if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, updatedModel.name))
+                    {
+                        return new EmptyResult();
+                    }
 
-                    if (subAdmin == null) return new EmptyResult();
                     // TODO investigate if EntityState is applicable here and use that instead
                     // db.Entry(updatedModel).State = EntityState.Modified;
 
@@ -327,17 +326,22 @@ namespace Voat.Controllers
 
                     if (existingSubverse.anonymized_mode && updatedModel.anonymized_mode == false)
                     {
-                        ModelState.AddModelError(string.Empty,
-                            "Sorry, this subverse is permanently locked to anonymized mode.");
+                        ModelState.AddModelError(string.Empty, "Sorry, this subverse is permanently locked to anonymized mode.");
                         return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
                     }
 
-                    existingSubverse.anonymized_mode = updatedModel.anonymized_mode;
+                    // only subverse owners should be able to convert a sub to anonymized mode
+                    if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, updatedModel.name))
+                    {
+                        existingSubverse.anonymized_mode = updatedModel.anonymized_mode;
+                    }
 
                     await _db.SaveChangesAsync();
                     DataCache.Subverse.Remove(existingSubverse.name);
+
                     // go back to this subverse
                     return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.name });
+
                     // user was not authorized to commit the changes, drop attempt
                 }
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");

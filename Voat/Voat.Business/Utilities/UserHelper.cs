@@ -403,6 +403,7 @@ namespace Voat.Utilities
                 return result != null && result.Disable_custom_css;
             }
         }
+        
         // check which theme style user selected
         public static void SetUserStylePreferenceCookie(string theme)
         {
@@ -410,6 +411,7 @@ namespace Voat.Utilities
             cookie.Expires = DateTime.Now.AddDays(14);
             System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
         }        
+        
         // check which theme style user selected
         public static string UserStylePreference(string userName)
         {
@@ -754,6 +756,70 @@ namespace Voat.Utilities
                     m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                         && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
                         && m.Date >= fromDate && m.Date <= toDate);
+
+                if (dpqps <= userSubmissionsToTargetSub)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // check if a given user has used his global hourly posting quota
+        public static bool UserHourlyGlobalPostingQuotaUsed(string userName)
+        {
+            // only execute this check if user account is less than a month old and user SCP is less than 500
+            DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
+            int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
+            int userScp = Karma.LinkKarma(userName);
+            if (memberInDays > 30 && userScp >= 500)
+            {
+                return false;
+            }
+
+            // set starting date to 1 hours ago from now
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
+            var toDate = DateTime.Now;
+
+            // read daily posting quota per sub configuration parameter from web.config
+            int dpqps = Settings.HourlyGlobalPostingQuota;
+
+            using (var db = new voatEntities())
+            {
+                // check how many submission user made in the last hour
+                var totalUserSubmissionsForTimeSpam = db.Messages.Count(m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && m.Date >= fromDate && m.Date <= toDate);
+
+                if (dpqps <= totalUserSubmissionsForTimeSpam)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // check if a given user has used his global daily posting quota
+        public static bool UserDailyGlobalPostingQuotaUsed(string userName)
+        {
+            // only execute this check if user account is less than a month old and user SCP is less than 500
+            DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
+            int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
+            int userScp = Karma.LinkKarma(userName);
+            if (memberInDays > 30 && userScp >= 500)
+            {
+                return false;
+            }
+
+            // set starting date to 24 hours ago from now
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = DateTime.Now;
+
+            // read daily global posting quota configuration parameter from web.config
+            int dpqps = Settings.DailyGlobalPostingQuota;
+
+            using (var db = new voatEntities())
+            {
+                // check how many submission user made today
+                var userSubmissionsToTargetSub = db.Messages.Count(m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && m.Date >= fromDate && m.Date <= toDate);
 
                 if (dpqps <= userSubmissionsToTargetSub)
                 {

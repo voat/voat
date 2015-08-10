@@ -117,11 +117,10 @@ namespace Voat.Utilities
                         submissionModel.Linkdescription = StripUnicode(submissionModel.Linkdescription);
                     }
 
-                    // abort if title is < than 10 characters
-                    if (submissionModel.Linkdescription.Length < 10)
+                    // reject if title is whitespace or < than 5 characters
+                    if (submissionModel.Linkdescription.Length < 5 || String.IsNullOrWhiteSpace(submissionModel.Title))
                     {
-                        // ABORT
-                        return ("The title may not be less than 10 characters.");
+                        return ("The title may not be less than 5 characters.");
                     }
 
                     // make sure the input URI is valid
@@ -185,10 +184,10 @@ namespace Voat.Utilities
                         submissionModel.Title = StripUnicode(submissionModel.Title);
                     }
 
-                    // abort if title less than 10 characters
-                    if (submissionModel.Title.Length < 10)
+                    // reject if title is whitespace or less than 5 characters
+                    if (submissionModel.Title.Length < 5 || String.IsNullOrWhiteSpace(submissionModel.Title))
                     {
-                        return ("Sorry, the the submission title may not be less than 10 characters.");
+                        return ("Sorry, submission title may not be less than 5 characters.");
                     }
 
                     // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
@@ -231,6 +230,20 @@ namespace Voat.Utilities
         // various spam checks, to be replaced with new rule engine
         public static async Task<string> PreAddSubmissionCheck(Message submissionModel, HttpRequestBase request, string userName, Subverse targetSubverse, Func<HttpRequestBase, Task<bool>> captchaValidator)
         {
+            // reject if user has reached global daily submission quota
+            if (UserHelper.UserDailyGlobalPostingQuotaUsed(userName))
+            {
+                return ("You have reached your daily global submission quota.");
+            }
+
+            // reject if user has reached global hourly submission quota
+            if (UserHelper.UserHourlyGlobalPostingQuotaUsed(userName))
+            {
+                return ("You have reached your hourly global submission quota.");
+            }
+
+            // TODO: reject if a submission with this title was posted in the last 60 minutes
+
             // check if user has reached hourly posting quota for target subverse
             if (UserHelper.UserHourlyPostingQuotaForSubUsed(userName, submissionModel.Subverse))
             {
