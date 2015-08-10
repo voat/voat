@@ -871,7 +871,6 @@ function deletesubmission(senderButton, submissionid) {
 // toggle are you sure question for comment deletion
 function toggle(obj) {
     $(obj).parent().parent().find('.option').toggle();
-    return false;
 }
 
 // toggle are you sure question for subverse block action
@@ -904,18 +903,6 @@ function reportcomment(obj, commentid) {
         }
     });
 
-    return false;
-}
-
-// toggle are you sure question for submission deletion
-function togglesubmission(obj, submissionid) {
-    $(obj).parent().parent().find('.option, .main').toggleClass("active");
-    return false;
-}
-
-// togle back are you sure question for submission deletion
-function togglesubmissionback(obj) {
-    $(obj).parent().parent().find('.option, .error').toggleClass("active");
     return false;
 }
 
