@@ -870,7 +870,7 @@ function deletesubmission(senderButton, submissionid) {
 
 // toggle are you sure question for comment deletion
 function toggle(obj) {
-    $(obj).parent().parent().find('.option, .main').toggle();
+    $(obj).parent().parent().find('.option').toggle();
     return false;
 }
 
@@ -904,12 +904,6 @@ function reportcomment(obj, commentid) {
         }
     });
 
-    return false;
-}
-
-// togle back are you sure question
-function toggleback(obj) {
-    $(obj).parent().parent().find('.option, .error').toggle();
     return false;
 }
 
