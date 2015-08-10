@@ -873,12 +873,6 @@ function toggle(obj) {
     $(obj).parent().parent().find('.option').toggle();
 }
 
-// toggle are you sure question for subverse block action
-function toggleblocksubverse(obj) {
-    $(obj).parent().parent().find('.option, .error').toggleClass("active");
-    return false;
-}
-
 // submit report and replace report button with a "thank you" to the user
 function reportcomment(obj, commentid) {
     $(obj).parent().parent().find('.togglebutton').attr("onclick", "javascript:void(0)");
