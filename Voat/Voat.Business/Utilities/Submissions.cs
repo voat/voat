@@ -118,7 +118,7 @@ namespace Voat.Utilities
                     }
 
                     // reject if title is whitespace or < than 5 characters
-                    if (submissionModel.Linkdescription.Length < 5 || String.IsNullOrWhiteSpace(submissionModel.Title))
+                    if (submissionModel.Linkdescription.Length < 5 || String.IsNullOrWhiteSpace(submissionModel.Linkdescription))
                     {
                         return ("The title may not be less than 5 characters.");
                     }
