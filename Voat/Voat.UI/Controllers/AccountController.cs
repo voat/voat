@@ -618,8 +618,10 @@ namespace Voat.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
-            var newTheme = "light";
+            if (!ModelState.IsValid) return View("Manage", model);
+            
             // save changes
+            string newTheme;
             using (var db = new voatEntities())
             {
                 var userPreferences = db.Userpreferences.Find(User.Identity.Name);
@@ -635,33 +637,30 @@ namespace Voat.Controllers
                     userPreferences.Topmenu_from_subscriptions = model.Topmenu_from_subscriptions;
 
                     await db.SaveChangesAsync();
-                    // apply theme change
                     newTheme = userPreferences.Night_mode ? "dark" : "light";
-                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
                 }
                 else
                 {
                     // create a new record for this user in userpreferences table
                     var tmpModel = new Userpreference
                     {
-                        Disable_custom_css = model.Disable_custom_css,
-                        Night_mode = model.Night_mode,
-                        Clicking_mode = model.OpenLinksInNewTab,
-                        Enable_adult_content = model.Enable_adult_content,
-                        Public_subscriptions = model.Public_subscriptions,
+                        Disable_custom_css = model.Disable_custom_css ? true : false,
+                        Night_mode = model.Night_mode ? true : false,
+                        Language = "en",
+                        Clicking_mode = model.OpenLinksInNewTab ? true : false,
+                        Enable_adult_content = model.Enable_adult_content ? true : false,
+                        Public_votes = false,
+                        Public_subscriptions = model.Public_subscriptions ? true : false,
                         Topmenu_from_subscriptions = model.Topmenu_from_subscriptions,
                         Username = User.Identity.Name
                     };
                     db.Userpreferences.Add(tmpModel);
 
                     await db.SaveChangesAsync();
-                    newTheme = userPreferences.Night_mode ? "dark" : "light";
-                    // apply theme change
-                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
+                    newTheme = tmpModel.Night_mode ? "dark" : "light";
                 }
             }
 
-            //return RedirectToAction("Manage", new { Message = "Your user preferences have been saved." });
             UserHelper.SetUserStylePreferenceCookie(newTheme);
             return RedirectToAction("Manage");
         }
