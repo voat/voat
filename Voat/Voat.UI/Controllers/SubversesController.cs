@@ -1969,7 +1969,7 @@ namespace Voat.Controllers
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                         where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                        where !(from bu in _db.SubverseBans select bu.Username).Contains(message.Name)
+                                                                        where !(from bu in _db.SubverseBans where bu.SubverseName == subverse.name select bu.Username).Contains(message.Name)
                                                                         where !subverse.admin_disabled.Value
                                                                         where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
                                                                         select message
@@ -2093,7 +2093,7 @@ namespace Voat.Controllers
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                   where message.Name != "deleted" && message.Subverse == subverseName
                                                                   where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                  where !(from bu in _db.SubverseBans select bu.Username).Contains(message.Name)
+                                                                  where !(from bu in _db.SubverseBans where bu.SubverseName == subverse.name select bu.Username).Contains(message.Name)
                                                                   select message).OrderByDescending(s => s.Date).AsNoTracking();
 
             if (subverseStickie != null)
