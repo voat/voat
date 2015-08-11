@@ -79,6 +79,12 @@
   <ItemGroup>
     <Compile Include="Metadata\CommentMetaData.cs" />
     <Compile Include="Metadata\MessageMetaData.cs" />
+    <Compile Include="Models\AutoModComment.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AutoModSubmission.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Badge.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
