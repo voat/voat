@@ -230,30 +230,34 @@ namespace Voat.Utilities
         // various spam checks, to be replaced with new rule engine
         public static async Task<string> PreAddSubmissionCheck(Message submissionModel, HttpRequestBase request, string userName, Subverse targetSubverse, Func<HttpRequestBase, Task<bool>> captchaValidator)
         {
-            // reject if user has reached global daily submission quota
-            if (UserHelper.UserDailyGlobalPostingQuotaUsed(userName))
-            {
-                return ("You have reached your daily global submission quota.");
-            }
-
-            // reject if user has reached global hourly submission quota
-            if (UserHelper.UserHourlyGlobalPostingQuotaUsed(userName))
-            {
-                return ("You have reached your hourly global submission quota.");
-            }
-
             // TODO: reject if a submission with this title was posted in the last 60 minutes
 
-            // check if user has reached hourly posting quota for target subverse
-            if (UserHelper.UserHourlyPostingQuotaForSubUsed(userName, submissionModel.Subverse))
+            // check posting quotas if user is posting to subs they do not moderate
+            if (!UserHelper.IsUserSubverseModerator(userName, submissionModel.Subverse))
             {
-                return ("You have reached your hourly submission quota for this subverse.");
-            }
+                // reject if user has reached global daily submission quota
+                if (UserHelper.UserDailyGlobalPostingQuotaUsed(userName))
+                {
+                    return ("You have reached your daily global submission quota.");
+                }
 
-            // check if user has reached daily posting quota for target subverse
-            if (UserHelper.UserDailyPostingQuotaForSubUsed(userName, submissionModel.Subverse))
-            {
-                return ("You have reached your daily submission quota for this subverse.");
+                // reject if user has reached global hourly submission quota
+                if (UserHelper.UserHourlyGlobalPostingQuotaUsed(userName))
+                {
+                    return ("You have reached your hourly global submission quota.");
+                }
+
+                // check if user has reached hourly posting quota for target subverse
+                if (UserHelper.UserHourlyPostingQuotaForSubUsed(userName, submissionModel.Subverse))
+                {
+                    return ("You have reached your hourly submission quota for this subverse.");
+                }
+
+                // check if user has reached daily posting quota for target subverse
+                if (UserHelper.UserDailyPostingQuotaForSubUsed(userName, submissionModel.Subverse))
+                {
+                    return ("You have reached your daily submission quota for this subverse.");
+                }
             }
 
             // verify recaptcha if user has less than 25 CCP

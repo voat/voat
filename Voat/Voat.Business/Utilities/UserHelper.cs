@@ -768,7 +768,7 @@ namespace Voat.Utilities
         // check if a given user has used his global hourly posting quota
         public static bool UserHourlyGlobalPostingQuotaUsed(string userName)
         {
-            // only execute this check if user account is less than a month old and user SCP is less than 50
+            // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
             int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
             int userScp = Karma.LinkKarma(userName);
@@ -800,7 +800,7 @@ namespace Voat.Utilities
         // check if a given user has used his global daily posting quota
         public static bool UserDailyGlobalPostingQuotaUsed(string userName)
         {
-            // only execute this check if user account is less than a month old and user SCP is less than 50
+            // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
             int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
             int userScp = Karma.LinkKarma(userName);
