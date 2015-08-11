@@ -192,3 +192,4 @@ Voat/Voat.UI/sitemap.xml
 Voat/packages/
 Voat/Whoaverse/Whoaverse.csproj
 Voat/Voat.Data/App.config
+Voat/Voat.Data/Models/VoatEntityDataModel.Designer.cs

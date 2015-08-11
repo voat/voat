@@ -62,6 +62,8 @@ namespace Voat.Data.Models
         public virtual DbSet<Usersetsubscription> Usersetsubscriptions { get; set; }
         public virtual DbSet<Viewstatistic> Viewstatistics { get; set; }
         public virtual DbSet<Votingtracker> Votingtrackers { get; set; }
+        public virtual DbSet<AutoModComment> AutoModComments { get; set; }
+        public virtual DbSet<AutoModSubmission> AutoModSubmissions { get; set; }
     
         [DbFunction("voatEntities", "fnActiveUserCounts")]
         public virtual IQueryable<fnActiveUserCounts_Result> fnActiveUserCounts(Nullable<int> spanInHours)
@@ -162,7 +164,7 @@ namespace Voat.Data.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_RankSubmissions_CTE", countParameter);
         }
     
-        public virtual int usp_TransferSubverse(string subverse, string userName, string transferedBy, Nullable<int> submissionID)
+        public virtual int usp_TransferSubverse(string subverse, string userName, string transferedBy, Nullable<int> submissionID, Nullable<bool> byPassChecks)
         {
             var subverseParameter = subverse != null ?
                 new ObjectParameter("Subverse", subverse) :
@@ -180,7 +182,11 @@ namespace Voat.Data.Models
                 new ObjectParameter("SubmissionID", submissionID) :
                 new ObjectParameter("SubmissionID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_TransferSubverse", subverseParameter, userNameParameter, transferedByParameter, submissionIDParameter);
+            var byPassChecksParameter = byPassChecks.HasValue ?
+                new ObjectParameter("ByPassChecks", byPassChecks) :
+                new ObjectParameter("ByPassChecks", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_TransferSubverse", subverseParameter, userNameParameter, transferedByParameter, submissionIDParameter, byPassChecksParameter);
         }
     
         public virtual ObjectResult<usp_WhoVotesForUsersComments_Result> usp_WhoVotesForUsersComments(string userName, Nullable<int> countLimit)
