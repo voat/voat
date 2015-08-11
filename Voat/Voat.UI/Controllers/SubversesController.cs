@@ -938,27 +938,32 @@ namespace Voat.Controllers
 
         // GET: banned users for selected subverse
         [Authorize]
-        public ActionResult SubverseBans(string subversetoshow)
+        public ActionResult SubverseBans(string subversetoshow, int? page)
         {
+            const int pageSize = 25;
+            int pageNumber = (page ?? 0);
+
+            if (pageNumber < 0)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
             // get model for selected subverse
             var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            // check if caller is subverse owner, if not, deny listing
+            // check if caller is authorized, if not, deny listing
             if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
 
-            var subverseBans = _db.SubverseBans
-                .Where(n => n.SubverseName == subversetoshow)
-                .Take(200)
-                .OrderBy(s => s.BanAddedOn)
-                .ToList();
+            var subverseBans = _db.SubverseBans.Where(n => n.SubverseName == subversetoshow).OrderByDescending(s => s.BanAddedOn);
+            var paginatedSubverseBans = new PaginatedList<SubverseBan>(subverseBans, page ?? 0, pageSize);
 
             ViewBag.SubverseModel = subverseModel;
             ViewBag.SubverseName = subversetoshow;
 
             ViewBag.SelectedSubverse = string.Empty;
-            return View("~/Views/Subverses/Admin/SubverseBans.cshtml", subverseBans);
+            return View("~/Views/Subverses/Admin/SubverseBans.cshtml", paginatedSubverseBans);
         }
 
         // GET: show add moderators view for selected subverse
