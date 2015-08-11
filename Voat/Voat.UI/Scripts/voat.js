@@ -824,9 +824,6 @@ function deletecomment(commentid) {
     //hide comment author attributes
     $("#" + commentid).find('.userattrs').html('');
 
-    //hide "are you sure" option
-    toggleback(commentid);
-
     removeeditform(commentid);
 
     //execute POST call to remove comment from database
@@ -876,7 +873,7 @@ function toggle(obj) {
 // submit report and replace report button with a "thank you" to the user
 function reportcomment(obj, commentid) {
     $(obj).parent().parent().find('.togglebutton').attr("onclick", "javascript:void(0)");
-    $(obj).parent().parent().find('.option, .main').toggleClass("active");
+    $(obj).parent().parent().find('.option').toggle();
     $(obj).parent().parent().find('.togglebutton').html("please wait...");
 
     // submit report
