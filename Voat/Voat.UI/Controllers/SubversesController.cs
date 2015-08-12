@@ -1635,6 +1635,7 @@ namespace Voat.Controllers
                         return View("~/Views/Errors/SubverseDisabled.cshtml");
                     }
                 }
+                ViewBag.TotalBannedUsersInSubverse = _db.SubverseBans.Where(rl => rl.SubverseName.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).Count();
                 var listOfBannedUsers = new PaginatedList<SubverseBan>(_db.SubverseBans.Where(rl => rl.SubverseName.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).OrderByDescending(rl => rl.BanAddedOn), page ?? 0, 20);
                 return View("BannedUsersLog", listOfBannedUsers);
             }
