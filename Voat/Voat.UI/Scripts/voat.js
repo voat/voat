@@ -824,9 +824,6 @@ function deletecomment(commentid) {
     //hide comment author attributes
     $("#" + commentid).find('.userattrs').html('');
 
-    //hide "are you sure" option
-    toggleback(commentid);
-
     removeeditform(commentid);
 
     //execute POST call to remove comment from database
@@ -868,28 +865,15 @@ function deletesubmission(senderButton, submissionid) {
     $('body').load($(location).attr('href'));
 }
 
-// toggle are you sure question for comment deletion
-function toggle(obj, commentid) {
-    $(obj).parent().parent().find('.option, .main').toggleClass("active");
-    return false;
-}
-
-// toggle are you sure question for subverse block action
-function toggleblocksubverse(obj) {
-    $(obj).parent().parent().find('.option, .error').toggleClass("active");
-    return false;
-}
-
-// toggle are you sure question for comment report
-function togglereport(commentid) {
-    $("#" + commentid).find('.report').toggleClass("active");
-    return false;
+// toggle are you sure question
+function toggle(obj) {
+    $(obj).parent().parent().find('.option').toggle();
 }
 
 // submit report and replace report button with a "thank you" to the user
 function reportcomment(obj, commentid) {
     $(obj).parent().parent().find('.togglebutton').attr("onclick", "javascript:void(0)");
-    $(obj).parent().parent().find('.option, .main').toggleClass("active");
+    $(obj).parent().parent().find('.option').toggle();
     $(obj).parent().parent().find('.togglebutton').html("please wait...");
 
     // submit report
@@ -904,24 +888,6 @@ function reportcomment(obj, commentid) {
         }
     });
 
-    return false;
-}
-
-// togle back are you sure question
-function toggleback(obj) {
-    $(obj).parent().parent().find('.option, .error').toggleClass("active");
-    return false;
-}
-
-// toggle are you sure question for submission deletion
-function togglesubmission(obj, submissionid) {
-    $(obj).parent().parent().find('.option, .main').toggleClass("active");
-    return false;
-}
-
-// togle back are you sure question for submission deletion
-function togglesubmissionback(obj) {
-    $(obj).parent().parent().find('.option, .error').toggleClass("active");
     return false;
 }
 
