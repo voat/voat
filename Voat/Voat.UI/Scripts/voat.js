@@ -849,7 +849,7 @@ function deletecommentsubmit(commentid) {
 // submit submission deletion request
 function deletesubmission(senderButton, submissionid) {
     var $form = $(senderButton).parents('form');
-    $form.find("#deletestatusmesssage").html("please wait...");
+    $("#aYSYesNo-s-"+submissionId).html("please wait...");
 
     var submissionobject = { "submissionid": submissionid };
 
