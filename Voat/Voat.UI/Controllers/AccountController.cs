@@ -23,9 +23,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Voat.Models;
 using Voat.Models.ViewModels;
-
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -163,6 +161,12 @@ namespace Voat.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
+            if (!Business.Utilities.AccountSecurity.IsPasswordComplex(model.Password, model.UserName))
+            {
+                ModelState.AddModelError(string.Empty, "Your password is not secure. You must use at least one uppercase letter, one lowercase letter, one number and one special character such as ?, ! or .");
+                return View(model);
+            }
+
             try
             {
                 // get user IP address
@@ -184,7 +188,9 @@ namespace Voat.Controllers
                     LastLoginDateTime = DateTime.Now
                 };
 
+                // try to create new user account
                 var result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
                     await SignInAsync(user, isPersistent: false);

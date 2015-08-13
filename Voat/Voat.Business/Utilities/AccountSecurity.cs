@@ -18,12 +18,18 @@ namespace Voat.Business.Utilities
 {
     public static class AccountSecurity
     {
-        public static bool IsPasswordComplex(string passwordToCheck)
+        public static bool IsPasswordComplex(string passwordToCheck, string userName)
         {
+            // mark password as insecure if it is the same as the username
+            if (passwordToCheck == userName)
+            {
+                return false;
+            }
+
             // setup parameters
-            const int minLength = 8;
-            const int numUpper = 2;
-            const int numLower = 2;
+            const int minLength = 6;
+            const int numUpper = 1;
+            const int numLower = 1;
             const int numNumbers = 1;
             const int numSpecial = 1;
 
