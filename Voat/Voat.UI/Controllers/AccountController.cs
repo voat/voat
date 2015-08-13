@@ -131,15 +131,15 @@ namespace Voat.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                // deny access to registered users
+                return RedirectToAction("Index", "Home");
+            }
+
             if (Settings.RegistrationDisabled)
             {
                 return View("RegistrationDisabled");
-            }
-
-            if (User.Identity.IsAuthenticated)
-            {
-                //deny access to registered users
-                return RedirectToAction("Index", "Home");
             }
 
             ViewBag.SelectedSubverse = string.Empty;
