@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Voat are Copyright (c) 2014 Voat
+All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
@@ -23,9 +23,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Voat.Models;
 using Voat.Models.ViewModels;
-
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -133,15 +131,15 @@ namespace Voat.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                // deny access to registered users
+                return RedirectToAction("Index", "Home");
+            }
+
             if (Settings.RegistrationDisabled)
             {
                 return View("RegistrationDisabled");
-            }
-
-            if (User.Identity.IsAuthenticated)
-            {
-                //deny access to registered users
-                return RedirectToAction("Index", "Home");
             }
 
             ViewBag.SelectedSubverse = string.Empty;
@@ -162,6 +160,12 @@ namespace Voat.Controllers
             }
 
             if (!ModelState.IsValid) return View(model);
+
+            if (!Business.Utilities.AccountSecurity.IsPasswordComplex(model.Password, model.UserName))
+            {
+                ModelState.AddModelError(string.Empty, "Your password is not secure. You must use at least one uppercase letter, one lowercase letter, one number and one special character such as ?, ! or .");
+                return View(model);
+            }
 
             try
             {
@@ -184,7 +188,9 @@ namespace Voat.Controllers
                     LastLoginDateTime = DateTime.Now
                 };
 
+                // try to create new user account
                 var result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
                     await SignInAsync(user, isPersistent: false);
@@ -618,8 +624,10 @@ namespace Voat.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
-            var newTheme = "light";
+            if (!ModelState.IsValid) return View("Manage", model);
+            
             // save changes
+            string newTheme;
             using (var db = new voatEntities())
             {
                 var userPreferences = db.Userpreferences.Find(User.Identity.Name);
@@ -635,33 +643,30 @@ namespace Voat.Controllers
                     userPreferences.Topmenu_from_subscriptions = model.Topmenu_from_subscriptions;
 
                     await db.SaveChangesAsync();
-                    // apply theme change
                     newTheme = userPreferences.Night_mode ? "dark" : "light";
-                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
                 }
                 else
                 {
                     // create a new record for this user in userpreferences table
                     var tmpModel = new Userpreference
                     {
-                        Disable_custom_css = model.Disable_custom_css,
-                        Night_mode = model.Night_mode,
-                        Clicking_mode = model.OpenLinksInNewTab,
-                        Enable_adult_content = model.Enable_adult_content,
-                        Public_subscriptions = model.Public_subscriptions,
+                        Disable_custom_css = model.Disable_custom_css ? true : false,
+                        Night_mode = model.Night_mode ? true : false,
+                        Language = "en",
+                        Clicking_mode = model.OpenLinksInNewTab ? true : false,
+                        Enable_adult_content = model.Enable_adult_content ? true : false,
+                        Public_votes = false,
+                        Public_subscriptions = model.Public_subscriptions ? true : false,
                         Topmenu_from_subscriptions = model.Topmenu_from_subscriptions,
                         Username = User.Identity.Name
                     };
                     db.Userpreferences.Add(tmpModel);
 
                     await db.SaveChangesAsync();
-                    newTheme = userPreferences.Night_mode ? "dark" : "light";
-                    // apply theme change
-                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
+                    newTheme = tmpModel.Night_mode ? "dark" : "light";
                 }
             }
 
-            //return RedirectToAction("Manage", new { Message = "Your user preferences have been saved." });
             UserHelper.SetUserStylePreferenceCookie(newTheme);
             return RedirectToAction("Manage");
         }

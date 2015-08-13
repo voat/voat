@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Voat are Copyright (c) 2014 Voat
+All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
@@ -282,12 +282,11 @@ namespace Voat.Controllers
                 if (existingSubverse != null)
                 {
                     // check if user requesting edit is authorized to do so for current subverse
-                    // check that the user requesting to edit subverse settings is subverse owner!
-                    var subAdmin =
-                        _db.SubverseAdmins.FirstOrDefault(
-                            x => x.SubverseName == updatedModel.name && x.Username == User.Identity.Name && x.Power <= 2);
+                    if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, updatedModel.name))
+                    {
+                        return new EmptyResult();
+                    }
 
-                    if (subAdmin == null) return new EmptyResult();
                     // TODO investigate if EntityState is applicable here and use that instead
                     // db.Entry(updatedModel).State = EntityState.Modified;
 
@@ -327,17 +326,22 @@ namespace Voat.Controllers
 
                     if (existingSubverse.anonymized_mode && updatedModel.anonymized_mode == false)
                     {
-                        ModelState.AddModelError(string.Empty,
-                            "Sorry, this subverse is permanently locked to anonymized mode.");
+                        ModelState.AddModelError(string.Empty, "Sorry, this subverse is permanently locked to anonymized mode.");
                         return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
                     }
 
-                    existingSubverse.anonymized_mode = updatedModel.anonymized_mode;
+                    // only subverse owners should be able to convert a sub to anonymized mode
+                    if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, updatedModel.name))
+                    {
+                        existingSubverse.anonymized_mode = updatedModel.anonymized_mode;
+                    }
 
                     await _db.SaveChangesAsync();
                     DataCache.Subverse.Remove(existingSubverse.name);
+
                     // go back to this subverse
                     return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.name });
+
                     // user was not authorized to commit the changes, drop attempt
                 }
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
@@ -894,7 +898,7 @@ namespace Voat.Controllers
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
                 return RedirectToAction("Index", "Home");
             var subverseModerators = _db.SubverseAdmins
                 .Where(n => n.SubverseName == subversetoshow)
@@ -918,7 +922,7 @@ namespace Voat.Controllers
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
 
             var moderatorInvitations = _db.Moderatorinvitations
                 .Where(mi => mi.Subverse == subversetoshow)
@@ -934,27 +938,32 @@ namespace Voat.Controllers
 
         // GET: banned users for selected subverse
         [Authorize]
-        public ActionResult SubverseBans(string subversetoshow)
+        public ActionResult SubverseBans(string subversetoshow, int? page)
         {
+            const int pageSize = 25;
+            int pageNumber = (page ?? 0);
+
+            if (pageNumber < 0)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
             // get model for selected subverse
             var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            // check if caller is subverse owner, if not, deny listing
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+            // check if caller is authorized, if not, deny listing
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
 
-            var subverseBans = _db.SubverseBans
-                .Where(n => n.SubverseName == subversetoshow)
-                .Take(200)
-                .OrderBy(s => s.BanAddedOn)
-                .ToList();
+            var subverseBans = _db.SubverseBans.Where(n => n.SubverseName == subversetoshow).OrderByDescending(s => s.BanAddedOn);
+            var paginatedSubverseBans = new PaginatedList<SubverseBan>(subverseBans, page ?? 0, pageSize);
 
             ViewBag.SubverseModel = subverseModel;
             ViewBag.SubverseName = subversetoshow;
 
             ViewBag.SelectedSubverse = string.Empty;
-            return View("~/Views/Subverses/Admin/SubverseBans.cshtml", subverseBans);
+            return View("~/Views/Subverses/Admin/SubverseBans.cshtml", paginatedSubverseBans);
         }
 
         // GET: show add moderators view for selected subverse
@@ -966,7 +975,7 @@ namespace Voat.Controllers
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
 
             ViewBag.SubverseModel = subverseModel;
             ViewBag.SubverseName = subversetoshow;
@@ -984,7 +993,7 @@ namespace Voat.Controllers
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny listing
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
 
             ViewBag.SubverseModel = subverseModel;
             ViewBag.SubverseName = subversetoshow;
@@ -1013,7 +1022,7 @@ namespace Voat.Controllers
             if (currentlyModerating.Count <= maximumOwnedSubs)
             {
                 // check if caller is subverse owner, if not, deny posting
-                if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName)) return RedirectToAction("Index", "Home");
+                if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subverseAdmin.SubverseName)) return RedirectToAction("Index", "Home");
 
                 // check that user is not already moderating given subverse
                 var isAlreadyModerator = _db.SubverseAdmins.FirstOrDefault(a => a.Username == subverseAdmin.Username && a.SubverseName == subverseAdmin.SubverseName);
@@ -1168,7 +1177,7 @@ namespace Voat.Controllers
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner, if not, deny posting
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverseBan.SubverseName)) return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subverseBan.SubverseName)) return RedirectToAction("Index", "Home");
 
             // check that user is not already banned in given subverse
             var isAlreadyBanned = _db.SubverseBans.FirstOrDefault(a => a.Username == subverseBan.Username && a.SubverseName == subverseBan.SubverseName);
@@ -1213,7 +1222,7 @@ namespace Voat.Controllers
             }
 
             // check if caller has clearance to access this area
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName)) return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverseAdmin.SubverseName)) return RedirectToAction("Index", "Home");
 
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.SubverseName = subverseAdmin.SubverseName;
@@ -1255,7 +1264,7 @@ namespace Voat.Controllers
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a moderator invitation
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverse.name) || invitationToBeRemoved.Sent_to == User.Identity.Name) return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverse.name) || invitationToBeRemoved.Sent_to == User.Identity.Name) return RedirectToAction("Index", "Home");
 
             // execute invitation removal
             _db.Moderatorinvitations.Remove(invitationToBeRemoved);
@@ -1273,7 +1282,7 @@ namespace Voat.Controllers
             }
 
             // check if caller is subverse owner, if not, deny listing
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
 
             var subverseBan = _db.SubverseBans.Find(id);
 
@@ -1341,8 +1350,7 @@ namespace Voat.Controllers
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a moderator
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverse.name) ||
-                moderatorToBeRemoved.Username == User.Identity.Name) return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverse.name) || moderatorToBeRemoved.Username == User.Identity.Name) return RedirectToAction("Index", "Home");
 
             // execute removal
             _db.SubverseAdmins.Remove(moderatorToBeRemoved);
@@ -1365,7 +1373,7 @@ namespace Voat.Controllers
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller has clearance to remove a ban
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverse.name)) return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subverse.name)) return RedirectToAction("Index", "Home");
 
             // execute removal
             _db.SubverseBans.Remove(banToBeRemoved);
@@ -1381,10 +1389,8 @@ namespace Voat.Controllers
             var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            // check if caller is subverse owner, if not, deny listing
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) &&
-                !Voat.Utilities.UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
-                return RedirectToAction("Index", "Home");
+            // check if caller is authorized for this sub, if not, deny listing
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
             var subverseFlairsettings = _db.Subverseflairsettings
                 .Where(n => n.Subversename == subversetoshow)
                 .Take(20)
@@ -1407,10 +1413,8 @@ namespace Voat.Controllers
 
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            // check if caller is subverse owner, if not, deny listing
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow) &&
-                !Voat.Utilities.UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
-                return RedirectToAction("Index", "Home");
+            // check if caller is authorized for this sub, if not, deny listing
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
             ViewBag.SubverseModel = subverseModel;
             ViewBag.SubverseName = subversetoshow;
             ViewBag.SelectedSubverse = string.Empty;
@@ -1429,9 +1433,7 @@ namespace Voat.Controllers
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             
             // check if caller is subverse owner, if not, deny posting
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverseFlairSetting.Subversename) &&
-                !Voat.Utilities.UserHelper.IsUserSubverseModerator(User.Identity.Name, subverseFlairSetting.Subversename))
-                return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subverseFlairSetting.Subversename)) return RedirectToAction("Index", "Home");
             subverseFlairSetting.Subversename = subverseModel.name;
             _db.Subverseflairsettings.Add(subverseFlairSetting);
             _db.SaveChanges();
@@ -1471,9 +1473,7 @@ namespace Voat.Controllers
             var subverse = DataCache.Subverse.Retrieve(linkFlairToRemove.Subversename);
             if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller has clearance to remove a link flair
-            if (!Voat.Utilities.UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverse.name) &&
-                !Voat.Utilities.UserHelper.IsUserSubverseModerator(User.Identity.Name, subverse.name))
-                return RedirectToAction("Index", "Home");
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subverse.name)) return RedirectToAction("Index", "Home");
             // execute removal
             var subverseFlairSetting = await _db.Subverseflairsettings.FindAsync(id);
             _db.Subverseflairsettings.Remove(subverseFlairSetting);
@@ -1635,6 +1635,7 @@ namespace Voat.Controllers
                         return View("~/Views/Errors/SubverseDisabled.cshtml");
                     }
                 }
+                ViewBag.TotalBannedUsersInSubverse = _db.SubverseBans.Where(rl => rl.SubverseName.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).Count();
                 var listOfBannedUsers = new PaginatedList<SubverseBan>(_db.SubverseBans.Where(rl => rl.SubverseName.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).OrderByDescending(rl => rl.BanAddedOn), page ?? 0, 20);
                 return View("BannedUsersLog", listOfBannedUsers);
             }
@@ -1969,6 +1970,7 @@ namespace Voat.Controllers
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                         where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                        where !(from bu in _db.SubverseBans where bu.SubverseName == subverse.name select bu.Username).Contains(message.Name)
                                                                         where !subverse.admin_disabled.Value
                                                                         where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
                                                                         select message
@@ -2092,6 +2094,7 @@ namespace Voat.Controllers
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
                                                                   where message.Name != "deleted" && message.Subverse == subverseName
                                                                   where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
+                                                                  where !(from bu in _db.SubverseBans where bu.SubverseName == subverse.name select bu.Username).Contains(message.Name)
                                                                   select message).OrderByDescending(s => s.Date).AsNoTracking();
 
             if (subverseStickie != null)

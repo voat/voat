@@ -38,6 +38,13 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.DailyPostingQuotaPerSub];
             }
         }
+        public static int DailyGlobalPostingQuota
+        {
+            get
+            {
+                return (int)configValues[CONFIGURATION.DailyGlobalPostingQuota];
+            }
+        }
         public static int DailyVotingQuota
         {
             get
@@ -57,6 +64,13 @@ namespace Voat.Configuration
             get
             {
                 return (int)configValues[CONFIGURATION.HourlyPostingQuotaPerSub];
+            }
+        }
+        public static int HourlyGlobalPostingQuota
+        {
+            get
+            {
+                return (int)configValues[CONFIGURATION.HourlyGlobalPostingQuota];
             }
         }
         public static int MaximumOwnedSets

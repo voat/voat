@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Voat are Copyright (c) 2014 Voat
+All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
@@ -42,9 +42,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             } 
             // check if caller is subverse moderator, if not, deny posting
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submission.Subverse) &&
-                !UserHelper.IsUserSubverseAdmin(User.Identity.Name, submission.Subverse))
-                return new HttpUnauthorizedResult();
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submission.Subverse)) return new HttpUnauthorizedResult();
 
             // find flair by id, apply it to submission
             var flairModel = _db.Subverseflairsettings.Find(flairId);
@@ -69,7 +67,7 @@ namespace Voat.Controllers
 
             if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse moderator, if not, deny posting
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) && !UserHelper.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse)) return new HttpUnauthorizedResult();
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse)) return new HttpUnauthorizedResult();
             // clear flair and save submission
             submissionModel.FlairCss = null;
             submissionModel.FlairLabel = null;
@@ -87,9 +85,7 @@ namespace Voat.Controllers
 
             if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse moderator, if not, deny change
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse) &&
-                !UserHelper.IsUserSubverseAdmin(User.Identity.Name, submissionModel.Subverse))
-                return new HttpUnauthorizedResult();
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse)) return new HttpUnauthorizedResult();
             try
             {
                 // find and clear current sticky if toggling
@@ -234,7 +230,7 @@ namespace Voat.Controllers
                 }
 
                 // delete submission if delete request is issued by subverse moderator
-                else if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, submissionToDelete.Subverse) || UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
+                else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
                 {
                     // mark submission as deleted (TODO: don't use name, add a new bit field to messages table instead)
                     submissionToDelete.Name = "deleted";

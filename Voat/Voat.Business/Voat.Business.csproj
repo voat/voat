@@ -174,6 +174,7 @@
     <Compile Include="Rules\VoatRuleExeception.cs" />
     <Compile Include="Rules\VoatRulesEngine.cs" />
     <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Utilities\AccountSecurity.cs" />
     <Compile Include="Utilities\BanningUtility.cs" />
     <Compile Include="Utilities\CacheHandler.cs" />
     <Compile Include="Utilities\CommentCounter.cs" />

@@ -14,6 +14,8 @@ namespace Voat.Configuration
         public const string DailyPostingQuotaForNegativeScore = "dailyPostingQuotaForNegativeScore";
         public const string DailyPostingQuotaPerSub = "dailyPostingQuotaPerSub";
         public const string DailyVotingQuota = "dailyVotingQuota";
+        public const string DailyGlobalPostingQuota = "dailyGlobalPostingQuota";
+        public const string HourlyGlobalPostingQuota = "hourlyGlobalPostingQuota";
         public const string ForceHTTPS = "forceHTTPS";
         public const string HourlyPostingQuotaPerSub = "hourlyPostingQuotaPerSub";
         public const string MaximumOwnedSets = "maximumOwnedSets";
@@ -109,9 +111,11 @@ namespace Voat.Configuration
                 SetValueIfPresent<int>(CONFIGURATION.MaximumOwnedSets, section[CONFIGURATION.MaximumOwnedSets]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyPostingQuotaPerSub, section[CONFIGURATION.DailyPostingQuotaPerSub]);
                 SetValueIfPresent<int>(CONFIGURATION.HourlyPostingQuotaPerSub, section[CONFIGURATION.HourlyPostingQuotaPerSub]);
+                SetValueIfPresent<int>(CONFIGURATION.HourlyGlobalPostingQuota, section[CONFIGURATION.HourlyGlobalPostingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyVotingQuota, section[CONFIGURATION.DailyVotingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyCrossPostingQuota, section[CONFIGURATION.DailyCrossPostingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyPostingQuotaForNegativeScore, section[CONFIGURATION.DailyPostingQuotaForNegativeScore]);
+                SetValueIfPresent<int>(CONFIGURATION.DailyGlobalPostingQuota, section[CONFIGURATION.DailyGlobalPostingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyCommentPostingQuotaForNegativeScore, section[CONFIGURATION.DailyCommentPostingQuotaForNegativeScore]);
                 SetValueIfPresent<int>(CONFIGURATION.MaxAllowedAccountsFromSingleIP, section[CONFIGURATION.MaxAllowedAccountsFromSingleIP]);
 

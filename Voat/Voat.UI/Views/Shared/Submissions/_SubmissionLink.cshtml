@@ -149,7 +149,6 @@
                     {
                         <a href="@commentsUrl" class="comments may-blank">discuss</a>
                     }
-
                 </li>
                 @if (User.Identity.IsAuthenticated)
                 {
@@ -158,6 +157,12 @@
                         <li>
                             @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
                         </li>
+                        if (!string.IsNullOrEmpty(routeActiveSubverse) && routeActiveSubverse == "all")
+                        {
+                            <li>
+                                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary { { "subverseName", Model.Subverse } })
+                            </li>
+                        }
                     }
                 }
             </ul>

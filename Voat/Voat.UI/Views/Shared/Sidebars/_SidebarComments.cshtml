@@ -125,8 +125,8 @@
             </div>
         </div>
     </div>
-    @if (User.Identity.IsAuthenticated && subverseOwner == User.Identity.Name)
+    @if(User.Identity.IsAuthenticated && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.name))
     {
-        @Html.Partial("Sidebars/_SidebarOwnerToolbox")
+        @Html.Partial("Sidebars/_SidebarModToolbox")
     }
 </div>

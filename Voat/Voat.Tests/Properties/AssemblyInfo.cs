@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Voat")]
 [assembly: AssemblyProduct("Voat Framework")]
-[assembly: AssemblyCopyright("Copyright © voat.co 2015")]
+[assembly: AssemblyCopyright("Copyright © 2015 Voat Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Voat are Copyright (c) 2014 Voat
+All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
@@ -87,8 +87,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // check if caller is subverse owner or moderator, if not, deny listing
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow) &&
-                !UserHelper.IsUserSubverseAdmin(User.Identity.Name, subversetoshow))
+            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow))
             {
                 return new HttpUnauthorizedResult();
             }

@@ -77,7 +77,7 @@
         // if user is sub admin or sub mod but not comment author, show delete button
         if (User.Identity.Name != commentAuthor)
         {
-            if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, Model.SubverseModel.name) || UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.name))
+            if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.name))
             {
                 @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
             }
@@ -92,7 +92,7 @@
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
 
             // if user is comment author but also sub mod or sub admin show distinguish button
-            if (UserHelper.IsUserSubverseAdmin(User.Identity.Name, Model.SubverseModel.name) || UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.name))
+            if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.name))
             {
                 <li>
                     <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.CommentModel.Id, this)">distinguish</a>

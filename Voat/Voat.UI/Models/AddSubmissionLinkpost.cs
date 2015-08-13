@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Voat are Copyright (c) 2014 Voat
+All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
  */
 

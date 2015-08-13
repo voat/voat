@@ -62,6 +62,8 @@
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Usersets" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetsubscriptions_Usersets" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="Models.AutoModComment" Width="1.5" PointX="11.375" PointY="11.75" />
+        <EntityTypeShape EntityType="Models.AutoModSubmission" Width="1.5" PointX="13.375" PointY="11.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

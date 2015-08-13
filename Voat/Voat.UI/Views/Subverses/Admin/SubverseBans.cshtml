@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model IEnumerable<Voat.Data.Models.SubverseBan>
+@model PaginatedList<Voat.Data.Models.SubverseBan>
 
 <div id="container">
     <div id="about-main" class="content about-page" role="main">
@@ -53,6 +53,23 @@
                 </tbody>
             </table>
 
+        </div>
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", "SubverseBans", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", "SubverseBans", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
         </div>
 
     </div>

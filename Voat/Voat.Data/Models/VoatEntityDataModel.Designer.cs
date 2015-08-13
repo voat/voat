@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'B:\Public\SourceTree\voat\Voat\Voat.Data\Models\VoatEntityDataModel.edmx'. 
+﻿// T4 code generation is enabled for model 'Y:\PUBLIC\Voat\Voat\Voat.Data\Models\VoatEntityDataModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

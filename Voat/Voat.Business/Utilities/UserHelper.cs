@@ -8,7 +8,7 @@ Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
 the specific language governing rights and limitations under the License.
 
-All portions of the code written by Voat are Copyright (c) 2014 Voat
+All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
@@ -150,8 +150,20 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 var subverseModerator = db.SubverseAdmins.FirstOrDefault(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 2);
+                var subverseOwner = db.SubverseAdmins.FirstOrDefault(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Power == 1);
 
-                return subverseModerator != null && subverseModerator.Username.Equals(userName, StringComparison.OrdinalIgnoreCase); ;
+                if (subverseModerator != null && subverseModerator.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                // subverse owners are by default also moderators
+                if (subverseOwner != null && subverseOwner.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                return false;
             }
         }
 
@@ -391,6 +403,7 @@ namespace Voat.Utilities
                 return result != null && result.Disable_custom_css;
             }
         }
+        
         // check which theme style user selected
         public static void SetUserStylePreferenceCookie(string theme)
         {
@@ -398,6 +411,7 @@ namespace Voat.Utilities
             cookie.Expires = DateTime.Now.AddDays(14);
             System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
         }        
+        
         // check which theme style user selected
         public static string UserStylePreference(string userName)
         {
@@ -742,6 +756,70 @@ namespace Voat.Utilities
                     m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                         && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
                         && m.Date >= fromDate && m.Date <= toDate);
+
+                if (dpqps <= userSubmissionsToTargetSub)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // check if a given user has used his global hourly posting quota
+        public static bool UserHourlyGlobalPostingQuotaUsed(string userName)
+        {
+            // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
+            DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
+            int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
+            int userScp = Karma.LinkKarma(userName);
+            if (memberInDays > 30 && userScp >= 50)
+            {
+                return false;
+            }
+
+            // set starting date to 1 hours ago from now
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
+            var toDate = DateTime.Now;
+
+            // read daily posting quota per sub configuration parameter from web.config
+            int dpqps = Settings.HourlyGlobalPostingQuota;
+
+            using (var db = new voatEntities())
+            {
+                // check how many submission user made in the last hour
+                var totalUserSubmissionsForTimeSpam = db.Messages.Count(m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && m.Date >= fromDate && m.Date <= toDate);
+
+                if (dpqps <= totalUserSubmissionsForTimeSpam)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // check if a given user has used his global daily posting quota
+        public static bool UserDailyGlobalPostingQuotaUsed(string userName)
+        {
+            // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
+            DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
+            int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
+            int userScp = Karma.LinkKarma(userName);
+            if (memberInDays > 30 && userScp >= 50)
+            {
+                return false;
+            }
+
+            // set starting date to 24 hours ago from now
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = DateTime.Now;
+
+            // read daily global posting quota configuration parameter from web.config
+            int dpqps = Settings.DailyGlobalPostingQuota;
+
+            using (var db = new voatEntities())
+            {
+                // check how many submission user made today
+                var userSubmissionsToTargetSub = db.Messages.Count(m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && m.Date >= fromDate && m.Date <= toDate);
 
                 if (dpqps <= userSubmissionsToTargetSub)
                 {

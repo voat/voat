@@ -674,7 +674,6 @@
     <Content Include="Views\Subverses\Admin\RecallModeratorInvitation.cshtml" />
     <Content Include="Views\Shared\Comments\_CommentBucket.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
-    <Content Include="Views\Shared\Sidebars\_SidebarOwnerToolbox.cshtml" />
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
     <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarChat.cshtml" />
@@ -691,6 +690,7 @@
     <Content Include="Web.config.live" />
     <Content Include="Views\Account\RegistrationDisabled.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseStylesheetEditor.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonBlockSubverse.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
