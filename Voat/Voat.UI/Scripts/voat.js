@@ -849,7 +849,7 @@ function deletecommentsubmit(commentid) {
 // submit submission deletion request
 function deletesubmission(senderButton, submissionid) {
     var $form = $(senderButton).parents('form');
-    $("#aYSYesNo-s-"+submissionId).html("please wait...");
+    $("#aYSYesNo-s-"+submissionid).html("please wait...");
 
     var submissionobject = { "submissionid": submissionid };
 
@@ -868,24 +868,24 @@ function deletesubmission(senderButton, submissionid) {
 // toggle are you sure question
 function toggleAreYouSure(areYouSureToggle, areYouSureYesNo) {
     $("#"+areYouSureToggle).toggle();
-    $("#"+areYouSureYesNo).toogle();
+    $("#"+areYouSureYesNo).toggle();
 }
 
 // submit report and replace report button with a "thank you" to the user
 function reportcomment(obj, commentid) {
-    $("#aYSToggle-cs-"+commentId).attr("onclick", "javascript:void(0)");
-    toggleAreYouSure("aYSToggle-cs-"+commentId, "aYSYesNo-cs-"+commentId);
-    $("#aYSToggle-cs-" + commentId).html("please wait...");
+    $("#aYSToggle-cs-"+commentid).attr("onclick", "javascript:void(0)");
+    toggleAreYouSure("aYSToggle-cs-"+commentid, "aYSYesNo-cs-"+commentid);
+    $("#aYSToggle-cs-" + commentid).html("please wait...");
 
     // submit report
     $.ajax({
         type: "POST",
         url: "/reportcomment/" + commentid,
         success: function () {
-            $("#aYSToggle-cs-" + commentId).html("thank you!");
+            $("#aYSToggle-cs-" + commentid).html("thank you!");
         },
         error: function () {
-            $("#aYSToggle-cs-" + commentId).html("report failed");
+            $("#aYSToggle-cs-" + commentid).html("report failed");
         }
     });
 
