@@ -50,11 +50,11 @@
                                     <li>
                                         <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this)">source</a>
                                     </li>
-                                    <li class="option main">
-                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick="toggle(this)">delete and revoke</a>
+                                    <li id="aYSToggle-p-@message.Id" class="option main">
+                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick="toggleAreYouSure('aYSToggle-p-@message.Id',aYSYesNo-p-@message.Id)">delete and revoke</a>
                                     </li>
-                                    <li class="option error" style="display: none;">
-                                        are you sure?  <a href="javascript:void(0)" class="yes" onclick="return deletePrivateMessageFromSent($(this).parent(), @message.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="toggle(this)">no</a>
+                                    <li id="aYSYesNo-p-@message.Id" class="option error" style="display: none;">
+                                        are you sure?  <a href="javascript:void(0)" class="yes" onclick="return deletePrivateMessageFromSent($(this).parent(), @message.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="toggleAreYouSure('aYSToggle-p-@message.Id','aYSYesNo-p-@message.Id')">no</a>
                                     </li>
                                 </ul>
                             </div>

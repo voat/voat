@@ -866,25 +866,26 @@ function deletesubmission(senderButton, submissionid) {
 }
 
 // toggle are you sure question
-function toggle(obj) {
-    $(obj).parent().parent().find('.option').toggle();
+function toggleAreYouSure(areYouSureToggle, areYouSureYesNo) {
+    $("#"+areYouSureToggle).toggle();
+    $("#"+areYouSureYesNo).toogle();
 }
 
 // submit report and replace report button with a "thank you" to the user
 function reportcomment(obj, commentid) {
-    $(obj).parent().parent().find('.togglebutton').attr("onclick", "javascript:void(0)");
-    $(obj).parent().parent().find('.option').toggle();
-    $(obj).parent().parent().find('.togglebutton').html("please wait...");
+    $("#aYSToggle-cs-"+commentId).attr("onclick", "javascript:void(0)");
+    toggleAreYouSure("aYSToggle-cs-"+commentId, "aYSYesNo-cs-"+commentId);
+    $("#aYSToggle-cs-" + commentId).html("please wait...");
 
     // submit report
     $.ajax({
         type: "POST",
         url: "/reportcomment/" + commentid,
         success: function () {
-            $(obj).parent().parent().find('.togglebutton').html("thank you!");
+            $("#aYSToggle-cs-" + commentId).html("thank you!");
         },
         error: function () {
-            $(obj).parent().parent().find('.togglebutton').html("report failed");
+            $("#aYSToggle-cs-" + commentId).html("report failed");
         }
     });
 
