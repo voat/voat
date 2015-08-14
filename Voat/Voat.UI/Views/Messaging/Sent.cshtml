@@ -66,6 +66,6 @@
     </div>
     @if (Model.PageCount > 1)
     {
-        @Html.PagedListPager(Model, page => Url.Action("Inbox", new { page }), VoatPagerOptions.PagedListRenderOptions())
+        @Html.PagedListPager(Model, page => Url.Action("Sent", new { page }), VoatPagerOptions.PagedListRenderOptions())
     }
 </div>
