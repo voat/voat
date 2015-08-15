@@ -48,9 +48,9 @@
 
         <div class="midcol @likesOrDislikesClass">
 
-            @if (commentContributionPoints < 20)
+            @if (commentContributionPoints < Settings.MinimumCcp)
             {
-                if (UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
+                if (UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name) < Settings.DailyVotingQuota)
                 {
                     <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
                 }
@@ -68,7 +68,7 @@
             <div class="score unvoted">@score</div>
             <div class="score likes">@Model.Likes</div>
 
-            @if (commentContributionPoints < 100)
+            @if (commentContributionPoints < Settings.MinimumCcp)
             {
                 <div class="@votingStatusClassDownArrow login-required" onclick="notEnoughCCP();" role="button" aria-label="downvote" tabindex="0"></div>
             }
