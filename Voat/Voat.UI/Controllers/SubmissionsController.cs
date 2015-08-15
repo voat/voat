@@ -134,7 +134,7 @@ namespace Voat.Controllers
             switch (typeOfVote)
             {
                 case 1:
-                    if (userCcp >= Settings.MinimumCcp)
+                    if (userCcp >= 20)
                     {
                         if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {
@@ -142,14 +142,14 @@ namespace Voat.Controllers
                             Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                         }
                     }
-                    else if (totalVotesUsedInPast24Hours < Settings.DailyVotingQuota)
+                    else if (totalVotesUsedInPast24Hours < 11)
                     {
                         // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
                         Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                     }
                     break;
                 case -1:
-                    if (userCcp >= Settings.MinimumCcp)
+                    if (userCcp >= 100)
                     {
                         if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {

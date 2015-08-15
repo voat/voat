@@ -64,9 +64,9 @@
         }
         
         <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
-            @if (commentContributionPoints < Settings.MinimumCcp)
+            @if (commentContributionPoints < 20)
             {
-                if (UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name) < Settings.DailyVotingQuota)
+                if (UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
                 {
                     <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
                 }
@@ -80,7 +80,7 @@
                 <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
             }
 
-            @if (commentContributionPoints < Settings.MinimumCcp)
+            @if (commentContributionPoints < 100)
             {
                 <div class="@votingStatusClassDownArrow login-required" onclick="notEnoughCCP();" role="button" aria-label="downvote" tabindex="0"></div>
             }
