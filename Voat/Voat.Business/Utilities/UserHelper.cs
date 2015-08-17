@@ -518,7 +518,7 @@ namespace Voat.Utilities
                 // get 3 highest rated comments
                 var highestRatedComments = db.Comments
                     .Include("Message")
-                    .Where(a => a.Name == userName && !a.Anonymized)
+                    .Where(a => a.Name == userName && !a.Anonymized && !a.IsDeleted)
                     .OrderByDescending(s => s.Likes - s.Dislikes)
                     .Take(3)
                     .ToList();
@@ -526,22 +526,22 @@ namespace Voat.Utilities
                 // get 3 lowest rated comments
                 var lowestRatedComments = db.Comments
                     .Include("Message")
-                    .Where(a => a.Name == userName && !a.Anonymized)
+                    .Where(a => a.Name == userName && !a.Anonymized && !a.IsDeleted)
                     .OrderBy(s => s.Likes - s.Dislikes)
                     .Take(3)
                     .ToList();
 
-                var linkSubmissionsCount = db.Messages.Count(a => a.Name == userName && a.Type == 2);
-                var messageSubmissionsCount = db.Messages.Count(a => a.Name == userName && a.Type == 1);
+                var linkSubmissionsCount = db.Messages.Count(a => a.Name == userName && a.Type == 2 && !a.IsDeleted);
+                var messageSubmissionsCount = db.Messages.Count(a => a.Name == userName && a.Type == 1 && !a.IsDeleted);
 
                 // get 5 highest rated submissions
-                var highestRatedSubmissions = db.Messages.Where(a => a.Name == userName && !a.Anonymized)
+                var highestRatedSubmissions = db.Messages.Where(a => a.Name == userName && !a.Anonymized && !a.IsDeleted)
                     .OrderByDescending(s => s.Likes - s.Dislikes)
                     .Take(5)
                     .ToList();
 
                 // get 5 lowest rated submissions
-                var lowestRatedSubmissions = db.Messages.Where(a => a.Name == userName && !a.Anonymized)
+                var lowestRatedSubmissions = db.Messages.Where(a => a.Name == userName && !a.Anonymized && !a.IsDeleted)
                     .OrderBy(s => s.Likes - s.Dislikes)
                     .Take(5)
                     .ToList();
