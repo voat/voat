@@ -122,7 +122,7 @@
                 </li>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    if (Model.Name != "deleted")
+                    if (!Model.IsDeleted)
                     {
                         <li>
                             @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })

@@ -38,10 +38,10 @@
                 {
                     string commentAuthorUrl;
                     var commentAuthorName = "";
-                    if (comment.Name == "deleted")
+                    if (comment.IsDeleted)
                     {
                         commentAuthorUrl = "#";
-                        commentAuthorName = comment.Name;
+                        commentAuthorName = "deleted";
                     }
                     else
                     {

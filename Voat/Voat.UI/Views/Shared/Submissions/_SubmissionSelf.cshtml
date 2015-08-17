@@ -45,7 +45,7 @@
                 <span class="domain">(<a href="/v/@Model.Subverse">self.@Model.Subverse</a>)</span>
             </p>
 
-            @if (Model.Name == "deleted")
+            @if (Model.IsDeleted)
             {
                 <p class="tagline">
                     submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by
@@ -91,7 +91,7 @@
                 </li>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    if (Model.Name != "deleted")
+                    if (!Model.IsDeleted)
                     {
                         <li>
                             @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary {{"submissionId", Model.Id}})

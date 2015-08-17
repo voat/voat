@@ -65,47 +65,6 @@ namespace Voat.Data.Models
         public virtual DbSet<AutoModComment> AutoModComments { get; set; }
         public virtual DbSet<AutoModSubmission> AutoModSubmissions { get; set; }
     
-        [DbFunction("voatEntities", "fnActiveUserCounts")]
-        public virtual IQueryable<fnActiveUserCounts_Result> fnActiveUserCounts(Nullable<int> spanInHours)
-        {
-            var spanInHoursParameter = spanInHours.HasValue ?
-                new ObjectParameter("SpanInHours", spanInHours) :
-                new ObjectParameter("SpanInHours", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<fnActiveUserCounts_Result>("[voatEntities].[fnActiveUserCounts](@SpanInHours)", spanInHoursParameter);
-        }
-    
-        public virtual ObjectResult<sp_perf_stats_azure_Result> sp_perf_stats_azure(string appname, Nullable<System.DateTime> runtime)
-        {
-            var appnameParameter = appname != null ?
-                new ObjectParameter("appname", appname) :
-                new ObjectParameter("appname", typeof(string));
-    
-            var runtimeParameter = runtime.HasValue ?
-                new ObjectParameter("runtime", runtime) :
-                new ObjectParameter("runtime", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_perf_stats_azure_Result>("sp_perf_stats_azure", appnameParameter, runtimeParameter);
-        }
-    
-        public virtual int sp_perf_stats_azure_infrequent11(Nullable<System.DateTime> runtime, Nullable<int> firstrun)
-        {
-            var runtimeParameter = runtime.HasValue ?
-                new ObjectParameter("runtime", runtime) :
-                new ObjectParameter("runtime", typeof(System.DateTime));
-    
-            var firstrunParameter = firstrun.HasValue ?
-                new ObjectParameter("firstrun", firstrun) :
-                new ObjectParameter("firstrun", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_perf_stats_azure_infrequent11", runtimeParameter, firstrunParameter);
-        }
-    
-        public virtual ObjectResult<usp_ActiveUsers_Result> usp_ActiveUsers()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_ActiveUsers_Result>("usp_ActiveUsers");
-        }
-    
         public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {
             var submissionIDParameter = submissionID.HasValue ?
@@ -121,85 +80,6 @@ namespace Voat.Data.Models
                 new ObjectParameter("ParentID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_CommentTree_Result>("usp_CommentTree", submissionIDParameter, depthParameter, parentIDParameter);
-        }
-    
-        public virtual int usp_MarkArchived()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_MarkArchived");
-        }
-    
-        public virtual int usp_PurgeInactiveSessions(Nullable<int> minutes)
-        {
-            var minutesParameter = minutes.HasValue ?
-                new ObjectParameter("Minutes", minutes) :
-                new ObjectParameter("Minutes", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_PurgeInactiveSessions", minutesParameter);
-        }
-    
-        public virtual int usp_PurgeInactiveSubverses(Nullable<int> hours)
-        {
-            var hoursParameter = hours.HasValue ?
-                new ObjectParameter("Hours", hours) :
-                new ObjectParameter("Hours", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_PurgeInactiveSubverses", hoursParameter);
-        }
-    
-        public virtual int usp_RankSubmissions(Nullable<int> count)
-        {
-            var countParameter = count.HasValue ?
-                new ObjectParameter("Count", count) :
-                new ObjectParameter("Count", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_RankSubmissions", countParameter);
-        }
-    
-        public virtual int usp_RankSubmissions_CTE(Nullable<int> count)
-        {
-            var countParameter = count.HasValue ?
-                new ObjectParameter("Count", count) :
-                new ObjectParameter("Count", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_RankSubmissions_CTE", countParameter);
-        }
-    
-        public virtual int usp_TransferSubverse(string subverse, string userName, string transferedBy, Nullable<int> submissionID, Nullable<bool> byPassChecks)
-        {
-            var subverseParameter = subverse != null ?
-                new ObjectParameter("Subverse", subverse) :
-                new ObjectParameter("Subverse", typeof(string));
-    
-            var userNameParameter = userName != null ?
-                new ObjectParameter("UserName", userName) :
-                new ObjectParameter("UserName", typeof(string));
-    
-            var transferedByParameter = transferedBy != null ?
-                new ObjectParameter("TransferedBy", transferedBy) :
-                new ObjectParameter("TransferedBy", typeof(string));
-    
-            var submissionIDParameter = submissionID.HasValue ?
-                new ObjectParameter("SubmissionID", submissionID) :
-                new ObjectParameter("SubmissionID", typeof(int));
-    
-            var byPassChecksParameter = byPassChecks.HasValue ?
-                new ObjectParameter("ByPassChecks", byPassChecks) :
-                new ObjectParameter("ByPassChecks", typeof(bool));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_TransferSubverse", subverseParameter, userNameParameter, transferedByParameter, submissionIDParameter, byPassChecksParameter);
-        }
-    
-        public virtual ObjectResult<usp_WhoVotesForUsersComments_Result> usp_WhoVotesForUsersComments(string userName, Nullable<int> countLimit)
-        {
-            var userNameParameter = userName != null ?
-                new ObjectParameter("UserName", userName) :
-                new ObjectParameter("UserName", typeof(string));
-    
-            var countLimitParameter = countLimit.HasValue ?
-                new ObjectParameter("CountLimit", countLimit) :
-                new ObjectParameter("CountLimit", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_WhoVotesForUsersComments_Result>("usp_WhoVotesForUsersComments", userNameParameter, countLimitParameter);
         }
     }
 }

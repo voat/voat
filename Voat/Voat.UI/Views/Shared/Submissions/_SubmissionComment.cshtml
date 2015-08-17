@@ -91,7 +91,7 @@
         <a></a>
     </p>
 
-    @if (comment.Name != "deleted")
+    @if (!comment.IsDeleted)
     {
         @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary {
             { "VoteCache", ViewBag.VoteCache },
@@ -104,7 +104,7 @@
 
         <div class="collapsed" style='@collapsedComment'>
             <a href="#" class="expand" onclick="return showcomment(@commentId)">[+]</a>
-            @if (comment.Name != "deleted")
+            @if (!comment.IsDeleted)
             {
                 if (Model.Submission.Anonymized || subverseAnonymized == true)
                 {
@@ -135,7 +135,7 @@
             <p class="tagline">
                 <a href="#" class="expand" onclick="return hidecomment(@commentId)">[&ndash;]</a>
 
-                @if (comment.Name != "deleted")
+                @if (!comment.IsDeleted)
                 {
                     //int commentScore = commentModel.Likes - commentModel.Dislikes;
                     string view = "~/Views/Shared/UserDistinctions/_UserDistinction.cshtml";
@@ -175,7 +175,7 @@
             <form class="usertext" onsubmit="return editcommentsubmit(@commentId)" id="commenteditform-@commentId" action="#">
                 @Html.AntiForgeryToken()
                 <input id="CommentId" name="CommentId" value="@commentId" type="hidden">
-                @if (comment.Name != "deleted")
+                @if (!comment.IsDeleted)
                 {
                     <div class="usertext-body may-blank-within" id="commentContent-@commentId">
                         <div class="md">

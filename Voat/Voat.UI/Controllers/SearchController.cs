@@ -75,7 +75,7 @@ namespace Voat.Controllers
                                        join s in _db.Subverses on m.Subverse equals s.name
                                        where
                                         !s.admin_disabled.Value &&
-                                        m.Name != "deleted" &&
+                                        !m.IsDeleted &&
                                         m.Subverse == sub &&
                                         (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
                                        orderby m.Rank ascending, m.Date descending
@@ -122,7 +122,7 @@ namespace Voat.Controllers
                                        join s in _db.Subverses on m.Subverse equals s.name
                                        where
                                         !s.admin_disabled.Value &&
-                                        m.Name != "deleted" &&
+                                        !m.IsDeleted &&
                                            //m.Subverse == sub &&
                                         (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
                                        orderby m.Rank ascending, m.Date descending

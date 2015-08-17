@@ -499,7 +499,6 @@ namespace Voat.Controllers
                 // delete comment if the comment author is currently logged in user
                 if (commentToDelete.Name == User.Identity.Name)
                 {
-                    commentToDelete.Name = "deleted";
                     commentToDelete.IsDeleted = true;
                     commentToDelete.CommentContent = "deleted by author at " + DateTime.Now;
                     await _db.SaveChangesAsync();
@@ -520,7 +519,6 @@ namespace Voat.Controllers
                         commentToDelete.CommentContent
                         );
 
-                    commentToDelete.Name = "deleted";
                     commentToDelete.IsDeleted = true;
 
                     // move the comment to removal log

@@ -18,7 +18,7 @@
 }
 
 <ul class="flat-list buttons">
-    @if (commentAuthor != "deleted")
+    @if (!Model.CommentModel.IsDeleted)
     {
         <li class="first">
             <a href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.MessageId/@Model.CommentModel.Id" class="bylink" rel="nofollow">permalink</a>
@@ -60,14 +60,14 @@
         }
         var saveString = savedOrNot == true ? "unsave" : "save";
 
-        if (commentAuthor != "deleted")
+        if (!Model.CommentModel.IsDeleted)
         {
             <li>
                 <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@commentId);">@saveString</a>
             </li>
         }
 
-        if (commentAuthor != "deleted" && User.Identity.Name != commentAuthor)
+        if (!Model.CommentModel.IsDeleted && User.Identity.Name != commentAuthor)
         {
             <li>
                 <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
@@ -100,7 +100,7 @@
             }
         }
 
-        if (commentAuthor != "deleted")
+        if (!Model.CommentModel.IsDeleted)
         {
             <li>
                 <a class="" href="javascript:void(0)" onclick="return reply(@commentId, @Model.CommentModel.MessageId)">reply</a>

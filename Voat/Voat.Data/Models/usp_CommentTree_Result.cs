@@ -30,5 +30,6 @@ namespace Voat.Data.Models
         public bool Anonymized { get; set; }
         public bool IsDistinguished { get; set; }
         public string FormattedContent { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

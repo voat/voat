@@ -51,7 +51,7 @@ namespace Voat.Controllers
             //restrict disabled subs from result list
             IQueryable<Message> submissions = (from m in _db.Messages
                                                join s in _db.Subverses on m.Subverse equals s.name
-                                               where !s.admin_disabled.Value && m.Name != "deleted" & m.Type == 2 & m.MessageContent.ToLower().Contains(domainname + "." + ext)
+                                               where !s.admin_disabled.Value && !m.IsDeleted & m.Type == 2 & m.MessageContent.ToLower().Contains(domainname + "." + ext)
                                                orderby m.Rank descending, m.Date descending
                                                select m);
 
@@ -85,7 +85,7 @@ namespace Voat.Controllers
 
             IQueryable<Message> submissions = (from m in _db.Messages
                                                join s in _db.Subverses on m.Subverse equals s.name
-                                               where !s.admin_disabled.Value && m.Name != "deleted" & m.Type == 2 & m.MessageContent.ToLower().Contains(domainname + "." + ext)
+                                               where !s.admin_disabled.Value && !m.IsDeleted & m.Type == 2 & m.MessageContent.ToLower().Contains(domainname + "." + ext)
                                                orderby m.Date descending
                                                select m);
 

@@ -17,7 +17,7 @@
     foreach (var comment in Model.DisplayTree)
     {
         //do not show deleted comments unless they have replies
-        if (comment.Name == "deleted" && comment.ChildCount <= 0)
+        if (comment.IsDeleted && comment.ChildCount <= 0)
         {
             continue;
         }

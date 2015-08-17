@@ -10,9 +10,8 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Comment
+@model Voat.Data.Models.Comment
 
-@using Voat.Models;
 
 @{
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
@@ -73,7 +72,7 @@
         <a></a>
     </p>
 
-    @if (Model.Name != "deleted")
+    @if (!Model.IsDeleted)
     {
         @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", Model.Id }, { "CCP", commentContributionPoints }, { "collapsedStyle", uncollapsedComment } })
     }
@@ -81,7 +80,7 @@
     <div class="entry unvoted">
         <div class="collapsed" style='@collapsedComment'>
             <a href="#" class="expand" onclick="return showcomment(@Model.Id)">[+]</a>
-            @if (Model.Name != "deleted")
+            @if (!Model.IsDeleted)
             {
                 int commentScore = Model.Likes - Model.Dislikes;
 
@@ -110,7 +109,7 @@
             <p class="tagline">
                 <a href="#" class="expand" onclick="return hidecomment(@Model.Id)">[&ndash;]</a>
 
-                @if (Model.Name != "deleted")
+                @if (!Model.IsDeleted)
                 {
                     int commentScore = Model.Likes - Model.Dislikes;
 
@@ -151,7 +150,7 @@
                 @Html.AntiForgeryToken()
                 <input id="CommentId" name="CommentId" value="@Model.Id" type="hidden">
 
-                @if (Model.Name != "deleted")
+                @if (!Model.IsDeleted)
                 {
                     <div class="usertext-body may-blank-within" id="commentContent-@Model.Id">
                         <div class="md">
@@ -203,20 +202,20 @@
 
             </form>
             <ul class="flat-list buttons">
-                @if (Model.Name != "deleted" && showContextLink == true)
+                @if (!Model.IsDeleted && showContextLink == true)
                 {
                 <li>
                     <a href="/v/@Model.Message.Subverse/comments/@Model.MessageId/@Model.ParentId/@Model.Id#@Model.Id" rel="nofollow">context</a>
                 </li>
                 }
-                @if (Model.Name != "deleted")
+                @if (!Model.IsDeleted)
                 {
                     <li class="first">
                         <a href="/v/@Model.Message.Subverse/comments/@Model.MessageId/@Model.Id" class="bylink" rel="nofollow">permalink</a>
                     </li>
                 }
 
-                @if (User.Identity.IsAuthenticated && commentAuthor != "deleted")
+                @if (User.Identity.IsAuthenticated && !Model.IsDeleted)
                 {
                     //returns true if user has saved this post
                     var savedOrNot = SavingComments.CheckIfSavedComment(User.Identity.Name, @Model.Id);
@@ -268,7 +267,7 @@
                         </li>
                     }
 
-                    if (Model.Name != "deleted")
+                    if (!Model.IsDeleted)
                     {
                         <li>
                             <a class="" href="javascript:void(0)" onclick="return reply(@Model.Id, @Model.MessageId)">reply</a>

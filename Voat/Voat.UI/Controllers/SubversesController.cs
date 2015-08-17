@@ -41,7 +41,7 @@ namespace Voat.Controllers
         // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments,
             string name, DateTime? date, DateTime? lastEditDate, int? submissionId, int? likes, int? dislikes,
-            bool anonymized, int? views)
+            bool anonymized, int? views, bool isDeleted)
         {
 
             //Can't cache as view is using model to query
@@ -65,7 +65,14 @@ namespace Voat.Controllers
             }
             else
             {
-                ViewBag.name = name;
+                if (isDeleted)
+                {
+                    ViewBag.name = "deleted";
+                }
+                else
+                {
+                    ViewBag.name = name;
+                }
             }
 
             ViewBag.date = date;
@@ -870,7 +877,7 @@ namespace Voat.Controllers
                     randomSubverse = subverse.OrderBy(s => s.name).Skip(index).FirstOrDefault(); // 2nd round-trip
 
                     var submissions = _db.Messages
-                            .Where(x => x.Subverse == randomSubverse.name && x.Name != "deleted")
+                            .Where(x => x.Subverse == randomSubverse.name && !x.IsDeleted)
                             .OrderByDescending(s => s.Rank)
                             .Take(50)
                             .ToList();
@@ -1968,7 +1975,7 @@ namespace Voat.Controllers
             }
             IQueryable<Message> sfwSubmissionsFromAllSubversesByDate = (from message in _db.Messages
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                        where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
+                                                                        where !message.IsArchived && !message.IsDeleted && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                         where !(from bu in _db.SubverseBans where bu.SubverseName == subverse.name select bu.Username).Contains(message.Name)
                                                                         where !subverse.admin_disabled.Value
@@ -1991,7 +1998,7 @@ namespace Voat.Controllers
             }
             IQueryable<Message> sfwSubmissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                        where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
+                                                                        where !message.IsArchived && !message.IsDeleted && subverse.private_subverse != true && subverse.forced_private != true && subverse.forced_private != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                         where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                         where !subverse.admin_disabled.Value
                                                                         where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
@@ -2004,7 +2011,7 @@ namespace Voat.Controllers
         {
             IQueryable<Message> sfwSubmissionsFromAllSubversesByTop = (from message in _db.Messages
                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                       where message.Name != "deleted" && subverse.private_subverse != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
+                                                                       where !message.IsDeleted && subverse.private_subverse != true && subverse.rated_adult == false && subverse.minimumdownvoteccp == 0
                                                                        where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                        where !subverse.admin_disabled.Value
                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
@@ -2022,7 +2029,7 @@ namespace Voat.Controllers
             var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
             IQueryable<Message> sfwSubmissionsFromAllSubversesByViews24Hours = (from message in _db.Messages
                                                                                 join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                                where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && message.Date >= startDate && message.Date <= DateTime.Now
+                                                                                where !message.IsArchived && !message.IsDeleted && subverse.private_subverse != true && subverse.forced_private != true && subverse.rated_adult == false && message.Date >= startDate && message.Date <= DateTime.Now
                                                                                 where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                                 where !subverse.admin_disabled.Value
                                                                                 where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
@@ -2046,7 +2053,7 @@ namespace Voat.Controllers
             }
             IQueryable<Message> submissionsFromAllSubversesByDate = (from message in _db.Messages
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                     where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
+                                                                     where !message.IsArchived && !message.IsDeleted && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                      where !subverse.admin_disabled.Value
                                                                      where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(userName)
@@ -2059,7 +2066,7 @@ namespace Voat.Controllers
         {
             IQueryable<Message> submissionsFromAllSubversesByRank = (from message in _db.Messages
                                                                      join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                     where !message.IsArchived && message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
+                                                                     where !message.IsArchived && !message.IsDeleted && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0 && message.Rank > 0.00009
                                                                      where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                      where !subverse.admin_disabled.Value
                                                                      where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
@@ -2072,7 +2079,7 @@ namespace Voat.Controllers
         {
             IQueryable<Message> submissionsFromAllSubversesByTop = (from message in _db.Messages
                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                    where message.Name != "deleted" && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
+                                                                    where !message.IsDeleted && subverse.private_subverse != true && subverse.forced_private != true && subverse.minimumdownvoteccp == 0
                                                                     where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                     where !subverse.admin_disabled.Value
                                                                     where !(from ubs in _db.UserBlockedSubverses where ubs.SubverseName.Equals(subverse.name) select ubs.Username).Contains(User.Identity.Name)
@@ -2092,7 +2099,7 @@ namespace Voat.Controllers
             var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             IQueryable<Message> submissionsFromASubverseByDate = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                  where message.Name != "deleted" && message.Subverse == subverseName
+                                                                  where !message.IsDeleted && message.Subverse == subverseName
                                                                   where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                   where !(from bu in _db.SubverseBans where bu.SubverseName == subverse.name select bu.Username).Contains(message.Name)
                                                                   select message).OrderByDescending(s => s.Date).AsNoTracking();
@@ -2112,7 +2119,7 @@ namespace Voat.Controllers
             var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             IQueryable<Message> submissionsFromASubverseByRank = (from message in _db.Messages
                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                  where message.Name != "deleted" && message.Subverse == subverseName
+                                                                  where !message.IsDeleted && message.Subverse == subverseName
                                                                   where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                   select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).AsNoTracking();
 
@@ -2128,7 +2135,7 @@ namespace Voat.Controllers
             var subverseStickie = _db.Stickiedsubmissions.FirstOrDefault(ss => ss.Subverse.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             IQueryable<Message> submissionsFromASubverseByTop = (from message in _db.Messages
                                                                  join subverse in _db.Subverses on message.Subverse equals subverse.name
-                                                                 where message.Name != "deleted" && message.Subverse == subverseName
+                                                                 where !message.IsDeleted && message.Subverse == subverseName
                                                                  where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
                                                                  select message).OrderByDescending(s => s.Likes - s.Dislikes).Where(s => s.Date >= startDate && s.Date <= DateTime.Now)
                                                                  .AsNoTracking();

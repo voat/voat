@@ -17,7 +17,7 @@
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
-    var commentCount = Model.Comments.Count(c => c.Name != "deleted");
+    var commentCount = Model.Comments.Count(c => !c.IsDeleted);
     bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 }
 
@@ -42,7 +42,7 @@
                 submitted&#32;
                 <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago&#32;by&#32;
 
-                @if (Model.Name == "deleted")
+                @if (Model.IsDeleted)
                 {
                     <span class="userattrs">[deleted]</span>
                 }

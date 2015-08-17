@@ -27,7 +27,7 @@ namespace Voat.UI.Utilities
 
             // skip could be used here
             var topRankedSubmissions = (from message in messagesDbSet
-                                        where message.Name != "deleted" && message.Subverse == subverseName
+                                        where !message.IsDeleted && message.Subverse == subverseName
                                         select new SetSubmission
                                         {
                                             Id = message.Id,
@@ -62,7 +62,7 @@ namespace Voat.UI.Utilities
         public static IQueryable<SetSubmission> NewestSubmissionsFromASub(string subverseName, DbSet<Message> messagesDbSet, string setName, int desiredResults)
         {
             var topRankedSubmissions = (from message in messagesDbSet
-                                        where message.Name != "deleted" && message.Subverse == subverseName
+                                        where !message.IsDeleted && message.Subverse == subverseName
                                         select new SetSubmission
                                         {
                                             Id = message.Id,

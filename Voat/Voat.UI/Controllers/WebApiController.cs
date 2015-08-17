@@ -115,7 +115,7 @@ namespace Voat.Controllers
                     
                         // get only submissions from default subverses, order by rank
                         var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
-                                                    where !message.IsArchived && message.Name != "deleted" && message.Subverses.admin_disabled != true
+                                                    where !message.IsArchived && !message.IsDeleted && message.Subverses.admin_disabled != true
                                                     join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                                     select message)
                                                     .OrderByDescending(s => s.Rank)
@@ -181,7 +181,7 @@ namespace Voat.Controllers
                 cacheData = CacheHandler.Register(cacheKey, new Func<object>(() => {
                     // get only submissions from given subverses, order by rank - ignoring messages in any given banned subverse
                     var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
-                                                where message.Name != "deleted" && message.Subverse == subverse && message.Subverses.admin_disabled != true
+                                                where !message.IsDeleted && message.Subverse == subverse && message.Subverses.admin_disabled != true
                                                 select message)
                                                 .OrderByDescending(s => s.Rank)
                                                 .Take(100)
@@ -477,7 +477,7 @@ namespace Voat.Controllers
                     foreach (var firstComment in firstComments.Take(10))
                     {
                         //do not show deleted comments unless they have replies
-                        if (firstComment.Name == "deleted" && submission.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
+                        if (firstComment.IsDeleted && submission.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
                         {
                             continue;
                         }

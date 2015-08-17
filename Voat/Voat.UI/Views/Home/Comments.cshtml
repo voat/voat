@@ -58,7 +58,8 @@ else if (!User.Identity.IsAuthenticated)
            likes = Model.Submission.Likes,
            dislikes = Model.Submission.Dislikes,
            anonymized = Model.Submission.Anonymized,
-           views = Model.Submission.Views
+           views = Model.Submission.Views,
+           isDeleted = Model.Submission.IsDeleted
        })
     }
 
