@@ -215,7 +215,7 @@ namespace Voat.Controllers
             if (whattodisplay != null && whattodisplay == "comments")
             {
                 var userComments = from c in _db.Comments.OrderByDescending(c => c.Date)
-                                   where (c.Name.Equals(id) && c.Message.Anonymized == false && !c.Message.IsDeleted) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
+                                   where (c.Name.Equals(id) && c.Message.Anonymized == false && !c.IsDeleted) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
                                    select c;
 
                 PaginatedList<Comment> paginatedUserComments = new PaginatedList<Comment>(userComments, page ?? 0, pageSize);
@@ -227,7 +227,7 @@ namespace Voat.Controllers
             if (whattodisplay != null && whattodisplay == "submissions")
             {
                 var userSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
-                                      where (b.Name.Equals(id) && b.Anonymized == false) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
+                                      where (b.Name.Equals(id) && b.Anonymized == false && !b.IsDeleted) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
                                       select b;
 
                 PaginatedList<Message> paginatedUserSubmissions = new PaginatedList<Message>(userSubmissions, page ?? 0, pageSize);
