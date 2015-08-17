@@ -111,9 +111,12 @@ namespace Voat.Utilities
                         // delete private messages
                         db.Privatemessages.RemoveRange(db.Privatemessages.Where(pm => pm.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-                        // delete short bio
+                        // delete short bio if userprefs record exists for this user
                         var userPrefs = db.Userpreferences.Find(userName);
-                        userPrefs.Shortbio = null;
+                        if (userPrefs != null)
+                        {
+                            userPrefs.Shortbio = null;
+                        }
 
                         // TODO: delete avatar
                         // userPrefs.Avatar = ""
