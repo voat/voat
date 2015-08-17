@@ -826,6 +826,7 @@ namespace Voat.Data {
                  // delete submission if delete request is issued by submission author
                  if (submissionToDelete.Name == User.Identity.Name) {
                      submissionToDelete.Name = "deleted";
+                     submissionToDelete.IsDeleted = true;
 
                      if (submissionToDelete.Type == 1) {
                          submissionToDelete.MessageContent = "deleted by author at " + DateTime.Now;
@@ -846,6 +847,7 @@ namespace Voat.Data {
                  else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse)) {
                      // mark submission as deleted (TODO: don't use name, add a new bit field to messages table instead)
                      submissionToDelete.Name = "deleted";
+                     submissionToDelete.IsDeleted = true;
 
                      // move the submission to removal log
                      var removalLog = new SubmissionRemovalLog {
@@ -992,9 +994,11 @@ namespace Voat.Data {
                 if (comment.Name == User.Identity.Name) {
                     comment.CommentContent = "deleted by author at " + CurrentDate.ToLongDateString();
                     comment.Name = "deleted";
+                    comment.IsDeleted = true;
                 }// delete comment if delete request is issued by subverse moderator
                 else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse)) {
                     comment.Name = "deleted";
+                    comment.IsDeleted = true;
                     comment.CommentContent = "deleted by moderator at " + CurrentDate;
 
                     // notify comment author that his comment has been deleted by a moderator

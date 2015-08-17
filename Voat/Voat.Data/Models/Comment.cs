@@ -17,6 +17,7 @@ namespace Voat.Data.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Comment()
         {
+            this.IsDeleted = false;
             this.Commentsavingtrackers = new HashSet<Commentsavingtracker>();
             this.Commentvotingtrackers = new HashSet<Commentvotingtracker>();
         }
@@ -34,6 +35,7 @@ namespace Voat.Data.Models
         public bool Anonymized { get; set; }
         public bool IsDistinguished { get; set; }
         public string FormattedContent { get; set; }
+        public bool IsDeleted { get; set; }
     
         public virtual CommentRemovalLog CommentRemovalLog { get; set; }
         public virtual Message Message { get; set; }

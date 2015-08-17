@@ -17,6 +17,7 @@ namespace Voat.Data.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Message()
         {
+            this.IsDeleted = false;
             this.Comments = new HashSet<Comment>();
             this.Savingtrackers = new HashSet<Savingtracker>();
             this.Viewstatistics = new HashSet<Viewstatistic>();
@@ -42,6 +43,7 @@ namespace Voat.Data.Models
         public string FlairCss { get; set; }
         public bool Anonymized { get; set; }
         public double Views { get; set; }
+        public bool IsDeleted { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }

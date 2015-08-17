@@ -207,6 +207,7 @@ namespace Voat.Controllers
                 if (submissionToDelete.Name == User.Identity.Name)
                 {
                     submissionToDelete.Name = "deleted";
+                    submissionToDelete.IsDeleted = true;
 
                     if (submissionToDelete.Type == 1)
                     {
@@ -232,8 +233,9 @@ namespace Voat.Controllers
                 // delete submission if delete request is issued by subverse moderator
                 else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
                 {
-                    // mark submission as deleted (TODO: don't use name, add a new bit field to messages table instead)
+                    // mark submission as deleted
                     submissionToDelete.Name = "deleted";
+                    submissionToDelete.IsDeleted = true;
 
                     // move the submission to removal log
                     var removalLog = new SubmissionRemovalLog

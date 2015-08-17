@@ -77,6 +77,7 @@ namespace Voat.Utilities
                         foreach (Comment c in comments)
                         {
                             c.Name = "deleted";
+                            c.IsDeleted = true;
                             c.CommentContent = "deleted by user";
                         }
                         db.SaveChanges();
@@ -88,12 +89,14 @@ namespace Voat.Utilities
                             if (s.Type == 1)
                             {
                                 s.Name = "deleted";
+                                s.IsDeleted = true;
                                 s.MessageContent = "deleted by user";
                                 s.Title = "deleted by user";
                             }
                             else
                             {
                                 s.Name = "deleted";
+                                s.IsDeleted = true;
                                 s.Linkdescription = "deleted by user";
                                 s.MessageContent = "http://voat.co";
                             }
