@@ -61,5 +61,23 @@ namespace Voat.Tests.Utils
             bool result = UrlUtility.IsUriValid(testUri.ToString());
             Assert.AreEqual(true, result, "The input URI was invalid.");
         }
+
+        [TestMethod]
+        public void TestEscapedQuotesInTitle()
+        {
+            Uri testUri = new Uri("https://lwn.net/Articles/653411/");
+
+            string result = UrlUtility.GetTitleFromUri(testUri.ToString());
+            Assert.AreEqual("\"Big data\" features coming in PostgreSQL 9.5 [LWN.net]", result, "HTML in title not properly decoded");
+        }
+
+        [TestMethod]
+        public void TestTagInTitle()
+        {
+            Uri testUri = new Uri("http://stackoverflow.com/questions/1348683/will-the-b-and-i-tags-ever-become-deprecated");
+
+            string result = UrlUtility.GetTitleFromUri(testUri.ToString());
+            Assert.AreEqual("Will the <b> and <i> tags ever become deprecated?", result, "HTML in title not properly decoded");
+        }
     }
 }
