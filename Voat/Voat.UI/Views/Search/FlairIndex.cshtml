@@ -1,0 +1,159 @@
+@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model PaginatedList<Voat.Data.Models.Message>
+
+@{
+    string selectedSubverse = ViewBag.SelectedSubverse;
+    string searchTerm = ViewBag.SearchTerm;
+    string sortingMode = ViewBag.SortingMode;
+    string urlaction = "";
+
+    int commentContributionPoints = 0;
+    if (User.Identity.IsAuthenticated)
+    {
+        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
+    }
+
+    switch (sortingMode)
+    {
+        case "new":
+            urlaction = "SortedSubverseFrontpage";
+            break;
+        case "top":
+            urlaction = "SortedSubverseFrontpage";
+            break;
+        default:
+            urlaction = "SubverseIndex";
+            break;
+    }
+
+    if (ViewBag.previewMode != null && ViewBag.previewMode)
+    {
+        Layout = null;
+    }
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div id="container">
+    @if (!selectedSubverse.Equals("user") && !selectedSubverse.Equals("all"))
+    {
+        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse })
+    }
+    else
+    {
+        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
+    }
+
+    <style type="text/css" id="custom_css">
+         @if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
+         {
+            Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+         }
+         else if (!User.Identity.IsAuthenticated)
+         {
+            Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+         }
+         else
+         {
+            Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+         }
+    </style>
+
+    <div class="content" role="main">
+        <div class="alert alert-info">
+            <p>Showing results for flair "<b>@searchTerm</b>"</p>
+        </div>
+
+        @if (sortingMode == "top")
+        {
+            <div id="sortingThingy" class="">
+                @Html.RouteLink("day", urlaction) | 
+                @Html.RouteLink("week", urlaction, new {time = "week"}) | 
+                @Html.RouteLink("month", urlaction, new {time = "month"}) |
+                @Html.RouteLink("year", urlaction, new {time = "year"}) |
+                @Html.RouteLink("all", urlaction, new {time = "all"})
+            </div>
+        }
+        <div class="sitetable linklisting">
+            @Html.Action("StickiedSubmission", "Subverses", new {subverseName = selectedSubverse})
+
+            @{
+                int currentPageNumber = Model.PageIndex;
+                int counterCont = (currentPageNumber)*25;
+
+                int counter = counterCont + 1;
+                string submissionClass = "";
+            }
+
+            @foreach (var submission in Model)
+            {
+                //type 2 = link
+                //type 1 = message
+                if (submission.Type == 1)
+                {
+                    submissionClass = "self";
+                }
+                else
+                {
+                    submissionClass = "";
+                }
+
+                var classEvenOrOdd = "";
+                if (counter%2 == 0)
+                {
+                    //is even
+                    classEvenOrOdd = "even";
+                }
+                else
+                {
+                    //is odd
+                    classEvenOrOdd = "odd";
+                }
+
+                <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+                    <p class="parent"></p>
+
+                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary {{"CCP", commentContributionPoints}})
+                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+
+                    <div class="child"></div>
+                    <div class="clearleft">@*IE6fix*@</div>
+                </div>
+                counter++;
+            }
+        </div>
+
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", urlaction, new {page = (Model.PageIndex - 1)}, new {rel = "prev"})
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", urlaction, new {page = (Model.PageIndex + 1)}, new {rel = "next"})
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
