@@ -103,7 +103,7 @@ namespace Voat.Utilities
             return Regex.Replace(stringToClean, @"[^\u0000-\u007F]", string.Empty);
         }
 
-        // add new link submission
+        // add new submission
         public static async Task<string> AddNewSubmission(Message submissionModel, Subverse targetSubverse, string userName)
         {
             using (var db = new voatEntities())
@@ -170,9 +170,7 @@ namespace Voat.Utilities
                     submissionModel.Subverse = targetSubverse.name;
                     submissionModel.Likes = 1;
                     db.Messages.Add(submissionModel);
-
-                    // update last submission received date for target subverse
-                    targetSubverse.last_submission_received = DateTime.Now;
+                    
                     await db.SaveChangesAsync();
                 }
                 else
@@ -205,9 +203,6 @@ namespace Voat.Utilities
                     submissionModel.Date = DateTime.Now;
                     submissionModel.Likes = 1;
                     db.Messages.Add(submissionModel);
-
-                    // update last submission received date for target subverse
-                    targetSubverse.last_submission_received = DateTime.Now;
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                     {

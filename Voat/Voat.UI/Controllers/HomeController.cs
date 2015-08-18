@@ -168,6 +168,9 @@ namespace Voat.Controllers
                     ModelState.AddModelError(string.Empty, addLinkSubmissionResult);
                     return View("Submit");
                 }
+                // update last submission received date for target subverse
+                targetSubverse.last_submission_received = DateTime.Now;
+                await _db.SaveChangesAsync();
             }
             // submission is a message type submission
             else if (submission.Type == 1 && submission.Title != null)
@@ -179,6 +182,9 @@ namespace Voat.Controllers
                     ModelState.AddModelError(string.Empty, addMessageSubmissionResult);
                     return View("Submit");
                 }
+                // update last submission received date for target subverse
+                targetSubverse.last_submission_received = DateTime.Now;
+                await _db.SaveChangesAsync();
             }
 
             // redirect to comments section of newly posted submission
