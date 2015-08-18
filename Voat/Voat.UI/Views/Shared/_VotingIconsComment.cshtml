@@ -10,6 +10,8 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
+@using Voat.Data.Models
+
 @{
     int commentId = Convert.ToInt32(ViewData["CommentId"]);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
@@ -21,33 +23,34 @@
     string votingStatusClassDownArrow = "arrow-downvote";
     string likesOrDislikesClass = "unvoted";
 
-    if (User.Identity.IsAuthenticated)
     //LOGGED IN USERS
+    if (User.Identity.IsAuthenticated)
     {
         string loggedInUserName = User.Identity.Name;
-        
-        //What you see here is a major hack. Atko is 100% responsible for this too. ;)
-        //returns -1:downvoted, 1:upvoted, or 0:not voted
+
         int? votedOrNot = null;
         if (ViewBag.VoteCache != null)
         {
-            foreach (var cv in ViewBag.VoteCache)
+            // this cached item contains a filtered list of one specific user comment voting actions for one specific submission
+            var voteStatus = ViewBag.VoteCache as List<Commentvotingtracker>;
+            if (voteStatus != null)
             {
-                if (cv.CommentId == commentId)
+                var cv = voteStatus.FirstOrDefault(x => x.CommentId == commentId);
+                if (cv != null)
                 {
                     votedOrNot = cv.VoteStatus;
-                    break;
                 }
             }
         }
-        else 
+        else
         {
             //backwards compat if ViewBad.VoteCache isn't populated as many code paths funnel here
+            //returns -1:downvoted, 1:upvoted, or 0:not voted
             votedOrNot = VotingComments.CheckIfVotedComment(loggedInUserName, commentId);
-            //throw new Exception("I WANT VOTECACHE");
         }
-        //int votedOrNot = VotingComments.CheckIfVotedComment(loggedInUserName, commentId);
-        if (votedOrNot.HasValue) { 
+
+        if (votedOrNot.HasValue)
+        {
             switch (votedOrNot.Value)
             {
                 case 1:
@@ -62,33 +65,32 @@
                     break;
             }
         }
-        
+
         <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
             @if (commentContributionPoints < 20)
             {
                 if (UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
                 {
-                    <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
+            <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
                 }
                 else
                 {
-                    <div class="@votingStatusClassUpArrow login-required" onclick="notEnoughCCPUpVote();" role="button" aria-label="upvote" tabindex="0"></div>
+            <div class="@votingStatusClassUpArrow login-required" onclick="notEnoughCCPUpVote();" role="button" aria-label="upvote" tabindex="0"></div>
                 }
             }
             else
             {
-                <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
+            <div class="@votingStatusClassUpArrow login-required" onclick="voteUpComment(@commentId);" role="button" aria-label="upvote" tabindex="0"></div>
             }
 
             @if (commentContributionPoints < 100)
             {
-                <div class="@votingStatusClassDownArrow login-required" onclick="notEnoughCCP();" role="button" aria-label="downvote" tabindex="0"></div>
+            <div class="@votingStatusClassDownArrow login-required" onclick="notEnoughCCP();" role="button" aria-label="downvote" tabindex="0"></div>
             }
             else
             {
-                <div class="@votingStatusClassDownArrow login-required" onclick="voteDownComment(@commentId);" role="button" aria-label="downvote" tabindex="0"></div>
+            <div class="@votingStatusClassDownArrow login-required" onclick="voteDownComment(@commentId);" role="button" aria-label="downvote" tabindex="0"></div>
             }
-
         </div>
     }
     else

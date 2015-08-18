@@ -10,7 +10,6 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@using System.Configuration
 @using Voat.Models;
 
 @model CommentBucketViewModel
@@ -19,14 +18,12 @@
     string highLight = "";
     string selectedSubverse = ViewBag.SelectedSubverse;
     int commentContributionPoints = ViewBag.CCP ?? 0;
-    //if (User.Identity.IsAuthenticated)
-    //{
-    //    commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
-    //}
 }
 
 <style type="text/css">
-    body > .content .link .rank { width: 3.2ex; }
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
 </style>
 
 <style type="text/css" id="custom_css">
@@ -41,7 +38,6 @@ else if (!User.Identity.IsAuthenticated)
 </style>
 
 <div id="container">
-
     @*
         display 1 submission with details and comments
     *@
@@ -64,10 +60,10 @@ else if (!User.Identity.IsAuthenticated)
     }
 
     <style type="text/css" id="custom_css">
-@if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
-{
-    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-}
+    @if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
+    {
+        Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+    }
     </style>
 
     <div class="content" role="main">
@@ -120,9 +116,11 @@ else if (!User.Identity.IsAuthenticated)
         }
 
         <div class="horizontal-line"></div>
+
         @* Show sort only if viewing all comments *@
-        @if (ViewBag.StartingCommentId == null) {
-            var sort = (Model.Sort == CommentSort.Top ? "new" : "top"); 
+        @if (ViewBag.StartingCommentId == null)
+        {
+            var sort = (Model.Sort == CommentSort.Top ? "new" : "top");
             <div class="menuarea">
                 <div class="spacer">
                     <span class="dropdown-title lightdrop">sort by: </span>
@@ -135,9 +133,11 @@ else if (!User.Identity.IsAuthenticated)
                 <div class="spacer"></div>
             </div>
         }
+
         @{
             string view = (ViewBag.StartingCommentId != null ? "~/Views/Home/_SingleCommentTree.cshtml" : "~/Views/Home/_CommentTree.cshtml");
         }
+
         @Html.Partial(view, Model, new ViewDataDictionary {
                     { "SavedCommentCache", ViewBag.SavedCommentCache },
                     { "VoteCache", ViewBag.VoteCache },

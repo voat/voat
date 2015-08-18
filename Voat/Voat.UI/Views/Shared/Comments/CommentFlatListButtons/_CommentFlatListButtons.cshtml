@@ -37,9 +37,6 @@
         string loggedInUserName = User.Identity.Name;
 
         //returns true if user has saved this post
-        //var savedOrNot = SavingComments.CheckIfSavedComment(loggedInUserName, commentId);
-        //What you see here is a major hack. Atko is 100% responsible for this too. ;)
-        //returns -1:downvoted, 1:upvoted, or 0:not voted
         bool? savedOrNot = null;
         if (ViewBag.SavedCommentCache != null)
         {
@@ -56,7 +53,6 @@
         {
             //backwards compat if ViewBad.VoteCache isn't populated as many code paths funnel here
             savedOrNot = SavingComments.CheckIfSavedComment(loggedInUserName, commentId);
-            //throw new Exception("I WANT VOTECACHE");
         }
         var saveString = savedOrNot == true ? "unsave" : "save";
 
@@ -108,6 +104,4 @@
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonReport.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }
     }
-
 </ul>
-

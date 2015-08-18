@@ -35,18 +35,17 @@ namespace Voat.Models
             };
             return singleComment;
         }
+        
         public CommentBucketViewModel(Comment comment) : this() {
-            //Convert object to known type so we can REUSE SOME CODE maybe - if God loves us.
-
             var singleComment = Map(comment);
 
-            var commentTree = new System.Collections.Generic.List<usp_CommentTree_Result> { singleComment };
+            var commentTree = new List<usp_CommentTree_Result> { singleComment };
             DisplayTree = commentTree.AsQueryable();
             CommentTree = commentTree;
             Submission = DataCache.Submission.Retrieve(comment.MessageId);
             Subverse = DataCache.Subverse.Retrieve(Submission.Subverse);
-        
         }
+
         //set defaults in comment display behavior
         public CommentBucketViewModel() {
             NestingThreshold = 2;
@@ -54,6 +53,7 @@ namespace Voat.Models
             Sort = CommentSort.Top;
             NegativeScoreThreshold = -4;
         }
+
         public int StartingIndex { get; set; }
         public int EndingIndex { get; set; }
         public int Count {
@@ -61,6 +61,7 @@ namespace Voat.Models
                 return EndingIndex - StartingIndex;
             }
         }
+
         public int CollapseSiblingThreshold { get; set; }
         public int NestingThreshold { get; set; }
         public int NegativeScoreThreshold { get; set; }
@@ -71,8 +72,5 @@ namespace Voat.Models
         public IQueryable<usp_CommentTree_Result> DisplayTree { get; set; }
         public int TotalInDisplayBranch { get; set; }
         public List<usp_CommentTree_Result> CommentTree { get; set; }
-
-
-
     }
 }
