@@ -46,6 +46,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "Random" }
             );
 
+            // /randomnsfw
+            routes.MapRoute(
+                name: "randomNsfwSubverse",
+                url: "randomnsfw/",
+                defaults: new { controller = "Subverses", action = "RandomNsfw" }
+            );
+
             // /v2, disabled until further notice
             //routes.MapRoute(
             //    name: "v2",
