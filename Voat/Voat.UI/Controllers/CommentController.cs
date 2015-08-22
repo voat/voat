@@ -453,7 +453,7 @@ namespace Voat.Controllers
 
                 if (existingComment != null)
                 {
-                    if (existingComment.Name.Trim() == User.Identity.Name)
+                    if (existingComment.Name.Trim() == User.Identity.Name && !existingComment.IsDeleted)
                     {
                         existingComment.LastEditDate = DateTime.Now;
                         existingComment.CommentContent = commentModel.CommentContent;
