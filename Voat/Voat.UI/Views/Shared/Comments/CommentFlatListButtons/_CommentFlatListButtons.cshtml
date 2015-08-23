@@ -71,7 +71,7 @@
         }
 
         // if user is sub admin or sub mod but not comment author, show delete button
-        if (User.Identity.Name != commentAuthor)
+        if (User.Identity.Name != commentAuthor && !Model.CommentModel.IsDeleted)
         {
             if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.name))
             {
@@ -80,7 +80,7 @@
         }
 
         // if user is comment author, show edit and delete buttons
-        if (User.Identity.Name == commentAuthor)
+        if (User.Identity.Name == commentAuthor && !Model.CommentModel.IsDeleted)
         {
             <li>
                 <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @Model.CommentModel.MessageId)">edit</a>

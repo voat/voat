@@ -108,7 +108,7 @@ namespace Voat.Controllers
             {
                 vCache = (from cv in _db.Commentsavingtrackers.AsNoTracking()
                           join c in _db.Comments on cv.CommentId equals c.Id
-                          where c.MessageId == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                          where c.MessageId == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && !c.IsDeleted
                           select cv).ToList();
             }
             return vCache;
@@ -496,7 +496,7 @@ namespace Voat.Controllers
         {
             var commentToDelete = _db.Comments.Find(commentId);
 
-            if (commentToDelete != null)
+            if (commentToDelete != null && !commentToDelete.IsDeleted)
             {
                 var commentSubverse = commentToDelete.Message.Subverse;
 

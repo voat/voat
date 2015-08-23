@@ -224,7 +224,7 @@
                         <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@Model.Id);">@saveString</a>
                     </li>
                     // if user is sub admin or sub mod but not comment author, show delete button
-                    if (User.Identity.Name != commentAuthor)
+                    if (User.Identity.Name != commentAuthor && !Model.IsDeleted)
                     {
                         if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
                         {
@@ -243,7 +243,7 @@
                     }
 
                     // if user is comment author, show edit and delete buttons. additionally, if he is sub admin or mod, show distinguish button
-                    if (User.Identity.Name == commentAuthor)
+                    if (User.Identity.Name == commentAuthor && !Model.IsDeleted)
                     {
 						if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
                         {
