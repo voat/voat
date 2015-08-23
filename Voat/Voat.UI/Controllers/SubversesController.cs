@@ -1354,7 +1354,6 @@ namespace Voat.Controllers
             if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
             var subverseFlairsettings = _db.Subverseflairsettings
                 .Where(n => n.Subversename == subversetoshow)
-                .Take(20)
                 .OrderBy(s => s.Id)
                 .ToList();
 

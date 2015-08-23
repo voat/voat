@@ -94,7 +94,6 @@ namespace Voat.Controllers
 
             var subverseLinkFlairs = _db.Subverseflairsettings
                 .Where(n => n.Subversename == subversetoshow)
-                .Take(10)
                 .ToList()
                 .OrderBy(s => s.Id);
 
