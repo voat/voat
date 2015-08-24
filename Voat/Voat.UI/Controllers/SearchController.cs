@@ -1,4 +1,4 @@
-﻿/*
+/*
 This source file is subject to version 3 of the GPL license, 
 that is bundled with this package in the file LICENSE, and is 
 available online at http://www.gnu.org/licenses/gpl.txt; 
@@ -50,10 +50,13 @@ namespace Voat.Controllers
                 return View("Jaje");
             }
             
-            // limit the search to selected subverse
-            if (l != null && sub != null)
+            // limit the search to selected subverse and check if searching for a flair
+            if (l != null && sub != null && ((q.StartsWith("flair:\'") && q.EndsWith("\'")) || (q.StartsWith("flair:\"") && q.EndsWith("\""))))
             {
                 // ViewBag.SelectedSubverse = string.Empty;
+                // Parsing the flair
+                q = q.Remove(0, 7);
+                q = q.Remove(q.Length - 1);
                 ViewBag.SearchTerm = q;
 
                 const int pageSize = 25;
@@ -75,7 +78,58 @@ namespace Voat.Controllers
                                        join s in _db.Subverses on m.Subverse equals s.name
                                        where
                                         !s.admin_disabled.Value &&
-                                        !m.IsDeleted &&
+                                        m.Name != "deleted" &&
+                                        m.Subverse == sub &&
+                                        (m.FlairLabel.ToLower().Contains(q))
+                                       orderby m.Rank ascending, m.Date descending
+                                       select m).Take(25).ToList();
+                        return results;
+                    }), TimeSpan.FromMinutes(10));
+
+                }
+
+
+                //var resultsx = _db.Messages
+                //    .Where(x => x.Name != "deleted" && x.Subverse == sub &&
+                //        (x.Linkdescription.ToLower().Contains(q) || x.MessageContent.ToLower().Contains(q) || x.Title.ToLower().Contains(q))
+                //    ).OrderByDescending(s => s.Rank)
+                //    .ThenByDescending(s => s.Date).Take(25);
+
+
+                ViewBag.Title = "search results";
+                ViewBag.SelectedSubverse = sub;
+                ViewBag.SearchTerm = q;
+                var paginatedResults = new PaginatedList<Message>(cacheData, 0, pageSize, 24); //HACK: To turn off paging 
+
+                return View("~/Views/Search/FlairIndex.cshtml", paginatedResults);
+            }
+            // limit the search to selected subverse
+            else if (l != null && sub != null)
+            {
+                // ViewBag.SelectedSubverse = string.Empty;
+                ViewBag.SearchTerm = q;
+
+                const int pageSize = 25;
+                int pageNumber = (page ?? 0);
+
+                if (pageNumber < 0)
+                {
+                    return View("~/Views/Errors/Error_404.cshtml");
+                }
+
+                string cacheKey = CacheHandler.Keys.Search(sub, q);
+                IList<Message> cacheData = (IList<Message>)CacheHandler.Retrieve(cacheKey);
+                if (cacheData == null)
+                {
+
+
+                    cacheData = (IList<Message>)CacheHandler.Register(cacheKey, new Func<object>(() =>
+                    {
+                        var results = (from m in _db.Messages
+                                       join s in _db.Subverses on m.Subverse equals s.name
+                                       where
+                                        !s.admin_disabled.Value &&
+                                        m.Name != "deleted" &&
                                         m.Subverse == sub &&
                                         (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
                                        orderby m.Rank ascending, m.Date descending
@@ -122,9 +176,9 @@ namespace Voat.Controllers
                                        join s in _db.Subverses on m.Subverse equals s.name
                                        where
                                         !s.admin_disabled.Value &&
-                                        !m.IsDeleted &&
-                                           //m.Subverse == sub &&
-                                        (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                        m.Name != "deleted" &&
+                                        m.Subverse == sub &&
+                                        (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q) || m.FlairLabel.ToLower().Contains(q))
                                        orderby m.Rank ascending, m.Date descending
                                        select m
                                 ).Take(25).ToList();
