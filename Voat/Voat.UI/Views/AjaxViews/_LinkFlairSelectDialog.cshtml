@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model IEnumerable<Voat.Data.Models.Subverseflairsetting>
+@model IEnumerable<Voat.Data.Models.SubverseFlair>
 
 @{
     var submissionId = ViewBag.SubmissionId;
@@ -29,7 +29,7 @@
                 <button type="button" class="btn btn-default btn-xs" onclick="return clearflair(@submissionId)">Clear current flair</button>
                 foreach (var item in Model)
                 {
-                    <button type="button" class="btn btn-default btn-xs" onclick="return applyflair(@submissionId, @item.Id, '@item.Label', '@item.CssClass')">@item.Label</button>
+                    <button type="button" class="btn btn-default btn-xs" onclick="return applyflair(@submissionId, @item.ID, '@item.Label', '@item.CssClass')">@item.Label</button>
                 }
             }
             else

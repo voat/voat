@@ -14,10 +14,10 @@ namespace Voat.Data.Models
     
     public partial class CommentRemovalLog
     {
-        public int CommentId { get; set; }
+        public int CommentID { get; set; }
         public string Moderator { get; set; }
-        public System.DateTime RemovalTimestamp { get; set; }
-        public string ReasonForRemoval { get; set; }
+        public System.DateTime CreationDate { get; set; }
+        public string Reason { get; set; }
     
         public virtual Comment Comment { get; set; }
     }

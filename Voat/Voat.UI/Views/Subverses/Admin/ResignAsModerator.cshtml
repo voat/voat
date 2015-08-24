@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.SubverseAdmin
+@model Voat.Data.Models.SubverseModerator
 
 <div id="container">
     <div id="about-main" class="content about-page" role="main">
@@ -23,11 +23,11 @@
         <hr />
         <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.Username)
+                @Html.DisplayNameFor(model => model.UserName)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.Username)
+                @Html.DisplayFor(model => model.UserName)
             </dd>
 
             <dt>
@@ -46,7 +46,7 @@
             <br />
             <input type="submit" value="Resign" class="btn-whoaverse-medium" />
             <br /><br />
-            @Html.ActionLink("Back to subverse frontpage", "Index", new { subversetoshow = Model.SubverseName })
+            @Html.ActionLink("Back to subverse frontpage", "Index", new { subversetoshow = Model.Subverse })
         }
     </div>
 </div>

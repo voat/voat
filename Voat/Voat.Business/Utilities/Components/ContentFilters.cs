@@ -103,7 +103,7 @@ namespace Voat.Utilities.Components
                     NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, c, ContentProcessor.UserNotificationChanged);
                 }
                 //Message mentions
-                Message m = context as Message;
+                Submission m = context as Submission;
                 if (m != null && m.LastEditDate == null)
                 {
                     NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, m, ContentProcessor.UserNotificationChanged);

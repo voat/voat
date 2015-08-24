@@ -10,16 +10,16 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Message
+@model Voat.Data.Models.Submission
 @using Voat.Utilities
 
 @{
     // check the domain to select appropriate player
-    string domain = UrlUtility.GetDomainFromUri(Model.MessageContent);
+    string domain = UrlUtility.GetDomainFromUri(Model.Content);
 
     if (domain == "youtube.com" || domain == "youtu.be")
     {
-        var youtubeVideoId = UrlUtility.GetVideoIdFromUrl(Model.MessageContent);
+        var youtubeVideoId = UrlUtility.GetVideoIdFromUrl(Model.Content);
         <iframe id="ytplayer" type="text/html" width="568" height="338"
                 src="https://www.youtube.com/embed/@(youtubeVideoId)?autoplay=0&origin=http://voat.co"
                 frameborder="0"></iframe>
@@ -27,7 +27,7 @@
 
     if (domain == "vimeo.com")
     {
-        var vimeoVideoId = UrlUtility.GetVideoIdFromUrl(Model.MessageContent);
+        var vimeoVideoId = UrlUtility.GetVideoIdFromUrl(Model.Content);
         <iframe src="https://player.vimeo.com/video/@(vimeoVideoId)" width="568" height="338" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
     }
 }

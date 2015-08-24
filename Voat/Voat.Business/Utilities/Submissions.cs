@@ -104,7 +104,7 @@ namespace Voat.Utilities
         }
 
         // add new submission
-        public static async Task<string> AddNewSubmission(Message submissionModel, Subverse targetSubverse, string userName)
+        public static async Task<string> AddNewSubmission(Submission submissionModel, Subverse targetSubverse, string userName)
         {
             using (var db = new voatEntities())
             {
@@ -112,29 +112,29 @@ namespace Voat.Utilities
                 if (submissionModel.Type == 2)
                 {
                     // strip unicode if title contains unicode
-                    if (ContainsUnicode(submissionModel.Linkdescription))
+                    if (ContainsUnicode(submissionModel.LinkDescription))
                     {
-                        submissionModel.Linkdescription = StripUnicode(submissionModel.Linkdescription);
+                        submissionModel.LinkDescription = StripUnicode(submissionModel.LinkDescription);
                     }
 
                     // reject if title is whitespace or < than 5 characters
-                    if (submissionModel.Linkdescription.Length < 5 || String.IsNullOrWhiteSpace(submissionModel.Linkdescription))
+                    if (submissionModel.LinkDescription.Length < 5 || String.IsNullOrWhiteSpace(submissionModel.LinkDescription))
                     {
                         return ("The title may not be less than 5 characters.");
                     }
 
                     // make sure the input URI is valid
-                    if (!UrlUtility.IsUriValid(submissionModel.MessageContent))
+                    if (!UrlUtility.IsUriValid(submissionModel.Content))
                     {
                         // ABORT
                         return ("The URI you are trying to submit is invalid.");
                     }
 
                     // check if target subvere allows submissions from globally banned hostnames
-                    if (!targetSubverse.exclude_sitewide_bans)
+                    if (!targetSubverse.ExcludeSitewideBans)
                     {
                         // check if hostname is banned before accepting submission
-                        var domain = UrlUtility.GetDomainFromUri(submissionModel.MessageContent);
+                        var domain = UrlUtility.GetDomainFromUri(submissionModel.Content);
                         if (BanningUtility.IsHostnameBanned(domain))
                         {
                             // ABORT
@@ -143,33 +143,33 @@ namespace Voat.Utilities
                     }
 
                     // check if user has reached daily crossposting quota
-                    if (UserHelper.DailyCrossPostingQuotaUsed(userName, submissionModel.MessageContent))
+                    if (UserHelper.DailyCrossPostingQuotaUsed(userName, submissionModel.Content))
                     {
                         // ABORT
                         return ("You have reached your daily crossposting quota for this URL.");
                     }
 
                     // check if target subverse has thumbnails setting enabled before generating a thumbnail
-                    if (targetSubverse.enable_thumbnails)
+                    if (targetSubverse.IsThumbnailEnabled)
                     {
                         // try to generate and assign a thumbnail to submission model
                         submissionModel.Thumbnail = await ThumbGenerator.ThumbnailFromSubmissionModel(submissionModel);
                     }
 
                     // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                    if (targetSubverse.anonymized_mode)
+                    if (targetSubverse.IsAnonymized)
                     {
-                        submissionModel.Anonymized = true;
+                        submissionModel.IsAnonymized = true;
                     }
                     else
                     {
-                        submissionModel.Name = userName;
+                        submissionModel.UserName = userName;
                     }
 
                     // accept submission and save it to the database
-                    submissionModel.Subverse = targetSubverse.name;
-                    submissionModel.Likes = 1;
-                    db.Messages.Add(submissionModel);
+                    submissionModel.Subverse = targetSubverse.Name;
+                    submissionModel.UpCount = 1;
+                    db.Submissions.Add(submissionModel);
                     
                     await db.SaveChangesAsync();
                 }
@@ -189,31 +189,31 @@ namespace Voat.Utilities
                     }
 
                     // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                    if (targetSubverse.anonymized_mode)
+                    if (targetSubverse.IsAnonymized)
                     {
-                        submissionModel.Anonymized = true;
+                        submissionModel.IsAnonymized = true;
                     }
                     else
                     {
-                        submissionModel.Name = userName;
+                        submissionModel.UserName = userName;
                     }
 
                     // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-                    submissionModel.Subverse = targetSubverse.name;
-                    submissionModel.Date = DateTime.Now;
-                    submissionModel.Likes = 1;
-                    db.Messages.Add(submissionModel);
+                    submissionModel.Subverse = targetSubverse.Name;
+                    submissionModel.CreationDate = DateTime.Now;
+                    submissionModel.UpCount = 1;
+                    db.Submissions.Add(submissionModel);
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                     {
-                        submissionModel.MessageContent = ContentProcessor.Instance.Process(submissionModel.MessageContent, ProcessingStage.InboundPreSave, submissionModel);
+                        submissionModel.Content = ContentProcessor.Instance.Process(submissionModel.Content, ProcessingStage.InboundPreSave, submissionModel);
                     }
 
                     await db.SaveChangesAsync();
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
                     {
-                        ContentProcessor.Instance.Process(submissionModel.MessageContent, ProcessingStage.InboundPostSave, submissionModel);
+                        ContentProcessor.Instance.Process(submissionModel.Content, ProcessingStage.InboundPostSave, submissionModel);
                     }
                 }
             }
@@ -223,7 +223,7 @@ namespace Voat.Utilities
         }
 
         // various spam checks, to be replaced with new rule engine
-        public static async Task<string> PreAddSubmissionCheck(Message submissionModel, HttpRequestBase request, string userName, Subverse targetSubverse, Func<HttpRequestBase, Task<bool>> captchaValidator)
+        public static async Task<string> PreAddSubmissionCheck(Submission submissionModel, HttpRequestBase request, string userName, Subverse targetSubverse, Func<HttpRequestBase, Task<bool>> captchaValidator)
         {
             // TODO: reject if a submission with this title was posted in the last 60 minutes
 
@@ -280,9 +280,9 @@ namespace Voat.Utilities
             }
 
             // check if subverse has "authorized_submitters_only" set and dissalow submission if user is not allowed submitter
-            if (targetSubverse.authorized_submitters_only)
+            if (targetSubverse.IsAuthorizedOnly)
             {
-                if (!UserHelper.IsUserSubverseModerator(userName, targetSubverse.name))
+                if (!UserHelper.IsUserSubverseModerator(userName, targetSubverse.Name))
                 {
                     return ("You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization.");
                 }

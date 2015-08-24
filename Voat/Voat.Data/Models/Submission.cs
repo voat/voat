@@ -12,49 +12,48 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Message
+    public partial class Submission
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Message()
+        public Submission()
         {
-            this.IsDeleted = false;
             this.Comments = new HashSet<Comment>();
-            this.Savingtrackers = new HashSet<Savingtracker>();
-            this.Viewstatistics = new HashSet<Viewstatistic>();
-            this.Votingtrackers = new HashSet<Votingtracker>();
+            this.SubmissionSaveTrackers = new HashSet<SubmissionSaveTracker>();
+            this.ViewStatistics = new HashSet<ViewStatistic>();
+            this.SubmissionVoteTrackers = new HashSet<SubmissionVoteTracker>();
         }
     
-        public int Id { get; set; }
+        public int ID { get; set; }
         public bool IsArchived { get; set; }
         public Nullable<int> Votes { get; set; }
-        public string Name { get; set; }
-        public string MessageContent { get; set; }
-        public System.DateTime Date { get; set; }
+        public string UserName { get; set; }
+        public System.DateTime CreationDate { get; set; }
         public int Type { get; set; }
-        public string Linkdescription { get; set; }
+        public string LinkDescription { get; set; }
         public string Title { get; set; }
         public double Rank { get; set; }
         public string Subverse { get; set; }
-        public int Likes { get; set; }
-        public int Dislikes { get; set; }
+        public long UpCount { get; set; }
+        public long DownCount { get; set; }
         public string Thumbnail { get; set; }
         public Nullable<System.DateTime> LastEditDate { get; set; }
         public string FlairLabel { get; set; }
         public string FlairCss { get; set; }
-        public bool Anonymized { get; set; }
+        public bool IsAnonymized { get; set; }
         public double Views { get; set; }
         public bool IsDeleted { get; set; }
+        public string Content { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }
-        public virtual Subverse Subverses { get; set; }
+        public virtual StickiedSubmission StickiedSubmission { get; set; }
+        public virtual Subverse Subverse1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Savingtracker> Savingtrackers { get; set; }
-        public virtual Stickiedsubmission Stickiedsubmission { get; set; }
+        public virtual ICollection<SubmissionSaveTracker> SubmissionSaveTrackers { get; set; }
         public virtual SubmissionRemovalLog SubmissionRemovalLog { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Viewstatistic> Viewstatistics { get; set; }
+        public virtual ICollection<ViewStatistic> ViewStatistics { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Votingtracker> Votingtrackers { get; set; }
+        public virtual ICollection<SubmissionVoteTracker> SubmissionVoteTrackers { get; set; }
     }
 }

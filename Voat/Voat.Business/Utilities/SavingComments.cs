@@ -22,14 +22,14 @@ namespace Voat.Utilities
     {
 
         // returns true if saved, false otherwise
-        public static bool? CheckIfSavedComment(string userToCheck, int commentId)
+        public static bool? CheckIfSavedComment(string userToCheck, int commentID)
         {
 
             using (voatEntities db = new voatEntities())
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = "SELECT COUNT(*) FROM Commentsavingtracker WITH (NOLOCK) WHERE UserName = @UserName AND CommentId = @CommentId";
+                cmd.CommandText = "SELECT COUNT(*) FROM CommentSaveTracker WITH (NOLOCK) WHERE UserName = @UserName AND CommentID = @CommentID";
 
                 var param = cmd.CreateParameter();
                 param.ParameterName = "UserName";
@@ -38,9 +38,9 @@ namespace Voat.Utilities
                 cmd.Parameters.Add(param);
 
                 param = cmd.CreateParameter();
-                param.ParameterName = "CommentId";
+                param.ParameterName = "CommentID";
                 param.DbType = System.Data.DbType.String;
-                param.Value = commentId;
+                param.Value = commentID;
                 cmd.Parameters.Add(param);
 
                 if (cmd.Connection.State != System.Data.ConnectionState.Open)
@@ -76,13 +76,13 @@ namespace Voat.Utilities
                 else
                 {
                     // register save
-                    var tmpSavingTracker = new Commentsavingtracker
+                    var tmpSavingTracker = new CommentSaveTracker
                     {
-                        CommentId = commentId,
+                        CommentID = commentId,
                         UserName = userWhichSaved,
-                        Timestamp = DateTime.Now
+                        CreationDate = DateTime.Now
                     };
-                    db.Commentsavingtrackers.Add(tmpSavingTracker);
+                    db.CommentSaveTrackers.Add(tmpSavingTracker);
                     db.SaveChanges();
                 }
             }
@@ -94,11 +94,11 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var votingTracker = db.Commentsavingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userWhichSaved);
+                var votingTracker = db.CommentSaveTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichSaved);
 
                 if (votingTracker == null) return;
                 // delete vote history
-                db.Commentsavingtrackers.Remove(votingTracker);
+                db.CommentSaveTrackers.Remove(votingTracker);
                 db.SaveChanges();
             }
         }

@@ -4,42 +4,43 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="8481aba751f941699ceaed733cff5d23" Name="Diagram1">
+      <Diagram DiagramId="d8b0bf2e540f4c9291da5903a39c10f7" Name="Diagram1">
+        <EntityTypeShape EntityType="Models.AutoModComment" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.AutoModSubmission" Width="1.5" PointX="5.75" PointY="5.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.Badge" Width="1.5" PointX="0.75" PointY="0.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Banneddomain" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Banneduser" Width="1.5" PointX="5.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.CommentRemovalLog" Width="2.875" PointX="7.5" PointY="10.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Commentreplynotification" Width="1.5" PointX="5.75" PointY="6.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Comment" Width="1.5" PointX="5.25" PointY="12.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Commentsavingtracker" Width="1.5" PointX="7.5" PointY="13.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Commentvotingtracker" Width="1.5" PointX="7.5" PointY="16.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Defaultsubverse" Width="1.5" PointX="3" PointY="5.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Featuredsub" Width="1.5" PointX="3" PointY="8.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Message" Width="1.5" PointX="3" PointY="17.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Moderatorinvitation" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.PartnerInformation" Width="1.5" PointX="7.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Postreplynotification" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Privatemessage" Width="1.5" PointX="9.75" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Promotedsubmission" Width="1.5" PointX="9.75" PointY="8.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Savingtracker" Width="1.5" PointX="5.25" PointY="19.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Session" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Sessiontracker" Width="1.5" PointX="0.75" PointY="11.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Stickiedsubmission" Width="1.5" PointX="8.25" PointY="22" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.SubmissionRemovalLog" Width="2.25" PointX="5.25" PointY="25.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Subscription" Width="1.5" PointX="3" PointY="30.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.SubverseAdmin" Width="1.5" PointX="3" PointY="33" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.SubverseBan" Width="1.5" PointX="3" PointY="36" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Subverseflairsetting" Width="1.5" PointX="3" PointY="39.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Subverse" Width="1.5" PointX="0.75" PointY="20.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Userbadge" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.UserBlockedSubverse" Width="2.625" PointX="3" PointY="41.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Userpreference" Width="1.5" PointX="11.75" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Userscore" Width="1.5" PointX="11.75" PointY="8.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Usersetdefinition" Width="2" PointX="3" PointY="24.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Userset" Width="1.5" PointX="0.75" PointY="30.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Usersetsubscription" Width="2.375" PointX="3" PointY="44.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Viewstatistic" Width="1.5" PointX="5.25" PointY="27.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Votingtracker" Width="1.5" PointX="5.25" PointY="30.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.BannedDomain" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.BannedUser" Width="1.5" PointX="7.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.Comment" Width="1.5" PointX="5.25" PointY="15.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.CommentRemovalLog" Width="1.5" PointX="7.5" PointY="13.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.CommentReplyNotification" Width="1.5" PointX="7.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.CommentSaveTracker" Width="1.5" PointX="7.5" PointY="16.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.CommentVoteTracker" Width="1.5" PointX="7.5" PointY="19.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.DefaultSubverse" Width="1.5" PointX="3" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.FeaturedSubverse" Width="1.5" PointX="3" PointY="8.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.ModeratorInvitation" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.PartnerInformation" Width="1.5" PointX="9.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.PrivateMessage" Width="1.5" PointX="9.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.PromotedSubmission" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.SessionTracker" Width="1.5" PointX="0.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.StickiedSubmission" Width="1.5" PointX="8.25" PointY="23.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.Submission" Width="1.5" PointX="3" PointY="20.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.SubmissionRemovalLog" Width="1.5" PointX="5.25" PointY="22.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.SubmissionReplyNotification" Width="1.5" PointX="11.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.SubmissionSaveTracker" Width="1.5" PointX="5.25" PointY="25.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.SubmissionVoteTracker" Width="1.5" PointX="5.25" PointY="27.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.Subverse" Width="1.5" PointX="0.75" PointY="20.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.SubverseBan" Width="1.5" PointX="3" PointY="33.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.SubverseFlair" Width="1.5" PointX="3" PointY="36.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.SubverseModerator" Width="1.5" PointX="3" PointY="39.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.SubverseSubscription" Width="1.5" PointX="3" PointY="42.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.UserBadge" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.UserBlockedSubverse" Width="1.5" PointX="3" PointY="44.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.UserPreference" Width="1.5" PointX="11.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.UserScore" Width="1.5" PointX="2.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.UserSet" Width="1.5" PointX="0.75" PointY="30.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.UserSetList" Width="1.5" PointX="3" PointY="27.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.UserSetSubscription" Width="1.5" PointX="3" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.ViewStatistic" Width="1.5" PointX="5.25" PointY="31" IsExpanded="true" />
         <AssociationConnector Association="Models.FK_Userbadges_Badges" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_CommentRemovalLog_Comments" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Comments_Messages" ManuallyRouted="false" />
@@ -47,13 +48,13 @@
         <AssociationConnector Association="Models.FK_Commentvotingtracker_Comments" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Defaultsubverses_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Featuredsubs_Subverses" ManuallyRouted="false" />
+        <AssociationConnector Association="Models.FK_Stickiedsubmissions_Messages" ManuallyRouted="false" />
+        <AssociationConnector Association="Models.FK_Stickiedsubmissions_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Messages_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Savingtracker_Messages" ManuallyRouted="false" />
-        <AssociationConnector Association="Models.FK_Stickiedsubmissions_Messages" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_SubmissionRemovalLog_Messages" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Viewstatistics_Messages" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Votingtracker_Messages" ManuallyRouted="false" />
-        <AssociationConnector Association="Models.FK_Stickiedsubmissions_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Subscriptions_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_SubverseAdmins_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_SubverseBans_Subverses" ManuallyRouted="false" />
@@ -62,8 +63,6 @@
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Usersets" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetsubscriptions_Usersets" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="Models.AutoModComment" Width="1.5" PointX="11.375" PointY="11.75" />
-        <EntityTypeShape EntityType="Models.AutoModSubmission" Width="1.5" PointX="13.375" PointY="11.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

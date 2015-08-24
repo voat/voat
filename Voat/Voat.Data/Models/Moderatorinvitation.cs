@@ -12,12 +12,12 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Moderatorinvitation
+    public partial class ModeratorInvitation
     {
-        public int Id { get; set; }
-        public string Sent_by { get; set; }
-        public System.DateTime Sent_on { get; set; }
-        public string Sent_to { get; set; }
+        public int ID { get; set; }
+        public string CreatedBy { get; set; }
+        public System.DateTime CreationDate { get; set; }
+        public string Recipient { get; set; }
         public string Subverse { get; set; }
         public int Power { get; set; }
     }

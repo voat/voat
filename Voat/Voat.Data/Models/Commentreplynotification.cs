@@ -12,18 +12,18 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Commentreplynotification
+    public partial class CommentReplyNotification
     {
-        public int Id { get; set; }
-        public int CommentId { get; set; }
-        public int SubmissionId { get; set; }
+        public int ID { get; set; }
+        public int CommentID { get; set; }
+        public int SubmissionID { get; set; }
         public string Recipient { get; set; }
         public string Sender { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
-        public bool Status { get; set; }
-        public System.DateTime Timestamp { get; set; }
-        public bool Markedasunread { get; set; }
+        public bool IsUnread { get; set; }
+        public System.DateTime CreationDate { get; set; }
+        public bool MarkedAsUnread { get; set; }
         public string Subverse { get; set; }
     }
 }

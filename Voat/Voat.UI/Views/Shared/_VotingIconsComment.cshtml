@@ -32,10 +32,10 @@
         if (ViewBag.VoteCache != null)
         {
             // this cached item contains a filtered list of one specific user comment voting actions for one specific submission
-            var voteStatus = ViewBag.VoteCache as List<Commentvotingtracker>;
+            var voteStatus = ViewBag.VoteCache as List<CommentVoteTracker>;
             if (voteStatus != null)
             {
-                var cv = voteStatus.FirstOrDefault(x => x.CommentId == commentId);
+                var cv = voteStatus.FirstOrDefault(x => x.CommentID == commentId);
                 if (cv != null)
                 {
                     votedOrNot = cv.VoteStatus;

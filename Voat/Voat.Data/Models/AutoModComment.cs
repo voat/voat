@@ -14,8 +14,8 @@ namespace Voat.Data.Models
     
     public partial class AutoModComment
     {
-        public int RuleId { get; set; }
-        public string RuleCreationDate { get; set; }
+        public int ID { get; set; }
+        public string CreationDate { get; set; }
         public string RuleAuthor { get; set; }
         public string ActionToTake { get; set; }
         public string CommentAuthor { get; set; }

@@ -10,7 +10,7 @@ using System.Web;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Message = Voat.Data.Models.Message;
+//using Submission = Voat.Data.Models.Submission;
 using Voat.Configuration;
 
 namespace Voat.Utilities
@@ -123,9 +123,9 @@ namespace Voat.Utilities
         }
 
         // generate a thumbnail if submission is a direct link to image or video
-        public static async Task<string> ThumbnailFromSubmissionModel(Message submissionModel)
+        public static async Task<string> ThumbnailFromSubmissionModel(Data.Models.Submission submissionModel)
         {
-            var extension = Path.GetExtension(submissionModel.MessageContent);
+            var extension = Path.GetExtension(submissionModel.Content);
 
             // this is a direct link to image
             if (extension != String.Empty)
@@ -134,7 +134,7 @@ namespace Voat.Utilities
                 {
                     try
                     {
-                        var thumbFileName = await GenerateThumbFromUrl(submissionModel.MessageContent);
+                        var thumbFileName = await GenerateThumbFromUrl(submissionModel.Content);
                         return thumbFileName;
                     }
                     catch (Exception)
@@ -147,7 +147,7 @@ namespace Voat.Utilities
                 // try generating a thumbnail by using the Open Graph Protocol
                 try
                 {
-                    var graphUri = new Uri(submissionModel.MessageContent);
+                    var graphUri = new Uri(submissionModel.Content);
                     var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
 
                     // open graph failed to find og:image element, abort thumbnail generation
@@ -167,7 +167,7 @@ namespace Voat.Utilities
             // try generating a thumbnail by using the Open Graph Protocol
             try
             {
-                var graphUri = new Uri(submissionModel.MessageContent);
+                var graphUri = new Uri(submissionModel.Content);
                 var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
 
                 // open graph failed to find og:image element, abort thumbnail generation

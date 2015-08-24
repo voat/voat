@@ -12,9 +12,9 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Userscore
+    public partial class UserScore
     {
-        public string Username { get; set; }
+        public string UserName { get; set; }
         public int CCP { get; set; }
         public int SCP { get; set; }
     }

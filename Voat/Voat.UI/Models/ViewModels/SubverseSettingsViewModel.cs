@@ -30,45 +30,45 @@ namespace Voat.Models.ViewModels
 
         [Required(ErrorMessage = "Please enter a sidebar text.")]
         [StringLength(4000, ErrorMessage = "The sidebar text is limited to 4000 characters.")]
-        public string Sidebar { get; set; }
+        public string SideBar { get; set; }
 
         [StringLength(500, ErrorMessage = "The submission text is limited to 1024 characters.")]
-        public string Submission_text { get; set; }
+        public string SubmissionText { get; set; }
 
         [StringLength(10, ErrorMessage = "The subverse type limited to 10 characters.")]
         [RegularExpression("link|self", ErrorMessage = "Please type link for link and self posts only or, type self for self posts only.")]
         public string Type { get; set; }
 
         [StringLength(50, ErrorMessage = "The label for new link submissions is limited to 50 characters.")]
-        public string Label_submit_new_link { get; set; }
+        public string SubmitLinkLabel { get; set; }
 
         [StringLength(50, ErrorMessage = "The label for new self submissions is limited to 50 characters.")]
-        public string Label_sumit_new_selfpost { get; set; }
+        public string SubmitPostLabel { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
-        public bool Rated_adult { get; set; }
+        public bool IsAdult { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
-        public bool Allow_default { get; set; }
+        public bool IsDefaultAllowed { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
-        public bool Private_subverse { get; set; }
+        public bool IsPrivate { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
-        public bool Enable_thumbnails { get; set; }
+        public bool IsThumbnailEnabled { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
-        public bool Exclude_sitewide_bans { get; set; }
+        public bool ExcludeSitewideBans { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
-        public bool Authorized_submitters_only { get; set; }
+        public bool IsAuthorizedOnly { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
-        public bool Anonymized_mode { get; set; }
+        public bool IsAnonymized { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
         [Range(0, 10000, ErrorMessage = "Minimum CCP value must be between 0 and 10000")]
-        public int Minimumdownvoteccp { get; set; }
+        public int MinCCPForDownvote { get; set; }
 
     }
 }

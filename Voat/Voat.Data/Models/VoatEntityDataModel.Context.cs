@@ -27,43 +27,42 @@ namespace Voat.Data.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Badge> Badges { get; set; }
-        public virtual DbSet<Banneddomain> Banneddomains { get; set; }
-        public virtual DbSet<Banneduser> Bannedusers { get; set; }
-        public virtual DbSet<CommentRemovalLog> CommentRemovalLogs { get; set; }
-        public virtual DbSet<Commentreplynotification> Commentreplynotifications { get; set; }
-        public virtual DbSet<Comment> Comments { get; set; }
-        public virtual DbSet<Commentsavingtracker> Commentsavingtrackers { get; set; }
-        public virtual DbSet<Commentvotingtracker> Commentvotingtrackers { get; set; }
-        public virtual DbSet<Defaultsubverse> Defaultsubverses { get; set; }
-        public virtual DbSet<Featuredsub> Featuredsubs { get; set; }
-        public virtual DbSet<Message> Messages { get; set; }
-        public virtual DbSet<Moderatorinvitation> Moderatorinvitations { get; set; }
-        public virtual DbSet<PartnerInformation> PartnerInformations { get; set; }
-        public virtual DbSet<Postreplynotification> Postreplynotifications { get; set; }
-        public virtual DbSet<Privatemessage> Privatemessages { get; set; }
-        public virtual DbSet<Promotedsubmission> Promotedsubmissions { get; set; }
-        public virtual DbSet<Savingtracker> Savingtrackers { get; set; }
-        public virtual DbSet<Session> Sessions { get; set; }
-        public virtual DbSet<Sessiontracker> Sessiontrackers { get; set; }
-        public virtual DbSet<Stickiedsubmission> Stickiedsubmissions { get; set; }
-        public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLogs { get; set; }
-        public virtual DbSet<Subscription> Subscriptions { get; set; }
-        public virtual DbSet<SubverseAdmin> SubverseAdmins { get; set; }
-        public virtual DbSet<SubverseBan> SubverseBans { get; set; }
-        public virtual DbSet<Subverseflairsetting> Subverseflairsettings { get; set; }
-        public virtual DbSet<Subverse> Subverses { get; set; }
-        public virtual DbSet<Userbadge> Userbadges { get; set; }
-        public virtual DbSet<UserBlockedSubverse> UserBlockedSubverses { get; set; }
-        public virtual DbSet<Userpreference> Userpreferences { get; set; }
-        public virtual DbSet<Userscore> Userscores { get; set; }
-        public virtual DbSet<Usersetdefinition> Usersetdefinitions { get; set; }
-        public virtual DbSet<Userset> Usersets { get; set; }
-        public virtual DbSet<Usersetsubscription> Usersetsubscriptions { get; set; }
-        public virtual DbSet<Viewstatistic> Viewstatistics { get; set; }
-        public virtual DbSet<Votingtracker> Votingtrackers { get; set; }
         public virtual DbSet<AutoModComment> AutoModComments { get; set; }
         public virtual DbSet<AutoModSubmission> AutoModSubmissions { get; set; }
+        public virtual DbSet<Badge> Badges { get; set; }
+        public virtual DbSet<BannedDomain> BannedDomains { get; set; }
+        public virtual DbSet<BannedUser> BannedUsers { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<CommentRemovalLog> CommentRemovalLogs { get; set; }
+        public virtual DbSet<CommentReplyNotification> CommentReplyNotifications { get; set; }
+        public virtual DbSet<CommentSaveTracker> CommentSaveTrackers { get; set; }
+        public virtual DbSet<CommentVoteTracker> CommentVoteTrackers { get; set; }
+        public virtual DbSet<DefaultSubverse> DefaultSubverses { get; set; }
+        public virtual DbSet<FeaturedSubverse> FeaturedSubverses { get; set; }
+        public virtual DbSet<ModeratorInvitation> ModeratorInvitations { get; set; }
+        public virtual DbSet<PartnerInformation> PartnerInformations { get; set; }
+        public virtual DbSet<PrivateMessage> PrivateMessages { get; set; }
+        public virtual DbSet<PromotedSubmission> PromotedSubmissions { get; set; }
+        public virtual DbSet<SessionTracker> SessionTrackers { get; set; }
+        public virtual DbSet<StickiedSubmission> StickiedSubmissions { get; set; }
+        public virtual DbSet<Submission> Submissions { get; set; }
+        public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLogs { get; set; }
+        public virtual DbSet<SubmissionReplyNotification> SubmissionReplyNotifications { get; set; }
+        public virtual DbSet<SubmissionSaveTracker> SubmissionSaveTrackers { get; set; }
+        public virtual DbSet<SubmissionVoteTracker> SubmissionVoteTrackers { get; set; }
+        public virtual DbSet<Subverse> Subverses { get; set; }
+        public virtual DbSet<SubverseBan> SubverseBans { get; set; }
+        public virtual DbSet<SubverseFlair> SubverseFlairs { get; set; }
+        public virtual DbSet<SubverseModerator> SubverseModerators { get; set; }
+        public virtual DbSet<SubverseSubscription> SubverseSubscriptions { get; set; }
+        public virtual DbSet<UserBadge> UserBadges { get; set; }
+        public virtual DbSet<UserBlockedSubverse> UserBlockedSubverses { get; set; }
+        public virtual DbSet<UserPreference> UserPreferences { get; set; }
+        public virtual DbSet<UserScore> UserScores { get; set; }
+        public virtual DbSet<UserSet> UserSets { get; set; }
+        public virtual DbSet<UserSetList> UserSetLists { get; set; }
+        public virtual DbSet<UserSetSubscription> UserSetSubscriptions { get; set; }
+        public virtual DbSet<ViewStatistic> ViewStatistics { get; set; }
     
         public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {

@@ -12,9 +12,9 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Promotedsubmission
+    public partial class PromotedSubmission
     {
-        public int promoted_submission_id { get; set; }
-        public string promoted_by { get; set; }
+        public int SubmissionID { get; set; }
+        public string CreatedBy { get; set; }
     }
 }

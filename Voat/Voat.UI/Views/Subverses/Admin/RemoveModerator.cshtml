@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.SubverseAdmin
+@model Voat.Data.Models.SubverseModerator
 
 <div id="container">
     <div id="about-main" class="content about-page" role="main">
@@ -27,7 +27,7 @@
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.Username)
+                @Html.DisplayFor(model => model.UserName)
             </dd>
 
             <dt>
@@ -46,7 +46,7 @@
             <br />
             <input type="submit" value="Remove" class="btn-whoaverse-medium" />
             <br /><br />
-            @Html.ActionLink("Back to moderators list", "SubverseModerators", new { subversetoshow = Model.SubverseName })
+            @Html.ActionLink("Back to moderators list", "SubverseModerators", new { subversetoshow = Model.Subverse })
         }
     </div>
 </div>

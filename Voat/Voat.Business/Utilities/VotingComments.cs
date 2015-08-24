@@ -30,7 +30,7 @@ namespace Voat.Utilities
             {
                 Comment comment = db.Comments.Find(commentId);
 
-                if (comment.Message.Anonymized)
+                if (comment.Submission.IsAnonymized)
                 {
                     // do not execute voting, subverse is in anonymized mode
                     return;
@@ -41,27 +41,27 @@ namespace Voat.Utilities
                     // never voted before
                     case 0:
 
-                        if (comment.Name != userWhichUpvoted)
+                        if (comment.UserName != userWhichUpvoted)
                         {
                             // check if this IP already voted on the same comment, abort voting if true
-                            var ipVotedAlready = db.Commentvotingtrackers.Where(x => x.CommentId == commentId && x.ClientIpAddress == clientIpHash);
+                            var ipVotedAlready = db.CommentVoteTrackers.Where(x => x.CommentID == commentId && x.IPAddress == clientIpHash);
                             if (ipVotedAlready.Any()) return;
 
-                            comment.Likes++;
+                            comment.UpCount++;
 
                             // register upvote
-                            var tmpVotingTracker = new Commentvotingtracker
+                            var tmpVotingTracker = new CommentVoteTracker
                             {
-                                CommentId = commentId,
+                                CommentID = commentId,
                                 UserName = userWhichUpvoted,
                                 VoteStatus = 1,
-                                Timestamp = DateTime.Now,
-                                ClientIpAddress = clientIpHash
+                                CreationDate = DateTime.Now,
+                                IPAddress = clientIpHash
                             };
-                            db.Commentvotingtrackers.Add(tmpVotingTracker);
+                            db.CommentVoteTrackers.Add(tmpVotingTracker);
                             db.SaveChanges();
 
-                            Voting.SendVoteNotification(comment.Name, "upvote");
+                            Voting.SendVoteNotification(comment.UserName, "upvote");
                         }
 
                         break;
@@ -69,22 +69,22 @@ namespace Voat.Utilities
                     // downvoted before, turn downvote to upvote
                     case -1:
 
-                        if (comment.Name != userWhichUpvoted)
+                        if (comment.UserName != userWhichUpvoted)
                         {
-                            comment.Likes++;
-                            comment.Dislikes--;
+                            comment.UpCount++;
+                            comment.DownCount--;
 
                             // register Turn DownVote To UpVote
-                            var votingTracker = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userWhichUpvoted);
+                            var votingTracker = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichUpvoted);
 
                             if (votingTracker != null)
                             {
                                 votingTracker.VoteStatus = 1;
-                                votingTracker.Timestamp = DateTime.Now;
+                                votingTracker.CreationDate = DateTime.Now;
                             }
                             db.SaveChanges();
 
-                            Voting.SendVoteNotification(comment.Name, "downtoupvote");
+                            Voting.SendVoteNotification(comment.UserName, "downtoupvote");
                         }
 
                         break;
@@ -92,10 +92,10 @@ namespace Voat.Utilities
                     // upvoted before, reset
                     case 1:
 
-                        comment.Likes--;
+                        comment.UpCount--;
                         db.SaveChanges();
 
-                        Voting.SendVoteNotification(comment.Name, "downvote");
+                        Voting.SendVoteNotification(comment.UserName, "downvote");
 
                         ResetCommentVote(userWhichUpvoted, commentId);
 
@@ -115,13 +115,13 @@ namespace Voat.Utilities
                 Comment comment = db.Comments.Find(commentId);
 
                 // do not execute downvoting, subverse is in anonymized mode
-                if (comment.Message.Anonymized)
+                if (comment.Submission.IsAnonymized)
                 {
                     return;
                 }
 
                 // do not execute downvoting if user has insufficient CCP for target subverse
-                if (Karma.CommentKarmaForSubverse(userWhichDownvoted, comment.Message.Subverse) < comment.Message.Subverses.minimumdownvoteccp)
+                if (Karma.CommentKarmaForSubverse(userWhichDownvoted, comment.Submission.Subverse) < comment.Submission.Subverse1.MinCCPForDownvote)
                 {
                     return;
                 }
@@ -139,24 +139,24 @@ namespace Voat.Utilities
                         }
 
                         // check if this IP already voted on the same comment, abort voting if true
-                        var ipVotedAlready = db.Commentvotingtrackers.Where(x => x.CommentId == commentId && x.ClientIpAddress == clientIpHash);
+                        var ipVotedAlready = db.CommentVoteTrackers.Where(x => x.CommentID == commentId && x.IPAddress == clientIpHash);
                         if (ipVotedAlready.Any()) return;
 
-                        comment.Dislikes++;
+                        comment.DownCount++;
 
                         // register downvote
-                        var tmpVotingTracker = new Commentvotingtracker
+                        var tmpVotingTracker = new CommentVoteTracker
                         {
-                            CommentId = commentId,
+                            CommentID = commentId,
                             UserName = userWhichDownvoted,
                             VoteStatus = -1,
-                            Timestamp = DateTime.Now,
-                            ClientIpAddress = clientIpHash
+                            CreationDate = DateTime.Now,
+                            IPAddress = clientIpHash
                         };
-                        db.Commentvotingtrackers.Add(tmpVotingTracker);
+                        db.CommentVoteTrackers.Add(tmpVotingTracker);
                         db.SaveChanges();
 
-                            Voting.SendVoteNotification(comment.Name, "downvote");
+                            Voting.SendVoteNotification(comment.UserName, "downvote");
                     }
 
                         break;
@@ -165,20 +165,20 @@ namespace Voat.Utilities
                     case 1:
 
                     {
-                        comment.Likes--;
-                        comment.Dislikes++;                            
+                        comment.UpCount--;
+                        comment.DownCount++;                            
 
                         //register Turn DownVote To UpVote
-                        var votingTracker = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userWhichDownvoted);
+                        var votingTracker = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichDownvoted);
 
                         if (votingTracker != null)
                         {
                             votingTracker.VoteStatus = -1;
-                            votingTracker.Timestamp = DateTime.Now;
+                            votingTracker.CreationDate = DateTime.Now;
                         }
                         db.SaveChanges();
 
-                            Voting.SendVoteNotification(comment.Name, "uptodownvote");
+                            Voting.SendVoteNotification(comment.UserName, "uptodownvote");
                     }
 
                         break;
@@ -186,11 +186,11 @@ namespace Voat.Utilities
                     // downvoted before, reset
                     case -1:
 
-                        comment.Dislikes--;
+                        comment.DownCount--;
                         db.SaveChanges();
                         ResetCommentVote(userWhichDownvoted, commentId);
 
-                        Voting.SendVoteNotification(comment.Name, "upvote");
+                        Voting.SendVoteNotification(comment.UserName, "upvote");
 
                         break;
                 }
@@ -205,7 +205,7 @@ namespace Voat.Utilities
 
             using (var db = new voatEntities())
             {
-                var checkResult = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userToCheck);
+                var checkResult = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userToCheck);
 
                 intCheckResult = checkResult != null ? checkResult.VoteStatus.Value : 0;
 
@@ -219,11 +219,11 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var votingTracker = db.Commentvotingtrackers.FirstOrDefault(b => b.CommentId == commentId && b.UserName == userWhichVoted);
+                var votingTracker = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichVoted);
 
                 if (votingTracker == null) return;
                 // delete vote history
-                db.Commentvotingtrackers.Remove(votingTracker);
+                db.CommentVoteTrackers.Remove(votingTracker);
                 db.SaveChanges();
             }
         }

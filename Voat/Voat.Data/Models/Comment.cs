@@ -17,31 +17,30 @@ namespace Voat.Data.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Comment()
         {
-            this.IsDeleted = false;
-            this.Commentsavingtrackers = new HashSet<Commentsavingtracker>();
-            this.Commentvotingtrackers = new HashSet<Commentvotingtracker>();
+            this.CommentSaveTrackers = new HashSet<CommentSaveTracker>();
+            this.CommentVoteTrackers = new HashSet<CommentVoteTracker>();
         }
     
-        public int Id { get; set; }
+        public int ID { get; set; }
         public Nullable<int> Votes { get; set; }
-        public string Name { get; set; }
-        public string CommentContent { get; set; }
-        public System.DateTime Date { get; set; }
+        public string UserName { get; set; }
+        public string Content { get; set; }
+        public System.DateTime CreationDate { get; set; }
         public Nullable<System.DateTime> LastEditDate { get; set; }
-        public Nullable<int> MessageId { get; set; }
-        public int Likes { get; set; }
-        public int Dislikes { get; set; }
-        public Nullable<int> ParentId { get; set; }
-        public bool Anonymized { get; set; }
+        public Nullable<int> SubmissionID { get; set; }
+        public long UpCount { get; set; }
+        public long DownCount { get; set; }
+        public Nullable<int> ParentID { get; set; }
+        public bool IsAnonymized { get; set; }
         public bool IsDistinguished { get; set; }
         public string FormattedContent { get; set; }
         public bool IsDeleted { get; set; }
     
         public virtual CommentRemovalLog CommentRemovalLog { get; set; }
-        public virtual Message Message { get; set; }
+        public virtual Submission Submission { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Commentsavingtracker> Commentsavingtrackers { get; set; }
+        public virtual ICollection<CommentSaveTracker> CommentSaveTrackers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Commentvotingtracker> Commentvotingtrackers { get; set; }
+        public virtual ICollection<CommentVoteTracker> CommentVoteTrackers { get; set; }
     }
 }

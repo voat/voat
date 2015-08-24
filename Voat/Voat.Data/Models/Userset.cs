@@ -12,27 +12,27 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Userset
+    public partial class UserSet
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Userset()
+        public UserSet()
         {
-            this.Usersetdefinitions = new HashSet<Usersetdefinition>();
-            this.Usersetsubscriptions = new HashSet<Usersetsubscription>();
+            this.UserSetLists = new HashSet<UserSetList>();
+            this.UserSetSubscriptions = new HashSet<UserSetSubscription>();
         }
     
-        public int Set_id { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Created_by { get; set; }
-        public System.DateTime Created_on { get; set; }
-        public bool Public { get; set; }
-        public int Subscribers { get; set; }
-        public bool Default { get; set; }
+        public string CreatedBy { get; set; }
+        public System.DateTime CreationDate { get; set; }
+        public bool IsPublic { get; set; }
+        public int SubscriberCount { get; set; }
+        public bool IsDefault { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Usersetdefinition> Usersetdefinitions { get; set; }
+        public virtual ICollection<UserSetList> UserSetLists { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Usersetsubscription> Usersetsubscriptions { get; set; }
+        public virtual ICollection<UserSetSubscription> UserSetSubscriptions { get; set; }
     }
 }

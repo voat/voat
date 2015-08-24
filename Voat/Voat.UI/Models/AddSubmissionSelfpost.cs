@@ -20,14 +20,14 @@ namespace Voat.Models
 {
     public class AddSubmissionSelfpost
     {
-        public int Id { get; set; }
+        public int ID { get; set; }
         public Nullable<short> Votes { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public string UserName { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime CreationDate { get; set; }
 
         [Required]
         public int Type { get; set; }
@@ -42,6 +42,6 @@ namespace Voat.Models
 
         [AllowHtml]
         [StringLength(10000, ErrorMessage = "Submission text is limited to 10.000 characters.")]
-        public string MessageContent { get; set; }
+        public string Content { get; set; }
     }
 }

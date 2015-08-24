@@ -12,13 +12,12 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Commentsavingtracker
+    public partial class SubverseSubscription
     {
-        public int Id { get; set; }
-        public int CommentId { get; set; }
+        public int ID { get; set; }
+        public string Subverse { get; set; }
         public string UserName { get; set; }
-        public System.DateTime Timestamp { get; set; }
     
-        public virtual Comment Comment { get; set; }
+        public virtual Subverse Subverse1 { get; set; }
     }
 }

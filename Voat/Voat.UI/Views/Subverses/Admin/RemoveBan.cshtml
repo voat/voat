@@ -26,19 +26,19 @@
                 @Html.Label("Username:", new { @class = "control-label col-md-2" })
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.Username)
+                @Html.DisplayFor(model => model.UserName)
             </dd>
             <dt>
                 @Html.Label("Banned by:", new { @class = "control-label col-md-2" })
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.BannedBy)
+                @Html.DisplayFor(model => model.CreatedBy)
             </dd>
             <dt>
                 @Html.Label("Banned on:", new { @class = "control-label col-md-2" })
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.BanAddedOn)
+                @Html.DisplayFor(model => model.CreationDate)
             </dd>
         </dl>
 
@@ -49,7 +49,7 @@
             <br />
             <input type="submit" value="Remove ban" class="btn-whoaverse-medium" />
             <br /><br />
-            @Html.ActionLink("Back to ban list", "SubverseBans", new { subversetoshow = Model.SubverseName })
+            @Html.ActionLink("Back to ban list", "SubverseBans", new { subversetoshow = Model.Subverse })
         }
     </div>
 </div>

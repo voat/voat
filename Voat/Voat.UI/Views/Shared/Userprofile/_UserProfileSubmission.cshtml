@@ -10,12 +10,12 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Message
+@model Voat.Data.Models.Submission
 
 @* 1 user submission with details without comments *@
 @if (Model.Type == 2)
 {
-    //type 2 = urls, model.messagecontent = url, model.linkdescription = link description
+    //type 2 = urls, model.Content = url, model.linkdescription = link description
     @Html.Partial("Userprofile/_UserProfileSubmissionLink", Model);
 }
 else

@@ -28,18 +28,18 @@ namespace Voat.Utilities
             {
                 try
                 {
-                    var privateMessage = new Privatemessage
+                    var privateMessage = new PrivateMessage
                     {
                         Sender = sender,
                         Recipient = recipient,
-                        Timestamp = DateTime.Now,
+                        CreationDate = DateTime.Now,
                         Subject = subject,
                         Body = body,
-                        Status = true,
-                        Markedasunread = true
+                        IsUnread = true,
+                        MarkedAsUnread = true
                     };
 
-                    db.Privatemessages.Add(privateMessage);
+                    db.PrivateMessages.Add(privateMessage);
                     db.SaveChanges();
 
                     return true;
@@ -61,16 +61,16 @@ namespace Voat.Utilities
                     // mark all items as read
                     if (markAll != null && (bool) markAll)
                     {
-                        IQueryable<Privatemessage> unreadPrivateMessages = db.Privatemessages
-                                                                            .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status)
-                                                                            .OrderByDescending(s => s.Timestamp)
+                        IQueryable<PrivateMessage> unreadPrivateMessages = db.PrivateMessages
+                                                                            .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread)
+                                                                            .OrderByDescending(s => s.CreationDate)
                                                                             .ThenBy(s => s.Sender);
 
                         if (!unreadPrivateMessages.Any()) return false;
 
                         foreach (var singleMessage in unreadPrivateMessages.ToList())
                         {
-                            singleMessage.Status = false;
+                            singleMessage.IsUnread = false;
                         }
                         await db.SaveChangesAsync();
                         return true;
@@ -79,11 +79,11 @@ namespace Voat.Utilities
                     // mark single item as read
                     if (itemId != null)
                     {
-                        var privateMessageToMarkAsread = db.Privatemessages.FirstOrDefault(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Id == itemId);
+                        var privateMessageToMarkAsread = db.PrivateMessages.FirstOrDefault(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.ID == itemId);
                         if (privateMessageToMarkAsread == null) return false;
 
-                        var item = db.Privatemessages.Find(itemId);
-                        item.Status = false;
+                        var item = db.PrivateMessages.Find(itemId);
+                        item.IsUnread = false;
                         await db.SaveChangesAsync();
                         return true;
                     }

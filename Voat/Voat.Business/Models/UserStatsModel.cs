@@ -23,8 +23,8 @@ namespace Voat.Models
         public int LinkSubmissionsSubmitted { get; set; }
         public int MessageSubmissionsSubmitted { get; set; }
         public int TotalCommentsSubmitted { get; set; }
-        public IEnumerable<Message> HighestRatedSubmissions { get; set; }
-        public IEnumerable<Message> LowestRatedSubmissions { get; set; }
+        public IEnumerable<Submission> HighestRatedSubmissions { get; set; }
+        public IEnumerable<Submission> LowestRatedSubmissions { get; set; }
         public IEnumerable<Comment> HighestRatedComments { get; set; }
         public IEnumerable<Comment> LowestRatedComments { get; set; }
 

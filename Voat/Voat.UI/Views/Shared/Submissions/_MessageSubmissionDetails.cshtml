@@ -10,10 +10,10 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Message
+@model Voat.Data.Models.Submission
 
 @{
-    DateTime submissionDate = Model.Date;
+    DateTime submissionDate = Model.CreationDate;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
@@ -26,7 +26,7 @@
 @* End link flair select modal placeholder *@
 @* 1 message submission details without comments *@
 <div id="siteTable" class="sitetable linklisting">
-    <div id="submissionid-@Model.Id" class="submission odd link self id-@Model.Id" data-fullname="@Model.Id" data-ups="" data-downs="">
+    <div id="submissionid-@Model.ID" class="submission odd link self id-@Model.ID" data-fullname="@Model.ID" data-ups="" data-downs="">
         <a name="submissionTop"></a>
         <p class="parent"></p>
 
@@ -35,12 +35,12 @@
         <div class="entry unvoted">
             <p class="title">
                 <span id="linkflair" class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
-                <a class="title may-blank " href="/v/@Model.Subverse/comments/@Model.Id" tabindex="1" title="@Model.Title">@Model.Title</a>&#32;
+                <a class="title may-blank " href="/v/@Model.Subverse/comments/@Model.ID" tabindex="1" title="@Model.Title">@Model.Title</a>&#32;
                 <span class="domain">(<a href="/v/@Model.Subverse">self.@Model.Subverse</a>)</span>
             </p>
             <p class="tagline">
                 submitted&#32;
-                <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago&#32;by&#32;
+                <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time>&#32;ago&#32;by&#32;
 
                 @if (Model.IsDeleted)
                 {
@@ -48,43 +48,43 @@
                 }
                 else
                 {
-                    if (Model.Anonymized || subverseAnonymized == true)
+                    if (Model.IsAnonymized || subverseAnonymized == true)
                     {
                         <span class="userattrs">
-                            <a href="#" class="author may-blank">@Model.Id</a>
+                            <a href="#" class="author may-blank">@Model.ID</a>
                         </span>
                     }
                     else
                     {
                         <span class="userattrs">
-                            <a href="/user/@Model.Name" class="author may-blank userinfo" data-username="@Model.Name">@Model.Name</a>
+                            <a href="/user/@Model.UserName" class="author may-blank userinfo" data-username="@Model.UserName">@Model.UserName</a>
                         </span>
                     }
                 }
             </p>
-            @if (!Model.MessageContent.IsEmpty())
+            @if (!Model.Content.IsEmpty())
             {
                 <div class="expando">
 
-                    <form class="usertext" onsubmit="return editmessagesubmit(@Model.Id)" id="messageeditform-@Model.Id" action="#">
+                    <form class="usertext" onsubmit="return editmessagesubmit(@Model.ID)" id="messageeditform-@Model.ID" action="#">
                         @Html.AntiForgeryToken()
-                        <input id="MessageId" name="MessageId" value="@Model.Id" type="hidden">
+                        <input id="SubmissionID" name="SubmissionID" value="@Model.ID" type="hidden">
 
                         <div class="usertext-body original may-blank-within">
                             <div class="md">
-                                @Html.Raw(@Formatting.FormatMessage(@Model.MessageContent))
+                                @Html.Raw(@Formatting.FormatMessage(@Model.Content))
                             </div>
                         </div>
 
                         <div class="usertext-edit" style="display: none;">
                             <div>
                                 @Html.Partial("_MarkdownEditor")
-                                <textarea aria-invalid="false" class="form-control valid" cols="20" id="MessageContent" name="MessageContent" data-rule-required="true" data-msg-required="The text can not be empty.">@Model.MessageContent</textarea>
-                                <span data-valmsg-replace="false" data-valmsg-for="CommentContent" class="field-validation-error"></span>
+                                <textarea aria-invalid="false" class="form-control valid" cols="20" id="Content" name="Content" data-rule-required="true" data-msg-required="The text can not be empty.">@Model.Content</textarea>
+                                <span data-valmsg-replace="false" data-valmsg-for="Content" class="field-validation-error"></span>
                                 <div class="usertext-buttons">
                                     <input value="Save" class="btn-whoaverse-paging" type="submit">
-									<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#MessageContent'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
-                                    <button class="btn-whoaverse-paging" onclick="removesubmissioneditform(@Model.Id)" type="button">Cancel</button>
+									<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
+                                    <button class="btn-whoaverse-paging" onclick="removesubmissioneditform(@Model.ID)" type="button">Cancel</button>
                                 </div>
                                 <div class="panel panel-default" id="submission-preview-area" style="display: none">
                                     <div class="panel-heading">
@@ -103,7 +103,7 @@
                     </form>
 
                 </div>
-				<textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.MessageContent</textarea>
+				<textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
             }
 
             @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_MSFLButtons.cshtml", Model, new ViewDataDictionary { { "commentCount", commentCount } })

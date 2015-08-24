@@ -14,11 +14,11 @@ namespace Voat.Data.Models
     
     public partial class SubmissionRemovalLog
     {
-        public int SubmissionId { get; set; }
+        public int SubmissionID { get; set; }
         public string Moderator { get; set; }
-        public System.DateTime RemovalTimestamp { get; set; }
-        public string ReasonForRemoval { get; set; }
+        public System.DateTime CreationDate { get; set; }
+        public string Reason { get; set; }
     
-        public virtual Message Message { get; set; }
+        public virtual Submission Submission { get; set; }
     }
 }

@@ -84,13 +84,13 @@
                     {
                         foreach (var badge in UserHelper.UserBadges(userName))
                         {
-                            if (badge.Badge.BadgeGraphics != null)
+                            if (badge.Badge.Graphic != null)
                             {
-                                <img style="cursor: help" src="~/Graphics/Badges/@badge.Badge.BadgeGraphics" data-toggle="popover" data-trigger="focus" title="@badge.Badge.BadgeName" data-content="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()" />
+                                <img style="cursor: help" src="~/Graphics/Badges/@badge.Badge.Graphic" data-toggle="popover" data-trigger="focus" title="@badge.Badge.Name" data-content="@badge.Badge.Title, awarded on: @badge.CreationDate.ToShortDateString()" />
                             }
                             else
                             {
-                                <p class="sidebar-badge" title="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()">@badge.Badge.BadgeName</p>
+                                <p class="sidebar-badge" title="@badge.Badge.Title, awarded on: @badge.CreationDate.ToShortDateString()">@badge.Badge.Name</p>
                             }
                         }
                         if (userRegistrationDateTime < new DateTime(2015, 08, 31))

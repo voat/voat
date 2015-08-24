@@ -3,6 +3,7 @@
 namespace Voat.Common
 {
 
+
     /// <summary>
     /// Turns TimeSpans into friendly ages. 1 day, 12 hours, etc.
     /// </summary>
@@ -19,6 +20,10 @@ namespace Voat.Common
             return String.Format("{0} {1}{2}", (Math.Round(amount, 1)), unit, (Math.Round(amount, 1) == 1.0 ? "" : "s"));
         }
 
+        public static string ToRelative(DateTime date)
+        {
+            return ToRelative(DateTime.Now.Subtract(date));
+        }
         public static string ToRelative(TimeSpan span)
         {
 

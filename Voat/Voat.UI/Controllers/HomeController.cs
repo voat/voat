@@ -94,19 +94,19 @@ namespace Voat.Controllers
         [Authorize]
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
-        public async Task<ActionResult> Submit([Bind(Include = "Id,Votes,Name,Date,Type,Linkdescription,Title,Rank,MessageContent,Subverse")] Message submission)
+        public async Task<ActionResult> Submit([Bind(Include = "ID,Votes,Name,CreationDate,Type,LinkDescription,Title,Rank,Content,Subverse")] Submission submission)
         {
             // abort if model state is invalid
             if (!ModelState.IsValid) return View();
 
             // save temp values for the view in case submission fails
             ViewBag.selectedSubverse = submission.Subverse;
-            ViewBag.message = submission.MessageContent;
+            ViewBag.message = submission.Content;
             ViewBag.title = submission.Title;
-            ViewBag.linkDescription = submission.Linkdescription;
+            ViewBag.linkDescription = submission.LinkDescription;
 
             // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-            submission.Date = DateTime.Now;
+            submission.CreationDate = DateTime.Now;
 
             // check if user is banned
             if (UserHelper.IsUserGloballyBanned(User.Identity.Name) || UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
@@ -138,10 +138,10 @@ namespace Voat.Controllers
             }
 
             // submission is a link post
-            if (submission.Type == 2 && submission.MessageContent != null && submission.Linkdescription != null)
+            if (submission.Type == 2 && submission.Content != null && submission.LinkDescription != null)
             {
                 // check if same link was submitted before and deny submission
-                var existingSubmission = _db.Messages.FirstOrDefault(s => s.MessageContent.Equals(submission.MessageContent, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
+                var existingSubmission = _db.Submissions.FirstOrDefault(s => s.Content.Equals(submission.Content, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
                 // submission is a repost, discard it and inform the user
                 if (existingSubmission != null)
@@ -155,7 +155,7 @@ namespace Voat.Controllers
                         {
                             controller = "Comment",
                             action = "Comments",
-                            id = existingSubmission.Id,
+                            id = existingSubmission.ID,
                             subversetoshow = existingSubmission.Subverse
                         }
                         );
@@ -169,7 +169,7 @@ namespace Voat.Controllers
                     return View("Submit");
                 }
                 // update last submission received date for target subverse
-                targetSubverse.last_submission_received = DateTime.Now;
+                targetSubverse.LastSubmissionDate = DateTime.Now;
                 await _db.SaveChangesAsync();
             }
             // submission is a message type submission
@@ -183,7 +183,7 @@ namespace Voat.Controllers
                     return View("Submit");
                 }
                 // update last submission received date for target subverse
-                targetSubverse.last_submission_received = DateTime.Now;
+                targetSubverse.LastSubmissionDate = DateTime.Now;
                 await _db.SaveChangesAsync();
             }
 
@@ -194,7 +194,7 @@ namespace Voat.Controllers
                 {
                     controller = "Comment",
                     action = "Comments",
-                    id = submission.Id,
+                    id = submission.ID,
                     subversetoshow = submission.Subverse
                 }
                 );
@@ -220,8 +220,8 @@ namespace Voat.Controllers
             // show comments
             if (whattodisplay != null && whattodisplay == "comments")
             {
-                var userComments = from c in _db.Comments.OrderByDescending(c => c.Date)
-                                   where (c.Name.Equals(id) && c.Message.Anonymized == false && !c.IsDeleted) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
+                var userComments = from c in _db.Comments.OrderByDescending(c => c.CreationDate)
+                                   where (c.UserName.Equals(id) && c.Submission.IsAnonymized == false && !c.IsDeleted) && (c.UserName.Equals(id) && c.Submission.Subverse1.IsAnonymized == false)
                                    select c;
 
                 PaginatedList<Comment> paginatedUserComments = new PaginatedList<Comment>(userComments, page ?? 0, pageSize);
@@ -232,11 +232,11 @@ namespace Voat.Controllers
             // show submissions                        
             if (whattodisplay != null && whattodisplay == "submissions")
             {
-                var userSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
-                                      where (b.Name.Equals(id) && b.Anonymized == false && !b.IsDeleted) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
+                var userSubmissions = from b in _db.Submissions.OrderByDescending(s => s.CreationDate)
+                                      where (b.UserName.Equals(id) && b.IsAnonymized == false && !b.IsDeleted) && (b.UserName.Equals(id) && b.Subverse1.IsAnonymized == false)
                                       select b;
 
-                PaginatedList<Message> paginatedUserSubmissions = new PaginatedList<Message>(userSubmissions, page ?? 0, pageSize);
+                PaginatedList<Submission> paginatedUserSubmissions = new PaginatedList<Submission>(userSubmissions, page ?? 0, pageSize);
 
 
                 return View("UserSubmitted", paginatedUserSubmissions);
@@ -245,23 +245,23 @@ namespace Voat.Controllers
             // show saved                        
             if (whattodisplay != null && whattodisplay == "saved" && User.Identity.IsAuthenticated && User.Identity.Name == id)
             {
-                IQueryable<SavedItem> savedSubmissions = (from m in _db.Messages
-                                                          join s in _db.Savingtrackers on m.Id equals s.MessageId
+                IQueryable<SavedItem> savedSubmissions = (from m in _db.Submissions
+                                                          join s in _db.SubmissionSaveTrackers on m.ID equals s.SubmissionID
                                                           where !m.IsDeleted && s.UserName == User.Identity.Name
                                                           select new SavedItem()
                                                           {
-                                                              SaveDateTime = s.Timestamp,
-                                                              SavedMessage = m,
+                                                              SaveDateTime = s.CreationDate,
+                                                              SavedSubmission = m,
                                                               SavedComment = null
                                                           });
 
                 IQueryable<SavedItem> savedComments = (from c in _db.Comments
-                                                       join s in _db.Commentsavingtrackers on c.Id equals s.CommentId
+                                                       join s in _db.CommentSaveTrackers on c.ID equals s.CommentID
                                                        where !c.IsDeleted && s.UserName == User.Identity.Name
                                                        select new SavedItem()
                                                        {
-                                                           SaveDateTime = s.Timestamp,
-                                                           SavedMessage = null,
+                                                           SaveDateTime = s.CreationDate,
+                                                           SavedSubmission = null,
                                                            SavedComment = c
                                                        });
 
@@ -312,15 +312,15 @@ namespace Voat.Controllers
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
 
-                                var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
+                                var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
 
-                                IQueryable<Message> submissions = (from m in db.Messages.Include("Subverse").AsNoTracking()
-                                                                   join s in db.Subscriptions on m.Subverse equals s.SubverseName
-                                                                   where !m.IsArchived && !m.IsDeleted && s.Username == User.Identity.Name
-                                                                   where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
+                                IQueryable<Submission> submissions = (from m in db.Submissions.Include("Subverse").AsNoTracking()
+                                                                   join s in db.SubverseSubscriptions on m.Subverse equals s.Subverse
+                                                                   where !m.IsArchived && !m.IsDeleted && s.UserName == User.Identity.Name
+                                                                   where !(from bu in db.BannedUsers select bu.UserName).Contains(m.UserName)
                                                                    select m).OrderByDescending(s => s.Rank);
 
-                                var submissionsWithoutStickies = submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id);
+                                var submissionsWithoutStickies = submissions.Where(s => s.StickiedSubmission.SubmissionID != s.ID);
 
                                 return submissionsWithoutStickies.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
 
@@ -330,8 +330,8 @@ namespace Voat.Controllers
                         //now with new and improved locking
                         cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5));
                     }
-                    var set = ((IList<Message>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(set, pageNumber, pageSize, 50000);
+                    var set = ((IList<Submission>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
+                    PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(set, pageNumber, pageSize, 50000);
 
                     return View(paginatedSubmissions);
                 }
@@ -349,13 +349,13 @@ namespace Voat.Controllers
                             {
 
                                 // get only submissions from default subverses, order by rank
-                                IQueryable<Message> submissions = (from message in db.Messages.AsNoTracking()
+                                IQueryable<Submission> submissions = (from message in db.Submissions.AsNoTracking()
                                                                    where !message.IsArchived && !message.IsDeleted
-                                                                   where !(from bu in db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                   join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                                                                   where !(from bu in db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                   join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
                                                                    select message).OrderByDescending(s => s.Rank);
 
-                                return submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id).Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                                return submissions.Where(s => s.StickiedSubmission.SubmissionID != s.ID).Skip(pageNumber * pageSize).Take(pageSize).ToList();
 
                             }
                         });
@@ -363,7 +363,7 @@ namespace Voat.Controllers
                         cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
                     }
 
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>((IList<Message>)cacheData, pageNumber, pageSize, 50000);
+                    PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>((IList<Submission>)cacheData, pageNumber, pageSize, 50000);
 
                     return View(paginatedSubmissions);
                 }
@@ -390,18 +390,18 @@ namespace Voat.Controllers
                 // for each subverse, get top ranked submissions
                 if (User.Identity.IsAuthenticated && UserHelper.SetsSubscriptionCount(User.Identity.Name) > 0)
                 {
-                    var userSetSubscriptions = _db.Usersetsubscriptions.Where(usd => usd.Username == User.Identity.Name);
-                    var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
+                    var userSetSubscriptions = _db.UserSetSubscriptions.Where(usd => usd.UserName == User.Identity.Name);
+                    var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
 
                     foreach (var set in userSetSubscriptions)
                     {
-                        Usersetsubscription setId = set;
-                        var userSetDefinition = _db.Usersetdefinitions.Where(st => st.Set_id == setId.Set_id);
+                        UserSetSubscription setId = set;
+                        var userSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.UserSetID);
 
                         foreach (var subverse in userSetDefinition)
                         {
                             // get top ranked submissions
-                            var submissionsExcludingBlockedSubverses = SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, subverse.Userset.Name, 2, 0)
+                            var submissionsExcludingBlockedSubverses = SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, subverse.UserSet.Name, 2, 0)
                                 .Where(x => !blockedSubverses.Contains(x.Subverse));
                             submissions.AddRange(submissionsExcludingBlockedSubverses);
                         }
@@ -418,18 +418,18 @@ namespace Voat.Controllers
                 // get names of default sets
                 // for each set name, get list of subverses
                 // for each subverse, get top ranked submissions
-                var defaultSets = _db.Usersets.Where(ds => ds.Default && ds.Usersetdefinitions.Any());
+                var defaultSets = _db.UserSets.Where(ds => ds.IsDefault && ds.UserSetLists.Any());
                 var defaultFrontPageResultModel = new SetFrontpageViewModel();
 
                 foreach (var set in defaultSets)
                 {
-                    Userset setId = set;
-                    var defaultSetDefinition = _db.Usersetdefinitions.Where(st => st.Set_id == setId.Set_id);
+                    UserSet setId = set;
+                    var defaultSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.ID);
 
                     foreach (var subverse in defaultSetDefinition)
                     {
                         // get top ranked submissions
-                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subversename, _db.Messages, set.Name, 2, 0));
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, set.Name, 2, 0));
                     }
                 }
 
@@ -499,21 +499,21 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
-                                var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
-                                IQueryable<Message> submissions = (from m in db.Messages
-                                                                   join s in db.Subscriptions on m.Subverse equals s.SubverseName
-                                                                   where !m.IsArchived && !m.IsDeleted && s.Username == User.Identity.Name
-                                                                   where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
-                                                                   select m).OrderByDescending(s => s.Date);
+                                var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
+                                IQueryable<Submission> submissions = (from m in db.Submissions
+                                                                   join s in db.SubverseSubscriptions on m.Subverse equals s.Subverse
+                                                                   where !m.IsArchived && !m.IsDeleted && s.UserName == User.Identity.Name
+                                                                   where !(from bu in db.BannedUsers select bu.UserName).Contains(m.UserName)
+                                                                   select m).OrderByDescending(s => s.CreationDate);
                                 return submissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
                             }
                         });
                         //now with new and improved locking
                         cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5), 1);
                     }
-                    var set = ((IList<Message>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
+                    var set = ((IList<Submission>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
 
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(set, pageNumber, pageSize, 50000);
+                    PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(set, pageNumber, pageSize, 50000);
                     return View("Index", paginatedSubmissions);
                 }
                 else
@@ -530,19 +530,19 @@ namespace Voat.Controllers
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                             {
                                 // get only submissions from default subverses, order by rank
-                                IQueryable<Message> submissions = (from message in db.Messages
-                                                                   where !message.IsArchived && !message.IsDeleted
-                                                                   where !(from bu in db.Bannedusers select bu.Username).Contains(message.Name)
-                                                                   join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
-                                                                   select message).OrderByDescending(s => s.Date);
-                                return submissions.Where(s => s.Stickiedsubmission.Submission_id != s.Id).Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                                IQueryable<Submission> submissions = (from message in db.Submissions
+                                                                      where !message.IsArchived && !message.IsDeleted
+                                                                   where !(from bu in db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                   join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
+                                                                   select message).OrderByDescending(s => s.CreationDate);
+                                return submissions.Where(s => s.StickiedSubmission.SubmissionID != s.ID).Skip(pageNumber * pageSize).Take(pageSize).ToList();
                             }
                         });
 
                         //now with new and improved locking
                         cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
                     }
-                    PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>((IList<Message>)cacheData, pageNumber, pageSize, 50000);
+                    PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>((IList<Submission>)cacheData, pageNumber, pageSize, 50000);
 
                     //// get only submissions from default subverses, sort by date
                     //IQueryable<Message> submissions = (from submission in _db.Messages
@@ -614,11 +614,11 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600)]
         public ActionResult StickiedSubmission()
         {
-            var stickiedSubmissions = _db.Stickiedsubmissions.FirstOrDefault(s => s.Subversename == "announcements");
+            var stickiedSubmissions = _db.StickiedSubmissions.FirstOrDefault(s => s.Subverse == "announcements");
 
             if (stickiedSubmissions == null) return new EmptyResult();
 
-            var stickiedSubmission = DataCache.Submission.Retrieve(stickiedSubmissions.Submission_id);
+            var stickiedSubmission = DataCache.Submission.Retrieve(stickiedSubmissions.SubmissionID);
 
             if (stickiedSubmission != null)
             {
@@ -633,9 +633,9 @@ namespace Voat.Controllers
         {
             if (userName != null)
             {
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", _db.SubverseAdmins
-                .Where(x => x.Username == userName)
-                .Select(s => new SelectListItem { Value = s.SubverseName })
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", _db.SubverseModerators
+                .Where(x => x.UserName == userName)
+                .Select(s => new SelectListItem { Value = s.Subverse })
                 .OrderBy(s => s.Value)
                 .ToList()
                 .AsEnumerable());
@@ -649,9 +649,9 @@ namespace Voat.Controllers
         {
             if (userName != null)
             {
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", _db.Subscriptions
-                .Where(x => x.Username == userName)
-                .Select(s => new SelectListItem { Value = s.SubverseName })
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", _db.SubverseSubscriptions
+                .Where(x => x.UserName == userName)
+                .Select(s => new SelectListItem { Value = s.Subverse })
                 .OrderBy(s => s.Value)
                 .ToList()
                 .AsEnumerable());
@@ -662,7 +662,7 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult FeaturedSub()
         {
-            var featuredSub = _db.Featuredsubs.OrderByDescending(s => s.Featured_on).FirstOrDefault();
+            var featuredSub = _db.FeaturedSubverses.OrderByDescending(s => s.CreationDate).FirstOrDefault();
 
             if (featuredSub == null) return new EmptyResult();
 

@@ -21,20 +21,20 @@
     int startingCommentId = ViewBag.StartingCommentId;
     
     usp_CommentTree_Result comment = null;
-    comment = Model.CommentTree.Where(x => x.Id == startingCommentId).FirstOrDefault();
+    comment = Model.CommentTree.Where(x => x.ID == startingCommentId).FirstOrDefault();
 }
 <div class='commentarea'>
     <div class="alert-singlethread">
         You are viewing a single comment's thread.
         <p>
-            <a href="/v/@Model.Subverse.name/comments/@Model.Submission.Id">view the rest of the comments</a>&nbsp;→
+            <a href="/v/@Model.Subverse.Name/comments/@Model.Submission.ID">view the rest of the comments</a>&nbsp;→
         </p>
     </div>
     <div id="siteTable" class="sitetable nestedlisting">
         @{
             @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary {
                 { "VoteCache", ViewBag.VoteCache },
-                { "CommentId", comment.Id },
+                { "CommentId", comment.ID },
                 { "SingleTree", true },
                 { "CCP", commentContributionPoints },
                 { "ParentIsHidden", false }, //No parent on a single tree load

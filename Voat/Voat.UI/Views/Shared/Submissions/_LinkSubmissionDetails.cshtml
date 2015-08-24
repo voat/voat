@@ -10,10 +10,10 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Message
+@model Voat.Data.Models.Submission
 
 @{
-    DateTime submissionDate = Model.Date;
+    DateTime submissionDate = Model.CreationDate;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
@@ -40,26 +40,26 @@
             }
         }
 
-        string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
+        string submissionDomain = UrlUtility.GetDomainFromUri(Model.Content);
 
         @* 1 link submission details without comments *@
         <div id="siteTable" class="sitetable linklisting">
 
-            <div id="submissionid-@Model.Id" class="submission id-@Model.Id odd link" onclick="" data-fullname="" data-ups="" data-downs="">
+            <div id="submissionid-@Model.ID" class="submission id-@Model.ID odd link" onclick="" data-fullname="" data-ups="" data-downs="">
                 <p class="parent"></p>
 
                 @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
 
                 @if (Model.Thumbnail != null)
                 {
-                    <a class="thumbnail may-blank" href="@Model.MessageContent" target="@ahrefTarget">
+                    <a class="thumbnail may-blank" href="@Model.Content" target="@ahrefTarget">
                         @if (Settings.UseContentDeliveryNetwork)
                         {
-                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
+                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
                         }
                         else
                         {
-                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
+                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
                         }
                     </a>
                 }
@@ -67,27 +67,27 @@
                 <div class="entry unvoted">
                     <p class="title">
                         <span id="linkflair" class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
-                        <a class="title may-blank " href="@Model.MessageContent" tabindex="1" title="@Model.Linkdescription" target="@ahrefTarget">@Model.Linkdescription</a>&#32;<span class="domain">(<a href="#">@submissionDomain</a>)</span>
+                        <a class="title may-blank " href="@Model.Content" tabindex="1" title="@Model.LinkDescription" target="@ahrefTarget">@Model.LinkDescription</a>&#32;<span class="domain">(<a href="#">@submissionDomain</a>)</span>
                     </p>
 
                     <p class="tagline">
-                        submitted&#32;<time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago&#32;by&#32;
+                        submitted&#32;<time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time>&#32;ago&#32;by&#32;
                         @if (Model.IsDeleted)
                         {
                             <span class="userattrs">[deleted]</span>
                         }
                         else
                         {
-                            if (Model.Anonymized || subverseAnonymized == true)
+                            if (Model.IsAnonymized || subverseAnonymized == true)
                             {
                                 <span class="userattrs">
-                                    <a href="#" class="author may-blank">@Model.Id</a>
+                                    <a href="#" class="author may-blank">@Model.ID</a>
                                 </span>
                             }
                             else
                             {
                                 <span class="userattrs">
-                                    <a href="/user/@Model.Name" class="author may-blank userinfo" data-username="@Model.Name">@Model.Name</a>
+                                    <a href="/user/@Model.UserName" class="author may-blank userinfo" data-username="@Model.UserName">@Model.UserName</a>
                                 </span>
                             }
                         }

@@ -28,7 +28,7 @@ namespace Voat.Utilities
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = "SELECT COUNT(*) FROM Savingtracker WITH (NOLOCK) WHERE UserName = @UserName AND MessageId = @MessageId";
+                cmd.CommandText = "SELECT COUNT(*) FROM SubmissionSaveTracker WITH (NOLOCK) WHERE UserName = @UserName AND SubmissionID = @SubmissionID";
 
                 var param = cmd.CreateParameter();
                 param.ParameterName = "UserName";
@@ -37,7 +37,7 @@ namespace Voat.Utilities
                 cmd.Parameters.Add(param);
 
                 param = cmd.CreateParameter();
-                param.ParameterName = "MessageId";
+                param.ParameterName = "SubmissionID";
                 param.DbType = System.Data.DbType.String;
                 param.Value = messageId;
                 cmd.Parameters.Add(param);
@@ -73,13 +73,13 @@ namespace Voat.Utilities
                 else
                 {
                     // register save
-                    var tmpSavingTracker = new Savingtracker
+                    var tmpSavingTracker = new SubmissionSaveTracker
                     {
-                        MessageId = submissionId,
+                        SubmissionID = submissionId,
                         UserName = userWhichSaved,
-                        Timestamp = DateTime.Now
+                        CreationDate = DateTime.Now
                     };
-                    db.Savingtrackers.Add(tmpSavingTracker);
+                    db.SubmissionSaveTrackers.Add(tmpSavingTracker);
                     db.SaveChanges();
                 }
             }
@@ -87,15 +87,15 @@ namespace Voat.Utilities
         }
 
         // a user has saved this submission earlier and wishes to unsave it, delete the record
-        private static void UnSaveSubmission(string userWhichSaved, int messageId)
+        private static void UnSaveSubmission(string userWhichSaved, int submissionID)
         {
             using (var db = new voatEntities())
             {
-                var saveTracker = db.Savingtrackers.FirstOrDefault(b => b.MessageId == messageId && b.UserName == userWhichSaved);
+                var saveTracker = db.SubmissionSaveTrackers.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userWhichSaved);
 
                 if (saveTracker == null) return;
                 //delete vote history
-                db.Savingtrackers.Remove(saveTracker);
+                db.SubmissionSaveTrackers.Remove(saveTracker);
                 db.SaveChanges();
             }
         }

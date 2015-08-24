@@ -21,9 +21,9 @@ namespace Voat.Models.ViewModels
     {
         [Required(ErrorMessage = "Please enter a username.")]
         [StringLength(23, ErrorMessage = "Username is limited to 23 characters.")]
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
-        public string SubverseName { get; set; }
+        public string Subverse { get; set; }
 
         [RegularExpression(@"^[2]$", ErrorMessage = "Please enter a clearance level of 2.")]
         [Required(ErrorMessage = "Please enter a clearance level.")]

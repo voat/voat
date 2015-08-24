@@ -40,7 +40,7 @@ namespace Voat.Controllers
             if (commentToReport != null)
             {
                 // prepare report headers
-                var commentSubverse = commentToReport.Message.Subverse;
+                var commentSubverse = commentToReport.Submission.Subverse;
                 var reportTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
 
                 // send the report
@@ -62,7 +62,7 @@ namespace Voat.Controllers
                     sb.Append(Environment.NewLine);
                     sb.Append("Report timestamp: " + reportTimeStamp);
                     sb.Append(Environment.NewLine);
-                    sb.Append("Comment permalink: " + "http://voat.co/v/" + commentSubverse + "/comments/" + commentToReport.MessageId + "/" + id);
+                    sb.Append("Comment permalink: " + "http://voat.co/v/" + commentSubverse + "/comments/" + commentToReport.SubmissionID + "/" + id);
                     sb.Append(Environment.NewLine);
 
                     msg.Body = sb.ToString();

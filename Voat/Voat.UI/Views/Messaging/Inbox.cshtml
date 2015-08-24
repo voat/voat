@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Voat.Data.Models.Privatemessage>
+@model PagedList.IPagedList<Voat.Data.Models.PrivateMessage>
 
 @using PagedList.Mvc;
 
@@ -40,12 +40,12 @@
                 <hr />
                 foreach (var message in Model)
                 {
-                    var readStatusClass = message.Status ? "unreadInboxItem" : null;
+                    var readStatusClass = message.IsUnread ? "unreadInboxItem" : null;
 
-                    <div id="messageContainer-@message.Id" class="entry comment">
+                    <div id="messageContainer-@message.ID" class="entry comment">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
-                                Sender: <a href="/u/@message.Sender">@message.Sender</a> | Sent: @message.Timestamp
+                                Sender: <a href="/u/@message.Sender">@message.Sender</a> | Sent: @message.CreationDate
                             </div>
                             <div class="panel panel-heading-messagetitle">
                                 <b>@message.Subject</b>
@@ -56,19 +56,19 @@
                                 <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Html.Raw(message.Body)</textarea>
                                 <ul class="flat-list buttons">
                                     <li>
-                                        <a id="replyPrivateMessage" href="javascript:void(0)" onclick="return replyprivatemessage(@message.Id, '@message.Sender', '@Html.Encode(@message.Subject)')">reply</a>
+                                        <a id="replyPrivateMessage" href="javascript:void(0)" onclick="return replyprivatemessage(@message.ID, '@message.Sender', '@Html.Encode(@message.Subject)')">reply</a>
                                     </li>
                                     <li>
                                         <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this)">source</a>
                                     </li>
                                     <li>
-                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deletePrivateMessage(this, @message.Id)">delete</a>
+                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deletePrivateMessage(this, @message.ID)">delete</a>
                                     </li>
-                                    @if (message.Status)
+                                    @if (message.IsUnread)
                                     {
                                         // status: true = unread, false = read
                                         <li>
-                                            <a id="markPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAsRead(this, 'privateMessage', @message.Id, false)">mark as read</a>
+                                            <a id="markPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAsRead(this, 'privateMessage', @message.ID, false)">mark as read</a>
                                         </li>
                                     }
                                 </ul>

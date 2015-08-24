@@ -498,7 +498,7 @@ function reply(parentcommentid, messageid) {
         success: function (data) {
             $("#" + parentcommentid).append(data);
             //Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
-            $('#commentreplyform-' + parentcommentid).find('#CommentContent').focus();
+            $('#commentreplyform-' + parentcommentid).find('#Content').focus();
         },
         complete: function () {
             replyCommentFormRequest = null;
@@ -559,7 +559,7 @@ function replyToCommentNotification(commentId, submissionId) {
         success: function (data) {
             $("#commentContainer-" + commentId).append(data);
             //Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
-            $('#commentreplyform-' + commentId).find('#CommentContent').focus();
+            $('#commentreplyform-' + commentId).find('#Content').focus();
         },
         complete: function () {
             replyToCommentFormRequest = null;
@@ -578,7 +578,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
 
-    if ($form.find("#CommentContent").val().length > 0) {
+    if ($form.find("#Content").val().length > 0) {
         $form.find("#submitbutton").val("Please wait...");
         $form.find("#submitbutton").prop('disabled', true);
 
@@ -614,7 +614,7 @@ function postCommentAjax(senderButton, messageId, userName) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
 
-    if ($form.find("#CommentContent").val().length > 0) {
+    if ($form.find("#Content").val().length > 0) {
         $form.find("#submitbutton").val("Doing the magic...");
         $form.find("#submitbutton").prop('disabled', true);
 
@@ -637,7 +637,7 @@ function postCommentAjax(senderButton, messageId, userName) {
                 $form.find("#submitbutton").val("Submit comment");
                 $form.find("#submitbutton").prop('disabled', false);
                 // reset textbox
-                $form.find("#CommentContent").val("");
+                $form.find("#Content").val("");
                 //notify UI framework of DOM insertion async
                 window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
             }
@@ -688,13 +688,13 @@ function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
 function edit(parentcommentid, messageid) {
 
     // hide original text comment
-    $("#commentContent-" + parentcommentid).toggle(1);
+    $("#Content-" + parentcommentid).toggle(1);
 
     // show edit form
     $("#" + parentcommentid).find(".usertext-edit").toggle(1);
 
     // Focus the cursor on the edit comment form textarea, to prevent unnecessary use of the tab key
-    $("#commenteditform-" + parentcommentid).find("#CommentContent").focus();
+    $("#commenteditform-" + parentcommentid).find("#Content").focus();
 
     var form = $("#commenteditform-" + parentcommentid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
@@ -787,7 +787,7 @@ function hidecomment(commentid) {
 // submit edited comment and replace the old one with formatted response received by server
 function editcommentsubmit(commentid) {
     var commentcontent = $("#" + commentid).find('.form-control').val();
-    var commentobject = { "Id": commentid, "CommentContent": commentcontent };
+    var commentobject = { "ID": commentid, "Content": commentcontent };
 
     $.ajax({
         type: "POST",
@@ -1166,10 +1166,10 @@ function selectflair(messageId, subverseName) {
 }
 
 // function to apply flair to a given submission
-function applyflair(messageId, flairId, flairLabel, flairCssClass) {
+function applyflair(submissionID, flairID, flairLabel, flairCssClass) {
     $.ajax({
         type: "POST",
-        url: "/submissions/applylinkflair/" + messageId + "/" + flairId,
+        url: "/submissions/applylinkflair/" + submissionID + "/" + flairID,
         success: function () {
             $('#linkFlairSelectModal').modal('hide');
 

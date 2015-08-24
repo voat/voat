@@ -44,7 +44,7 @@ namespace Voat.Controllers
             {
                 // get list of subverses for the set
                 // for each subverse, get top ranked submissions
-                var set = _db.Usersets.FirstOrDefault(ds => ds.Set_id == setId);
+                var set = _db.UserSets.FirstOrDefault(ds => ds.ID == setId);
 
                 if (set == null) return RedirectToAction("NotFound", "Error");
 
@@ -53,16 +53,16 @@ namespace Voat.Controllers
                 var submissions = new List<SetSubmission>();
 
                 // if subs in set count is < 1, don't display the page, instead, check if the user owns this set and give them a chance to add subs to the set
-                if (set.Usersetdefinitions.Count < 1)
+                if (set.UserSetLists.Count < 1)
                 {
                     // check if the user owns this sub
-                    if (User.Identity.IsAuthenticated && User.Identity.Name == set.Created_by)
+                    if (User.Identity.IsAuthenticated && User.Identity.Name == set.CreatedBy)
                     {
-                        return RedirectToAction("EditSet", "Sets", new { setId = set.Set_id });
+                        return RedirectToAction("EditSet", "Sets", new { setId = set.ID });
                     }
                 }
 
-                int subsInSet = set.Usersetdefinitions.Count();
+                int subsInSet = set.UserSetLists.Count();
                 int submissionsToGet = 5;
 
                 // there is at least 1 sub in the set
@@ -81,19 +81,19 @@ namespace Voat.Controllers
                     submissionsToGet = (int)Math.Ceiling((double)25 / subsInSet);
                 }
 
-                foreach (var subverse in set.Usersetdefinitions)
+                foreach (var subverse in set.UserSetLists)
                 {
                     // get top ranked submissions for current subverse
-                    Subverse currentSubverse = subverse.Subverse;
+                    Subverse currentSubverse = subverse.Subverse1;
 
                     if (currentSubverse != null)
                     {
                         // skip parameter could be passed here
-                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, submissionsToGet, recordsToSkip * pageSize));
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.Name, _db.Submissions, set.Name, submissionsToGet, recordsToSkip * pageSize));
                     }
                     singleSetResultModel.Name = set.Name;
                     singleSetResultModel.Description = set.Description;
-                    singleSetResultModel.Id = set.Set_id;
+                    singleSetResultModel.Id = set.ID;
                 }
 
                 singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
@@ -115,7 +115,7 @@ namespace Voat.Controllers
             {
                 // get list of subverses for the set
                 // for each subverse, get top ranked submissions
-                var set = _db.Usersets.FirstOrDefault(ds => ds.Set_id == setId);
+                var set = _db.UserSets.FirstOrDefault(ds => ds.ID == setId);
 
                 if (set == null) return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
@@ -123,22 +123,22 @@ namespace Voat.Controllers
                 var singleSetResultModel = new SingleSetViewModel();
                 var submissions = new List<SetSubmission>();
 
-                foreach (var subverse in set.Usersetdefinitions)
+                foreach (var subverse in set.UserSetLists)
                 {
                     // get 5 top ranked submissions for current subverse
-                    Subverse currentSubverse = subverse.Subverse;
+                    Subverse currentSubverse = subverse.Subverse1;
 
                     if (currentSubverse != null)
                     {
                         // skip parameter could be passed here
-                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.name, _db.Messages, set.Name, pageSize, page * pageSize));
+                        submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(currentSubverse.Name, _db.Submissions, set.Name, pageSize, page * pageSize));
                     }
                     singleSetResultModel.Name = set.Name;
                     singleSetResultModel.Description = set.Description;
-                    singleSetResultModel.Id = set.Set_id;
+                    singleSetResultModel.Id = set.ID;
                 }
 
-                singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date));
+                singleSetResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate));
 
                 if (submissions.Any())
                 {
@@ -159,15 +159,15 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult EditSet(int setId)
         {
-            var setToEdit = _db.Usersets.FirstOrDefault(s => s.Set_id == setId);
+            var setToEdit = _db.UserSets.FirstOrDefault(s => s.ID == setId);
 
             if (setToEdit != null)
             {
                 // check if user owns the set and abort
-                if (!UserHelper.IsUserSetOwner(User.Identity.Name, setToEdit.Set_id)) return RedirectToAction("UnAuthorized", "Error");
+                if (!UserHelper.IsUserSetOwner(User.Identity.Name, setToEdit.ID)) return RedirectToAction("UnAuthorized", "Error");
 
                 // get list of subverses for the set
-                var setSubversesList = _db.Usersetdefinitions.Where(s => s.Set_id == setToEdit.Set_id).ToList();
+                var setSubversesList = _db.UserSetLists.Where(s => s.ID == setToEdit.ID).ToList();
 
                 // populate viewmodel for the set
                 var setViewModel = new SingleSetViewModel()
@@ -175,9 +175,9 @@ namespace Voat.Controllers
                     Name = setToEdit.Name,
                     Description = setToEdit.Description,
                     SubversesList = setSubversesList,
-                    Id = setToEdit.Set_id,
-                    Created = setToEdit.Created_on,
-                    Subscribers = setToEdit.Subscribers
+                    Id = setToEdit.ID,
+                    Created = setToEdit.CreationDate,
+                    Subscribers = setToEdit.SubscriberCount
                 };
 
                 return View("~/Views/Sets/EditSet.cshtml", setViewModel);
@@ -217,9 +217,9 @@ namespace Voat.Controllers
             try
             {
                 // order by subscriber count (popularity), show only sets which are fully defined by their creators
-                var sets = _db.Usersets.Where(s => s.Usersetdefinitions.Any()).OrderByDescending(s => s.Subscribers);
+                var sets = _db.UserSets.Where(s => s.UserSetLists.Any()).OrderByDescending(s => s.SubscriberCount);
 
-                var paginatedSets = new PaginatedList<Userset>(sets, page ?? 0, pageSize);
+                var paginatedSets = new PaginatedList<UserSet>(sets, page ?? 0, pageSize);
 
                 return View(paginatedSets);
             }
@@ -246,9 +246,9 @@ namespace Voat.Controllers
             try
             {
                 // order by subscriber count (popularity), show only sets which are fully defined
-                var sets = _db.Usersets.Where(s => s.Usersetdefinitions.Any() && s.Default).OrderByDescending(s => s.Subscribers);
+                var sets = _db.UserSets.Where(s => s.UserSetLists.Any() && s.IsDefault).OrderByDescending(s => s.SubscriberCount);
 
-                var paginatedSets = new PaginatedList<Userset>(sets, page ?? 0, pageSize);
+                var paginatedSets = new PaginatedList<UserSet>(sets, page ?? 0, pageSize);
 
                 return View("~/Views/Sets/Sets.cshtml", paginatedSets);
             }
@@ -281,32 +281,32 @@ namespace Voat.Controllers
                 if (!ModelState.IsValid) return View();
 
                 // setup default values
-                var set = new Userset
+                var set = new UserSet
                 {
                     Name = setTmpModel.Name,
                     Description = setTmpModel.Description,
-                    Created_on = DateTime.Now,
-                    Created_by = User.Identity.Name,
-                    Default = false,
-                    Public = true,
-                    Subscribers = 0
+                    CreationDate = DateTime.Now,
+                    CreatedBy = User.Identity.Name,
+                    IsDefault = false,
+                    IsPublic = true,
+                    SubscriberCount = 0
                 };
 
                 // only allow users with less than maximum allowed sets to create a set
-                var amountOfOwnedSets = _db.Usersets
-                    .Where(s => s.Created_by == User.Identity.Name)
+                var amountOfOwnedSets = _db.UserSets
+                    .Where(s => s.CreatedBy == User.Identity.Name)
                     .ToList();
 
                 if (amountOfOwnedSets.Count <= maximumOwnedSets)
                 {
-                    _db.Usersets.Add(set);
+                    _db.UserSets.Add(set);
                     await _db.SaveChangesAsync();
 
                     // subscribe user to the newly created set
-                    UserHelper.SubscribeToSet(User.Identity.Name, set.Set_id);
+                    UserHelper.SubscribeToSet(User.Identity.Name, set.ID);
 
                     // go to newly created Set
-                    return RedirectToAction("EditSet", "Sets", new { setId = set.Set_id });
+                    return RedirectToAction("EditSet", "Sets", new { setId = set.ID });
                 }
 
                 ModelState.AddModelError(string.Empty, "Sorry, you can not own more than " + maximumOwnedSets + " sets.");
@@ -333,9 +333,9 @@ namespace Voat.Controllers
             }
 
             // load user sets for logged in user
-            IQueryable<Usersetsubscription> userSets = _db.Usersetsubscriptions.Where(s => s.Username.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.Userset.Name);
+            IQueryable<UserSetSubscription> userSets = _db.UserSetSubscriptions.Where(s => s.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.UserSet.Name);
 
-            var paginatedUserSetSubscriptions = new PaginatedList<Usersetsubscription>(userSets, page ?? 0, pageSize);
+            var paginatedUserSetSubscriptions = new PaginatedList<UserSetSubscription>(userSets, page ?? 0, pageSize);
 
             return View("~/Views/Sets/MySets.cshtml", paginatedUserSetSubscriptions);
         }
@@ -353,9 +353,9 @@ namespace Voat.Controllers
             }
 
             // load user owned sets for logged in user
-            IQueryable<Userset> userSets = _db.Usersets.Where(s => s.Created_by.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.Name);
+            IQueryable<UserSet> userSets = _db.UserSets.Where(s => s.CreatedBy.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.Name);
 
-            var paginatedUserSets = new PaginatedList<Userset>(userSets, page ?? 0, pageSize);
+            var paginatedUserSets = new PaginatedList<UserSet>(userSets, page ?? 0, pageSize);
 
             return View("~/Views/Sets/ManageMySets.cshtml", paginatedUserSets);
         }
@@ -364,7 +364,7 @@ namespace Voat.Controllers
         [ChildActionOnly]
         public PartialViewResult PopularSets()
         {
-            var popularSets = _db.Usersets.Where(s => s.Public).OrderByDescending(s => s.Subscribers).Take(40);
+            var popularSets = _db.UserSets.Where(s => s.IsPublic).OrderByDescending(s => s.SubscriberCount).Take(40);
 
             return PartialView("~/Views/Sets/_PopularSets.cshtml", popularSets);
         }
@@ -397,7 +397,7 @@ namespace Voat.Controllers
         public JsonResult AddSubverseToSet(string subverseName, int setId)
         {
             // check if set exists
-            var setToModify = _db.Usersets.Find(setId);
+            var setToModify = _db.UserSets.Find(setId);
             if (setToModify == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -412,7 +412,7 @@ namespace Voat.Controllers
             }
 
             // check if subverse exists
-            var subverseToAdd = _db.Subverses.FirstOrDefault(s => s.name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            var subverseToAdd = _db.Subverses.FirstOrDefault(s => s.Name.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             if (subverseToAdd == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -420,20 +420,20 @@ namespace Voat.Controllers
             }
 
             // check if subverse is already a part of this set
-            if (setToModify.Usersetdefinitions.Any(sd => sd.Subversename.Equals(subverseName, StringComparison.OrdinalIgnoreCase)))
+            if (setToModify.UserSetLists.Any(sd => sd.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase)))
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Json("The subverse is already a part of this set.", JsonRequestBehavior.AllowGet);
             }
 
             // add subverse to set
-            Usersetdefinition newUsersetdefinition = new Usersetdefinition
+            UserSetList newUsersetdefinition = new UserSetList
             {
-                Set_id = setId,
-                Subversename = subverseToAdd.name
+                ID = setId,
+                Subverse = subverseToAdd.Name
             };
             
-            _db.Usersetdefinitions.Add(newUsersetdefinition);
+            _db.UserSetLists.Add(newUsersetdefinition);
             _db.SaveChangesAsync();
 
             return Json("Add subverse to set request sucessful.", JsonRequestBehavior.AllowGet);
@@ -452,10 +452,10 @@ namespace Voat.Controllers
             }
 
             // remove subverse from set
-            var setDefinitionToRemove = _db.Usersetdefinitions.FirstOrDefault(s => s.Set_id == setId && s.Subversename.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            var setDefinitionToRemove = _db.UserSetLists.FirstOrDefault(s => s.ID == setId && s.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
             if (setDefinitionToRemove != null)
             {
-                _db.Usersetdefinitions.Remove(setDefinitionToRemove);
+                _db.UserSetLists.Remove(setDefinitionToRemove);
                 _db.SaveChangesAsync();
                 return Json("Add subverse to set request sucessful.", JsonRequestBehavior.AllowGet);
             }
@@ -478,7 +478,7 @@ namespace Voat.Controllers
             }
 
             // find the set to modify
-            var setToModify = _db.Usersets.Find(setId);
+            var setToModify = _db.UserSets.Find(setId);
 
             if (setToModify != null)
             {
@@ -514,10 +514,10 @@ namespace Voat.Controllers
             }
 
             // delete the set
-            var setToRemove = _db.Usersets.FirstOrDefault(s => s.Set_id == setId && s.Created_by.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+            var setToRemove = _db.UserSets.FirstOrDefault(s => s.ID == setId && s.CreatedBy.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
             if (setToRemove != null)
             {
-                _db.Usersets.Remove(setToRemove);
+                _db.UserSets.Remove(setToRemove);
                 _db.SaveChangesAsync();
                 return Json("Set has been deleted.", JsonRequestBehavior.AllowGet);
             }

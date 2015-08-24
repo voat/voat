@@ -36,31 +36,31 @@ namespace Voat.Utilities.Components
                 {
                     string recipient = UserHelper.OriginalUsername(user);
 
-                    var commentReplyNotification = new Commentreplynotification();
+                    var commentReplyNotification = new CommentReplyNotification();
                     using (var _db = new voatEntities())
                     {
-                        var submission = DataCache.Submission.Retrieve(comment.MessageId);
+                        var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
                         var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
-                        commentReplyNotification.CommentId = comment.Id;
-                        commentReplyNotification.SubmissionId = comment.MessageId.Value;
+                        commentReplyNotification.CommentID = comment.ID;
+                        commentReplyNotification.SubmissionID = comment.SubmissionID.Value;
                         commentReplyNotification.Recipient = recipient;
-                        if (submission.Anonymized || subverse.anonymized_mode)
+                        if (submission.IsAnonymized || subverse.IsAnonymized)
                         {
                             commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
                         }
                         else
                         {
-                            commentReplyNotification.Sender = comment.Name;
+                            commentReplyNotification.Sender = comment.UserName;
                         }
-                        commentReplyNotification.Body = comment.CommentContent;
-                        commentReplyNotification.Subverse = subverse.name;
-                        commentReplyNotification.Status = true;
-                        commentReplyNotification.Timestamp = DateTime.Now;
+                        commentReplyNotification.Body = comment.Content;
+                        commentReplyNotification.Subverse = subverse.Name;
+                        commentReplyNotification.IsUnread = true;
+                        commentReplyNotification.CreationDate = DateTime.Now;
 
-                        commentReplyNotification.Subject = String.Format("@{0} mentioned you in a comment", comment.Name, submission.Title);
+                        commentReplyNotification.Subject = String.Format("@{0} mentioned you in a comment", comment.UserName, submission.Title);
 
-                        _db.Commentreplynotifications.Add(commentReplyNotification);
+                        _db.CommentReplyNotifications.Add(commentReplyNotification);
                        
                         await _db.SaveChangesAsync();
                     }
@@ -76,7 +76,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendUserMentionNotification(string user, Message submission, Action<string> onSuccess)
+        public static async Task SendUserMentionNotification(string user, Submission submission, Action<string> onSuccess)
         {
             if (submission != null)
             {
@@ -87,30 +87,30 @@ namespace Voat.Utilities.Components
                 try { 
                     string recipient = UserHelper.OriginalUsername(user);
 
-                    var commentReplyNotification = new Commentreplynotification();
+                    var commentReplyNotification = new CommentReplyNotification();
                     using (var _db = new voatEntities())
                     {
                     
                         var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
-                        commentReplyNotification.SubmissionId = submission.Id;
+                        commentReplyNotification.SubmissionID = submission.ID;
                         commentReplyNotification.Recipient = recipient;
-                        if (submission.Anonymized || subverse.anonymized_mode)
+                        if (submission.IsAnonymized || subverse.IsAnonymized)
                         {
                             commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
                         }
                         else
                         {
-                            commentReplyNotification.Sender = submission.Name;
+                            commentReplyNotification.Sender = submission.UserName;
                         }
-                        commentReplyNotification.Body = submission.MessageContent;
-                        commentReplyNotification.Subverse = subverse.name;
-                        commentReplyNotification.Status = true;
-                        commentReplyNotification.Timestamp = DateTime.Now;
+                        commentReplyNotification.Body = submission.Content;
+                        commentReplyNotification.Subverse = subverse.Name;
+                        commentReplyNotification.IsUnread = true;
+                        commentReplyNotification.CreationDate = DateTime.Now;
 
-                        commentReplyNotification.Subject = String.Format("@{0} mentioned you in post '{1}'", submission.Name, submission.Title);
+                        commentReplyNotification.Subject = String.Format("@{0} mentioned you in post '{1}'", submission.UserName, submission.Title);
 
-                        _db.Commentreplynotifications.Add(commentReplyNotification);
+                        _db.CommentReplyNotifications.Add(commentReplyNotification);
                         await _db.SaveChangesAsync();
                     }
 
@@ -134,30 +134,30 @@ namespace Voat.Utilities.Components
                 {
                     Random _rnd = new Random();
 
-                    if (comment.ParentId != null && comment.CommentContent != null)
+                    if (comment.ParentID != null && comment.Content != null)
                     {
                         // find the parent comment and its author
-                        var parentComment = _db.Comments.Find(comment.ParentId);
+                        var parentComment = _db.Comments.Find(comment.ParentID);
                         if (parentComment != null)
                         {
                             // check if recipient exists
-                            if (UserHelper.UserExists(parentComment.Name))
+                            if (UserHelper.UserExists(parentComment.UserName))
                             {
                                 // do not send notification if author is the same as comment author
-                                if (parentComment.Name != HttpContext.Current.User.Identity.Name)
+                                if (parentComment.UserName != HttpContext.Current.User.Identity.Name)
                                 {
                                     // send the message
 
-                                    var submission = DataCache.Submission.Retrieve(comment.MessageId);
+                                    var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
                                     if (submission != null)
                                     {
                                         var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
-                                        var commentReplyNotification = new Commentreplynotification();
-                                        commentReplyNotification.CommentId = comment.Id;
-                                        commentReplyNotification.SubmissionId = submission.Id;
-                                        commentReplyNotification.Recipient = parentComment.Name;
-                                        if (submission.Anonymized || subverse.anonymized_mode)
+                                        var commentReplyNotification = new CommentReplyNotification();
+                                        commentReplyNotification.CommentID = comment.ID;
+                                        commentReplyNotification.SubmissionID = submission.ID;
+                                        commentReplyNotification.Recipient = parentComment.UserName;
+                                        if (submission.IsAnonymized || subverse.IsAnonymized)
                                         {
                                             commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
                                         }
@@ -165,15 +165,15 @@ namespace Voat.Utilities.Components
                                         {
                                             commentReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
                                         }
-                                        commentReplyNotification.Body = comment.CommentContent;
-                                        commentReplyNotification.Subverse = subverse.name;
-                                        commentReplyNotification.Status = true;
-                                        commentReplyNotification.Timestamp = DateTime.Now;
+                                        commentReplyNotification.Body = comment.Content;
+                                        commentReplyNotification.Subverse = subverse.Name;
+                                        commentReplyNotification.IsUnread = true;
+                                        commentReplyNotification.CreationDate = DateTime.Now;
 
                                         // self = type 1, url = type 2
-                                        commentReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.Linkdescription;
+                                        commentReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.LinkDescription;
 
-                                        _db.Commentreplynotifications.Add(commentReplyNotification);
+                                        _db.CommentReplyNotifications.Add(commentReplyNotification);
 
                                         await _db.SaveChangesAsync();
 
@@ -189,23 +189,23 @@ namespace Voat.Utilities.Components
                     else
                     {
                         // comment reply is sent to a root comment which has no parent id, trigger post reply notification
-                        var submission = DataCache.Submission.Retrieve(comment.MessageId);
+                        var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
                         if (submission != null)
                         {
                             // check if recipient exists
-                            if (UserHelper.UserExists(submission.Name))
+                            if (UserHelper.UserExists(submission.UserName))
                             {
                                 // do not send notification if author is the same as comment author
-                                if (submission.Name != HttpContext.Current.User.Identity.Name)
+                                if (submission.UserName != HttpContext.Current.User.Identity.Name)
                                 {
                                     // send the message
-                                    var postReplyNotification = new Postreplynotification();
+                                    var postReplyNotification = new SubmissionReplyNotification();
 
-                                    postReplyNotification.CommentId = comment.Id;
-                                    postReplyNotification.SubmissionId = submission.Id;
-                                    postReplyNotification.Recipient = submission.Name;
+                                    postReplyNotification.CommentID = comment.ID;
+                                    postReplyNotification.SubmissionID = submission.ID;
+                                    postReplyNotification.Recipient = submission.UserName;
                                     var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-                                    if (submission.Anonymized || subverse.anonymized_mode)
+                                    if (submission.IsAnonymized || subverse.IsAnonymized)
                                     {
                                         postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
                                     }
@@ -214,15 +214,15 @@ namespace Voat.Utilities.Components
                                         postReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
                                     }
 
-                                    postReplyNotification.Body = comment.CommentContent;
+                                    postReplyNotification.Body = comment.Content;
                                     postReplyNotification.Subverse = submission.Subverse;
-                                    postReplyNotification.Status = true;
-                                    postReplyNotification.Timestamp = DateTime.Now;
+                                    postReplyNotification.IsUnread = true;
+                                    postReplyNotification.CreationDate = DateTime.Now;
 
                                     // self = type 1, url = type 2
-                                    postReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.Linkdescription;
+                                    postReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.LinkDescription;
 
-                                    _db.Postreplynotifications.Add(postReplyNotification);
+                                    _db.SubmissionReplyNotifications.Add(postReplyNotification);
 
                                     await _db.SaveChangesAsync();
 

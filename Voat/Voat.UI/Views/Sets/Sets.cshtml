@@ -11,7 +11,7 @@
     All Rights Reserved.*@
 
 @using Voat.Models.ViewModels
-@model PaginatedList<Voat.Data.Models.Userset>
+@model PaginatedList<Voat.Data.Models.UserSet>
 
 @{
     string sortingMode = ViewBag.SortingMode;
@@ -92,12 +92,12 @@
                 var setViewModel = new SetDetailsViewModel()
                 {
                     Name = set.Name,
-                    Id = set.Set_id,
-                    Subscribers = set.Subscribers,
+                    Id = set.ID,
+                    Subscribers = set.SubscriberCount,
                     Description = set.Description,
-                    CreatedBy = set.Created_by,
-                    CreationDate = set.Created_on,
-                    SubversesList = set.Usersetdefinitions.ToList()
+                    CreatedBy = set.CreatedBy,
+                    CreationDate = set.CreationDate,
+                    SubversesList = set.UserSetLists.ToList()
                 };
 
                 @Html.Partial("~/Views/Sets/_SetDetails.cshtml", setViewModel)

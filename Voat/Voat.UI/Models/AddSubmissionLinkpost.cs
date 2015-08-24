@@ -19,21 +19,21 @@ namespace Voat.Models
 {
     public class AddSubmissionLinkpost
     {
-        public int Id { get; set; }
+        public int ID { get; set; }
         public Nullable<short> Votes { get; set; }
-        public string Name { get; set; }
-        public DateTime Date { get; set; }
+        public string UserName { get; set; }
+        public DateTime CreationDate { get; set; }
         public int Type { get; set; }
 
         public Nullable<double> Rank { get; set; }
 
         [Required(ErrorMessage = "Post title is required. Please fill this field.")]
         [StringLength(200, ErrorMessage = "The title must be at least 10 and no more than 200 characters long.", MinimumLength = 10)]
-        public string Linkdescription { get; set; }
+        public string LinkDescription { get; set; }
 
         [Required(ErrorMessage = "URL is required. Please fill this field.")]
         [Url(ErrorMessage="Please enter a valid http, https, or ftp URL.")]
-        public string MessageContent { get; set; }
+        public string Content { get; set; }
 
         [Required(ErrorMessage = "You must enter a subverse to send the post to. Examples: programming, videos, pics, funny...")]
         public string Subverse { get; set; }

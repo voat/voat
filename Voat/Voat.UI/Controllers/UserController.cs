@@ -20,11 +20,11 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserSubmissions(string id, int? page, string whattodisplay)
         {
-                var userSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
-                                      where (b.Name.Equals(id) && b.Anonymized == false) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
+                var userSubmissions = from b in _db.Submissions.OrderByDescending(s => s.CreationDate)
+                                      where (b.UserName.Equals(id) && b.IsAnonymized == false) && (b.UserName.Equals(id) && b.Subverse1.IsAnonymized == false)
                                       select b;
 
-                PaginatedList<Message> paginatedUserSubmissions = new PaginatedList<Message>(userSubmissions, page ?? 0, pageSize);
+                PaginatedList<Submission> paginatedUserSubmissions = new PaginatedList<Submission>(userSubmissions, page ?? 0, pageSize);
 
                 return View("~/Views/Home/UserSubmitted.cshtml", paginatedUserSubmissions);
         }
@@ -35,8 +35,8 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserComments(string id, int? page, string whattodisplay)
         {
-                var userComments = from c in _db.Comments.OrderByDescending(c => c.Date)
-                                   where (c.Name.Equals(id) && c.Message.Anonymized == false) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
+                var userComments = from c in _db.Comments.OrderByDescending(c => c.CreationDate)
+                                   where (c.UserName.Equals(id) && c.Submission.IsAnonymized == false) && (c.UserName.Equals(id) && c.Submission.Subverse1.IsAnonymized == false)
                                    select c;
 
                 PaginatedList<Comment> paginatedUserComments = new PaginatedList<Comment>(userComments, page ?? 0, pageSize);

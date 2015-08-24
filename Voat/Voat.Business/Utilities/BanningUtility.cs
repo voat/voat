@@ -31,7 +31,7 @@ namespace Voat.Utilities
 
             using (var db = new voatEntities())
             {
-                var bannedHostname = db.Banneddomains.FirstOrDefault(r => r.Hostname.Equals(hostnameToCheck, StringComparison.OrdinalIgnoreCase));
+                var bannedHostname = db.BannedDomains.FirstOrDefault(r => r.Domain.Equals(hostnameToCheck, StringComparison.OrdinalIgnoreCase));
 
                 // look for exact match
                 return bannedHostname != null;

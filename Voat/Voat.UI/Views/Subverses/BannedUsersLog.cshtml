@@ -55,10 +55,10 @@
                         @foreach (var logItem in Model)
                         {
                             <tr>
-                                <td>@logItem.Username</td>
-                                <td>@logItem.BannedBy</td>
-                                <td>@logItem.BanReason</td>
-                                <td>@logItem.BanAddedOn</td>
+                                <td>@logItem.UserName</td>
+                                <td>@logItem.CreatedBy</td>
+                                <td>@logItem.Reason</td>
+                                <td>@logItem.CreationDate</td>
                             </tr>
                         }
                         </tbody>

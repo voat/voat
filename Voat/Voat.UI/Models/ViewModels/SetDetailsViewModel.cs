@@ -29,6 +29,6 @@ namespace Voat.Models.ViewModels
         public int? Subscribers { get; set; }
 
         // list of subverses which define the set
-        public List<Usersetdefinition> SubversesList { get; set; }
+        public List<UserSetList> SubversesList { get; set; }
     }
 }

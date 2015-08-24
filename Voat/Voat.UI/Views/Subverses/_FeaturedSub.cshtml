@@ -10,22 +10,22 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Featuredsub
+@model Voat.Data.Models.FeaturedSubverse
 
 @{
-    DateTime submissionDate = Model.Featured_on;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    DateTime submissionDate = Model.CreationDate;
+    string postAge = Voat.Common.Age.ToRelative(submissionDate);
 
     <div class="alert-featuredsub">
         <div class="submission link stickied">
             <div class="entry unvoted">
                 <p class="title">
                     <span class="featuredsub">featured sub</span>
-                    <a class="title may-blank" href="/v/@Model.Subname" tabindex="1" title="@Model.Subverse.description">@Model.Subverse.title: @Model.Subverse.description</a>
+                    <a class="title may-blank" href="/v/@Model.Subverse" tabindex="1" title="@Model.Subverse1.Description">@Model.Subverse1.Title: @Model.Subverse1.Description</a>
                 </p>
 
                 <p class="tagline">
-                    a community for @Submissions.CalcSubmissionAge(Model.Subverse.creation_date), featured <time title="@Model.Featured_on" datetime="@Model.Featured_on">@postAge</time> ago by <a href="/user/@Model.Featured_by" class="author may-blank">@Model.Featured_by</a>
+                    a community for @Voat.Common.Age.ToRelative(Model.Subverse1.CreationDate), featured <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by <a href="/user/@Model.CreatedBy" class="author may-blank">@Model.CreatedBy</a>
                 </p>
             </div>
         </div>

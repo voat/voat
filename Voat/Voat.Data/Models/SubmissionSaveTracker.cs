@@ -12,15 +12,13 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Commentvotingtracker
+    public partial class SubmissionSaveTracker
     {
-        public int Id { get; set; }
-        public int CommentId { get; set; }
+        public int ID { get; set; }
+        public int SubmissionID { get; set; }
         public string UserName { get; set; }
-        public Nullable<int> VoteStatus { get; set; }
-        public Nullable<System.DateTime> Timestamp { get; set; }
-        public string ClientIpAddress { get; set; }
+        public System.DateTime CreationDate { get; set; }
     
-        public virtual Comment Comment { get; set; }
+        public virtual Submission Submission { get; set; }
     }
 }

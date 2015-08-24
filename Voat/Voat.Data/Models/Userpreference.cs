@@ -12,18 +12,18 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Userpreference
+    public partial class UserPreference
     {
-        public string Username { get; set; }
-        public bool Disable_custom_css { get; set; }
-        public bool Night_mode { get; set; }
+        public bool DisableCSS { get; set; }
+        public bool NightMode { get; set; }
         public string Language { get; set; }
-        public bool Clicking_mode { get; set; }
-        public bool Enable_adult_content { get; set; }
-        public bool Public_votes { get; set; }
-        public bool Public_subscriptions { get; set; }
-        public bool Topmenu_from_subscriptions { get; set; }
-        public string Shortbio { get; set; }
+        public bool OpenInNewWindow { get; set; }
+        public bool EnableAdultContent { get; set; }
+        public bool DisplayVotes { get; set; }
+        public bool DisplaySubscriptions { get; set; }
+        public bool UseSubscriptionsMenu { get; set; }
+        public string Bio { get; set; }
         public string Avatar { get; set; }
+        public string UserName { get; set; }
     }
 }

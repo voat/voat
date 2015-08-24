@@ -12,12 +12,12 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Banneddomain
+    public partial class BannedDomain
     {
-        public int Id { get; set; }
-        public string Hostname { get; set; }
-        public string Added_by { get; set; }
-        public System.DateTime Added_on { get; set; }
+        public int ID { get; set; }
+        public string Domain { get; set; }
+        public string CreatedBy { get; set; }
+        public System.DateTime CreationDate { get; set; }
         public string Reason { get; set; }
     }
 }
