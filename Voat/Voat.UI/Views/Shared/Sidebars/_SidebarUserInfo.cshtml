@@ -93,7 +93,7 @@
                                 <p class="sidebar-badge" title="@badge.Badge.BadgeTitle, awarded on: @badge.Awarded.ToShortDateString()">@badge.Badge.BadgeName</p>
                             }
                         }
-                        if (userRegistrationDateTime < new DateTime(2015, 08, 31))
+                        if (userRegistrationDateTime < new DateTime(2015, 12, 31))
                         {
                             <img style="cursor: help" src="~/Graphics/Badges/alpha_user.png" data-toggle="popover" data-trigger="focus" title="Early adopter" data-content="Alpha tester, joined Voat during its alpha testing phase" />
                         }
@@ -106,7 +106,7 @@
                             }
                         }
                     }
-                    else if (userRegistrationDateTime < new DateTime(2015, 08, 31))
+                    else if (userRegistrationDateTime < new DateTime(2015, 12, 31))
                     {
                         <img style="cursor: help" src="~/Graphics/Badges/alpha_user.png" data-toggle="popover" data-trigger="focus" title="Early adopter" data-content="Alpha tester, joined Voat during its alpha testing phase" />
                     }
