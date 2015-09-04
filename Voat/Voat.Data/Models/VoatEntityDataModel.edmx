@@ -122,6 +122,7 @@
           <Property Name="Anonymized" Type="bit" Nullable="false" />
           <Property Name="IsDistinguished" Type="bit" Nullable="false" />
           <Property Name="FormattedContent" Type="nvarchar(max)" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Commentsavingtracker">
           <Key>
@@ -182,6 +183,7 @@
           <Property Name="FlairCss" Type="nvarchar" MaxLength="50" />
           <Property Name="Anonymized" Type="bit" Nullable="false" />
           <Property Name="Views" Type="float" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Moderatorinvitations">
           <Key>
@@ -767,56 +769,10 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Function Name="fnActiveUserCounts" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="SpanInHours" Type="int" Mode="In" />
-          <ReturnType>
-            <CollectionType>
-              <RowType>
-                <Property Name="Date" Type="nvarchar" MaxLength="25" />
-                <Property Name="Hours" Type="int" />
-                <Property Name="Days" Type="int" />
-                <Property Name="Count" Type="int" />
-              </RowType>
-            </CollectionType>
-          </ReturnType>
-        </Function>
-        <Function Name="sp_perf_stats_azure" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="appname" Type="nvarchar" Mode="In" />
-          <Parameter Name="runtime" Type="datetime" Mode="In" />
-        </Function>
-        <Function Name="sp_perf_stats_azure_infrequent11" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="runtime" Type="datetime" Mode="In" />
-          <Parameter Name="firstrun" Type="int" Mode="In" />
-        </Function>
-        <Function Name="usp_ActiveUsers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="usp_CommentTree" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="SubmissionID" Type="int" Mode="In" />
           <Parameter Name="Depth" Type="int" Mode="In" />
           <Parameter Name="ParentID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="usp_MarkArchived" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="usp_PurgeInactiveSessions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Minutes" Type="int" Mode="In" />
-        </Function>
-        <Function Name="usp_PurgeInactiveSubverses" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Hours" Type="int" Mode="In" />
-        </Function>
-        <Function Name="usp_RankSubmissions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Count" Type="int" Mode="In" />
-        </Function>
-        <Function Name="usp_RankSubmissions_CTE" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Count" Type="int" Mode="In" />
-        </Function>
-        <Function Name="usp_TransferSubverse" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Subverse" Type="nvarchar" Mode="In" />
-          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
-          <Parameter Name="TransferedBy" Type="nvarchar" Mode="In" />
-          <Parameter Name="SubmissionID" Type="int" Mode="In" />
-          <Parameter Name="ByPassChecks" Type="bit" Mode="In" />
-        </Function>
-        <Function Name="usp_WhoVotesForUsersComments" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
-          <Parameter Name="CountLimit" Type="int" Mode="In" />
         </Function>
         <EntityContainer Name="ModelsStoreContainer">
           <EntitySet Name="AutoModComments" EntityType="Self.AutoModComments" Schema="dbo" store:Type="Tables" />
@@ -1032,6 +988,7 @@
           <NavigationProperty Name="Message" Relationship="Self.FK_Comments_Messages" FromRole="Comments" ToRole="Messages" />
           <NavigationProperty Name="Commentsavingtrackers" Relationship="Self.FK_Commentsavingtracker_Comments" FromRole="Comments" ToRole="Commentsavingtracker" />
           <NavigationProperty Name="Commentvotingtrackers" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="Comments" ToRole="Commentvotingtracker" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" DefaultValue="false" />
         </EntityType>
         <EntityType Name="Commentsavingtracker">
           <Key>
@@ -1103,6 +1060,7 @@
           <NavigationProperty Name="SubmissionRemovalLog" Relationship="Self.FK_SubmissionRemovalLog_Messages" FromRole="Messages" ToRole="SubmissionRemovalLog" />
           <NavigationProperty Name="Viewstatistics" Relationship="Self.FK_Viewstatistics_Messages" FromRole="Messages" ToRole="Viewstatistics" />
           <NavigationProperty Name="Votingtrackers" Relationship="Self.FK_Votingtracker_Messages" FromRole="Messages" ToRole="Votingtracker" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" DefaultValue="false" />
         </EntityType>
         <EntityType Name="Moderatorinvitation">
           <Key>
@@ -1839,49 +1797,13 @@
             <End Role="Usersets" EntitySet="Usersets" />
             <End Role="Usersetsubscriptions" EntitySet="Usersetsubscriptions" />
           </AssociationSet>
-          <FunctionImport Name="fnActiveUserCounts" IsComposable="true" ReturnType="Collection(Models.fnActiveUserCounts_Result)">
-          <Parameter Name="SpanInHours" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="sp_perf_stats_azure" ReturnType="Collection(Models.sp_perf_stats_azure_Result)">
-            <Parameter Name="appname" Mode="In" Type="String" />
-            <Parameter Name="runtime" Mode="In" Type="DateTime" />
-          </FunctionImport>
-          <FunctionImport Name="sp_perf_stats_azure_infrequent11">
-            <Parameter Name="runtime" Mode="In" Type="DateTime" />
-            <Parameter Name="firstrun" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="usp_ActiveUsers" ReturnType="Collection(Models.usp_ActiveUsers_Result)" />
+          <EntitySet Name="AutoModComments" EntityType="Models.AutoModComment" />
+          <EntitySet Name="AutoModSubmissions" EntityType="Models.AutoModSubmission" />
           <FunctionImport Name="usp_CommentTree" ReturnType="Collection(Models.usp_CommentTree_Result)">
             <Parameter Name="SubmissionID" Mode="In" Type="Int32" />
             <Parameter Name="Depth" Mode="In" Type="Int32" />
             <Parameter Name="ParentID" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="usp_MarkArchived" />
-          <FunctionImport Name="usp_PurgeInactiveSessions">
-          <Parameter Name="Minutes" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="usp_PurgeInactiveSubverses">
-          <Parameter Name="Hours" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="usp_RankSubmissions">
-          <Parameter Name="Count" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="usp_RankSubmissions_CTE">
-          <Parameter Name="Count" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="usp_TransferSubverse">
-            <Parameter Name="Subverse" Mode="In" Type="String" />
-            <Parameter Name="UserName" Mode="In" Type="String" />
-            <Parameter Name="TransferedBy" Mode="In" Type="String" />
-            <Parameter Name="SubmissionID" Mode="In" Type="Int32" />
-            <Parameter Name="ByPassChecks" Mode="In" Type="Boolean" />
-          </FunctionImport>
-          <FunctionImport Name="usp_WhoVotesForUsersComments" ReturnType="Collection(Models.usp_WhoVotesForUsersComments_Result)">
-            <Parameter Name="UserName" Mode="In" Type="String" />
-            <Parameter Name="CountLimit" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <EntitySet Name="AutoModComments" EntityType="Models.AutoModComment" />
-          <EntitySet Name="AutoModSubmissions" EntityType="Models.AutoModSubmission" />
         </EntityContainer>
         <ComplexType Name="sp_perf_stats_azure_Result">
           <Property Type="String" Name="runtime" Nullable="true" MaxLength="30" />
@@ -1947,36 +1869,6 @@
           <Property Type="Int32" Name="group_id" Nullable="true" />
           <Property Type="Binary" Name="context_info" Nullable="true" MaxLength="128" />
         </ComplexType>
-        <ComplexType Name="usp_ActiveUsers_Result">
-          <Property Type="String" Name="Date" Nullable="true" MaxLength="25" />
-          <Property Type="Int32" Name="Hours" Nullable="true" />
-          <Property Type="Int32" Name="Days" Nullable="true" />
-          <Property Type="Int32" Name="Count" Nullable="true" />
-        </ComplexType>
-        <ComplexType Name="usp_CommentTree_Result">
-          <Property Type="Int32" Name="ChildCount" Nullable="true" />
-          <Property Type="Int32" Name="Depth" Nullable="true" />
-          <Property Type="String" Name="Path" Nullable="true" />
-          <Property Type="String" Name="Subverse" Nullable="true" MaxLength="20" />
-          <Property Type="Int32" Name="Id" Nullable="false" />
-          <Property Type="Int32" Name="Votes" Nullable="true" />
-          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
-          <Property Type="String" Name="CommentContent" Nullable="false" />
-          <Property Type="DateTime" Name="Date" Nullable="false" Precision="23" />
-          <Property Type="DateTime" Name="LastEditDate" Nullable="true" Precision="23" />
-          <Property Type="Int32" Name="MessageId" Nullable="true" />
-          <Property Type="Int64" Name="Likes" Nullable="false" />
-          <Property Type="Int64" Name="Dislikes" Nullable="false" />
-          <Property Type="Int32" Name="ParentId" Nullable="true" />
-          <Property Type="Boolean" Name="Anonymized" Nullable="false" />
-          <Property Type="Boolean" Name="IsDistinguished" Nullable="false" />
-          <Property Type="String" Name="FormattedContent" Nullable="true" />
-        </ComplexType>
-        <ComplexType Name="usp_WhoVotesForUsersComments_Result">
-          <Property Type="String" Name="UserName" Nullable="true" MaxLength="50" />
-          <Property Type="Int32" Name="VoteStatus" Nullable="true" />
-          <Property Type="Int32" Name="VoteCount" Nullable="true" />
-        </ComplexType>
         <EntityType Name="AutoModComment">
           <Key>
             <PropertyRef Name="RuleId" />
@@ -2023,6 +1915,26 @@
           <Property Name="NotifyMod" Type="Boolean" />
           <Property Name="CheckEdited" Type="Boolean" />
         </EntityType>
+        <ComplexType Name="usp_CommentTree_Result">
+          <Property Type="Int32" Name="ChildCount" Nullable="true" />
+          <Property Type="Int32" Name="Depth" Nullable="true" />
+          <Property Type="String" Name="Path" Nullable="true" />
+          <Property Type="String" Name="Subverse" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="Votes" Nullable="true" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="CommentContent" Nullable="false" />
+          <Property Type="DateTime" Name="Date" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastEditDate" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="MessageId" Nullable="true" />
+          <Property Type="Int64" Name="Likes" Nullable="false" />
+          <Property Type="Int64" Name="Dislikes" Nullable="false" />
+          <Property Type="Int32" Name="ParentId" Nullable="true" />
+          <Property Type="Boolean" Name="Anonymized" Nullable="false" />
+          <Property Type="Boolean" Name="IsDistinguished" Nullable="false" />
+          <Property Type="String" Name="FormattedContent" Nullable="true" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2091,6 +2003,7 @@
           <EntitySetMapping Name="Comments">
             <EntityTypeMapping TypeName="Models.Comment">
               <MappingFragment StoreEntitySet="Comments">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Votes" ColumnName="Votes" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -2150,6 +2063,7 @@
           <EntitySetMapping Name="Messages">
             <EntityTypeMapping TypeName="Models.Message">
               <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="IsArchived" ColumnName="IsArchived" />
                 <ScalarProperty Name="Votes" ColumnName="Votes" />
@@ -2476,133 +2390,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionName="Models.Store.fnActiveUserCounts" FunctionImportName="fnActiveUserCounts">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="Models.fnActiveUserCounts_Result">
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="Hours" ColumnName="Hours" />
-                <ScalarProperty Name="Days" ColumnName="Days" />
-                <ScalarProperty Name="Count" ColumnName="Count" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="sp_perf_stats_azure" FunctionName="Models.Store.sp_perf_stats_azure">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="Models.sp_perf_stats_azure_Result">
-                <ScalarProperty Name="runtime" ColumnName="runtime" />
-                <ScalarProperty Name="session_id" ColumnName="session_id" />
-                <ScalarProperty Name="request_id" ColumnName="request_id" />
-                <ScalarProperty Name="ecid" ColumnName="ecid" />
-                <ScalarProperty Name="blocking_session_id" ColumnName="blocking_session_id" />
-                <ScalarProperty Name="blocking_ecid" ColumnName="blocking_ecid" />
-                <ScalarProperty Name="task_state" ColumnName="task_state" />
-                <ScalarProperty Name="wait_type" ColumnName="wait_type" />
-                <ScalarProperty Name="wait_duration_ms" ColumnName="wait_duration_ms" />
-                <ScalarProperty Name="wait_resource" ColumnName="wait_resource" />
-                <ScalarProperty Name="resource_description" ColumnName="resource_description" />
-                <ScalarProperty Name="last_wait_type" ColumnName="last_wait_type" />
-                <ScalarProperty Name="open_trans" ColumnName="open_trans" />
-                <ScalarProperty Name="transaction_isolation_level" ColumnName="transaction_isolation_level" />
-                <ScalarProperty Name="is_user_process" ColumnName="is_user_process" />
-                <ScalarProperty Name="request_cpu_time" ColumnName="request_cpu_time" />
-                <ScalarProperty Name="request_logical_reads" ColumnName="request_logical_reads" />
-                <ScalarProperty Name="request_reads" ColumnName="request_reads" />
-                <ScalarProperty Name="request_writes" ColumnName="request_writes" />
-                <ScalarProperty Name="memory_usage" ColumnName="memory_usage" />
-                <ScalarProperty Name="session_cpu_time" ColumnName="session_cpu_time" />
-                <ScalarProperty Name="session_reads" ColumnName="session_reads" />
-                <ScalarProperty Name="session_writes" ColumnName="session_writes" />
-                <ScalarProperty Name="session_logical_reads" ColumnName="session_logical_reads" />
-                <ScalarProperty Name="total_scheduled_time" ColumnName="total_scheduled_time" />
-                <ScalarProperty Name="total_elapsed_time" ColumnName="total_elapsed_time" />
-                <ScalarProperty Name="last_request_start_time" ColumnName="last_request_start_time" />
-                <ScalarProperty Name="last_request_end_time" ColumnName="last_request_end_time" />
-                <ScalarProperty Name="session_row_count" ColumnName="session_row_count" />
-                <ScalarProperty Name="prev_error" ColumnName="prev_error" />
-                <ScalarProperty Name="open_resultsets" ColumnName="open_resultsets" />
-                <ScalarProperty Name="request_total_elapsed_time" ColumnName="request_total_elapsed_time" />
-                <ScalarProperty Name="percent_complete" ColumnName="percent_complete" />
-                <ScalarProperty Name="est_completion_time" ColumnName="est_completion_time" />
-                <ScalarProperty Name="tran_name" ColumnName="tran_name" />
-                <ScalarProperty Name="transaction_begin_time" ColumnName="transaction_begin_time" />
-                <ScalarProperty Name="tran_type" ColumnName="tran_type" />
-                <ScalarProperty Name="tran_state" ColumnName="tran_state" />
-                <ScalarProperty Name="request_start_time" ColumnName="request_start_time" />
-                <ScalarProperty Name="request_status" ColumnName="request_status" />
-                <ScalarProperty Name="command" ColumnName="command" />
-                <ScalarProperty Name="statement_start_offset" ColumnName="statement_start_offset" />
-                <ScalarProperty Name="statement_end_offset" ColumnName="statement_end_offset" />
-                <ScalarProperty Name="database_id" ColumnName="database_id" />
-                <ScalarProperty Name="user_id" ColumnName="user_id" />
-                <ScalarProperty Name="executing_managed_code" ColumnName="executing_managed_code" />
-                <ScalarProperty Name="pending_io_count" ColumnName="pending_io_count" />
-                <ScalarProperty Name="login_time" ColumnName="login_time" />
-                <ScalarProperty Name="host_name" ColumnName="host_name" />
-                <ScalarProperty Name="program_name" ColumnName="program_name" />
-                <ScalarProperty Name="host_process_id" ColumnName="host_process_id" />
-                <ScalarProperty Name="client_version" ColumnName="client_version" />
-                <ScalarProperty Name="client_interface_name" ColumnName="client_interface_name" />
-                <ScalarProperty Name="login_name" ColumnName="login_name" />
-                <ScalarProperty Name="nt_domain" ColumnName="nt_domain" />
-                <ScalarProperty Name="nt_user_name" ColumnName="nt_user_name" />
-                <ScalarProperty Name="net_packet_size" ColumnName="net_packet_size" />
-                <ScalarProperty Name="client_net_address" ColumnName="client_net_address" />
-                <ScalarProperty Name="session_status" ColumnName="session_status" />
-                <ScalarProperty Name="scheduler_id" ColumnName="scheduler_id" />
-                <ScalarProperty Name="group_id" ColumnName="group_id" />
-                <ScalarProperty Name="context_info" ColumnName="context_info" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="sp_perf_stats_azure_infrequent11" FunctionName="Models.Store.sp_perf_stats_azure_infrequent11" />
-          <FunctionImportMapping FunctionImportName="usp_ActiveUsers" FunctionName="Models.Store.usp_ActiveUsers">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="Models.usp_ActiveUsers_Result">
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="Hours" ColumnName="Hours" />
-                <ScalarProperty Name="Days" ColumnName="Days" />
-                <ScalarProperty Name="Count" ColumnName="Count" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="usp_CommentTree" FunctionName="Models.Store.usp_CommentTree">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="Models.usp_CommentTree_Result">
-                <ScalarProperty Name="ChildCount" ColumnName="ChildCount" />
-                <ScalarProperty Name="Depth" ColumnName="Depth" />
-                <ScalarProperty Name="Path" ColumnName="Path" />
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Votes" ColumnName="Votes" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
-                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
-                <ScalarProperty Name="Likes" ColumnName="Likes" />
-                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
-                <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
-                <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="usp_MarkArchived" FunctionName="Models.Store.usp_MarkArchived" />
-          <FunctionImportMapping FunctionImportName="usp_PurgeInactiveSessions" FunctionName="Models.Store.usp_PurgeInactiveSessions" />
-          <FunctionImportMapping FunctionImportName="usp_PurgeInactiveSubverses" FunctionName="Models.Store.usp_PurgeInactiveSubverses" />
-          <FunctionImportMapping FunctionImportName="usp_RankSubmissions" FunctionName="Models.Store.usp_RankSubmissions" />
-          <FunctionImportMapping FunctionImportName="usp_RankSubmissions_CTE" FunctionName="Models.Store.usp_RankSubmissions_CTE" />
-          <FunctionImportMapping FunctionImportName="usp_TransferSubverse" FunctionName="Models.Store.usp_TransferSubverse" />
-          <FunctionImportMapping FunctionImportName="usp_WhoVotesForUsersComments" FunctionName="Models.Store.usp_WhoVotesForUsersComments">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="Models.usp_WhoVotesForUsersComments_Result">
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
-                <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <EntitySetMapping Name="AutoModComments">
             <EntityTypeMapping TypeName="Models.AutoModComment">
               <MappingFragment StoreEntitySet="AutoModComments">
@@ -2651,6 +2438,30 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="usp_CommentTree" FunctionName="Models.Store.usp_CommentTree">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="Models.usp_CommentTree_Result">
+                <ScalarProperty Name="ChildCount" ColumnName="ChildCount" />
+                <ScalarProperty Name="Depth" ColumnName="Depth" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Votes" ColumnName="Votes" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="LastEditDate" ColumnName="LastEditDate" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="Likes" ColumnName="Likes" />
+                <ScalarProperty Name="Dislikes" ColumnName="Dislikes" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Anonymized" ColumnName="Anonymized" />
+                <ScalarProperty Name="IsDistinguished" ColumnName="IsDistinguished" />
+                <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

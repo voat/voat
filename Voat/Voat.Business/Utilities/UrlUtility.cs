@@ -69,7 +69,7 @@ namespace Voat.Utilities
                     var titleNode = htmlDocument.DocumentNode.Descendants("title").SingleOrDefault();
                     if (titleNode != null)
                     {
-                        return titleNode.InnerText;
+                        return HttpUtility.HtmlDecode(titleNode.InnerText);
                     }
                 }
 

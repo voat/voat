@@ -21,7 +21,7 @@ namespace Voat.Utilities
                     using (voatEntities db = new voatEntities())
                     {
                         var cmd = db.Database.Connection.CreateCommand();
-                        cmd.CommandText = "SELECT COUNT(*) FROM Comments WITH (NOLOCK) WHERE MessageID = @MessageID AND Name != 'deleted'";
+                        cmd.CommandText = "SELECT COUNT(*) FROM Comments WITH (NOLOCK) WHERE MessageID = @MessageID AND IsDeleted != 1";
                         var param = cmd.CreateParameter();
                         param.ParameterName = "MessageID";
                         param.DbType = System.Data.DbType.Int32;

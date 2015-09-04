@@ -18,7 +18,7 @@
 }
 
 <ul class="flat-list buttons">
-    @if (commentAuthor != "deleted")
+    @if (!Model.CommentModel.IsDeleted)
     {
         <li class="first">
             <a href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.MessageId/@Model.CommentModel.Id" class="bylink" rel="nofollow">permalink</a>
@@ -37,9 +37,6 @@
         string loggedInUserName = User.Identity.Name;
 
         //returns true if user has saved this post
-        //var savedOrNot = SavingComments.CheckIfSavedComment(loggedInUserName, commentId);
-        //What you see here is a major hack. Atko is 100% responsible for this too. ;)
-        //returns -1:downvoted, 1:upvoted, or 0:not voted
         bool? savedOrNot = null;
         if (ViewBag.SavedCommentCache != null)
         {
@@ -56,18 +53,17 @@
         {
             //backwards compat if ViewBad.VoteCache isn't populated as many code paths funnel here
             savedOrNot = SavingComments.CheckIfSavedComment(loggedInUserName, commentId);
-            //throw new Exception("I WANT VOTECACHE");
         }
         var saveString = savedOrNot == true ? "unsave" : "save";
 
-        if (commentAuthor != "deleted")
+        if (!Model.CommentModel.IsDeleted)
         {
             <li>
                 <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@commentId);">@saveString</a>
             </li>
         }
 
-        if (commentAuthor != "deleted" && User.Identity.Name != commentAuthor)
+        if (!Model.CommentModel.IsDeleted && User.Identity.Name != commentAuthor)
         {
             <li>
                 <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
@@ -75,7 +71,7 @@
         }
 
         // if user is sub admin or sub mod but not comment author, show delete button
-        if (User.Identity.Name != commentAuthor)
+        if (User.Identity.Name != commentAuthor && !Model.CommentModel.IsDeleted)
         {
             if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.name))
             {
@@ -84,7 +80,7 @@
         }
 
         // if user is comment author, show edit and delete buttons
-        if (User.Identity.Name == commentAuthor)
+        if (User.Identity.Name == commentAuthor && !Model.CommentModel.IsDeleted)
         {
             <li>
                 <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @Model.CommentModel.MessageId)">edit</a>
@@ -100,7 +96,7 @@
             }
         }
 
-        if (commentAuthor != "deleted")
+        if (!Model.CommentModel.IsDeleted)
         {
             <li>
                 <a class="" href="javascript:void(0)" onclick="return reply(@commentId, @Model.CommentModel.MessageId)">reply</a>
@@ -108,6 +104,4 @@
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonReport.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }
     }
-
 </ul>
-

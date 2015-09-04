@@ -17,7 +17,7 @@
     foreach (var comment in Model.DisplayTree)
     {
         //do not show deleted comments unless they have replies
-        if (comment.Name == "deleted" && comment.ChildCount <= 0)
+        if (comment.IsDeleted && comment.ChildCount <= 0)
         {
             continue;
         }
@@ -48,7 +48,6 @@
                 //this is non-root comments
                 <a style="cursor:pointer;" id="loadmore-@Model.ParentID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@Model.ParentID'),$('.id-@Model.ParentID'),@Model.Submission.Id,@Model.ParentID,'siblings',@Model.EndingIndex,'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
             }
-
         </div>
     }
 }

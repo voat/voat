@@ -32,12 +32,14 @@ namespace Voat.Utilities
 
             var request = WebRequest.Create(sourceUrl);
             request.Timeout = 300;
-            var response = request.GetResponse();
+            using (var response = request.GetResponse())
+            {
 
-            var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
+                var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
 
-            originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathThumbs + '\\' + randomFileName + ".jpg", 90);
-            
+
+                originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathThumbs + '\\' + randomFileName + ".jpg", 90);
+            }
             // call upload to storage method if CDN config is enabled
             if (Settings.UseContentDeliveryNetwork)
             {

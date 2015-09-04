@@ -19,7 +19,7 @@
         //type 1 = message
         if (Model.Message.Type == 2)
         {
-            if (Model.Message.Name != "deleted")
+            if (!Model.Message.IsDeleted)
             {
                 <p class="parent">
                     <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Linkdescription</a> by
@@ -36,7 +36,7 @@
         }
         else
         {
-            if (Model.Message.Name != "deleted")
+            if (!Model.Message.IsDeleted)
             {
                 <p class="parent">
                     <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Title</a> by

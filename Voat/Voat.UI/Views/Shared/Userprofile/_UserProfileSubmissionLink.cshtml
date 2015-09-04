@@ -26,7 +26,7 @@
         }
     }  
     
-    var commentCount = Model.Comments.Count(c => c.Name != "deleted");
+    var commentCount = Model.Comments.Count(c => !c.IsDeleted);
         
     string postAge = Submissions.CalcSubmissionAge(Model.Date);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;

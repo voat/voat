@@ -168,6 +168,9 @@ namespace Voat.Controllers
                     ModelState.AddModelError(string.Empty, addLinkSubmissionResult);
                     return View("Submit");
                 }
+                // update last submission received date for target subverse
+                targetSubverse.last_submission_received = DateTime.Now;
+                await _db.SaveChangesAsync();
             }
             // submission is a message type submission
             else if (submission.Type == 1 && submission.Title != null)
@@ -179,6 +182,9 @@ namespace Voat.Controllers
                     ModelState.AddModelError(string.Empty, addMessageSubmissionResult);
                     return View("Submit");
                 }
+                // update last submission received date for target subverse
+                targetSubverse.last_submission_received = DateTime.Now;
+                await _db.SaveChangesAsync();
             }
 
             // redirect to comments section of newly posted submission
@@ -215,7 +221,7 @@ namespace Voat.Controllers
             if (whattodisplay != null && whattodisplay == "comments")
             {
                 var userComments = from c in _db.Comments.OrderByDescending(c => c.Date)
-                                   where (c.Name.Equals(id) && c.Message.Anonymized == false) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
+                                   where (c.Name.Equals(id) && c.Message.Anonymized == false && !c.IsDeleted) && (c.Name.Equals(id) && c.Message.Subverses.anonymized_mode == false)
                                    select c;
 
                 PaginatedList<Comment> paginatedUserComments = new PaginatedList<Comment>(userComments, page ?? 0, pageSize);
@@ -227,7 +233,7 @@ namespace Voat.Controllers
             if (whattodisplay != null && whattodisplay == "submissions")
             {
                 var userSubmissions = from b in _db.Messages.OrderByDescending(s => s.Date)
-                                      where (b.Name.Equals(id) && b.Anonymized == false) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
+                                      where (b.Name.Equals(id) && b.Anonymized == false && !b.IsDeleted) && (b.Name.Equals(id) && b.Subverses.anonymized_mode == false)
                                       select b;
 
                 PaginatedList<Message> paginatedUserSubmissions = new PaginatedList<Message>(userSubmissions, page ?? 0, pageSize);
@@ -241,7 +247,7 @@ namespace Voat.Controllers
             {
                 IQueryable<SavedItem> savedSubmissions = (from m in _db.Messages
                                                           join s in _db.Savingtrackers on m.Id equals s.MessageId
-                                                          where m.Name != "deleted" && s.UserName == User.Identity.Name
+                                                          where !m.IsDeleted && s.UserName == User.Identity.Name
                                                           select new SavedItem()
                                                           {
                                                               SaveDateTime = s.Timestamp,
@@ -251,7 +257,7 @@ namespace Voat.Controllers
 
                 IQueryable<SavedItem> savedComments = (from c in _db.Comments
                                                        join s in _db.Commentsavingtrackers on c.Id equals s.CommentId
-                                                       where c.Name != "deleted" && s.UserName == User.Identity.Name
+                                                       where !c.IsDeleted && s.UserName == User.Identity.Name
                                                        select new SavedItem()
                                                        {
                                                            SaveDateTime = s.Timestamp,
@@ -310,7 +316,7 @@ namespace Voat.Controllers
 
                                 IQueryable<Message> submissions = (from m in db.Messages.Include("Subverse").AsNoTracking()
                                                                    join s in db.Subscriptions on m.Subverse equals s.SubverseName
-                                                                   where !m.IsArchived && m.Name != "deleted" && s.Username == User.Identity.Name
+                                                                   where !m.IsArchived && !m.IsDeleted && s.Username == User.Identity.Name
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
                                                                    select m).OrderByDescending(s => s.Rank);
 
@@ -344,7 +350,7 @@ namespace Voat.Controllers
 
                                 // get only submissions from default subverses, order by rank
                                 IQueryable<Message> submissions = (from message in db.Messages.AsNoTracking()
-                                                                   where !message.IsArchived && message.Name != "deleted"
+                                                                   where !message.IsArchived && !message.IsDeleted
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(message.Name)
                                                                    join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                                                    select message).OrderByDescending(s => s.Rank);
@@ -496,7 +502,7 @@ namespace Voat.Controllers
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.Username.Equals(User.Identity.Name)).Select(x => x.SubverseName);
                                 IQueryable<Message> submissions = (from m in db.Messages
                                                                    join s in db.Subscriptions on m.Subverse equals s.SubverseName
-                                                                   where !m.IsArchived && m.Name != "deleted" && s.Username == User.Identity.Name
+                                                                   where !m.IsArchived && !m.IsDeleted && s.Username == User.Identity.Name
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(m.Name)
                                                                    select m).OrderByDescending(s => s.Date);
                                 return submissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
@@ -525,7 +531,7 @@ namespace Voat.Controllers
                             {
                                 // get only submissions from default subverses, order by rank
                                 IQueryable<Message> submissions = (from message in db.Messages
-                                                                   where !message.IsArchived && message.Name != "deleted"
+                                                                   where !message.IsArchived && !message.IsDeleted
                                                                    where !(from bu in db.Bannedusers select bu.Username).Contains(message.Name)
                                                                    join defaultsubverse in db.Defaultsubverses on message.Subverse equals defaultsubverse.name
                                                                    select message).OrderByDescending(s => s.Date);

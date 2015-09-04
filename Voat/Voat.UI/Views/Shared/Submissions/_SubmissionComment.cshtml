@@ -14,17 +14,16 @@
 
 @model CommentBucketViewModel
 
+@using Voat.Data.Models
 @using Voat.Models.ViewModels
 @using Voat.Models;
 
 @{
     int commentContributionPoints = ViewBag.CCP ?? 0;
-    //string sortingMode = Convert.ToString(ViewData["SortingMode"]);
-
 
     bool singleTree = ViewBag.SingleTree ?? false;
-    
-    bool? subverseAnonymized = Model.Subverse.anonymized_mode;// Convert.ToBoolean(ViewData["SubverseAnonymized"]);
+
+    bool? subverseAnonymized = Model.Subverse.anonymized_mode;
 
     //nesting params
     int nestingCount = ViewBag.NestingCount ?? 0;
@@ -32,7 +31,7 @@
 
     //find the comment based on the received comment id via ViewData
     int commentId = ViewBag.CommentId;
-    var comment = Model.CommentTree.Where(x => x.Id == commentId).FirstOrDefault();
+    var comment = Model.CommentTree.FirstOrDefault(x => x.Id == commentId);
     int commentScore = (int)(comment.Likes - comment.Dislikes);
     var commentSingleVM = new CommentSingleViewModel() { CommentModel = comment, SubmissionModel = Model.Submission, SubverseModel = Model.Subverse };
 
@@ -59,6 +58,7 @@
     string collapsedComment = "";
     string uncollapsedComment = "";
     string showIfParent = "";
+
     //collapse comments with score of -4 or less
     if (parentIsHidden || commentScore <= Model.NegativeScoreThreshold)
     {
@@ -82,8 +82,8 @@
     {
         highlightClass = "highlightedComment";
     }
-
 }
+
 <div class="child id-@commentId comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="@(parentIsHidden ? "display:none" : "")">
 
     @* 1 submission comment *@
@@ -91,7 +91,7 @@
         <a></a>
     </p>
 
-    @if (comment.Name != "deleted")
+    @if (!comment.IsDeleted)
     {
         @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary {
             { "VoteCache", ViewBag.VoteCache },
@@ -101,10 +101,9 @@
     }
 
     <div class="entry unvoted">
-
         <div class="collapsed" style='@collapsedComment'>
             <a href="#" class="expand" onclick="return showcomment(@commentId)">[+]</a>
-            @if (comment.Name != "deleted")
+            @if (!comment.IsDeleted)
             {
                 if (Model.Submission.Anonymized || subverseAnonymized == true)
                 {
@@ -135,7 +134,7 @@
             <p class="tagline">
                 <a href="#" class="expand" onclick="return hidecomment(@commentId)">[&ndash;]</a>
 
-                @if (comment.Name != "deleted")
+                @if (!comment.IsDeleted)
                 {
                     //int commentScore = commentModel.Likes - commentModel.Dislikes;
                     string view = "~/Views/Shared/UserDistinctions/_UserDistinction.cshtml";
@@ -175,7 +174,7 @@
             <form class="usertext" onsubmit="return editcommentsubmit(@commentId)" id="commenteditform-@commentId" action="#">
                 @Html.AntiForgeryToken()
                 <input id="CommentId" name="CommentId" value="@commentId" type="hidden">
-                @if (comment.Name != "deleted")
+                @if (!comment.IsDeleted)
                 {
                     <div class="usertext-body may-blank-within" id="commentContent-@commentId">
                         <div class="md">
@@ -238,8 +237,6 @@
                 </div>
             }
         </div>
-
-
     </div>
 
     @{
@@ -278,7 +275,6 @@
                     nestingCount++;
                 }
                 parentID = childComment.Id;
-
 
                 @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary {
                     { "SavedCommentCache", ViewBag.SavedCommentCache },

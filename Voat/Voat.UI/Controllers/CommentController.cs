@@ -87,7 +87,8 @@ namespace Voat.Controllers
             Response.StatusCode = 200;
             return Json("Saving ok", JsonRequestBehavior.AllowGet);
         }
-        private List<Commentvotingtracker> UserVotesBySubmission(int submissionID) {
+        
+        private List<Commentvotingtracker> UserCommentVotesBySubmission(int submissionID) {
             List<Commentvotingtracker> vCache = new List<Commentvotingtracker>();
 
             if (User.Identity.IsAuthenticated){
@@ -98,6 +99,7 @@ namespace Voat.Controllers
             }
             return vCache;
         }
+        
         private List<Commentsavingtracker> UserSavedCommentsBySubmission(int submissionID)
         {
             List<Commentsavingtracker> vCache = new List<Commentsavingtracker>();
@@ -106,11 +108,12 @@ namespace Voat.Controllers
             {
                 vCache = (from cv in _db.Commentsavingtrackers.AsNoTracking()
                           join c in _db.Comments on cv.CommentId equals c.Id
-                          where c.MessageId == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                          where c.MessageId == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && !c.IsDeleted
                           select cv).ToList();
             }
             return vCache;
         }
+        
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
         {
@@ -155,7 +158,7 @@ namespace Voat.Controllers
             ViewBag.SubverseAnonymized = subverse.anonymized_mode;
 
             //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserVotesBySubmission(id.Value);
+            ViewBag.VoteCache = UserCommentVotesBySubmission(id.Value);
             ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(id.Value);
             ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
 
@@ -240,7 +243,8 @@ namespace Voat.Controllers
 
             return View("~/Views/Home/Comments.cshtml", model);
         }
-        //url: "/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + count + "/" + nestingLevel + "/" + sort + "/",
+        
+        // url: "/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + count + "/" + nestingLevel + "/" + sort + "/",
         // GET: comments for a given submission
         public ActionResult BucketOfComments(int submissionId, int? parentId, string command, int startingIndex, string sort)
         {
@@ -279,7 +283,7 @@ namespace Voat.Controllers
             ViewBag.SubverseAnonymized = subverse.anonymized_mode;
 
             //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserVotesBySubmission(submissionId);
+            ViewBag.VoteCache = UserCommentVotesBySubmission(submissionId);
             ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submissionId);
             ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
 
@@ -449,7 +453,7 @@ namespace Voat.Controllers
 
                 if (existingComment != null)
                 {
-                    if (existingComment.Name.Trim() == User.Identity.Name)
+                    if (existingComment.Name.Trim() == User.Identity.Name && !existingComment.IsDeleted)
                     {
                         existingComment.LastEditDate = DateTime.Now;
                         existingComment.CommentContent = commentModel.CommentContent;
@@ -492,14 +496,14 @@ namespace Voat.Controllers
         {
             var commentToDelete = _db.Comments.Find(commentId);
 
-            if (commentToDelete != null)
+            if (commentToDelete != null && !commentToDelete.IsDeleted)
             {
                 var commentSubverse = commentToDelete.Message.Subverse;
 
                 // delete comment if the comment author is currently logged in user
                 if (commentToDelete.Name == User.Identity.Name)
                 {
-                    commentToDelete.Name = "deleted";
+                    commentToDelete.IsDeleted = true;
                     commentToDelete.CommentContent = "deleted by author at " + DateTime.Now;
                     await _db.SaveChangesAsync();
                 }
@@ -519,7 +523,7 @@ namespace Voat.Controllers
                         commentToDelete.CommentContent
                         );
 
-                    commentToDelete.Name = "deleted";
+                    commentToDelete.IsDeleted = true;
 
                     // move the comment to removal log
                     var removalLog = new CommentRemovalLog

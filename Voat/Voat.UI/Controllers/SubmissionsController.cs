@@ -181,6 +181,7 @@ namespace Voat.Controllers
             var existingSubmission = _db.Messages.Find(model.SubmissionId);
 
             if (existingSubmission == null) return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+            if (existingSubmission.IsDeleted) return Json("This submission has been deleted.", JsonRequestBehavior.AllowGet);
             if (existingSubmission.Name.Trim() != User.Identity.Name) return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
             
             existingSubmission.MessageContent = model.SubmissionContent;
@@ -206,7 +207,7 @@ namespace Voat.Controllers
                 // delete submission if delete request is issued by submission author
                 if (submissionToDelete.Name == User.Identity.Name)
                 {
-                    submissionToDelete.Name = "deleted";
+                    submissionToDelete.IsDeleted = true;
 
                     if (submissionToDelete.Type == 1)
                     {
@@ -232,8 +233,8 @@ namespace Voat.Controllers
                 // delete submission if delete request is issued by subverse moderator
                 else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
                 {
-                    // mark submission as deleted (TODO: don't use name, add a new bit field to messages table instead)
-                    submissionToDelete.Name = "deleted";
+                    // mark submission as deleted
+                    submissionToDelete.IsDeleted = true;
 
                     // move the submission to removal log
                     var removalLog = new SubmissionRemovalLog
