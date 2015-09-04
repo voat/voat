@@ -3246,6 +3246,8 @@ textarea.form-control {
     }
 }
 
+
+
 .link-expando-type {
     background: #606060; 
     border: 1px solid #606060; 
@@ -3255,4 +3257,14 @@ textarea.form-control {
 
 .markdownEditorImgButton, .markdownEditorTextButton { 
     background-color: #606060 !important;
+}
+
+/* ! FAQ
+-------------------------------------------------------------------------------- */
+.faqAnchor {
+    color: #dfdfdf;
+}
+
+.faqAnchor:visited {
+    color: #dfdfdf;
 }
