@@ -37,7 +37,7 @@
                     <div class="col-md-10">
                         @Html.MarkdownEditorFor(model => model.Sidebar, new { @class = "form-control", rows = "5" })
                         @Html.ValidationMessageFor(model => model.Sidebar, "", new { @class = "text-danger" })
-						<input type="button" id="previewButton" value="Preview" class="btn-whoaverse" onclick="showMessagePreview(this,$(this.parentElement).find('#Sidebar'),$(this.parentElement).find('#submission-preview-area'))">
+						<input type="button" id="previewButton" value="Preview" class="btn-whoaverse" onclick="showMessagePreview(this,$('#SideBar'),$('#submission-preview-area'))">
 						<div class="panel panel-default" id="submission-preview-area" style="display: none">
 							<div class="panel-heading">
 								<h4 class="panel-title">Preview</h4>
