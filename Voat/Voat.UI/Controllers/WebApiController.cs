@@ -42,8 +42,8 @@ namespace Voat.Controllers
                {
                    using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                    {
-                       var listOfDefaultSubverses = db.Defaultsubverses.OrderBy(s => s.position).ToList();
-                       return listOfDefaultSubverses.Select(item => item.name).ToList();
+                       var listOfDefaultSubverses = db.DefaultSubverses.OrderBy(s => s.Order).ToList();
+                       return listOfDefaultSubverses.Select(item => item.Subverse).ToList();
                    }
                }), TimeSpan.FromHours(12));
             return defaultSubs;
@@ -62,8 +62,8 @@ namespace Voat.Controllers
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                   {
-                      var bannedHostnames = db.Banneddomains.OrderBy(s => s.Added_on).ToList();
-                      return bannedHostnames.Select(item => "Hostname: " + item.Hostname + ", reason: " + item.Reason + ", added on: " + item.Added_on + ", added by: " + item.Added_by).ToList();
+                      var bannedHostnames = db.BannedDomains.OrderBy(s => s.CreationDate).ToList();
+                      return bannedHostnames.Select(item => "Hostname: " + item.Domain + ", reason: " + item.Reason + ", added on: " + item.CreationDate + ", added by: " + item.CreatedBy).ToList();
                   }
               }), TimeSpan.FromHours(12));
             return bannedSubs;
@@ -76,7 +76,7 @@ namespace Voat.Controllers
         [HttpGet]
         public bool IsHostnameGloballyBanned(string hostnameToCheck)
         {
-            var hostname = _db.Banneddomains.FirstOrDefault(s => s.Hostname == hostnameToCheck);
+            var hostname = _db.BannedDomains.FirstOrDefault(s => s.Domain == hostnameToCheck);
             return hostname != null;
         }
 
@@ -90,8 +90,8 @@ namespace Voat.Controllers
             IEnumerable<string> top200 = CacheHandler.Register<IEnumerable<string>>("LegacyApi.Top200Subverses", 
                 new Func<IList<string>>(() => {
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY)) {
-                        var top200Subverses = db.Subverses.Where(s => s.admin_disabled != true).OrderByDescending(s => s.subscribers).Take(200);
-                        return top200Subverses.Select(item => "Name: " + item.name + "," + "Description: " + item.description + "," + "Subscribers: " + item.subscribers + "," + "Created: " + item.creation_date).ToList();
+                        var top200Subverses = db.Subverses.Where(s => s.IsAdminDisabled != true).OrderByDescending(s => s.SubscriberCount).Take(200);
+                        return top200Subverses.Select(item => "Name: " + item.Name + "," + "Description: " + item.Description + "," + "Subscribers: " + item.SubscriberCount + "," + "Created: " + item.CreationDate).ToList();
                     }
                 }), TimeSpan.FromMinutes(90), 0);
             return top200;
@@ -114,9 +114,9 @@ namespace Voat.Controllers
                 {
                     
                         // get only submissions from default subverses, order by rank
-                        var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
-                                                    where !message.IsArchived && !message.IsDeleted && message.Subverses.admin_disabled != true
-                                                    join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                        var frontpageSubmissions = (from message in _db.Submissions
+                                                    where !message.IsArchived && !message.IsDeleted && message.Subverse1.IsAdminDisabled != true
+                                                    join defaultsubverse in _db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
                                                     select message)
                                                     .OrderByDescending(s => s.Rank)
                                                     .Take(100)
@@ -129,22 +129,22 @@ namespace Voat.Controllers
                             var resultModel = new ApiMessage
                             {
                                 CommentCount = item.Comments.Count,
-                                Date = item.Date,
-                                Dislikes = item.Dislikes,
-                                Id = item.Id,
+                                Date = item.CreationDate,
+                                Dislikes = (int)item.DownCount,
+                                Id = item.ID,
                                 LastEditDate = item.LastEditDate,
-                                Likes = item.Likes,
-                                Linkdescription = item.Linkdescription,
-                                MessageContent = item.MessageContent
+                                Likes = (int)item.UpCount,
+                                Linkdescription = item.LinkDescription,
+                                MessageContent = item.Content
                             };
 
-                            if (item.Anonymized || item.Subverses.anonymized_mode)
+                            if (item.IsAnonymized || item.Subverse1.IsAnonymized)
                             {
-                                resultModel.Name = item.Id.ToString();
+                                resultModel.Name = item.ID.ToString();
                             }
                             else
                             {
-                                resultModel.Name = item.Name;
+                                resultModel.Name = item.UserName;
                             }
                             resultModel.Rank = item.Rank;
                             resultModel.Subverse = item.Subverse;
@@ -180,8 +180,8 @@ namespace Voat.Controllers
 
                 cacheData = CacheHandler.Register(cacheKey, new Func<object>(() => {
                     // get only submissions from given subverses, order by rank - ignoring messages in any given banned subverse
-                    var frontpageSubmissions = (from message in _db.Messages.Include("subverses")
-                                                where !message.IsDeleted && message.Subverse == subverse && message.Subverses.admin_disabled != true
+                    var frontpageSubmissions = (from message in _db.Submissions
+                                                where !message.IsDeleted && message.Subverse == subverse && message.Subverse1.IsAdminDisabled != true
                                                 select message)
                                                 .OrderByDescending(s => s.Rank)
                                                 .Take(100)
@@ -199,22 +199,22 @@ namespace Voat.Controllers
                         var resultModel = new ApiMessage
                         {
                             CommentCount = item.Comments.Count,
-                            Date = item.Date,
-                            Dislikes = item.Dislikes,
-                            Id = item.Id,
+                            Date = item.CreationDate,
+                            Dislikes = (int)item.DownCount,
+                            Id = item.ID,
                             LastEditDate = item.LastEditDate,
-                            Likes = item.Likes,
-                            Linkdescription = item.Linkdescription,
-                            MessageContent = item.MessageContent
+                            Likes = (int)item.UpCount,
+                            Linkdescription = item.LinkDescription,
+                            MessageContent = item.Content
                         };
 
-                        if (item.Anonymized || item.Subverses.anonymized_mode)
+                        if (item.IsAnonymized || item.Subverse1.IsAnonymized)
                         {
-                            resultModel.Name = item.Id.ToString();
+                            resultModel.Name = item.ID.ToString();
                         }
                         else
                         {
-                            resultModel.Name = item.Name;
+                            resultModel.Name = item.UserName;
                         }
                         resultModel.Rank = item.Rank;
                         resultModel.Subverse = item.Subverse;
@@ -248,9 +248,9 @@ namespace Voat.Controllers
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                   {
-                      var submission = db.Messages.Find(id);
+                      var submission = db.Submissions.Find(id);
 
-                      if (submission == null || submission.Subverses.admin_disabled == true)
+                      if (submission == null || submission.Subverse1.IsAdminDisabled == true)
                       {
                           return null; // throw new HttpResponseException(HttpStatusCode.NotFound);
                       }
@@ -258,28 +258,28 @@ namespace Voat.Controllers
                       var resultModel = new ApiMessage
                       {
                           CommentCount = submission.Comments.Count,
-                          Id = submission.Id,
-                          Date = submission.Date,
+                          Id = submission.ID,
+                          Date = submission.CreationDate,
                           LastEditDate = submission.LastEditDate,
-                          Likes = submission.Likes,
-                          Dislikes = submission.Dislikes
+                          Likes = (int)submission.UpCount,
+                          Dislikes = (int)submission.DownCount
                       };
 
-                      if (submission.Anonymized || submission.Subverses.anonymized_mode)
+                      if (submission.IsAnonymized || submission.Subverse1.IsAnonymized)
                       {
-                          resultModel.Name = submission.Id.ToString();
+                          resultModel.Name = submission.ID.ToString();
                       }
                       else
                       {
-                          resultModel.Name = submission.Name;
+                          resultModel.Name = submission.UserName;
                       }
                       resultModel.Rank = submission.Rank;
                       resultModel.Thumbnail = submission.Thumbnail;
                       resultModel.Subverse = submission.Subverse;
                       resultModel.Type = submission.Type;
                       resultModel.Title = submission.Title;
-                      resultModel.Linkdescription = submission.Linkdescription;
-                      resultModel.MessageContent = submission.MessageContent;
+                      resultModel.Linkdescription = submission.LinkDescription;
+                      resultModel.MessageContent = submission.Content;
 
                       return resultModel;
                   }
@@ -309,23 +309,23 @@ namespace Voat.Controllers
 
             var resultModel = new ApiComment
             {
-                Id = comment.Id,
-                Date = comment.Date,
+                Id = comment.ID,
+                Date = comment.CreationDate,
                 LastEditDate = comment.LastEditDate,
-                Likes = comment.Likes,
-                Dislikes = comment.Dislikes,
-                CommentContent = comment.CommentContent,
-                ParentId = comment.ParentId,
-                MessageId = comment.MessageId
+                Likes = (int)comment.UpCount,
+                Dislikes = (int)comment.DownCount,
+                CommentContent = comment.Content,
+                ParentId = comment.ParentID,
+                MessageId = comment.SubmissionID
             };
 
-            if (comment.Message.Anonymized || comment.Message.Subverses.anonymized_mode)
+            if (comment.Submission.IsAnonymized || comment.Submission.Subverse1.IsAnonymized)
             {
-                resultModel.Name = comment.Id.ToString();
+                resultModel.Name = comment.ID.ToString();
             }
             else
             {
-                resultModel.Name = comment.Name;
+                resultModel.Name = comment.UserName;
             }            
 
             return resultModel;
@@ -347,18 +347,18 @@ namespace Voat.Controllers
             }
 
             // get subscriber count for selected subverse
-            var subscriberCount = subverse.subscribers ?? 0;
+            var subscriberCount = subverse.SubscriberCount ?? 0;
 
             var resultModel = new ApiSubverseInfo
             {
-                Name = subverse.name,
-                CreationDate = subverse.creation_date,
-                Description = subverse.description,
-                RatedAdult = subverse.rated_adult,
-                Sidebar = subverse.sidebar,
+                Name = subverse.Name,
+                CreationDate = subverse.CreationDate,
+                Description = subverse.Description,
+                RatedAdult = subverse.IsAdult,
+                Sidebar = subverse.SideBar,
                 SubscriberCount = subscriberCount,
-                Title = subverse.title,
-                Type = subverse.type
+                Title = subverse.Title,
+                Type = subverse.Type
             };
 
             return resultModel;
@@ -391,7 +391,7 @@ namespace Voat.Controllers
                       var resultModel = new ApiUserInfo();
 
                       var userBadgesList = UserHelper.UserBadges(userName);
-                      var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge { Awarded = item.Awarded, BadgeName = item.Badge.BadgeName }).ToList();
+                      var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge { Awarded = item.CreationDate, BadgeName = item.Badge.Name }).ToList();
 
                       resultModel.Name = userName;
                       resultModel.CCP = Karma.CommentKarma(userName);
@@ -429,10 +429,10 @@ namespace Voat.Controllers
 
                      var resultModel = new ApiBadge
                      {
-                         BadgeId = badge.BadgeId,
-                         BadgeGraphics = badge.BadgeGraphics,
-                         Name = badge.BadgeName,
-                         Title = badge.BadgeTitle
+                         BadgeId = badge.ID,
+                         BadgeGraphics = badge.Graphic,
+                         Name = badge.Name,
+                         Title = badge.Title
                      };
 
                      return resultModel;
@@ -453,7 +453,7 @@ namespace Voat.Controllers
         {
             var submission = DataCache.Submission.Retrieve(submissionId);
 
-            if (submission == null || submission.Subverses.admin_disabled == true)
+            if (submission == null || submission.Subverse1.IsAdminDisabled == true)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
@@ -467,8 +467,8 @@ namespace Voat.Controllers
                 {
 
                     var firstComments = from f in submission.Comments
-                                let commentScore = f.Likes - f.Dislikes
-                                where f.ParentId == null
+                                let commentScore = (int)f.UpCount - (int)f.DownCount
+                                where f.ParentID == null
                                 orderby commentScore descending
                                 select f;
 
@@ -477,30 +477,30 @@ namespace Voat.Controllers
                     foreach (var firstComment in firstComments.Take(10))
                     {
                         //do not show deleted comments unless they have replies
-                        if (firstComment.IsDeleted && submission.Comments.Count(a => a.ParentId == firstComment.Id) == 0)
+                        if (firstComment.IsDeleted && submission.Comments.Count(a => a.ParentID == firstComment.ID) == 0)
                         {
                             continue;
                         }
 
                         var resultModel = new ApiComment
                         {
-                            Id = firstComment.Id,
-                            Date = firstComment.Date,
-                            Dislikes = firstComment.Dislikes,
+                            Id = firstComment.ID,
+                            Date = firstComment.CreationDate,
+                            Dislikes = (int)firstComment.DownCount,
                             LastEditDate = firstComment.LastEditDate,
-                            Likes = firstComment.Likes,
-                            MessageId = firstComment.MessageId,
-                            ParentId = firstComment.ParentId,
-                            CommentContent = firstComment.CommentContent
+                            Likes = (int)firstComment.UpCount,
+                            MessageId = firstComment.SubmissionID,
+                            ParentId = firstComment.ParentID,
+                            CommentContent = firstComment.Content
                         };
 
-                        if (firstComment.Message.Anonymized || firstComment.Message.Subverses.anonymized_mode)
+                        if (firstComment.Submission.IsAnonymized || firstComment.Submission.Subverse1.IsAnonymized)
                         {
-                            resultModel.Name = firstComment.Id.ToString();
+                            resultModel.Name = firstComment.ID.ToString();
                         }
                         else
                         {
-                            resultModel.Name = firstComment.Name;
+                            resultModel.Name = firstComment.UserName;
                         }                
 
                         // TODO

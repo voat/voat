@@ -12,15 +12,15 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Privatemessage
+    public partial class PrivateMessage
     {
-        public int Id { get; set; }
+        public int ID { get; set; }
         public string Sender { get; set; }
         public string Recipient { get; set; }
-        public System.DateTime Timestamp { get; set; }
+        public System.DateTime CreationDate { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
-        public bool Status { get; set; }
-        public bool Markedasunread { get; set; }
+        public bool IsUnread { get; set; }
+        public bool MarkedAsUnread { get; set; }
     }
 }

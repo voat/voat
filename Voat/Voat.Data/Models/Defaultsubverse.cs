@@ -12,11 +12,11 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Defaultsubverse
+    public partial class DefaultSubverse
     {
-        public string name { get; set; }
-        public int position { get; set; }
+        public string Subverse { get; set; }
+        public int Order { get; set; }
     
-        public virtual Subverse Subverse { get; set; }
+        public virtual Subverse Subverse1 { get; set; }
     }
 }

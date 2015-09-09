@@ -14,8 +14,8 @@ namespace Voat.Data.Models
     
     public partial class AutoModSubmission
     {
-        public int RuleId { get; set; }
-        public System.DateTime RuleCreationDate { get; set; }
+        public int ID { get; set; }
+        public System.DateTime CreationDate { get; set; }
         public string RuleAuthor { get; set; }
         public string ActionToTake { get; set; }
         public string SubmissionTitle { get; set; }

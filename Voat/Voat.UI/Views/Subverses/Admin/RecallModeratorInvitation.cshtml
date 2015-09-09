@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Moderatorinvitation
+@model Voat.Data.Models.ModeratorInvitation
 
 <div id="container">
     <div id="about-main" class="content about-page" role="main">
@@ -26,7 +26,7 @@
                 @Html.Label("Username:", new { @class = "control-label col-md-2" })
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.Sent_to)
+                @Html.DisplayFor(model => model.Recipient)
             </dd>
             <dt>
                 @Html.Label("Power:", new { @class = "control-label col-md-2" })

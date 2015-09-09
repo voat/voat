@@ -16,7 +16,7 @@ using Voat.Data.Models;
 
 namespace Voat.Models
 {
-    public class SetSubmission : Message
+    public class SetSubmission : Submission
     {
         public string ParentSet { get; set; }
     }

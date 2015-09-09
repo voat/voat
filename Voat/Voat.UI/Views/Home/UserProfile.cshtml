@@ -9,6 +9,7 @@
 
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
+@using Voat.Data.Models
 
 @{
     ViewBag.Title = "Profile overview for " + @ViewBag.userid;
@@ -56,17 +57,17 @@
                 @{
                     if (userStatsModel.HighestRatedSubmissions.Count > 0)
                     {
-                        foreach (var item in userStatsModel.HighestRatedSubmissions)
+                        foreach (Submission item in userStatsModel.HighestRatedSubmissions)
                         {
-                            var score = item.Likes - item.Dislikes;
+                            var score = item.UpCount - item.DownCount;
 
                             if (item.Type == 1)
                             {
-                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Title</a>, submitted: @item.Date, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
+                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
                             }
                             else
                             {
-                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Linkdescription</a>, submitted: @item.Date, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
+                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.LinkDescription</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
                             }
                         }
                     }
@@ -81,17 +82,17 @@
                 @{
                     if (userStatsModel.LowestRatedSubmissions.Count > 0)
                     {
-                        foreach (var item in userStatsModel.LowestRatedSubmissions)
+                        foreach (Submission item in userStatsModel.LowestRatedSubmissions)
                         {
-                            var score = item.Likes - item.Dislikes;
+                            var score = item.UpCount - item.DownCount;
 
                             if (item.Type == 1)
                             {
-                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Title</a>, submitted: @item.Date, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
+                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
                             }
                             else
                             {
-                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.Id">@item.Linkdescription</a>, submitted: @item.Date, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</p>
+                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.LinkDescription</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
                             }
                         }
                     }
@@ -109,31 +110,31 @@
                 @{
                     if (userStatsModel.HighestRatedComments.Count > 0)
                     {
-                        foreach (var item in userStatsModel.HighestRatedComments)
+                        foreach (Comment item in userStatsModel.HighestRatedComments)
                         {
-                            var score = item.Likes - item.Dislikes;
+                            var score = item.UpCount - item.DownCount;
 
-                            <div class="thread comment" data-ups="@item.Likes" data-downs="@item.Dislikes">
+                            <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
                                 <p>
-                                    @if (item.Message.Type == 1)
+                                    @if (item.Submission.Type == 1)
                                     {
-                                        <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Title</a>
+                                        <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
                                     }
                                     else
                                     {
-                                        <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Linkdescription</a>
+                                        <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.LinkDescription</a>
                                     }
-                                    submitted by <a href="/user/@item.Message.Name">@item.Message.Name</a> to <a href="/v/@item.Message.Subverse" class="userstats-submission-subverse">@item.Message.Subverse</a>
+                                    submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
                                 </p>
 
                                 <div class="entry unvoted">
                                     <p class="tagline">
                                         <a href="/user/@ViewBag.userid" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.userid">@ViewBag.userid</a>
-                                        <span class="score dislikes">@item.Dislikes points</span>
+                                        <span class="score dislikes">@item.DownCount points</span>
                                         <span class="userstats-submission-score">@score points</span>
-                                        <span class="score likes">@item.Likes points</span>
-                                        <span class="commentvotesratio">(<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</span>
-                                        <time title="@item.Date" datetime="@item.Date">@Submissions.CalcSubmissionAge(item.Date)</time> ago
+                                        <span class="score likes">@item.UpCount points</span>
+                                        <span class="commentvotesratio">(<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</span>
+                                        <time title="@item.CreationDate" datetime="@item.CreationDate">@Submissions.CalcSubmissionAge(item.CreationDate)</time> ago
                                     </p>
                                     <div class="usertext-body">
                                         <div class="md">
@@ -144,14 +145,14 @@
                                             }
                                             else
                                             {
-                                                string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
+                                                string trimmedComment = Formatting.TruncateAtWord(item.Content, 300);
                                                 @Html.Raw(@Formatting.FormatMessage(trimmedComment))
                                             }
                                         </div>
                                     </div>
                                     <ul class="flat-list buttons">
                                         <li class="first">
-                                            <a href="/v/@item.Message.Subverse/comments/@item.MessageId/@item.Id" class="bylink" rel="nofollow">permalink</a>
+                                            <a href="/v/@item.Submission.Subverse/comments/@item.Submission.ID/@item.ID" class="bylink" rel="nofollow">permalink</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -170,30 +171,30 @@
                 @{
                     if (userStatsModel.LowestRatedComments.Count > 0)
                     {
-                        foreach (var item in userStatsModel.LowestRatedComments)
+                        foreach (Comment item in userStatsModel.LowestRatedComments)
                         {
-                            var score = item.Likes - item.Dislikes;
+                            var score = item.UpCount - item.DownCount;
 
-                            <div class="thread comment" data-ups="@item.Likes" data-downs="@item.Dislikes">
+                            <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
 
-                                @if (item.Message.Type == 1)
+                                @if (item.Submission.Type == 1)
                                 {
-                                    <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Title</a>
+                                    <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
                                 }
                                 else
                                 {
-                                    <a href="/v/@item.Message.Subverse/comments/@item.MessageId" class="userstats-submission-title" rel="nofollow">@item.Message.Linkdescription</a>
+                                    <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.LinkDescription</a>
                                 }
-                                submitted by <a href="/user/@item.Message.Name">@item.Message.Name</a> to <a href="/v/@item.Message.Subverse" class="userstats-submission-subverse">@item.Message.Subverse</a>
+                                submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
 
                                 <div class="entry unvoted">
                                     <p class="tagline">
                                         <a href="/user/@ViewBag.userid" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.userid">@ViewBag.userid</a>
-                                        <span class="score dislikes">@item.Dislikes points</span>
+                                        <span class="score dislikes">@item.DownCount points</span>
                                         <span class="userstats-submission-score">@score points</span>
-                                        <span class="score likes">@item.Likes points</span>
-                                        <span class="commentvotesratio">(<span class="post_upvotes">+@item.Likes</span>|<span class="post_downvotes">-@item.Dislikes</span>)</span>
-                                        <time title="@item.Date" datetime="@item.Date">@Submissions.CalcSubmissionAge(item.Date)</time> ago
+                                        <span class="score likes">@item.UpCount points</span>
+                                        <span class="commentvotesratio">(<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</span>
+                                        <time title="@item.CreationDate" datetime="@item.CreationDate">@Submissions.CalcSubmissionAge(item.CreationDate)</time> ago
                                     </p>
                                     <div class="usertext-body">
                                         <div class="md">
@@ -204,14 +205,14 @@
                                             }
                                             else
                                             {
-                                                string trimmedComment = Formatting.TruncateAtWord(item.CommentContent, 300);
+                                                string trimmedComment = Formatting.TruncateAtWord(item.Content, 300);
                                                 @Html.Raw(@Formatting.FormatMessage(trimmedComment))
                                             }
                                         </div>
                                     </div>
                                     <ul class="flat-list buttons">
                                         <li class="first">
-                                            <a href="/v/@item.Message.Subverse/comments/@item.MessageId/@item.Id" class="bylink" rel="nofollow">permalink</a>
+                                            <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID/@item.ID" class="bylink" rel="nofollow">permalink</a>
                                         </li>
                                     </ul>
                                 </div>

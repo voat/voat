@@ -12,13 +12,13 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Savingtracker
+    public partial class FeaturedSubverse
     {
-        public int Id { get; set; }
-        public int MessageId { get; set; }
-        public string UserName { get; set; }
-        public System.DateTime Timestamp { get; set; }
+        public int ID { get; set; }
+        public string Subverse { get; set; }
+        public string CreatedBy { get; set; }
+        public System.DateTime CreationDate { get; set; }
     
-        public virtual Message Message { get; set; }
+        public virtual Subverse Subverse1 { get; set; }
     }
 }

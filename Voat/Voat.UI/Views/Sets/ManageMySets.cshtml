@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Data.Models.Userset>
+@model PaginatedList<Voat.Data.Models.UserSet>
 
 @{
     ViewBag.Title = Settings.SiteSlogan;
@@ -44,14 +44,14 @@
                 {
                     var viewModel = new SetDetailsViewModel
                     {
-                        CreatedBy = set.Created_by,
-                        CreationDate = set.Created_on,
+                        CreatedBy = set.CreatedBy,
+                        CreationDate = set.CreationDate,
                         Description = set.Description,
-                        Id = set.Set_id,
+                        Id = set.ID,
                         Name = set.Name,
-                        Public = set.Public,
-                        Subscribers = set.Subscribers,
-                        SubversesList = set.Usersetdefinitions.ToList()
+                        Public = set.IsPublic,
+                        Subscribers = set.SubscriberCount,
+                        SubversesList = set.UserSetLists.ToList()
                     };
 
                     @Html.Partial("_SetDetails", viewModel)

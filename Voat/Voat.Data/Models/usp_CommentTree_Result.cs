@@ -17,17 +17,17 @@ namespace Voat.Data.Models
         public Nullable<int> Depth { get; set; }
         public string Path { get; set; }
         public string Subverse { get; set; }
-        public int Id { get; set; }
+        public int ID { get; set; }
         public Nullable<int> Votes { get; set; }
-        public string Name { get; set; }
-        public string CommentContent { get; set; }
-        public System.DateTime Date { get; set; }
+        public string UserName { get; set; }
+        public string Content { get; set; }
+        public System.DateTime CreationDate { get; set; }
         public Nullable<System.DateTime> LastEditDate { get; set; }
-        public Nullable<int> MessageId { get; set; }
-        public long Likes { get; set; }
-        public long Dislikes { get; set; }
-        public Nullable<int> ParentId { get; set; }
-        public bool Anonymized { get; set; }
+        public Nullable<int> SubmissionID { get; set; }
+        public long UpCount { get; set; }
+        public long DownCount { get; set; }
+        public Nullable<int> ParentID { get; set; }
+        public bool IsAnonymized { get; set; }
         public bool IsDistinguished { get; set; }
         public string FormattedContent { get; set; }
         public bool IsDeleted { get; set; }

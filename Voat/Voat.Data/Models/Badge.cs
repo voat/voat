@@ -17,15 +17,15 @@ namespace Voat.Data.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Badge()
         {
-            this.Userbadges = new HashSet<Userbadge>();
+            this.UserBadges = new HashSet<UserBadge>();
         }
     
-        public string BadgeId { get; set; }
-        public string BadgeGraphics { get; set; }
-        public string BadgeTitle { get; set; }
-        public string BadgeName { get; set; }
+        public string ID { get; set; }
+        public string Graphic { get; set; }
+        public string Title { get; set; }
+        public string Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Userbadge> Userbadges { get; set; }
+        public virtual ICollection<UserBadge> UserBadges { get; set; }
     }
 }

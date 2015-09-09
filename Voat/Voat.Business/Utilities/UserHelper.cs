@@ -67,55 +67,55 @@ namespace Voat.Utilities
                     if (tmpuser != null)
                     {
                         // remove voting history for submisions
-                        db.Votingtrackers.RemoveRange(db.Votingtrackers.Where(x => x.UserName == userName));
+                        db.SubmissionVoteTrackers.RemoveRange(db.SubmissionVoteTrackers.Where(x => x.UserName == userName));
 
                         // remove voting history for comments
-                        db.Commentvotingtrackers.RemoveRange(db.Commentvotingtrackers.Where(x => x.UserName == userName));
+                        db.CommentVoteTrackers.RemoveRange(db.CommentVoteTrackers.Where(x => x.UserName == userName));
 
                         // remove all comments
-                        var comments = db.Comments.Where(c => c.Name == userName).ToList();
+                        var comments = db.Comments.Where(c => c.UserName == userName).ToList();
                         foreach (Comment c in comments)
                         {
                             c.IsDeleted = true;
-                            c.CommentContent = "deleted by user";
+                            c.Content = "deleted by user";
                         }
                         db.SaveChanges();
 
                         // remove all submissions
-                        var submissions = db.Messages.Where(c => c.Name == userName).ToList();
-                        foreach (Message s in submissions)
+                        var submissions = db.Submissions.Where(c => c.UserName == userName).ToList();
+                        foreach (var s in submissions)
                         {
                             if (s.Type == 1)
                             {
                                 s.IsDeleted = true;
-                                s.MessageContent = "deleted by user";
+                                s.Content = "deleted by user";
                                 s.Title = "deleted by user";
                             }
                             else
                             {
                                 s.IsDeleted = true;
-                                s.Linkdescription = "deleted by user";
-                                s.MessageContent = "http://voat.co";
+                                s.LinkDescription = "deleted by user";
+                                s.Content = "http://voat.co";
                             }
                         }
 
                         // resign from all moderating positions
-                        db.SubverseAdmins.RemoveRange(db.SubverseAdmins.Where(m => m.Username.Equals(userName, StringComparison.OrdinalIgnoreCase)));
+                        db.SubverseModerators.RemoveRange(db.SubverseModerators.Where(m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
                         // delete comment reply notifications
-                        db.Commentreplynotifications.RemoveRange(db.Commentreplynotifications.Where(crp => crp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
+                        db.CommentReplyNotifications.RemoveRange(db.CommentReplyNotifications.Where(crp => crp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
                         // delete post reply notifications
-                        db.Postreplynotifications.RemoveRange(db.Postreplynotifications.Where(prp => prp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
+                        db.SubmissionReplyNotifications.RemoveRange(db.SubmissionReplyNotifications.Where(prp => prp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
                         // delete private messages
-                        db.Privatemessages.RemoveRange(db.Privatemessages.Where(pm => pm.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
+                        db.PrivateMessages.RemoveRange(db.PrivateMessages.Where(pm => pm.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
                         // delete short bio if userprefs record exists for this user
-                        var userPrefs = db.Userpreferences.Find(userName);
+                        var userPrefs = db.UserPreferences.Find(userName);
                         if (userPrefs != null)
                         {
-                            userPrefs.Shortbio = null;
+                            userPrefs.Bio = null;
                         }
 
                         // TODO: delete avatar
@@ -142,8 +142,8 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var subverseOwner = db.SubverseAdmins.FirstOrDefault(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Power == 1);
-                return subverseOwner != null && subverseOwner.Username.Equals(userName, StringComparison.OrdinalIgnoreCase);
+                var subverseOwner = db.SubverseModerators.FirstOrDefault(n => n.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Power == 1);
+                return subverseOwner != null && subverseOwner.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -152,16 +152,16 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var subverseModerator = db.SubverseAdmins.FirstOrDefault(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 2);
-                var subverseOwner = db.SubverseAdmins.FirstOrDefault(n => n.SubverseName.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.Power == 1);
+                var subverseModerator = db.SubverseModerators.FirstOrDefault(n => n.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 2);
+                var subverseOwner =     db.SubverseModerators.FirstOrDefault(n => n.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 1);
 
-                if (subverseModerator != null && subverseModerator.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                if (subverseModerator != null && subverseModerator.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
 
                 // subverse owners are by default also moderators
-                if (subverseOwner != null && subverseOwner.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                if (subverseOwner != null && subverseOwner.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -175,7 +175,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var subverseSubscriber = db.Subscriptions.FirstOrDefault(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username == userName);
+                var subverseSubscriber = db.SubverseSubscriptions.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
                 return subverseSubscriber != null;
             }
         }
@@ -185,7 +185,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username == userName);
+                var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
                 return subverseBlock != null;
             }
         }
@@ -195,7 +195,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var setSubscriber = db.Usersetsubscriptions.FirstOrDefault(n => n.Set_id == setId && n.Username == userName);
+                var setSubscriber = db.UserSetSubscriptions.FirstOrDefault(n => n.UserSetID == setId && n.UserName == userName);
                 return setSubscriber != null;
             }
         }
@@ -207,15 +207,15 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // add a new subscription
-                var newSubscription = new Subscription { Username = userName, SubverseName = subverse };
-                db.Subscriptions.Add(newSubscription);
+                var newSubscription = new SubverseSubscription { UserName = userName, Subverse = subverse };
+                db.SubverseSubscriptions.Add(newSubscription);
 
                 // record new subscription in subverse table subscribers field
                 Subverse tmpSubverse = db.Subverses.Find(subverse);
 
                 if (tmpSubverse != null)
                 {
-                    tmpSubverse.subscribers++;
+                    tmpSubverse.SubscriberCount++;
                 }
 
                 db.SaveChanges();
@@ -229,18 +229,18 @@ namespace Voat.Utilities
             {
                 using (var db = new voatEntities())
                 {
-                    var subscription = db.Subscriptions.FirstOrDefault(b => b.Username == userName && b.SubverseName == subverse);
+                    var subscription = db.SubverseSubscriptions.FirstOrDefault(b => b.UserName == userName && b.Subverse == subverse);
 
                     if (subverse == null) return;
                     // remove subscription record
-                    db.Subscriptions.Remove(subscription);
+                    db.SubverseSubscriptions.Remove(subscription);
 
                     // record new unsubscription in subverse table subscribers field
                     Subverse tmpSubverse = db.Subverses.Find(subverse);
 
                     if (tmpSubverse != null)
                     {
-                        tmpSubverse.subscribers--;
+                        tmpSubverse.SubscriberCount--;
                     }
 
                     db.SaveChanges();
@@ -253,7 +253,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                return db.Subscriptions.Count(s => s.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                return db.SubverseSubscriptions.Count(s => s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
             }
         }
 
@@ -264,23 +264,23 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 var subscribedSubverses = from c in db.Subverses
-                                          join a in db.Subscriptions
-                                          on c.name equals a.SubverseName
-                                          where a.Username.Equals(userName)
-                                          orderby a.SubverseName ascending
-                                          select c.name;
+                                          join a in db.SubverseSubscriptions
+                                          on c.Name equals a.Subverse
+                                          where a.UserName.Equals(userName)
+                                          orderby a.Subverse ascending
+                                          select c.Name;
 
                 return subscribedSubverses.ToList();
             }
         }
 
         // return a list of user badges
-        public static List<Userbadge> UserBadges(string userName)
+        public static List<UserBadge> UserBadges(string userName)
         {
             using (var db = new voatEntities())
             {
-                return db.Userbadges.Include("Badge")
-                    .Where(r => r.Username.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                return db.UserBadges.Include("Badge")
+                    .Where(r => r.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
         }
@@ -290,9 +290,9 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var unreadPrivateMessagesCount = db.Privatemessages.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
-                var unreadCommentRepliesCount = db.Commentreplynotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
-                var unreadPostRepliesCount = db.Postreplynotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
+                var unreadPrivateMessagesCount = db.PrivateMessages.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
+                var unreadCommentRepliesCount = db.CommentReplyNotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
+                var unreadPostRepliesCount = db.SubmissionReplyNotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
 
                 return unreadPrivateMessagesCount > 0 || unreadCommentRepliesCount > 0 || unreadPostRepliesCount > 0;
             }
@@ -303,14 +303,14 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var commentReplies = db.Commentreplynotifications
+                var commentReplies = db.CommentReplyNotifications
                     .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                    .OrderBy(s => s.Timestamp)
+                    .OrderBy(s => s.CreationDate)
                     .ThenBy(s => s.Sender);
 
                 if (!commentReplies.Any()) return 0;
 
-                var unreadCommentReplies = commentReplies.Where(s => s.Status && s.Markedasunread == false);
+                var unreadCommentReplies = commentReplies.Where(s => s.IsUnread && s.MarkedAsUnread == false);
                 return unreadCommentReplies.Any() ? unreadCommentReplies.Count() : 0;
             }
         }
@@ -320,13 +320,13 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var postReplies = db.Postreplynotifications
+                var postReplies = db.SubmissionReplyNotifications
                     .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                    .OrderBy(s => s.Timestamp)
+                    .OrderBy(s => s.CreationDate)
                     .ThenBy(s => s.Sender);
 
                 if (!postReplies.Any()) return 0;
-                var unreadPostReplies = postReplies.Where(s => s.Status && s.Markedasunread == false);
+                var unreadPostReplies = postReplies.Where(s => s.IsUnread && s.MarkedAsUnread == false);
 
                 return unreadPostReplies.Any() ? unreadPostReplies.Count() : 0;
             }
@@ -337,13 +337,13 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var privateMessages = db.Privatemessages
+                var privateMessages = db.PrivateMessages
                     .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                    .OrderBy(s => s.Timestamp)
+                    .OrderBy(s => s.CreationDate)
                     .ThenBy(s => s.Sender);
 
                 if (!privateMessages.Any()) return 0;
-                var unreadPrivateMessages = privateMessages.Where(s => s.Status && s.Markedasunread == false);
+                var unreadPrivateMessages = privateMessages.Where(s => s.IsUnread && s.MarkedAsUnread == false);
 
                 return unreadPrivateMessages.Any() ? unreadPrivateMessages.Count() : 0;
             }
@@ -355,9 +355,9 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 int totalCount = 0;
-                int unreadPrivateMessagesCount = db.Privatemessages.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
-                int unreadPostRepliesCount = db.Postreplynotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
-                int unreadCommentRepliesCount = db.Commentreplynotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Markedasunread == false);
+                int unreadPrivateMessagesCount = db.PrivateMessages.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
+                int unreadPostRepliesCount = db.SubmissionReplyNotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
+                int unreadCommentRepliesCount = db.CommentReplyNotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
 
                 totalCount = totalCount + unreadPrivateMessagesCount + unreadPostRepliesCount + unreadCommentRepliesCount;
                 return totalCount;
@@ -369,7 +369,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var commentReplies = db.Commentreplynotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                var commentReplies = db.CommentReplyNotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
                 if (!commentReplies.Any()) return 0;
                 return commentReplies.Any() ? commentReplies.Count() : 0;
             }
@@ -380,7 +380,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var postReplies = db.Postreplynotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                var postReplies = db.SubmissionReplyNotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
                 if (!postReplies.Any()) return 0;
                 return postReplies.Any() ? postReplies.Count() : 0;
             }
@@ -391,7 +391,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var privateMessages = db.Privatemessages.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                var privateMessages = db.PrivateMessages.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
                 if (!privateMessages.Any()) return 0;
                 return privateMessages.Any() ? privateMessages.Count() : 0;
             }
@@ -402,8 +402,8 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var result = db.Userpreferences.Find(userName);
-                return result != null && result.Disable_custom_css;
+                var result = db.UserPreferences.Find(userName);
+                return result != null && result.DisableCSS;
             }
         }
         
@@ -430,10 +430,10 @@ namespace Voat.Utilities
                 if (!String.IsNullOrEmpty(userName)) { 
                     using (var db = new voatEntities())
                     {
-                        var result = db.Userpreferences.Find(userName);
+                        var result = db.UserPreferences.Find(userName);
                         if (result != null)
                         {
-                            theme = result.Night_mode ? "dark" : "light";
+                            theme = result.NightMode ? "dark" : "light";
                         }
                     }
                 }
@@ -446,8 +446,8 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var result = db.Userpreferences.Find(userName);
-                return result != null && result.Enable_adult_content;
+                var result = db.UserPreferences.Find(userName);
+                return result != null && result.EnableAdultContent;
             }
         }
 
@@ -456,8 +456,8 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var result = db.Userpreferences.Find(userName);
-                return result != null && result.Clicking_mode;
+                var result = db.UserPreferences.Find(userName);
+                return result != null && result.OpenInNewWindow;
             }
         }
 
@@ -476,14 +476,14 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // calculate how many comment votes user made in the past 24 hours
-                var commentVotesUsedToday = db.Commentvotingtrackers
-                    .Where(c => c.Timestamp >= startDate && c.Timestamp <= DateTime.Now && c.UserName == userName);
+                var commentVotesUsedToday = db.CommentVoteTrackers
+                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= DateTime.Now && c.UserName == userName);
 
                 commentVotesUsedInPast24Hrs = commentVotesUsedToday.Count();
 
                 // calculate how many submission votes user made in the past 24 hours
-                var submissionVotesUsedToday = db.Votingtrackers
-                    .Where(c => c.Timestamp >= startDate && c.Timestamp <= DateTime.Now && c.UserName == userName);
+                var submissionVotesUsedToday = db.SubmissionVoteTrackers
+                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= DateTime.Now && c.UserName == userName);
 
                 submissionVotesUsedInPast24Hrs = submissionVotesUsedToday.Count();
             }
@@ -499,50 +499,50 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // 5 subverses user submitted to most
-                var subverses = db.Messages.Where(a => a.Name == userName && !a.Anonymized)
-                         .GroupBy(a => new { a.Name, a.Subverse })
+                var subverses = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                         .GroupBy(a => new { a.UserName, a.Subverse })
                          .Select(g => new SubverseStats { SubverseName = g.Key.Subverse, Count = g.Count() })
                          .OrderByDescending(s => s.Count)
                          .Take(5)
                          .ToList();
 
                 // total comment count
-                var comments = db.Comments.Count(a => a.Name == userName);
+                var comments = db.Comments.Count(a => a.UserName == userName);
 
                 // voting habits
-                var commentUpvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var commentDownvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
-                var submissionUpvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var submissionDownvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                var submissionUpvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                var submissionDownvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
                 // get 3 highest rated comments
                 var highestRatedComments = db.Comments
-                    .Include("Message")
-                    .Where(a => a.Name == userName && !a.Anonymized && !a.IsDeleted)
-                    .OrderByDescending(s => s.Likes - s.Dislikes)
+                    .Include("Submission")
+                    .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                    .OrderByDescending(s => s.UpCount - s.DownCount)
                     .Take(3)
                     .ToList();
 
                 // get 3 lowest rated comments
                 var lowestRatedComments = db.Comments
-                    .Include("Message")
-                    .Where(a => a.Name == userName && !a.Anonymized && !a.IsDeleted)
-                    .OrderBy(s => s.Likes - s.Dislikes)
+                    .Include("Submission")
+                    .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                    .OrderBy(s => s.UpCount - s.DownCount)
                     .Take(3)
                     .ToList();
 
-                var linkSubmissionsCount = db.Messages.Count(a => a.Name == userName && a.Type == 2 && !a.IsDeleted);
-                var messageSubmissionsCount = db.Messages.Count(a => a.Name == userName && a.Type == 1 && !a.IsDeleted);
+                var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted);
+                var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted);
 
                 // get 5 highest rated submissions
-                var highestRatedSubmissions = db.Messages.Where(a => a.Name == userName && !a.Anonymized && !a.IsDeleted)
-                    .OrderByDescending(s => s.Likes - s.Dislikes)
+                var highestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                    .OrderByDescending(s => s.UpCount - s.DownCount)
                     .Take(5)
                     .ToList();
 
                 // get 5 lowest rated submissions
-                var lowestRatedSubmissions = db.Messages.Where(a => a.Name == userName && !a.Anonymized && !a.IsDeleted)
-                    .OrderBy(s => s.Likes - s.Dislikes)
+                var lowestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                    .OrderBy(s => s.UpCount - s.DownCount)
                     .Take(5)
                     .ToList();
 
@@ -568,7 +568,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var bannedUser = db.Bannedusers.FirstOrDefault(n => n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                var bannedUser = db.BannedUsers.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
                 return bannedUser != null;
             }
         }
@@ -578,7 +578,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var bannedUser = db.SubverseBans.FirstOrDefault(n => n.Username.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.SubverseName.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+                var bannedUser = db.SubverseBans.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
                 return bannedUser != null;
             }
         }
@@ -598,8 +598,8 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var result = db.Userpreferences.Find(userName);
-                return result != null && result.Public_subscriptions;
+                var result = db.UserPreferences.Find(userName);
+                return result != null && result.DisplaySubscriptions;
             }
         }
 
@@ -608,8 +608,8 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var result = db.Userpreferences.Find(userName);
-                return result != null && result.Topmenu_from_subscriptions;
+                var result = db.UserPreferences.Find(userName);
+                return result != null && result.UseSubscriptionsMenu;
             }
         }
 
@@ -620,10 +620,10 @@ namespace Voat.Utilities
 
             using (var db = new voatEntities())
             {
-                var result = db.Userpreferences.Find(userName);
+                var result = db.UserPreferences.Find(userName);
                 if (result == null) return placeHolderMessage;
 
-                return result.Shortbio ?? placeHolderMessage;
+                return result.Bio ?? placeHolderMessage;
             }
         }
 
@@ -632,7 +632,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var result = db.Userpreferences.Find(userName);
+                var result = db.UserPreferences.Find(userName);
                 return result == null ? null : result.Avatar;
             }
         }
@@ -642,7 +642,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var result = db.Usersetsubscriptions.FirstOrDefault(s => s.Userset.Name == setName && s.Username == userName);
+                var result = db.UserSetSubscriptions.FirstOrDefault(s => s.UserSet.Name == setName && s.UserName == userName);
                 return result != null;
             }
         }
@@ -652,7 +652,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var result = db.Usersets.FirstOrDefault(s => s.Set_id == setId && s.Created_by == userName);
+                var result = db.UserSets.FirstOrDefault(s => s.ID == setId && s.CreatedBy == userName);
                 return result != null;
             }
         }
@@ -662,7 +662,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                return db.Usersetsubscriptions.Count(s => s.Username.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                return db.UserSetSubscriptions.Count(s => s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
             }
         }
 
@@ -679,10 +679,10 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // check how many submission user made today
-                var userSubmissionsToTargetSub = db.Messages.Count(
+                var userSubmissionsToTargetSub = db.Submissions.Count(
                     m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                        && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                        && m.Date >= fromDate && m.Date <= toDate);
+                        && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
                 if (dpqps <= userSubmissionsToTargetSub)
                 {
@@ -705,9 +705,9 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // check how many submission user made today
-                var userSubmissionsInPast24Hours = db.Messages.Count(
-                    m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                        && m.Date >= fromDate && m.Date <= toDate);
+                var userSubmissionsInPast24Hours = db.Submissions.Count(
+                    m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
                 if (dpqps <= userSubmissionsInPast24Hours)
                 {
@@ -731,8 +731,8 @@ namespace Voat.Utilities
             {
                 // check how many submission user made today
                 var userCommentSubmissionsInPast24Hours = db.Comments.Count(
-                    m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                        && m.Date >= fromDate && m.Date <= toDate);
+                    m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
                 if (dpqps <= userCommentSubmissionsInPast24Hours)
                 {
@@ -755,10 +755,10 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // check how many submission user made in the last hour
-                var userSubmissionsToTargetSub = db.Messages.Count(
+                var userSubmissionsToTargetSub = db.Submissions.Count(
                     m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                        && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                        && m.Date >= fromDate && m.Date <= toDate);
+                        && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
                 if (dpqps <= userSubmissionsToTargetSub)
                 {
@@ -790,7 +790,7 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // check how many submission user made in the last hour
-                var totalUserSubmissionsForTimeSpam = db.Messages.Count(m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && m.Date >= fromDate && m.Date <= toDate);
+                var totalUserSubmissionsForTimeSpam = db.Submissions.Count(m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
                 if (dpqps <= totalUserSubmissionsForTimeSpam)
                 {
@@ -822,7 +822,7 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // check how many submission user made today
-                var userSubmissionsToTargetSub = db.Messages.Count(m => m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) && m.Date >= fromDate && m.Date <= toDate);
+                var userSubmissionsToTargetSub = db.Submissions.Count(m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
                 if (dpqps <= userSubmissionsToTargetSub)
                 {
@@ -844,10 +844,10 @@ namespace Voat.Utilities
 
             using (var db = new voatEntities())
             {
-                var numberOfTimesSubmitted = db.Messages
-                    .Where(m => m.MessageContent.Equals(url, StringComparison.OrdinalIgnoreCase) 
-                    && m.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                    && m.Date >= fromDate && m.Date <= toDate);
+                var numberOfTimesSubmitted = db.Submissions
+                    .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase) 
+                    && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                    && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
                 int nrtimessubmitted = numberOfTimesSubmitted.Count();
 
@@ -868,15 +868,15 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // add a new set subscription
-                var newSubscription = new Usersetsubscription { Username = userName, Set_id = setId };
-                db.Usersetsubscriptions.Add(newSubscription);
+                var newSubscription = new UserSetSubscription { UserName = userName, UserSetID = setId };
+                db.UserSetSubscriptions.Add(newSubscription);
 
                 // record new set subscription in sets table subscribers field
-                var tmpUserSet = db.Usersets.Find(setId);
+                var tmpUserSet = db.UserSets.Find(setId);
 
                 if (tmpUserSet != null)
                 {
-                    tmpUserSet.Subscribers++;
+                    tmpUserSet.SubscriberCount++;
                 }
 
                 db.SaveChanges();
@@ -891,17 +891,17 @@ namespace Voat.Utilities
 
             using (var db = new voatEntities())
             {
-                var subscription = db.Usersetsubscriptions.FirstOrDefault(b => b.Username == userName && b.Set_id == setId);
+                var subscription = db.UserSetSubscriptions.FirstOrDefault(b => b.UserName == userName && b.UserSetID == setId);
 
                 // remove subscription record
-                db.Usersetsubscriptions.Remove(subscription);
+                db.UserSetSubscriptions.Remove(subscription);
 
                 // record new unsubscription in sets table subscribers field
-                var tmpUserset = db.Usersets.Find(setId);
+                var tmpUserset = db.UserSets.Find(setId);
 
                 if (tmpUserset != null)
                 {
-                    tmpUserset.Subscribers--;
+                    tmpUserset.SubscriberCount--;
                 }
 
                 db.SaveChanges();
@@ -914,8 +914,8 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // get voting habits
-                var commentUpvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var commentDownvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
                 return commentDownvotes > commentUpvotes;
             }
@@ -927,8 +927,8 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // get voting habits
-                var submissionUpvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var submissionDownvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                var submissionUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                var submissionDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
                 return submissionDownvotes > submissionUpvotes;
             }
@@ -957,14 +957,14 @@ namespace Voat.Utilities
                 // unblock if subverse is already blocked
                 if (IsUserBlockingSubverse(userName, subverse))
                 {
-                    var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.SubverseName.ToLower() == subverse.ToLower() && n.Username == userName);
+                    var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
                     if (subverseBlock != null) db.UserBlockedSubverses.Remove(subverseBlock);
                     db.SaveChanges();
                     return;
                 }
 
                 // add a new block
-                var blockedSubverse = new UserBlockedSubverse { Username = userName, SubverseName = subverse };
+                var blockedSubverse = new UserBlockedSubverse { UserName = userName, Subverse = subverse };
                 db.UserBlockedSubverses.Add(blockedSubverse);
                 db.SaveChanges();
             }

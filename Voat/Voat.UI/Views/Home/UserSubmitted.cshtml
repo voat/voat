@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Data.Models.Message>
+@model PaginatedList<Voat.Data.Models.Submission>
 
 @{
     ViewBag.Title = "Submission history for " + @ViewBag.userid;
@@ -34,7 +34,7 @@
             {
                 submissionClass = "";
             }
-            <div class="submission id-@submission.Id even link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+            <div class="submission id-@submission.ID even link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
                 @Html.Partial("Userprofile/_UserProfileSubmission", submission)
                 <div class="child"></div>
                 <div class="clearleft">@*IE6fix*@</div>

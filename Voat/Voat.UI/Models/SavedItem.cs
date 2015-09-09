@@ -20,7 +20,7 @@ namespace Voat.Models
     public class SavedItem
     {
         public DateTime SaveDateTime { get; set; }
-        public Message SavedMessage { get; set; }
+        public Submission SavedSubmission { get; set; }
         public Comment SavedComment { get; set; }
     }
 }

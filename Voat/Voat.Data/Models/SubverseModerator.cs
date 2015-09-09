@@ -12,15 +12,15 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Votingtracker
+    public partial class SubverseModerator
     {
-        public int Id { get; set; }
-        public int MessageId { get; set; }
+        public int ID { get; set; }
+        public string Subverse { get; set; }
         public string UserName { get; set; }
-        public Nullable<int> VoteStatus { get; set; }
-        public Nullable<System.DateTime> Timestamp { get; set; }
-        public string ClientIpAddress { get; set; }
+        public int Power { get; set; }
+        public string CreatedBy { get; set; }
+        public Nullable<System.DateTime> CreationDate { get; set; }
     
-        public virtual Message Message { get; set; }
+        public virtual Subverse Subverse1 { get; set; }
     }
 }

@@ -12,13 +12,13 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Usersetsubscription
+    public partial class UserSetSubscription
     {
-        public int Id { get; set; }
-        public int Set_id { get; set; }
+        public int ID { get; set; }
+        public int UserSetID { get; set; }
         public int Order { get; set; }
-        public string Username { get; set; }
+        public string UserName { get; set; }
     
-        public virtual Userset Userset { get; set; }
+        public virtual UserSet UserSet { get; set; }
     }
 }

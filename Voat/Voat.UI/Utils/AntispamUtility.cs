@@ -78,7 +78,7 @@ namespace Voat.UI.Utilities
             // user is submitting a message
             if (filterContext.ActionParameters.ContainsKey("message"))
             {
-                Message incomingMessage = (Message)filterContext.ActionParameters["message"];
+                var incomingMessage = (Submission)filterContext.ActionParameters["message"];
                 var targetSubverse = incomingMessage.Subverse;
 
                 // check user LCP for target subverse
@@ -104,7 +104,7 @@ namespace Voat.UI.Utilities
 
                 using (voatEntities db = new voatEntities())
                 {
-                    var relatedMessage = db.Messages.Find(incomingComment.MessageId);
+                    var relatedMessage = db.Submissions.Find(incomingComment.SubmissionID);
                     if (relatedMessage != null)
                     {
                         var targetSubverseName = relatedMessage.Subverse;

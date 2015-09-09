@@ -18,9 +18,9 @@ namespace Voat.Models.ViewModels
 {
     public class PrivateMessageComposeViewModel
     {
-        [RegularExpression("^[a-zA-Z0-9-_]+$", ErrorMessage="Please use only alphanumeric characters.")]
+        //[RegularExpression("^[a-zA-Z0-9-_]+$", ErrorMessage="Please use only alphanumeric characters.")]
         [Required(ErrorMessage = "Please enter a username to send this submission to.")]
-        [StringLength(23, ErrorMessage = "Username is limited to 23 characters.")]
+        //[StringLength(23, ErrorMessage = "Username is limited to 23 characters.")]
         public string Recipient { get; set; }
         
         [Required(ErrorMessage = "Please enter a subject for this submission.")]

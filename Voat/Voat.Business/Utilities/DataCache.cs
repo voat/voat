@@ -19,7 +19,7 @@ namespace Voat.Utilities
                 var t = new Task(() => {
                     try
                     {
-                        string key = CacheHandler.Keys.CommentTree(comment.MessageId.Value);
+                        string key = CacheHandler.Keys.CommentTree(comment.SubmissionID.Value);
                         
                         //not in any way thread safe, will be jacked in high concurrency situations
                         var c = CommentBucketViewModel.Map(comment);
@@ -27,9 +27,9 @@ namespace Voat.Utilities
                         CacheHandler.Replace<List<usp_CommentTree_Result>>(key, new Func<List<usp_CommentTree_Result>, List<usp_CommentTree_Result>>(currentData =>
                         {
                             usp_CommentTree_Result parent = null;
-                            if (c.ParentId != null)
+                            if (c.ParentID != null)
                             {
-                                parent = currentData.FirstOrDefault(x => x.Id == c.ParentId);
+                                parent = currentData.FirstOrDefault(x => x.ID == c.ParentID);
                                 parent.ChildCount += 1;
                             }
                             currentData.Add(c);
@@ -107,15 +107,15 @@ namespace Voat.Utilities
             /// </summary>
             /// <param name="submissionID">Using Nullable because everything seems to be nullable in this entire project</param>
             /// <returns></returns>
-            public static Message Retrieve(int? submissionID)
+            public static Voat.Data.Models.Submission Retrieve(int? submissionID)
             {
                 if (submissionID.HasValue && submissionID.Value > 0)
                 {
                     string cacheKey = CacheHandler.Keys.Submission(submissionID.Value);
-                    var submission = CacheHandler.Register<Message>(cacheKey, new Func<Message>(() => {
+                    Voat.Data.Models.Submission submission = CacheHandler.Register<Voat.Data.Models.Submission>(cacheKey, new Func<Voat.Data.Models.Submission>(() => {
                         using (voatEntities db = new voatEntities())
                         {
-                            return db.Messages.Where(x => x.Id == submissionID).FirstOrDefault();
+                            return db.Submissions.Where(x => x.ID == submissionID).FirstOrDefault();
                         }
                     }), TimeSpan.FromMinutes(30), -1);
                     return submission;
@@ -140,7 +140,7 @@ namespace Voat.Utilities
                     {
                         using (voatEntities db = new voatEntities())
                         {
-                            return db.Subverses.Where(x => x.name.Equals(subverse, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                            return db.Subverses.Where(x => x.Name.Equals(subverse, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                         }
                     }), TimeSpan.FromMinutes(5), 50);
 

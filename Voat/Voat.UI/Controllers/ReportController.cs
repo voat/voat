@@ -40,38 +40,22 @@ namespace Voat.Controllers
             if (commentToReport != null)
             {
                 // prepare report headers
-                var commentSubverse = commentToReport.Message.Subverse;
-                var reportTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+                var commentSubverse = commentToReport.Submission.Subverse;
 
-                // send the report
-                try
+                //don't allow banned users to send reports
+                if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, commentSubverse) && !UserHelper.IsUserGloballyBanned(User.Identity.Name))
                 {
-                    var from = new MailAddress("abuse@whoaverse.com");
-                    var to = new MailAddress("legal@voat.co");
-                    var msg = new MailMessage(from, to)
+                    var reportTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+                    try
                     {
-                        Subject = "New comment report from " + User.Identity.Name,
-                        IsBodyHtml = false
-                    };
+                        string body = String.Format("This comment has been reported as spam:\r\n\r\nhttps://voat.co/v/{0}/comments/{1}/{2}/{2}#{2}\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", commentSubverse, commentToReport.SubmissionID, id);
+                        MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : User.Identity.Name, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
 
-                    // format report email
-                    var sb = new StringBuilder();
-                    sb.Append("Comment Id: " + id);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Subverse: " + commentSubverse);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Report timestamp: " + reportTimeStamp);
-                    sb.Append(Environment.NewLine);
-                    sb.Append("Comment permalink: " + "http://voat.co/v/" + commentSubverse + "/comments/" + commentToReport.MessageId + "/" + id);
-                    sb.Append(Environment.NewLine);
-
-                    msg.Body = sb.ToString();
-
-                    EmailUtility.SendEmail(msg);
-                }
-                catch (Exception)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.ServiceUnavailable, "Service Unavailable");
+                    }
+                    catch (Exception)
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.ServiceUnavailable, "Service Unavailable");
+                    }
                 }
             }
             else

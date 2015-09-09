@@ -65,20 +65,20 @@ namespace Voat.Controllers
                 }
                 
                 string cacheKey = CacheHandler.Keys.Search(sub, q);
-                IList<Message> cacheData = (IList<Message>)CacheHandler.Retrieve(cacheKey);
+                IList<Submission> cacheData = (IList<Submission>)CacheHandler.Retrieve(cacheKey);
                 if (cacheData == null) {
 
 
-                    cacheData = (IList<Message>)CacheHandler.Register(cacheKey, new Func<object>(() =>
+                    cacheData = (IList<Submission>)CacheHandler.Register(cacheKey, new Func<object>(() =>
                     {
-                        var results = (from m in _db.Messages
-                                       join s in _db.Subverses on m.Subverse equals s.name
+                        var results = (from m in _db.Submissions
+                                       join s in _db.Subverses on m.Subverse equals s.Name
                                        where
-                                        !s.admin_disabled.Value &&
+                                        !s.IsAdminDisabled.Value &&
                                         !m.IsDeleted &&
                                         m.Subverse == sub &&
-                                        (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
-                                       orderby m.Rank ascending, m.Date descending
+                                        (m.LinkDescription.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                       orderby m.Rank ascending, m.CreationDate descending
                                        select m).Take(25).ToList();
                         return results;
                     }), TimeSpan.FromMinutes(10));
@@ -95,7 +95,7 @@ namespace Voat.Controllers
 
                 ViewBag.Title = "search results";
 
-                var paginatedResults = new PaginatedList<Message>(cacheData, 0, pageSize, 24); //HACK: To turn off paging 
+                var paginatedResults = new PaginatedList<Submission>(cacheData, 0, pageSize, 24); //HACK: To turn off paging 
 
                 return View("~/Views/Search/Index.cshtml", paginatedResults);
             }
@@ -113,19 +113,19 @@ namespace Voat.Controllers
                 }
 
                 string cacheKey = CacheHandler.Keys.Search(q);
-                IList<Message> cacheData = (IList<Message>)CacheHandler.Retrieve(cacheKey);
+                IList<Submission> cacheData = (IList<Submission>)CacheHandler.Retrieve(cacheKey);
                 if (cacheData == null)
                 {
-                    cacheData = (IList<Message>)CacheHandler.Register(cacheKey, new Func<object>(() =>
+                    cacheData = (IList<Submission>)CacheHandler.Register(cacheKey, new Func<object>(() =>
                     {
-                        var results = (from m in _db.Messages
-                                       join s in _db.Subverses on m.Subverse equals s.name
+                        var results = (from m in _db.Submissions
+                                       join s in _db.Subverses on m.Subverse equals s.Name
                                        where
-                                        !s.admin_disabled.Value &&
+                                        !s.IsAdminDisabled.Value &&
                                         !m.IsDeleted &&
                                            //m.Subverse == sub &&
-                                        (m.Linkdescription.ToLower().Contains(q) || m.MessageContent.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
-                                       orderby m.Rank ascending, m.Date descending
+                                        (m.LinkDescription.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                       orderby m.Rank ascending, m.CreationDate descending
                                        select m
                                 ).Take(25).ToList();
                         return results;
@@ -133,7 +133,7 @@ namespace Voat.Controllers
 
                 }
 
-                var paginatedResults = new PaginatedList<Message>(cacheData, 0, pageSize, 24);//HACK to stop paging
+                var paginatedResults = new PaginatedList<Submission>(cacheData, 0, pageSize, 24);//HACK to stop paging
 
                 ViewBag.Title = "search results";
 
@@ -161,20 +161,20 @@ namespace Voat.Controllers
 
             // find a subverse by name and/or description, sort search results by number of subscribers
             var subversesByName = _db.Subverses
-                .Where(s => s.name.ToLower().Contains(q))
-                .OrderByDescending(s => s.subscribers);
+                .Where(s => s.Name.ToLower().Contains(q))
+                .OrderByDescending(s => s.SubscriberCount);
 
             if (d != null)
             {
                 var subversesByDescription = _db.Subverses
-                    .Where(s => s.description.ToLower().Contains(q))
-                    .OrderByDescending(s => s.subscribers);
+                    .Where(s => s.Description.ToLower().Contains(q))
+                    .OrderByDescending(s => s.SubscriberCount);
 
-                results = subversesByName.Concat(subversesByDescription).OrderByDescending(s=>s.subscribers);
+                results = subversesByName.Concat(subversesByDescription).OrderByDescending(s=>s.SubscriberCount);
             }
             else
             {
-                results = subversesByName.OrderByDescending(s => s.subscribers);
+                results = subversesByName.OrderByDescending(s => s.SubscriberCount);
             }
 
             ViewBag.Title = "Search results";

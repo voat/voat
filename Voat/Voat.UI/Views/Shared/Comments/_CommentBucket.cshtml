@@ -24,7 +24,7 @@
         @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, 
         new ViewDataDictionary { 
             { "VoteCache", ViewBag.VoteCache }, 
-            { "CommentId", comment.Id }, 
+            { "CommentId", comment.ID }, 
             { "CCP", ViewBag.CCP }, 
             { "NestingCount", 0 },
             { "ParentIsHidden", false } 
@@ -39,14 +39,14 @@
             {
                 //this is root comments
                 <div class="spacer"></div>
-                <a href="javascript:void(0)" id="loadmorebutton" class="btn-whoaverse btn-block" onclick="javascript:loadMoreComments2($('#loadmorebutton'), $('.commentarea > #siteTable'),@Model.Submission.Id,null,'siblings',@Model.EndingIndex,'@Model.Sort.ToString()')">
+                <a href="javascript:void(0)" id="loadmorebutton" class="btn-whoaverse btn-block" onclick="javascript:loadMoreComments2($('#loadmorebutton'), $('.commentarea > #siteTable'),@Model.Submission.ID,null,'siblings',@Model.EndingIndex,'@Model.Sort.ToString()')">
                     load more comments &#9660; (@remaining remaining)
                 </a>
             }
             else
             {
                 //this is non-root comments
-                <a style="cursor:pointer;" id="loadmore-@Model.ParentID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@Model.ParentID'),$('.id-@Model.ParentID'),@Model.Submission.Id,@Model.ParentID,'siblings',@Model.EndingIndex,'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
+                <a style="cursor:pointer;" id="loadmore-@Model.ParentID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@Model.ParentID'),$('.id-@Model.ParentID'),@Model.Submission.ID,@Model.ParentID,'siblings',@Model.EndingIndex,'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
             }
         </div>
     }

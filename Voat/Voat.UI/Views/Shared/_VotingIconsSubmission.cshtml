@@ -10,10 +10,10 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Message
+@model Voat.Data.Models.Submission
 
 @{
-    int score = (Model.Likes - Model.Dislikes);
+    int score = (int)(Model.UpCount - Model.DownCount);
     
     //default voting icons style
     string votingStatusClassUpArrow = "arrow-upvote";
@@ -22,15 +22,15 @@
 
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
-    double likes = Math.Round(((double)Model.Likes / ((double)Model.Likes + (double)Model.Dislikes)) * 100);
-    double dislikes = Math.Round(((double)Model.Dislikes / ((double)Model.Likes + (double)Model.Dislikes)) * 100);
+    double likes = Math.Round(((double)Model.UpCount / ((double)Model.UpCount + (double)Model.DownCount)) * 100);
+    double dislikes = Math.Round(((double)Model.DownCount / ((double)Model.UpCount + (double)Model.DownCount)) * 100);
 
     if (User.Identity.IsAuthenticated)
     {
         string loggedInUserName = User.Identity.Name;
 
         //returns -1:downvoted, 1:upvoted, or 0:not voted
-        int votedOrNot = Voting.CheckIfVoted(loggedInUserName, Model.Id);
+        int votedOrNot = Voting.CheckIfVoted(loggedInUserName, Model.ID);
 
         switch (votedOrNot)
         {
@@ -52,7 +52,7 @@
             {
                 if (UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
                 {
-                    <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
+                    <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.ID);" role="button" aria-label="upvote" tabindex="0"></div>
                 }
                 else
                 {
@@ -61,12 +61,12 @@
             }
             else
             {
-                <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.Id);" role="button" aria-label="upvote" tabindex="0"></div>
+                <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.ID);" role="button" aria-label="upvote" tabindex="0"></div>
             }
 
-            <div class="score dislikes">@Model.Dislikes</div>
+            <div class="score dislikes">@Model.DownCount</div>
             <div class="score unvoted">@score</div>
-            <div class="score likes">@Model.Likes</div>
+            <div class="score likes">@Model.UpCount</div>
 
             @if (commentContributionPoints < 100)
             {
@@ -74,7 +74,7 @@
             }
             else
             {
-                <div class="@votingStatusClassDownArrow login-required" onclick="voteDownSubmission(@Model.Id);" role="button" aria-label="downvote" tabindex="0"></div>
+                <div class="@votingStatusClassDownArrow login-required" onclick="voteDownSubmission(@Model.ID);" role="button" aria-label="downvote" tabindex="0"></div>
             }
 
         </div>
@@ -88,10 +88,10 @@
     else
     {
         <div class="midcol unvoted">
-            <div class="arrow-upvote login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0" id="upvotebutton-@Model.Id"></div>
-            <div class="score dislikes">@Model.Dislikes</div>
+            <div class="arrow-upvote login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0" id="upvotebutton-@Model.ID"></div>
+            <div class="score dislikes">@Model.DownCount</div>
             <div class="score unvoted">@score</div>
-            <div class="score likes">@Model.Likes</div>
+            <div class="score likes">@Model.UpCount</div>
             <div class="arrow-downvote login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
         </div>
 

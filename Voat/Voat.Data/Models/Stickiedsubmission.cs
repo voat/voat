@@ -12,14 +12,14 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Stickiedsubmission
+    public partial class StickiedSubmission
     {
-        public int Submission_id { get; set; }
-        public string Subversename { get; set; }
-        public string Stickied_by { get; set; }
-        public System.DateTime Stickied_date { get; set; }
+        public int SubmissionID { get; set; }
+        public string Subverse { get; set; }
+        public string CreatedBy { get; set; }
+        public System.DateTime CreationDate { get; set; }
     
-        public virtual Message Message { get; set; }
-        public virtual Subverse Subverse { get; set; }
+        public virtual Submission Submission { get; set; }
+        public virtual Subverse Subverse1 { get; set; }
     }
 }

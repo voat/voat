@@ -17,64 +17,65 @@ namespace Voat.Data.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Subverse()
         {
-            this.Featuredsubs = new HashSet<Featuredsub>();
-            this.Messages = new HashSet<Message>();
-            this.Stickiedsubmissions = new HashSet<Stickiedsubmission>();
-            this.Subscriptions = new HashSet<Subscription>();
-            this.SubverseAdmins = new HashSet<SubverseAdmin>();
+            this.FeaturedSubverses = new HashSet<FeaturedSubverse>();
+            this.StickiedSubmissions = new HashSet<StickiedSubmission>();
+            this.Submissions = new HashSet<Submission>();
+            this.SubverseSubscriptions = new HashSet<SubverseSubscription>();
+            this.SubverseModerators = new HashSet<SubverseModerator>();
             this.SubverseBans = new HashSet<SubverseBan>();
-            this.Subverseflairsettings = new HashSet<Subverseflairsetting>();
+            this.SubverseFlairs = new HashSet<SubverseFlair>();
             this.UserBlockedSubverses = new HashSet<UserBlockedSubverse>();
-            this.Usersetdefinitions = new HashSet<Usersetdefinition>();
+            this.UserSetLists = new HashSet<UserSetList>();
         }
     
-        public string name { get; set; }
-        public string title { get; set; }
-        public string description { get; set; }
-        public string sidebar { get; set; }
-        public string submission_text { get; set; }
-        public string language { get; set; }
-        public string type { get; set; }
-        public string label_submit_new_link { get; set; }
-        public string label_sumit_new_selfpost { get; set; }
-        public string spam_filter_links { get; set; }
-        public string spam_filter_selfpost { get; set; }
-        public string spam_filter_comments { get; set; }
-        public bool rated_adult { get; set; }
-        public bool allow_default { get; set; }
-        public bool enable_thumbnails { get; set; }
-        public bool exclude_sitewide_bans { get; set; }
-        public Nullable<bool> traffic_stats_public { get; set; }
-        public Nullable<int> minutes_to_hide_comments { get; set; }
-        public System.DateTime creation_date { get; set; }
-        public string stylesheet { get; set; }
-        public Nullable<int> subscribers { get; set; }
-        public bool private_subverse { get; set; }
-        public bool authorized_submitters_only { get; set; }
-        public bool anonymized_mode { get; set; }
-        public Nullable<System.DateTime> last_submission_received { get; set; }
-        public int minimumdownvoteccp { get; set; }
-        public bool forced_private { get; set; }
-        public Nullable<bool> admin_disabled { get; set; }
+        public string Name { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string SideBar { get; set; }
+        public string SubmissionText { get; set; }
+        public string Language { get; set; }
+        public string Type { get; set; }
+        public string SubmitLinkLabel { get; set; }
+        public string SubmitPostLabel { get; set; }
+        public string SpamFilterLink { get; set; }
+        public string SpamFilterPost { get; set; }
+        public string SpamFilterComment { get; set; }
+        public bool IsAdult { get; set; }
+        public bool IsDefaultAllowed { get; set; }
+        public bool IsThumbnailEnabled { get; set; }
+        public bool ExcludeSitewideBans { get; set; }
+        public Nullable<bool> IsTrafficStatsPublic { get; set; }
+        public Nullable<int> MinutesToHideComments { get; set; }
+        public System.DateTime CreationDate { get; set; }
+        public string Stylesheet { get; set; }
+        public Nullable<int> SubscriberCount { get; set; }
+        public bool IsPrivate { get; set; }
+        public bool IsAuthorizedOnly { get; set; }
+        public bool IsAnonymized { get; set; }
+        public Nullable<System.DateTime> LastSubmissionDate { get; set; }
+        public int MinCCPForDownvote { get; set; }
+        public bool IsAdminPrivate { get; set; }
+        public Nullable<bool> IsAdminDisabled { get; set; }
+        public string CreatedBy { get; set; }
     
-        public virtual Defaultsubverse Defaultsubvers { get; set; }
+        public virtual DefaultSubverse DefaultSubverse { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Featuredsub> Featuredsubs { get; set; }
+        public virtual ICollection<FeaturedSubverse> FeaturedSubverses { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Message> Messages { get; set; }
+        public virtual ICollection<StickiedSubmission> StickiedSubmissions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Stickiedsubmission> Stickiedsubmissions { get; set; }
+        public virtual ICollection<Submission> Submissions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Subscription> Subscriptions { get; set; }
+        public virtual ICollection<SubverseSubscription> SubverseSubscriptions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SubverseAdmin> SubverseAdmins { get; set; }
+        public virtual ICollection<SubverseModerator> SubverseModerators { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SubverseBan> SubverseBans { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Subverseflairsetting> Subverseflairsettings { get; set; }
+        public virtual ICollection<SubverseFlair> SubverseFlairs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserBlockedSubverse> UserBlockedSubverses { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Usersetdefinition> Usersetdefinitions { get; set; }
+        public virtual ICollection<UserSetList> UserSetLists { get; set; }
     }
 }

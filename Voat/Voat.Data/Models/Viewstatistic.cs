@@ -12,11 +12,11 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Viewstatistic
+    public partial class ViewStatistic
     {
-        public int submissionId { get; set; }
-        public string viewerId { get; set; }
+        public int SubmissionID { get; set; }
+        public string ViewerID { get; set; }
     
-        public virtual Message Message { get; set; }
+        public virtual Submission Submission { get; set; }
     }
 }

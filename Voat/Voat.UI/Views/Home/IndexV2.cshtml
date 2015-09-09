@@ -44,12 +44,12 @@
             @if (Model.UserSets != null)
             {
                 // show content from subscribed sets
-                foreach (var set in Model.UserSets.Where(s => s.Userset.Usersetdefinitions.Any()).OrderBy(s => s.Order))
+                foreach (var set in Model.UserSets.Where(s => s.UserSet.UserSetLists.Any()).OrderBy(s => s.Order))
                 {
-                    var currentSet = set.Userset.Name;
+                    var currentSet = set.UserSet.Name;
 
-                    <div class="set-container" id="set-@set.Set_id-container">
-                        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.Set_id } })
+                    <div class="set-container" id="set-@set.UserSetID-container">
+                        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.UserSetID } })
 
                         @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
                         {
@@ -78,7 +78,7 @@
                                 classEvenOrOdd = "odd";
                             }
 
-                            <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+                            <div class="submission id-@submission.ID @classEvenOrOdd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
                                 <p class="parent"></p>
 
                                 @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
@@ -90,7 +90,7 @@
                             counter++;
                         }
                     </div>
-                    <a href="javascript:void(0)" onclick='loadMoreSetItems(this,@set.Set_id)' class=" btn-whoaverse btn-block">
+                    <a href="javascript:void(0)" onclick='loadMoreSetItems(this,@set.UserSetID)' class=" btn-whoaverse btn-block">
                         load more &#9660;
                     </a>
                 }
@@ -102,8 +102,8 @@
                 {
                     var currentSet = set.Name;
 
-                    <div class="set-container" id="set-@set.Set_id-container">
-                        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.Set_id } })
+                    <div class="set-container" id="set-@set.ID-container">
+                        @Html.Partial("~/Views/Sets/_SetTitle.cshtml", new ViewDataDictionary { { "setTitle", currentSet }, { "setId", set.ID } })
 
                         @foreach (var submission in Model.SubmissionsList.Where(x => x.ParentSet == currentSet))
                         {
@@ -132,7 +132,7 @@
                                 classEvenOrOdd = "odd";
                             }
 
-                            <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+                            <div class="submission id-@submission.ID @classEvenOrOdd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
                                 <p class="parent"></p>
 
                                 @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", commentContributionPoints } })
@@ -144,7 +144,7 @@
                             counter++;
                         }
                     </div>
-                    <a href="javascript:void(0)" onclick='loadMoreSetItems(this, @set.Set_id)' class=" btn-whoaverse btn-block">
+                    <a href="javascript:void(0)" onclick='loadMoreSetItems(this, @set.ID)' class=" btn-whoaverse btn-block">
                         load more &#9660;
                     </a>
                 }

@@ -12,10 +12,10 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Sessiontracker
+    public partial class SessionTracker
     {
-        public string SessionId { get; set; }
+        public string SessionID { get; set; }
         public string Subverse { get; set; }
-        public System.DateTime Timestamp { get; set; }
+        public System.DateTime CreationDate { get; set; }
     }
 }

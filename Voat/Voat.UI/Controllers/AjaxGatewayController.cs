@@ -39,9 +39,9 @@ namespace Voat.Controllers
             {
                 var mpm = new MarkdownPreviewModel();
 
-                if (message.MessageContent != null)
+                if (message.Content != null)
                 {
-                    mpm.MessageContent = message.MessageContent;
+                    mpm.MessageContent = message.Content;
                     return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
                 }
 
@@ -59,12 +59,12 @@ namespace Voat.Controllers
 
             if (message != null)
             {
-                if (message.MessageContent != null)
+                if (message.Content != null)
                 {
                     return PartialView("~/Views/AjaxViews/_VideoPlayer.cshtml", message);
                 }
 
-                message.MessageContent = "There was a problem loading video.";
+                message.Content = "There was a problem loading video.";
                 return PartialView("~/Views/AjaxViews/_VideoPlayer.cshtml", message);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -81,7 +81,7 @@ namespace Voat.Controllers
             if (subverseModel == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
 
-            Message submission = DataCache.Submission.Retrieve(messageId);
+            var submission = DataCache.Submission.Retrieve(messageId);
 
             if (submission == null || submission.Subverse != subversetoshow)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -92,11 +92,11 @@ namespace Voat.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            var subverseLinkFlairs = _db.Subverseflairsettings
-                .Where(n => n.Subversename == subversetoshow)
+            var subverseLinkFlairs = _db.SubverseFlairs
+                .Where(n => n.Subverse == subversetoshow)
                 .Take(10)
                 .ToList()
-                .OrderBy(s => s.Id);
+                .OrderBy(s => s.ID);
 
             ViewBag.SubmissionId = messageId;
             ViewBag.SubverseName = subversetoshow;
@@ -131,12 +131,12 @@ namespace Voat.Controllers
             var resultList = new List<string>();
 
             var subverseNameSuggestions = _db.Subverses
-                .Where(s => s.name.ToLower().StartsWith(term))
+                .Where(s => s.Name.ToLower().StartsWith(term))
                 .Take(10).ToArray();
 
             // jquery UI doesn't play nice with key value pairs so we have to build a simple string array
             if (!subverseNameSuggestions.Any()) return Json(resultList, JsonRequestBehavior.AllowGet);
-            resultList.AddRange(subverseNameSuggestions.Select(item => item.name));
+            resultList.AddRange(subverseNameSuggestions.Select(item => item.Name));
 
             return Json(resultList, JsonRequestBehavior.AllowGet);
         }
@@ -163,7 +163,7 @@ namespace Voat.Controllers
         // GET: subverse basic info used for V2 sets layout
         public ActionResult SubverseBasicInfo(int setId, string subverseName)
         {
-            var userSetDefinition = _db.Usersetdefinitions.FirstOrDefault(s => s.Set_id == setId && s.Subversename.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            var userSetDefinition = _db.UserSetLists.FirstOrDefault(s => s.UserSetID == setId && s.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
 
             return PartialView("~/Views/AjaxViews/_SubverseInfo.cshtml", userSetDefinition);
         }

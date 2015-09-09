@@ -23,9 +23,9 @@
     @Html.ValidationSummary(true)
 
     @* Setup default values *@
-    @Html.Hidden("MessageId", messageId)
+    @Html.Hidden("SubmissionID", messageId)
 
-    @Html.MarkdownEditorFor(m => m.CommentContent, new { @class = "commenttextarea", rows = "3" })
+    @Html.MarkdownEditorFor(m => m.Content, new { @class = "commenttextarea", rows = "3" })
 
     <div>
         <span class="field-validation-error" data-valmsg-for="Title" data-valmsg-replace="true">
@@ -34,7 +34,7 @@
     </div>
 
     <input type="button" id="submitbutton" value="Submit comment" class="btn-whoaverse-paging" onclick="postCommentAjax(this, @messageId, '@User.Identity.Name');$(this.parentElement).find('#submission-preview-area').hide();">
-	<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement).find('#CommentContent'),$(this.parentElement).find('#submission-preview-area'))">
+	<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement).find('#Content'),$(this.parentElement).find('#submission-preview-area'))">
     <br><br>
 	<div class="panel panel-default" id="submission-preview-area" style="display: none">
 		<div class="panel-heading">

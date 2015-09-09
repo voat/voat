@@ -12,44 +12,44 @@
 
 @model Voat.Data.Models.Comment
 
-<div class="thread id-@Model.Id odd comment" onclick="" data-fullname="" data-ups="" data-downs="">
+<div class="thread id-@Model.ID odd comment" onclick="" data-fullname="" data-ups="" data-downs="">
 
     @{
-        //type 2 = urls, model.messagecontent = url, model.linkdescription = link description
+        //type 2 = urls, model.Content = url, model.linkdescription = link description
         //type 1 = message
-        if (Model.Message.Type == 2)
+        if (Model.Submission.Type == 2)
         {
-            if (!Model.Message.IsDeleted)
+            if (!Model.Submission.IsDeleted)
             {
                 <p class="parent">
-                    <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Linkdescription</a> by
-                    <a href="~/user/@Model.Message.Name" class="author may-blank">@Model.Message.Name</a> in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
+                    <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a> in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
                 </p>
             }
             else
             {
                 <p class="parent">
-                    <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Linkdescription</a> by
-                    <span class="userattrs">[deleted]</span>in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
+                    <span class="userattrs">[deleted]</span>in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
                 </p>
             }
         }
         else
         {
-            if (!Model.Message.IsDeleted)
+            if (!Model.Submission.IsDeleted)
             {
                 <p class="parent">
-                    <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Title</a> by
-                    <a href="~/user/@Model.Message.Name" class="author may-blank">@Model.Message.Name</a>
-                    in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                    <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a>
+                    in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
                 </p>
             }
             else
             {
                 <p class="parent">
-                    <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="title" rel="nofollow">@Model.Message.Title</a> by
+                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
                     <span class="userattrs">[deleted]</span>
-                    in <a href="~/v/@Model.Message.Subverse" class="subverse hover">@Model.Message.Subverse</a>
+                    in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
                 </p>
             }
         }
@@ -57,8 +57,8 @@
 
 
     @{
-        string postAge = Submissions.CalcSubmissionAge(Model.Date);
-        int commentScore = (Model.Likes - Model.Dislikes);
+        string postAge = Submissions.CalcSubmissionAge(Model.CreationDate);
+        int commentScore = (int)(Model.UpCount - Model.DownCount);
 
         @*
         area for voting icons
@@ -67,27 +67,27 @@
 
         <div class="entry unvoted">
             <div class="collapsed" style="display: none">
-                <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.Name" class="author gray submitter may-blank">@Model.Name</a>
-                @if (Model.Message.Name == Model.Name)
+                <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.UserName" class="author gray submitter may-blank">@Model.UserName</a>
+                @if (Model.Submission.UserName == Model.UserName)
                 {
-                    <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                    <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID">S</a>]</span>
                 }
-                <span class="score dislikes">@Model.Dislikes points</span><span class="score unvoted">@commentScore points</span>
-                <span class="score likes">@Model.Likes points</span>
-                <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago &nbsp;<a href="#" class="expand" onclick=" return showcomment(this) ">(0 children)</a>
+                <span class="score dislikes">@Model.DownCount points</span><span class="score unvoted">@commentScore points</span>
+                <span class="score likes">@Model.UpCount points</span>
+                <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago &nbsp;<a href="#" class="expand" onclick=" return showcomment(this) ">(0 children)</a>
             </div>
             <div class="noncollapsed">
                 <p class="tagline">
-                    <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="~/user/@Model.Name" class="author submitter may-blank">@Model.Name</a>
-                    @if (Model.Message.Name == Model.Name)
+                    <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="~/user/@Model.UserName" class="author submitter may-blank">@Model.UserName</a>
+                    @if (Model.Submission.UserName == Model.UserName)
                     {
-                        <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Message.Subverse/comments/@Model.MessageId">S</a>]</span>
+                        <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID">S</a>]</span>
                     }
-                    <span class="score dislikes">@Model.Dislikes points</span>
+                    <span class="score dislikes">@Model.DownCount points</span>
                     <span class="score unvoted">@commentScore points</span>
-                    <span class="score likes">@Model.Likes points</span>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
-                    <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago
+                    <span class="score likes">@Model.UpCount points</span>
+                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
+                    <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago
                 </p>
                 <form action="#" class="usertext" onsubmit=" return post_form(this, 'editusertext') " id="form-t1_cgpb6dh3f5">
                     <input name="submission-id" value="xxxx" type="hidden">
@@ -101,7 +101,7 @@
                                 }
                                 else
                                 {
-                                    @Html.Raw(@Formatting.FormatMessage(Model.CommentContent))
+                                    @Html.Raw(@Formatting.FormatMessage(Model.Content))
                                 }
                             </p>
                         </div>
@@ -109,13 +109,13 @@
                 </form>
                 <ul class="flat-list buttons">
                     <li class="first">
-                        <a href="/v/@Model.Message.Subverse/comments/@Model.MessageId/@Model.Id" class="bylink" rel="nofollow">permalink</a>
+                        <a href="/v/@Model.Submission.Subverse/comments/@Model.SubmissionID/@Model.ID" class="bylink" rel="nofollow">permalink</a>
                     </li>
                     <li class="first">
-                        <a href="/v/@Model.Message.Subverse/comments/@Model.MessageId/@Model.ParentId/@Model.Id#@Model.Id" class="bylink" rel="nofollow">context</a>
+                        <a href="/v/@Model.Submission.Subverse/comments/@Model.SubmissionID/@Model.ParentID/@Model.ID#@Model.ID" class="bylink" rel="nofollow">context</a>
                     </li>
                     <li class="first">
-                        <a href="~/v/@Model.Message.Subverse/comments/@Model.MessageId" class="may-blank">full comments (@Model.Message.Comments.Count)</a>
+                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="may-blank">full comments (@Model.Submission.Comments.Count)</a>
                     </li>
                 </ul>
             </div>

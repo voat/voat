@@ -46,7 +46,7 @@
             <div class="sitetable linklisting">
                 @foreach (var subverse in Model)
                 {
-                    @Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = subverse.name });
+                    @Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = subverse.Name });
                 }
             </div>
         }

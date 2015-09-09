@@ -15,15 +15,15 @@
 @using Voat.Models;
 
 @{
-    bool? subverseAnonymized = Model.SubverseModel.anonymized_mode; // Convert.ToBoolean(ViewData["SubverseAnonymized"]);
+    bool? subverseAnonymized = Model.SubverseModel.IsAnonymized; // Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 }
 
-@if (Model.CommentModel.Anonymized || subverseAnonymized == true)
+@if (Model.CommentModel.IsAnonymized || subverseAnonymized == true)
 {
-    <a href="#" class="author submitter may-blank">@Model.CommentModel.Id</a>
+    <a href="#" class="author submitter may-blank">@Model.CommentModel.ID</a>
 }
 else
 {
-    <a href="/user/@Model.CommentModel.Name" class="author submitter may-blank userinfo" data-username="@Model.CommentModel.Name">@Model.CommentModel.Name</a>
+    <a href="/user/@Model.CommentModel.UserName" class="author submitter may-blank userinfo" data-username="@Model.CommentModel.UserName">@Model.CommentModel.UserName</a>
 }
-<span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.SubverseModel.name/comments/@Model.SubmissionModel.Id">S</a>]</span>
+<span class="userattrs">[<a class="submitter" title="submitter" href="/v/@Model.SubverseModel.Name/comments/@Model.SubmissionModel.ID">S</a>]</span>

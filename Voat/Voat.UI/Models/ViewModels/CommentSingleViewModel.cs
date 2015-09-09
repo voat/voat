@@ -19,7 +19,7 @@ namespace Voat.Models.ViewModels
 {
     public class CommentSingleViewModel
     {
-        public Message SubmissionModel { get; set; }
+        public Submission SubmissionModel { get; set; }
         public Subverse SubverseModel { get; set; }
         public usp_CommentTree_Result CommentModel { get; set; }
 

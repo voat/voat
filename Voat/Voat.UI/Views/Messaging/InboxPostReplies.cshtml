@@ -45,36 +45,36 @@
                     }
                     else
                     {
-                        if (comment.Anonymized)
+                        if (comment.IsAnonymized)
                         {
                             commentAuthorUrl = "#";
-                            commentAuthorName = comment.Id.ToString();
+                            commentAuthorName = comment.ID.ToString();
                         }
                         else
                         {
-                            commentAuthorUrl = "/u/" + @comment.Name;
-                            commentAuthorName = comment.Name;
+                            commentAuthorUrl = "/u/" + @comment.UserName;
+                            commentAuthorName = comment.UserName;
                         }
                     }
 
-                    <div id="commentContainer-@comment.Id">
+                    <div id="commentContainer-@comment.ID">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
-                                From: <a href="@commentAuthorUrl">@commentAuthorName</a> | Sent: @comment.Date
+                                From: <a href="@commentAuthorUrl">@commentAuthorName</a> | Sent: @comment.CreationDate
                             </div>
                             <div class="panel panel-heading-messagetitle">
-                                @if (comment.Message.Type == 1)
+                                @if (comment.Submission.Type == 1)
                                 {
-                                    <a href="/v/@comment.Message.Subverse/comments/@comment.MessageId"><b>@comment.Message.Title</b></a>
+                                    <a href="/v/@comment.Submission.Subverse/comments/@comment.SubmissionID"><b>@comment.Submission.Title</b></a>
                                 }
                                 else
                                 {
-                                    <a href="/v/@comment.Message.Subverse/comments/@comment.MessageId"><b>@comment.Message.Linkdescription</b></a>
+                                    <a href="/v/@comment.Submission.Subverse/comments/@comment.SubmissionID"><b>@comment.Submission.LinkDescription</b></a>
                                 }
                             </div>
                             <div class="panel-message-body">
                                 @*@Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" } })*@
-                                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", new Voat.Models.CommentBucketViewModel(comment), new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
+                                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", new Voat.Models.CommentBucketViewModel(comment), new ViewDataDictionary { { "CommentId", comment.ID }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
 
 
                             </div>

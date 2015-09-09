@@ -21,10 +21,10 @@
     bool childTohiddenParent = Convert.ToBoolean(ViewData["childTohiddenParent"]);
     bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 
-    DateTime submissionDate = Model.Date;
+    DateTime submissionDate = Model.CreationDate;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
-    string opName = Model.Message.Name;
-    string commentAuthor = Model.Name;
+    string opName = Model.Submission.UserName;
+    string commentAuthor = Model.UserName;
 
     string collapsedComment = "";
     string uncollapsedComment = "";
@@ -66,7 +66,7 @@
     }
 }
 
-<div class="@commentType id-@Model.Id comment" data-fullname="" data-ups="" data-downs="" style="">
+<div class="@commentType id-@Model.ID comment" data-fullname="" data-ups="" data-downs="" style="">
     @* 1 submission comment *@
     <p class="parent">
         <a></a>
@@ -74,44 +74,44 @@
 
     @if (!Model.IsDeleted)
     {
-        @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", Model.Id }, { "CCP", commentContributionPoints }, { "collapsedStyle", uncollapsedComment } })
+        @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary { { "CommentId", Model.ID }, { "CCP", commentContributionPoints }, { "collapsedStyle", uncollapsedComment } })
     }
 
     <div class="entry unvoted">
         <div class="collapsed" style='@collapsedComment'>
-            <a href="#" class="expand" onclick="return showcomment(@Model.Id)">[+]</a>
+            <a href="#" class="expand" onclick="return showcomment(@Model.ID)">[+]</a>
             @if (!Model.IsDeleted)
             {
-                int commentScore = Model.Likes - Model.Dislikes;
+                int commentScore = (int)(Model.UpCount - Model.DownCount);
 
-                if (Model.Anonymized || subverseAnonymized == true)
+                if (Model.IsAnonymized || subverseAnonymized == true)
                 {
-                    <a href="#" class="author gray may-blank">@Model.Id</a>
+                    <a href="#" class="author gray may-blank">@Model.ID</a>
                 }
                 else
                 {
-                    <a href="/user/@Model.Name" class="author gray may-blank">@Model.Name</a>
+                    <a href="/user/@Model.UserName" class="author gray may-blank">@Model.UserName</a>
                 }
 
                 <span class="userattrs"></span>
-                <span class="score dislikes">@Model.Dislikes points</span>
+                <span class="score dislikes">@Model.DownCount points</span>
                 <span class="score onlycollapsed">@commentScore points</span>
-                <span class="score likes">@Model.Likes points</span>
+                <span class="score likes">@Model.UpCount points</span>
             }
             else
             {
                 <span class="userattrs">[deleted]</span>
             }
-            <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return showcomment(@Model.Id)">(show children)</a>
+            <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time>&#32;ago &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return showcomment(@Model.ID)">(show children)</a>
         </div>
 
-        <div class="noncollapsed" id="@Model.Id" style="@uncollapsedComment">
+        <div class="noncollapsed" id="@Model.ID" style="@uncollapsedComment">
             <p class="tagline">
-                <a href="#" class="expand" onclick="return hidecomment(@Model.Id)">[&ndash;]</a>
+                <a href="#" class="expand" onclick="return hidecomment(@Model.ID)">[&ndash;]</a>
 
                 @if (!Model.IsDeleted)
                 {
-                    int commentScore = Model.Likes - Model.Dislikes;
+                    int commentScore = (int)(Model.UpCount - Model.DownCount);
 
                     if (opName == commentAuthor)
                     {
@@ -133,26 +133,26 @@
                         @Html.Partial("~/Views/Shared/UserDistinctions/_UserDistinction.cshtml", Model)
                     }
 
-                    <span class="score dislikes">@Model.Dislikes points</span>
+                    <span class="score dislikes">@Model.DownCount points</span>
                     <span class="score unvoted">@commentScore points</span>
-                    <span class="score likes">@Model.Likes points</span>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
+                    <span class="score likes">@Model.UpCount points</span>
+                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
                 }
                 else
                 {
                     <span class="userattrs">[deleted]</span>
                 }
 
-                <time title="@Model.Date" datetime="@Model.Date">@postAge</time>&#32;ago
+                <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time>&#32;ago
             </p>
 
-            <form class="usertext" onsubmit="return editcommentsubmit(@Model.Id)" id="commenteditform-@Model.Id" action="#">
+            <form class="usertext" onsubmit="return editcommentsubmit(@Model.ID)" id="commenteditform-@Model.ID" action="#">
                 @Html.AntiForgeryToken()
-                <input id="CommentId" name="CommentId" value="@Model.Id" type="hidden">
+                <input id="CommentId" name="CommentId" value="@Model.ID" type="hidden">
 
                 @if (!Model.IsDeleted)
                 {
-                    <div class="usertext-body may-blank-within" id="commentContent-@Model.Id">
+                    <div class="usertext-body may-blank-within" id="commentContent-@Model.ID">
                         <div class="md">
                             @* Skip Regex intense processing if we've pre-processed *@
                             @if (!String.IsNullOrEmpty(Model.FormattedContent))
@@ -161,7 +161,7 @@
                             }
                             else
                             {
-                                @Html.Raw(@Formatting.FormatMessage(Model.CommentContent))
+                                @Html.Raw(@Formatting.FormatMessage(Model.Content))
                             }
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                 {
                     <div class="usertext gray">
                         <div class="md">
-                            [@Model.CommentContent]
+                            [@Model.Content]
                         </div>
                     </div>
                 }
@@ -178,12 +178,12 @@
                 <div class="usertext-edit" style="width: 775px; display: none;">
                     <div>
                         @Html.Partial("_MarkdownEditor")
-                        <textarea aria-invalid="false" class="form-control valid" cols="20" id="CommentContent" name="CommentContent" rows="2" data-rule-required="true" data-msg-required="The comment can not be empty.">@WebUtility.HtmlDecode(Model.CommentContent)</textarea>
-                        <span data-valmsg-replace="false" data-valmsg-for="CommentContent" class="field-validation-error"></span>
+                        <textarea aria-invalid="false" class="form-control valid" cols="20" id="Content" name="Content" rows="2" data-rule-required="true" data-msg-required="The comment can not be empty.">@WebUtility.HtmlDecode(Model.Content)</textarea>
+                        <span data-valmsg-replace="false" data-valmsg-for="Content" class="field-validation-error"></span>
                         <div class="usertext-buttons">
                             <input value="Save" class="btn-whoaverse-paging" type="submit">
-                            <input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#CommentContent'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
-                            <button class="btn-whoaverse-paging" onclick="removeeditform(@Model.Id)" type="button">Cancel</button>
+                            <input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
+                            <button class="btn-whoaverse-paging" onclick="removeeditform(@Model.ID)" type="button">Cancel</button>
                         </div>
                         <div class="panel panel-default" id="submission-preview-area" style="display: none">
                             <div class="panel-heading">
@@ -205,37 +205,37 @@
                 @if (!Model.IsDeleted && showContextLink == true)
                 {
                 <li>
-                    <a href="/v/@Model.Message.Subverse/comments/@Model.MessageId/@Model.ParentId/@Model.Id#@Model.Id" rel="nofollow">context</a>
+                    <a href="/v/@Model.Submission.Subverse/comments/@Model.SubmissionID/@Model.ParentID/@Model.ID#@Model.ID" rel="nofollow">context</a>
                 </li>
                 }
                 @if (!Model.IsDeleted)
                 {
                     <li class="first">
-                        <a href="/v/@Model.Message.Subverse/comments/@Model.MessageId/@Model.Id" class="bylink" rel="nofollow">permalink</a>
+                        <a href="/v/@Model.Submission.Subverse/comments/@Model.SubmissionID/@Model.ID" class="bylink" rel="nofollow">permalink</a>
                     </li>
                 }
 
                 @if (User.Identity.IsAuthenticated && !Model.IsDeleted)
                 {
                     //returns true if user has saved this post
-                    var savedOrNot = SavingComments.CheckIfSavedComment(User.Identity.Name, @Model.Id);
+                    var savedOrNot = SavingComments.CheckIfSavedComment(User.Identity.Name, @Model.ID);
                     var saveString = savedOrNot == true ? "unsave" : "save";
                     <li>
-                        <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@Model.Id);">@saveString</a>
+                        <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@Model.ID);">@saveString</a>
                     </li>
                     // if user is sub admin or sub mod but not comment author, show delete button
                     if (User.Identity.Name != commentAuthor && !Model.IsDeleted)
                     {
-                        if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
+                        if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Submission.Subverse))
                         {
                             <li>
                                 <form class="toggle del-button " action="#" method="get">
                                     <input class="active" name="executed" value="deleted" type="hidden">
                                     <span class="option main active">
-                                        <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(this, @Model.Id)">delete</a>
+                                        <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(this, @Model.ID)">delete</a>
                                     </span>
                                     <span class="option error">
-                                        are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
+                                        are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.ID)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
                                     </span>
                                 </form>
                             </li>
@@ -245,23 +245,23 @@
                     // if user is comment author, show edit and delete buttons. additionally, if he is sub admin or mod, show distinguish button
                     if (User.Identity.Name == commentAuthor && !Model.IsDeleted)
                     {
-						if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Message.Subverse))
+						if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Submission.Subverse))
                         {
                             <li>
-                                <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.Id, @Model.MessageId)">distinguish</a>
+                                <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.ID, @Model.SubmissionID)">distinguish</a>
                             </li>
 						}
                         <li>
-                            <a class="" href="javascript:void(0)" onclick="return edit(@Model.Id, @Model.MessageId)">edit</a>
+                            <a class="" href="javascript:void(0)" onclick="return edit(@Model.ID, @Model.SubmissionID)">edit</a>
                         </li>
                         <li>
                             <form class="toggle del-button " action="#" method="get">
                                 <input class="active" name="executed" value="deleted" type="hidden">
                                 <span class="option main active">
-                                    <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(this, @Model.Id)">delete</a>
+                                    <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(this, @Model.ID)">delete</a>
                                 </span>
                                 <span class="option error">
-                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.Id)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
+                                    are you sure?  <a href="javascript:void(0)" class="yes" onclick="deletecomment(@Model.ID)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
                                 </span>
                             </form>
                         </li>
@@ -270,7 +270,7 @@
                     if (!Model.IsDeleted)
                     {
                         <li>
-                            <a class="" href="javascript:void(0)" onclick="return reply(@Model.Id, @Model.MessageId)">reply</a>
+                            <a class="" href="javascript:void(0)" onclick="return reply(@Model.ID, @Model.SubmissionID)">reply</a>
                         </li>
                     }
                 }

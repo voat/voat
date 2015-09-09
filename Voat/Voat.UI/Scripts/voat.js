@@ -263,225 +263,288 @@ function notEnoughCCPUpVote() {
 function firstTimeVisitorWelcome() {
     $('#firsttimevisitorwelcomemessage').toggle();
 }
-
+//locks vote operations
+var submissionVoteLock = null;
 function voteUpSubmission(submissionid) {
-    submitUpVote(submissionid);
-    var submission = $(".submission.id-" + submissionid);
-    var scoreLikes = +(submission.find('.score.likes').html());
-    var scoreDislikes = +(submission.find('.score.dislikes').html());
 
-    //ADD LIKE IF UNVOTED
-    if (submission.children(".midcol").is(".unvoted")) {
-        submission.children(".midcol").toggleClass("likes", true); //add class likes
-        submission.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
-        //add upvoted arrow
-        submission.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //set upvote arrow to upvoted
-        submission.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false); //remove upvote arrow
-        //increment score likes counter        
-        scoreLikes++;
-        submission.find('.score.likes').html(scoreLikes);
-    } else if (submission.children(".midcol").is(".likes")) {
-        //REMOVE LIKE IF LIKED
-        submission.children(".midcol").toggleClass("unvoted", true); //add class unvoted
-        submission.children(".midcol").toggleClass("likes", false); //remove class dislikes
-        //remove upvoted arrow
-        submission.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set arrow to upvote
-        submission.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
-        //decrement score likes counter
-        scoreLikes--;
-        submission.find('.score.likes').html(scoreLikes);
-        submission.find('.score.unvoted').html(scoreLikes);
-    } else if (submission.children(".midcol").is(".dislikes")) {
-        //ADD LIKE IF DISLIKED
-        submission.children(".midcol").toggleClass("dislikes", false); //remove class dislikes
-        submission.children(".midcol").toggleClass("likes", true); //add class likes
-        submission.children(".midcol").toggleClass("unvoted", false); //remove class unvoted        
-        //remove downvoted arrow
-        submission.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set downvoted arrow to downvote
-        submission.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
-        submission.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //add upvoted arrow
-        //increment score dislikes counter
-        scoreDislikes--;
-        scoreLikes++;
-        submission.find('.score.dislikes').html(scoreDislikes);
-        submission.find('.score.likes').html(scoreLikes);
+    if (submissionVoteLock == null) {
+
+        submissionVoteLock = new Object();
+        //submitUpVote(submissionid);
+        $.ajax({
+            type: "POST",
+            url: "/vote/" + submissionid + "/1",
+            complete: function () {
+                submissionVoteLock = null;
+            },
+            success: function () {
+
+                var submission = $(".submission.id-" + submissionid);
+                var scoreLikes = +(submission.find('.score.likes').html());
+                var scoreDislikes = +(submission.find('.score.dislikes').html());
+
+                //ADD LIKE IF UNVOTED
+                if (submission.children(".midcol").is(".unvoted")) {
+                    submission.children(".midcol").toggleClass("likes", true); //add class likes
+                    submission.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
+                    //add upvoted arrow
+                    submission.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //set upvote arrow to upvoted
+                    submission.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false); //remove upvote arrow
+                    //increment score likes counter        
+                    scoreLikes++;
+                    submission.find('.score.likes').html(scoreLikes);
+                } else if (submission.children(".midcol").is(".likes")) {
+                    //REMOVE LIKE IF LIKED
+                    submission.children(".midcol").toggleClass("unvoted", true); //add class unvoted
+                    submission.children(".midcol").toggleClass("likes", false); //remove class dislikes
+                    //remove upvoted arrow
+                    submission.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set arrow to upvote
+                    submission.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
+                    //decrement score likes counter
+                    scoreLikes--;
+                    submission.find('.score.likes').html(scoreLikes);
+                    submission.find('.score.unvoted').html(scoreLikes);
+                } else if (submission.children(".midcol").is(".dislikes")) {
+                    //ADD LIKE IF DISLIKED
+                    submission.children(".midcol").toggleClass("dislikes", false); //remove class dislikes
+                    submission.children(".midcol").toggleClass("likes", true); //add class likes
+                    submission.children(".midcol").toggleClass("unvoted", false); //remove class unvoted        
+                    //remove downvoted arrow
+                    submission.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set downvoted arrow to downvote
+                    submission.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
+                    submission.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //add upvoted arrow
+                    //increment score dislikes counter
+                    scoreDislikes--;
+                    scoreLikes++;
+                    submission.find('.score.dislikes').html(scoreDislikes);
+                    submission.find('.score.likes').html(scoreLikes);
+                }
+            }
+        });
     }
-
 }
 
 function voteDownSubmission(submissionid) {
-    submitDownVote(submissionid);
 
-    var submission = $(".submission.id-" + submissionid);
-    var scoreDislikes = +(submission.find('.score.dislikes').html());
-    var scoreLikes = +(submission.find('.score.likes').html());
+    if (submissionVoteLock == null) {
 
-    //ADD DISLIKE IF UNVOTED
-    if (submission.children(".midcol").is(".unvoted")) {
-        submission.children(".midcol").toggleClass("dislikes", true); //add class dislikes
-        submission.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
-        //add downvoted arrow
-        submission.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //set downvote arrow to downvoted
-        submission.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false); //remove downvote arrow
-        //increment score dislikes counter
-        scoreDislikes++;
-        submission.find('.score.dislikes').html(scoreDislikes);
-    } else if (submission.children(".midcol").is(".dislikes")) {
-        //REMOVE DISLIKE IF DISLIKED
-        submission.children(".midcol").toggleClass("unvoted", true); //add class unvoted
-        submission.children(".midcol").toggleClass("dislikes", false); //remove class dislikes
-        //remove downvoted arrow
-        submission.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set arrow to downvote
-        submission.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
-        //decrement score dislikes counter
-        scoreDislikes--;
-        submission.find('.score.dislikes').html(scoreDislikes);
-        submission.find('.score.unvoted').html(scoreLikes);
-    } else if (submission.children(".midcol").is(".likes")) {
-        //ADD DISLIKE IF LIKED
-        submission.children(".midcol").toggleClass("likes", false); //remove class likes
-        submission.children(".midcol").toggleClass("dislikes", true); //add class dislikes
-        submission.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
-        //remove upvoted arrow
-        submission.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set upvoted arrow to upvote
-        submission.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
-        submission.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //add downvoted arrow
-        //increment score dislikes counter
-        scoreDislikes++;
-        scoreLikes--;
-        submission.find('.score.dislikes').html(scoreDislikes);
-        submission.find('.score.likes').html(scoreLikes);
+        submissionVoteLock = new Object();
+
+        //submitUpVote(submissionid);
+        $.ajax({
+            type: "POST",
+            url: "/vote/" + submissionid + "/-1",
+            complete: function () {
+                submissionVoteLock = null;
+            },
+            success: function () {
+
+                var submission = $(".submission.id-" + submissionid);
+                var scoreDislikes = +(submission.find('.score.dislikes').html());
+                var scoreLikes = +(submission.find('.score.likes').html());
+
+                //ADD DISLIKE IF UNVOTED
+                if (submission.children(".midcol").is(".unvoted")) {
+                    submission.children(".midcol").toggleClass("dislikes", true); //add class dislikes
+                    submission.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
+                    //add downvoted arrow
+                    submission.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //set downvote arrow to downvoted
+                    submission.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false); //remove downvote arrow
+                    //increment score dislikes counter
+                    scoreDislikes++;
+                    submission.find('.score.dislikes').html(scoreDislikes);
+                } else if (submission.children(".midcol").is(".dislikes")) {
+                    //REMOVE DISLIKE IF DISLIKED
+                    submission.children(".midcol").toggleClass("unvoted", true); //add class unvoted
+                    submission.children(".midcol").toggleClass("dislikes", false); //remove class dislikes
+                    //remove downvoted arrow
+                    submission.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set arrow to downvote
+                    submission.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
+                    //decrement score dislikes counter
+                    scoreDislikes--;
+                    submission.find('.score.dislikes').html(scoreDislikes);
+                    submission.find('.score.unvoted').html(scoreLikes);
+                } else if (submission.children(".midcol").is(".likes")) {
+                    //ADD DISLIKE IF LIKED
+                    submission.children(".midcol").toggleClass("likes", false); //remove class likes
+                    submission.children(".midcol").toggleClass("dislikes", true); //add class dislikes
+                    submission.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
+                    //remove upvoted arrow
+                    submission.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set upvoted arrow to upvote
+                    submission.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
+                    submission.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //add downvoted arrow
+                    //increment score dislikes counter
+                    scoreDislikes++;
+                    scoreLikes--;
+                    submission.find('.score.dislikes').html(scoreDislikes);
+                    submission.find('.score.likes').html(scoreLikes);
+                }
+
+            }
+        });
     }
-
 }
 
-function submitUpVote(messageid) {
-    $.ajax({
-        type: "POST",
-        url: "/vote/" + messageid + "/1"
-    });
-}
+//function submitUpVote(messageid) {
+//    $.ajax({
+//        type: "POST",
+//        url: "/vote/" + messageid + "/1"
+//    });
+//}
+
+//function submitDownVote(messageid) {
+//    $.ajax({
+//        type: "POST",
+//        url: "/vote/" + messageid + "/-1"
+//    });
+    //}
+//locks vote operations
+var commentVoteLock = null;
 
 function voteUpComment(commentid) {
-    submitCommentUpVote(commentid);
-    var comment = $(".comment.id-" + commentid);
-    // get current score
-    var scoreLikes = +(comment.find('.post_upvotes').filter(":first").html());
-    var scoreDislikes = -(comment.find('.post_downvotes').filter(":first").html());
 
-    // ADD LIKE IF UNVOTED
-    if (comment.children(".midcol").is(".unvoted")) {
-        comment.children(".midcol").toggleClass("likes", true); //add class likes
-        comment.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
-        // add upvoted arrow
-        comment.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //set upvote arrow to upvoted
-        comment.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false); //remove upvote arrow
-        // increment comment points counter and update DOM element
-        scoreLikes++;
-        comment.find('.post_upvotes').filter(":first").html('+' + scoreLikes);
-        comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-        comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-    } else if (comment.children(".midcol").is(".likes")) {
-        // REMOVE LIKE IF LIKED
-        comment.children(".midcol").toggleClass("unvoted", true); //add class unvoted
-        comment.children(".midcol").toggleClass("likes", false); //remove class dislikes
-        // remove upvoted arrow
-        comment.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set arrow to upvote
-        comment.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
-        // decrement comment points counter and update DOM element
-        scoreLikes--;
-        comment.find('.post_upvotes').filter(":first").html('+' + scoreLikes);
-        comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-        comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-    } else if (comment.children(".midcol").is(".dislikes")) {
-        // ADD LIKE IF DISLIKED
-        comment.children(".midcol").toggleClass("dislikes", false); //remove class dislikes
-        comment.children(".midcol").toggleClass("likes", true); //add class likes
-        comment.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
-        // remove downvoted arrow
-        comment.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set downvoted arrow to downvote
-        comment.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
-        comment.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //add upvoted arrow
-        // increment/decrement comment points counters and update DOM element
-        scoreLikes++;
-        scoreDislikes--;
-        comment.find('.post_upvotes').filter(":first").html('+' + scoreLikes);
-        comment.find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
-        comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-        comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+    if (commentVoteLock == null) {
+
+        commentVoteLock = new Object();
+
+        //submitCommentUpVote(commentid);
+        $.ajax({
+            type: "POST",
+            url: "/votecomment/" + commentid + "/1",
+            complete: function () {
+                commentVoteLock = null;
+            },
+            success: function () {
+                var comment = $(".comment.id-" + commentid);
+                // get current score
+                var scoreLikes = +(comment.find('.post_upvotes').filter(":first").html());
+                var scoreDislikes = -(comment.find('.post_downvotes').filter(":first").html());
+
+                // ADD LIKE IF UNVOTED
+                if (comment.children(".midcol").is(".unvoted")) {
+                    comment.children(".midcol").toggleClass("likes", true); //add class likes
+                    comment.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
+                    // add upvoted arrow
+                    comment.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //set upvote arrow to upvoted
+                    comment.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvote", false); //remove upvote arrow
+                    // increment comment points counter and update DOM element
+                    scoreLikes++;
+                    comment.find('.post_upvotes').filter(":first").html('+' + scoreLikes);
+                    comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                    comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                } else if (comment.children(".midcol").is(".likes")) {
+                    // REMOVE LIKE IF LIKED
+                    comment.children(".midcol").toggleClass("unvoted", true); //add class unvoted
+                    comment.children(".midcol").toggleClass("likes", false); //remove class dislikes
+                    // remove upvoted arrow
+                    comment.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set arrow to upvote
+                    comment.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
+                    // decrement comment points counter and update DOM element
+                    scoreLikes--;
+                    comment.find('.post_upvotes').filter(":first").html('+' + scoreLikes);
+                    comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                    comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                } else if (comment.children(".midcol").is(".dislikes")) {
+                    // ADD LIKE IF DISLIKED
+                    comment.children(".midcol").toggleClass("dislikes", false); //remove class dislikes
+                    comment.children(".midcol").toggleClass("likes", true); //add class likes
+                    comment.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
+                    // remove downvoted arrow
+                    comment.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set downvoted arrow to downvote
+                    comment.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
+                    comment.children(".midcol").children(".arrow-upvote").toggleClass("arrow-upvoted", true); //add upvoted arrow
+                    // increment/decrement comment points counters and update DOM element
+                    scoreLikes++;
+                    scoreDislikes--;
+                    comment.find('.post_upvotes').filter(":first").html('+' + scoreLikes);
+                    comment.find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
+                    comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                    comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                }
+            }
+        });
     }
 }
 
-function voteDownComment(commentid) {
-    submitCommentDownVote(commentid);
-    var comment = $(".comment.id-" + commentid);
-    // get current score
-    var scoreLikes = +(comment.find('.post_upvotes').filter(":first").html());
-    var scoreDislikes = -(comment.find('.post_downvotes').filter(":first").html());
+ function voteDownComment(commentid) {
+     if (commentVoteLock == null) {
 
-    // ADD DISLIKE IF UNVOTED
-    if (comment.children(".midcol").is(".unvoted")) {
-        comment.children(".midcol").toggleClass("dislikes", true); //add class dislikes
-        comment.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
-        // add downvoted arrow
-        comment.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //set downvote arrow to downvoted
-        comment.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false); //remove downvote arrow
-        // increment comment points counter and update DOM element        
-        scoreDislikes++;
-        comment.find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
-        comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-        comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-    } else if (comment.children(".midcol").is(".dislikes")) {
-        // REMOVE DISLIKE IF DISLIKED
-        comment.children(".midcol").toggleClass("unvoted", true); //add class unvoted
-        comment.children(".midcol").toggleClass("dislikes", false); //remove class dislikes
-        // remove downvoted arrow
-        comment.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set arrow to downvote
-        comment.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
-        // decrement comment points counter and update DOM element
-        scoreDislikes--;
-        comment.find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
-        comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-        comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-    } else if (comment.children(".midcol").is(".likes")) {
-        // ADD DISLIKE IF LIKED
-        comment.children(".midcol").toggleClass("likes", false); //remove class likes
-        comment.children(".midcol").toggleClass("dislikes", true); //add class dislikes
-        comment.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
-        // remove upvoted arrow
-        comment.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set upvoted arrow to upvote
-        comment.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
-        comment.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //add downvoted arrow
-        // increment/decrement comment points counters and update DOM element
-        scoreLikes--;
-        scoreDislikes++;
-        comment.find('.post_upvotes').filter(":first").html('+' + scoreLikes);
-        comment.find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
-        comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-        comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
-    }
+         commentVoteLock = new Object();
+
+         $.ajax({
+             type: "POST",
+             url: "/votecomment/" + commentid + "/-1",
+             complete: function () {
+                 commentVoteLock = null;
+             },
+             success: function () {
+                 //submitCommentDownVote(commentid);
+                 var comment = $(".comment.id-" + commentid);
+                 // get current score
+                 var scoreLikes = +(comment.find('.post_upvotes').filter(":first").html());
+                 var scoreDislikes = -(comment.find('.post_downvotes').filter(":first").html());
+
+                 // ADD DISLIKE IF UNVOTED
+                 if (comment.children(".midcol").is(".unvoted")) {
+                     comment.children(".midcol").toggleClass("dislikes", true); //add class dislikes
+                     comment.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
+                     // add downvoted arrow
+                     comment.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //set downvote arrow to downvoted
+                     comment.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvote", false); //remove downvote arrow
+                     // increment comment points counter and update DOM element        
+                     scoreDislikes++;
+                     comment.find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
+                     comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                     comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                 } else if (comment.children(".midcol").is(".dislikes")) {
+                     // REMOVE DISLIKE IF DISLIKED
+                     comment.children(".midcol").toggleClass("unvoted", true); //add class unvoted
+                     comment.children(".midcol").toggleClass("dislikes", false); //remove class dislikes
+                     // remove downvoted arrow
+                     comment.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvote", true); //set arrow to downvote
+                     comment.children(".midcol").children(".arrow-downvoted").toggleClass("arrow-downvoted", false); //remove downvoted arrow
+                     // decrement comment points counter and update DOM element
+                     scoreDislikes--;
+                     comment.find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
+                     comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                     comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                 } else if (comment.children(".midcol").is(".likes")) {
+                     // ADD DISLIKE IF LIKED
+                     comment.children(".midcol").toggleClass("likes", false); //remove class likes
+                     comment.children(".midcol").toggleClass("dislikes", true); //add class dislikes
+                     comment.children(".midcol").toggleClass("unvoted", false); //remove class unvoted
+                     // remove upvoted arrow
+                     comment.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvote", true); //set upvoted arrow to upvote
+                     comment.children(".midcol").children(".arrow-upvoted").toggleClass("arrow-upvoted", false); //remove upvoted arrow
+                     comment.children(".midcol").children(".arrow-downvote").toggleClass("arrow-downvoted", true); //add downvoted arrow
+                     // increment/decrement comment points counters and update DOM element
+                     scoreLikes--;
+                     scoreDislikes++;
+                     comment.find('.post_upvotes').filter(":first").html('+' + scoreLikes);
+                     comment.find('.post_downvotes').filter(":first").html('-' + scoreDislikes);
+                     comment.find('.score.unvoted').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                     comment.find('.score.onlycollapsed').filter(":first").html((scoreLikes - scoreDislikes) + " points");
+                 }
+             }
+         });
+     }
 }
 
-function submitCommentUpVote(commentid) {
-    $.ajax({
-        type: "POST",
-        url: "/votecomment/" + commentid + "/1"
-    });
-}
+//function submitCommentUpVote(commentid) {
+//    $.ajax({
+//        type: "POST",
+//        url: "/votecomment/" + commentid + "/1"
+//    });
+//}
 
-function submitDownVote(messageid) {
-    $.ajax({
-        type: "POST",
-        url: "/vote/" + messageid + "/-1"
-    });
-}
 
-function submitCommentDownVote(commentid) {
-    $.ajax({
-        type: "POST",
-        url: "/votecomment/" + commentid + "/-1"
-    });
-}
+
+//function submitCommentDownVote(commentid) {
+//    $.ajax({
+//        type: "POST",
+//        url: "/votecomment/" + commentid + "/-1"
+//    });
+//}
 
 // append a comment reply form to calling area while preventing multiple appends
 var replyCommentFormRequest;
@@ -498,7 +561,7 @@ function reply(parentcommentid, messageid) {
         success: function (data) {
             $("#" + parentcommentid).append(data);
             //Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
-            $('#commentreplyform-' + parentcommentid).find('#CommentContent').focus();
+            $('#commentreplyform-' + parentcommentid).find('#Content').focus();
         },
         complete: function () {
             replyCommentFormRequest = null;
@@ -559,7 +622,7 @@ function replyToCommentNotification(commentId, submissionId) {
         success: function (data) {
             $("#commentContainer-" + commentId).append(data);
             //Focus the cursor on the comment reply form textarea, to prevent unnecessary use of the tab key
-            $('#commentreplyform-' + commentId).find('#CommentContent').focus();
+            $('#commentreplyform-' + commentId).find('#Content').focus();
         },
         complete: function () {
             replyToCommentFormRequest = null;
@@ -578,7 +641,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
 
-    if ($form.find("#CommentContent").val().length > 0) {
+    if ($form.find("#Content").val().length > 0) {
         $form.find("#submitbutton").val("Please wait...");
         $form.find("#submitbutton").prop('disabled', true);
 
@@ -614,7 +677,7 @@ function postCommentAjax(senderButton, messageId, userName) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
 
-    if ($form.find("#CommentContent").val().length > 0) {
+    if ($form.find("#Content").val().length > 0) {
         $form.find("#submitbutton").val("Doing the magic...");
         $form.find("#submitbutton").prop('disabled', true);
 
@@ -626,7 +689,7 @@ function postCommentAjax(senderButton, messageId, userName) {
                 // submission failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit comment");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html("You are doing that too fast. Please wait 30 seconds before trying again.");
+                $form.find("#errorMessage").html(error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.");
                 $form.find("#errorMessage").toggle(true);
             },
             //response now contains the comment html
@@ -637,7 +700,7 @@ function postCommentAjax(senderButton, messageId, userName) {
                 $form.find("#submitbutton").val("Submit comment");
                 $form.find("#submitbutton").prop('disabled', false);
                 // reset textbox
-                $form.find("#CommentContent").val("");
+                $form.find("#Content").val("");
                 //notify UI framework of DOM insertion async
                 window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
             }
@@ -694,7 +757,7 @@ function edit(parentcommentid, messageid) {
     $("#" + parentcommentid).find(".usertext-edit").toggle(1);
 
     // Focus the cursor on the edit comment form textarea, to prevent unnecessary use of the tab key
-    $("#commenteditform-" + parentcommentid).find("#CommentContent").focus();
+    $("#commenteditform-" + parentcommentid).find("#Content").focus();
 
     var form = $("#commenteditform-" + parentcommentid)
             .removeData("validator") /* added by the raw jquery.validate plugin */
@@ -787,7 +850,7 @@ function hidecomment(commentid) {
 // submit edited comment and replace the old one with formatted response received by server
 function editcommentsubmit(commentid) {
     var commentcontent = $("#" + commentid).find('.form-control').val();
-    var commentobject = { "Id": commentid, "CommentContent": commentcontent };
+    var commentobject = { "ID": commentid, "Content": commentcontent };
 
     $.ajax({
         type: "POST",
@@ -795,15 +858,21 @@ function editcommentsubmit(commentid) {
         data: JSON.stringify(commentobject),
         url: "/editcomment",
         datatype: "json",
+        error: function (xhr, status, error) {
+            var msg = error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.";
+            $('#commenteditform-' + commentid + " span.field-validation-error").html(msg);
+        },
         success: function (data) {
             $("#" + commentid).find('.md').html(data.response);
+
+            removeeditform(commentid);
+
             //notify UI framework of DOM insertion async
             window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)); });
-
         }
     });
 
-    removeeditform(commentid);
+
     return false;
 }
 
@@ -1166,10 +1235,10 @@ function selectflair(messageId, subverseName) {
 }
 
 // function to apply flair to a given submission
-function applyflair(messageId, flairId, flairLabel, flairCssClass) {
+function applyflair(submissionID, flairID, flairLabel, flairCssClass) {
     $.ajax({
         type: "POST",
-        url: "/submissions/applylinkflair/" + messageId + "/" + flairId,
+        url: "/submissions/applylinkflair/" + submissionID + "/" + flairID,
         success: function () {
             $('#linkFlairSelectModal').modal('hide');
 
@@ -1226,18 +1295,18 @@ function suggestTitle() {
     $("#suggest-title").off('click', suggestTitle);
     $("#suggest-title").text('Please wait...');
 
-    var uri = $("#MessageContent").val();
+    var uri = $("#Content").val();
 
     // request a url title from title service
     var title = $.get(
         "/ajaxhelpers/titlefromuri?uri=" + uri,
         null,
         function (data) {
-            $("#Linkdescription").val(data);
+            $("#LinkDescription").val(data);
             $("#suggest-title").text("Enter the URL above, then click here to suggest a title");
             $("#suggest-title").on('click', suggestTitle);
         }).fail(function () {
-            $("#Linkdescription").val("We were unable to suggest a title.");
+            $("#LinkDescription").val("We were unable to suggest a title.");
             $("#suggest-title").text("Enter the URL above, then click here to suggest a title");
             $("#suggest-title").on('click', suggestTitle);
         });

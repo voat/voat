@@ -47,13 +47,13 @@ else if (!User.Identity.IsAuthenticated)
        {
            selectedSubverse = selectedSubverse,
            showingComments = true,
-           name = Model.Submission.Name,
-           date = Model.Submission.Date,
+           name = Model.Submission.UserName,
+           date = Model.Submission.CreationDate,
            lastEditDate = Model.Submission.LastEditDate,
-           submissionId = Model.Submission.Id,
-           likes = Model.Submission.Likes,
-           dislikes = Model.Submission.Dislikes,
-           anonymized = Model.Submission.Anonymized,
+           submissionId = Model.Submission.ID,
+           likes = Model.Submission.UpCount,
+           dislikes = Model.Submission.DownCount,
+           anonymized = Model.Submission.IsAnonymized,
            views = Model.Submission.Views,
            isDeleted = Model.Submission.IsDeleted
        })
@@ -84,7 +84,7 @@ else if (!User.Identity.IsAuthenticated)
             //type 2 = link submission
             if (Model.Submission.Type == 2)
             {
-                ViewBag.Title = Model.Submission.Linkdescription + " | " + selectedSubverse;
+                ViewBag.Title = Model.Submission.LinkDescription + " | " + selectedSubverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
 
@@ -112,7 +112,7 @@ else if (!User.Identity.IsAuthenticated)
         @if (User.Identity.IsAuthenticated)
         //if user logged in, show add comment form
         {
-            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Submission.Id } })
+            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", Model.Submission.ID } })
         }
 
         <div class="horizontal-line"></div>
@@ -126,7 +126,7 @@ else if (!User.Identity.IsAuthenticated)
                     <span class="dropdown-title lightdrop">sort by: </span>
                     <div class="dropdown lightdrop">
                         <span class="selected">
-                            <a href="/v/@Model.Subverse.name/comments/@Model.Submission.Id/@sort" class="bylink" rel="nofollow">@sort</a>
+                            <a href="/v/@Model.Subverse.Name/comments/@Model.Submission.ID/@sort" class="bylink" rel="nofollow">@sort</a>
                         </span>
                     </div>
                 </div>

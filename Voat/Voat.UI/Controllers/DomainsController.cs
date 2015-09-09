@@ -49,13 +49,13 @@ namespace Voat.Controllers
             //    .ThenByDescending(s => s.Date);
 
             //restrict disabled subs from result list
-            IQueryable<Message> submissions = (from m in _db.Messages
-                                               join s in _db.Subverses on m.Subverse equals s.name
-                                               where !s.admin_disabled.Value && !m.IsDeleted & m.Type == 2 & m.MessageContent.ToLower().Contains(domainname + "." + ext)
-                                               orderby m.Rank descending, m.Date descending
+            IQueryable<Submission> submissions = (from m in _db.Submissions
+                                                  join s in _db.Subverses on m.Subverse equals s.Name
+                                               where !s.IsAdminDisabled.Value && !m.IsDeleted & m.Type == 2 & m.Content.ToLower().Contains(domainname + "." + ext)
+                                               orderby m.Rank descending, m.CreationDate descending
                                                select m);
 
-            var paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
+            var paginatedSubmissions = new PaginatedList<Submission>(submissions, page ?? 0, pageSize);
 
             ViewBag.Title = "Showing all submissions which link to " + domainname;
             return View("Index", paginatedSubmissions);
@@ -83,13 +83,13 @@ namespace Voat.Controllers
             //    .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
             //    .OrderByDescending(s => s.Date);
 
-            IQueryable<Message> submissions = (from m in _db.Messages
-                                               join s in _db.Subverses on m.Subverse equals s.name
-                                               where !s.admin_disabled.Value && !m.IsDeleted & m.Type == 2 & m.MessageContent.ToLower().Contains(domainname + "." + ext)
-                                               orderby m.Date descending
+            IQueryable<Submission> submissions = (from m in _db.Submissions
+                                                  join s in _db.Subverses on m.Subverse equals s.Name
+                                               where !s.IsAdminDisabled.Value && !m.IsDeleted & m.Type == 2 & m.Content.ToLower().Contains(domainname + "." + ext)
+                                               orderby m.CreationDate descending
                                                select m);
 
-            var paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
+            var paginatedSubmissions = new PaginatedList<Submission>(submissions, page ?? 0, pageSize);
 
             ViewBag.Title = "Showing all newest submissions which link to " + domainname;
             return View("Index", paginatedSubmissions);

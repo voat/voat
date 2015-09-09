@@ -11,20 +11,20 @@
     All Rights Reserved.*@
 
 @using Voat.Models.ViewModels
-@model IQueryable<Voat.Data.Models.Userset>
+@model IQueryable<Voat.Data.Models.UserSet>
 
 @foreach (var set in Model)
 {
     var viewModel = new SetDetailsViewModel
     {
-        CreatedBy = set.Created_by,
-        CreationDate = set.Created_on,
+        CreatedBy = set.CreatedBy,
+        CreationDate = set.CreationDate,
         Description = set.Description,
-        Id = set.Set_id,
+        Id = set.ID,
         Name = set.Name,
-        Public = set.Public,
-        Subscribers = set.Subscribers,
-        SubversesList = set.Usersetdefinitions.ToList()
+        Public = set.IsPublic,
+        Subscribers = set.SubscriberCount,
+        SubversesList = set.UserSetLists.ToList()
     };
 
     @Html.Partial("_SetDetails", viewModel)

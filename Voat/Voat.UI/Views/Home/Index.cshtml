@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Data.Models.Message>
+@model PaginatedList<Voat.Data.Models.Submission>
 
 @using System.Configuration
 
@@ -89,7 +89,7 @@
                     classEvenOrOdd = "odd";
                 }
 
-                <div class="submission id-@submission.Id @classEvenOrOdd link @submissionClass" data-fullname="@submission.Id" data-ups="@submission.Votes" data-downs="">
+                <div class="submission id-@submission.ID @classEvenOrOdd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
                     <p class="parent"></p>
                     @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary {{"CCP", commentContributionPoints}})
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)

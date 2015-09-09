@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model IEnumerable<Voat.Data.Models.SubverseAdmin>
+@model IEnumerable<Voat.Data.Models.SubverseModerator>
 
 <div id="container">
     <div id="about-main" class="content about-page" role="main">
@@ -40,9 +40,9 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.Username</td>
+                        <td>@item.UserName</td>
                         <td>@item.Power</td>
-                        <td>@Html.ActionLink("Remove", "RemoveModerator", new {id = item.Id})</td>
+                        <td>@Html.ActionLink("Remove", "RemoveModerator", new {id = item.ID})</td>
                     </tr>
                 }
 

@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PagedList.IPagedList<Voat.Data.Models.Privatemessage>
+@model PagedList.IPagedList<Voat.Data.Models.PrivateMessage>
 
 @using PagedList.Mvc;
 
@@ -34,10 +34,10 @@
 
                 foreach (var message in Model)
                 {
-                    <div id="messageContainer-@message.Id">
+                    <div id="messageContainer-@message.ID">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
-                                Recipient: <a href="/u/@message.Recipient">@message.Recipient</a> | Sent: @message.Timestamp
+                                Recipient: <a href="/u/@message.Recipient">@message.Recipient</a> | Sent: @message.CreationDate
                             </div>
                             <div class="panel panel-heading-messagetitle">
                                 <b>@message.Subject</b>
@@ -50,7 +50,7 @@
 
                         <ul class="flat-list buttons">
                             <li>
-                                <a class="btn-whoaverse-paging" href="javascript:void(0)" onclick="return deletePrivateMessageFromSent(this, @message.Id)">Delete and revoke</a>
+                                <a class="btn-whoaverse-paging" href="javascript:void(0)" onclick="return deletePrivateMessageFromSent(this, @message.ID)">Delete and revoke</a>
                             </li>
                         </ul>
                         <br /><br />

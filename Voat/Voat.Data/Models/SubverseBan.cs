@@ -14,13 +14,13 @@ namespace Voat.Data.Models
     
     public partial class SubverseBan
     {
-        public int Id { get; set; }
-        public string SubverseName { get; set; }
-        public string Username { get; set; }
-        public string BannedBy { get; set; }
-        public System.DateTime BanAddedOn { get; set; }
-        public string BanReason { get; set; }
+        public int ID { get; set; }
+        public string Subverse { get; set; }
+        public string UserName { get; set; }
+        public string CreatedBy { get; set; }
+        public System.DateTime CreationDate { get; set; }
+        public string Reason { get; set; }
     
-        public virtual Subverse Subverse { get; set; }
+        public virtual Subverse Subverse1 { get; set; }
     }
 }

@@ -42,11 +42,11 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.Username</td>
-                            <td>@item.BannedBy</td>
-                            <td>@item.BanReason</td>
-                            <td>@item.BanAddedOn</td>
-                            <td>@Html.ActionLink("Remove", "RemoveBan", new { id = item.Id })</td>
+                            <td>@item.UserName</td>
+                            <td>@item.CreatedBy</td>
+                            <td>@item.Reason</td>
+                            <td>@item.CreationDate</td>
+                            <td>@Html.ActionLink("Remove", "RemoveBan", new { id = item.ID })</td>
                         </tr>
                     }
 

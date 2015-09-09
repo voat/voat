@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Configuration;
@@ -88,27 +89,27 @@ namespace Voat.Controllers
             return Json("Saving ok", JsonRequestBehavior.AllowGet);
         }
         
-        private List<Commentvotingtracker> UserCommentVotesBySubmission(int submissionID) {
-            List<Commentvotingtracker> vCache = new List<Commentvotingtracker>();
+        private List<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID) {
+            List<CommentVoteTracker> vCache = new List<CommentVoteTracker>();
 
             if (User.Identity.IsAuthenticated){
-                vCache = (from cv in _db.Commentvotingtrackers.AsNoTracking()
-                            join c in _db.Comments on cv.CommentId equals c.Id
-                            where c.MessageId == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                vCache = (from cv in _db.CommentVoteTrackers.AsNoTracking()
+                            join c in _db.Comments on cv.CommentID equals c.ID
+                            where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
                             select cv).ToList();    
             }
             return vCache;
         }
         
-        private List<Commentsavingtracker> UserSavedCommentsBySubmission(int submissionID)
+        private List<CommentSaveTracker> UserSavedCommentsBySubmission(int submissionID)
         {
-            List<Commentsavingtracker> vCache = new List<Commentsavingtracker>();
+            List<CommentSaveTracker> vCache = new List<CommentSaveTracker>();
 
             if (User.Identity.IsAuthenticated)
             {
-                vCache = (from cv in _db.Commentsavingtrackers.AsNoTracking()
-                          join c in _db.Comments on cv.CommentId equals c.Id
-                          where c.MessageId == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && !c.IsDeleted
+                vCache = (from cv in _db.CommentSaveTrackers.AsNoTracking()
+                          join c in _db.Comments on cv.CommentID equals c.ID
+                          where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && !c.IsDeleted
                           select cv).ToList();
             }
             return vCache;
@@ -124,7 +125,7 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error.cshtml");
             }
 
-            var submission = _db.Messages.Find(id.Value);
+            var submission = _db.Submissions.Find(id.Value);
 
             if (submission == null)
             {
@@ -146,16 +147,16 @@ namespace Voat.Controllers
             }
 
             //HACK: Disable subverse
-            if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+            if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
-                ViewBag.Subverse = subverse.name;
+                ViewBag.Subverse = subverse.Name;
                 return View("~/Views/Errors/SubverseDisabled.cshtml");
             }
 
             #endregion 
 
-            ViewBag.SelectedSubverse = subverse.name;
-            ViewBag.SubverseAnonymized = subverse.anonymized_mode;
+            ViewBag.SelectedSubverse = subverse.Name;
+            ViewBag.SubverseAnonymized = subverse.IsAnonymized;
 
             //Temp cache user votes for this thread
             ViewBag.VoteCache = UserCommentVotesBySubmission(id.Value);
@@ -197,18 +198,18 @@ namespace Voat.Controllers
                 var currentSubverse = (string)RouteData.Values["subversetoshow"];
 
                 // register a new session for this subverse
-                SessionTracker.Add(currentSubverse, ipHash);
+                SessionHelper.Add(currentSubverse, ipHash);
 
                 // register a new view for this thread
                 // check if this hash is present for this submission id in viewstatistics table
-                var existingView = _db.Viewstatistics.Find(submission.Id, ipHash);
+                var existingView = _db.ViewStatistics.Find(submission.ID, ipHash);
 
                 // this IP has already viwed this thread, skip registering a new view
                 if (existingView == null)
                 {
                     // this is a new view, register it for this submission
-                    var view = new Viewstatistic { submissionId = submission.Id, viewerId = ipHash };
-                    _db.Viewstatistics.Add(view);
+                    var view = new ViewStatistic { SubmissionID = submission.ID, ViewerID = ipHash };
+                    _db.ViewStatistics.Add(view);
 
                     submission.Views++;
 
@@ -216,7 +217,7 @@ namespace Voat.Controllers
                 }
             }
 
-            var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.Id, null, null);
+            var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.ID, null, null);
 
             var model = new CommentBucketViewModel()
             {
@@ -230,13 +231,13 @@ namespace Voat.Controllers
                 Sort = (CommentSort)Enum.Parse(typeof(CommentSort), SortingMode, true)
             };
 
-            IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable().Where(x => x.ParentId == null);
+            IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable().Where(x => x.ParentID == null);
             model.TotalInDisplayBranch = displayTree.Count();
 
             if (model.Sort == CommentSort.Top) {
-                displayTree = displayTree.OrderByDescending(x => x.Likes - x.Dislikes).Take(model.EndingIndex);
+                displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount).Take(model.EndingIndex);
             } else {
-                displayTree = displayTree.OrderByDescending(x => x.Date).Take(model.EndingIndex);
+                displayTree = displayTree.OrderByDescending(x => x.CreationDate).Take(model.EndingIndex);
             }
             model.DisplayTree = displayTree;
            
@@ -271,16 +272,16 @@ namespace Voat.Controllers
             }
 
             //HACK: Disable subverse
-            if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+            if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
-                ViewBag.Subverse = subverse.name;
+                ViewBag.Subverse = subverse.Name;
                 return View("~/Views/Errors/SubverseDisabled.cshtml");
             }
 
             #endregion
             
-            ViewBag.SelectedSubverse = subverse.name;
-            ViewBag.SubverseAnonymized = subverse.anonymized_mode;
+            ViewBag.SelectedSubverse = subverse.Name;
+            ViewBag.SubverseAnonymized = subverse.IsAnonymized;
 
             //Temp cache user votes for this thread
             ViewBag.VoteCache = UserCommentVotesBySubmission(submissionId);
@@ -291,9 +292,9 @@ namespace Voat.Controllers
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
 
-          
 
-            var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.Id, null, null);
+
+            var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.ID, null, null);
             var model = new CommentBucketViewModel()
             {
                 StartingIndex = startingIndex,
@@ -307,7 +308,7 @@ namespace Voat.Controllers
             model.CollapseSiblingThreshold = 5;
            
             IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable();
-            displayTree = displayTree.Where(x => x.ParentId == parentId);
+            displayTree = displayTree.Where(x => x.ParentID == parentId);
             model.TotalInDisplayBranch = displayTree.Count();
 
             //calculate offsets
@@ -315,9 +316,9 @@ namespace Voat.Controllers
 
 
             if (model.Sort == CommentSort.Top){
-                displayTree = displayTree.OrderByDescending(x => x.Likes - x.Dislikes);
+                displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount);
             } else {
-                displayTree = displayTree.OrderByDescending(x => x.Date);
+                displayTree = displayTree.OrderByDescending(x => x.CreationDate);
             }
 
             displayTree = displayTree.Skip(model.StartingIndex).Take(model.Count); 
@@ -340,23 +341,19 @@ namespace Voat.Controllers
         [Authorize]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SubmitComment([Bind(Include = "Id, CommentContent, MessageId, ParentId")] Comment commentModel)
+        public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Comment commentModel)
         {
-            commentModel.Date = DateTime.Now;
-            commentModel.Name = User.Identity.Name;
+            commentModel.CreationDate = DateTime.Now;
+            commentModel.UserName = User.Identity.Name;
             commentModel.Votes = 0;
-            commentModel.Likes = 0;
+            commentModel.UpCount = 0;
 
             if (ModelState.IsValid)
             {
                 // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
-                var submission = DataCache.Submission.Retrieve(commentModel.MessageId.Value);
-                
-                if (submission != null)
-                {
-                    var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-                    commentModel.Anonymized = submission.Anonymized || subverse.anonymized_mode;
-                }
+                var submission = DataCache.Submission.Retrieve(commentModel.SubmissionID.Value);
+                var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                commentModel.IsAnonymized = submission.IsAnonymized || subverse.IsAnonymized;
 
                 // if user CCP is < 50, allow only X comment submissions per 24 hours
                 var userCcp = Karma.CommentKarma(User.Identity.Name);
@@ -365,21 +362,29 @@ namespace Voat.Controllers
                     var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
                     if (quotaUsed)
                     {
-                        ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore + " comment(s) per 24 hours.");
-                        return View();
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
+                        //ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore + " comment(s) per 24 hours.");
+                        //return View();
                     }
                 }
 
                 // check if author is banned, don't save the comment or send notifications if true
                 if (!UserHelper.IsUserGloballyBanned(User.Identity.Name) && !UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
                 {
+                    bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(subverse.Name, commentModel.Content);
+                    if (containsBannedDomain)
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
+                    }
+
+
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                     {
-                        commentModel.CommentContent = ContentProcessor.Instance.Process(commentModel.CommentContent, ProcessingStage.InboundPreSave, commentModel);
+                        commentModel.Content = ContentProcessor.Instance.Process(commentModel.Content, ProcessingStage.InboundPreSave, commentModel);
                     }
 
                     //save fully formatted content 
-                    var formattedComment = Formatting.FormatMessage(commentModel.CommentContent);
+                    var formattedComment = Formatting.FormatMessage(commentModel.Content);
                     commentModel.FormattedContent = formattedComment;
                     
                     _db.Comments.Add(commentModel);
@@ -390,7 +395,7 @@ namespace Voat.Controllers
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
                     {
-                        ContentProcessor.Instance.Process(commentModel.CommentContent, ProcessingStage.InboundPostSave, commentModel);
+                        ContentProcessor.Instance.Process(commentModel.Content, ProcessingStage.InboundPostSave, commentModel);
                     }
 
                     // send comment reply notification to parent comment author if the comment is not a new root comment
@@ -408,15 +413,12 @@ namespace Voat.Controllers
                 {
                     var comment = commentModel;
 
-                    ViewBag.CommentId = comment.Id; //why?
-                    ViewBag.rootComment = comment.ParentId == null; //why?
+                    ViewBag.CommentId = comment.ID; //why?
+                    ViewBag.rootComment = comment.ParentID == null; //why?
 
-                    //var submission = DataCache.Submission.Retrieve(comment.MessageId.Value);
-                    var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-
-                    if (submission.Anonymized || subverse.anonymized_mode)
+                    if (submission.IsAnonymized || subverse.IsAnonymized)
                     {
-                        comment.Name = comment.Id.ToString(CultureInfo.InvariantCulture);
+                        comment.UserName = comment.ID.ToString(CultureInfo.InvariantCulture);
                     }
 
                     var model = new CommentBucketViewModel(comment);
@@ -445,33 +447,40 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> EditComment([Bind(Include = "Id, CommentContent")] Comment commentModel)
+        public async Task<ActionResult> EditComment([Bind(Include = "ID, Content")] Comment commentModel)
         {
             if (ModelState.IsValid)
             {
-                var existingComment = _db.Comments.Find(commentModel.Id);
+                var existingComment = _db.Comments.Find(commentModel.ID);
 
                 if (existingComment != null)
                 {
-                    if (existingComment.Name.Trim() == User.Identity.Name && !existingComment.IsDeleted)
+                    if (existingComment.UserName.Trim() == User.Identity.Name && !existingComment.IsDeleted)
                     {
+
+                        bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(existingComment.Submission.Subverse, commentModel.Content);
+                        if (containsBannedDomain)
+                        {
+                            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
+                        }
+
                         existingComment.LastEditDate = DateTime.Now;
-                        existingComment.CommentContent = commentModel.CommentContent;
+                        existingComment.Content = commentModel.Content;
 
                         if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                         {
-                            existingComment.CommentContent = ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPreSave, existingComment);
+                            existingComment.Content = ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPreSave, existingComment);
                         }
 
                         //save fully formatted content 
-                        var formattedComment = Formatting.FormatMessage(existingComment.CommentContent);
+                        var formattedComment = Formatting.FormatMessage(existingComment.Content);
                         existingComment.FormattedContent = formattedComment;
 
                         await _db.SaveChangesAsync();
 
                         if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
                         {
-                            ContentProcessor.Instance.Process(existingComment.CommentContent, ProcessingStage.InboundPostSave, existingComment);
+                            ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPostSave, existingComment);
                         }
 
                         //return the formatted comment so that it can replace the existing html comment which just got modified
@@ -498,13 +507,13 @@ namespace Voat.Controllers
 
             if (commentToDelete != null && !commentToDelete.IsDeleted)
             {
-                var commentSubverse = commentToDelete.Message.Subverse;
+                var commentSubverse = commentToDelete.Submission.Subverse;
 
                 // delete comment if the comment author is currently logged in user
-                if (commentToDelete.Name == User.Identity.Name)
+                if (commentToDelete.UserName == User.Identity.Name)
                 {
                     commentToDelete.IsDeleted = true;
-                    commentToDelete.CommentContent = "deleted by author at " + DateTime.Now;
+                    commentToDelete.Content = "deleted by author at " + DateTime.Now;
                     await _db.SaveChangesAsync();
                 }
 
@@ -514,13 +523,13 @@ namespace Voat.Controllers
                     // notify comment author that his comment has been deleted by a moderator
                     MesssagingUtility.SendPrivateMessage(
                         "Voat",
-                        commentToDelete.Name,
+                        commentToDelete.UserName,
                         "Your comment has been deleted by a moderator",
-                        "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.MessageId + "/" + commentToDelete.Id + ") has been deleted by: " +
+                        "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
                         "/u/" + User.Identity.Name + " on: " + DateTime.Now + "  " + Environment.NewLine +
                         "Original comment content was: " + Environment.NewLine +
                         "---" + Environment.NewLine +
-                        commentToDelete.CommentContent
+                        commentToDelete.Content
                         );
 
                     commentToDelete.IsDeleted = true;
@@ -528,15 +537,15 @@ namespace Voat.Controllers
                     // move the comment to removal log
                     var removalLog = new CommentRemovalLog
                     {
-                        CommentId = commentToDelete.Id,
+                        CommentID = commentToDelete.ID,
                         Moderator = User.Identity.Name,
-                        ReasonForRemoval = "This feature is not yet implemented",
-                        RemovalTimestamp = DateTime.Now
+                        Reason = "This feature is not yet implemented",
+                        CreationDate = DateTime.Now
                     };
 
                     _db.CommentRemovalLogs.Add(removalLog);
 
-                    commentToDelete.CommentContent = "deleted by a moderator at " + DateTime.Now;
+                    commentToDelete.Content = "deleted by a moderator at " + DateTime.Now;
                     await _db.SaveChangesAsync();
                 }
             }
@@ -557,10 +566,10 @@ namespace Voat.Controllers
             if (commentToDistinguish != null)
             {
                 // check to see if request came from comment author
-                if (User.Identity.Name == commentToDistinguish.Name)
+                if (User.Identity.Name == commentToDistinguish.UserName)
                 {
                     // check to see if comment author is also sub mod or sub admin for comment sub
-                    if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentToDistinguish.Message.Subverse))
+                    if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentToDistinguish.Submission.Subverse))
                     {
                         // mark the comment as distinguished and save to db
                         if (commentToDistinguish.IsDistinguished)

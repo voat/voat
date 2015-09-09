@@ -32,11 +32,11 @@ namespace Voat.Controllers
         // POST: apply a link flair to given submission
         [Authorize]
         [HttpPost]
-        public ActionResult ApplyLinkFlair(int? submissionId, int? flairId)
+        public ActionResult ApplyLinkFlair(int? submissionID, int? flairId)
         {
-            if (submissionId == null || flairId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (submissionID == null || flairId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var submission = _db.Messages.Find(submissionId);
+            var submission = _db.Submissions.Find(submissionID);
             if (submission == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -45,13 +45,14 @@ namespace Voat.Controllers
             if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submission.Subverse)) return new HttpUnauthorizedResult();
 
             // find flair by id, apply it to submission
-            var flairModel = _db.Subverseflairsettings.Find(flairId);
-            if (flairModel == null || flairModel.Subversename != submission.Subverse) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            var flairModel = _db.SubverseFlairs.Find(flairId);
+            if (flairModel == null || flairModel.Subverse != submission.Subverse) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // apply flair and save submission
             submission.FlairCss = flairModel.CssClass;
             submission.FlairLabel = flairModel.Label;
             _db.SaveChanges();
+            DataCache.Submission.Remove(submissionID.Value);
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
@@ -59,11 +60,11 @@ namespace Voat.Controllers
         // POST: clear link flair from a given submission
         [Authorize]
         [HttpPost]
-        public ActionResult ClearLinkFlair(int? submissionId)
+        public ActionResult ClearLinkFlair(int? submissionID)
         {
-            if (submissionId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (submissionID == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // get model for selected submission
-            var submissionModel = DataCache.Submission.Retrieve(submissionId);
+            var submissionModel = _db.Submissions.Find(submissionID);
 
             if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse moderator, if not, deny posting
@@ -72,16 +73,17 @@ namespace Voat.Controllers
             submissionModel.FlairCss = null;
             submissionModel.FlairLabel = null;
             _db.SaveChanges();
+            DataCache.Submission.Remove(submissionID.Value);
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         // POST: toggle sticky status of a submission
         [Authorize]
         [HttpPost]
-        public ActionResult ToggleSticky(int submissionId)
+        public ActionResult ToggleSticky(int submissionID)
         {
             // get model for selected submission
-            var submissionModel = _db.Messages.Find(submissionId);
+            var submissionModel = _db.Submissions.Find(submissionID);
 
             if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse moderator, if not, deny change
@@ -89,29 +91,30 @@ namespace Voat.Controllers
             try
             {
                 // find and clear current sticky if toggling
-                var existingSticky = _db.Stickiedsubmissions.FirstOrDefault(s => s.Submission_id == submissionId);
+                var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionID);
                 if (existingSticky != null)
                 {
-                    _db.Stickiedsubmissions.Remove(existingSticky);
+                    _db.StickiedSubmissions.Remove(existingSticky);
                     _db.SaveChanges();
                     return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
 
                 // remove all stickies for subverse matching submission subverse
-                _db.Stickiedsubmissions.RemoveRange(_db.Stickiedsubmissions.Where(s => s.Subversename == submissionModel.Subverse));
+                _db.StickiedSubmissions.RemoveRange(_db.StickiedSubmissions.Where(s => s.Subverse == submissionModel.Subverse));
 
                 // set new submission as sticky
-                var stickyModel = new Stickiedsubmission
+                var stickyModel = new StickiedSubmission
                 {
-                    Submission_id = submissionId,
-                    Stickied_by = User.Identity.Name,
-                    Stickied_date = DateTime.Now,
-                    Subversename = submissionModel.Subverse
+                    SubmissionID = submissionID,
+                    CreatedBy = User.Identity.Name,
+                    CreationDate = DateTime.Now,
+                    Subverse = submissionModel.Subverse
                 };
 
-                _db.Stickiedsubmissions.Add(stickyModel);
+                _db.StickiedSubmissions.Add(stickyModel);
                 _db.SaveChanges();
 
+                DataCache.Submission.Remove(submissionID);
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }
             catch (Exception)
@@ -178,13 +181,14 @@ namespace Voat.Controllers
         [HttpPost]
         public ActionResult EditSubmission(EditSubmission model)
         {
-            var existingSubmission = _db.Messages.Find(model.SubmissionId);
+            var existingSubmission = _db.Submissions.Find(model.SubmissionId);
 
             if (existingSubmission == null) return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+
             if (existingSubmission.IsDeleted) return Json("This submission has been deleted.", JsonRequestBehavior.AllowGet);
-            if (existingSubmission.Name.Trim() != User.Identity.Name) return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
-            
-            existingSubmission.MessageContent = model.SubmissionContent;
+            if (existingSubmission.UserName.Trim() != User.Identity.Name) return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+
+            existingSubmission.Content = model.SubmissionContent;
             existingSubmission.LastEditDate = DateTime.Now;
 
             _db.SaveChanges();
@@ -200,29 +204,29 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> DeleteSubmission(int submissionId)
         {
-            var submissionToDelete = _db.Messages.Find(submissionId);
+            var submissionToDelete = _db.Submissions.Find(submissionId);
 
             if (submissionToDelete != null)
             {
                 // delete submission if delete request is issued by submission author
-                if (submissionToDelete.Name == User.Identity.Name)
+                if (submissionToDelete.UserName == User.Identity.Name)
                 {
                     submissionToDelete.IsDeleted = true;
 
                     if (submissionToDelete.Type == 1)
                     {
-                        submissionToDelete.MessageContent = "deleted by author at " + DateTime.Now;
+                        submissionToDelete.Content = "deleted by author at " + DateTime.Now;
                     }
                     else
                     {
-                        submissionToDelete.MessageContent = "http://voat.co";
+                        submissionToDelete.Content = "http://voat.co";
                     }
 
                     // remove sticky if submission was stickied
-                    var existingSticky = _db.Stickiedsubmissions.FirstOrDefault(s => s.Submission_id == submissionId);
+                    var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionId);
                     if (existingSticky != null)
                     {
-                        _db.Stickiedsubmissions.Remove(existingSticky);
+                        _db.StickiedSubmissions.Remove(existingSticky);
                     }
 
                     await _db.SaveChangesAsync();
@@ -239,10 +243,10 @@ namespace Voat.Controllers
                     // move the submission to removal log
                     var removalLog = new SubmissionRemovalLog
                     {
-                        SubmissionId = submissionToDelete.Id,
+                        SubmissionID = submissionToDelete.ID,
                         Moderator = User.Identity.Name,
-                        ReasonForRemoval = "This feature is not yet implemented",
-                        RemovalTimestamp = DateTime.Now
+                        Reason = "This feature is not yet implemented",
+                        CreationDate = DateTime.Now
                     };
 
                     _db.SubmissionRemovalLogs.Add(removalLog);
@@ -252,14 +256,14 @@ namespace Voat.Controllers
                         // notify submission author that his submission has been deleted by a moderator
                         MesssagingUtility.SendPrivateMessage(
                             "Voat",
-                            submissionToDelete.Name,
+                            submissionToDelete.UserName,
                             "Your submission has been deleted by a moderator",
-                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.Id + ") has been deleted by: " +
+                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
                             "/u/" + User.Identity.Name + " at " + DateTime.Now + "  " + Environment.NewLine +
                             "Original submission content was: " + Environment.NewLine +
                             "---" + Environment.NewLine +
                             "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
-                            "Submission content: " + submissionToDelete.MessageContent
+                            "Submission content: " + submissionToDelete.Content
                             );
                     }
                     else
@@ -267,22 +271,22 @@ namespace Voat.Controllers
                         // notify submission author that his submission has been deleted by a moderator
                         MesssagingUtility.SendPrivateMessage(
                             "Voat",
-                            submissionToDelete.Name,
+                            submissionToDelete.UserName,
                             "Your submission has been deleted by a moderator",
-                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.Id + ") has been deleted by: " +
+                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
                             "/u/" + User.Identity.Name + " at " + DateTime.Now + "  " + Environment.NewLine +
                             "Original submission content was: " + Environment.NewLine +
                             "---" + Environment.NewLine +
-                            "Link description: " + submissionToDelete.Linkdescription + ", " + Environment.NewLine +
-                            "Link URL: " + submissionToDelete.MessageContent
+                            "Link description: " + submissionToDelete.LinkDescription + ", " + Environment.NewLine +
+                            "Link URL: " + submissionToDelete.Content
                             );
                     }
 
                     // remove sticky if submission was stickied
-                    var existingSticky = _db.Stickiedsubmissions.FirstOrDefault(s => s.Submission_id == submissionId);
+                    var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionId);
                     if (existingSticky != null)
                     {
-                        _db.Stickiedsubmissions.Remove(existingSticky);
+                        _db.StickiedSubmissions.Remove(existingSticky);
                     }
 
                     await _db.SaveChangesAsync();

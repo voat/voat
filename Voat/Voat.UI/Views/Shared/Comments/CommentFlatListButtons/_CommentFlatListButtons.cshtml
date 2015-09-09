@@ -13,22 +13,22 @@
 @model Voat.Models.ViewModels.CommentSingleViewModel
 
 @{
-    string commentAuthor = Model.CommentModel.Name;
-    int commentId = Model.CommentModel.Id;
+    string commentAuthor = Model.CommentModel.UserName;
+    int commentId = Model.CommentModel.ID;
 }
 
 <ul class="flat-list buttons">
     @if (!Model.CommentModel.IsDeleted)
     {
         <li class="first">
-            <a href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.MessageId/@Model.CommentModel.Id" class="bylink" rel="nofollow">permalink</a>
+            <a href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.SubmissionID/@Model.CommentModel.ID" class="bylink" rel="nofollow">permalink</a>
         </li>
     }
 
-    @if (Model.CommentModel.ParentId != null)
+    @if (Model.CommentModel.ParentID != null)
     {
         <li>
-            <a onclick="goToParent(event, @Model.CommentModel.ParentId)" href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.MessageId/@Model.CommentModel.ParentId" rel="nofollow">parent</a>
+            <a onclick="goToParent(event, @Model.CommentModel.ParentID)" href="/v/@Model.SubmissionModel.Subverse/comments/@Model.CommentModel.SubmissionID/@Model.CommentModel.ParentID" rel="nofollow">parent</a>
         </li>
     }
 
@@ -73,7 +73,7 @@
         // if user is sub admin or sub mod but not comment author, show delete button
         if (User.Identity.Name != commentAuthor && !Model.CommentModel.IsDeleted)
         {
-            if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.name))
+            if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.Name))
             {
                 @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
             }
@@ -83,15 +83,15 @@
         if (User.Identity.Name == commentAuthor && !Model.CommentModel.IsDeleted)
         {
             <li>
-                <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @Model.CommentModel.MessageId)">edit</a>
+                <a class="" href="javascript:void(0)" onclick="return edit(@commentId, @Model.CommentModel.SubmissionID)">edit</a>
             </li>
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
 
             // if user is comment author but also sub mod or sub admin show distinguish button
-            if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.name))
+            if (UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.SubverseModel.Name))
             {
                 <li>
-                    <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.CommentModel.Id, this)">distinguish</a>
+                    <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.CommentModel.ID, this)">distinguish</a>
                 </li>
             }
         }
@@ -99,7 +99,7 @@
         if (!Model.CommentModel.IsDeleted)
         {
             <li>
-                <a class="" href="javascript:void(0)" onclick="return reply(@commentId, @Model.CommentModel.MessageId)">reply</a>
+                <a class="" href="javascript:void(0)" onclick="return reply(@commentId, @Model.CommentModel.SubmissionID)">reply</a>
             </li>
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonReport.cshtml", null, new ViewDataDictionary { { "CommentId", commentId } })
         }

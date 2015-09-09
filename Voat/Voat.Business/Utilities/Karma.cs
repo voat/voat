@@ -64,9 +64,9 @@ namespace Voat.Utilities
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = "SELECT ISNULL(SUM(Likes - Dislikes), 0) FROM Messages WITH (NOLOCK) WHERE Name = @Name";
+                cmd.CommandText = "SELECT ISNULL(SUM(UpCount - DownCount), 0) FROM Submission WITH (NOLOCK) WHERE UserName = @UserName";
                 var param = cmd.CreateParameter();
-                param.ParameterName = "Name";
+                param.ParameterName = "UserName";
                 param.DbType = System.Data.DbType.String;
                 param.Value = userName;
                 cmd.Parameters.Add(param);
@@ -118,10 +118,10 @@ namespace Voat.Utilities
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = "SELECT ISNULL(SUM(Likes - Dislikes), 0) FROM Messages WITH (NOLOCK) WHERE Name = @Name AND Subverse = @Subverse";
+                cmd.CommandText = "SELECT ISNULL(SUM(UpCount - DownCount), 0) FROM Submission WITH (NOLOCK) WHERE UserName = @UserName AND Subverse = @Subverse";
 
                 var param = cmd.CreateParameter();
-                param.ParameterName = "Name";
+                param.ParameterName = "UserName";
                 param.DbType = System.Data.DbType.String;
                 param.Value = userName;
                 cmd.Parameters.Add(param);
@@ -179,10 +179,10 @@ namespace Voat.Utilities
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = "SELECT ISNULL(SUM(Likes - Dislikes), 0) FROM Comments WITH (NOLOCK) WHERE Name = @Name";
+                cmd.CommandText = "SELECT ISNULL(SUM(UpCount - DownCount), 0) FROM Comment WITH (NOLOCK) WHERE UserName = @UserName";
 
                 var param = cmd.CreateParameter();
-                param.ParameterName = "Name";
+                param.ParameterName = "UserName";
                 param.DbType = System.Data.DbType.String;
                 param.Value = userName;
                 cmd.Parameters.Add(param);
@@ -233,13 +233,13 @@ namespace Voat.Utilities
             {
 
                 var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = @"SELECT ISNULL(SUM(c.Likes - c.Dislikes), 0) FROM Comments c WITH (NOLOCK) 
-                                    INNER JOIN Messages m WITH (NOLOCK) ON (m.Id = c.MessageId)
-                                    WHERE c.Name = @Name AND m.Subverse = @Subverse";
+                cmd.CommandText = @"SELECT ISNULL(SUM(c.UpCount - c.DownCount), 0) FROM Comment c WITH (NOLOCK) 
+                                    INNER JOIN Submission m WITH (NOLOCK) ON (m.ID = c.SubmissionID)
+                                    WHERE c.UserName = @UserName AND m.Subverse = @Subverse";
 
 
                 var param = cmd.CreateParameter();
-                param.ParameterName = "Name";
+                param.ParameterName = "UserName";
                 param.DbType = System.Data.DbType.String;
                 param.Value = userName;
                 cmd.Parameters.Add(param);
@@ -303,9 +303,9 @@ namespace Voat.Utilities
 
                 var cmd = db.Database.Connection.CreateCommand();
                 cmd.CommandText = @"SELECT 
-                                    (SELECT ISNULL(COUNT(*), 0) FROM Commentvotingtracker WITH (NOLOCK) WHERE UserName = @Name AND VoteStatus = 1) 
+                                    (SELECT ISNULL(COUNT(*), 0) FROM CommentVoteTracker WITH (NOLOCK) WHERE UserName = @Name AND VoteStatus = 1) 
                                     +
-                                    (SELECT ISNULL(COUNT(*), 0) FROM Votingtracker WITH (NOLOCK) WHERE UserName = @Name AND VoteStatus = 1)";
+                                    (SELECT ISNULL(COUNT(*), 0) FROM SubmissionVoteTracker WITH (NOLOCK) WHERE UserName = @Name AND VoteStatus = 1)";
 
                 var param = cmd.CreateParameter();
                 param.ParameterName = "Name";

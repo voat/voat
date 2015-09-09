@@ -39,17 +39,17 @@
 
             @foreach (var subverse in Model.SubversesList)
             {
-                <div id="subverse-@subverse.Subversename">
+                <div id="subverse-@subverse.Subverse">
                     <div class="midcol">
-                        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return removeSubFromSet(this, '@Model.Id', '@subverse.Subversename')">remove</button>
+                        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return removeSubFromSet(this, '@Model.Id', '@subverse.Subverse')">remove</button>
                     </div>
                     <div class="entry">
                         <p class="titlerow">
-                            <a href="/v/@subverse.Subversename" class="h4">@subverse.Subverse.title: @subverse.Subversename</a>
+                            <a href="/v/@subverse.Subverse" class="h4">@subverse.Subverse1.Title: @subverse.Subverse</a>
                         </p>
 
                         <div class="well well-lg subversedescriptionbox">
-                            @subverse.Subverse.description
+                            @subverse.Subverse1.Description
                         </div>
                     </div>
                 </div>

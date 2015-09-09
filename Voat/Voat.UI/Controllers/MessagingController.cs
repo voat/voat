@@ -87,9 +87,9 @@ namespace Voat.Controllers
             // get logged in username and fetch received messages
             try
             {
-                IQueryable<Privatemessage> privateMessages = _db.Privatemessages
+                IQueryable<PrivateMessage> privateMessages = _db.PrivateMessages
                     .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(s => s.Timestamp)
+                    .OrderByDescending(s => s.CreationDate)
                     .ThenBy(s => s.Sender);
 
                 ViewBag.InboxCount = privateMessages.Count();
@@ -118,13 +118,13 @@ namespace Voat.Controllers
             // get logged in username and fetch received comment replies
             try
             {
-                IQueryable<Commentreplynotification> commentReplyNotifications = _db.Commentreplynotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
-                IQueryable<Comment> commentReplies = _db.Comments.Where(p => commentReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
+                IQueryable<CommentReplyNotification> commentReplyNotifications = _db.CommentReplyNotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+                IQueryable<Comment> commentReplies = _db.Comments.Where(p => commentReplyNotifications.Any(p2 => p2.CommentID == p.ID)).OrderByDescending(s => s.CreationDate);
 
                 // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
                 if (commentReplyNotifications.Any())
                 {
-                    var unreadCommentReplies = commentReplyNotifications.Where(s => s.Status && s.Markedasunread == false);
+                    var unreadCommentReplies = commentReplyNotifications.Where(s => s.IsUnread && s.MarkedAsUnread == false);
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadCommentReplies.Any())
@@ -132,7 +132,7 @@ namespace Voat.Controllers
                         foreach (var singleCommentReply in unreadCommentReplies)
                         {
                             // status: true = unread, false = read
-                            singleCommentReply.Status = false;
+                            singleCommentReply.IsUnread = false;
                         }
                         _db.SaveChanges();
                         // update notification icon
@@ -168,13 +168,13 @@ namespace Voat.Controllers
             // get logged in username and fetch received post replies
             try
             {
-                IQueryable<Postreplynotification> postReplyNotifications = _db.Postreplynotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
-                IQueryable<Comment> postReplies = _db.Comments.Where(p => postReplyNotifications.Any(p2 => p2.CommentId == p.Id)).OrderByDescending(s => s.Date);
+                IQueryable<SubmissionReplyNotification> postReplyNotifications = _db.SubmissionReplyNotifications.Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+                IQueryable<Comment> postReplies = _db.Comments.Where(p => postReplyNotifications.Any(p2 => p2.CommentID == p.ID)).OrderByDescending(s => s.CreationDate);
 
                 // mark all unread messages as read as soon as the inbox is served, except for manually marked as unread
                 if (postReplyNotifications.Any())
                 {
-                    var unreadPostReplies = postReplyNotifications.Where(s => s.Status && s.Markedasunread == false);
+                    var unreadPostReplies = postReplyNotifications.Where(s => s.IsUnread && s.MarkedAsUnread == false);
 
                     // todo: implement a delay in the marking of messages as read until the returned inbox view is rendered
                     if (unreadPostReplies.Any())
@@ -182,7 +182,7 @@ namespace Voat.Controllers
                         foreach (var singlePostReply in unreadPostReplies)
                         {
                             // status: true = unread, false = read
-                            singlePostReply.Status = false;
+                            singlePostReply.IsUnread = false;
                         }
                         _db.SaveChanges();
                         // update notification icon
@@ -218,13 +218,13 @@ namespace Voat.Controllers
             // get logged in username and fetch sent messages
             try
             {
-                var privateMessages = _db.Privatemessages
+                var privateMessages = _db.PrivateMessages
                     .Where(s => s.Sender.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(s => s.Timestamp)
+                    .OrderByDescending(s => s.CreationDate)
                     .ThenBy(s => s.Recipient)
                     .ToList().AsEnumerable();
 
-                var privatemessages = privateMessages as IList<Privatemessage> ?? privateMessages.ToList();
+                var privatemessages = privateMessages as IList<PrivateMessage> ?? privateMessages.ToList();
                 ViewBag.OutboxCount = privatemessages.Count();
                 return View(privatemessages.ToPagedList(pageNumber, pageSize));
 
@@ -257,9 +257,12 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Compose([Bind(Include = "Id,Recipient,Subject,Body")] Privatemessage privateMessage)
+        public async Task<ActionResult> Compose([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
         {
-            if (!ModelState.IsValid) return View();
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null) return RedirectToAction("Sent", "Messaging");
 
             if (Karma.CommentKarma(User.Identity.Name) < 100)
@@ -273,36 +276,8 @@ namespace Voat.Controllers
                 }
             }
 
-            // check if recipient exists
-            if (Voat.Utilities.UserHelper.UserExists(privateMessage.Recipient) && !Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name))
-            {
-                // send the submission
-                privateMessage.Timestamp = DateTime.Now;
-                privateMessage.Sender = User.Identity.Name;
-                privateMessage.Status = true;
-                if (Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name)) return RedirectToAction("Sent", "Messaging");
-                _db.Privatemessages.Add(privateMessage);
-                try
-                {
-                    await _db.SaveChangesAsync();
+            var response = MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
 
-                    // get count of unread notifications
-                    int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(privateMessage.Recipient);
-
-                    // send SignalR realtime notification to recipient
-                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                    hubContext.Clients.User(privateMessage.Recipient).setNotificationsPending(unreadNotifications);
-                }
-                catch (Exception)
-                {
-                    return View("~/Views/Errors/DbNotResponding.cshtml");
-                }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Sorry, there is no recipient with that username.");
-                return View();
-            }
             return RedirectToAction("Sent", "Messaging");
         }
 
@@ -311,7 +286,7 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SendPrivateMessage([Bind(Include = "Id,Recipient,Subject,Body")] Privatemessage privateMessage)
+        public async Task<ActionResult> SendPrivateMessage([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
         {
             if (!ModelState.IsValid) return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
@@ -320,11 +295,11 @@ namespace Voat.Controllers
             if (UserHelper.UserExists(privateMessage.Recipient))
             {
                 // send the submission
-                privateMessage.Timestamp = DateTime.Now;
+                privateMessage.CreationDate = DateTime.Now;
                 privateMessage.Sender = User.Identity.Name;
-                privateMessage.Status = true;
+                privateMessage.IsUnread = true;
                 if (Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name)) return new HttpStatusCodeResult(HttpStatusCode.OK);
-                _db.Privatemessages.Add(privateMessage);
+                _db.PrivateMessages.Add(privateMessage);
 
                 try
                 {
@@ -358,13 +333,13 @@ namespace Voat.Controllers
             // check that the submission is owned by logged in user executing delete action
             var loggedInUser = User.Identity.Name;
 
-            var privateMessageToDelete = _db.Privatemessages.FirstOrDefault(s => s.Recipient.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId);
+            var privateMessageToDelete = _db.PrivateMessages.FirstOrDefault(s => s.Recipient.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.ID == privateMessageId);
 
             if (privateMessageToDelete != null)
             {
                 // delete the submission
-                var privateMessage = _db.Privatemessages.Find(privateMessageId);
-                _db.Privatemessages.Remove(privateMessage);
+                var privateMessage = _db.PrivateMessages.Find(privateMessageId);
+                _db.PrivateMessages.Remove(privateMessage);
                 _db.SaveChangesAsync();
                 Response.StatusCode = 200;
                 return Json("Message deleted.", JsonRequestBehavior.AllowGet);
@@ -381,13 +356,13 @@ namespace Voat.Controllers
             // check that the submission is owned by logged in user executing delete action
             var loggedInUser = User.Identity.Name;
 
-            var privateMessageToDelete = _db.Privatemessages.FirstOrDefault(s => s.Sender.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.Id == privateMessageId);
+            var privateMessageToDelete = _db.PrivateMessages.FirstOrDefault(s => s.Sender.Equals(loggedInUser, StringComparison.OrdinalIgnoreCase) && s.ID == privateMessageId);
 
             if (privateMessageToDelete != null)
             {
                 // delete the submission
-                var privateMessage = _db.Privatemessages.Find(privateMessageId);
-                _db.Privatemessages.Remove(privateMessage);
+                var privateMessage = _db.PrivateMessages.Find(privateMessageId);
+                _db.PrivateMessages.Remove(privateMessage);
                 _db.SaveChangesAsync();
                 Response.StatusCode = 200;
                 return Json("Message deleted.", JsonRequestBehavior.AllowGet);

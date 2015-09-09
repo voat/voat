@@ -13,7 +13,9 @@ All Rights Reserved.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Voat.Data.Models;
 
@@ -22,33 +24,88 @@ namespace Voat.Utilities
     public static class MesssagingUtility
     {
         // a method to send a private message to a user, invoked by other methods
-        public static bool SendPrivateMessage(string sender, string recipient, string subject, string body)
+        public static bool SendPrivateMessage(string sender, string recipientList, string subject, string body)
         {
-            using (var db = new voatEntities())
+            if (Voat.Utilities.UserHelper.IsUserGloballyBanned(System.Web.HttpContext.Current.User.Identity.Name))
             {
-                try
+                return false;
+            }
+
+            List<PrivateMessage> messages = new List<PrivateMessage>();
+            MatchCollection col = Regex.Matches(recipientList, @"((?'prefix'@|u/|/u/|v/|/v/)?(?'recipient'[\w-.]+))", RegexOptions.IgnoreCase);
+
+            foreach (Match m in col)
+            {
+                var recipient = m.Groups["recipient"].Value;
+                var prefix = m.Groups["prefix"].Value;
+
+                if (!String.IsNullOrEmpty(prefix) && prefix.ToLower().Contains("v"))
                 {
-                    var privateMessage = new Privatemessage
+                    //don't allow banned users to send to subverses
+                    if (!UserHelper.IsUserBannedFromSubverse(System.Web.HttpContext.Current.User.Identity.Name, recipient))
                     {
-                        Sender = sender,
-                        Recipient = recipient,
-                        Timestamp = DateTime.Now,
-                        Subject = subject,
-                        Body = body,
-                        Status = true,
-                        Markedasunread = true
-                    };
+                        //send to subverse mods
+                        using (var db = new voatEntities())
+                        {
+                            //designed to limit abuse by taking the level 1 mod and the next four oldest
+                            var mods = (from mod in db.SubverseModerators
+                                        where mod.Subverse.Equals(recipient, StringComparison.OrdinalIgnoreCase) && mod.UserName != "system" && mod.UserName != "youcanclaimthissub"
+                                        orderby mod.Power ascending, mod.CreationDate descending
+                                        select mod).Take(5);
 
-                    db.Privatemessages.Add(privateMessage);
-                    db.SaveChanges();
-
-                    return true;
+                            foreach (var moderator in mods)
+                            {
+                                messages.Add(new PrivateMessage
+                                {
+                                    Sender = sender,
+                                    Recipient = moderator.UserName,
+                                    CreationDate = DateTime.Now,
+                                    Subject = String.Format("[v/{0}] {1}", recipient, subject),
+                                    Body = body,
+                                    IsUnread = true,
+                                    MarkedAsUnread = true
+                                });
+                            }
+                        }
+                    }
                 }
-                catch (Exception)
+                else
                 {
-                    return false;
+                    //ensure proper cased
+                    recipient = UserHelper.OriginalUsername(recipient);
+
+                    if (Voat.Utilities.UserHelper.UserExists(recipient))
+                    {
+                        messages.Add(new PrivateMessage
+                        {
+                            Sender = sender,
+                            Recipient = recipient,
+                            CreationDate = DateTime.Now,
+                            Subject = subject,
+                            Body = body,
+                            IsUnread = true,
+                            MarkedAsUnread = true
+                        });
+                    }
                 }
             }
+
+            if (messages.Count > 0)
+            {
+                using (var db = new voatEntities())
+                {
+                    try
+                    {
+                        db.PrivateMessages.AddRange(messages);
+                        db.SaveChanges();
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         // a method to mark single or all private messages as read for a given user
@@ -61,16 +118,16 @@ namespace Voat.Utilities
                     // mark all items as read
                     if (markAll != null && (bool) markAll)
                     {
-                        IQueryable<Privatemessage> unreadPrivateMessages = db.Privatemessages
-                                                                            .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status)
-                                                                            .OrderByDescending(s => s.Timestamp)
+                        IQueryable<PrivateMessage> unreadPrivateMessages = db.PrivateMessages
+                                                                            .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread)
+                                                                            .OrderByDescending(s => s.CreationDate)
                                                                             .ThenBy(s => s.Sender);
 
                         if (!unreadPrivateMessages.Any()) return false;
 
                         foreach (var singleMessage in unreadPrivateMessages.ToList())
                         {
-                            singleMessage.Status = false;
+                            singleMessage.IsUnread = false;
                         }
                         await db.SaveChangesAsync();
                         return true;
@@ -79,11 +136,11 @@ namespace Voat.Utilities
                     // mark single item as read
                     if (itemId != null)
                     {
-                        var privateMessageToMarkAsread = db.Privatemessages.FirstOrDefault(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.Status && s.Id == itemId);
+                        var privateMessageToMarkAsread = db.PrivateMessages.FirstOrDefault(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.ID == itemId);
                         if (privateMessageToMarkAsread == null) return false;
 
-                        var item = db.Privatemessages.Find(itemId);
-                        item.Status = false;
+                        var item = db.PrivateMessages.Find(itemId);
+                        item.IsUnread = false;
                         await db.SaveChangesAsync();
                         return true;
                     }

@@ -12,12 +12,12 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Userbadge
+    public partial class UserBadge
     {
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public string BadgeId { get; set; }
-        public System.DateTime Awarded { get; set; }
+        public int ID { get; set; }
+        public string UserName { get; set; }
+        public string BadgeID { get; set; }
+        public System.DateTime CreationDate { get; set; }
     
         public virtual Badge Badge { get; set; }
     }

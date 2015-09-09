@@ -19,7 +19,7 @@ namespace Voat.Controllers
         // GET: rss/{subverseName}
         public ActionResult Rss(string subverseName)
         {
-            var submissions = new List<Message>();
+            var submissions = new List<Submission>();
 
             if (subverseName != null && subverseName != "all")
             {
@@ -29,14 +29,14 @@ namespace Voat.Controllers
                 {
 
                     //HACK: Disable subverse
-                    if (subverse.admin_disabled.HasValue && subverse.admin_disabled.Value)
+                    if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
                     {
-                        ViewBag.Subverse = subverse.name;
+                        ViewBag.Subverse = subverse.Name;
                         return View("~/Views/Errors/SubverseDisabled.cshtml");
                     }
 
-                    submissions = (from message in _db.Messages
-                                   where !message.IsDeleted && message.Subverse == subverse.name
+                    submissions = (from message in _db.Submissions
+                                   where !message.IsDeleted && message.Subverse == subverse.Name
                                    select message)
                                    .OrderByDescending(s => s.Rank)
                                    .Take(25)
@@ -46,18 +46,18 @@ namespace Voat.Controllers
             else if (subverseName == "all")
             {
                 // return submissions from all subs
-                submissions = (from message in _db.Messages
-                               join subverse in _db.Subverses on message.Subverse equals subverse.name
-                               where !message.IsDeleted && subverse.private_subverse != true && subverse.forced_private != true && message.Rank > 0.00009
-                               where !(from bu in _db.Bannedusers select bu.Username).Contains(message.Name)
-                               select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).Take(25).ToList(); 
+                submissions = (from message in _db.Submissions
+                               join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                               where !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && message.Rank > 0.00009
+                               where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                               select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate).Take(25).ToList(); 
             } 
             else
             {
                 // return site-wide frontpage submissions
-                submissions = (from message in _db.Messages
+                submissions = (from message in _db.Submissions
                                where !message.IsDeleted
-                               join defaultsubverse in _db.Defaultsubverses on message.Subverse equals defaultsubverse.name
+                               join defaultsubverse in _db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
                                select message)
                                .OrderByDescending(s => s.Rank)
                                .Take(25)
@@ -76,36 +76,36 @@ namespace Voat.Controllers
 
             foreach (var submission in submissions)
             {
-                var commentsUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse + "/comments/" + submission.Id);
+                var commentsUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse + "/comments/" + submission.ID);
                 var subverseUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse);
 
-                var authorName = submission.Name;
+                var authorName = submission.UserName;
 
                 if (submission.Type == 1)
                 {
                     // submission type submission
-                    if (submission.Anonymized || submission.Subverses.anonymized_mode)
+                    if (submission.IsAnonymized || submission.Subverse1.IsAnonymized)
                     {
-                        authorName = submission.Id.ToString(CultureInfo.InvariantCulture);
+                        authorName = submission.ID.ToString(CultureInfo.InvariantCulture);
                     }
 
                     var item = new SyndicationItem(
                     submission.Title,
-                    submission.MessageContent + "</br>" + "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
+                    submission.Content + "</br>" + "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
                     commentsUrl,
-                    submission.Id.ToString(CultureInfo.InvariantCulture),
-                    submission.Date);
+                    submission.ID.ToString(CultureInfo.InvariantCulture),
+                    submission.CreationDate);
                     feedItems.Add(item);
                 }
                 else
                 {
                     // link type submission
-                    var linkUrl = new Uri(submission.MessageContent);
-                    authorName = submission.Name;
+                    var linkUrl = new Uri(submission.Content);
+                    authorName = submission.UserName;
 
-                    if (submission.Anonymized || submission.Subverses.anonymized_mode)
+                    if (submission.IsAnonymized || submission.Subverse1.IsAnonymized)
                     {
-                        authorName = submission.Id.ToString(CultureInfo.InvariantCulture);
+                        authorName = submission.ID.ToString(CultureInfo.InvariantCulture);
                     }
 
                     // add a thumbnail if submission has one
@@ -123,25 +123,25 @@ namespace Voat.Controllers
                         }
                         
                         var item = new SyndicationItem(
-                                                submission.Linkdescription,
-                                                "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='" + submission.Linkdescription + "' alt='" + submission.Linkdescription + "' src='" + thumbnailUrl + "' /></a>" +
+                                                submission.LinkDescription,
+                                                "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='" + submission.LinkDescription + "' alt='" + submission.LinkDescription + "' src='" + thumbnailUrl + "' /></a>" +
                                                 "</br>" +
                                                 "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>" +
                                                 " | <a href='" + linkUrl + "'>link</a>",
                                                 commentsUrl,
-                                                submission.Id.ToString(CultureInfo.InvariantCulture),
-                                                submission.Date);
+                                                submission.ID.ToString(CultureInfo.InvariantCulture),
+                                                submission.CreationDate);
 
                         feedItems.Add(item);
                     }
                     else
                     {
                         var item = new SyndicationItem(
-                                                submission.Linkdescription,
+                                                submission.LinkDescription,
                                                 "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
                                                 commentsUrl,
-                                                submission.Id.ToString(CultureInfo.InvariantCulture),
-                                                submission.Date);
+                                                submission.ID.ToString(CultureInfo.InvariantCulture),
+                                                submission.CreationDate);
                         feedItems.Add(item);
                     }
                 }

@@ -33,8 +33,8 @@
         @Html.ValidationSummary(true)
 
         @*Setup default values*@
-        @Html.Hidden("Date", currentdatetime)
-        @Html.Hidden("Name", loggedinUser)
+        @Html.Hidden("CreationDate", currentdatetime)
+        @Html.Hidden("UserName", loggedinUser)
         @Html.Hidden("Type", 1)
         @Html.Hidden("Votes", 1)
         @Html.Hidden("Rank", 0)
@@ -87,8 +87,8 @@
         <div class="form-group">
             @Html.Label("Message (optional):", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.MarkdownEditorFor(m => m.MessageContent, new { @class = "form-control", rows = "5", Value = ViewBag.message })
-                @Html.ValidationMessageFor(model => model.MessageContent)
+                @Html.MarkdownEditorFor(m => m.Content, new { @class = "form-control", rows = "5", Value = ViewBag.message })
+                @Html.ValidationMessageFor(model => model.Content)
             </div>
         </div>
 
@@ -106,7 +106,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Submit" class="btn-whoaverse" />
-                <input type="button" value="Preview" class="btn-whoaverse" onclick="showMessagePreview(this,$(this.parentElement.parentElement.parentElement).find('#MessageContent'),$(this.parentElement.parentElement.parentElement).find('#submission-preview-area'))">
+                <input type="button" value="Preview" class="btn-whoaverse" onclick="showMessagePreview(this,$(this.parentElement.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement.parentElement).find('#submission-preview-area'))">
             </div>
         </div>
 

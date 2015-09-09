@@ -19,77 +19,78 @@ using Voat.Models;
 
 namespace Voat.UI.Utilities
 {
+    //REFACTOR: Duplicate logic
     public static class SetsUtility
     {
-        public static IQueryable<SetSubmission> TopRankedSubmissionsFromASub(string subverseName, DbSet<Message> messagesDbSet, string setName, int desiredResults, int? skip)
+        public static IQueryable<SetSubmission> TopRankedSubmissionsFromASub(string subverseName, DbSet<Submission> submissionDBSet, string setName, int desiredResults, int? skip)
         {
             int recordsToSkip = (skip ?? 0);
 
             // skip could be used here
-            var topRankedSubmissions = (from message in messagesDbSet
-                                        where !message.IsDeleted && message.Subverse == subverseName
+            var topRankedSubmissions = (from submission in submissionDBSet
+                                        where !submission.IsDeleted && submission.Subverse == subverseName
                                         select new SetSubmission
                                         {
-                                            Id = message.Id,
-                                            Votes = message.Votes,
-                                            Name = message.Name,
-                                            Date = message.Date,
-                                            Type = message.Type,
-                                            Linkdescription = message.Linkdescription,
-                                            Title = message.Title,
-                                            Rank = message.Rank,
-                                            MessageContent = message.MessageContent,
-                                            Subverse = message.Subverse,
-                                            Likes = message.Likes,
-                                            Dislikes = message.Dislikes,
-                                            Thumbnail = message.Thumbnail,
-                                            LastEditDate = message.LastEditDate,
-                                            FlairLabel = message.FlairLabel,
-                                            FlairCss = message.FlairCss,
-                                            Anonymized = message.Anonymized,
-                                            Views = message.Views,
-                                            Comments = message.Comments,
-                                            Votingtrackers = message.Votingtrackers,
-                                            Subverses = message.Subverses,
-                                            Stickiedsubmission = message.Stickiedsubmission,
-                                            Viewstatistics = message.Viewstatistics,
+                                            ID = submission.ID,
+                                            Votes = submission.Votes,
+                                            UserName = submission.UserName,
+                                            CreationDate = submission.CreationDate,
+                                            Type = submission.Type,
+                                            LinkDescription = submission.LinkDescription,
+                                            Title = submission.Title,
+                                            Rank = submission.Rank,
+                                            Content = submission.Content,
+                                            Subverse = submission.Subverse,
+                                            UpCount = submission.UpCount,
+                                            DownCount = submission.DownCount,
+                                            Thumbnail = submission.Thumbnail,
+                                            LastEditDate = submission.LastEditDate,
+                                            FlairLabel = submission.FlairLabel,
+                                            FlairCss = submission.FlairCss,
+                                            IsAnonymized = submission.IsAnonymized,
+                                            Views = submission.Views,
+                                            Comments = submission.Comments,
+                                            SubmissionVoteTrackers = submission.SubmissionVoteTrackers,
+                                            Subverse1 = submission.Subverse1,
+                                            StickiedSubmission = submission.StickiedSubmission,
+                                            ViewStatistics = submission.ViewStatistics,
                                             ParentSet = setName
-                                        }).OrderByDescending(s => s.Rank).ThenByDescending(s => s.Date).Skip(recordsToSkip).Take(desiredResults).AsNoTracking();
+                                        }).OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate).Skip(recordsToSkip).Take(desiredResults).AsNoTracking();
 
             return topRankedSubmissions;
         }
 
-        public static IQueryable<SetSubmission> NewestSubmissionsFromASub(string subverseName, DbSet<Message> messagesDbSet, string setName, int desiredResults)
+        public static IQueryable<SetSubmission> NewestSubmissionsFromASub(string subverseName, DbSet<Submission> submissionDBSet, string setName, int desiredResults)
         {
-            var topRankedSubmissions = (from message in messagesDbSet
-                                        where !message.IsDeleted && message.Subverse == subverseName
+            var topRankedSubmissions = (from submission in submissionDBSet
+                                        where !submission.IsDeleted && submission.Subverse == subverseName
                                         select new SetSubmission
                                         {
-                                            Id = message.Id,
-                                            Votes = message.Votes,
-                                            Name = message.Name,
-                                            Date = message.Date,
-                                            Type = message.Type,
-                                            Linkdescription = message.Linkdescription,
-                                            Title = message.Title,
-                                            Rank = message.Rank,
-                                            MessageContent = message.MessageContent,
-                                            Subverse = message.Subverse,
-                                            Likes = message.Likes,
-                                            Dislikes = message.Dislikes,
-                                            Thumbnail = message.Thumbnail,
-                                            LastEditDate = message.LastEditDate,
-                                            FlairLabel = message.FlairLabel,
-                                            FlairCss = message.FlairCss,
-                                            Anonymized = message.Anonymized,
-                                            Views = message.Views,
-                                            Comments = message.Comments,
-                                            Votingtrackers = message.Votingtrackers,
-                                            Subverses = message.Subverses,
-                                            Stickiedsubmission = message.Stickiedsubmission,
-                                            Viewstatistics = message.Viewstatistics,
+                                            ID = submission.ID,
+                                            Votes = submission.Votes,
+                                            UserName = submission.UserName,
+                                            CreationDate = submission.CreationDate,
+                                            Type = submission.Type,
+                                            LinkDescription = submission.LinkDescription,
+                                            Title = submission.Title,
+                                            Rank = submission.Rank,
+                                            Content = submission.Content,
+                                            Subverse = submission.Subverse,
+                                            UpCount = submission.UpCount,
+                                            DownCount = submission.DownCount,
+                                            Thumbnail = submission.Thumbnail,
+                                            LastEditDate = submission.LastEditDate,
+                                            FlairLabel = submission.FlairLabel,
+                                            FlairCss = submission.FlairCss,
+                                            IsAnonymized = submission.IsAnonymized,
+                                            Views = submission.Views,
+                                            Comments = submission.Comments,
+                                            SubmissionVoteTrackers = submission.SubmissionVoteTrackers,
+                                            Subverse1 = submission.Subverse1,
+                                            StickiedSubmission = submission.StickiedSubmission,
+                                            ViewStatistics = submission.ViewStatistics,
                                             ParentSet = setName
-                                        }).OrderByDescending(s => s.Date).Take(desiredResults).AsNoTracking();
+                                        }).OrderByDescending(s => s.CreationDate).Take(desiredResults).AsNoTracking();
 
             return topRankedSubmissions;
         }

@@ -78,10 +78,10 @@
                 while (enumerator.MoveNext())
                 {
                     <div class="row">
-                        <div class="col-md-6">@Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = enumerator.Current.name })</div>
+                        <div class="col-md-6">@Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = enumerator.Current.Name })</div>
                         @if (enumerator.MoveNext())
                         {
-                            <div class="col-md-6">@Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = enumerator.Current.name })</div>
+                            <div class="col-md-6">@Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = enumerator.Current.Name })</div>
                         }
                     </div>
                 }

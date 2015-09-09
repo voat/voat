@@ -41,7 +41,7 @@ namespace Voat.Models
         public Nullable<int> ParentId { get; set; }
 
         public virtual ICollection<Comment> ChildComments { get; set; }
-        public virtual Message Message { get; set; }
+        public virtual Submission Submission { get; set; }
     }
 
     

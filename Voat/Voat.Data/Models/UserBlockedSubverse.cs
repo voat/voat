@@ -14,10 +14,10 @@ namespace Voat.Data.Models
     
     public partial class UserBlockedSubverse
     {
-        public int Id { get; set; }
-        public string SubverseName { get; set; }
-        public string Username { get; set; }
+        public int ID { get; set; }
+        public string Subverse { get; set; }
+        public string UserName { get; set; }
     
-        public virtual Subverse Subverse { get; set; }
+        public virtual Subverse Subverse1 { get; set; }
     }
 }

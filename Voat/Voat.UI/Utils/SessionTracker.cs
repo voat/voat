@@ -21,7 +21,7 @@ using Voat.Models.ViewModels;
 
 namespace Voat.UI.Utilities
 {
-    public static class SessionTracker
+    public static class SessionHelper
     {
         // remove a session
         public static void Remove(string sessionIdToRemove)
@@ -31,7 +31,7 @@ namespace Voat.UI.Utilities
                 using (var db = new voatEntities())
                 {
                     // remove all records for given session id
-                    db.Sessiontrackers.RemoveRange(db.Sessiontrackers.Where(s => s.SessionId == sessionIdToRemove));
+                    db.SessionTrackers.RemoveRange(db.SessionTrackers.Where(s => s.SessionID == sessionIdToRemove));
                     db.SaveChanges();
                 }
             }
@@ -66,9 +66,9 @@ namespace Voat.UI.Utilities
                 if (SessionExists(sessionId, subverseName)) return;
                 using (var db = new voatEntities())
                 {
-                    var newSession = new Sessiontracker { SessionId = sessionId, Subverse = subverseName, Timestamp = DateTime.Now };
+                    var newSession = new SessionTracker { SessionID = sessionId, Subverse = subverseName, CreationDate = DateTime.Now };
 
-                    db.Sessiontrackers.Add(newSession);
+                    db.SessionTrackers.Add(newSession);
                     db.SaveChanges();
 
                 }
@@ -84,8 +84,8 @@ namespace Voat.UI.Utilities
         {
             using (var db = new voatEntities())
             {
-                var result = from sessions in db.Sessiontrackers
-                             where sessions.Subverse.Equals(subverseName) && sessions.SessionId.Equals(sessionId)
+                var result = from sessions in db.SessionTrackers
+                             where sessions.Subverse.Equals(subverseName) && sessions.SessionID.Equals(sessionId)
                              select sessions;
 
                 return result.Any();
@@ -155,7 +155,7 @@ namespace Voat.UI.Utilities
             {
                 using (var db = new voatEntities())
                 {
-                    var groups = db.Sessiontrackers
+                    var groups = db.SessionTrackers
                                 .GroupBy(n => n.Subverse)
                                 .Select(n => new ActiveSubverseViewModel
                                 {

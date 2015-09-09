@@ -47,7 +47,7 @@ namespace Voat.Utilities
                     if (!String.IsNullOrEmpty(href))
                     {
                         //I think it needs the javascript: prefix to work at all but there might be more holes as this is just a simple check.
-                        if (href.ToLower().Trim().StartsWith("javascript:"))
+                        if (href.ToLower().Trim().Contains("javascript"))
                         {
                             x.attributes["href"] = "#";
                             //add it to the output for verification?

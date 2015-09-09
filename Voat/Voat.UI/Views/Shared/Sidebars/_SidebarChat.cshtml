@@ -29,18 +29,18 @@
                         <div class="sidecontentbox content">
                             <div id="subverseChatRoom" class="subverseChatRoomContent">
                                 <p>
-                                    <b>Voat</b>: you have joined /v/@Model.name chatroom.
+                                    <b>Voat</b>: you have joined /v/@Model.Name chatroom.
                                 </p>
                             </div>
                         </div>
                         <script>
-                            window.onload = function () { joinSubverseChatRoom('@Model.name'); }
+                            window.onload = function () { joinSubverseChatRoom('@Model.Name'); }
                         </script>
 
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <input id="chatInputBox" onkeydown="if (event.keyCode == 13) sendChatMessage('@User.Identity.Name', '@Model.name');" class="form-control" data-val="true" data-val-length="Please write at least 3 characters." data-val-length-max="100" data-val-length-min="3" data-val-required="Please enter a message." name="chatInputBox" placeholder="Say something. Anything." value="" type="text">
-                            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="sendChatMessage('@User.Identity.Name', '@Model.name');">send</button>
+                            <input id="chatInputBox" onkeydown="if (event.keyCode == 13) sendChatMessage('@User.Identity.Name', '@Model.Name');" class="form-control" data-val="true" data-val-length="Please write at least 3 characters." data-val-length-max="100" data-val-length-min="3" data-val-required="Please enter a message." name="chatInputBox" placeholder="Say something. Anything." value="" type="text">
+                            <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="sendChatMessage('@User.Identity.Name', '@Model.Name');">send</button>
                         }
                         else
                         {

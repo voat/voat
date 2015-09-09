@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Voat.Data.Models.Subverseflairsetting>
+﻿@model IEnumerable<Voat.Data.Models.SubverseFlair>
 
 <div id="container">
     <div id="about-main" class="content about-page" role="main">
@@ -30,7 +30,7 @@
                         <tr>
                             <td>@item.Label</td>
                             <td>@item.CssClass</td>
-                            <td>@Html.ActionLink("Remove", "RemoveLinkFlair", new { id = item.Id })</td>
+                            <td>@Html.ActionLink("Remove", "RemoveLinkFlair", new { id = item.ID })</td>
                         </tr>
                     }
 

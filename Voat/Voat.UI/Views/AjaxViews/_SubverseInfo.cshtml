@@ -10,19 +10,19 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Usersetdefinition
+@model Voat.Data.Models.UserSetList
 
-<div id="subverse-@Model.Subversename">
+<div id="subverse-@Model.Subverse">
     <div class="midcol">
-        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return removeSubFromSet(this, '@Model.Id', '@Model.Subversename')">remove</button>
+        <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="return removeSubFromSet(this, '@Model.ID', '@Model.Subverse')">remove</button>
     </div>
     <div class="entry">
         <p class="titlerow">
-            <a href="/v/@Model.Subversename" class="h4">@Model.Subverse.title: @Model.Subversename</a>
+            <a href="/v/@Model.Subverse" class="h4">@Model.Subverse1.Title: @Model.Subverse</a>
         </p>
 
         <div class="well well-lg subversedescriptionbox">
-            @Model.Subverse.description
+            @Model.Subverse1.Description
         </div>
     </div>
 </div>

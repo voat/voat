@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Message
+@model Voat.Data.Models.Submission
 
 @{
     string ahrefTarget = "_self";
@@ -26,73 +26,73 @@
     }
 
     //var commentCount = Model.Comments.Count(c => c.Name != "deleted");
-    var commentCount = CommentCounter.CommentCount(Model.Id);
+    var commentCount = CommentCounter.CommentCount(Model.ID);
 
     //if (Model.Subverses != null)
     //{
         var sub = DataCache.Subverse.Retrieve(Model.Subverse);
-        ratedAdult = sub.rated_adult;
-        anonymizedSubverse = sub.anonymized_mode;
+        ratedAdult = sub.IsAdult;
+        anonymizedSubverse = sub.IsAnonymized;
     //}
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
 
-    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.Id;
+    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
 
-    DateTime submissionDate = Model.Date;
+    DateTime submissionDate = Model.CreationDate;
     string postAge = Submissions.CalcSubmissionAge(submissionDate);
 
     //type 2 = urls
     if (Model.Type == 2)
     {
-        string submissionDomain = UrlUtility.GetDomainFromUri(Model.MessageContent);
+        string submissionDomain = UrlUtility.GetDomainFromUri(Model.Content);
 
         if (Model.Thumbnail != null)
         {
             if (routeActiveSubverse != null)
             {
-                if (Model.Linkdescription.ToLower().Contains("nsfw") && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
+                if (Model.LinkDescription.ToLower().Contains("nsfw") && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
                 {
-                    <a class="thumbnail nsfw may-blank" href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
+                    <a class="thumbnail nsfw may-blank" href="@Model.Content" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else if (ratedAdult && Model.Subverse.ToLower() != routeActiveSubverse.ToLower())
                 {
-                    <a class="thumbnail nsfw may-blank" href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
+                    <a class="thumbnail nsfw may-blank" href="@Model.Content" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else
                 {
-                    <a class="thumbnail may-blank" href="@Model.MessageContent" target="@ahrefTarget">
+                    <a class="thumbnail may-blank" href="@Model.Content" target="@ahrefTarget">
                         @if (Settings.UseContentDeliveryNetwork)
                         {
-                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
+                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
                         }
                         else
                         {
-                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
+                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
                         }
                     </a>
                 }
             }
             else
             {
-                if (Model.Linkdescription.ToLower().Contains("nsfw"))
+                if (Model.LinkDescription.ToLower().Contains("nsfw"))
                 {
-                    <a class="thumbnail nsfw may-blank" href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
+                    <a class="thumbnail nsfw may-blank" href="@Model.Content" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else if (ratedAdult)
                 {
-                    <a class="thumbnail nsfw may-blank" href="@Model.MessageContent" rel="nofollow" target="@ahrefTarget"></a>
+                    <a class="thumbnail nsfw may-blank" href="@Model.Content" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else
                 {
-                    <a class="thumbnail may-blank" href="@Model.MessageContent" target="@ahrefTarget">
+                    <a class="thumbnail may-blank" href="@Model.Content" target="@ahrefTarget">
                         @if (Settings.UseContentDeliveryNetwork)
                         {
-                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
+                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
                         }
                         else
                         {
-                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Linkdescription" />
+                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
                         }
                     </a>
                 }
@@ -108,33 +108,33 @@
                         <span class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
                     }
                 }
-                <a class="title may-blank " href="@Model.MessageContent" tabindex="1" title="@Model.Linkdescription" target="@ahrefTarget">@Model.Linkdescription</a>
+                <a class="title may-blank " href="@Model.Content" tabindex="1" title="@Model.LinkDescription" target="@ahrefTarget">@Model.LinkDescription</a>
                 <span class="domain">(<a href="/domains/@submissionDomain/">@submissionDomain</a>)</span>
             </p>
 
             @if (Model.IsDeleted)
             {
                 <p class="tagline">
-                    submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by
+                    submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by
                     <span class="userattrs">[deleted]</span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
                 </p>
             }
             else
             {
-                if (Model.Anonymized || anonymizedSubverse)
+                if (Model.IsAnonymized || anonymizedSubverse)
                 {
                     <p class="tagline">
-                        submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="#" class="author may-blank">@Model.Id</a>
+                        submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by <a href="#" class="author may-blank">@Model.ID</a>
                         <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
-                        <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
+                        <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
                     </p>
                 }
                 else
                 {
                     <p class="tagline">
-                        submitted <time title="@Model.Date" datetime="@Model.Date">@postAge</time> ago by <a href="/user/@Model.Name" class="author may-blank userinfo" data-username="@Model.Name">@Model.Name</a>
+                        submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by <a href="/user/@Model.UserName" class="author may-blank userinfo" data-username="@Model.UserName">@Model.UserName</a>
                         <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
-                        <span class="commentvotesratio">(<span class="post_upvotes">+@Model.Likes</span>|<span class="post_downvotes">-@Model.Dislikes</span>)</span>
+                        <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
                     </p>
                 }
             }
@@ -155,7 +155,7 @@
                     if (!Model.IsDeleted)
                     {
                         <li>
-                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.Id } })
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
                         </li>
                         if (!string.IsNullOrEmpty(routeActiveSubverse) && routeActiveSubverse == "all")
                         {
