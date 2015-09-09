@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Configuration;
@@ -351,12 +352,8 @@ namespace Voat.Controllers
             {
                 // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
                 var submission = DataCache.Submission.Retrieve(commentModel.SubmissionID.Value);
-                
-                if (submission != null)
-                {
-                    var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-                    commentModel.IsAnonymized = submission.IsAnonymized || subverse.IsAnonymized;
-                }
+                var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                commentModel.IsAnonymized = submission.IsAnonymized || subverse.IsAnonymized;
 
                 // if user CCP is < 50, allow only X comment submissions per 24 hours
                 var userCcp = Karma.CommentKarma(User.Identity.Name);
@@ -365,14 +362,22 @@ namespace Voat.Controllers
                     var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
                     if (quotaUsed)
                     {
-                        ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore + " comment(s) per 24 hours.");
-                        return View();
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
+                        //ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore + " comment(s) per 24 hours.");
+                        //return View();
                     }
                 }
 
                 // check if author is banned, don't save the comment or send notifications if true
                 if (!UserHelper.IsUserGloballyBanned(User.Identity.Name) && !UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
                 {
+                    bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(subverse.Name, commentModel.Content);
+                    if (containsBannedDomain)
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
+                    }
+
+
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                     {
                         commentModel.Content = ContentProcessor.Instance.Process(commentModel.Content, ProcessingStage.InboundPreSave, commentModel);
@@ -410,9 +415,6 @@ namespace Voat.Controllers
 
                     ViewBag.CommentId = comment.ID; //why?
                     ViewBag.rootComment = comment.ParentID == null; //why?
-
-                    //var submission = DataCache.Submission.Retrieve(comment.MessageId.Value);
-                    var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
                     if (submission.IsAnonymized || subverse.IsAnonymized)
                     {
@@ -455,6 +457,13 @@ namespace Voat.Controllers
                 {
                     if (existingComment.UserName.Trim() == User.Identity.Name && !existingComment.IsDeleted)
                     {
+
+                        bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(existingComment.Submission.Subverse, commentModel.Content);
+                        if (containsBannedDomain)
+                        {
+                            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
+                        }
+
                         existingComment.LastEditDate = DateTime.Now;
                         existingComment.Content = commentModel.Content;
 

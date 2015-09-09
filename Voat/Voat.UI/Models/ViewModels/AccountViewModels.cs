@@ -89,7 +89,7 @@ namespace Voat.Models.ViewModels
     {
         [Display(Name = "Short profile bio")]
         [StringLength(100, ErrorMessage = "The short profile bio is limited to 100 characters.")]
-        public string Shortbio { get; set; }
+        public string Bio { get; set; }
 
         public string Avatar { get; set; }
 

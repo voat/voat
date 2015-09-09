@@ -13,30 +13,69 @@ All Rights Reserved.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Voat.Data.Models;
+using Voat.Utilities.Components;
 
 namespace Voat.Utilities
 {
     public class BanningUtility
     {
 
-        public static bool IsHostnameBanned(string hostnameToCheck)
+        public static bool ContentContainsBannedDomain(string subverse, string comment)
         {
-            // manual ban for blogspot
-            if (hostnameToCheck.Contains("blogspot"))
+            var s = DataCache.Subverse.Retrieve(subverse);
+            if (s == null || (s != null && !s.ExcludeSitewideBans))
             {
-                return true;
-            }
 
-            using (var db = new voatEntities())
-            {
-                var bannedHostname = db.BannedDomains.FirstOrDefault(r => r.Domain.Equals(hostnameToCheck, StringComparison.OrdinalIgnoreCase));
-
-                // look for exact match
-                return bannedHostname != null;
+                MatchCollection matches = Regex.Matches(comment, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
+                List<string> domains = new List<string>();
+                foreach (Match match in matches)
+                {
+                    string domain = match.Groups["domain"].Value;
+                    string[] parts = domain.Split('.');
+                    if (parts.Length > 2)
+                    {
+                        domain = String.Format("{0}.{1}", parts[parts.Length - 2], parts[parts.Length - 1]);
+                    }
+                    domains.Add(domain);
+                }
+                if (domains.Count > 0)
+                {
+                    bool hasBannedDomainLinks = BanningUtility.IsDomainBanned(domains.ToArray());
+                    if (hasBannedDomainLinks)
+                    {
+                        return true;
+                    }
+                }
             }
+            return false;
         }
 
+        public static bool IsDomainBanned(params string[] domains)
+        {
+            foreach (string domain in domains)
+            {
+                using (var db = new voatEntities())
+                {
+                    if (domain != null)
+                    {
+                        // manual ban for blogspot
+                        if (domain.ToLower().Contains("blogspot"))
+                        {
+                            return true;
+                        }
+                        var result = db.BannedDomains.Any(r => r.Domain.Equals(domain, StringComparison.OrdinalIgnoreCase));
+                        if (result)
+                        {
+                            return result;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }
 }

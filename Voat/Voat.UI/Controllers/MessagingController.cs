@@ -259,7 +259,10 @@ namespace Voat.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Compose([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
         {
-            if (!ModelState.IsValid) return View();
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null) return RedirectToAction("Sent", "Messaging");
 
             if (Karma.CommentKarma(User.Identity.Name) < 100)
@@ -273,36 +276,8 @@ namespace Voat.Controllers
                 }
             }
 
-            // check if recipient exists
-            if (Voat.Utilities.UserHelper.UserExists(privateMessage.Recipient) && !Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name))
-            {
-                // send the submission
-                privateMessage.CreationDate = DateTime.Now;
-                privateMessage.Sender = User.Identity.Name;
-                privateMessage.IsUnread = true;
-                if (Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name)) return RedirectToAction("Sent", "Messaging");
-                _db.PrivateMessages.Add(privateMessage);
-                try
-                {
-                    await _db.SaveChangesAsync();
+            var response = MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
 
-                    // get count of unread notifications
-                    int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(privateMessage.Recipient);
-
-                    // send SignalR realtime notification to recipient
-                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                    hubContext.Clients.User(privateMessage.Recipient).setNotificationsPending(unreadNotifications);
-                }
-                catch (Exception)
-                {
-                    return View("~/Views/Errors/DbNotResponding.cshtml");
-                }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Sorry, there is no recipient with that username.");
-                return View();
-            }
             return RedirectToAction("Sent", "Messaging");
         }
 

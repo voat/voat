@@ -135,10 +135,10 @@ namespace Voat.Utilities
                     {
                         // check if hostname is banned before accepting submission
                         var domain = UrlUtility.GetDomainFromUri(submissionModel.Content);
-                        if (BanningUtility.IsHostnameBanned(domain))
+                        if (BanningUtility.IsDomainBanned(domain))
                         {
                             // ABORT
-                            return ("The hostname you are trying to submit is banned.");
+                            return ("The domain you are trying to submit is banned.");
                         }
                     }
 
@@ -157,16 +157,8 @@ namespace Voat.Utilities
                     }
 
                     // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                    if (targetSubverse.IsAnonymized)
-                    {
-                        submissionModel.IsAnonymized = true;
-                    }
-                    else
-                    {
-                        submissionModel.UserName = userName;
-                    }
-
-                    // accept submission and save it to the database
+                    submissionModel.IsAnonymized = targetSubverse.IsAnonymized;
+                    submissionModel.UserName = userName;
                     submissionModel.Subverse = targetSubverse.Name;
                     submissionModel.UpCount = 1;
                     db.Submissions.Add(submissionModel);
@@ -188,17 +180,9 @@ namespace Voat.Utilities
                         return ("Sorry, submission title may not be less than 5 characters.");
                     }
 
-                    // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
-                    if (targetSubverse.IsAnonymized)
-                    {
-                        submissionModel.IsAnonymized = true;
-                    }
-                    else
-                    {
-                        submissionModel.UserName = userName;
-                    }
-
                     // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+                    submissionModel.IsAnonymized = targetSubverse.IsAnonymized;
+                    submissionModel.UserName = userName;
                     submissionModel.Subverse = targetSubverse.Name;
                     submissionModel.CreationDate = DateTime.Now;
                     submissionModel.UpCount = 1;

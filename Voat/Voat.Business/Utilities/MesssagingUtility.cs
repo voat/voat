@@ -13,7 +13,9 @@ All Rights Reserved.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Voat.Data.Models;
 
@@ -22,33 +24,82 @@ namespace Voat.Utilities
     public static class MesssagingUtility
     {
         // a method to send a private message to a user, invoked by other methods
-        public static bool SendPrivateMessage(string sender, string recipient, string subject, string body)
+        public static bool SendPrivateMessage(string sender, string recipientList, string subject, string body)
         {
-            using (var db = new voatEntities())
+            if (Voat.Utilities.UserHelper.IsUserGloballyBanned(System.Web.HttpContext.Current.User.Identity.Name))
             {
-                try
+                return false;
+            }
+
+            List<PrivateMessage> messages = new List<PrivateMessage>();
+            MatchCollection col = Regex.Matches(recipientList, @"((?'prefix'@|u/|/u/|v/|/v/)?(?'recipient'[\w-.]+))", RegexOptions.IgnoreCase);
+
+            foreach (Match m in col)
+            {
+                var recipient = m.Groups["recipient"].Value;
+                var prefix = m.Groups["prefix"].Value;
+
+                if (!String.IsNullOrEmpty(prefix) && prefix.ToLower().Contains("v"))
                 {
-                    var privateMessage = new PrivateMessage
+                    //don't allow banned users to send to subverses
+                    if (!UserHelper.IsUserBannedFromSubverse(System.Web.HttpContext.Current.User.Identity.Name, recipient))
                     {
-                        Sender = sender,
-                        Recipient = recipient,
-                        CreationDate = DateTime.Now,
-                        Subject = subject,
-                        Body = body,
-                        IsUnread = true,
-                        MarkedAsUnread = true
-                    };
-
-                    db.PrivateMessages.Add(privateMessage);
-                    db.SaveChanges();
-
-                    return true;
+                        //send to subverse mods
+                        using (var db = new voatEntities())
+                        {
+                            foreach (var moderator in db.SubverseModerators.Where(x => x.Subverse.Equals(recipient, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                messages.Add(new PrivateMessage
+                                {
+                                    Sender = sender,
+                                    Recipient = moderator.UserName,
+                                    CreationDate = DateTime.Now,
+                                    Subject = String.Format("[v/{0}] {1}", recipient, subject),
+                                    Body = body,
+                                    IsUnread = true,
+                                    MarkedAsUnread = true
+                                });
+                            }
+                        }
+                    }
                 }
-                catch (Exception)
+                else
                 {
-                    return false;
+                    //ensure proper cased
+                    recipient = UserHelper.OriginalUsername(recipient);
+
+                    if (Voat.Utilities.UserHelper.UserExists(recipient))
+                    {
+                        messages.Add(new PrivateMessage
+                        {
+                            Sender = sender,
+                            Recipient = recipient,
+                            CreationDate = DateTime.Now,
+                            Subject = subject,
+                            Body = body,
+                            IsUnread = true,
+                            MarkedAsUnread = true
+                        });
+                    }
                 }
             }
+
+            if (messages.Count > 0)
+            {
+                using (var db = new voatEntities())
+                {
+                    try
+                    {
+                        db.PrivateMessages.AddRange(messages);
+                        db.SaveChanges();
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         // a method to mark single or all private messages as read for a given user

@@ -64,7 +64,7 @@ namespace Voat.Controllers
         {
             if (submissionID == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // get model for selected submission
-            var submissionModel = DataCache.Submission.Retrieve(submissionID);
+            var submissionModel = _db.Submissions.Find(submissionID);
 
             if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse moderator, if not, deny posting

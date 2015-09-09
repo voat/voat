@@ -203,7 +203,7 @@ namespace Voat.Utilities.Components
 
         protected override string ProcessContent(string content, object context)
         {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + @"(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=!@:]*)(?<![\.\?\-_\,]|\s{1,})",
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.HTTP_LINK_REGEX,
                ProcessLogic
             );
             return replacer.Replace(content, context);

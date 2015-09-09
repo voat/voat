@@ -46,6 +46,14 @@ UI.Common = {
     availableWidth: function (container) {
         return $(container).innerWidth();
     },
+    htmlEscape: function(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    },
     isMobile: function () {
         return false; //TODO: determine what conditions qualify for a 'mobile' view
     },
@@ -242,10 +250,10 @@ LinkExpando.setTag = function (target, tagText) {
         target.data('text', target.text());
     }
     if (tagText) {
-        target.html(target.data('text').concat('<span class=\'link-expando-type\'>', tagText, '</span>'))
+        target.html(UI.Common.htmlEscape(target.data('text')).concat('<span class=\'link-expando-type\'>', tagText, '</span>'))
     } else {
         //revert 
-        target.text(target.data('text'));
+        target.text(UI.Common.htmlEscape(target.data('text')));
     }
 }
 LinkExpando.dataProp = function (target, prop, value) {

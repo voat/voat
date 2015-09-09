@@ -114,7 +114,7 @@ namespace Voat.Controllers
                 {
                     
                         // get only submissions from default subverses, order by rank
-                        var frontpageSubmissions = (from message in _db.Submissions.Include("subverses")
+                        var frontpageSubmissions = (from message in _db.Submissions
                                                     where !message.IsArchived && !message.IsDeleted && message.Subverse1.IsAdminDisabled != true
                                                     join defaultsubverse in _db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
                                                     select message)
@@ -180,7 +180,7 @@ namespace Voat.Controllers
 
                 cacheData = CacheHandler.Register(cacheKey, new Func<object>(() => {
                     // get only submissions from given subverses, order by rank - ignoring messages in any given banned subverse
-                    var frontpageSubmissions = (from message in _db.Submissions.Include("subverses")
+                    var frontpageSubmissions = (from message in _db.Submissions
                                                 where !message.IsDeleted && message.Subverse == subverse && message.Subverse1.IsAdminDisabled != true
                                                 select message)
                                                 .OrderByDescending(s => s.Rank)

@@ -235,6 +235,7 @@ namespace Voat.Controllers
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
+            ViewBag.userid = User.Identity.Name;
             return View();
         }
 
@@ -469,7 +470,7 @@ namespace Voat.Controllers
                         // load existing preferences and return to view engine
                         var tmpModel = new UserAboutViewModel()
                         {
-                            Shortbio = userPreferences.Bio,
+                            Bio = userPreferences.Bio,
                             Avatar = userPreferences.Avatar
                         };
 
@@ -493,7 +494,7 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Bio, Avatar")] UserAboutViewModel model)
+        public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Bio, Avatarfile")] UserAboutViewModel model)
         {
             // save changes
             using (var db = new voatEntities())
@@ -504,7 +505,7 @@ namespace Voat.Controllers
                 if (userPreferences == null)
                 {
                     // create a new record for this user in userpreferences table
-                    tmpModel.Bio = model.Shortbio;
+                    tmpModel.Bio = model.Bio;
                     tmpModel.UserName = User.Identity.Name;
                 }
 
@@ -569,7 +570,7 @@ namespace Voat.Controllers
                 }
                 else
                 {
-                    userPreferences.Bio = model.Shortbio;
+                    userPreferences.Bio = model.Bio;
                     userPreferences.UserName = User.Identity.Name;
                     await db.SaveChangesAsync();
                 }

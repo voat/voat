@@ -35,7 +35,13 @@ namespace Voat.Utilities
                 return intCheckResult;
             }
         }
-
+        //// returns -1:downvoted, 1:upvoted, 0:not voted
+        //public static SubmissionVoteTracker GetVote(voatEntities db, string userToCheck, int submissionID)
+        //{
+        //        var checkResult = db.SubmissionVoteTrackers.Where(u => u.UserName == userToCheck && u.SubmissionID == submissionID)
+        //                .AsNoTracking()
+        //                .FirstOrDefault();
+        //}
         // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetMessageVote(string userWhichVoted, int submissionID)
         {
@@ -51,14 +57,17 @@ namespace Voat.Utilities
         }
 
         // submit submission upvote
-        public static void UpvoteSubmission(int submissionId, string userWhichUpvoted, string clientIp)
+        public static void UpvoteSubmission(int submissionID, string userName, string clientIp)
         {
-            // user account voting check
-            int result = CheckIfVoted(userWhichUpvoted, submissionId);
+            //// user account voting check
+            //int result = CheckIfVoted(userName, submissionID);
 
             using (var db = new voatEntities())
             {
-                Submission submission = db.Submissions.Find(submissionId);
+
+                SubmissionVoteTracker previousVote = db.SubmissionVoteTrackers.Where(u => u.UserName == userName && u.SubmissionID == submissionID).FirstOrDefault();
+
+                Submission submission = db.Submissions.Find(submissionID);
 
                 if (submission.IsAnonymized)
                 {
@@ -66,15 +75,17 @@ namespace Voat.Utilities
                     return;
                 }
 
+                int result = (previousVote == null ? 0 : previousVote.VoteStatus.Value);
+
                 switch (result)
                 {
                     // never voted before
                     case 0:
 
-                        if (submission.UserName != userWhichUpvoted)
+                        if (submission.UserName != userName)
                         {
                             // check if this IP already voted on the same submission, abort voting if true
-                            var ipVotedAlready = db.SubmissionVoteTrackers.Where(x => x.SubmissionID == submissionId && x.IPAddress == clientIp);
+                            var ipVotedAlready = db.SubmissionVoteTrackers.Where(x => x.SubmissionID == submissionID && x.IPAddress == clientIp);
                             if (ipVotedAlready.Any()) return;
 
                             submission.UpCount++;
@@ -82,12 +93,12 @@ namespace Voat.Utilities
                             double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
                             submission.Rank = newRank;
-
+                            
                             // register upvote
                             var tmpVotingTracker = new SubmissionVoteTracker
                             {
-                                SubmissionID = submissionId,
-                                UserName = userWhichUpvoted,
+                                SubmissionID = submissionID,
+                                UserName = userName,
                                 VoteStatus = 1,
                                 CreationDate = DateTime.Now,
                                 IPAddress = clientIp
@@ -104,7 +115,7 @@ namespace Voat.Utilities
                     // downvoted before, turn downvote to upvote
                     case -1:
 
-                        if (submission.UserName != userWhichUpvoted)
+                        if (submission.UserName != userName)
                         {
                             submission.UpCount++;
                             submission.DownCount--;
@@ -114,14 +125,9 @@ namespace Voat.Utilities
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
                             submission.Rank = newRank;
 
-                            // register Turn DownVote To UpVote
-                            var votingTracker = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == submissionId && b.UserName == userWhichUpvoted);
-
-                            if (votingTracker != null)
-                            {
-                                votingTracker.VoteStatus = 1;
-                                votingTracker.CreationDate = DateTime.Now;
-                            }
+                            previousVote.VoteStatus = 1;
+                            previousVote.CreationDate = DateTime.Now;
+                            
                             db.SaveChanges();
 
                             SendVoteNotification(submission.UserName, "downtoupvote");
@@ -139,9 +145,10 @@ namespace Voat.Utilities
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
                             submission.Rank = newRank;
+                            db.SubmissionVoteTrackers.Remove(previousVote);
                             db.SaveChanges();
 
-                            ResetMessageVote(userWhichUpvoted, submissionId);
+                            //ResetMessageVote(userName, submissionID);
 
                             SendVoteNotification(submission.UserName, "downvote");
                         }
@@ -153,13 +160,16 @@ namespace Voat.Utilities
         }
 
         // submit submission downvote
-        public static void DownvoteSubmission(int submissionId, string userWhichDownvoted, string clientIp)
+        public static void DownvoteSubmission(int submissionID, string userName, string clientIp)
         {
-            int result = CheckIfVoted(userWhichDownvoted, submissionId);
+            //int result = CheckIfVoted(userWhichDownvoted, submissionId);
 
             using (var db = new voatEntities())
             {
-                Submission submission = db.Submissions.Find(submissionId);
+                Submission submission = db.Submissions.Find(submissionID);
+
+                SubmissionVoteTracker previousVote = db.SubmissionVoteTrackers.Where(u => u.UserName == userName && u.SubmissionID == submissionID).FirstOrDefault();
+
 
                 // do not execute downvoting if subverse is in anonymized mode
                 if (submission.IsAnonymized)
@@ -168,10 +178,12 @@ namespace Voat.Utilities
                 }
                 
                 // do not execute downvoting if user has insufficient CCP for target subverse
-                if (Karma.CommentKarmaForSubverse(userWhichDownvoted, submission.Subverse) < submission.Subverse1.MinCCPForDownvote)
+                if (Karma.CommentKarmaForSubverse(userName, submission.Subverse) < submission.Subverse1.MinCCPForDownvote)
                 {
                     return;
                 }
+
+                int result = (previousVote == null ? 0 : previousVote.VoteStatus.Value);
 
                 switch (result)
                 {
@@ -179,13 +191,13 @@ namespace Voat.Utilities
                     case 0:
                         {
                             // this user is downvoting more than upvoting, don't register the downvote
-                            if (UserHelper.IsUserCommentVotingMeanie(userWhichDownvoted))
+                            if (UserHelper.IsUserCommentVotingMeanie(userName))
                             {
                                 return;
                             }
 
                             // check if this IP already voted on the same submission, abort voting if true
-                            var ipVotedAlready = db.SubmissionVoteTrackers.Where(x => x.SubmissionID == submissionId && x.IPAddress == clientIp);
+                            var ipVotedAlready = db.SubmissionVoteTrackers.Where(x => x.SubmissionID == submissionID && x.IPAddress == clientIp);
                             if (ipVotedAlready.Any()) return;
 
                             submission.DownCount++;
@@ -199,8 +211,8 @@ namespace Voat.Utilities
                             // register downvote
                             var tmpVotingTracker = new SubmissionVoteTracker
                             {
-                                SubmissionID = submissionId,
-                                UserName = userWhichDownvoted,
+                                SubmissionID = submissionID,
+                                UserName = userName,
                                 VoteStatus = -1,
                                 CreationDate = DateTime.Now,
                                 IPAddress = clientIp
@@ -226,13 +238,12 @@ namespace Voat.Utilities
                             submission.Rank = newRank;
 
                             // register Turn DownVote To UpVote
-                            var votingTracker = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == submissionId && b.UserName == userWhichDownvoted);
+                            var votingTracker = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userName);
 
-                            if (votingTracker != null)
-                            {
-                                votingTracker.VoteStatus = -1;
-                                votingTracker.CreationDate = DateTime.Now;
-                            }
+                           
+                            previousVote.VoteStatus = -1;
+                            previousVote.CreationDate = DateTime.Now;
+                            
                             db.SaveChanges();
 
                             SendVoteNotification(submission.UserName, "uptodownvote");
@@ -243,6 +254,7 @@ namespace Voat.Utilities
                     // downvoted before, reset
                     case -1:
                         {
+                            //ResetMessageVote(userName, submissionID);
                             submission.DownCount--;
 
                             double currentScore = submission.UpCount - submission.DownCount;
@@ -250,9 +262,8 @@ namespace Voat.Utilities
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
                             submission.Rank = newRank;
+                            db.SubmissionVoteTrackers.Remove(previousVote);
                             db.SaveChanges();
-
-                            ResetMessageVote(userWhichDownvoted, submissionId);
 
                             SendVoteNotification(submission.UserName, "upvote");
                         }

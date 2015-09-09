@@ -499,7 +499,7 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // 5 subverses user submitted to most
-                var subverses = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized)
+                var subverses = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                          .GroupBy(a => new { a.UserName, a.Subverse })
                          .Select(g => new SubverseStats { SubverseName = g.Key.Subverse, Count = g.Count() })
                          .OrderByDescending(s => s.Count)

@@ -114,7 +114,11 @@ namespace Voat.Controllers
                 ViewBag.SelectedSubverse = submission.Subverse;
                 return View("~/Views/Home/Comments.cshtml", submission);
             }
-
+            if (String.IsNullOrEmpty(submission.Subverse))
+            {
+                ModelState.AddModelError(string.Empty, "Please enter a subverse.");
+                return View("Submit");
+            }
             // check if subverse exists
             var targetSubverse = _db.Subverses.Find(submission.Subverse.Trim());
 
@@ -175,6 +179,13 @@ namespace Voat.Controllers
             // submission is a message type submission
             else if (submission.Type == 1 && submission.Title != null)
             {
+                var containsBannedDomain = BanningUtility.ContentContainsBannedDomain(targetSubverse.Name, submission.Content);
+                if (containsBannedDomain)
+                {
+                    ModelState.AddModelError(string.Empty, "Sorry, this post contains links to banned domains.");
+                    return View("Submit");
+                }
+
                 // process new message type submission
                 var addMessageSubmissionResult = await Submissions.AddNewSubmission(submission, targetSubverse, User.Identity.Name);
                 if (addMessageSubmissionResult != null)
