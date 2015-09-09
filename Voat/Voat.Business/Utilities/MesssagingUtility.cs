@@ -47,7 +47,13 @@ namespace Voat.Utilities
                         //send to subverse mods
                         using (var db = new voatEntities())
                         {
-                            foreach (var moderator in db.SubverseModerators.Where(x => x.Subverse.Equals(recipient, StringComparison.OrdinalIgnoreCase)))
+                            //designed to limit abuse by taking the level 1 mod and the next four oldest
+                            var mods = (from mod in db.SubverseModerators
+                                        where mod.Subverse.Equals(recipient, StringComparison.OrdinalIgnoreCase) && mod.UserName != "system" && mod.UserName != "youcanclaimthissub"
+                                        orderby mod.Power ascending, mod.CreationDate descending
+                                        select mod).Take(5);
+
+                            foreach (var moderator in mods)
                             {
                                 messages.Add(new PrivateMessage
                                 {
