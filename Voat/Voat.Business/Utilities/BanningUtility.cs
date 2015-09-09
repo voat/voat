@@ -26,28 +26,31 @@ namespace Voat.Utilities
 
         public static bool ContentContainsBannedDomain(string subverse, string comment)
         {
-            var s = DataCache.Subverse.Retrieve(subverse);
-            if (s == null || (s != null && !s.ExcludeSitewideBans))
+            if (!String.IsNullOrEmpty(comment))
             {
+                var s = DataCache.Subverse.Retrieve(subverse);
+                if (s == null || (s != null && !s.ExcludeSitewideBans))
+                {
 
-                MatchCollection matches = Regex.Matches(comment, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
-                List<string> domains = new List<string>();
-                foreach (Match match in matches)
-                {
-                    string domain = match.Groups["domain"].Value;
-                    string[] parts = domain.Split('.');
-                    if (parts.Length > 2)
+                    MatchCollection matches = Regex.Matches(comment, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
+                    List<string> domains = new List<string>();
+                    foreach (Match match in matches)
                     {
-                        domain = String.Format("{0}.{1}", parts[parts.Length - 2], parts[parts.Length - 1]);
+                        string domain = match.Groups["domain"].Value;
+                        string[] parts = domain.Split('.');
+                        if (parts.Length > 2)
+                        {
+                            domain = String.Format("{0}.{1}", parts[parts.Length - 2], parts[parts.Length - 1]);
+                        }
+                        domains.Add(domain);
                     }
-                    domains.Add(domain);
-                }
-                if (domains.Count > 0)
-                {
-                    bool hasBannedDomainLinks = BanningUtility.IsDomainBanned(domains.ToArray());
-                    if (hasBannedDomainLinks)
+                    if (domains.Count > 0)
                     {
-                        return true;
+                        bool hasBannedDomainLinks = BanningUtility.IsDomainBanned(domains.ToArray());
+                        if (hasBannedDomainLinks)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
