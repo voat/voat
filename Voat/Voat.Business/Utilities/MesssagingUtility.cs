@@ -63,7 +63,7 @@ namespace Voat.Utilities
                                     Subject = String.Format("[v/{0}] {1}", recipient, subject),
                                     Body = body,
                                     IsUnread = true,
-                                    MarkedAsUnread = true
+                                    MarkedAsUnread = false
                                 });
                             }
                         }
@@ -84,7 +84,7 @@ namespace Voat.Utilities
                             Subject = subject,
                             Body = body,
                             IsUnread = true,
-                            MarkedAsUnread = true
+                            MarkedAsUnread = false
                         });
                     }
                 }
