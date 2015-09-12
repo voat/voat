@@ -25,11 +25,11 @@
             <div class="logged-in">
                 <span class="user">
                     <a href="/user/@User.Identity.Name" title="Profile">@User.Identity.Name</a>
-                    <span class="userkarma" title="submission contribution points"><a href="/user/@User.Identity.Name/submissions" class="userkarma" id="scp">@linkKarma</a></span>
+                    <span class="userkarma" title="Submission Contribution Points"><a href="/user/@User.Identity.Name/submissions" class="userkarma" id="scp">@linkKarma</a></span>
                     |
-                    <span class="userkarma" title="comment contribution points"><a href="/user/@User.Identity.Name/comments" class="userkarma" id="ccp">@commentKarma</a></span>
+                    <span class="userkarma" title="Comment Contribution Points"><a href="/user/@User.Identity.Name/comments" class="userkarma" id="ccp">@commentKarma</a></span>
                     |
-                    <span class="upvoatsGiven" title="total upvoats given"><a href="/user/@User.Identity.Name" class="upvoatsGiven" id="upvoatsGiven">@upvotesGiven</a></span>
+                    <span class="upvoatsGiven" title="total upvotes given"><a href="/user/@User.Identity.Name" class="upvoatsGiven" id="upvoatsGiven">@upvotesGiven</a></span>
                 </span>
                 <span class="separator">|</span>
                 <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage", id = "manage" })</span>
