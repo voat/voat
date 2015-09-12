@@ -34,7 +34,7 @@ namespace Voat.Controllers
         //[OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
-            
+
             if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             //sanitize
@@ -45,11 +45,16 @@ namespace Voat.Controllers
                 return new RedirectResult("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
             }
 
+            if (q == "0118 999 881 999 119 7253")
+            {
+                return new RedirectResult("https://www.youtube.com/watch?v=HWc3WY3fuZU");
+            }
+
             if (q == "spoon")
             {
                 return View("Jaje");
             }
-            
+
             // limit the search to selected subverse
             if (l != null && sub != null)
             {
@@ -63,10 +68,11 @@ namespace Voat.Controllers
                 {
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
-                
+
                 string cacheKey = CacheHandler.Keys.Search(sub, q);
                 IList<Submission> cacheData = (IList<Submission>)CacheHandler.Retrieve(cacheKey);
-                if (cacheData == null) {
+                if (cacheData == null)
+                {
 
 
                     cacheData = (IList<Submission>)CacheHandler.Register(cacheKey, new Func<object>(() =>
@@ -123,7 +129,7 @@ namespace Voat.Controllers
                                        where
                                         !s.IsAdminDisabled.Value &&
                                         !m.IsDeleted &&
-                                           //m.Subverse == sub &&
+                                        //m.Subverse == sub &&
                                         (m.LinkDescription.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
                                        orderby m.Rank ascending, m.CreationDate descending
                                        select m
@@ -146,7 +152,7 @@ namespace Voat.Controllers
         public ActionResult FindSubverse(int? page, string d, string q)
         {
             if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            
+
             IQueryable<Subverse> results;
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.SearchTerm = q;
@@ -170,7 +176,7 @@ namespace Voat.Controllers
                     .Where(s => s.Description.ToLower().Contains(q))
                     .OrderByDescending(s => s.SubscriberCount);
 
-                results = subversesByName.Concat(subversesByDescription).OrderByDescending(s=>s.SubscriberCount);
+                results = subversesByName.Concat(subversesByDescription).OrderByDescending(s => s.SubscriberCount);
             }
             else
             {
