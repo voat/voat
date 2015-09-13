@@ -49,22 +49,6 @@ namespace Voat.Controllers
         [System.Web.Mvc.Authorize]
         public ActionResult Inbox(int? page)
         {
-            int unreadCommentCount = Voat.Utilities.UserHelper.UnreadCommentRepliesCount(User.Identity.Name);
-            int unreadPostCount = Voat.Utilities.UserHelper.UnreadPostRepliesCount(User.Identity.Name);
-            int unreadPMCount = Voat.Utilities.UserHelper.UnreadPrivateMessagesCount(User.Identity.Name);
-
-            if (unreadPMCount > 0)
-            {
-                return InboxPrivateMessages(page);
-            }
-            if (unreadCommentCount > 0)
-            {
-                return InboxCommentReplies(page);
-            }
-            if (unreadPostCount > 0)
-            {
-                return InboxPostReplies(page);
-            }
             return InboxPrivateMessages(page);
         }
 
@@ -92,8 +76,46 @@ namespace Voat.Controllers
                     .OrderByDescending(s => s.CreationDate)
                     .ThenBy(s => s.Sender);
 
+                var unreadCount = privateMessages.Count(pm => pm.IsUnread);
+
                 ViewBag.InboxCount = privateMessages.Count();
+                ViewBag.UnreadCount = unreadCount;
                 return View("Inbox", privateMessages.ToPagedList(pageNumber, pageSize));
+            }
+            catch (Exception)
+            {
+                return View("~/Views/Errors/DbNotResponding.cshtml");
+            }
+        }
+
+        // GET: Inbox/Unread
+        [System.Web.Mvc.Authorize]
+        public ActionResult InboxPrivateMessagesUnread(int? page)
+        {
+            ViewBag.PmView = "unread";
+
+            SetViewBagCounts();
+
+            const int pageSize = 25;
+            int pageNumber = (page ?? 1);
+
+            if (pageNumber < 1)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            // get logged in username and fetch unread private messages
+            try
+            {
+                IQueryable<PrivateMessage> privateMessages = _db.PrivateMessages
+                    .Where(s => s.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(s => s.CreationDate)
+                    .ThenBy(s => s.Sender);
+
+                ViewBag.InboxCount = privateMessages.Count();
+                var unreadMessages = privateMessages.Where(pm => pm.IsUnread);
+                ViewBag.UnreadCount = unreadMessages.Count();
+                return View("InboxUnread", unreadMessages.ToPagedList(pageNumber, pageSize));
             }
             catch (Exception)
             {

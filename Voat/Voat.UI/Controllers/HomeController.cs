@@ -324,6 +324,10 @@ namespace Voat.Controllers
                             {
 
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
+                                
+                                // TODO: 
+                                // check if user wants to exclude downvoted submissions from frontpage
+                                var downvotedSubmissionIds = db.SubmissionVoteTrackers.AsNoTracking().Where(vt => vt.UserName.Equals(User.Identity.Name) && vt.VoteStatus == -1).Select(s=>s.SubmissionID);
 
                                 IQueryable<Submission> submissions = (from m in db.Submissions.Include("Subverse").AsNoTracking()
                                                                    join s in db.SubverseSubscriptions on m.Subverse equals s.Subverse
@@ -333,8 +337,10 @@ namespace Voat.Controllers
 
                                 var submissionsWithoutStickies = submissions.Where(s => s.StickiedSubmission.SubmissionID != s.ID);
 
-                                return submissionsWithoutStickies.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
+                                // exclude downvoted submissions
+                                var submissionsWithoutDownvotedSubmissions = submissionsWithoutStickies.Where(x => !downvotedSubmissionIds.Contains(x.ID));
 
+                                return submissionsWithoutDownvotedSubmissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
                             }
 
                         });

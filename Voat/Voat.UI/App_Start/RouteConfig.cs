@@ -240,6 +240,13 @@ namespace Voat
                 defaults: new { controller = "Messaging", action = "Inbox" }
             );
 
+            // inbox/unread
+            routes.MapRoute(
+                name: "InboxUnread",
+                url: "messaging/inbox/unread",
+                defaults: new { controller = "Messaging", action = "InboxPrivateMessagesUnread" }
+            );
+
             // compose
             routes.MapRoute(
                 name: "Compose",

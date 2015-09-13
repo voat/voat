@@ -13,19 +13,31 @@
 @{
     var selectedView = ViewBag.selectedView;
     var classInbox = "selected";
+    var classUnread = "disabled";
     var classSent = "disabled";
     var classCompose = "disabled";
 
     if (selectedView != null)
     {
+        if (selectedView.Equals("unread"))
+        {
+            classSent = "disabled";
+            classInbox = "disabled";
+            classCompose = "disabled";
+            classUnread = "selected";
+        }
         if (selectedView.Equals("sent"))
         {
             classSent = "selected";
-            classInbox = "disabled";            
+            classInbox = "disabled";
+            classCompose = "disabled";
+            classUnread = "disabled";
         }
         else if (selectedView.Equals("compose"))
         {
             classInbox = "disabled";
+            classSent = "disabled";
+            classUnread = "disabled";
             classCompose = "selected";
         }
     }
@@ -33,6 +45,7 @@
 
 <ul class="tabmenu ">
     <li class="@classInbox"><a href="~/messaging/inbox">Inbox</a></li>
+    <li class="@classUnread"><a href="~/messaging/inbox/unread">Unread</a></li>
     <li class="@classSent"><a href="~/messaging/sent">Sent</a></li>
     <li class="@classCompose"><a href="~/messaging/compose">Compose</a></li>
 </ul>
