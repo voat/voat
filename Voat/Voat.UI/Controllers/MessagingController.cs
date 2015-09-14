@@ -49,7 +49,22 @@ namespace Voat.Controllers
         [System.Web.Mvc.Authorize]
         public ActionResult Inbox(int? page)
         {
-            return InboxPrivateMessages(page);
+            int unreadCommentCount = Voat.Utilities.UserHelper.UnreadCommentRepliesCount(User.Identity.Name);
+            int unreadPostCount = Voat.Utilities.UserHelper.UnreadPostRepliesCount(User.Identity.Name);
+            int unreadPMCount = Voat.Utilities.UserHelper.UnreadPrivateMessagesCount(User.Identity.Name);
+
+            if (unreadPMCount > 0)
+            {
+                return InboxPrivateMessages(page);
+            }
+
+            if (unreadCommentCount > 0)
+            {
+                return InboxCommentReplies(page);
+            }
+            
+            // return inbox view if there are no unread comments or post replies
+            return unreadPostCount > 0 ? InboxPostReplies(page) : InboxPrivateMessages(page);
         }
 
         // GET: Inbox
@@ -417,7 +432,7 @@ namespace Voat.Controllers
             switch (itemType)
             {
                 case "privateMessage":
-                    if (await MesssagingUtility.MarkPrivateMessagesAsRead((bool) markAll, User.Identity.Name, itemId))
+                    if (await MesssagingUtility.MarkPrivateMessagesAsRead((bool)markAll, User.Identity.Name, itemId))
                     {
                         UpdateNotificationCounts(); // update notification icon
                         Response.StatusCode = 200;
