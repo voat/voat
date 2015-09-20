@@ -31,6 +31,11 @@ namespace Voat.Utilities
                 return false;
             }
 
+            if (Voat.Utilities.Karma.CommentKarma(System.Web.HttpContext.Current.User.Identity.Name) < 10)
+            {
+                return false;
+            }
+
             List<PrivateMessage> messages = new List<PrivateMessage>();
             MatchCollection col = Regex.Matches(recipientList, @"((?'prefix'@|u/|/u/|v/|/v/)?(?'recipient'[\w-.]+))", RegexOptions.IgnoreCase);
 
