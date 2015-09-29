@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -120,7 +120,7 @@ namespace Voat.Utilities
 
                         // TODO: delete avatar
                         // userPrefs.Avatar = ""
-                        
+
                         // TODO:
                         // keep this updated as new features are added (delete sets etc)
 
@@ -406,15 +406,15 @@ namespace Voat.Utilities
                 return result != null && result.DisableCSS;
             }
         }
-        
+
         // check which theme style user selected
         public static void SetUserStylePreferenceCookie(string theme)
         {
             var cookie = new HttpCookie("theme", theme);
             cookie.Expires = DateTime.Now.AddDays(14);
             System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
-        }        
-        
+        }
+
         // check which theme style user selected
         public static string UserStylePreference(string userName)
         {
@@ -427,7 +427,7 @@ namespace Voat.Utilities
             }
             else
             {
-                if (!String.IsNullOrEmpty(userName)) { 
+                if (!String.IsNullOrEmpty(userName)) {
                     using (var db = new voatEntities())
                     {
                         var result = db.UserPreferences.Find(userName);
@@ -845,7 +845,7 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 var numberOfTimesSubmitted = db.Submissions
-                    .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase) 
+                    .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase)
                     && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
                     && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
@@ -927,8 +927,8 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // get voting habits
-                var submissionUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var submissionDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                var submissionUpvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                var submissionDownvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
                 return submissionDownvotes > submissionUpvotes;
             }
