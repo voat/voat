@@ -48,8 +48,39 @@ namespace Voat.Controllers
                     var reportTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
                     try
                     {
-                        string body = String.Format("This comment has been reported as spam:\r\n\r\nhttps://voat.co/v/{0}/comments/{1}/{2}/{2}#{2}\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", commentSubverse, commentToReport.SubmissionID, id);
-                        MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : User.Identity.Name, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
+                        string cacheKeyCommentReport = String.Format("report.comment.{0}", id.ToString());
+
+                        //see if comment has been reported before
+                        if (CacheHandler.Retrieve<object>(cacheKeyCommentReport) == null)
+                        {
+                            //mark comment in cache as having been reported
+                            CacheHandler.Register(cacheKeyCommentReport, new Func<object>(() => { return new object(); }), TimeSpan.FromHours(6), -1);
+
+                                
+                            string userName = User.Identity.Name;
+                            string cacheKeyUserReportCount = String.Format("report.comment.{0}.count", userName);
+                            int reportsPerUserThreshold = 5;
+
+                            var reportCountViaUser = CacheHandler.Retrieve<int?>(cacheKeyUserReportCount);
+                            //ensure user is below reporting threshold
+                            if (reportCountViaUser == null || reportCountViaUser.Value <= reportsPerUserThreshold)
+                            {
+                                //add or update cache with current user reports
+                                if (reportCountViaUser.HasValue)
+                                {
+                                    CacheHandler.Replace<int?>(cacheKeyUserReportCount, new Func<int?, int?>((x) => { return (int?)(x.Value + 1); }));
+                                }
+                                else
+                                {
+                                    CacheHandler.Register<int?>(cacheKeyUserReportCount, new Func<int?>(() => { return (int?)1; }), TimeSpan.FromMinutes(120), -1);
+                                }
+
+                                string body = String.Format("This comment has been reported as spam:\r\n\r\nhttps://voat.co/v/{0}/comments/{1}/{2}/{2}#{2}\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", commentSubverse, commentToReport.SubmissionID, id);
+                                MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : userName, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
+
+                            }
+
+                        }
 
                     }
                     catch (Exception)

@@ -59,6 +59,8 @@ namespace Voat.Utilities
         {
             if (!String.IsNullOrEmpty(key))
             {
+                key = key.ToLower();
+
                 lock (GetLockObject(key))
                 {
                     _cache[key] = replaceAlg(Retrieve<T>(key));
@@ -82,6 +84,9 @@ namespace Voat.Utilities
         {
             if (!String.IsNullOrEmpty(key))
             {
+
+                key = key.ToLower();
+
                 object o = GetLockObject(key);
                 lock (o)
                 {
