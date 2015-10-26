@@ -176,6 +176,14 @@ namespace Voat.Utilities
                 {
                     return;
                 }
+
+                // do not execute downvoting if submission is older than 7 days
+                var submissionPostingDate = submission.CreationDate;
+                TimeSpan timeElapsed = DateTime.Now - submissionPostingDate;
+                if (timeElapsed.TotalDays > 7)
+                {
+                    return;
+                }
                 
                 // do not execute downvoting if user has insufficient CCP for target subverse
                 if (Karma.CommentKarmaForSubverse(userName, submission.Subverse) < submission.Subverse1.MinCCPForDownvote)
