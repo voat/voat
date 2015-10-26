@@ -19,6 +19,8 @@ namespace Voat
     {
         protected void Application_Start()
         {
+            var formatters = GlobalConfiguration.Configuration.Formatters;
+            formatters.Remove(formatters.XmlFormatter);
 
             LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
             LiveConfigurationManager.Start();

@@ -141,17 +141,15 @@ namespace Voat.Models.ViewModels
         public string ConfirmPassword { get; set; }
     }
 
-    public class PasswordRecoveryModel
+    public class ResetPasswordViewModel
     {
-        [Display(Name = "User name")]
-        public string UserName { get; set; }
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
 
-        public string Question { get; set; }
-
-        [Display(Name = "Answer")]
-        public string InputAnswer { get; set; }
-
-        [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -160,5 +158,15 @@ namespace Voat.Models.ViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        public string Code { get; set; }
+    }
+
+    public class ForgotPasswordViewModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
     }
 }

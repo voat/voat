@@ -126,6 +126,14 @@ namespace Voat.Utilities
                     return;
                 }
 
+                // do not execute downvoting if comment is older than 7 days
+                var commentPostingDate = comment.CreationDate;
+                TimeSpan timeElapsed = DateTime.Now - commentPostingDate;
+                if (timeElapsed.TotalDays > 7)
+                {
+                    return;
+                }
+
                 switch (result)
                 {
                     // never voted before

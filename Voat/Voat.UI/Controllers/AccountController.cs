@@ -27,6 +27,9 @@ using Voat.Models.ViewModels;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security.DataProtection;
+using Voat.App_Start;
 using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Configuration;
@@ -40,7 +43,9 @@ namespace Voat.Controllers
         public AccountController()
             : this(new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
         {
+            var provider = new DpapiDataProtectionProvider("VoatUI");
             UserManager.UserValidator = new UserValidator<VoatUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
+            UserManager.UserTokenProvider = new DataProtectorTokenProvider<VoatUser>(provider.Create("VoatTokenProvider"));
         }
 
         public AccountController(UserManager<VoatUser> userManager)
@@ -51,6 +56,7 @@ namespace Voat.Controllers
             UserManager.UserLockoutEnabledByDefault = true;
             UserManager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
             UserManager.MaxFailedAccessAttemptsBeforeLockout = 5;
+            UserManager.EmailService = new IdentityConfig.EmailService();
         }
 
         public UserManager<VoatUser> UserManager { get; private set; }
@@ -123,7 +129,7 @@ namespace Voat.Controllers
             // sign in and continue
             await SignInAsync(user, model.RememberMe);
             // read User Theme preference and set value to cookie 
-            UserHelper.SetUserStylePreferenceCookie(UserHelper.UserStylePreference(user.UserName));            
+            UserHelper.SetUserStylePreferenceCookie(UserHelper.UserStylePreference(user.UserName));
             return RedirectToLocal(returnUrl);
         }
 
@@ -182,7 +188,7 @@ namespace Voat.Controllers
 
                 var user = new VoatUser
                 {
-                    UserName = model.UserName, 
+                    UserName = model.UserName,
                     RegistrationDateTime = DateTime.Now,
                     LastLoginFromIp = clientIpAddress,
                     LastLoginDateTime = DateTime.Now
@@ -435,7 +441,7 @@ namespace Voat.Controllers
                 {
                     // delete email address and set password to something random
                     UserManager.SetEmail(User.Identity.GetUserId(), null);
-                    
+
                     string randomPassword = "";
                     using (SHA512 shaM = new SHA512Managed())
                     {
@@ -626,7 +632,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
             if (!ModelState.IsValid) return View("Manage", model);
-            
+
             // save changes
             string newTheme;
             using (var db = new voatEntities())
@@ -765,7 +771,7 @@ namespace Voat.Controllers
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Json("A username parameter is required for this function.", JsonRequestBehavior.AllowGet);
-            }            
+            }
 
             // check username availability
             var userNameAvailable = UserManager.FindByName(userNameToCheck);
@@ -773,8 +779,9 @@ namespace Voat.Controllers
             if (userNameAvailable == null)
             {
                 Response.StatusCode = 200;
-                var response = new UsernameAvailabilityResponse{
-                    Available=true
+                var response = new UsernameAvailabilityResponse
+                {
+                    Available = true
                 };
 
                 return Json(response, JsonRequestBehavior.AllowGet);
@@ -788,13 +795,107 @@ namespace Voat.Controllers
                     Available = false
                 };
                 return Json(response, JsonRequestBehavior.AllowGet);
-            }            
+            }
         }
 
 
-        private class UsernameAvailabilityResponse{
+        private class UsernameAvailabilityResponse
+        {
             public bool Available { get; set; }
         }
+
+        #region password reset
+        // GET: /Account/ForgotPassword
+        [AllowAnonymous]
+        public ActionResult ForgotPassword()
+        {
+            ViewBag.SelectedSubverse = string.Empty;
+            return View();
+        }
+
+        //
+        // POST: /Account/ForgotPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        [ValidateCaptcha]
+        public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await UserManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    // Don't reveal that the user does not exist or is not confirmed
+                    return View("ForgotPasswordConfirmation");
+                }
+
+                // Send an email with this link
+                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                await UserManager.SendEmailAsync(user.Id, "Voat Password Reset Request", "You have requested to reset your Voat password. If you did not do this, please ignore this email. In order to open a page which will let you reset your Voat password, please click <a href=\"" + callbackUrl + "\">here</a>");
+                return RedirectToAction("ForgotPasswordConfirmation", "Account");
+            }
+
+            // If we got this far, something failed, redisplay form
+            ViewBag.SelectedSubverse = string.Empty;
+            return View(model);
+        }
+
+        //
+        // GET: /Account/ForgotPasswordConfirmation
+        [AllowAnonymous]
+        public ActionResult ForgotPasswordConfirmation()
+        {
+            ViewBag.SelectedSubverse = string.Empty;
+            return View();
+        }
+
+        //
+        // GET: /Account/ResetPassword
+        [AllowAnonymous]
+        public ActionResult ResetPassword(string code)
+        {
+            ViewBag.SelectedSubverse = string.Empty;
+            return code == null ? View("Error") : View();
+        }
+
+        //
+        // POST: /Account/ResetPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var user = await UserManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return RedirectToAction("ResetPasswordConfirmation", "Account");
+            }
+            var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ResetPasswordConfirmation", "Account");
+            }
+            AddErrors(result);
+            ViewBag.SelectedSubverse = string.Empty;
+            return View();
+        }
+
+        //
+        // GET: /Account/ResetPasswordConfirmation
+        [AllowAnonymous]
+        public ActionResult ResetPasswordConfirmation()
+        {
+            ViewBag.SelectedSubverse = string.Empty;
+            return View();
+        }
+        #endregion
 
         #region Helpers
         // Used for XSRF protection when adding external logins

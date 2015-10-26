@@ -185,7 +185,6 @@
     <Compile Include="Utilities\CONSTANTS.cs" />
     <Compile Include="Utilities\DataCache.cs" />
     <Compile Include="Utilities\DateTimeUtility.cs" />
-    <Compile Include="Utilities\EmailUtility.cs" />
     <Compile Include="Utilities\Formatting.cs" />
     <Compile Include="Utilities\HashHandler.cs" />
     <Compile Include="Utilities\IpHashUtility.cs" />

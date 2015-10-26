@@ -115,6 +115,15 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.RecaptchaPublicKey];
             }
         }
+
+        public static string EmailServiceKey
+        {
+            get
+            {
+                return (string)configValues[CONFIGURATION.EmailServiceKey];
+            }
+        }
+
         public static string SiteDescription
         {
             get

@@ -75,6 +75,9 @@ namespace Voat
 
             configuration.Routes.MapHttpRoute("API comments for a single submission", "api/submissioncomments",
                 new { controller = "WebApi", action = "SubmissionComments" });
+
+            configuration.Routes.MapHttpRoute("Top 100 images by date", "api/top100imagesbydate",
+                new { controller = "WebApi", action = "Top100ImagesByDate" });
         }
     }
 }

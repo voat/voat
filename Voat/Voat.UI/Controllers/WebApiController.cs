@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Web.Http;
 using Voat.Data.Models;
 using Voat.Models;
@@ -87,9 +88,11 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> Top200Subverses()
         {
-            IEnumerable<string> top200 = CacheHandler.Register<IEnumerable<string>>("LegacyApi.Top200Subverses", 
-                new Func<IList<string>>(() => {
-                    using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY)) {
+            IEnumerable<string> top200 = CacheHandler.Register<IEnumerable<string>>("LegacyApi.Top200Subverses",
+                new Func<IList<string>>(() =>
+                {
+                    using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+                    {
                         var top200Subverses = db.Subverses.Where(s => s.IsAdminDisabled != true).OrderByDescending(s => s.SubscriberCount).Take(200);
                         return top200Subverses.Select(item => "Name: " + item.Name + "," + "Description: " + item.Description + "," + "Subscribers: " + item.SubscriberCount + "," + "Created: " + item.CreationDate).ToList();
                     }
@@ -112,50 +115,50 @@ namespace Voat.Controllers
             {
                 cacheData = CacheHandler.Register(cacheKey, new Func<List<ApiMessage>>(() =>
                 {
-                    
-                        // get only submissions from default subverses, order by rank
-                        var frontpageSubmissions = (from message in _db.Submissions
-                                                    where !message.IsArchived && !message.IsDeleted && message.Subverse1.IsAdminDisabled != true
-                                                    join defaultsubverse in _db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
-                                                    select message)
-                                                    .OrderByDescending(s => s.Rank)
-                                                    .Take(100)
-                                                    .ToList();
 
-                        var resultList = new List<ApiMessage>();
+                    // get only submissions from default subverses, order by rank
+                    var frontpageSubmissions = (from message in _db.Submissions
+                                                where !message.IsArchived && !message.IsDeleted && message.Subverse1.IsAdminDisabled != true
+                                                join defaultsubverse in _db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
+                                                select message)
+                                                .OrderByDescending(s => s.Rank)
+                                                .Take(100)
+                                                .ToList();
 
-                        foreach (var item in frontpageSubmissions)
+                    var resultList = new List<ApiMessage>();
+
+                    foreach (var item in frontpageSubmissions)
+                    {
+                        var resultModel = new ApiMessage
                         {
-                            var resultModel = new ApiMessage
-                            {
-                                CommentCount = item.Comments.Count,
-                                Date = item.CreationDate,
-                                Dislikes = (int)item.DownCount,
-                                Id = item.ID,
-                                LastEditDate = item.LastEditDate,
-                                Likes = (int)item.UpCount,
-                                Linkdescription = item.LinkDescription,
-                                MessageContent = item.Content
-                            };
+                            CommentCount = item.Comments.Count,
+                            Date = item.CreationDate,
+                            Dislikes = (int)item.DownCount,
+                            Id = item.ID,
+                            LastEditDate = item.LastEditDate,
+                            Likes = (int)item.UpCount,
+                            Linkdescription = item.LinkDescription,
+                            MessageContent = item.Content
+                        };
 
-                            if (item.IsAnonymized || item.Subverse1.IsAnonymized)
-                            {
-                                resultModel.Name = item.ID.ToString();
-                            }
-                            else
-                            {
-                                resultModel.Name = item.UserName;
-                            }
-                            resultModel.Rank = item.Rank;
-                            resultModel.Subverse = item.Subverse;
-                            resultModel.Thumbnail = item.Thumbnail;
-                            resultModel.Title = item.Title;
-                            resultModel.Type = item.Type;
-
-                            resultList.Add(resultModel);
+                        if (item.IsAnonymized || item.Subverse1.IsAnonymized)
+                        {
+                            resultModel.Name = item.ID.ToString();
                         }
+                        else
+                        {
+                            resultModel.Name = item.UserName;
+                        }
+                        resultModel.Rank = item.Rank;
+                        resultModel.Subverse = item.Subverse;
+                        resultModel.Thumbnail = item.Thumbnail;
+                        resultModel.Title = item.Title;
+                        resultModel.Type = item.Type;
 
-                        return resultList;
+                        resultList.Add(resultModel);
+                    }
+
+                    return resultList;
                 }), TimeSpan.FromMinutes(5), 4);
             }
             return (IEnumerable<ApiMessage>)cacheData;
@@ -168,7 +171,8 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<ApiMessage> SubverseFrontpage(string subverse)
         {
-            if (String.IsNullOrEmpty(subverse)) {
+            if (String.IsNullOrEmpty(subverse))
+            {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
             //IAmAGate: Perf mods for caching
@@ -178,7 +182,8 @@ namespace Voat.Controllers
             if (cacheData == null)
             {
 
-                cacheData = CacheHandler.Register(cacheKey, new Func<object>(() => {
+                cacheData = CacheHandler.Register(cacheKey, new Func<object>(() =>
+                {
                     // get only submissions from given subverses, order by rank - ignoring messages in any given banned subverse
                     var frontpageSubmissions = (from message in _db.Submissions
                                                 where !message.IsDeleted && message.Subverse == subverse && message.Subverse1.IsAdminDisabled != true
@@ -228,12 +233,13 @@ namespace Voat.Controllers
                 }), TimeSpan.FromMinutes(5), 2);
             }
             //means we didn't find one.
-            if (cacheData == null) {
+            if (cacheData == null)
+            {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
             return (IEnumerable<ApiMessage>)cacheData;
         }
-        
+
         // GET api/singlesubmission
         /// <summary>
         ///  This API returns a single submission for a given submission ID.
@@ -285,7 +291,8 @@ namespace Voat.Controllers
                   }
               }), TimeSpan.FromMinutes(5), 2);
 
-            if (singleSubmission == null) {
+            if (singleSubmission == null)
+            {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
             return singleSubmission;
@@ -326,7 +333,7 @@ namespace Voat.Controllers
             else
             {
                 resultModel.Name = comment.UserName;
-            }            
+            }
 
             return resultModel;
         }
@@ -440,7 +447,7 @@ namespace Voat.Controllers
              }), TimeSpan.FromHours(5));
             return badgeInfo;
 
-           
+
         }
 
         // GET api/submissioncomments
@@ -467,10 +474,10 @@ namespace Voat.Controllers
                 {
 
                     var firstComments = from f in submission.Comments
-                                let commentScore = (int)f.UpCount - (int)f.DownCount
-                                where f.ParentID == null
-                                orderby commentScore descending
-                                select f;
+                                        let commentScore = (int)f.UpCount - (int)f.DownCount
+                                        where f.ParentID == null
+                                        orderby commentScore descending
+                                        select f;
 
                     var resultList = new List<ApiComment>();
 
@@ -501,7 +508,7 @@ namespace Voat.Controllers
                         else
                         {
                             resultModel.Name = firstComment.UserName;
-                        }                
+                        }
 
                         // TODO
                         // fetch child comments
@@ -510,12 +517,60 @@ namespace Voat.Controllers
                     }
 
                     return resultList;
-        
-                
+
+
                 }), TimeSpan.FromMinutes(5));
 
             }
             return cacheData;
+        }
+
+        // GET api/top100imagesByDate
+        [HttpGet]
+        public ImageBucket Top100ImagesByDate()
+        {
+            IEnumerable<ResponseItem> top100ImagesByDate = CacheHandler.Register<IEnumerable<ResponseItem>>("LegacyApi.Top100ImagesByDate",
+                () =>
+                {
+                    using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+                    {
+                        var query = from pro in db.Submissions.Where(s => s.Type == 2 && (s.Content.EndsWith(".png") || s.Content.EndsWith(".jpg")) && s.UpCount > 10 && !s.Subverse1.IsAdult).OrderByDescending(s => s.CreationDate).Take(100)
+                                    select new ResponseItem
+                                    {
+                                        SubmissionId = pro.ID,
+                                        Alt = pro.LinkDescription, 
+                                        Img = pro.Content,
+                                        DownVotes = pro.DownCount,
+                                        SubmittedBy = pro.UserName,
+                                        SubmittedOn = pro.CreationDate,
+                                        Subverse = pro.Subverse,
+                                        UpVotes = pro.UpCount
+                                    };
+                        return query.ToList();
+                    }
+                }, TimeSpan.FromMinutes(90), 0);
+
+            var bucket = new ImageBucket();
+            var itemList = top100ImagesByDate.ToList();
+            bucket.Items = itemList;
+            return bucket;
+        }
+
+        public class ResponseItem
+        {
+            public int SubmissionId { get; set; }
+            public string Img { get; set; }
+            public string Alt { get; set; }
+            public string Subverse { get; set; }
+            public string SubmittedBy { get; set; }
+            public DateTime SubmittedOn { get; set; }
+            public long UpVotes { get; set; }
+            public long DownVotes { get; set; }
+        }
+
+        public class ImageBucket
+        {
+            public List<ResponseItem> Items { get; set; }
         }
     }
 }

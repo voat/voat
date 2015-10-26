@@ -35,6 +35,7 @@ namespace Voat.Configuration
         public const string CacheDisabled = "cacheDisabled";
         public const string RegistrationDisabled = "registrationDisabled";
         public const string UseContentDeliveryNetwork = "useContentDeliveryNetwork";
+        public const string EmailServiceKey = "emailServiceKey";
     }
 
     public class LiveConfigurationManager
@@ -100,6 +101,7 @@ namespace Voat.Configuration
             {
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPublicKey, section[CONFIGURATION.RecaptchaPublicKey]);
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPrivateKey, section[CONFIGURATION.RecaptchaPrivateKey]);
+                SetValueIfPresent<string>(CONFIGURATION.EmailServiceKey, section[CONFIGURATION.EmailServiceKey]);
                 SetValueIfPresent<string>(CONFIGURATION.SiteName, section[CONFIGURATION.SiteName]);
                 SetValueIfPresent<string>(CONFIGURATION.SiteSlogan, section[CONFIGURATION.SiteSlogan]);
                 SetValueIfPresent<string>(CONFIGURATION.SiteDescription, section[CONFIGURATION.SiteDescription]);

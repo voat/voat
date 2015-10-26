@@ -76,12 +76,13 @@ namespace Voat.Controllers
             msg.Body = sb.ToString();
 
             // send the email with Partner Intent data
-            if (EmailUtility.SendEmail(msg))
-            {
-                msg.Dispose();
-                ViewBag.SelectedSubverse = string.Empty;
-                return View("~/Views/Partner/PartnerProgramIntentSent.cshtml");
-            }
+            //if (EmailUtility.SendEmail(msg))
+            //{
+            //    msg.Dispose();
+            //    ViewBag.SelectedSubverse = string.Empty;
+            //    return View("~/Views/Partner/PartnerProgramIntentSent.cshtml");
+            //}
+
             ViewBag.SelectedSubverse = string.Empty;
             return View("~/Views/Errors/Error.cshtml");
         }
