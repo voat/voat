@@ -353,18 +353,28 @@ namespace Voat.Controllers
                 // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
                 var submission = DataCache.Submission.Retrieve(commentModel.SubmissionID.Value);
                 var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                var userCcp = Karma.CommentKarma(User.Identity.Name);
                 commentModel.IsAnonymized = submission.IsAnonymized || subverse.IsAnonymized;
+   
+                // if user CCP is negative and account less than 6 months old, allow only x comment submissions per 24 hours
+                var userRegistrationDate = UserHelper.GetUserRegistrationDateTime(User.Identity.Name);
+                TimeSpan userMembershipTimeSpam = DateTime.Now - userRegistrationDate;
+                if (userMembershipTimeSpam.TotalDays < 180 && userCcp < 1)
+                {
+                    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
+                    if (quotaUsed)
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
+                    }
+                }
 
                 // if user CCP is < 50, allow only X comment submissions per 24 hours
-                var userCcp = Karma.CommentKarma(User.Identity.Name);
                 if (userCcp <= -50)
                 {
                     var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
                     if (quotaUsed)
                     {
                         return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
-                        //ModelState.AddModelError("", "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore + " comment(s) per 24 hours.");
-                        //return View();
                     }
                 }
 

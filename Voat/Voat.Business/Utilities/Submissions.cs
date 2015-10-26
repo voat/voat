@@ -252,9 +252,9 @@ namespace Voat.Utilities
                 }
             }
 
-            // if user CCP or SCP is less than -50, allow only X submissions per 24 hours
+            // if user CCP or SCP is less than -10, allow only X submissions per 24 hours
             var userScp = Karma.LinkKarma(userName);
-            if (userCcp <= -50 || userScp <= -50)
+            if (userCcp <= -10 || userScp <= -10)
             {
                 var quotaUsed = UserHelper.UserDailyPostingQuotaForNegativeScoreUsed(userName);
                 if (quotaUsed)
