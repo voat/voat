@@ -511,8 +511,16 @@ namespace Voat.Controllers
                 if (userPreferences == null)
                 {
                     // create a new record for this user in userpreferences table
-                    tmpModel.Bio = model.Bio;
+                    tmpModel.DisableCSS = false;
+                    tmpModel.NightMode = false;
+                    tmpModel.Language = "en";
+                    tmpModel.OpenInNewWindow = false;
+                    tmpModel.EnableAdultContent = false;
+                    tmpModel.DisplayVotes = false;
+                    tmpModel.DisplaySubscriptions = false;
+                    tmpModel.UseSubscriptionsMenu = false;
                     tmpModel.UserName = User.Identity.Name;
+                    tmpModel.Bio = model.Bio;
                 }
 
                 if (model.Avatarfile != null && model.Avatarfile.ContentLength > 0)

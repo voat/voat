@@ -62,23 +62,22 @@ namespace Voat.Utilities
         {
             try
             {
-                // call upload to storage if CDN config is enabled
-                if (Settings.UseContentDeliveryNetwork)
-                {
-                    string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";
-                    if (FileExists(tempAvatarLocation, DestinationPathAvatars))
-                    {
-                        await UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
-
-                        // delete local file after uploading to CDN
-                        File.Delete(tempAvatarLocation);
-                    }
-                    return true;
-                }
-                
                 // store avatar locally
                 var originalImage = new KalikoImage(inputImage);
                 originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathAvatars + '\\' + userName + ".jpg", 90);
+                if (!Settings.UseContentDeliveryNetwork) return true;
+
+                // call upload to storage since CDN is enabled in config
+                string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";
+
+                // the avatar file was not found at expected path, abort
+                if (!FileExists(tempAvatarLocation, DestinationPathAvatars)) return false;
+
+                // upload to CDN
+                await UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
+
+                // delete local file after uploading to CDN
+                File.Delete(tempAvatarLocation);
                 return true;
             }
             catch (Exception ex)
@@ -216,7 +215,7 @@ namespace Voat.Utilities
             CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
-            return blobClient.GetContainerReference("thumbs").GetBlockBlobReference(blobName).Exists();  
+            return blobClient.GetContainerReference("thumbs").GetBlockBlobReference(blobName).Exists();
         }
 
         // validate the connection string information
