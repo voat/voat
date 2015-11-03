@@ -23,7 +23,7 @@ namespace Voat.Data.Models
     }
 
     // stores information about Voat partners
-    public class PartnerInformation
+    /*public class PartnerInformation
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -44,7 +44,7 @@ namespace Voat.Data.Models
         public string PartnerZip { get; set; }
         public string PartnerStreet { get; set; }
         public DateTime PartnerLastPaymentDate { get; set; }
-    }
+    }   */
 
     public class ApplicationDbContext : IdentityDbContext<VoatUser>
     {
