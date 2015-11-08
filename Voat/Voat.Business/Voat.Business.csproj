@@ -177,6 +177,7 @@
     <Compile Include="Utilities\AccountSecurity.cs" />
     <Compile Include="Utilities\BanningUtility.cs" />
     <Compile Include="Utilities\CacheHandler.cs" />
+    <Compile Include="Utilities\CloudStorageUtility.cs" />
     <Compile Include="Utilities\CommentCounter.cs" />
     <Compile Include="Utilities\Components\ContentFilters.cs" />
     <Compile Include="Utilities\Components\ContentProcessor.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="Utilities\CONSTANTS.cs" />
     <Compile Include="Utilities\DataCache.cs" />
     <Compile Include="Utilities\DateTimeUtility.cs" />
+    <Compile Include="Utilities\FileSystemUtility.cs" />
     <Compile Include="Utilities\Formatting.cs" />
     <Compile Include="Utilities\HashHandler.cs" />
     <Compile Include="Utilities\IpHashUtility.cs" />

@@ -7,10 +7,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-//using Submission = Voat.Data.Models.Submission;
+using Voat.Business.Utilities;
 using Voat.Configuration;
 
 namespace Voat.Utilities
@@ -45,9 +42,9 @@ namespace Voat.Utilities
             {
                 string tempThumbLocation = DestinationPathThumbs + '\\' + randomFileName + ".jpg";
 
-                if (FileExists(tempThumbLocation, DestinationPathThumbs))
+                if (FileSystemUtility.FileExists(tempThumbLocation, DestinationPathThumbs))
                 {
-                    await UploadBlobToStorageAsync(tempThumbLocation, "thumbs");
+                    await CloudStorageUtility.UploadBlobToStorageAsync(tempThumbLocation, "thumbs");
 
                     // delete local file after uploading to CDN
                     File.Delete(tempThumbLocation);
@@ -71,10 +68,10 @@ namespace Voat.Utilities
                 string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";
 
                 // the avatar file was not found at expected path, abort
-                if (!FileExists(tempAvatarLocation, DestinationPathAvatars)) return false;
+                if (!FileSystemUtility.FileExists(tempAvatarLocation, DestinationPathAvatars)) return false;
 
                 // upload to CDN
-                await UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
+                await CloudStorageUtility.UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
 
                 // delete local file after uploading to CDN
                 File.Delete(tempAvatarLocation);
@@ -98,7 +95,7 @@ namespace Voat.Utilities
                 do
                 {
                     rndFileName = Guid.NewGuid().ToString();
-                } while (BlobExists(rndFileName));
+                } while (CloudStorageUtility.BlobExists(rndFileName, "thumbs"));
 
                 rndFileName = Guid.NewGuid().ToString();
             }
@@ -107,19 +104,13 @@ namespace Voat.Utilities
                 do
                 {
                     rndFileName = Guid.NewGuid().ToString();
-                } while (FileExists(rndFileName, DestinationPathThumbs));
+                } while (FileSystemUtility.FileExists(rndFileName, DestinationPathThumbs));
             }
 
             return rndFileName;
         }
 
-        // Check if a file exists at given location.
-        private static bool FileExists(string fileName, string destinationPath)
-        {
-            var location = Path.Combine(destinationPath, fileName);
-
-            return (File.Exists(location));
-        }
+        
 
         // generate a thumbnail if submission is a direct link to image or video
         public static async Task<string> ThumbnailFromSubmissionModel(Data.Models.Submission submissionModel)
@@ -180,64 +171,6 @@ namespace Voat.Utilities
                 // thumnail generation failed, skip adding thumbnail
                 return null;
             }
-        }
-
-        // upload a blob to storage, requires full path
-        private static async Task UploadBlobToStorageAsync(string blobToUpload, string containerName)
-        {
-            // Retrieve storage account information from connection string
-            CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
-
-            // Create a blob client for interacting with the blob service.
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-            // Create a container for organizing blobs within the storage account.
-            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
-            try
-            {
-                await container.CreateIfNotExistsAsync();
-            }
-            catch (StorageException)
-            {
-                throw;
-            }
-
-            // allow public access to blobs in this container
-            await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
-
-            // Upload a BlockBlob to the newly created container, default mode: overwrite existing
-            CloudBlockBlob blockBlob = container.GetBlockBlobReference(Path.GetFileName(blobToUpload));
-            await blockBlob.UploadFromFileAsync(blobToUpload, FileMode.Open);
-        }
-
-        private static bool BlobExists(string blobName)
-        {
-            CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-            return blobClient.GetContainerReference("thumbs").GetBlockBlobReference(blobName).Exists();
-        }
-
-        // validate the connection string information
-        private static CloudStorageAccount CreateStorageAccountFromConnectionString(string storageConnectionString)
-        {
-            CloudStorageAccount storageAccount;
-            try
-            {
-                storageAccount = CloudStorageAccount.Parse(storageConnectionString);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Invalid storage account information provided. Please confirm the AccountName and AccountKey are valid in the app.config file - then restart the sample.");
-                throw;
-            }
-            catch (ArgumentException)
-            {
-                Console.WriteLine("Invalid storage account information provided. Please confirm the AccountName and AccountKey are valid in the app.config file - then restart the sample.");
-                throw;
-            }
-
-            return storageAccount;
         }
     }
 }
