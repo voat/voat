@@ -205,6 +205,22 @@ namespace Voat.Configuration
                 return (bool)configValues[CONFIGURATION.UseContentDeliveryNetwork];
             }
         }
+
+        public static string DestinationPathThumbs
+        {
+            get
+            {
+                return (string)configValues[CONFIGURATION.DestinationPathThumbs];
+            }
+        }
+
+        public static string DestinationPathAvatars
+        {
+            get
+            {
+                return (string)configValues[CONFIGURATION.DestinationPathAvatars];
+            }
+        }
         #endregion 
     }
 }

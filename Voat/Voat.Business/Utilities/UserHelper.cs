@@ -16,8 +16,10 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
+using Voat.Business.Utilities;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;
@@ -111,15 +113,35 @@ namespace Voat.Utilities
                         // delete private messages
                         db.PrivateMessages.RemoveRange(db.PrivateMessages.Where(pm => pm.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-                        // delete short bio if userprefs record exists for this user
+                        // delete user preferences
                         var userPrefs = db.UserPreferences.Find(userName);
                         if (userPrefs != null)
                         {
+                            // delete short bio
                             userPrefs.Bio = null;
-                        }
 
-                        // TODO: delete avatar
-                        // userPrefs.Avatar = ""
+                            // delete avatar
+                            if (userPrefs.Avatar != null)
+                            {
+                                var avatarFilename = userPrefs.Avatar;
+                                if (Settings.UseContentDeliveryNetwork)
+                                {
+                                    // try to delete from CDN
+                                    CloudStorageUtility.DeleteBlob(avatarFilename, "avatars");
+                                }
+                                else
+                                {
+                                    // try to remove from local FS
+                                    string tempAvatarLocation = Settings.DestinationPathAvatars + '\\' + userName + ".jpg";
+
+                                    // the avatar file was not found at expected path, abort
+                                    if (!FileSystemUtility.FileExists(tempAvatarLocation, Settings.DestinationPathAvatars)) return false;
+
+                                    // exec delete
+                                    File.Delete(tempAvatarLocation);
+                                }
+                            }
+                        }
                         
                         // TODO:
                         // keep this updated as new features are added (delete sets etc)
