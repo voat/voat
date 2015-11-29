@@ -122,7 +122,7 @@ namespace Voat.Controllers
             // check if subverse exists
             var targetSubverse = _db.Subverses.Find(submission.Subverse.Trim());
 
-            if (targetSubverse == null || submission.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase))
+            if (targetSubverse == null || targetSubverse.Name.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
                 return View("Submit");
