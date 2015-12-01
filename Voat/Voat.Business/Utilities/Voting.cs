@@ -92,8 +92,13 @@ namespace Voat.Utilities
                             double currentScore = submission.UpCount - submission.DownCount;
                             double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+
                             submission.Rank = newRank;
-                            
+
+                            // calculate relative rank
+                            var subCtr = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == submission.Subverse).Select(x => x.Rank).First();
+                            submission.RelativeRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
+
                             // register upvote
                             var tmpVotingTracker = new SubmissionVoteTracker
                             {
@@ -125,9 +130,13 @@ namespace Voat.Utilities
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
                             submission.Rank = newRank;
 
+                            // calculate relative rank
+                            var subCtr = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == submission.Subverse).Select(x => x.Rank).First();
+                            submission.RelativeRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
+
                             previousVote.VoteStatus = 1;
                             previousVote.CreationDate = DateTime.Now;
-                            
+
                             db.SaveChanges();
 
                             SendVoteNotification(submission.UserName, "downtoupvote");
@@ -143,6 +152,10 @@ namespace Voat.Utilities
                             double currentScore = submission.UpCount - submission.DownCount;
                             double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+
+                            // calculate relative rank
+                            var subCtr = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == submission.Subverse).Select(x => x.Rank).First();
+                            submission.RelativeRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
 
                             submission.Rank = newRank;
                             db.SubmissionVoteTrackers.Remove(previousVote);
@@ -184,7 +197,7 @@ namespace Voat.Utilities
                 {
                     return;
                 }
-                
+
                 // do not execute downvoting if user has insufficient CCP for target subverse
                 if (Karma.CommentKarmaForSubverse(userName, submission.Subverse) < submission.Subverse1.MinCCPForDownvote)
                 {
@@ -216,6 +229,10 @@ namespace Voat.Utilities
 
                             submission.Rank = newRank;
 
+                            // calculate relative rank
+                            var subCtr = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == submission.Subverse).Select(x => x.Rank).First();
+                            submission.RelativeRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
+
                             // register downvote
                             var tmpVotingTracker = new SubmissionVoteTracker
                             {
@@ -245,13 +262,17 @@ namespace Voat.Utilities
 
                             submission.Rank = newRank;
 
+                            // calculate relative rank
+                            var subCtr = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == submission.Subverse).Select(x => x.Rank).First();
+                            submission.RelativeRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
+
                             // register Turn DownVote To UpVote
                             var votingTracker = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userName);
 
-                           
+
                             previousVote.VoteStatus = -1;
                             previousVote.CreationDate = DateTime.Now;
-                            
+
                             db.SaveChanges();
 
                             SendVoteNotification(submission.UserName, "uptodownvote");
@@ -268,6 +289,10 @@ namespace Voat.Utilities
                             double currentScore = submission.UpCount - submission.DownCount;
                             double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
                             double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+
+                            // calculate relative rank
+                            var subCtr = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == submission.Subverse).Select(x => x.Rank).First();
+                            submission.RelativeRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
 
                             submission.Rank = newRank;
                             db.SubmissionVoteTrackers.Remove(previousVote);
@@ -331,5 +356,6 @@ namespace Voat.Utilities
             //        break;
             //}
         }
+                           
     }
 }

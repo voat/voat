@@ -27,5 +27,11 @@ namespace Voat.Utilities
 
             return double.IsNaN(newRank) ? 0 : Math.Round(newRank, 7);
         }
+
+        public static double CalculateNewRelativeRank(double rank, double subCtr)
+        {
+            double relativeRank = rank/subCtr;
+            return double.IsNaN(relativeRank) ? 0 : Math.Round(relativeRank, 7);
+        }
     }
 }

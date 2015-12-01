@@ -256,6 +256,7 @@
           <Property Name="IsAnonymized" Type="bit" Nullable="false" />
           <Property Name="Views" Type="float" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="RelativeRank" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
           <Key>
@@ -1161,6 +1162,7 @@
           <NavigationProperty Name="ViewStatistics" Relationship="Self.FK_Viewstatistics_Messages" FromRole="Submission" ToRole="ViewStatistic" />
           <NavigationProperty Name="SubmissionVoteTrackers" Relationship="Self.FK_Votingtracker_Messages" FromRole="Submission" ToRole="SubmissionVoteTracker" />
           <Property Name="Content" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="RelativeRank" Type="Double" Nullable="false" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
           <Key>
@@ -2090,6 +2092,7 @@
           <EntitySetMapping Name="Submissions">
             <EntityTypeMapping TypeName="Models.Submission">
               <MappingFragment StoreEntitySet="Submission">
+                <ScalarProperty Name="RelativeRank" ColumnName="RelativeRank" />
                 <ScalarProperty Name="Content" ColumnName="Content" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="IsArchived" ColumnName="IsArchived" />
