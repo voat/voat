@@ -38,11 +38,25 @@ namespace Voat.Utilities
 
             List<PrivateMessage> messages = new List<PrivateMessage>();
             MatchCollection col = Regex.Matches(recipientList, @"((?'prefix'@|u/|/u/|v/|/v/)?(?'recipient'[\w-.]+))", RegexOptions.IgnoreCase);
-
-            foreach (Match m in col)
+            if (col.Count <= 0)
             {
-                var recipient = m.Groups["recipient"].Value;
-                var prefix = m.Groups["prefix"].Value;
+                return false;
+            }
+
+            //Have to filter distinct because of spamming. If you copy a user name 
+            //1,000 times into the recipient list the previous 
+            //logic would send that user 1,000 messages. These guys find everything.
+            var filtered = (from x in col.Cast<Match>()
+                            select new
+                            {
+                                recipient = x.Groups["recipient"].Value,
+                                prefix = (x.Groups["prefix"].Value.ToLower().Contains("v") ? "v" : "") //stop users from sending multiple messages using diff prefixes @user, /u/user, and u/user 
+                            }).Distinct();
+
+            foreach (var m in filtered)
+            {
+                var recipient = m.recipient;
+                var prefix = m.prefix;
 
                 if (!String.IsNullOrEmpty(prefix) && prefix.ToLower().Contains("v"))
                 {
