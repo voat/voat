@@ -64,11 +64,16 @@ namespace Voat.Utilities
             return double.IsNaN(newRank) ? 0 : Math.Round(newRank, 7);
         }
 
-        public static double CalculateNewRelativeRank(double rank, double highestRankInSubverse)
+        public static double? CalculateNewRelativeRank(double rank, double? highestRankInSubverse)
         {
-            double relativeRank = rank / highestRankInSubverse;
+            var d = rank / highestRankInSubverse;
+            if (d != null)
+            {
+                double relativeRank = (double) d;
 
-            return double.IsNaN(relativeRank) ? 0 : Math.Round(relativeRank, 7);
+                return double.IsNaN(relativeRank) ? 0 : Math.Round(relativeRank, 7);
+            }
+            return null;
         }
     }
 }
