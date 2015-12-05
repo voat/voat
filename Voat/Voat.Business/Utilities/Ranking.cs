@@ -91,6 +91,9 @@ namespace Voat.Utilities
             {
                 submission.RelativeRank = relRank.Value;
             }
+
+            //update cache if higher rank that what's in there already
+            UpdateSubverseHighestRanking(submission.Subverse, newRank);
         }
     }
 }
