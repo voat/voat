@@ -89,19 +89,22 @@ namespace Voat.Utilities
                             if (ipVotedAlready.Any()) return;
 
                             submission.UpCount++;
-                            double currentScore = submission.UpCount - submission.DownCount;
-                            double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
-                            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
-                            submission.Rank = newRank;
+                            //double currentScore = submission.UpCount - submission.DownCount;
+                            //double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
+                            //double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
-                            // calculate relative rank
-                            var subCtr = Ranking.GetSubverseHighestRanking(submission.Subverse);
-                            var relRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
-                            if (relRank != null)
-                            {
-                                submission.RelativeRank = relRank.Value;
-                            }
+                            //submission.Rank = newRank;
+
+                            //// calculate relative rank
+                            //var subCtr = Ranking.GetSubverseHighestRanking(submission.Subverse);
+                            //var relRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
+                            //if (relRank != null)
+                            //{
+                            //    submission.RelativeRank = relRank.Value;
+                            //}
+                            Ranking.ReRankSubmission(submission);
+
 
                             // register upvote
                             var tmpVotingTracker = new SubmissionVoteTracker

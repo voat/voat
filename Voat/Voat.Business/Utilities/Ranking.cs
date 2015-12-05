@@ -75,5 +75,22 @@ namespace Voat.Utilities
             }
             return null;
         }
+
+        public static void ReRankSubmission(Submission submission)
+        {
+            double currentScore = submission.UpCount - submission.DownCount;
+            double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
+            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+
+            submission.Rank = newRank;
+
+            // calculate relative rank
+            var subCtr = Ranking.GetSubverseHighestRanking(submission.Subverse);
+            var relRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
+            if (relRank != null)
+            {
+                submission.RelativeRank = relRank.Value;
+            }
+        }
     }
 }
