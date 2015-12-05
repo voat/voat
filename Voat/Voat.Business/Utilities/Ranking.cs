@@ -18,26 +18,23 @@ using System.Linq;
 
 namespace Voat.Utilities
 {
-    //Simple object to store highest rank because we need to know submission ID to update it in cache
-    public class HighestRank
-    {
-        public double Rank { get; set; }
-        public int SubmissionID { get; set; }
-    }
-
     public static class Ranking
     {
         private static string GetHighestRankingCacheKey(string subverse)
         {
             return String.Format("subverse.{0}.highest-rank", subverse).ToLower();
         }
-        public static HighestRank GetSubverseHighestRanking(string subverse)
+        public static double? GetSubverseHighestRanking(string subverse)
         {
-            var highestRank =  CacheHandler.Register(GetHighestRankingCacheKey(subverse), new Func<HighestRank>(() => {
+            var highestRank =  CacheHandler.Register(GetHighestRankingCacheKey(subverse), new Func<double?>(() => {
                 using (var db = new voatEntities())
                 {
                     var submission = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == subverse).FirstOrDefault();
-                    return new HighestRank() { Rank = submission.Rank, SubmissionID = submission.ID };
+                    if (submission != null)
+                    {
+                        return submission.Rank;
+                    }
+                    return null;
                 }
             }), TimeSpan.FromMinutes(30));
 
@@ -50,16 +47,9 @@ namespace Voat.Utilities
 
             if (highestRankCacheEntry != null)
             {
-                if (highestRankCacheEntry.Rank < newRank)
+                if (highestRankCacheEntry < newRank)
                 {
-                    if (highestRankCacheEntry.SubmissionID != submissionID)
-                    {
-                        highestRankCacheEntry.SubmissionID = submissionID;
-                    }
-
-                    highestRankCacheEntry.Rank = newRank;
-
-                    CacheHandler.Replace(GetHighestRankingCacheKey(subverse), new Func<HighestRank, HighestRank>(current => highestRankCacheEntry));
+                    CacheHandler.Replace(GetHighestRankingCacheKey(subverse), new Func<double?, double?>(current => highestRankCacheEntry));
                 }
             }
         }
