@@ -76,17 +76,17 @@ namespace Voat.Utilities
             return null;
         }
 
-        public static void ReRankSubmission(Submission submission)
+        public static void RerankSubmission(Submission submission)
         {
             double currentScore = submission.UpCount - submission.DownCount;
             double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
-            double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+            double newRank = CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
             submission.Rank = newRank;
 
             // calculate relative rank
-            var subCtr = Ranking.GetSubverseHighestRanking(submission.Subverse);
-            var relRank = Ranking.CalculateNewRelativeRank(newRank, subCtr);
+            var subCtr = GetSubverseHighestRanking(submission.Subverse);
+            var relRank = CalculateNewRelativeRank(newRank, subCtr);
             if (relRank != null)
             {
                 submission.RelativeRank = relRank.Value;
