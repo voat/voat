@@ -370,7 +370,7 @@ namespace Voat.Controllers
                                                                    where !message.IsArchived && !message.IsDeleted
                                                                    where !(from bu in db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                                    join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
-                                                                   select message).OrderByDescending(s => s.Rank);
+                                                                   select message).OrderByDescending(s => s.RelativeRank);
 
                                 return submissions.Where(s => s.StickiedSubmission.SubmissionID != s.ID).Skip(pageNumber * pageSize).Take(pageSize).ToList();
 
