@@ -41,7 +41,7 @@ namespace Voat.Utilities
             return highestRank;
 
         }
-        public static void UpdateSubverseHighestRanking(string subverse, int submissionID, double newRank)
+        public static void UpdateSubverseHighestRanking(string subverse, double newRank)
         {
             var highestRankCacheEntry = GetSubverseHighestRanking(subverse);
 
