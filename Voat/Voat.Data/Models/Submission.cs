@@ -43,6 +43,7 @@ namespace Voat.Data.Models
         public double Views { get; set; }
         public bool IsDeleted { get; set; }
         public string Content { get; set; }
+        public double RelativeRank { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }
