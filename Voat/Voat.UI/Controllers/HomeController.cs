@@ -254,7 +254,7 @@ namespace Voat.Controllers
             }
 
             // show saved                        
-            if (whattodisplay != null && whattodisplay == "saved" && User.Identity.IsAuthenticated && User.Identity.Name == id)
+            if (whattodisplay != null && whattodisplay == "saved" && User.Identity.IsAuthenticated && User.Identity.Name.Equals(id, StringComparison.OrdinalIgnoreCase))
             {
                 IQueryable<SavedItem> savedSubmissions = (from m in _db.Submissions
                                                           join s in _db.SubmissionSaveTrackers on m.ID equals s.SubmissionID
