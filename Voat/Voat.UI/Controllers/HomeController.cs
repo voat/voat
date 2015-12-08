@@ -364,11 +364,11 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                             {
-                                // get only submissions from default subverses not older than 48 hours, order by relative rank
-                                var startDate = DateTime.Now.Add(new TimeSpan(0, -48, 0, 0, 0));
+                                // get only submissions from default subverses not older than 24 hours, order by relative rank
+                                var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
 
                                 IQueryable<Submission> submissions = (from message in db.Submissions.AsNoTracking()
-                                                                   where !message.IsArchived && !message.IsDeleted && message.UpCount >= 10 && message.CreationDate >= startDate && message.CreationDate <= DateTime.Now
+                                                                   where !message.IsArchived && !message.IsDeleted && message.UpCount >= 3 && message.CreationDate >= startDate && message.CreationDate <= DateTime.Now
                                                                    where !(from bu in db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                                    join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
                                                                    select message).OrderByDescending(s => s.RelativeRank);
