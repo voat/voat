@@ -29,6 +29,7 @@
     <div id="siteTable" class="sitetable nestedlisting">
         @Html.Partial("~/Views/Shared/Comments/_CommentBucket.cshtml", Model, new ViewDataDictionary {
             { "VoteCache", ViewBag.VoteCache },
+            { "SavedCommentCache", ViewBag.SavedCommentCache },
             { "CCP", ViewBag.CCP }})
     </div>
 </div>
