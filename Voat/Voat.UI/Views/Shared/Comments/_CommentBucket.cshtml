@@ -21,13 +21,14 @@
         {
             continue;
         }
-        @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, 
-        new ViewDataDictionary { 
-            { "VoteCache", ViewBag.VoteCache }, 
-            { "CommentId", comment.ID }, 
-            { "CCP", ViewBag.CCP }, 
+        @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model,
+        new ViewDataDictionary {
+            { "VoteCache", ViewBag.VoteCache },
+            { "SavedCommentCache", ViewBag.SavedCommentCache },
+            { "CommentId", comment.ID },
+            { "CCP", ViewBag.CCP },
             { "NestingCount", 0 },
-            { "ParentIsHidden", false } 
+            { "ParentIsHidden", false }
         })
     }
     if (Model.TotalInDisplayBranch > @Model.EndingIndex)

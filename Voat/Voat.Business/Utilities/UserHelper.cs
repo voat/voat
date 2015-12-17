@@ -16,6 +16,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -169,27 +170,21 @@ namespace Voat.Utilities
             }
         }
 
-        // check if given user is moderator for a given subverse
+        //Check if given user is moderator for a given subverse
+        //This method gets called numerous times from views. Refactoring.
         public static bool IsUserSubverseModerator(string userName, string subverse)
         {
-            using (var db = new voatEntities())
+            string key = String.Format("{0}-{1}", userName, subverse).ToLower();
+            bool? isMod = (bool?)System.Web.HttpContext.Current.Items[key];
+            if (!isMod.HasValue)
             {
-                var subverseModerator = db.SubverseModerators.FirstOrDefault(n => n.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 2);
-                var subverseOwner =     db.SubverseModerators.FirstOrDefault(n => n.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Power == 1);
-
-                if (subverseModerator != null && subverseModerator.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                using (var db = new voatEntities())
                 {
-                    return true;
+                    isMod = db.SubverseModerators.Any(n => n.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) && n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                    System.Web.HttpContext.Current.Items[key] = isMod;
                 }
-
-                // subverse owners are by default also moderators
-                if (subverseOwner != null && subverseOwner.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-
-                return false;
             }
+            return isMod.Value;
         }
 
         // check if given user is subscribed to a given subverse
@@ -422,11 +417,8 @@ namespace Voat.Utilities
         // check if a given user does not want to see custom CSS styles
         public static bool CustomCssDisabledForUser(string userName)
         {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserPreferences.Find(userName);
-                return result != null && result.DisableCSS;
-            }
+            UserPreference result = GetUserPreferences(userName);
+            return result != null && result.DisableCSS;
         }
         
         // check which theme style user selected
@@ -449,14 +441,11 @@ namespace Voat.Utilities
             }
             else
             {
-                if (!String.IsNullOrEmpty(userName)) { 
-                    using (var db = new voatEntities())
+                if (!String.IsNullOrEmpty(userName)) {
+                    UserPreference result = GetUserPreferences(userName);
+                    if (result != null)
                     {
-                        var result = db.UserPreferences.Find(userName);
-                        if (result != null)
-                        {
-                            theme = result.NightMode ? "dark" : "light";
-                        }
+                        theme = result.NightMode ? "dark" : "light";
                     }
                 }
             }
@@ -466,23 +455,33 @@ namespace Voat.Utilities
         // check if a given user wants to see NSFW (adult) content
         public static bool AdultContentEnabled(string userName)
         {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserPreferences.Find(userName);
-                return result != null && result.EnableAdultContent;
-            }
+            UserPreference result = GetUserPreferences(userName);
+            return result != null && result.EnableAdultContent;
         }
 
         // check if a given user wants to open links in new window
         public static bool LinksInNewWindow(string userName)
         {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserPreferences.Find(userName);
-                return result != null && result.OpenInNewWindow;
-            }
-        }
 
+            UserPreference pref = GetUserPreferences(userName);
+            return pref != null && pref.OpenInNewWindow;
+
+        }
+        //preferences get called from views, so this method caches prefs in the context so each call only queries once
+        private static UserPreference GetUserPreferences(string userName)
+        {
+            UserPreference pref = (UserPreference)System.Web.HttpContext.Current.Items["UserPreferences"];
+            if (pref == null)
+            {
+                using (var db = new voatEntities())
+                {
+                    Debug.Print(String.Format("Loading preferences for {0}", userName));
+                    pref = db.UserPreferences.Find(userName);
+                    System.Web.HttpContext.Current.Items["UserPreferences"] = pref;
+                }
+            }
+            return pref;
+        }
         // check how many votes a user has used in the past 24 hours
         // TODO: this is executed 25 times for frontpage, needs to be redesigned as follows:
         // - only call this function if user is attempting to vote
@@ -618,21 +617,16 @@ namespace Voat.Utilities
         // check if a given user wants to publicly display his subscriptions
         public static bool PublicSubscriptionsEnabled(string userName)
         {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserPreferences.Find(userName);
-                return result != null && result.DisplaySubscriptions;
-            }
+            UserPreference result = GetUserPreferences(userName);
+            return result != null && result.DisplaySubscriptions;
         }
 
         // check if a given user wants to replace default menu bar with subscriptions
         public static bool Topmenu_From_Subscriptions(string userName)
         {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserPreferences.Find(userName);
-                return result != null && result.UseSubscriptionsMenu;
-            }
+            UserPreference result = GetUserPreferences(userName);
+            return result != null && result.UseSubscriptionsMenu;
+            
         }
 
         // get short bio for a given user
@@ -640,11 +634,13 @@ namespace Voat.Utilities
         {
             const string placeHolderMessage = "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.";
 
-            using (var db = new voatEntities())
+            UserPreference result = GetUserPreferences(userName);
+            if (result == null)
             {
-                var result = db.UserPreferences.Find(userName);
-                if (result == null) return placeHolderMessage;
-
+                return placeHolderMessage;
+            }
+            else
+            {
                 return result.Bio ?? placeHolderMessage;
             }
         }
@@ -652,11 +648,8 @@ namespace Voat.Utilities
         // get avatar for a given user
         public static string HasAvatar(string userName)
         {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserPreferences.Find(userName);
-                return result == null ? null : result.Avatar;
-            }
+            UserPreference result = GetUserPreferences(userName);
+            return result == null ? null : result.Avatar;
         }
 
         // check if a given user is subscribed to a given set
