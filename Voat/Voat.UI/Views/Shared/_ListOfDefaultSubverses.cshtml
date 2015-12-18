@@ -55,10 +55,19 @@
                     <span class="separator">-</span>
                     <a href="/">front</a>
                 </li>
+              
                 <li>
                     <span class="separator">-</span>
                     <a href="/v/all">all</a>
                 </li>
+                @* Add Guest Relative Ranking Front for logged in users to access *@
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li>
+                        <span class="separator">-</span>
+                        <a href="/?frontpage=guest">default</a>
+                    </li>
+                }
                 <li>
                     <span class="separator">-</span>
                     <a href="/random" class="random">random</a>
