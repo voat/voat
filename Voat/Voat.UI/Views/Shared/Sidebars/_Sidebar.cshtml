@@ -134,7 +134,10 @@
                     </ul>
                 </div>
             </div>
-            @Html.Partial("Sidebars/_SidebarChat", Model)
+            @if (!Settings.SignalRDisabled)
+            {
+                @Html.Partial("Sidebars/_SidebarChat", Model)
+            }
             <div class="spacer spacersection">
                 <div class="sidecontentbox ">
                     <div class="title">

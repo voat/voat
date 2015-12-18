@@ -33,13 +33,16 @@
             </a>
         </div>
     </div>
-    <div class="spacer">
-        <div class="sidebox create">
-            <a href="/sets/create" class="btn-whoaverse btn-block">
-                Create a new set
-            </a>
+    @if (!Settings.SetsDisabled)
+    {
+        <div class="spacer">
+            <div class="sidebox create">
+                <a href="/sets/create" class="btn-whoaverse btn-block">
+                    Create a new set
+                </a>
+            </div>
         </div>
-    </div>
+   }
     <div class="spacer">
         <div class="sidebox">
             <a href="/p/partnerprogram" class="btn-whoaverse btn-block">
