@@ -59,7 +59,7 @@
                     <div id="commentContainer-@comment.ID">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
-                                From: <a href="@commentAuthorUrl">@commentAuthorName</a> | Sent: @comment.CreationDate
+                                From: <a href="@commentAuthorUrl">@commentAuthorName</a> | Sent: @Age.ToRelative(comment.CreationDate) ago on @comment.CreationDate
                             </div>
                             <div class="panel panel-heading-messagetitle">
                                 @if (comment.Submission.Type == 1)
