@@ -37,7 +37,7 @@
                     <div id="messageContainer-@message.ID">
                         <div class="panel panel-default">
                             <div class="panel panel-heading">
-                                Recipient: <a href="/u/@message.Recipient">@message.Recipient</a> | Sent: @message.CreationDate
+                                Recipient: <a href="/u/@message.Recipient">@message.Recipient</a> | Sent: @Age.ToRelative(message.CreationDate) ago on @message.CreationDate
                             </div>
                             <div class="panel panel-heading-messagetitle">
                                 <b>@message.Subject</b>
