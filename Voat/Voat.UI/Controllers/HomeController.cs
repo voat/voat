@@ -354,7 +354,7 @@ namespace Voat.Controllers
                 }
                 else
                 {
-                    IList<Submission> cacheData = GetGuestFrontPage(pageSize, pageNumber);
+                     IList<Submission> cacheData = GetGuestFrontPage(pageSize, pageNumber);
 
                     PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>((IList<Submission>)cacheData, pageNumber, pageSize, 50000);
 

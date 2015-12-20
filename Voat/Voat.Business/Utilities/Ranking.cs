@@ -66,7 +66,8 @@ namespace Voat.Utilities
 
         public static double? CalculateNewRelativeRank(double rank, double? highestRankInSubverse)
         {
-            var d = rank / highestRankInSubverse;
+            //Handle zero highest rank, return current rank.
+            var d = rank / (highestRankInSubverse == 0.0 ? 1 : highestRankInSubverse);
             if (d != null)
             {
                 double relativeRank = (double) d;
