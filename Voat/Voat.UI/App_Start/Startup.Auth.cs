@@ -3,6 +3,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 using System;
+using System.Web.Configuration;
 
 namespace Voat
 {
@@ -17,6 +18,7 @@ namespace Voat
                 SlidingExpiration = true,                
                 ExpireTimeSpan = TimeSpan.FromDays(30.0),
                 CookieName = "WhoaverseLogin", //We keeping it old school with the cookies.
+                CookieDomain = WebConfigurationManager.AppSettings["CookieDomain"],
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login")                
             });
