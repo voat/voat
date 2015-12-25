@@ -13,15 +13,23 @@ namespace Voat
         public void ConfigureAuth(IAppBuilder app)
         {
             // Enable the application to use a cookie to store information for the signed in user
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            var settings = new CookieAuthenticationOptions
             {
-                SlidingExpiration = true,                
+                SlidingExpiration = true,
                 ExpireTimeSpan = TimeSpan.FromDays(30.0),
                 CookieName = "WhoaverseLogin", //We keeping it old school with the cookies.
-                CookieDomain = WebConfigurationManager.AppSettings["CookieDomain"],
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-                LoginPath = new PathString("/Account/Login")                
-            });
+                LoginPath = new PathString("/Account/Login")
+            };
+
+            //for local testing don't set cookiedomain
+            var domain = WebConfigurationManager.AppSettings["CookieDomain"];
+            if (!String.IsNullOrEmpty(domain))
+            {
+                settings.CookieDomain = domain;
+            }
+
+            app.UseCookieAuthentication(settings);
 
         }
     }
