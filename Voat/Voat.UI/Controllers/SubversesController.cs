@@ -618,6 +618,7 @@ namespace Voat.Controllers
         {
             // sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
+            ViewBag.Time = time;
             ViewBag.SelectedSubverse = subversetoshow;
             ViewBag.Title = subversetoshow;
 
