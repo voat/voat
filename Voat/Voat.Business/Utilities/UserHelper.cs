@@ -81,6 +81,7 @@ namespace Voat.Utilities
                         {
                             c.IsDeleted = true;
                             c.Content = "deleted by user";
+                            c.UserName = "deleted";
                         }
                         db.SaveChanges();
 
@@ -93,9 +94,11 @@ namespace Voat.Utilities
                                 s.IsDeleted = true;
                                 s.Content = "deleted by user";
                                 s.Title = "deleted by user";
+                                s.UserName = "deleted";
                             }
                             else
                             {
+                                s.UserName = "deleted";
                                 s.IsDeleted = true;
                                 s.LinkDescription = "deleted by user";
                                 s.Content = "http://voat.co";
@@ -528,7 +531,7 @@ namespace Voat.Utilities
                          .ToList();
 
                 // total comment count
-                var comments = db.Comments.Count(a => a.UserName == userName);
+                var comments = db.Comments.Count(a => a.UserName == userName && !a.IsDeleted);
 
                 // voting habits
                 var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
