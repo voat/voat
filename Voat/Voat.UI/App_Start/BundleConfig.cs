@@ -23,23 +23,23 @@ namespace Voat
         {
             #region script bundles
             bundles.Add(new ScriptBundle("~/bundles/javascript").Include(
-                        "~/Scripts/modernizr-*",
-                        "~/Scripts/jquery-{version}.js",
-                        "~/Scripts/jquery-ui.js",
-                        "~/Scripts/jquery.tooltipster.js",
-                        "~/Scripts/jquery.unobtrusive*",
-                        "~/Scripts/jquery.validate*",
+                        "~/Scripts/libs/modernizr-*",
+                        "~/Scripts/libs/jquery-{version}.js",
+                        "~/Scripts/libs/jquery-ui.js",
+                        "~/Scripts/libs/jquery.tooltipster.js",
+                        "~/Scripts/libs/jquery.unobtrusive*",
+                        "~/Scripts/libs/jquery.validate*",
                         "~/Scripts/voat.ui.js",
                         "~/Scripts/voat.js",
                         "~/Scripts/markdownEditor.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-                        "~/Scripts/jquery.validate*"));
+                        "~/Scripts/libs/jquery.validate*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js",
-                      "~/Scripts/respond.js"));
+                      "~/Scripts/libs/bootstrap.js",
+                      "~/Scripts/libs/respond.js"));
             #endregion
 
             #region style bundles
