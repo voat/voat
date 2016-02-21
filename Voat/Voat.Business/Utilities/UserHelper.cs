@@ -793,7 +793,7 @@ namespace Voat.Utilities
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
             int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
             int userScp = Karma.LinkKarma(userName);
-            if (memberInDays > 30 && userScp >= 50)
+            if (memberInDays > 30 || userScp >= 50)
             {
                 return false;
             }
@@ -825,7 +825,7 @@ namespace Voat.Utilities
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
             int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
             int userScp = Karma.LinkKarma(userName);
-            if (memberInDays > 30 && userScp >= 50)
+            if (memberInDays > 30 || userScp >= 50)
             {
                 return false;
             }
