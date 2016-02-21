@@ -118,6 +118,18 @@
     <div class="spacer">
         <div class="sidecontentbox ">
             <div class="title">
+                <h1 class="alert-h1">MODERATION LOGS</h1>
+            </div>
+            <ul class="content">
+                <li><a rel="nofollow" href="/v/@Model.Name/modlog/deleted">Removed submissions</a></li>
+                <li><a rel="nofollow" href="/v/@Model.Name/modlog/deletedcomments">Removed comments</a></li>
+                <li><a rel="nofollow" href="/v/@Model.Name/modlog/bannedusers">Banned users</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="spacer">
+        <div class="sidecontentbox ">
+            <div class="title">
                 <h1 class="alert-h1">ANNOUNCEMENTS</h1>
             </div>
             <div class="sidecontentbox content">
@@ -125,7 +137,7 @@
             </div>
         </div>
     </div>
-    @if(User.Identity.IsAuthenticated && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Name))
+    @if (User.Identity.IsAuthenticated && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Name))
     {
         @Html.Partial("Sidebars/_SidebarModToolbox")
     }
