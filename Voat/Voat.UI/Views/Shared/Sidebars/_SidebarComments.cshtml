@@ -77,7 +77,9 @@
             </p>
             @if (User.Identity.IsAuthenticated && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Name))
             {
-                <div class="leavemoderator">you are a moderator of this subverse. (<a href="/v/@Model.Name/about/moderators/resign">change</a>)</div>
+                <div class="leavemoderator">
+                    you are a moderator of this subverse. (<a href="/v/@Model.Name/about/moderators/resign">change</a>)
+                </div>
             }
             <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxxx">
                 <input name="submission-id" value="xxxx" type="hidden">
@@ -99,6 +101,18 @@
                 }
             </div>
             <div class="clear">
+            </div>
+        </div>
+    </div>
+    <div class="spacer">
+        <div class="sidecontentbox ">
+            <div class="title">
+                <h1 class="alert-h1">Advertize on Voat</h1>
+            </div>
+            <div class="sidecontentbox content">
+                <p>
+                    Your Ad here? E-mail hello@voat.co.
+                </p>
             </div>
         </div>
     </div>
