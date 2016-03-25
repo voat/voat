@@ -792,7 +792,6 @@ namespace Voat.Controllers
             return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
         }
 
-        [OutputCache(Duration = 3600, VaryByParam = "none")]
         public ActionResult Subversenotfound()
         {
             ViewBag.SelectedSubverse = "404";
