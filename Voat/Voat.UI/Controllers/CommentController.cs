@@ -91,19 +91,21 @@ namespace Voat.Controllers
             Response.StatusCode = 200;
             return Json("Saving ok", JsonRequestBehavior.AllowGet);
         }
-        
-        private List<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID) {
+
+        private List<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID)
+        {
             List<CommentVoteTracker> vCache = new List<CommentVoteTracker>();
 
-            if (User.Identity.IsAuthenticated){
+            if (User.Identity.IsAuthenticated)
+            {
                 vCache = (from cv in _db.CommentVoteTrackers.AsNoTracking()
-                            join c in _db.Comments on cv.CommentID equals c.ID
-                            where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                            select cv).ToList();    
+                          join c in _db.Comments on cv.CommentID equals c.ID
+                          where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                          select cv).ToList();
             }
             return vCache;
         }
-        
+
         private List<CommentSaveTracker> UserSavedCommentsBySubmission(int submissionID)
         {
             List<CommentSaveTracker> vCache = new List<CommentSaveTracker>();
@@ -117,12 +119,12 @@ namespace Voat.Controllers
             }
             return vCache;
         }
-        
+
         // GET: comments for a given submission
         public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
         {
-            #region Validation 
-            
+            #region Validation
+
             if (id == null)
             {
                 return View("~/Views/Errors/Error.cshtml");
@@ -156,7 +158,7 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/SubverseDisabled.cshtml");
             }
 
-            #endregion 
+            #endregion
 
             ViewBag.SelectedSubverse = subverse.Name;
             ViewBag.SubverseAnonymized = subverse.IsAnonymized;
@@ -179,7 +181,7 @@ namespace Voat.Controllers
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
 
-          
+
 
             // experimental: register a new session for this subverse
             string clientIpAddress = String.Empty;
@@ -237,17 +239,20 @@ namespace Voat.Controllers
             IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable().Where(x => x.ParentID == null);
             model.TotalInDisplayBranch = displayTree.Count();
 
-            if (model.Sort == CommentSort.Top) {
+            if (model.Sort == CommentSort.Top)
+            {
                 displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount).Take(model.EndingIndex);
-            } else {
+            }
+            else
+            {
                 displayTree = displayTree.OrderByDescending(x => x.CreationDate).Take(model.EndingIndex);
             }
             model.DisplayTree = displayTree;
-           
+
 
             return View("~/Views/Home/Comments.cshtml", model);
         }
-        
+
         // url: "/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + count + "/" + nestingLevel + "/" + sort + "/",
         // GET: comments for a given submission
         public ActionResult BucketOfComments(int submissionId, int? parentId, string command, int startingIndex, string sort)
@@ -282,7 +287,7 @@ namespace Voat.Controllers
             }
 
             #endregion
-            
+
             ViewBag.SelectedSubverse = subverse.Name;
             ViewBag.SubverseAnonymized = subverse.IsAnonymized;
 
@@ -309,7 +314,7 @@ namespace Voat.Controllers
                 Sort = (CommentSort)Enum.Parse(typeof(CommentSort), SortingMode, true)
             };
             model.CollapseSiblingThreshold = 5;
-           
+
             IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable();
             displayTree = displayTree.Where(x => x.ParentID == parentId);
             model.TotalInDisplayBranch = displayTree.Count();
@@ -318,13 +323,16 @@ namespace Voat.Controllers
             model.EndingIndex = Math.Min(model.StartingIndex + model.CollapseSiblingThreshold, model.TotalInDisplayBranch);
 
 
-            if (model.Sort == CommentSort.Top){
+            if (model.Sort == CommentSort.Top)
+            {
                 displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount);
-            } else {
+            }
+            else
+            {
                 displayTree = displayTree.OrderByDescending(x => x.CreationDate);
             }
 
-            displayTree = displayTree.Skip(model.StartingIndex).Take(model.Count); 
+            displayTree = displayTree.Skip(model.StartingIndex).Take(model.Count);
 
             model.DisplayTree = displayTree;
 
@@ -358,11 +366,11 @@ namespace Voat.Controllers
                 var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
                 var userCcp = Karma.CommentKarma(User.Identity.Name);
                 commentModel.IsAnonymized = submission.IsAnonymized || subverse.IsAnonymized;
-   
+
                 // if user CCP is negative and account less than 6 months old, allow only x comment submissions per 24 hours
                 var userRegistrationDate = UserHelper.GetUserRegistrationDateTime(User.Identity.Name);
-                TimeSpan userMembershipTimeSpam = DateTime.Now - userRegistrationDate;
-                if (userMembershipTimeSpam.TotalDays < 180 && userCcp < 1)
+                TimeSpan userMembershipTimeSpan = DateTime.Now - userRegistrationDate;
+                if (userMembershipTimeSpan.TotalDays < 180 && userCcp < 1)
                 {
                     var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
                     if (quotaUsed)
@@ -371,14 +379,32 @@ namespace Voat.Controllers
                     }
                 }
 
-                // if user CCP is < 50, allow only X comment submissions per 24 hours
-                if (userCcp <= -50)
+                // if user account is new, allow max X comments per hour
+                if (userMembershipTimeSpan.TotalDays < 7 && userCcp < 50)
                 {
-                    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
+                    var quotaUsed = UserHelper.UserHourlyCommentPostingQuotaUsed(User.Identity.Name);
                     if (quotaUsed)
                     {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your hourly comment quota. Your current quota is " + Settings.HourlyCommentPostingQuota.ToString() + " comment(s) per hour.");
                     }
+                }
+
+                // if user CCP is < 10, allow only X comment submissions per 24 hours
+                if (userMembershipTimeSpan.TotalDays < 7 && userCcp <= 10)
+                {
+                    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaUsed(User.Identity.Name);
+                    if (quotaUsed)
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuota.ToString() + " comment(s) per 24 hours.");
+                    }
+                }
+
+                // check for copypasta
+                // TODO: use Levenshtein distance algo or similar for better results
+                var copyPasta = UserHelper.SimilarCommentSubmittedRecently(User.Identity.Name, commentModel.Content);
+                if (copyPasta)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have recently submitted a similar comment. Please try to not use copy/paste so often.");
                 }
 
                 // check if author is banned, don't save the comment or send notifications if true
@@ -399,7 +425,7 @@ namespace Voat.Controllers
                     //save fully formatted content 
                     var formattedComment = Formatting.FormatMessage(commentModel.Content);
                     commentModel.FormattedContent = formattedComment;
-                    
+
                     _db.Comments.Add(commentModel);
 
                     await _db.SaveChangesAsync();
@@ -412,8 +438,9 @@ namespace Voat.Controllers
                     }
 
                     // send comment reply notification to parent comment author if the comment is not a new root comment
-                    await NotificationManager.SendCommentNotification(commentModel, 
-                        new Action<string>(recipient => {
+                    await NotificationManager.SendCommentNotification(commentModel,
+                        new Action<string>(recipient =>
+                        {
                             //get count of unread notifications
                             int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(recipient);
                             // send SignalR realtime notification to recipient
@@ -422,7 +449,7 @@ namespace Voat.Controllers
                         })
                     );
                 }
-                if (Request.IsAjaxRequest()) 
+                if (Request.IsAjaxRequest())
                 {
                     var comment = commentModel;
 
@@ -562,7 +589,7 @@ namespace Voat.Controllers
                     await _db.SaveChangesAsync();
                 }
             }
-            if (Request.IsAjaxRequest()) 
+            if (Request.IsAjaxRequest())
             {
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }

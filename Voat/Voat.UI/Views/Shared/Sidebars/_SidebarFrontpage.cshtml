@@ -110,26 +110,29 @@
                 <h1 class="alert-h1">Advertize on Voat</h1>
             </div>
             <div class="sidecontentbox content">
-                <p>
-                    Your Ad here? E-mail hello@voat.co.
-                </p>
+                <img src="/Graphics/voat-ad-placeholder.png" alt="Advertize on Voat" />
             </div>
         </div>
     </div>
     <div class="spacer">
         <div class="sidecontentbox ">
             <div class="title">
-                <h1 class="alert-h1">Days remaining</h1>
+                <h1 class="alert-h1">Help us keep Voat alive</h1>
             </div>
             <div class="sidecontentbox content">
                 <p>
                     @{
-                        var deadline = new DateTime(2016,6,15);
+                        var deadline = new DateTime(2016, 6, 15);
                         var today = DateTime.Today;
                         var daysLeft = (deadline - today).Days;
-                        <span>@daysLeft</span>
+                        <span>Voat has @daysLeft startup credit days remaining. If you can, please donate to help us keep Voat running and free. As a thank you, we will display a donor badge on your profile.</span>
+                        <span>You can also <a href="https://www.coinbase.com/voat">donate Bitcoin</a>.</span>
                     }
                 </p>
+                <form name="PrePage" method="post" action="https://Simplecheckout.authorize.net/payment/CatalogPayment.aspx">
+                    <input type="hidden" name="LinkId" value="816205ea-70d4-4a37-9541-f4a7aeafa0b1" />
+                    <input type="submit" value="Donate" class="btn-whoaverse btn-block contribute" />
+                </form> 
             </div>
         </div>
     </div>

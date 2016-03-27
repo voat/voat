@@ -17,6 +17,22 @@ namespace Voat.Configuration
             }
         }
 
+        public static int DailyCommentPostingQuota
+        {
+            get
+            {
+                return (int)configValues[CONFIGURATION.DailyCommentPostingQuota];
+            }
+        }
+
+        public static int HourlyCommentPostingQuota
+        {
+            get
+            {
+                return (int)configValues[CONFIGURATION.HourlyCommentPostingQuota];
+            }
+        }
+
         public static int DailyCrossPostingQuota
         {
             get
@@ -31,6 +47,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.DailyPostingQuotaForNegativeScore];
             }
         }
+
         public static int DailyPostingQuotaPerSub
         {
             get
