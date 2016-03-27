@@ -49,6 +49,9 @@ namespace Voat
             configuration.Routes.MapHttpRoute("API list banned hostnames", "api/bannedhostnames",
                 new { controller = "WebApi", action = "BannedHostnames" });
 
+            configuration.Routes.MapHttpRoute("API list banned user accounts", "api/bannedusers",
+                new { controller = "WebApi", action = "BannedUsers" });
+
             configuration.Routes.MapHttpRoute("API list top 200 subverses", "api/top200subverses",
                 new { controller = "WebApi", action = "Top200Subverses" });
 
