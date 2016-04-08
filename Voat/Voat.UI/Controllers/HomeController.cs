@@ -601,6 +601,13 @@ namespace Voat.Controllers
             }
         }
 
+        // GET: /advertize
+        public ActionResult Advertize()
+        {
+            ViewBag.SelectedSubverse = string.Empty;
+            return View("~/Views/Help/Advertize.cshtml");
+        }
+
         public ActionResult Welcome()
         {
             ViewBag.SelectedSubverse = string.Empty;

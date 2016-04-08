@@ -1,0 +1,14 @@
+﻿@model Voat.Models.ViewModels.AdViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="title">
+    <h1 class="alert-h1">Advertisement</h1>
+</div>
+<div class="sidecontentbox content">
+    <a href="@Model.DestinationUrl" target="_blank">
+        <img src="@Model.GraphicUrl" alt="@Model.Description" height="270" width="270"/>
+    </a>
+</div>

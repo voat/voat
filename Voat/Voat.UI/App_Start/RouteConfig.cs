@@ -39,6 +39,13 @@ namespace Voat
                 defaults: new { controller = "RSS", action = "RSS", subverseName = UrlParameter.Optional }                
             );
 
+            // /advertize
+            routes.MapRoute(
+                name: "advertize",
+                url: "advertize",
+                defaults: new { controller = "Home", action = "Advertize" }
+            );
+
             // /random
             routes.MapRoute(
                 name: "randomSubverse",

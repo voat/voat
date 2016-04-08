@@ -106,14 +106,9 @@
     </div>
     <div class="spacer">
         <div class="sidecontentbox ">
-            <div class="title">
-                <h1 class="alert-h1">Advertize on Voat</h1>
-            </div>
-            <div class="sidecontentbox content">
-                <p>
-                    Your Ad here? E-mail hello@voat.co.
-                </p>
-            </div>
+            @{
+                Html.RenderAction("RenderAd", "Ad", new { subverse = Model.Name });
+            }
         </div>
     </div>
     <div class="spacer">
