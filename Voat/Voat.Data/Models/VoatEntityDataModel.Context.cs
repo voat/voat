@@ -63,6 +63,7 @@ namespace Voat.Data.Models
         public virtual DbSet<UserSetList> UserSetLists { get; set; }
         public virtual DbSet<UserSetSubscription> UserSetSubscriptions { get; set; }
         public virtual DbSet<ViewStatistic> ViewStatistics { get; set; }
+        public virtual DbSet<Ad> Ads { get; set; }
     
         public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {

@@ -63,6 +63,7 @@
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Usersets" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetsubscriptions_Usersets" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="Models.Ad" Width="1.5" PointX="12.375" PointY="11.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
