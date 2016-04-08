@@ -79,6 +79,9 @@
   <ItemGroup>
     <Compile Include="Metadata\CommentMetaData.cs" />
     <Compile Include="Metadata\MessageMetaData.cs" />
+    <Compile Include="Models\Ad.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\AutoModComment.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
