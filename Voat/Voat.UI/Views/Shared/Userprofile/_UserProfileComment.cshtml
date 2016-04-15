@@ -21,10 +21,20 @@
         {
             if (!Model.Submission.IsDeleted)
             {
-                <p class="parent">
-                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
-                    <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a> in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
-                </p>
+                if (!Model.Submission.IsAnonymized)
+                {
+                    <p class="parent">
+                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
+                        <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a> in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                    </p>
+                }
+                else
+                {
+                    <p class="parent">
+                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
+                        <a href="#" class="author may-blank">@Model.SubmissionID</a> in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                    </p>
+                }
             }
             else
             {
@@ -38,11 +48,22 @@
         {
             if (!Model.Submission.IsDeleted)
             {
-                <p class="parent">
-                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
-                    <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a>
-                    in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
-                </p>
+                if (!Model.Submission.IsAnonymized)
+                {
+                    <p class="parent">
+                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                        <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a>
+                        in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                    </p>
+                }
+                else
+                {
+                    <p class="parent">
+                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                        <a href="#" class="author may-blank">@Model.SubmissionID</a>
+                        in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                    </p>
+                }
             }
             else
             {
@@ -61,13 +82,21 @@
         int commentScore = (int)(Model.UpCount - Model.DownCount);
 
         @*
-        area for voting icons
-        icons removed due to community request http://voat.co/v/ideasforvoat/comments/8212
+            area for voting icons
+            icons removed due to community request http://voat.co/v/ideasforvoat/comments/8212
         *@
 
         <div class="entry unvoted">
             <div class="collapsed" style="display: none">
-                <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.UserName" class="author gray submitter may-blank">@Model.UserName</a>
+                @if (!Model.IsAnonymized)
+                {
+                    <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.UserName" class="author gray submitter may-blank">@Model.UserName</a>
+                }
+                else
+                {
+                    <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.ID" class="author gray submitter may-blank">@Model.ID</a>
+                }
+
                 @if (Model.Submission.UserName == Model.UserName)
                 {
                     <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID">S</a>]</span>
@@ -78,7 +107,15 @@
             </div>
             <div class="noncollapsed">
                 <p class="tagline">
-                    <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="~/user/@Model.UserName" class="author submitter may-blank">@Model.UserName</a>
+                    @if (!Model.IsAnonymized)
+                    {
+                        <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="~/user/@Model.UserName" class="author submitter may-blank">@Model.UserName</a>
+                    }
+                    else
+                    {
+                        <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="#" class="author submitter may-blank">@Model.ID</a>
+                    }
+
                     @if (Model.Submission.UserName == Model.UserName)
                     {
                         <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID">S</a>]</span>

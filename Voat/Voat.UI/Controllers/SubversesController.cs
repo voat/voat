@@ -1564,6 +1564,7 @@ namespace Voat.Controllers
                 var subverse = DataCache.Subverse.Retrieve(subversetoshow);
                 if (subverse != null)
                 {
+                    ViewBag.SubverseAnonymized = subverse.IsAnonymized;
                     //HACK: Disable subverse
                     if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
                     {
