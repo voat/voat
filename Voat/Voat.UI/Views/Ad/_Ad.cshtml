@@ -9,6 +9,12 @@
 </div>
 <div class="sidecontentbox content">
     <a href="@Model.DestinationUrl" target="_blank">
-        <img src="@Model.GraphicUrl" alt="@Model.Description" height="270" width="270"/>
+        @if (!String.IsNullOrEmpty(Model.GraphicUrl))
+        {
+            <div style="margin:0 auto;width: 270px;">
+                <img src="@Model.GraphicUrl" alt="@Model.Description" width="270" />
+            </div>
+        }
     </a>
+    <p>@Html.Raw(Voat.Utilities.Formatting.FormatMessage(Model.Description))</p>
 </div>
