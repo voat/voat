@@ -27,10 +27,21 @@ using Voat.Domain.Command;
 
 namespace Voat.Tests.Repository
 {
+
+
+  
+
     [TestClass]
     public class DataGatewayTests_Voting : DatabaseRequiredUnitTest
     {
         public ContentContext context = null;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            context = ContentContext.NewContext(true);
+        }
+
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
@@ -236,10 +247,5 @@ namespace Voat.Tests.Repository
             Assert.IsTrue(x.DownCount == downs);
         }
 
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            context = ContentContext.NewContext(true);
-        }
     }
 }

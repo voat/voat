@@ -27,6 +27,7 @@ using Voat.Utilities;
 using Voat.Data.Models;
 using Voat.Configuration;
 using Voat.UI.Utilities;
+using Voat.Data;
 
 namespace Voat.Controllers
 {
@@ -285,7 +286,7 @@ namespace Voat.Controllers
                 {
                     Name = setTmpModel.Name,
                     Description = setTmpModel.Description,
-                    CreationDate = DateTime.Now,
+                    CreationDate = Repository.CurrentDate,
                     CreatedBy = User.Identity.Name,
                     IsDefault = false,
                     IsPublic = true,

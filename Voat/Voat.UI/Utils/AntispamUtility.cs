@@ -33,6 +33,7 @@ using Newtonsoft.Json;
 using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Configuration;
+using Voat.Data;
 
 namespace Voat.UI.Utilities
 {
@@ -157,7 +158,7 @@ namespace Voat.UI.Utilities
             {
                 // Adds an empty object to the cache using the hashValue to a key (This sets the expiration that will determine
                 // if the Request is valid or not
-                cache.Add(hashValue, "", null, DateTime.Now.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                cache.Add(hashValue, "", null, Repository.CurrentDate.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
 
             base.OnActionExecuting(filterContext);

@@ -53,7 +53,12 @@ namespace Voat.Domain.Query
                         data.Moderates = moderates.Select(x => x.Subverse).ToList();
                     }
                 }
-
+                //TODO: Need to ensure this condition doesn't happen often, throwing exception to test.
+                else
+                {
+                    throw new InvalidOperationException(String.Format("Can not find UserInformation for {0}", _userToRetrieve));
+                }
+               
                 return data;
             }
         }

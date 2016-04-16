@@ -25,6 +25,7 @@ using Voat.Models;
 using Voat.Utilities;
 using Voat.Data.Models;
 using Voat.UI.Utilities;
+using Voat.Data;
 
 namespace Voat.Controllers
 {
@@ -332,7 +333,7 @@ namespace Voat.Controllers
             if (UserHelper.UserExists(privateMessage.Recipient))
             {
                 // send the submission
-                privateMessage.CreationDate = DateTime.Now;
+                privateMessage.CreationDate = Repository.CurrentDate;
                 privateMessage.Sender = User.Identity.Name;
                 privateMessage.IsUnread = true;
                 if (Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name)) return new HttpStatusCodeResult(HttpStatusCode.OK);

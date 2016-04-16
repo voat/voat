@@ -34,6 +34,7 @@ using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Configuration;
 using Voat.UI.Utilities;
+using Voat.Data;
 
 namespace Voat.Controllers
 {
@@ -123,7 +124,7 @@ namespace Voat.Controllers
 
             // save last login ip and timestamp
             user.LastLoginFromIp = clientIpAddress;
-            user.LastLoginDateTime = DateTime.Now;
+            user.LastLoginDateTime = Repository.CurrentDate;
             await UserManager.UpdateAsync(user);
 
             // sign in and continue
@@ -189,9 +190,9 @@ namespace Voat.Controllers
                 var user = new VoatUser
                 {
                     UserName = model.UserName,
-                    RegistrationDateTime = DateTime.Now,
+                    RegistrationDateTime = Repository.CurrentDate,
                     LastLoginFromIp = clientIpAddress,
-                    LastLoginDateTime = DateTime.Now
+                    LastLoginDateTime = Repository.CurrentDate
                 };
 
                 // try to create new user account

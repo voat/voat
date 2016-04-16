@@ -248,7 +248,7 @@
             int parentID = commentId;
 
             //TODO: Should sort in controller
-            if (Model.Sort == CommentSort.New)
+            if (Model.Sort == Voat.Domain.Models.CommentSort.New)
             {
                 childComments = Model.CommentTree.Where(x => x.ParentID == commentId).OrderByDescending(x => x.CreationDate).ToList();
             }

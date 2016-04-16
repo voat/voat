@@ -30,7 +30,7 @@ namespace Voat.Tests.Utils
     public class MessagingTests
     {
         [Ignore]
-        [TestMethod]
+        //[TestMethod]
         [TestCategory("Utility")]
         [TestCategory("Messaging")]
         public void PreventSpamSends()

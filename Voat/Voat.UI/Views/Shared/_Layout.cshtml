@@ -281,7 +281,7 @@
     @if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
     {
         HttpCookie hc = new HttpCookie("NotFirstTime", "1");
-        hc.Expires = DateTime.Now.AddYears(1);
+        hc.Expires = Repository.CurrentDate.AddYears(1);
         HttpContext.Current.Response.Cookies.Add(hc);
 
         @* First time visitor welcome *@

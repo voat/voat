@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Voat.Caching;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Models;
 using Voat.Models.ViewModels;
@@ -107,7 +108,7 @@ namespace Voat.Controllers
             ViewBag.linkDescription = submission.LinkDescription;
 
             // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-            submission.CreationDate = DateTime.Now;
+            submission.CreationDate = Repository.CurrentDate;
 
             // check if user is banned
             if (UserHelper.IsUserGloballyBanned(User.Identity.Name) || UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
@@ -174,7 +175,7 @@ namespace Voat.Controllers
                     return View("Submit");
                 }
                 // update last submission received date for target subverse
-                targetSubverse.LastSubmissionDate = DateTime.Now;
+                targetSubverse.LastSubmissionDate = Repository.CurrentDate;
                 await _db.SaveChangesAsync();
             }
             // submission is a message type submission
@@ -195,7 +196,7 @@ namespace Voat.Controllers
                     return View("Submit");
                 }
                 // update last submission received date for target subverse
-                targetSubverse.LastSubmissionDate = DateTime.Now;
+                targetSubverse.LastSubmissionDate = Repository.CurrentDate;
                 await _db.SaveChangesAsync();
             }
 
@@ -381,10 +382,10 @@ namespace Voat.Controllers
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                     {
                         // get only submissions from default subverses not older than 24 hours, order by relative rank
-                        var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+                        var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
 
                         IQueryable<Submission> submissions = (from message in db.Submissions.AsNoTracking()
-                                                              where !message.IsArchived && !message.IsDeleted && message.UpCount >= 3 && message.CreationDate >= startDate && message.CreationDate <= DateTime.Now
+                                                              where !message.IsArchived && !message.IsDeleted && message.UpCount >= 3 && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
                                                               where !(from bu in db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                               join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
                                                               select message).OrderByDescending(s => s.RelativeRank);
@@ -498,7 +499,7 @@ namespace Voat.Controllers
             {
                 // add a cookie for first time visitors
                 HttpCookie hc = new HttpCookie("NotFirstTime", "1");
-                hc.Expires = DateTime.Now.AddYears(1);
+                hc.Expires = Repository.CurrentDate.AddYears(1);
                 System.Web.HttpContext.Current.Response.Cookies.Add(hc);
 
                 ViewBag.FirstTimeVisitor = true;

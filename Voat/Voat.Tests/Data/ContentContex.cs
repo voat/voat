@@ -1,14 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Tests.Data;
 
 namespace Voat.Tests.Repository
 {
     public class ContentContext
     {
         public static ContentContext Instance { get; set; }
+       
         public int CommentID { get; set; }
         public int SubmissionID { get; set; }
         public string UserName { get; set; }
@@ -16,32 +19,31 @@ namespace Voat.Tests.Repository
         public static ContentContext NewContext(bool createData = false)
         {
             var context = Instance;
-            List<string> userNames = new List<string> {
-                "TestUser4",
-                "TestUser5",
-                "TestUser6",
-                "TestUser7",
-                "TestUser8",
-                "TestUser9",
-                "TestUser10",
-                "TestUser11",
-                "TestUser12",
-                "TestUser13",
-                "TestUser14",
-                "TestUser15"
-            };
-            var userName = "TestUser1";
+
+            //These users need to match the datainitializer batch setup
+            int start = 0;
+            int end = 50;
+
+            
+            var userName = String.Format(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, "0");
 
             if (context != null)
             {
-                var index = userNames.IndexOf(ContentContext.Instance.UserName);
-                index += 1;
-                if (index > userNames.Count - 1)
-                {
-                    index = 0;
-                }
-                userName = userNames[index];
+                userName = context.UserName;
             }
+
+            //increment user name
+            var match = Regex.Match(userName, @"\d+").Value;
+            int numeric = start;
+            if (int.TryParse(match, out numeric))
+            {
+                numeric += 1;
+            }
+            if (numeric > end)
+            {
+                numeric = start;
+            }
+            userName = String.Format(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, numeric.ToString());
 
             TestHelper.SetPrincipal(userName);
             if (createData)
@@ -49,11 +51,11 @@ namespace Voat.Tests.Repository
                 using (var db = new Voat.Data.Repository())
                 {
                     var m = db.PostSubmission("unit", new UserSubmission() { Title = "Test Post", Content = "Test Content" });
-                    Assert.AreEqual(Status.Success, m.Status, String.Format("NewContext PostSubmission for user {0} received non-success message", userName));
+                    Assert.AreEqual(Status.Success, m.Status, String.Format("NewContext PostSubmission for user {0} received non-success message : {1}", userName, m.SystemDescription));
                     var submissionid = m.Response.ID;
 
                     var c = db.PostComment(submissionid, -1, "This is a comment");
-                    Assert.AreEqual(Status.Success, c.Status, String.Format("NewContext PostComment for user {0} received non-success message", userName));
+                    Assert.AreEqual(Status.Success, c.Status, String.Format("NewContext PostComment for user {0} received non-success message : {1}", userName, m.SystemDescription));
                     var commentid = c.Response.ID;
                     context = new ContentContext() { UserName = userName, CommentID = commentid, SubmissionID = submissionid };
                 }

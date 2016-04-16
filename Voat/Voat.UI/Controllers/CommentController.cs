@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Caching;
 using Voat.Configuration;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Models;
@@ -356,7 +357,7 @@ namespace Voat.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
-            commentModel.CreationDate = DateTime.Now;
+            commentModel.CreationDate = Repository.CurrentDate;
             commentModel.UserName = User.Identity.Name;
             commentModel.Votes = 0;
             commentModel.UpCount = 0;
@@ -371,7 +372,7 @@ namespace Voat.Controllers
 
                 // if user CCP is negative and account less than 6 months old, allow only x comment submissions per 24 hours
                 var userRegistrationDate = UserHelper.GetUserRegistrationDateTime(User.Identity.Name);
-                TimeSpan userMembershipTimeSpan = DateTime.Now - userRegistrationDate;
+                TimeSpan userMembershipTimeSpan = Repository.CurrentDate - userRegistrationDate;
                 if (userMembershipTimeSpan.TotalDays < 180 && userCcp < 1)
                 {
                     var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
@@ -506,7 +507,7 @@ namespace Voat.Controllers
                             return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
                         }
 
-                        existingComment.LastEditDate = DateTime.Now;
+                        existingComment.LastEditDate = Repository.CurrentDate;
                         existingComment.Content = commentModel.Content;
 
                         if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
@@ -555,7 +556,7 @@ namespace Voat.Controllers
                 if (commentToDelete.UserName == User.Identity.Name)
                 {
                     commentToDelete.IsDeleted = true;
-                    commentToDelete.Content = "deleted by author at " + DateTime.Now;
+                    commentToDelete.Content = "deleted by author at " + Repository.CurrentDate;
                     await _db.SaveChangesAsync();
                 }
 
@@ -568,7 +569,7 @@ namespace Voat.Controllers
                         commentToDelete.UserName,
                         "Your comment has been deleted by a moderator",
                         "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
-                        "/u/" + User.Identity.Name + " on: " + DateTime.Now + "  " + Environment.NewLine +
+                        "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
                         "Original comment content was: " + Environment.NewLine +
                         "---" + Environment.NewLine +
                         commentToDelete.Content
@@ -582,12 +583,12 @@ namespace Voat.Controllers
                         CommentID = commentToDelete.ID,
                         Moderator = User.Identity.Name,
                         Reason = "This feature is not yet implemented",
-                        CreationDate = DateTime.Now
+                        CreationDate = Repository.CurrentDate
                     };
 
                     _db.CommentRemovalLogs.Add(removalLog);
 
-                    commentToDelete.Content = "deleted by a moderator at " + DateTime.Now;
+                    commentToDelete.Content = "deleted by a moderator at " + Repository.CurrentDate;
                     await _db.SaveChangesAsync();
                 }
             }

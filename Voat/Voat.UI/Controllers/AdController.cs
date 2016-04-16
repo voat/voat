@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Models.ViewModels;
 
@@ -21,7 +22,7 @@ namespace Voat.Controllers
                     var ad = (from x in db.Ads
                               where
                               ((subverse != null && x.Subverse.Equals(subverse, StringComparison.InvariantCultureIgnoreCase) || (subverse == null && x.Subverse == null)))
-                              && (x.EndDate >= DateTime.Now && x.StartDate <= DateTime.Now)
+                              && (x.EndDate >= Repository.CurrentDate && x.StartDate <= Repository.CurrentDate)
                               orderby x.Subverse descending
                               select x).FirstOrDefault();
 

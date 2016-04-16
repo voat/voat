@@ -24,6 +24,7 @@ using Voat.Utilities;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;
+using Voat.Data;
 
 namespace Voat.Utilities
 {
@@ -428,7 +429,7 @@ namespace Voat.Utilities
         public static void SetUserStylePreferenceCookie(string theme)
         {
             var cookie = new HttpCookie("theme", theme);
-            cookie.Expires = DateTime.Now.AddDays(14);
+            cookie.Expires = Repository.CurrentDate.AddDays(14);
             System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
         }
 
@@ -499,19 +500,19 @@ namespace Voat.Utilities
             int commentVotesUsedInPast24Hrs = 0;
             int submissionVotesUsedInPast24Hrs = 0;
 
-            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
 
             using (var db = new voatEntities())
             {
                 // calculate how many comment votes user made in the past 24 hours
                 var commentVotesUsedToday = db.CommentVoteTrackers
-                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= DateTime.Now && c.UserName == userName);
+                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= Repository.CurrentDate && c.UserName == userName);
 
                 commentVotesUsedInPast24Hrs = commentVotesUsedToday.Count();
 
                 // calculate how many submission votes user made in the past 24 hours
                 var submissionVotesUsedToday = db.SubmissionVoteTrackers
-                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= DateTime.Now && c.UserName == userName);
+                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= Repository.CurrentDate && c.UserName == userName);
 
                 submissionVotesUsedInPast24Hrs = submissionVotesUsedToday.Count();
             }
@@ -692,8 +693,8 @@ namespace Voat.Utilities
         public static bool UserDailyPostingQuotaForSubUsed(string userName, string subverse)
         {
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.DailyPostingQuotaPerSub;
@@ -718,8 +719,8 @@ namespace Voat.Utilities
         public static bool UserDailyPostingQuotaForNegativeScoreUsed(string userName)
         {
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.DailyPostingQuotaForNegativeScore;
@@ -743,8 +744,8 @@ namespace Voat.Utilities
         public static bool UserDailyCommentPostingQuotaForNegativeScoreUsed(string userName)
         {
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.DailyCommentPostingQuotaForNegativeScore;
@@ -768,8 +769,8 @@ namespace Voat.Utilities
         public static bool UserDailyCommentPostingQuotaUsed(string userName)
         {
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.DailyCommentPostingQuota;
@@ -793,8 +794,8 @@ namespace Voat.Utilities
         public static bool UserHourlyCommentPostingQuotaUsed(string userName)
         {
             // set starting date to 59 minutes ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, 0, -59, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, 0, -59, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read hourly posting quota configuration parameter from web.config
             int hpqp = Settings.HourlyCommentPostingQuota;
@@ -818,8 +819,8 @@ namespace Voat.Utilities
         public static bool UserHourlyPostingQuotaForSubUsed(string userName, string subverse)
         {
             // set starting date to 1 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -1, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.HourlyPostingQuotaPerSub;
@@ -845,7 +846,7 @@ namespace Voat.Utilities
         {
             // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
-            int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
+            int memberInDays = (Repository.CurrentDate - userRegistrationDateTime).Days;
             int userScp = Karma.LinkKarma(userName);
             if (memberInDays > 30 || userScp >= 50)
             {
@@ -853,8 +854,8 @@ namespace Voat.Utilities
             }
 
             // set starting date to 1 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -1, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.HourlyGlobalPostingQuota;
@@ -877,7 +878,7 @@ namespace Voat.Utilities
         {
             // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
-            int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
+            int memberInDays = (Repository.CurrentDate - userRegistrationDateTime).Days;
             int userScp = Karma.LinkKarma(userName);
             if (memberInDays > 30 || userScp >= 50)
             {
@@ -885,8 +886,8 @@ namespace Voat.Utilities
             }
 
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily global posting quota configuration parameter from web.config
             int dpqps = Settings.DailyGlobalPostingQuota;
@@ -911,8 +912,8 @@ namespace Voat.Utilities
             int dailyCrossPostQuota = Settings.DailyCrossPostingQuota;
 
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             using (var db = new voatEntities())
             {
@@ -1045,8 +1046,8 @@ namespace Voat.Utilities
         public static bool SimilarCommentSubmittedRecently(string userName, string commentContent)
         {
             // set starting date to 59 minutes ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, 0, -59, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, 0, -59, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             using (var db = new voatEntities())
             {

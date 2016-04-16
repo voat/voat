@@ -97,8 +97,7 @@ namespace Voat.Tests.Rules
             Assert.AreNotEqual(0, descriptions.Count);
         }
 
-        [Ignore]
-        [TestMethod]
+        //[TestMethod]
         [TestCategory("RulesEngine")]
         public void TestRulesEngineLoading()
         {

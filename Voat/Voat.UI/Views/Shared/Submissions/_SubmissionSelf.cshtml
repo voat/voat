@@ -26,7 +26,7 @@
 
     //if (Model.Subverses != null)
     //{
-        anonymizedSubverse = DataCache.Subverse.Retrieve(Model.Subverse).IsAnonymized;
+        anonymizedSubverse = Voat.Caching.DataCache.Subverse.Retrieve(Model.Subverse).IsAnonymized;
     //}
 
     //type 1 = message

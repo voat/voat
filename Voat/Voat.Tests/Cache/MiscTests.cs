@@ -132,7 +132,7 @@ namespace Voat.Tests.Cache
             //Assert.AreEqual(false, handler.Exists(key));
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void TestSerializationWithRedis()
         {
             var args = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Arguments;

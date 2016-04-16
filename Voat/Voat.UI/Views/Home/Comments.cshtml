@@ -120,7 +120,7 @@ else if (!User.Identity.IsAuthenticated)
         @* Show sort only if viewing all comments *@
         @if (ViewBag.StartingCommentId == null)
         {
-            var sort = (Model.Sort == CommentSort.Top ? "new" : "top");
+            var sort = (Model.Sort == Voat.Domain.Models.CommentSort.Top ? "new" : "top");
             <div class="menuarea">
                 <div class="spacer">
                     <span class="dropdown-title lightdrop">sort by: </span>

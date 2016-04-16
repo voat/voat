@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Caching;
 using Voat.Configuration;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Models;
 using Voat.Utilities;
@@ -109,7 +110,7 @@ namespace Voat.Controllers
                 {
                     SubmissionID = submissionID,
                     CreatedBy = User.Identity.Name,
-                    CreationDate = DateTime.Now,
+                    CreationDate = Repository.CurrentDate,
                     Subverse = submissionModel.Subverse
                 };
 
@@ -194,7 +195,7 @@ namespace Voat.Controllers
             if (existingSubmission.UserName.Trim() != User.Identity.Name) return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
 
             existingSubmission.Content = model.SubmissionContent;
-            existingSubmission.LastEditDate = DateTime.Now;
+            existingSubmission.LastEditDate = Repository.CurrentDate;
 
             _db.SaveChanges();
             DataCache.Submission.Remove(model.SubmissionId);
@@ -220,7 +221,7 @@ namespace Voat.Controllers
 
                     if (submissionToDelete.Type == 1)
                     {
-                        submissionToDelete.Content = "deleted by author at " + DateTime.Now;
+                        submissionToDelete.Content = "deleted by author at " + Repository.CurrentDate;
                     }
                     else
                     {
@@ -251,7 +252,7 @@ namespace Voat.Controllers
                         SubmissionID = submissionToDelete.ID,
                         Moderator = User.Identity.Name,
                         Reason = "This feature is not yet implemented",
-                        CreationDate = DateTime.Now
+                        CreationDate = Repository.CurrentDate
                     };
 
                     _db.SubmissionRemovalLogs.Add(removalLog);
@@ -264,7 +265,7 @@ namespace Voat.Controllers
                             submissionToDelete.UserName,
                             "Your submission has been deleted by a moderator",
                             "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
-                            "/u/" + User.Identity.Name + " at " + DateTime.Now + "  " + Environment.NewLine +
+                            "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
                             "Original submission content was: " + Environment.NewLine +
                             "---" + Environment.NewLine +
                             "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
@@ -279,7 +280,7 @@ namespace Voat.Controllers
                             submissionToDelete.UserName,
                             "Your submission has been deleted by a moderator",
                             "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
-                            "/u/" + User.Identity.Name + " at " + DateTime.Now + "  " + Environment.NewLine +
+                            "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
                             "Original submission content was: " + Environment.NewLine +
                             "---" + Environment.NewLine +
                             "Link description: " + submissionToDelete.LinkDescription + ", " + Environment.NewLine +

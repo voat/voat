@@ -27,6 +27,7 @@ using System;
 using System.Data.Entity;
 using System.Diagnostics;
 using Voat.Data.Models;
+using Voat.Tests.Data;
 using Voat.Utilities;
 
 namespace Voat.Tests.Repository
@@ -41,7 +42,7 @@ namespace Voat.Tests.Repository
         protected override void Seed(voatEntities context)
         {
             CreateUserSchema(context);
-
+            
             //*******************************************************************************************************
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -325,22 +326,11 @@ namespace Voat.Tests.Repository
             CreateUser("unit");
             CreateUser("anon");
 
-            CreateUser("TestUser1");
-            CreateUser("TestUser2");
-            CreateUser("TestUser3");
-            CreateUser("TestUser4");
-            CreateUser("TestUser5");
-            CreateUser("TestUser6");
-            CreateUser("TestUser7");
-            CreateUser("TestUser8");
-            CreateUser("TestUser9");
-            CreateUser("TestUser10");
-            CreateUser("TestUser11");
-            CreateUser("TestUser12");
-            CreateUser("TestUser13");
-            CreateUser("TestUser14");
-            CreateUser("TestUser15");
+            //these blocks are used for testing individual operations
+            CreateUserBatch(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, 0, 50);
+            CreateUserBatch(UNIT_TEST_CONSTANTS.TEST_USER_TEMPLATE, 0, 15);
 
+            //Users with varying levels of CCP
             CreateUser("User0CCP");
             CreateUser("User50CCP");
             CreateUser("User100CCP");
@@ -408,7 +398,7 @@ namespace Voat.Tests.Repository
             //******************************************************************************************************************
         }
 
-        private static void CreateUser(string userName)
+        public static void CreateUser(string userName)
         {
             //SchemaInitializerApplicationDbContext.ReferenceEquals(null, new object());
 
@@ -432,7 +422,13 @@ namespace Voat.Tests.Repository
                 }
             }
         }
-
+        public static void CreateUserBatch(string userNameTemplate, int start, int end)
+        {
+            for (int i = start; i <= end; i++)
+            {
+                CreateUser(String.Format(userNameTemplate, i.ToString()));
+            }
+        }
         private void CreateUserSchema(voatEntities context)
         {
             //Got sick of wasting time messing around with database initializers for

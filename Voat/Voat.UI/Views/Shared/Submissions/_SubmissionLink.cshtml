@@ -30,7 +30,7 @@
 
     //if (Model.Subverses != null)
     //{
-        var sub = DataCache.Subverse.Retrieve(Model.Subverse);
+        var sub = Voat.Caching.DataCache.Subverse.Retrieve(Model.Subverse);
         ratedAdult = sub.IsAdult;
         anonymizedSubverse = sub.IsAnonymized;
     //}

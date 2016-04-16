@@ -30,6 +30,7 @@ using Voat.Utilities;
 using Voat.UI.Utilities;
 using Voat.Configuration;
 using Voat.Caching;
+using Voat.Data;
 
 namespace Voat.Controllers
 {
@@ -187,7 +188,7 @@ namespace Voat.Controllers
                     Title = "/v/" + subverseTmpModel.Name,
                     Description = subverseTmpModel.Description,
                     SideBar = subverseTmpModel.Sidebar,
-                    CreationDate = DateTime.Now,
+                    CreationDate = Repository.CurrentDate,
                     Type = "link",
                     IsThumbnailEnabled = true,
                     IsAdult = false,
@@ -814,7 +815,7 @@ namespace Voat.Controllers
             {
                 // setup nswf cookie
                 HttpCookie hc = new HttpCookie("NSFWEnabled", "1");
-                hc.Expires = DateTime.Now.AddYears(1);
+                hc.Expires = Repository.CurrentDate.AddYears(1);
                 System.Web.HttpContext.Current.Response.Cookies.Add(hc);
 
                 // redirect to destination subverse
@@ -1005,7 +1006,7 @@ namespace Voat.Controllers
                     ModeratorInvitation modInv = new ModeratorInvitation
                     {
                         CreatedBy = User.Identity.Name,
-                        CreationDate = DateTime.Now,
+                        CreationDate = Repository.CurrentDate,
                         Recipient = subverseAdmin.UserName,
                         Subverse = subverseAdmin.Subverse,
                         Power = subverseAdmin.Power
@@ -1108,7 +1109,7 @@ namespace Voat.Controllers
                 UserName = userInvitation.Recipient,
                 Power = userInvitation.Power,
                 CreatedBy = userInvitation.CreatedBy,
-                CreationDate = DateTime.Now
+                CreationDate = Repository.CurrentDate
             };
 
             _db.SubverseModerators.Add(subAdm);
@@ -1149,7 +1150,7 @@ namespace Voat.Controllers
             {
                 subverseBan.Subverse = subverseModel.Name;
                 subverseBan.CreatedBy = User.Identity.Name;
-                subverseBan.CreationDate = DateTime.Now;
+                subverseBan.CreationDate = Repository.CurrentDate;
                 _db.SubverseBans.Add(subverseBan);
                 _db.SaveChanges();
 
@@ -1738,7 +1739,7 @@ namespace Voat.Controllers
                 //    int count = x.Count();
                 //    List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
                 //    cacheData = new Tuple<IList<Message>, int>(content, count);
-                //    System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, DateTime.Now.AddSeconds(subverseCacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                //    System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, Repository.CurrentDate.AddSeconds(subverseCacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
                 //}
 
                 PaginatedList<Submission> paginatedSubmissionsByDate = new PaginatedList<Submission>(cacheData.Item1, pageNumber, pageSize, cacheData.Item2);
@@ -1974,7 +1975,7 @@ namespace Voat.Controllers
                                                                        where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                                        where !subverse.IsAdminDisabled.Value
                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
-                                                                       select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= DateTime.Now)
+                                                                       select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= Repository.CurrentDate)
                                                                        .AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByTop;
@@ -1986,10 +1987,10 @@ namespace Voat.Controllers
             {
                 _db = this._db;
             }
-            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
             IQueryable<Submission> sfwSubmissionsFromAllSubversesByViews24Hours = (from message in _db.Submissions
                                                                                    join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                                where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= DateTime.Now
+                                                                                where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
                                                                                 where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                                                 where !subverse.IsAdminDisabled.Value
                                                                                 where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
@@ -2043,7 +2044,7 @@ namespace Voat.Controllers
                                                                     where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                                     where !subverse.IsAdminDisabled.Value
                                                                     where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
-                                                                    select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= DateTime.Now)
+                                                                    select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= Repository.CurrentDate)
                                                                     .AsNoTracking();
 
             return submissionsFromAllSubversesByTop;
@@ -2099,7 +2100,7 @@ namespace Voat.Controllers
                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.Name
                                                                  where !message.IsDeleted && message.Subverse == subverseName
                                                                  where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                 select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= DateTime.Now)
+                                                                 select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= Repository.CurrentDate)
                                                                  .AsNoTracking();
             if (subverseStickie != null)
             {

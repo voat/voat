@@ -15,6 +15,7 @@ All Rights Reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Models;
 using Voat.Models.ViewModels;
@@ -66,7 +67,7 @@ namespace Voat.UI.Utilities
                 if (SessionExists(sessionId, subverseName)) return;
                 using (var db = new voatEntities())
                 {
-                    var newSession = new SessionTracker { SessionID = sessionId, Subverse = subverseName, CreationDate = DateTime.Now };
+                    var newSession = new SessionTracker { SessionID = sessionId, Subverse = subverseName, CreationDate = Repository.CurrentDate };
 
                     db.SessionTrackers.Add(newSession);
                     db.SaveChanges();
@@ -124,7 +125,7 @@ namespace Voat.UI.Utilities
                         cmd.Connection.Open();
                     }
                     count = (int)cmd.ExecuteScalar();
-                    System.Web.HttpContext.Current.Cache.Insert(cacheKey, count, null, DateTime.Now.AddSeconds(120), System.Web.Caching.Cache.NoSlidingExpiration);
+                    System.Web.HttpContext.Current.Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(120), System.Web.Caching.Cache.NoSlidingExpiration);
 
                 }
 

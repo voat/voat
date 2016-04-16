@@ -24,6 +24,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using OpenGraph_Net;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Voat.Common;
 using Voat.Utilities;
 
@@ -63,7 +65,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual("youtube.com", result, "Unable to extract domain from given Uri.");
         }
 
-        [Ignore] //This fails often, ignoring.
+        //[Ignore] //This fails often, ignoring.
         [TestMethod]
         [TestCategory("Utility")]
         [TestCategory("Utility.WebRequest")]
@@ -75,10 +77,17 @@ namespace Voat.Tests.Utils
             Uri testUri = new Uri("http://www.bbc.com/news/technology-32194196");
             var graph = OpenGraph.ParseUrl(testUri);
 
-            //'merica test
-            Assert.AreEqual("http://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", graph.Image.ToString(), "Unable to extract domain from given Uri.");
-            //Yuro test
-            //Assert.AreEqual("http://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg", graph.Image.ToString(), "Unable to extract domain from given Uri.");
+            List<string> acceptable = new List<string>() {
+                "http://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test
+                "http://ichef-1.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test part 2
+                "http://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg" //Yuro test
+            };
+            var expected = graph.Image.ToString();
+
+            var passed = acceptable.Any(x => x.Equals(expected, StringComparison.OrdinalIgnoreCase));
+            ;
+
+            Assert.IsTrue(passed, "OpenGraph was unable to find an acceptable image path");
         }
 
         [TestMethod]

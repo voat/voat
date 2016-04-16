@@ -19,6 +19,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Web.Mvc;
 using Voat.Caching;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Models;
 using Voat.UI.Utilities;
@@ -46,7 +47,7 @@ namespace Voat.Controllers
                 //don't allow banned users to send reports
                 if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, commentSubverse) && !UserHelper.IsUserGloballyBanned(User.Identity.Name))
                 {
-                    var reportTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+                    var reportTimeStamp = Repository.CurrentDate.ToString(CultureInfo.InvariantCulture);
                     try
                     {
                         string cacheKeyCommentReport = String.Format("report.comment.{0}", id.ToString());
