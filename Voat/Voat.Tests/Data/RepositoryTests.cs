@@ -31,25 +31,28 @@ using Voat.Domain.Models;
 namespace Voat.Tests.Repository
 {
     [TestClass]
-    public class RepositoryTests : DatabaseRequiredUnitTest
+    public class RepositoryTests 
     {
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
         public void Block_Subverse()
         {
-            string name = "whatever";
+            using (var db = new Voat.Data.Repository())
+            {
+                string name = "whatever";
 
-            TestHelper.SetPrincipal("TestUser1");
-            db.Block(DomainType.Subverse, name);
+                TestHelper.SetPrincipal("TestUser1");
+                db.Block(DomainType.Subverse, name);
 
-            var blocks = db.GetBlockedSubverses("TestUser1");
-            Assert.IsNotNull(blocks);
-            Assert.IsTrue(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
+                var blocks = db.GetBlockedSubverses("TestUser1");
+                Assert.IsNotNull(blocks);
+                Assert.IsTrue(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
 
-            db.Unblock(DomainType.Subverse, name);
-            blocks = db.GetBlockedSubverses("TestUser1");
-            Assert.IsNotNull(blocks);
-            Assert.IsFalse(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
+                db.Unblock(DomainType.Subverse, name);
+                blocks = db.GetBlockedSubverses("TestUser1");
+                Assert.IsNotNull(blocks);
+                Assert.IsFalse(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
+            }
         }
 
         [TestMethod]
@@ -57,7 +60,10 @@ namespace Voat.Tests.Repository
         [ExpectedException(typeof(VoatSecurityException))]
         public void Block_Subverse_NoAuthentication()
         {
-            db.Block(DomainType.Subverse, "test");
+            using (var db = new Voat.Data.Repository())
+            {
+                db.Block(DomainType.Subverse, "test");
+            }
         }
 
         [TestMethod]
@@ -65,30 +71,36 @@ namespace Voat.Tests.Repository
         [ExpectedException(typeof(VoatNotFoundException))]
         public void Block_Subverse_SubverseDoesNotExist()
         {
-            TestHelper.SetPrincipal("TestUser1");
-            db.Block(DomainType.Subverse, "happyhappyjoyjoy");
+            using (var db = new Voat.Data.Repository())
+            {
+                TestHelper.SetPrincipal("TestUser1");
+                db.Block(DomainType.Subverse, "happyhappyjoyjoy");
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
         public void Block_Subverse_Toggle()
         {
-            string name = "whatever";
-            string userName = "TestUser2";
+            using (var db = new Voat.Data.Repository())
+            {
+                string name = "whatever";
+                string userName = "TestUser2";
 
-            TestHelper.SetPrincipal(userName);
+                TestHelper.SetPrincipal(userName);
 
-            db.Block(DomainType.Subverse, name, null);
+                db.Block(DomainType.Subverse, name, null);
 
-            var blocks = db.GetBlockedSubverses(userName);
-            Assert.IsNotNull(blocks);
-            Assert.IsTrue(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
+                var blocks = db.GetBlockedSubverses(userName);
+                Assert.IsNotNull(blocks);
+                Assert.IsTrue(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
 
-            db.Block(DomainType.Subverse, name, null);
+                db.Block(DomainType.Subverse, name, null);
 
-            blocks = db.GetBlockedSubverses(userName);
-            Assert.IsNotNull(blocks);
-            Assert.IsFalse(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
+                blocks = db.GetBlockedSubverses(userName);
+                Assert.IsNotNull(blocks);
+                Assert.IsFalse(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
+            }
         }
 
         [TestMethod]
@@ -96,24 +108,30 @@ namespace Voat.Tests.Repository
         [ExpectedException(typeof(VoatValidationException))]
         public void PostSubmission_InvalidSubveseFails()
         {
-            TestHelper.SetPrincipal("TestUser1");
-
-            db.PostSubmission("**Invalid Subverse**", new UserSubmission()
+            using (var db = new Voat.Data.Repository())
             {
-                Content = "Test",
-                Title = "My title",
-                Url = "http://www.yahoo.com"
-            });
+                TestHelper.SetPrincipal("TestUser1");
+
+                db.PostSubmission("**Invalid Subverse**", new UserSubmission()
+                {
+                    Content = "Test",
+                    Title = "My title",
+                    Url = "http://www.yahoo.com"
+                });
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void GetAnonymousComments()
         {
-            var comments = db.GetComments(3, new SearchOptions());
-            foreach (var c in comments)
+            using (var db = new Voat.Data.Repository())
             {
-                Assert.IsTrue(c.UserName == c.ID.ToString());
+                var comments = db.GetComments(3, new SearchOptions());
+                foreach (var c in comments)
+                {
+                    Assert.IsTrue(c.UserName == c.ID.ToString());
+                }
             }
         }
 
@@ -121,113 +139,146 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public void GetAnonymousSubmission()
         {
-            var anon_sub = db.GetSubmission(2);
-            Assert.IsTrue(anon_sub.UserName == anon_sub.ID.ToString());
+            using (var db = new Voat.Data.Repository())
+            {
+                var anon_sub = db.GetSubmission(2);
+                Assert.IsTrue(anon_sub.UserName == anon_sub.ID.ToString());
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void GetSubmission()
         {
-            var s = db.GetSubmissions("unit", new SearchOptions());
-            Assert.IsTrue(s.Any());
+            using (var db = new Voat.Data.Repository())
+            {
+                var s = db.GetSubmissions("unit", new SearchOptions());
+                Assert.IsTrue(s.Any());
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void GetSubmissionsFilterAnonymous()
         {
-            var anon_sub = db.GetSubmissions("anon", SearchOptions.Default);
-            Assert.IsTrue(anon_sub.Count() == 1);
-            Assert.IsTrue(anon_sub.First().Title == "First Anon Post");
+            using (var db = new Voat.Data.Repository())
+            {
+                var anon_sub = db.GetSubmissions("anon", SearchOptions.Default);
+                Assert.AreEqual(1, anon_sub.Count());
+                Assert.AreEqual("First Anon Post", anon_sub.First().Title);
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void GetUserPrefernces()
         {
-            var p = db.GetUserPreferences("unit");
-            Assert.IsTrue(p != null);
-            Assert.IsTrue(p.UserName == "unit");
-            Assert.IsTrue(p.Bio == "User unit's short bio");
-            Assert.IsTrue(!p.DisableCSS);
+            using (var db = new Voat.Data.Repository())
+            {
+                var p = db.GetUserPreferences("unit");
+                Assert.IsTrue(p != null);
+                Assert.IsTrue(p.UserName == "unit");
+                Assert.IsTrue(p.Bio == "User unit's short bio");
+                Assert.IsTrue(!p.DisableCSS);
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void GetUserPrefernces_UserNotExists()
         {
-            var p = db.GetUserPreferences("asrtastarstarstarstart343");
-            Assert.IsTrue(p == null);
+            using (var db = new Voat.Data.Repository())
+            {
+                var p = db.GetUserPreferences("asrtastarstarstarstart343");
+                Assert.IsTrue(p == null);
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void PostSubmission()
         {
-            TestHelper.SetPrincipal("TestUser1");
-
-            var m = db.PostSubmission("unit", new UserSubmission()
+            using (var db = new Voat.Data.Repository())
             {
-                Url = "http://www.LearnToGolfLikeJordanSpiethOrYourMoneyBack.com",
-                Content = "Learn to putt first. It's the most important part of golf.",
-                Title = "Golf is really three games in one: Putting, Full Swing, and Partial Swing"
-            });
+                TestHelper.SetPrincipal("TestUser1");
 
-            Assert.IsNotNull(m, "CommandResponse is null");
-            Assert.IsNotNull(m.Response, "Response payload is null");
-            Assert.AreNotEqual(0, m.Response.ID);
+                var m = db.PostSubmission("unit", new UserSubmission()
+                {
+                    Url = "http://www.LearnToGolfLikeJordanSpiethOrYourMoneyBack.com",
+                    Content = "Learn to putt first. It's the most important part of golf.",
+                    Title = "Golf is really three games in one: Putting, Full Swing, and Partial Swing"
+                });
+
+                Assert.IsNotNull(m, "CommandResponse is null");
+                Assert.IsNotNull(m.Response, "Response payload is null");
+                Assert.AreNotEqual(0, m.Response.ID);
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void SubverseRetrieval()
         {
-            var info = db.GetSubverseInfo("unit");
-            Assert.IsTrue(info.Title == "v/unit");
+            using (var db = new Voat.Data.Repository())
+            {
+                var info = db.GetSubverseInfo("unit");
+                Assert.IsTrue(info.Title == "v/unit");
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void SaveComment()
         {
-            var result = db.Save(ContentType.Comment, 1);
-            Assert.IsTrue(result);
+            using (var db = new Voat.Data.Repository())
+            {
+                var result = db.Save(ContentType.Comment, 1);
+                Assert.IsTrue(result);
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void SaveComment_Force()
         {
-            var result = db.Save(ContentType.Comment, 3, true);
-            Assert.IsTrue(result);
+            using (var db = new Voat.Data.Repository())
+            {
+                var result = db.Save(ContentType.Comment, 3, true);
+                Assert.IsTrue(result);
 
-            //Should only save, never toggle because forceAction == true
-            result = db.Save(ContentType.Comment, 3, true);
-            Assert.IsTrue(result);
+                //Should only save, never toggle because forceAction == true
+                result = db.Save(ContentType.Comment, 3, true);
+                Assert.IsTrue(result);
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void SaveComment_ForceUnSave()
         {
-            var result = db.Save(ContentType.Comment, 4, false);
-            Assert.IsFalse(result);
+            using (var db = new Voat.Data.Repository())
+            {
+                var result = db.Save(ContentType.Comment, 4, false);
+                Assert.IsFalse(result);
 
-            //Should only save, never toggle because forceAction == true
-            result = db.Save(ContentType.Comment, 3, false);
-            Assert.IsFalse(result);
+                //Should only save, never toggle because forceAction == true
+                result = db.Save(ContentType.Comment, 3, false);
+                Assert.IsFalse(result);
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
         public void SaveComment_Toggle()
         {
-            var result = db.Save(ContentType.Comment, 2);
-            Assert.IsTrue(result);
+            using (var db = new Voat.Data.Repository())
+            {
+                var result = db.Save(ContentType.Comment, 2);
+                Assert.IsTrue(result);
 
-            result = db.Save(ContentType.Comment, 2);
-            Assert.IsFalse(result);
+                result = db.Save(ContentType.Comment, 2);
+                Assert.IsFalse(result);
+            } 
         }
 
 
@@ -236,62 +287,75 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
         public void PostSubmission_BannedDomain()
         {
-            TestHelper.SetPrincipal("TestUser10");
+            using (var db = new Voat.Data.Repository())
+            {
+                TestHelper.SetPrincipal("TestUser10");
 
-            var result = db.PostSubmission("unit", new UserSubmission() { Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
-            Assert.IsNotNull(result, "Result was null");
-            Assert.IsFalse(result.Successfull, "Submitting content with banned domain did not get rejected");
-            Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
+                var result = db.PostSubmission("unit", new UserSubmission() { Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Successfull, "Submitting content with banned domain did not get rejected");
+                Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Comment")]
         public void PostComment_BannedDomain()
         {
-            TestHelper.SetPrincipal("TestUser10");
+            using (var db = new Voat.Data.Repository())
+            {
+                TestHelper.SetPrincipal("TestUser10");
 
-            var result = db.PostComment(1, null, "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" );
-            Assert.IsNotNull(result, "Result was null");
-            Assert.IsFalse(result.Successfull, "Submitting content with banned domain did not get rejected");
-            Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
-
+                var result = db.PostComment(1, null, "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics");
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Successfull, "Submitting content with banned domain did not get rejected");
+                Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
         public void PostSubmission_AuthorizedOnly_Allow()
         {
-            TestHelper.SetPrincipal("unit");
+            using (var db = new Voat.Data.Repository())
+            {
+                TestHelper.SetPrincipal("unit");
 
-            var result = db.PostSubmission("AuthorizedOnly", new UserSubmission() { Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
-            Assert.IsNotNull(result, "Result was null");
-            Assert.IsTrue(result.Successfull, "Submitting to authorized only subverse was not allowed by admin");
-            Assert.AreEqual(Status.Success, result.Status, "Expecting a success status");
+                var result = db.PostSubmission("AuthorizedOnly", new UserSubmission() { Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsTrue(result.Successfull, "Submitting to authorized only subverse was not allowed by admin");
+                Assert.AreEqual(Status.Success, result.Status, "Expecting a success status");
+            }
         }
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
         public void PostSubmission_AuthorizedOnly_Denied()
         {
-            TestHelper.SetPrincipal("TestUser11");
+            using (var db = new Voat.Data.Repository())
+            {
+                TestHelper.SetPrincipal("TestUser11");
 
-            var result = db.PostSubmission("AuthorizedOnly", new UserSubmission() { Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
-            Assert.IsNotNull(result, "Result was null");
-            Assert.IsFalse(result.Successfull, "Submitting to authorized only subverse was allowed by non admin");
-            Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
+                var result = db.PostSubmission("AuthorizedOnly", new UserSubmission() { Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Successfull, "Submitting to authorized only subverse was allowed by non admin");
+                Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
+            }
         }
 
-       
+
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
         public void Get_SubversesUser_Moderates()
         {
 
-            var result = db.GetSubversesUserModerates("unit");
-            Assert.IsNotNull(result, "Result was null");
-            Assert.IsTrue(result.Any(x => x.Subverse == "AuthorizedOnly"), "Result expected to see subverse AuthorizedOnly for user unit");
-
+            using (var db = new Voat.Data.Repository())
+            {
+                var result = db.GetSubversesUserModerates("unit");
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsTrue(result.Any(x => x.Subverse == "AuthorizedOnly"), "Result expected to see subverse AuthorizedOnly for user unit");
+            }
         }
 
     }

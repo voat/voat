@@ -79,7 +79,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_1_21second()
+        public void Age_1_21second()
         {
             string result = Age.ToRelative(TimeSpan.FromSeconds(1.2096));
             Assert.AreEqual("1 microfortnight", result, "Submission age was not calculated.");
@@ -92,7 +92,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_1_5years()
+        public void Age_1_5years()
         {
             string result = Age.ToRelative(TimeSpan.FromDays(18 * 30));
             Assert.AreEqual(String.Format("{0} years", 1.5), result, "Submission age was not calculated.");
@@ -102,7 +102,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_1_7Days()
+        public void Age_1_7Days()
         {
             string result = Age.ToRelative(TimeSpan.FromDays(1.7));
             Assert.AreEqual("1.7 days", result, "Submission age was not calculated.");
@@ -112,7 +112,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_1Day()
+        public void Age_1Day()
         {
             string result = Age.ToRelative(TimeSpan.FromDays(1));
             Assert.AreEqual("1 day", result, "Submission age was not calculated.");
@@ -122,7 +122,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_1minute()
+        public void Age_1minute()
         {
             string result = Age.ToRelative(TimeSpan.FromMinutes(1));
             Assert.AreEqual("1 minute", result, "Submission age was not calculated.");
@@ -132,7 +132,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_1point2hours()
+        public void Age_1point2hours()
         {
             string result = Age.ToRelative(TimeSpan.FromHours(1.22323232));
             Assert.AreEqual("1.2 hours", result, "Submission age was not calculated.");
@@ -142,7 +142,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_1second()
+        public void Age_1second()
         {
             string result = Age.ToRelative(TimeSpan.FromSeconds(1));
             Assert.AreEqual("1 second", result, "Submission age was not calculated.");
@@ -152,7 +152,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_1year()
+        public void Age_1year()
         {
             string result = Age.ToRelative(TimeSpan.FromDays(370));
             Assert.AreEqual("1 year", result, "Submission age was not calculated.");
@@ -162,7 +162,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_2Day()
+        public void Age_2Day()
         {
             string result = Age.ToRelative(TimeSpan.FromDays(2));
             Assert.AreEqual("2 days", result, "Submission age was not calculated.");
@@ -172,7 +172,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_2minutes()
+        public void Age_2minutes()
         {
             string result = Age.ToRelative(TimeSpan.FromMinutes(2));
             Assert.AreEqual("2 minutes", result, "Submission age was not calculated.");
@@ -182,7 +182,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_2years()
+        public void Age_2years()
         {
             string result = Age.ToRelative(TimeSpan.FromDays(369 * 2));
             Assert.AreEqual("2 years", result, "Submission age was not calculated.");
@@ -192,7 +192,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_3_1Days()
+        public void Age_3_1Days()
         {
             string result = Age.ToRelative(TimeSpan.FromDays(3.2));
             Assert.AreEqual("3 days", result, "Submission age was not calculated.");
@@ -202,7 +202,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_30seconds()
+        public void Age_30seconds()
         {
             string result = Age.ToRelative(TimeSpan.FromSeconds(30));
             Assert.AreEqual("30 seconds", result, "Submission age was not calculated.");
@@ -212,7 +212,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_52Day()
+        public void Age_52Day()
         {
             string result = Age.ToRelative(TimeSpan.FromDays(52));
             Assert.AreEqual("1 dog year", result, "Submission age was not calculated.");
@@ -222,7 +222,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_52minutes()
+        public void Age_52minutes()
         {
             string result = Age.ToRelative(TimeSpan.FromMinutes(52));
             Assert.AreEqual("1 microcentury", result, "Submission age was not calculated.");
@@ -232,7 +232,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_8months()
+        public void Age_8months()
         {
             string result = Age.ToRelative(TimeSpan.FromDays(8 * 31));
             Assert.AreEqual("8 months", result, "Submission age was not calculated.");
@@ -242,7 +242,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAge_90minutes()
+        public void Age_90minutes()
         {
             string result = Age.ToRelative(TimeSpan.FromMinutes(90));
             Assert.AreEqual(String.Format("{0} hours", 1.5), result, "Submission age was not calculated.");
@@ -252,7 +252,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Age")]
         [TestCategory("Calculation")]
         [TestCategory("Utility")]
-        public void Calc_SubmissionAgeDouble()
+        public void AgeDouble()
         {
             DateTime testDate = DateTime.UtcNow.AddDays(-143);
             double result = Submissions.CalcSubmissionAgeDouble(testDate);

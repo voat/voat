@@ -60,7 +60,7 @@ namespace Voat.Tests.QueryTests
     }
 
     //[TestClass]
-    public class QuerySubmissionTests : DatabaseRequiredUnitTest
+    public class QuerySubmissionTests 
     {
         [TestMethod]
         [TestCategory("Query")]

@@ -24,7 +24,6 @@ namespace Voat.Tests.Repository
             int start = 0;
             int end = 50;
 
-            
             var userName = String.Format(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, "0");
 
             if (context != null)

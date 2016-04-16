@@ -28,7 +28,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.Rules
 {
     [TestClass]
-    public class RulesTests : DatabaseRequiredUnitTest
+    public class RulesTests 
     {
         [TestMethod]
         [TestCategory("Rules")]

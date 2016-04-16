@@ -29,7 +29,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class VoteCommandTests : DatabaseRequiredUnitTest
+    public class VoteCommandTests 
     {
         #region Comment Vote Commands
 

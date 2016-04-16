@@ -11,7 +11,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.BugTraps
 {
     [TestClass]
-    public class BugTrapTests : DatabaseRequiredUnitTest
+    public class BugTrapTests
     {
         [TestMethod]
         [TestCategory("Bug")]

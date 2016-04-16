@@ -28,7 +28,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class CommentCommandTests : DatabaseRequiredUnitTest
+    public class CommentCommandTests 
     {
         #region Anon Comment Tests
 

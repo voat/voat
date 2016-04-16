@@ -28,7 +28,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class SubmissionCommandTests : DatabaseRequiredUnitTest
+    public class SubmissionCommandTests 
     {
         [TestMethod]
         [TestCategory("Command")]
