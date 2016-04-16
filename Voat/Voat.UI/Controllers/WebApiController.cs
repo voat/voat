@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Web.Http;
+using Voat.Caching;
 using Voat.Data.Models;
 using Voat.Models;
 using Voat.Models.ApiModels;
@@ -38,7 +39,7 @@ namespace Voat.Controllers
         public IEnumerable<string> DefaultSubverses()
         {
 
-            IEnumerable<string> defaultSubs = CacheHandler.Register<IEnumerable<string>>("LegacyApi.DefaultSubverses",
+            IEnumerable<string> defaultSubs = CacheHandler.Instance.Register<IEnumerable<string>>("LegacyApi.DefaultSubverses",
                new Func<IList<string>>(() =>
                {
                    using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -58,7 +59,7 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> BannedHostnames()
         {
-            IEnumerable<string> bannedSubs = CacheHandler.Register<IEnumerable<string>>("LegacyApi.BannedHostnames",
+            IEnumerable<string> bannedSubs = CacheHandler.Instance.Register<IEnumerable<string>>("LegacyApi.BannedHostnames",
               new Func<IList<string>>(() =>
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -73,7 +74,7 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> BannedUsers()
         {
-            IEnumerable<string> bannedUsers = CacheHandler.Register<IEnumerable<string>>("LegacyApi.BannedUsers",
+            IEnumerable<string> bannedUsers = CacheHandler.Instance.Register<IEnumerable<string>>("LegacyApi.BannedUsers",
               new Func<IList<string>>(() =>
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -103,7 +104,7 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> Top200Subverses()
         {
-            IEnumerable<string> top200 = CacheHandler.Register<IEnumerable<string>>("LegacyApi.Top200Subverses",
+            IEnumerable<string> top200 = CacheHandler.Instance.Register<IEnumerable<string>>("LegacyApi.Top200Subverses",
                 new Func<IList<string>>(() =>
                 {
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -125,10 +126,10 @@ namespace Voat.Controllers
 
             //IAmAGate: Perf mods for caching
             string cacheKey = String.Format("LegacyApi.Frontpage").ToLower();
-            List<ApiMessage> cacheData = CacheHandler.Retrieve<List<ApiMessage>>(cacheKey);
+            List<ApiMessage> cacheData = CacheHandler.Instance.Retrieve<List<ApiMessage>>(cacheKey);
             if (cacheData == null)
             {
-                cacheData = CacheHandler.Register(cacheKey, new Func<List<ApiMessage>>(() =>
+                cacheData = CacheHandler.Instance.Register(cacheKey, new Func<List<ApiMessage>>(() =>
                 {
 
                     // get only submissions from default subverses, order by rank
@@ -192,12 +193,12 @@ namespace Voat.Controllers
             }
             //IAmAGate: Perf mods for caching
             string cacheKey = String.Format("LegacyApi.SubverseFrontpage.{0}", subverse).ToLower();
-            object cacheData = CacheHandler.Retrieve(cacheKey);
+            object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
             if (cacheData == null)
             {
 
-                cacheData = CacheHandler.Register(cacheKey, new Func<object>(() =>
+                cacheData = CacheHandler.Instance.Register(cacheKey, new Func<object>(() =>
                 {
                     // get only submissions from given subverses, order by rank - ignoring messages in any given banned subverse
                     var frontpageSubmissions = (from message in _db.Submissions
@@ -264,7 +265,7 @@ namespace Voat.Controllers
         public ApiMessage SingleSubmission(int id)
         {
 
-            ApiMessage singleSubmission = CacheHandler.Register<ApiMessage>(String.Format("LegacyApi.SingleSubmission.{0}", id),
+            ApiMessage singleSubmission = CacheHandler.Instance.Register<ApiMessage>(String.Format("LegacyApi.SingleSubmission.{0}", id),
               new Func<ApiMessage>(() =>
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -405,7 +406,7 @@ namespace Voat.Controllers
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            ApiUserInfo userInfo = CacheHandler.Register<ApiUserInfo>(String.Format("LegacyApi.UserInfo.{0}", userName),
+            ApiUserInfo userInfo = CacheHandler.Instance.Register<ApiUserInfo>(String.Format("LegacyApi.UserInfo.{0}", userName),
               new Func<ApiUserInfo>(() =>
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -437,7 +438,7 @@ namespace Voat.Controllers
         public ApiBadge BadgeInfo(string badgeId)
         {
 
-            ApiBadge badgeInfo = CacheHandler.Register<ApiBadge>(String.Format("LegacyApi.ApiBadge.{0}", badgeId),
+            ApiBadge badgeInfo = CacheHandler.Instance.Register<ApiBadge>(String.Format("LegacyApi.ApiBadge.{0}", badgeId),
              new Func<ApiBadge>(() =>
              {
                  using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -481,11 +482,11 @@ namespace Voat.Controllers
             }
 
             string cacheKey = String.Format("LegacyApi.SubmissionComments.{0}", submissionId).ToLower();
-            IEnumerable<ApiComment> cacheData = CacheHandler.Retrieve<IEnumerable<ApiComment>>(cacheKey);
+            IEnumerable<ApiComment> cacheData = CacheHandler.Instance.Retrieve<IEnumerable<ApiComment>>(cacheKey);
 
             if (cacheData == null)
             {
-                cacheData = CacheHandler.Register(cacheKey, new Func<IEnumerable<ApiComment>>(() =>
+                cacheData = CacheHandler.Instance.Register(cacheKey, new Func<IEnumerable<ApiComment>>(() =>
                 {
 
                     var firstComments = from f in submission.Comments
@@ -544,7 +545,7 @@ namespace Voat.Controllers
         [HttpGet]
         public ImageBucket Top100ImagesByDate()
         {
-            IEnumerable<ResponseItem> top100ImagesByDate = CacheHandler.Register<IEnumerable<ResponseItem>>("LegacyApi.Top100ImagesByDate",
+            IEnumerable<ResponseItem> top100ImagesByDate = CacheHandler.Instance.Register<IEnumerable<ResponseItem>>("LegacyApi.Top100ImagesByDate",
                 () =>
                 {
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))

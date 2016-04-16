@@ -16,7 +16,7 @@
 @{
     var commentCount = Model.Comments.Count(c => !c.IsDeleted);
     
-    string postAge = Submissions.CalcSubmissionAge(Model.CreationDate);
+    string postAge = Age.ToRelative(Model.CreationDate);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
     int submissionScore = (int)(Model.UpCount - Model.DownCount);
 

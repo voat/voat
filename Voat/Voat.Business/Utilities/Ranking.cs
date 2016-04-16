@@ -15,6 +15,7 @@ All Rights Reserved.
 using System;
 using Voat.Data.Models;
 using System.Linq;
+using Voat.Caching;
 
 namespace Voat.Utilities
 {
@@ -26,7 +27,7 @@ namespace Voat.Utilities
         }
         public static double? GetSubverseHighestRanking(string subverse)
         {
-            var highestRank =  CacheHandler.Register(GetHighestRankingCacheKey(subverse), new Func<double?>(() => {
+            var highestRank =  CacheHandler.Instance.Register(GetHighestRankingCacheKey(subverse), new Func<double?>(() => {
                 using (var db = new voatEntities())
                 {
                     var submission = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == subverse).FirstOrDefault();
@@ -49,7 +50,7 @@ namespace Voat.Utilities
             {
                 if (highestRankCacheEntry < newRank)
                 {
-                    CacheHandler.Replace(GetHighestRankingCacheKey(subverse), new Func<double?, double?>(current => highestRankCacheEntry));
+                    CacheHandler.Instance.Replace(GetHighestRankingCacheKey(subverse), new Func<double?, double?>(current => highestRankCacheEntry));
                 }
             }
         }

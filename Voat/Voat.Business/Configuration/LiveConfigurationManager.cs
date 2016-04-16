@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.IO;
+using System.Reflection;
 using System.Web;
 using System.Xml;
+using Voat.Caching;
 using Voat.Utilities;
 
 namespace Voat.Configuration
@@ -64,9 +66,17 @@ namespace Voat.Configuration
                     {
                         if (_thewatchmen == null)
                         {
-                            _thewatchmen = new FileSystemWatcher(HttpContext.Current.Server.MapPath("~/"), "Web.config.live");
+                            if (HttpContext.Current != null)
+                            {
+                                _thewatchmen = new FileSystemWatcher(HttpContext.Current.Server.MapPath("~/"), "Web.config.live");
+                            }
+                            else 
+                            {
+                                _thewatchmen = new FileSystemWatcher(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Web.config.live");
+                            }
+
                             _thewatchmen.NotifyFilter = NotifyFilters.LastWrite;
-                            
+
                             _thewatchmen.Changed += (object sender, FileSystemEventArgs e) =>
                             {
                                 Reload(e.FullPath);
@@ -95,6 +105,7 @@ namespace Voat.Configuration
                 }
                 catch (Exception ex) { 
                     /*no-op*/
+                    
                 }
             }
         }
@@ -138,7 +149,7 @@ namespace Voat.Configuration
                 SetValueIfPresent<bool>(CONFIGURATION.UseContentDeliveryNetwork, section[CONFIGURATION.UseContentDeliveryNetwork]);
 
                 //HACK ATTACK
-                CacheHandler.CacheEnabled = !Settings.CacheDisabled;
+                CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;
             }
         }
 
@@ -172,7 +183,9 @@ namespace Voat.Configuration
                         Settings.configValues[key] = saveValue;
                     }
                 }
-                catch { }
+                catch (Exception ex) {
+                    
+                }
             }
         }
 

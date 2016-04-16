@@ -1,123 +1,121 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿#region LICENSE
+
+/*
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
 
 namespace Voat.RulesEngine
-{
 
-    public enum RuleAction { 
-        Create,
-        Edit,
-        Delete,
-        View
+{
+    public enum RuleAction
+    {
+        Create = 1,
+        Edit = 2,
+        Delete = 4,
+        View = 8,
+        UpVote = 16,
+        DownVote = 32
     }
 
-    public enum RuleArea { 
-        Comment,
-        Submission,
-        Subverse,
-        Set
+    public enum RuleArea
+    {
+        Comment = 128,
+        Submission = 256,
+        Subverse = 512,
+        Profile = 1024,
+        Message = 2048,
+        //Set = 2048
     }
 
     /// <summary>
     /// The scope at which this rule applies
     /// </summary>
-    public enum RuleScope : int {
+    public enum RuleScope : int
+    {
+        /// <summary>
+        /// Applies globally to every action.
+        /// </summary>
+        Global = 0,
+
+        #region C-C-C-COMBOs
 
         /// <summary>
-        /// Applies globally to every action. 
+        /// Applies to any posting of new content
         /// </summary>
-        Global = -1,
-
-        /// <summary>
-        /// Applies to any downvote action
-        /// </summary>
-        DownVote = 1,
-
-        /// <summary>
-        /// Applies to any upvote action
-        /// </summary>
-        UpVote = 2,
-
-        /// <summary>
-        /// Applies to any submission action
-        /// </summary>
-        Submission = 4,
-
-        /// <summary>
-        /// Applies to any comment action
-        /// </summary>
-        Comment = 8,
-
-        /// <summary>
-        /// Applies to any subverse action
-        /// </summary>
-        Subverse = 16,
-
-
-        Message = 32,
-        /// <summary>
-        /// Applies to any post action (posting of both comments and submissions)
-        /// </summary>
-        Post = 16,
-        
-        //Create = Post,
-
-        Delete = 32,
-        
-        Edit = 64,
-
-        View = 128,
-
-        ///// <summary>
-        ///// MAYBE? Applies to any view action (posting of both comments and submissions)
-        ///// </summary>
-        //View = 32,
-
-        #region CccccCOMBOs
+        Post = RuleAction.Create,
 
         /// <summary>
         /// Applies to the posting of new comments
         /// </summary>
-        PostComment = Post | Comment,
+        PostComment = RuleAction.Create | RuleArea.Comment,
 
         /// <summary>
         /// Applies to the posting of new submissions
         /// </summary>
-        PostSubmission = Post | Submission,
+        PostSubmission = RuleAction.Create | RuleArea.Submission,
+
+        /// <summary>
+        /// Applies to the posting of new submissions
+        /// </summary>
+        PostMessage = RuleAction.Create | RuleArea.Message,
 
         /// <summary>
         /// Applies to the upvoting of comments
         /// </summary>
-        UpVoteComment = UpVote | Comment,
+        UpVoteComment = RuleAction.UpVote | RuleArea.Comment,
 
         /// <summary>
         /// Applies to the downvoting of comments
         /// </summary>
-        DownVoteComment = DownVote | Comment,
+        DownVoteComment = RuleAction.DownVote | RuleArea.Comment,
 
         /// <summary>
         /// Applies to the upvoting of submissions
         /// </summary>
-        UpVoteSubmission = UpVote | Submission,
+        UpVoteSubmission = RuleAction.UpVote | RuleArea.Submission,
 
         /// <summary>
         /// Applies to the downvoting of submissions
         /// </summary>
-        DownVoteSubmission = DownVote | Submission,
+        DownVoteSubmission = RuleAction.DownVote | RuleArea.Submission,
+
+        /// <summary>
+        /// Applies to any up vote operation
+        /// </summary>
+        UpVote = RuleAction.UpVote,
+
+        /// <summary>
+        /// Applies to any down vote operation
+        /// </summary>
+        DownVote = RuleAction.DownVote,
 
         /// <summary>
         /// Applies to any vote operation
         /// </summary>
-        Vote = DownVote | UpVote
+        Vote = RuleAction.DownVote | RuleAction.UpVote,
 
-        //,
-        //ViewComment = View | Comment,
-        //ViewSubmission = View | Submission
+        /// <summary>
+        /// Applies to viewing of a subverse
+        /// </summary>
+        ViewSubverse = RuleAction.View | RuleArea.Subverse
 
-        #endregion 
+        #endregion C-C-C-COMBOs
 
     }
-
 }

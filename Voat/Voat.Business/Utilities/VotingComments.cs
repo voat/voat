@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Linq;
+using Voat.Data;
 //using Microsoft.AspNet.SignalR;
 using Voat.Data.Models;
 
@@ -55,7 +56,7 @@ namespace Voat.Utilities
                                 CommentID = commentId,
                                 UserName = userWhichUpvoted,
                                 VoteStatus = 1,
-                                CreationDate = DateTime.Now,
+                                CreationDate = Repository.CurrentDate,
                                 IPAddress = clientIpHash
                             };
                             db.CommentVoteTrackers.Add(tmpVotingTracker);
@@ -80,7 +81,7 @@ namespace Voat.Utilities
                             if (votingTracker != null)
                             {
                                 votingTracker.VoteStatus = 1;
-                                votingTracker.CreationDate = DateTime.Now;
+                                votingTracker.CreationDate = Repository.CurrentDate;
                             }
                             db.SaveChanges();
 
@@ -128,7 +129,7 @@ namespace Voat.Utilities
 
                 // do not execute downvoting if comment is older than 7 days
                 var commentPostingDate = comment.CreationDate;
-                TimeSpan timeElapsed = DateTime.Now - commentPostingDate;
+                TimeSpan timeElapsed = Repository.CurrentDate - commentPostingDate;
                 if (timeElapsed.TotalDays > 7)
                 {
                     return;
@@ -158,7 +159,7 @@ namespace Voat.Utilities
                             CommentID = commentId,
                             UserName = userWhichDownvoted,
                             VoteStatus = -1,
-                            CreationDate = DateTime.Now,
+                            CreationDate = Repository.CurrentDate,
                             IPAddress = clientIpHash
                         };
                         db.CommentVoteTrackers.Add(tmpVotingTracker);
@@ -182,7 +183,7 @@ namespace Voat.Utilities
                         if (votingTracker != null)
                         {
                             votingTracker.VoteStatus = -1;
-                            votingTracker.CreationDate = DateTime.Now;
+                            votingTracker.CreationDate = Repository.CurrentDate;
                         }
                         db.SaveChanges();
 

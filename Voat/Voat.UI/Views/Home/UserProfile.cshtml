@@ -134,7 +134,7 @@
                                         <span class="userstats-submission-score">@score points</span>
                                         <span class="score likes">@item.UpCount points</span>
                                         <span class="commentvotesratio">(<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</span>
-                                        <time title="@item.CreationDate" datetime="@item.CreationDate">@Submissions.CalcSubmissionAge(item.CreationDate)</time> ago
+                                        <time title="@item.CreationDate" datetime="@item.CreationDate">@Age.ToRelative(item.CreationDate)</time> ago
                                     </p>
                                     <div class="usertext-body">
                                         <div class="md">
@@ -194,7 +194,7 @@
                                         <span class="userstats-submission-score">@score points</span>
                                         <span class="score likes">@item.UpCount points</span>
                                         <span class="commentvotesratio">(<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</span>
-                                        <time title="@item.CreationDate" datetime="@item.CreationDate">@Submissions.CalcSubmissionAge(item.CreationDate)</time> ago
+                                        <time title="@item.CreationDate" datetime="@item.CreationDate">@Age.ToRelative(item.CreationDate)</time> ago
                                     </p>
                                     <div class="usertext-body">
                                         <div class="md">

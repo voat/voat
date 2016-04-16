@@ -57,7 +57,7 @@
 
 
     @{
-        string postAge = Submissions.CalcSubmissionAge(Model.CreationDate);
+        string postAge = Age.ToRelative(Model.CreationDate);
         int commentScore = (int)(Model.UpCount - Model.DownCount);
 
         @*

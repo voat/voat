@@ -63,7 +63,17 @@
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Usersets" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetsubscriptions_Usersets" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="Models.Ad" Width="1.5" PointX="12.375" PointY="11.75" />
+        <EntityTypeShape EntityType="Models.AdminLog" Width="1.5" PointX="12.375" PointY="11.75" />
+        <EntityTypeShape EntityType="Models.ApiClient" Width="1.5" PointX="14.375" PointY="0.5" />
+        <EntityTypeShape EntityType="Models.ApiLog" Width="1.5" PointX="14.375" PointY="4.75" />
+        <EntityTypeShape EntityType="Models.ApiThrottlePolicy" Width="1.5" PointX="14.375" PointY="8.75" />
+        <EntityTypeShape EntityType="Models.EventLog" Width="1.5" PointX="14.375" PointY="11.75" />
+        <EntityTypeShape EntityType="Models.ApiCorsPolicy" Width="1.5" PointX="14.375" PointY="15.75" />
+        <EntityTypeShape EntityType="Models.ApiPermissionPolicy" Width="1.5" PointX="12.125" PointY="16.75" />
+        <EntityTypeShape EntityType="Models.UserBlockedUser" Width="1.5" PointX="16.375" PointY="0.75" />
+        <AssociationConnector Association="Models.FK_ApiClient_ApiPermissionPolicy" />
+        <AssociationConnector Association="Models.FK_ApiClient_ApiThrottlePolicy" />
+        <EntityTypeShape EntityType="Models.Ad" Width="1.5" PointX="16.375" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

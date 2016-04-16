@@ -1,19 +1,28 @@
-﻿/*
-This source file is subject to version 3 of the GPL license,
-that is bundled with this package in the file LICENSE, and is
-available online at http://www.gnu.org/licenses/gpl.txt;
-you may not use this file except in compliance with the License.
+﻿#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
+
+    All Rights Reserved.
+
 */
 
-using System;
+#endregion LICENSE
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using System;
 using Voat.Utilities;
 
 namespace Voat.Tests.Utils
@@ -22,6 +31,7 @@ namespace Voat.Tests.Utils
     public class UrlUtilityTests
     {
         [TestMethod]
+        [TestCategory("Utility")]
         public void GetYoutubeIdFromUrl()
         {
             var expected = "Gjk5udJY_gM";
@@ -36,6 +46,17 @@ namespace Voat.Tests.Utils
         }
 
         [TestMethod]
+        [TestCategory("Utility")]
+        public void TestEscapedQuotesInTitle()
+        {
+            Uri testUri = new Uri("https://lwn.net/Articles/653411/");
+
+            string result = UrlUtility.GetTitleFromUri(testUri.ToString());
+            Assert.AreEqual("\"Big data\" features coming in PostgreSQL 9.5 [LWN.net]", result, "HTML in title not properly decoded");
+        }
+
+        [TestMethod]
+        [TestCategory("Utility")]
         public void TestGetDomainFromUri()
         {
             Uri testUri = new Uri("http://www.youtube.com");
@@ -45,6 +66,7 @@ namespace Voat.Tests.Utils
         }
 
         [TestMethod]
+        [TestCategory("Utility")]
         public void TestGetTitleFromUri()
         {
             const string testUri = "http://www.google.com";
@@ -53,6 +75,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual("Google", result, "Unable to extract title from given Uri.");
         }
 
+        [TestCategory("Utility")]
         [TestMethod]
         public void TestIsUriValid()
         {
@@ -63,15 +86,7 @@ namespace Voat.Tests.Utils
         }
 
         [TestMethod]
-        public void TestEscapedQuotesInTitle()
-        {
-            Uri testUri = new Uri("https://lwn.net/Articles/653411/");
-
-            string result = UrlUtility.GetTitleFromUri(testUri.ToString());
-            Assert.AreEqual("\"Big data\" features coming in PostgreSQL 9.5 [LWN.net]", result, "HTML in title not properly decoded");
-        }
-
-        [TestMethod]
+        [TestCategory("Utility")]
         public void TestTagInTitle()
         {
             Uri testUri = new Uri("http://stackoverflow.com/questions/1348683/will-the-b-and-i-tags-ever-become-deprecated");

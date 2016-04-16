@@ -17,12 +17,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Voat.Data;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
 {
     public static class MesssagingUtility
     {
+        [Obsolete("Use SendMessageCommand object")]
         // a method to send a private message to a user, invoked by other methods
         public static bool SendPrivateMessage(string sender, string recipientList, string subject, string body)
         {
@@ -78,7 +80,7 @@ namespace Voat.Utilities
                                 {
                                     Sender = sender,
                                     Recipient = moderator.UserName,
-                                    CreationDate = DateTime.Now,
+                                    CreationDate = Repository.CurrentDate,
                                     Subject = String.Format("[v/{0}] {1}", recipient, subject),
                                     Body = body,
                                     IsUnread = true,
@@ -93,13 +95,13 @@ namespace Voat.Utilities
                     //ensure proper cased
                     recipient = UserHelper.OriginalUsername(recipient);
 
-                    if (Voat.Utilities.UserHelper.UserExists(recipient))
+                    if (!String.IsNullOrEmpty(recipient) && Voat.Utilities.UserHelper.UserExists(recipient))
                     {
                         messages.Add(new PrivateMessage
                         {
                             Sender = sender,
                             Recipient = recipient,
-                            CreationDate = DateTime.Now,
+                            CreationDate = Repository.CurrentDate,
                             Subject = subject,
                             Body = body,
                             IsUnread = true,

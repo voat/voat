@@ -7,7 +7,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using Voat.Business.Utilities;
+using Voat.Utilities;
 using Voat.Configuration;
 
 namespace Voat.Utilities

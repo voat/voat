@@ -1,50 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using Voat.Data.Models;
 using Voat.RulesEngine;
+using Voat.Utilities;
 
 namespace Voat.Rules
 {
-
-    public class BaseSubverseMinCCPRule : BaseVoatRule {
-
-
+    public class BaseSubverseMinCCPRule : VoatRule
+    {
         public BaseSubverseMinCCPRule(string name, string number, RuleScope scope)
-            : base(name, number, scope) {
+            : base(name, number, scope)
+        {
         }
 
-        public override IDictionary<string, Type> RequiredContext {
-            get {
-                return new Dictionary<string, Type>() { { "SubverseName", typeof(string) } };
+        public override IDictionary<string, Type> RequiredContext
+        {
+            get
+            {
+                return new Dictionary<string, Type>() { { "Subverse", typeof(Subverse) } };
             }
         }
-        public override RuleOutcome Evaluate() {
 
-            if (String.IsNullOrEmpty(Context.SubverseName)) {
-                
-                throw new VoatRuleExeception("SubverseName is a required value for rule evaluation.");
+        protected override RuleOutcome EvaluateRule(VoatRuleContext context)
+        {
+            var subverse = context.Subverse;
 
+            int? subMinCCP = subverse.MinCCPForDownvote;
+
+            if (subMinCCP.HasValue && subMinCCP.Value > 0)
+            {
+                int subverseUserCCP = Karma.CommentKarmaForSubverse(context.UserName, subverse.Name);
+
+                if (subverseUserCCP < subMinCCP.Value)
+                {
+                    return CreateOutcome(RuleResult.Denied, String.Format("User {0} has {1} CPP in subverse '{2}' and {3} is required to downvote.", context.UserName, subverseUserCCP, subverse.Name, subMinCCP.Value.ToString()));
+                }
             }
-            
-            //using (DataGateway db = new DataGateway()) {
 
-            //    var sub = db.GetSubverseInfo(Context.SubverseName);
-
-            //    int? subMinCCP = sub.minimumdownvoteccp;
-
-            //    if (subMinCCP.HasValue && subMinCCP.Value > 0) {
-
-            //        int subverseUserCCP = Karma.CommentKarmaForSubverse(Context.UserName, Context.SubverseName);
-
-            //        if (subverseUserCCP < subMinCCP.Value) {
-
-            //            return CreateOutcome(RuleResult.Denied, String.Format("User {0} has {1} CPP in subverse '{2}' and {3} is required to downvote.", Context.UserName, subverseUserCCP, Context.SubverseName, subMinCCP.Value.ToString()));
-                    
-            //        }
-
-            //    }
-            //}
-            return Allowed;
+            return base.EvaluateRule(context);
         }
-    
     }
 }

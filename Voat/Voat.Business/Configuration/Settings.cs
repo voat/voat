@@ -47,7 +47,6 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.DailyPostingQuotaForNegativeScore];
             }
         }
-
         public static int DailyPostingQuotaPerSub
         {
             get

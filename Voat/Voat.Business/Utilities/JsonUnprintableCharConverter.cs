@@ -6,7 +6,6 @@ namespace Voat.Utilities
 {
     public class JsonUnprintableCharConverter : JsonConverter
     {
-
         public override bool CanConvert(Type objectType)
         {
             return true;

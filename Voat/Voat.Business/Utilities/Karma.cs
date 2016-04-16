@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Web.Caching;
+using Voat.Data;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
@@ -38,11 +39,11 @@ namespace Voat.Utilities
             return String.Format("{0}_{1}_{2}", userName, type.ToString(), subverse ?? "none");
         }
 
-        private static Cache Cache
+        private static System.Runtime.Caching.MemoryCache Cache
         {
             get
             {
-                return System.Web.HttpContext.Current.Cache;
+                return System.Runtime.Caching.MemoryCache.Default;
             }
         }
 
@@ -77,7 +78,7 @@ namespace Voat.Utilities
                 }
                 long l = (long)cmd.ExecuteScalar();
                 count = (int)l;
-                Cache.Insert(cacheKey, count, null, DateTime.Now.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
 
             }
 
@@ -138,7 +139,8 @@ namespace Voat.Utilities
                 }
                 long l = (long)cmd.ExecuteScalar();
                 count = (int)l;
-                Cache.Insert(cacheKey, count, null, DateTime.Now.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                //Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
 
             }
 
@@ -193,7 +195,8 @@ namespace Voat.Utilities
                 }
                 long l = (long)cmd.ExecuteScalar();
                 count = (int)l;
-                Cache.Insert(cacheKey, count, null, DateTime.Now.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                //Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
 
             }
 
@@ -257,7 +260,8 @@ namespace Voat.Utilities
                 }
                 long l = (long)cmd.ExecuteScalar();
                 count = (int)l;
-                Cache.Insert(cacheKey, count, null, DateTime.Now.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                //Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
 
             }
 
@@ -319,7 +323,8 @@ namespace Voat.Utilities
                 }
                 count = (int)cmd.ExecuteScalar();
                 //count = (int)l;
-                Cache.Insert(cacheKey, count, null, DateTime.Now.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                //Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
+                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
 
             }
 

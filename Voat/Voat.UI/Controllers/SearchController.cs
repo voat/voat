@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Data.Models;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -62,12 +63,12 @@ namespace Voat.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
                 
-                string cacheKey = CacheHandler.Keys.Search(sub, q);
-                IList<Submission> cacheData = (IList<Submission>)CacheHandler.Retrieve(cacheKey);
+                string cacheKey = DataCache.Keys.Search(sub, q);
+                IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
                 if (cacheData == null) {
 
 
-                    cacheData = (IList<Submission>)CacheHandler.Register(cacheKey, new Func<object>(() =>
+                    cacheData = (IList<Submission>)CacheHandler.Instance.Register(cacheKey, new Func<object>(() =>
                     {
                         var results = (from m in _db.Submissions
                                        join s in _db.Subverses on m.Subverse equals s.Name
@@ -102,11 +103,11 @@ namespace Voat.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
 
-                string cacheKey = CacheHandler.Keys.Search(q);
-                IList<Submission> cacheData = (IList<Submission>)CacheHandler.Retrieve(cacheKey);
+                string cacheKey = DataCache.Keys.Search(q);
+                IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
                 if (cacheData == null)
                 {
-                    cacheData = (IList<Submission>)CacheHandler.Register(cacheKey, new Func<object>(() =>
+                    cacheData = (IList<Submission>)CacheHandler.Instance.Register(cacheKey, new Func<object>(() =>
                     {
                         var results = (from m in _db.Submissions
                                        join s in _db.Subverses on m.Subverse equals s.Name

@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Voat.Caching;
 using Voat.Data.Models;
 using Voat.Utilities.Components;
 
@@ -23,11 +24,11 @@ namespace Voat.Utilities
 {
     public class BanningUtility
     {
-
         public static bool ContentContainsBannedDomain(string subverse, string comment)
         {
             if (!String.IsNullOrEmpty(comment))
             {
+                //TODO: Change this to Query
                 var s = DataCache.Subverse.Retrieve(subverse);
                 if (s == null || (s != null && !s.ExcludeSitewideBans))
                 {

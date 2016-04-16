@@ -29,6 +29,7 @@ using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.UI.Utilities;
 using Voat.Configuration;
+using Voat.Caching;
 
 namespace Voat.Controllers
 {
@@ -515,7 +516,7 @@ namespace Voat.Controllers
 
                     //IAmAGate: Perf mods for caching
                     string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
-                    Tuple<IList<Submission>, int> cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Retrieve(cacheKey);
+                    Tuple<IList<Submission>, int> cacheData = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKey);
 
                     if (cacheData == null)
                     {
@@ -530,7 +531,7 @@ namespace Voat.Controllers
                             }
                         });
 
-                        cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                        cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
                     }
 
                     PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(cacheData.Item1, pageNumber, pageSize, cacheData.Item2);
@@ -589,7 +590,7 @@ namespace Voat.Controllers
                 //NEW LOGIC
                 //IAmAGate: Perf mods for caching
                 string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "rank").ToLower();
-                Tuple<IList<Submission>, int> cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Retrieve(cacheKeyAll);
+                Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
                 if (cacheDataAll == null)
                 {
@@ -603,7 +604,7 @@ namespace Voat.Controllers
                             return new Tuple<IList<Submission>, int>(content, count);
                         }
                     });
-                    cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber > 2) ? 5 : 0);
+                    cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber > 2) ? 5 : 0);
                 }
                 paginatedSfwSubmissions = new PaginatedList<Submission>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
                 return View(paginatedSfwSubmissions);
@@ -1709,7 +1710,7 @@ namespace Voat.Controllers
 
                 //IAmAGate: Perf mods for caching
                 string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
-                Tuple<IList<Submission>, int> cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Retrieve(cacheKey);
+                Tuple<IList<Submission>, int> cacheData = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKey);
 
                 if (cacheData == null)
                 {
@@ -1724,7 +1725,7 @@ namespace Voat.Controllers
                         }
                     });
 
-                    cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                    cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
                 }
 
                 ////IAmAGate: Perf mods for caching
@@ -1827,7 +1828,7 @@ namespace Voat.Controllers
                     int pageNumber = page.HasValue ? page.Value : 0;
                     int size = pageSize;
                     string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "new").ToLower();
-                    Tuple<IList<Submission>, int> cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Retrieve(cacheKeyAll);
+                    Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
                     if (cacheDataAll == null)
                     {
@@ -1842,7 +1843,7 @@ namespace Voat.Controllers
                             }
                         });
 
-                        cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                        cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
                     }
                     paginatedSubmissions = new PaginatedList<Submission>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
 
@@ -1867,7 +1868,7 @@ namespace Voat.Controllers
                 //IAmAGate: Perf mods for caching
                 int pageNumber = page.HasValue ? page.Value : 0;
                 string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.nsfw", "all", pageNumber, "new").ToLower();
-                Tuple<IList<Submission>, int> cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Retrieve(cacheKeyAll);
+                Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
                 if (cacheDataAll == null)
                 {
@@ -1882,7 +1883,7 @@ namespace Voat.Controllers
                         }
                     });
 
-                    cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                    cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
                 }
                 paginatedSubmissions = new PaginatedList<Submission>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
 
@@ -1905,7 +1906,7 @@ namespace Voat.Controllers
         public ActionResult TopViewedSubmissions24Hours()
         {
             //var submissions = 
-            var cacheData = CacheHandler.Register("TopViewedSubmissions24Hours", new Func<object>(() =>
+            var cacheData = CacheHandler.Instance.Register("TopViewedSubmissions24Hours", new Func<object>(() =>
             {
                 using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                 {

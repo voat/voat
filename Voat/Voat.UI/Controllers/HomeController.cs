@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Data.Models;
 using Voat.Models;
 using Voat.Models.ViewModels;
@@ -312,7 +313,7 @@ namespace Voat.Controllers
                     int pagesToTake = 2;
                     int subset = pageNumber / pagesToTake;
                     string cacheKey = String.Format("front.{0}.block.{1}.sort.rank", User.Identity.Name, subset);
-                    object cacheData = CacheHandler.Retrieve(cacheKey);
+                    object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
                     if (cacheData == null)
                     {
@@ -345,7 +346,7 @@ namespace Voat.Controllers
 
                         });
                         //now with new and improved locking
-                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5));
+                        cacheData = CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5));
                     }
                     var set = ((IList<Submission>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
                     PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(set, pageNumber, pageSize, 50000);
@@ -371,7 +372,7 @@ namespace Voat.Controllers
         {
             //IAmAGate: Perf mods for caching
             string cacheKey = String.Format("front.guest.page.{0}.sort.rank", pageNumber);
-            IList<Submission> cacheData = CacheHandler.Retrieve<IList<Submission>>(cacheKey);
+            IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
             if (cacheData == null)
             {
 
@@ -393,7 +394,7 @@ namespace Voat.Controllers
                     }
                 });
                 //Now with it's own locking!
-                cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
+                cacheData = CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
             }
 
             return cacheData;
@@ -514,7 +515,7 @@ namespace Voat.Controllers
                     int pagesToTake = 2;
                     int subset = pageNumber / pagesToTake;
                     string cacheKey = String.Format("front.{0}.block.{1}.sort.new", User.Identity.Name, subset);
-                    object cacheData = CacheHandler.Retrieve(cacheKey);
+                    object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
                     if (cacheData == null)
                     {
@@ -534,7 +535,7 @@ namespace Voat.Controllers
                             }
                         });
                         //now with new and improved locking
-                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5), 1);
+                        cacheData = CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5), 1);
                     }
                     var set = ((IList<Submission>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
 
@@ -546,7 +547,7 @@ namespace Voat.Controllers
 
                     //IAmAGate: Perf mods for caching
                     string cacheKey = String.Format("front.guest.page.{0}.sort.new", pageNumber);
-                    object cacheData = CacheHandler.Retrieve(cacheKey);
+                    object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
                     if (cacheData == null)
                     {
@@ -565,7 +566,7 @@ namespace Voat.Controllers
                         });
 
                         //now with new and improved locking
-                        cacheData = CacheHandler.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
+                        cacheData = CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
                     }
                     PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>((IList<Submission>)cacheData, pageNumber, pageSize, 50000);
 

@@ -20,8 +20,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data.Models;
+using Voat.Domain.Models;
 using Voat.Models;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -352,7 +354,7 @@ namespace Voat.Controllers
         [Authorize]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Comment commentModel)
+        public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
             commentModel.CreationDate = DateTime.Now;
             commentModel.UserName = User.Identity.Name;
@@ -487,7 +489,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> EditComment([Bind(Include = "ID, Content")] Comment commentModel)
+        public async Task<ActionResult> EditComment([Bind(Include = "ID, Content")] Data.Models.Comment commentModel)
         {
             if (ModelState.IsValid)
             {

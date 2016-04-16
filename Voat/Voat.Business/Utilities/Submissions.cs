@@ -17,7 +17,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using Voat.Common;
 using Voat.Configuration;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Utilities.Components;
 
@@ -27,64 +29,11 @@ namespace Voat.Utilities
     {
         private const double Tolerance = 0.01;
 
-        // calculate submission age in days, hours or minutes for use in views
-        public static string CalcSubmissionAge(DateTime inPostingDateTime)
-        {
-            var currentDateTime = DateTime.Now;
-            var duration = currentDateTime - inPostingDateTime;
-            return CalcSubmissionAge(duration);
-        }
-
-        private static string IsPlural(int amount)
-        {
-            return (amount == 1 ? "" : "s");
-        }
-
-        public static string CalcSubmissionAge(TimeSpan span)
-        {
-
-            string result = "No idea when this was posted...";
-
-            if (span.TotalDays > 365)
-            {
-                //years
-                double years = Math.Round(span.TotalDays / 365, 1);
-                result = String.Format("{0} year{1}", years, (years > 1.0 ? "s" : ""));
-            }
-            else if (span.TotalDays > 31)
-            {
-                //months
-                int months = (int)(span.TotalDays / 31);
-                result = String.Format("{0} month{1}", months, IsPlural(months));
-            }
-            else if (span.TotalHours >= 24)
-            {
-                //days 
-                result = String.Format("{0} day{1}", (int)span.TotalDays, IsPlural((int)span.TotalDays));
-            }
-            else if (span.TotalHours > 1 || Math.Abs(span.TotalHours - 1) < Tolerance)
-            {
-                //hours
-                result = String.Format("{0} hour{1}", (int)span.TotalHours, IsPlural((int)span.TotalHours));
-            }
-            else if (span.TotalSeconds >= 60)
-            {
-                //minutes
-                result = String.Format("{0} minute{1}", (int)span.TotalMinutes, IsPlural((int)span.TotalMinutes));
-            }
-            else
-            {
-                //seconds
-                result = String.Format("{0} second{1}", (int)span.TotalSeconds, IsPlural((int)span.TotalSeconds));
-            }
-
-            return result;
-        }
-
+        
         // calculate submission age in hours from posting date for ranking purposes
         public static double CalcSubmissionAgeDouble(DateTime inPostingDateTime)
         {
-            var currentDateTime = DateTime.Now;
+            var currentDateTime = Repository.CurrentDate;
             var duration = currentDateTime - inPostingDateTime;
 
             return duration.TotalHours;
@@ -184,7 +133,7 @@ namespace Voat.Utilities
                     submissionModel.IsAnonymized = targetSubverse.IsAnonymized;
                     submissionModel.UserName = userName;
                     submissionModel.Subverse = targetSubverse.Name;
-                    submissionModel.CreationDate = DateTime.Now;
+                    submissionModel.CreationDate = Repository.CurrentDate;
                     submissionModel.UpCount = 1;
                     db.Submissions.Add(submissionModel);
 
@@ -205,7 +154,7 @@ namespace Voat.Utilities
             // null is returned if no errors were raised
             return null;
         }
-
+        [Obsolete("Implemented via SubmissionThrottleRule rule")]
         // various spam checks, to be replaced with new rule engine
         public static async Task<string> PreAddSubmissionCheck(Submission submissionModel, HttpRequestBase request, string userName, Subverse targetSubverse, Func<HttpRequestBase, Task<bool>> captchaValidator)
         {

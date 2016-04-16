@@ -14,7 +14,7 @@ All Rights Reserved.
 
 using System.Text.RegularExpressions;
 
-namespace Voat.Business.Utilities
+namespace Voat.Utilities
 {
     public static class AccountSecurity
     {

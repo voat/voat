@@ -40,7 +40,7 @@
     bool childTohiddenParent = ViewBag.ChildToHiddenParent ?? false;
 
     DateTime submissionDate = comment.CreationDate;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Age.ToRelative(submissionDate);
     string opName = Model.Submission.UserName;
     string commentAuthor = comment.UserName;
 
@@ -48,7 +48,7 @@
     string editedPostAge = "at some point in time";
     if (lastEditDate != null)
     {
-        editedPostAge = Submissions.CalcSubmissionAge((DateTime)lastEditDate);
+        editedPostAge = Age.ToRelative((DateTime)lastEditDate);
     }
 
     // apply class style if OP is the Comment Author

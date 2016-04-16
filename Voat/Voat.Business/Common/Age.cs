@@ -1,4 +1,5 @@
 ﻿using System;
+using Voat.Data;
 
 namespace Voat.Common
 {
@@ -10,19 +11,19 @@ namespace Voat.Common
     public static class Age
     {
 
-        public static string PluralizeIt(int amount, string unit)
+        private static string PluralizeIt(int amount, string unit)
         {
             return String.Format("{0} {1}{2}", amount, unit, (amount == 1 ? "" : "s"));
         }
 
-        public static string PluralizeIt(double amount, string unit)
+        private static string PluralizeIt(double amount, string unit)
         {
             return String.Format("{0} {1}{2}", (Math.Round(amount, 1)), unit, (Math.Round(amount, 1) == 1.0 ? "" : "s"));
         }
 
         public static string ToRelative(DateTime date)
         {
-            return ToRelative(DateTime.Now.Subtract(date));
+            return ToRelative(Repository.CurrentDate.Subtract(date));
         }
         public static string ToRelative(TimeSpan span)
         {
@@ -33,7 +34,7 @@ namespace Voat.Common
             {
 
                 //years
-                double years = Math.Round(span.TotalDays / 365, 1);
+                double years = Math.Round(span.TotalDays / 365f, 1);
                 result = PluralizeIt(years, "year");
 
             }
@@ -63,13 +64,13 @@ namespace Voat.Common
                 }
                 else
                 {
-                    result = PluralizeIt(days, "day");
+                    result = PluralizeIt(Math.Round(span.TotalDays, (span.TotalDays < 2 ? 1 : 0)), "day");
                 }
             }
-            else if (span.TotalHours > 1)
+            else if (span.TotalHours >= 1)
             {
                 //hours
-                if (span.TotalHours < 2)
+                if (span.TotalHours < 3)
                 {
                     result = PluralizeIt(span.TotalHours, "hour");
                 }
@@ -91,7 +92,7 @@ namespace Voat.Common
                     result = PluralizeIt(min, "minute");
                 }
             }
-            else
+            else if (span.TotalSeconds > 0)
             {
                 //seconds
                 if (Math.Round(span.TotalSeconds, 2).Equals(1.21))
@@ -100,7 +101,7 @@ namespace Voat.Common
                 }
                 else
                 {
-                    result = PluralizeIt((int)span.TotalSeconds, "second");
+                    result = PluralizeIt(Math.Max(1, Math.Round(span.TotalSeconds, 0)), "second");
                 }
             }
 

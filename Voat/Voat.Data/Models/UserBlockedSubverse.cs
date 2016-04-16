@@ -17,6 +17,7 @@ namespace Voat.Data.Models
         public int ID { get; set; }
         public string Subverse { get; set; }
         public string UserName { get; set; }
+        public System.DateTime CreationDate { get; set; }
     
         public virtual Subverse Subverse1 { get; set; }
     }

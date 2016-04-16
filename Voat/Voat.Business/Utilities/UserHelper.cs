@@ -20,7 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
-using Voat.Business.Utilities;
+using Voat.Utilities;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;

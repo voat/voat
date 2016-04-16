@@ -130,7 +130,7 @@ namespace Voat.Utilities.Components
                 var u = new UrlHelper(HttpContext.Current.Request.RequestContext, RouteTable.Routes);
                 return String.Format("[{0}]({1})", replace, u.Action("UserProfile", "Home", new { id = match.Groups["user"] }));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return String.Format("[{0}](https://voat.co/u/{1})", replace, match.Groups["user"].Value);
             }

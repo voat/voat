@@ -17,6 +17,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;

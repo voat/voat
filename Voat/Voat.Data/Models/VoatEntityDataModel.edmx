@@ -19,6 +19,85 @@
           <Property Name="Subverse" Type="nvarchar" MaxLength="50" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="AdminLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="RefUserName" Type="nvarchar" MaxLength="20" />
+          <Property Name="RefSubverse" Type="nvarchar" MaxLength="50" />
+          <Property Name="RefUrl" Type="nvarchar" MaxLength="200" />
+          <Property Name="RefCommentID" Type="int" />
+          <Property Name="RefSubmissionID" Type="int" />
+          <Property Name="Type" Type="nvarchar" MaxLength="100" />
+          <Property Name="Action" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Details" Type="nvarchar" MaxLength="1000" Nullable="false" />
+          <Property Name="InternalDetails" Type="nvarchar(max)" />
+          <Property Name="CreationDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ApiClient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="100" />
+          <Property Name="AppName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AppDescription" Type="nvarchar" MaxLength="2000" />
+          <Property Name="AppAboutUrl" Type="nvarchar" MaxLength="200" />
+          <Property Name="RedirectUrl" Type="nvarchar" MaxLength="200" />
+          <Property Name="PublicKey" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="PrivateKey" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="LastAccessDate" Type="datetime" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="ApiThrottlePolicyID" Type="int" />
+          <Property Name="ApiPermissionPolicyID" Type="int" />
+        </EntityType>
+        <EntityType Name="ApiCorsPolicy">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="AllowOrigin" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="AllowMethods" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="AllowHeaders" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="AllowCredentials" Type="bit" />
+          <Property Name="MaxAge" Type="int" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="100" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ApiLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ApiClientID" Type="int" Nullable="false" />
+          <Property Name="Method" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Url" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Headers" Type="varchar(max)" />
+          <Property Name="Body" Type="varchar(max)" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ApiPermissionPolicy">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Policy" Type="nvarchar" MaxLength="2000" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ApiThrottlePolicy">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Policy" Type="nvarchar" MaxLength="2000" Nullable="false" />
+        </EntityType>
         <EntityType Name="AutoModComment">
           <Key>
             <PropertyRef Name="ID" />
@@ -164,6 +243,21 @@
           </Key>
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="Order" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EventLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ParentID" Type="int" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="100" />
+          <Property Name="Type" Type="varchar" MaxLength="300" Nullable="false" />
+          <Property Name="Message" Type="varchar" MaxLength="1500" Nullable="false" />
+          <Property Name="Source" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="IsBase" Type="bit" Nullable="false" />
+          <Property Name="CallStack" Type="varchar(max)" Nullable="false" />
+          <Property Name="Data" Type="varchar(max)" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="FeaturedSubverse">
           <Key>
@@ -406,6 +500,16 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserBlockedUser">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BlockUser" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="UserPreference">
           <Key>
@@ -469,6 +573,30 @@
           <Property Name="SubmissionID" Type="int" Nullable="false" />
           <Property Name="ViewerID" Type="nvarchar" MaxLength="90" Nullable="false" />
         </EntityType>
+        <Association Name="FK_ApiClient_ApiPermissionPolicy">
+          <End Role="ApiPermissionPolicy" Type="Self.ApiPermissionPolicy" Multiplicity="0..1" />
+          <End Role="ApiClient" Type="Self.ApiClient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiPermissionPolicy">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ApiClient">
+              <PropertyRef Name="ApiPermissionPolicyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ApiClient_ApiThrottlePolicy">
+          <End Role="ApiThrottlePolicy" Type="Self.ApiThrottlePolicy" Multiplicity="0..1" />
+          <End Role="ApiClient" Type="Self.ApiClient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiThrottlePolicy">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ApiClient">
+              <PropertyRef Name="ApiThrottlePolicyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CommentRemovalLog_Comments">
           <End Role="Comment" Type="Self.Comment" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -778,6 +906,12 @@
         </Function>
         <EntityContainer Name="ModelsStoreContainer">
           <EntitySet Name="Ad" EntityType="Self.Ad" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AdminLog" EntityType="Self.AdminLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ApiClient" EntityType="Self.ApiClient" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ApiCorsPolicy" EntityType="Self.ApiCorsPolicy" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ApiLog" EntityType="Self.ApiLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ApiPermissionPolicy" EntityType="Self.ApiPermissionPolicy" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ApiThrottlePolicy" EntityType="Self.ApiThrottlePolicy" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AutoModComment" EntityType="Self.AutoModComment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AutoModSubmission" EntityType="Self.AutoModSubmission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Badge" EntityType="Self.Badge" Schema="dbo" store:Type="Tables" />
@@ -789,6 +923,7 @@
           <EntitySet Name="CommentSaveTracker" EntityType="Self.CommentSaveTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommentVoteTracker" EntityType="Self.CommentVoteTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DefaultSubverse" EntityType="Self.DefaultSubverse" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EventLog" EntityType="Self.EventLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FeaturedSubverse" EntityType="Self.FeaturedSubverse" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ModeratorInvitation" EntityType="Self.ModeratorInvitation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PartnerInformations" EntityType="Self.PartnerInformations" Schema="dbo" store:Type="Tables" />
@@ -808,12 +943,21 @@
           <EntitySet Name="SubverseSubscription" EntityType="Self.SubverseSubscription" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserBadge" EntityType="Self.UserBadge" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserBlockedSubverse" EntityType="Self.UserBlockedSubverse" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserBlockedUser" EntityType="Self.UserBlockedUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserPreference" EntityType="Self.UserPreference" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserScore" EntityType="Self.UserScore" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSet" EntityType="Self.UserSet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSetList" EntityType="Self.UserSetList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSetSubscription" EntityType="Self.UserSetSubscription" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ViewStatistic" EntityType="Self.ViewStatistic" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_ApiClient_ApiPermissionPolicy" Association="Self.FK_ApiClient_ApiPermissionPolicy">
+            <End Role="ApiPermissionPolicy" EntitySet="ApiPermissionPolicy" />
+            <End Role="ApiClient" EntitySet="ApiClient" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ApiClient_ApiThrottlePolicy" Association="Self.FK_ApiClient_ApiThrottlePolicy">
+            <End Role="ApiThrottlePolicy" EntitySet="ApiThrottlePolicy" />
+            <End Role="ApiClient" EntitySet="ApiClient" />
+          </AssociationSet>
           <AssociationSet Name="FK_CommentRemovalLog_Comments" Association="Self.FK_CommentRemovalLog_Comments">
             <End Role="Comment" EntitySet="Comment" />
             <End Role="CommentRemovalLog" EntitySet="CommentRemovalLog" />
@@ -1332,6 +1476,7 @@
           <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Subverse1" Relationship="Self.FK_UserBlockedSubverses_Subverses" FromRole="UserBlockedSubverse" ToRole="Subverse" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <EntityType Name="UserPreference">
           <Key>
@@ -1833,6 +1978,22 @@
             <Parameter Name="Depth" Mode="In" Type="Int32" />
             <Parameter Name="ParentID" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="AdminLogs" EntityType="Models.AdminLog" />
+          <EntitySet Name="ApiClients" EntityType="Models.ApiClient" />
+          <EntitySet Name="ApiLogs" EntityType="Models.ApiLog" />
+          <EntitySet Name="ApiThrottlePolicies" EntityType="Models.ApiThrottlePolicy" />
+          <EntitySet Name="EventLogs" EntityType="Models.EventLog" />
+          <EntitySet Name="ApiCorsPolicies" EntityType="Models.ApiCorsPolicy" />
+          <EntitySet Name="ApiPermissionPolicies" EntityType="Models.ApiPermissionPolicy" />
+          <EntitySet Name="UserBlockedUsers" EntityType="Models.UserBlockedUser" />
+          <AssociationSet Name="FK_ApiClient_ApiPermissionPolicy" Association="Models.FK_ApiClient_ApiPermissionPolicy">
+            <End Role="ApiPermissionPolicy" EntitySet="ApiPermissionPolicies" />
+            <End Role="ApiClient" EntitySet="ApiClients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ApiClient_ApiThrottlePolicy" Association="Models.FK_ApiClient_ApiThrottlePolicy">
+            <End Role="ApiThrottlePolicy" EntitySet="ApiThrottlePolicies" />
+            <End Role="ApiClient" EntitySet="ApiClients" />
+          </AssociationSet>
           <EntitySet Name="Ads" EntityType="Models.Ad" />
         </EntityContainer>
         <ComplexType Name="usp_CommentTree_Result">
@@ -1855,6 +2016,137 @@
           <Property Type="String" Name="FormattedContent" Nullable="true" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
         </ComplexType>
+        <EntityType Name="AdminLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="RefUserName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="RefSubverse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RefUrl" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="RefCommentID" Type="Int32" />
+          <Property Name="RefSubmissionID" Type="Int32" />
+          <Property Name="Type" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Action" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Details" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="InternalDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
+        <EntityType Name="ApiClient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="AppName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AppDescription" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="AppAboutUrl" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="LastAccessDate" Type="DateTime" Precision="3" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ApiThrottlePolicyID" Type="Int32" />
+          <Property Name="PublicKey" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PrivateKey" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ApiPermissionPolicyID" Type="Int32" />
+          <NavigationProperty Name="ApiPermissionPolicy" Relationship="Models.FK_ApiClient_ApiPermissionPolicy" FromRole="ApiClient" ToRole="ApiPermissionPolicy" />
+          <NavigationProperty Name="ApiThrottlePolicy" Relationship="Models.FK_ApiClient_ApiThrottlePolicy" FromRole="ApiClient" ToRole="ApiThrottlePolicy" />
+          <Property Name="RedirectUrl" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ApiLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ApiClientID" Type="Int32" Nullable="false" />
+          <Property Name="Method" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Url" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Headers" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="ApiThrottlePolicy">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Policy" Type="String" Nullable="false" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ApiClients" Relationship="Models.FK_ApiClient_ApiThrottlePolicy" FromRole="ApiThrottlePolicy" ToRole="ApiClient" />
+        </EntityType>
+        <EntityType Name="EventLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentID" Type="Int32" />
+          <Property Name="UserName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="Message" Type="String" Nullable="false" MaxLength="1500" FixedLength="false" Unicode="false" />
+          <Property Name="Source" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="IsBase" Type="Boolean" Nullable="false" />
+          <Property Name="CallStack" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Data" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="ApiCorsPolicy">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="AllowOrigin" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="AllowMethods" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="AllowHeaders" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="AllowCredentials" Type="Boolean" />
+          <Property Name="MaxAge" Type="Int32" />
+          <Property Name="UserName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="ApiPermissionPolicy">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Policy" Type="String" Nullable="false" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ApiClients" Relationship="Models.FK_ApiClient_ApiPermissionPolicy" FromRole="ApiPermissionPolicy" ToRole="ApiClient" />
+        </EntityType>
+        <EntityType Name="UserBlockedUser">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BlockUser" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <Association Name="FK_ApiClient_ApiPermissionPolicy">
+          <End Type="Models.ApiPermissionPolicy" Role="ApiPermissionPolicy" Multiplicity="0..1" />
+          <End Type="Models.ApiClient" Role="ApiClient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiPermissionPolicy">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ApiClient">
+              <PropertyRef Name="ApiPermissionPolicyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ApiClient_ApiThrottlePolicy">
+          <End Type="Models.ApiThrottlePolicy" Role="ApiThrottlePolicy" Multiplicity="0..1" />
+          <End Type="Models.ApiClient" Role="ApiClient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiThrottlePolicy">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ApiClient">
+              <PropertyRef Name="ApiThrottlePolicyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="Ad">
           <Key>
             <PropertyRef Name="ID" />
@@ -2286,6 +2578,7 @@
           <EntitySetMapping Name="UserBlockedSubverses">
             <EntityTypeMapping TypeName="Models.UserBlockedSubverse">
               <MappingFragment StoreEntitySet="UserBlockedSubverse">
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
@@ -2383,6 +2676,117 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="AdminLogs">
+            <EntityTypeMapping TypeName="Models.AdminLog">
+              <MappingFragment StoreEntitySet="AdminLog">
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="InternalDetails" ColumnName="InternalDetails" />
+                <ScalarProperty Name="Details" ColumnName="Details" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="RefSubmissionID" ColumnName="RefSubmissionID" />
+                <ScalarProperty Name="RefCommentID" ColumnName="RefCommentID" />
+                <ScalarProperty Name="RefUrl" ColumnName="RefUrl" />
+                <ScalarProperty Name="RefSubverse" ColumnName="RefSubverse" />
+                <ScalarProperty Name="RefUserName" ColumnName="RefUserName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApiClients">
+            <EntityTypeMapping TypeName="Models.ApiClient">
+              <MappingFragment StoreEntitySet="ApiClient">
+                <ScalarProperty Name="RedirectUrl" ColumnName="RedirectUrl" />
+                <ScalarProperty Name="ApiPermissionPolicyID" ColumnName="ApiPermissionPolicyID" />
+                <ScalarProperty Name="PrivateKey" ColumnName="PrivateKey" />
+                <ScalarProperty Name="PublicKey" ColumnName="PublicKey" />
+                <ScalarProperty Name="ApiThrottlePolicyID" ColumnName="ApiThrottlePolicyID" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="LastAccessDate" ColumnName="LastAccessDate" />
+                <ScalarProperty Name="AppAboutUrl" ColumnName="AppAboutUrl" />
+                <ScalarProperty Name="AppDescription" ColumnName="AppDescription" />
+                <ScalarProperty Name="AppName" ColumnName="AppName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApiLogs">
+            <EntityTypeMapping TypeName="Models.ApiLog">
+              <MappingFragment StoreEntitySet="ApiLog">
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="Headers" ColumnName="Headers" />
+                <ScalarProperty Name="Url" ColumnName="Url" />
+                <ScalarProperty Name="Method" ColumnName="Method" />
+                <ScalarProperty Name="ApiClientID" ColumnName="ApiClientID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApiThrottlePolicies">
+            <EntityTypeMapping TypeName="Models.ApiThrottlePolicy">
+              <MappingFragment StoreEntitySet="ApiThrottlePolicy">
+                <ScalarProperty Name="Policy" ColumnName="Policy" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EventLogs">
+            <EntityTypeMapping TypeName="Models.EventLog">
+              <MappingFragment StoreEntitySet="EventLog">
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="CallStack" ColumnName="CallStack" />
+                <ScalarProperty Name="IsBase" ColumnName="IsBase" />
+                <ScalarProperty Name="Source" ColumnName="Source" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="ParentID" ColumnName="ParentID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApiCorsPolicies">
+            <EntityTypeMapping TypeName="Models.ApiCorsPolicy">
+              <MappingFragment StoreEntitySet="ApiCorsPolicy">
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="MaxAge" ColumnName="MaxAge" />
+                <ScalarProperty Name="AllowCredentials" ColumnName="AllowCredentials" />
+                <ScalarProperty Name="AllowHeaders" ColumnName="AllowHeaders" />
+                <ScalarProperty Name="AllowMethods" ColumnName="AllowMethods" />
+                <ScalarProperty Name="AllowOrigin" ColumnName="AllowOrigin" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApiPermissionPolicies">
+            <EntityTypeMapping TypeName="Models.ApiPermissionPolicy">
+              <MappingFragment StoreEntitySet="ApiPermissionPolicy">
+                <ScalarProperty Name="Policy" ColumnName="Policy" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserBlockedUsers">
+            <EntityTypeMapping TypeName="Models.UserBlockedUser">
+              <MappingFragment StoreEntitySet="UserBlockedUser">
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="BlockUser" ColumnName="BlockUser" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Ads">
             <EntityTypeMapping TypeName="Models.Ad">
               <MappingFragment StoreEntitySet="Ad">

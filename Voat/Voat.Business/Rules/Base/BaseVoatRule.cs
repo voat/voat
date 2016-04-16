@@ -1,18 +1,35 @@
 ﻿using Voat.RulesEngine;
+using Voat.Utilities;
 
 namespace Voat.Rules
 {
-    public abstract class BaseVoatRule : Rule {
-
-        public BaseVoatRule(string name, string number, RuleScope scope, int order = 100) : base(name, number, scope, order) { 
+    public abstract class VoatRule : Rule<VoatRuleContext>
+    {
+        public VoatRule(string name, string number, RuleScope scope, int order = 100) : base(name, number, scope, order)
+        {
             /*no-op*/
         }
 
-        public VoatRuleContext Context {
-            get {
-                return VoatRulesEngine.Instance.Context;
+        /// <summary>
+        /// Mostly for debugging to ensure rule context has necessary data to process requests.
+        /// </summary>
+        /// <param name="value"></param>
+        protected void DemandContext(object value)
+        {
+            if (value == null)
+            {
+                throw new VoatRuleException("Specified required value is not set");
             }
         }
-    
+
+        protected override RuleOutcome EvaluateRule(VoatRuleContext context)
+        {
+            if (UserHelper.IsUserGloballyBanned(context.UserName))
+            {
+                return CreateOutcome(RuleResult.Denied, "User is globally banned");
+            }
+            return Allowed;
+        }
     }
+   
 }

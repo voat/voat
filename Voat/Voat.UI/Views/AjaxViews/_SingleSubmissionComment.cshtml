@@ -22,7 +22,7 @@
     bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 
     DateTime submissionDate = Model.CreationDate;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Age.ToRelative(submissionDate);
     string opName = Model.Submission.UserName;
     string commentAuthor = Model.UserName;
 

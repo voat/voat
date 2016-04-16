@@ -18,7 +18,6 @@ namespace Voat.Controllers
 
                 if (renderAd)
                 {
-
                     var ad = (from x in db.Ads
                               where
                               ((subverse != null && x.Subverse.Equals(subverse, StringComparison.InvariantCultureIgnoreCase) || (subverse == null && x.Subverse == null)))

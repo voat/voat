@@ -22,6 +22,8 @@ using Voat.Models.ViewModels;
 
 using Voat.Data.Models;
 using Voat.Utilities;
+using Voat.Caching;
+using Voat.Common;
 
 namespace Voat.Controllers
 {
@@ -173,7 +175,7 @@ namespace Voat.Controllers
         public ActionResult UserBasicInfo(string userName)
         {
             var userRegistrationDateTime = UserHelper.GetUserRegistrationDateTime(userName);
-            var memberFor = Submissions.CalcSubmissionAge(userRegistrationDateTime);
+            var memberFor = Age.ToRelative(userRegistrationDateTime);
             var scp = Karma.LinkKarma(userName);
             var ccp = Karma.CommentKarma(userName);
 

@@ -16,6 +16,8 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Web;
+using Voat.Caching;
+using Voat.Data;
 //using Microsoft.AspNet.SignalR;
 //using Voat.Data.Models;
 using Voat.Data.Models;
@@ -56,7 +58,7 @@ namespace Voat.Utilities.Components
                         commentReplyNotification.Body = comment.Content;
                         commentReplyNotification.Subverse = subverse.Name;
                         commentReplyNotification.IsUnread = true;
-                        commentReplyNotification.CreationDate = DateTime.Now;
+                        commentReplyNotification.CreationDate = Repository.CurrentDate;
 
                         commentReplyNotification.Subject = String.Format("@{0} mentioned you in a comment", comment.UserName, submission.Title);
 
@@ -106,7 +108,7 @@ namespace Voat.Utilities.Components
                         commentReplyNotification.Body = submission.Content;
                         commentReplyNotification.Subverse = subverse.Name;
                         commentReplyNotification.IsUnread = true;
-                        commentReplyNotification.CreationDate = DateTime.Now;
+                        commentReplyNotification.CreationDate = Repository.CurrentDate;
 
                         commentReplyNotification.Subject = String.Format("@{0} mentioned you in post '{1}'", submission.UserName, submission.Title);
 
@@ -168,7 +170,7 @@ namespace Voat.Utilities.Components
                                         commentReplyNotification.Body = comment.Content;
                                         commentReplyNotification.Subverse = subverse.Name;
                                         commentReplyNotification.IsUnread = true;
-                                        commentReplyNotification.CreationDate = DateTime.Now;
+                                        commentReplyNotification.CreationDate = Repository.CurrentDate;
 
                                         // self = type 1, url = type 2
                                         commentReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.LinkDescription;
@@ -217,7 +219,7 @@ namespace Voat.Utilities.Components
                                     postReplyNotification.Body = comment.Content;
                                     postReplyNotification.Subverse = submission.Subverse;
                                     postReplyNotification.IsUnread = true;
-                                    postReplyNotification.CreationDate = DateTime.Now;
+                                    postReplyNotification.CreationDate = Repository.CurrentDate;
 
                                     // self = type 1, url = type 2
                                     postReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.LinkDescription;

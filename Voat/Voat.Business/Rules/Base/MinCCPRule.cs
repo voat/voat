@@ -2,18 +2,18 @@
 
 namespace Voat.Rules
 {
-
-    public abstract class MinCCPRule : BaseVoatRule {
-
-        public MinCCPRule(string name, string number, int minCCP, RuleScope scope)
-            : base(name, number, scope) {
-            MinCCP = minCCP;
+    public abstract class MinimumCCPRule : VoatRule
+    {
+        public MinimumCCPRule(string name, string number, int minimumCommentPoints, RuleScope scope)
+            : base(name, number, scope)
+        {
+            MinimumCommentPoints = minimumCommentPoints;
         }
 
-        public int MinCCP {
+        public int MinimumCommentPoints
+        {
             get;
             protected set;
         }
-
     }
 }

@@ -14,7 +14,7 @@
 
 @{
     DateTime submissionDate = Model.CreationDate;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Age.ToRelative(submissionDate);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
     var commentCount = Model.Comments.Count(c => !c.IsDeleted);

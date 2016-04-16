@@ -15,7 +15,7 @@
 @foreach (var submission in Model)
 {
     DateTime submissionDate = submission.CreationDate;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Age.ToRelative(submissionDate);
     
     // type 2 = link
     // type 1 = message

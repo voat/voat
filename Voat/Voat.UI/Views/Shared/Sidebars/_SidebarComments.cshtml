@@ -15,7 +15,7 @@
 @using Voat.Models.ViewModels;
 
 @{
-    string subverseAge = Submissions.CalcSubmissionAge(Model.CreationDate);
+    string subverseAge = Age.ToRelative(Model.CreationDate);
     string subverseOwner = "youcanclaimthissub";
 
     var subOwner = Model.SubverseModerators.FirstOrDefault(n => n.Subverse == Model.Name && n.Power == 1);

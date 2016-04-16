@@ -22,7 +22,7 @@
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
 
     DateTime submissionDate = Model.CreationDate;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Age.ToRelative(submissionDate);
 
     //if (Model.Subverses != null)
     //{
