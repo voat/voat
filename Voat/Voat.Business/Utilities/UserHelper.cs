@@ -474,14 +474,17 @@ namespace Voat.Utilities
         //preferences get called from views, so this method caches prefs in the context so each call only queries once
         private static UserPreference GetUserPreferences(string userName)
         {
-            UserPreference pref = (UserPreference)System.Web.HttpContext.Current.Items["UserPreferences"];
+            UserPreference pref = (UserPreference)(System.Web.HttpContext.Current != null ? System.Web.HttpContext.Current.Items["UserPreferences"] : null);
             if (pref == null)
             {
                 using (var db = new voatEntities())
                 {
                     Debug.Print(String.Format("Loading preferences for {0}", userName));
                     pref = db.UserPreferences.Find(userName);
-                    System.Web.HttpContext.Current.Items["UserPreferences"] = pref;
+                    if (System.Web.HttpContext.Current != null)
+                    {
+                        System.Web.HttpContext.Current.Items["UserPreferences"] = pref;
+                    }
                 }
             }
             return pref;
