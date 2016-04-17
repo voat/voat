@@ -73,7 +73,6 @@ namespace Voat.Tests.Utils
         {
             //HACK: This test is most likely Geo Sensitive, thus it fails on a U.S. network.
             //This test needs to be performed on static server based resource instead.
-
             Uri testUri = new Uri("http://www.bbc.com/news/technology-32194196");
             var graph = OpenGraph.ParseUrl(testUri);
 
@@ -85,7 +84,6 @@ namespace Voat.Tests.Utils
             var expected = graph.Image.ToString();
 
             var passed = acceptable.Any(x => x.Equals(expected, StringComparison.OrdinalIgnoreCase));
-            ;
 
             Assert.IsTrue(passed, "OpenGraph was unable to find an acceptable image path");
         }

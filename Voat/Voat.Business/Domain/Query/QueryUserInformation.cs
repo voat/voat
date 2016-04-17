@@ -4,6 +4,7 @@ using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Utilities;
 using System.Linq;
+using Voat.Common;
 
 namespace Voat.Domain.Query
 {
@@ -56,7 +57,7 @@ namespace Voat.Domain.Query
                 //TODO: Need to ensure this condition doesn't happen often, throwing exception to test.
                 else
                 {
-                    throw new InvalidOperationException(String.Format("Can not find UserInformation for {0}", _userToRetrieve));
+                    throw new VoatNotFoundException(String.Format("Can not find UserInformation for {0}", _userToRetrieve));
                 }
                
                 return data;

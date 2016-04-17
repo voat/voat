@@ -23,7 +23,6 @@ namespace Voat.Tests
                 var data = db.DefaultSubverses.ToList();
             }
 
-
             //This causes the voat rules engine to init usin config section for load
             var x = VoatRulesEngine.Instance;
 
