@@ -31,6 +31,13 @@ namespace Voat.Controllers
     {
         private readonly voatEntities _db = new voatEntities();
 
+        public WebApiController()
+        {
+            //Turn off all automatic behavior as we are caching
+            _db.Configuration.ProxyCreationEnabled = false;
+            _db.Configuration.LazyLoadingEnabled = false;
+        }
+
         // GET api/defaultsubverses
         /// <summary>
         ///  This API returns a list of default subverses shown to guests.
@@ -131,7 +138,6 @@ namespace Voat.Controllers
             {
                 cacheData = CacheHandler.Instance.Register(cacheKey, new Func<List<ApiMessage>>(() =>
                 {
-
                     // get only submissions from default subverses, order by rank
                     var frontpageSubmissions = (from message in _db.Submissions
                                                 where !message.IsArchived && !message.IsDeleted && message.Subverse1.IsAdminDisabled != true

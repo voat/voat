@@ -30,9 +30,9 @@ namespace Voat.Caching
         {
             return String.Format("Comment:{0}", commentID);
         }
-        public static string CommentCount(int commentID)
+        public static string CommentCount(int submissionID)
         {
-            return String.Format("Comment:Count{0}", commentID);
+            return String.Format("Comment:Count{0}", submissionID);
         }
         public static string CommentTree(int submissionID)
         {

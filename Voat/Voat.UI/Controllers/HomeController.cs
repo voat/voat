@@ -324,6 +324,9 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
+                                //Turn off all automatic behavior as we are caching
+                                db.Configuration.ProxyCreationEnabled = false;
+                                db.Configuration.LazyLoadingEnabled = false;
 
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
                                 
@@ -381,6 +384,10 @@ namespace Voat.Controllers
                 {
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                     {
+                        //Turn off all automatic behavior as we are caching
+                        db.Configuration.ProxyCreationEnabled = false;
+                        db.Configuration.LazyLoadingEnabled = false;
+
                         // get only submissions from default subverses not older than 24 hours, order by relative rank
                         var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
 
@@ -526,6 +533,10 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
+                                //Turn off all automatic behavior as we are caching
+                                db.Configuration.ProxyCreationEnabled = false;
+                                db.Configuration.LazyLoadingEnabled = false;
+
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
                                 IQueryable<Submission> submissions = (from m in db.Submissions
                                                                    join s in db.SubverseSubscriptions on m.Subverse equals s.Subverse
@@ -556,6 +567,10 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                             {
+                                //Turn off all automatic behavior as we are caching
+                                db.Configuration.ProxyCreationEnabled = false;
+                                db.Configuration.LazyLoadingEnabled = false;
+
                                 // get only submissions from default subverses, order by rank
                                 IQueryable<Submission> submissions = (from message in db.Submissions
                                                                       where !message.IsArchived && !message.IsDeleted

@@ -525,6 +525,10 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
+                                //Turn off all automatic behavior as we are caching
+                                db.Configuration.ProxyCreationEnabled = false;
+                                db.Configuration.LazyLoadingEnabled = false;
+
                                 var x = SubmissionsFromASubverseByRank(subversetoshow, db);
                                 int count = x.Count();
                                 List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
@@ -599,6 +603,10 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
+                            //Turn off all automatic behavior as we are caching
+                            db.Configuration.ProxyCreationEnabled = false;
+                            db.Configuration.LazyLoadingEnabled = false;
+
                             var x = SfwSubmissionsFromAllSubversesByRank(db);
                             int count = 50000;
                             List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
@@ -1719,6 +1727,10 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
+                            //Turn off all automatic behavior as we are caching
+                            db.Configuration.ProxyCreationEnabled = false;
+                            db.Configuration.LazyLoadingEnabled = false;
+
                             var x = SubmissionsFromASubverseByDate(subversetoshow, db);
                             int count = x.Count();
                             List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
@@ -1837,6 +1849,10 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
+                                //Turn off all automatic behavior as we are caching
+                                db.Configuration.ProxyCreationEnabled = false;
+                                db.Configuration.LazyLoadingEnabled = false;
+
                                 var x = SfwSubmissionsFromAllSubversesByDate(db);
                                 int count = 50000;
                                 List<Submission> content = x.Skip(pageNumber * size).Take(size).ToList();
@@ -1877,6 +1893,10 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
+                            //Turn off all automatic behavior as we are caching
+                            db.Configuration.ProxyCreationEnabled = false;
+                            db.Configuration.LazyLoadingEnabled = false;
+
                             var x = SubmissionsFromAllSubversesByDate(db);
                             int count = 50000;
                             List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
