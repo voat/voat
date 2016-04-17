@@ -1307,25 +1307,41 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public void CreateApiKey(string name, string description, string url)
+        public void CreateApiKey(string name, string description, string url, string redirectUrl)
         {
 
             ApiClient c = new ApiClient();
             c.IsActive = true;
             c.AppAboutUrl = url;
+            c.RedirectUrl = redirectUrl;
             c.AppDescription = description;
             c.AppName = name;
             c.UserName = User.Identity.Name;
             c.CreationDate = CurrentDate;
 
-            var keyGen = RandomNumberGenerator.Create();
-            byte[] tempKey = new byte[16];
-            keyGen.GetBytes(tempKey);
-            c.PublicKey = Convert.ToBase64String(tempKey);
+            var generatePublicKey = new Func<string>(() => {
+                return String.Format("VO{0}AT", Guid.NewGuid().ToString().Replace("-", "").ToUpper());
+            });
 
-            tempKey = new byte[64];
-            keyGen.GetBytes(tempKey);
-            c.PrivateKey = Convert.ToBase64String(tempKey);
+            //just make sure key isn't already in db
+            var publicKey = generatePublicKey();
+            while (_db.ApiClients.Any(x => x.PublicKey == publicKey))
+            {
+                publicKey = generatePublicKey();
+            }
+
+            c.PublicKey = publicKey;
+            c.PrivateKey = (Guid.NewGuid().ToString() + Guid.NewGuid().ToString()).Replace("-", "").ToUpper();
+
+            //Using OAuth 2, we don't need enc keys
+            //var keyGen = RandomNumberGenerator.Create();
+            //byte[] tempKey = new byte[16];
+            //keyGen.GetBytes(tempKey);
+            //c.PublicKey = Convert.ToBase64String(tempKey);
+
+            //tempKey = new byte[64];
+            //keyGen.GetBytes(tempKey);
+            //c.PrivateKey = Convert.ToBase64String(tempKey);
 
             _db.ApiClients.Add(c);
             _db.SaveChanges();

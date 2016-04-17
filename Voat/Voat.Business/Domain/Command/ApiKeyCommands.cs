@@ -11,12 +11,13 @@ namespace Voat.Domain.Command
         private string _description = null;
         private string _name = null;
         private string _url = null;
-
-        public CreateApiKeyCommand(string name, string description, string url)
+        private string _redirectUrl = null;
+        public CreateApiKeyCommand(string name, string description, string url, string redirectUrl)
         {
             this._name = name;
             this._description = description;
             this._url = url;
+            this._redirectUrl = redirectUrl;
         }
 
         public override async Task<CommandResponse> Execute()
@@ -28,7 +29,7 @@ namespace Voat.Domain.Command
 
             using (var repo = new Repository())
             {
-                await Task.Run(() => repo.CreateApiKey(_name, _description, _url));
+                await Task.Run(() => repo.CreateApiKey(_name, _description, _url, _redirectUrl));
             }
             return CommandResponse.Success();
         }

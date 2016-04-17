@@ -293,6 +293,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdController.cs" />
     <Compile Include="Controllers\AjaxGatewayController.cs" />
+    <Compile Include="Controllers\ApiKeysController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -308,6 +309,7 @@
     <Compile Include="Models\SavedItem.cs" />
     <Compile Include="Models\MarkdownPreviewModel.cs" />
     <Compile Include="Models\ViewModels\AdViewModel.cs" />
+    <Compile Include="Models\ViewModels\ApiKeyCreateRequest.cs" />
     <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
@@ -727,6 +729,8 @@
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Ad\_AdPlaceholder.cshtml" />
     <Content Include="Views\Ad\_Ad.cshtml" />
+    <Content Include="Views\ApiKeys\Create.cshtml" />
+    <Content Include="Views\ApiKeys\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -3,6 +3,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 using System;
+using System.Web;
 using System.Web.Configuration;
 
 namespace Voat
@@ -23,8 +24,9 @@ namespace Voat
             };
 
             //for local testing don't set cookiedomain
+            var localRequest = (HttpContext.Current != null && HttpContext.Current.Request != null && HttpContext.Current.Request.IsLocal);
             var domain = WebConfigurationManager.AppSettings["CookieDomain"];
-            if (!String.IsNullOrEmpty(domain))
+            if (!String.IsNullOrEmpty(domain) && !localRequest)
             {
                 settings.CookieDomain = domain;
             }

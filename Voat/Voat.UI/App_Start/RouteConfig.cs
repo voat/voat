@@ -458,7 +458,17 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "SubmitComment" }
             );
 
-           
+            //Map Explicit API Keys Controller
+            routes.MapRoute(
+               name: "apikeys",
+               url: "apikeys/{action}/{id}",
+               defaults: new
+               {
+                   controller = "ApiKeys",
+                   action = "Index",
+                   id = UrlParameter.Optional
+               }
+            );
 
             // /new
             routes.MapRoute(
