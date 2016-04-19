@@ -2934,7 +2934,7 @@ textarea.form-control {
     .side {
         position: absolute;
         top: -11px;
-        left: -300px;
+        left: -320px;
         transition: 500ms left;
         background-color: rgba(51, 51, 51, 1);
         margin: 0;
