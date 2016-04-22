@@ -23,6 +23,7 @@ namespace Voat.Controllers
                               where
                               ((subverse != null && x.Subverse.Equals(subverse, StringComparison.InvariantCultureIgnoreCase) || (subverse == null && x.Subverse == null)))
                               && (x.EndDate >= Repository.CurrentDate && x.StartDate <= Repository.CurrentDate)
+                              && x.IsActive
                               orderby x.Subverse descending
                               select x).FirstOrDefault();
 

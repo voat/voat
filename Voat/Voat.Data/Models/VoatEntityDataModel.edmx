@@ -10,6 +10,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="GraphicUrl" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="DestinationUrl" Type="nvarchar" MaxLength="1000" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
@@ -2160,6 +2161,7 @@
           <Property Name="EndDate" Type="DateTime" Precision="3" />
           <Property Name="Subverse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -2790,6 +2792,7 @@
           <EntitySetMapping Name="Ads">
             <EntityTypeMapping TypeName="Models.Ad">
               <MappingFragment StoreEntitySet="Ad">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />

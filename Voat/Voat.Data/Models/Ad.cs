@@ -23,5 +23,6 @@ namespace Voat.Data.Models
         public Nullable<System.DateTime> EndDate { get; set; }
         public string Subverse { get; set; }
         public System.DateTime CreationDate { get; set; }
+        public bool IsActive { get; set; }
     }
 }
