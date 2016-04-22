@@ -42,6 +42,8 @@ namespace Voat.Configuration
         public const string EmailServiceKey = "emailServiceKey";
         public const string DestinationPathThumbs = "destinationPathThumbs";
         public const string DestinationPathAvatars = "destinationPathAvatars";
+        public const string AdsEnabled = "adsEnabled";
+
     }
 
     public class LiveConfigurationManager
@@ -148,6 +150,7 @@ namespace Voat.Configuration
                 SetValueIfPresent<bool>(CONFIGURATION.RegistrationDisabled, section[CONFIGURATION.RegistrationDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.UseContentDeliveryNetwork, section[CONFIGURATION.UseContentDeliveryNetwork]);
 
+                SetValueIfPresent<bool>(CONFIGURATION.AdsEnabled, section[CONFIGURATION.AdsEnabled]);
                 //HACK ATTACK
                 CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;
             }

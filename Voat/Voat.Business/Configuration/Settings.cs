@@ -237,6 +237,14 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.DestinationPathAvatars];
             }
         }
+
+        public static bool AdsEnabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.AdsEnabled];
+            }
+        }
         #endregion 
     }
 }
