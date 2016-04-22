@@ -39,7 +39,15 @@ namespace Voat.Controllers
                     }
 
                     // no running ads found, render ad placeholder instead
-                    return RenderPlaceholder();
+                    var placeHolder = new AdViewModel
+                    {
+                        Name = "Advertize on Voat",
+                        DestinationUrl = Url.Action("Advertize", "Home"),
+                        Description = String.Format("Want to advertize on Voat? [Click to learn how]({0}).", Url.Action("Advertize", "Home")),
+                        GraphicUrl = Url.Content("~/Graphics/voat-ad-placeholder.png")
+                    };
+                    return View("_Ad", placeHolder);
+                    //return RenderPlaceholder();
                 }
                 else
                 {
