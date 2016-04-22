@@ -22,7 +22,7 @@
         <h1>Can I advertize on Voat?</h1>
 
         <p>
-            Yes. Voat now accepts standard graphic advertisements that are available for purchase.
+            Yes. Voat now accepts standard graphic/text advertisements that are available for purchase.
         </p>
         <p>
             We respect our users. We will not run ads which distort the product's capabilities, or hide its defects, and we will do everything we can to protect our users from unethical advertizing. If we run an ad and our users report it as misleading, we will take it down.
@@ -35,37 +35,37 @@
         <div class="md">
             <ul>
                 <li>
-                    Visit the Ad Checkout Page:
-                    <br />
-                    <form name="PrePage" method="post" action="https://Simplecheckout.authorize.net/payment/CatalogPayment.aspx"> 
-                        <input type="hidden" name="LinkId" value="da5610db-9067-4dff-b7ba-a80fc47f2ceb" /> 
-                        <input type="submit" value="Buy Ad Placements"  class="btn-whoaverse btn-block contribute" style="max-width:200px;" /> 
-                    </form> 
+                    Visit the Purchase Ad Placements page by clicking the button below.
                 </li>
                 <li>Purchase the number of days you wish to place ad for</li>
                 <li>On the confirmation page, copy the Transaction ID of your purchase</li>
                 <li>
                     Email us the following information to <a href="mailto:advertize@voat.co?subject=Ad Placement Information&body=Please include: Name, Url, Description, Subverse, Transaction ID, and an attached image. Thanks!">advertize@voat.co</a>:
+                    <i>(Appologies as this is a manual process currently)</i>
                     <ol>
                         <li>Name (Company Name, Product Name, etc.)</li>
                         <li>Url (The destintation url you wish clicks to be sent)</li>
-                        <li>An image (The graphic image to display)</li>
-                        <li>Description (The description/caption of the advertisement. This supports MarkDown syntax.)</li>
+                        <li>Ad Image (The graphic image to display). Acceptable Dimensions: 270w x 100h - 270w x 540h</li>
+                        <li>Short Description (The description/caption of the ad.)</li>
                         <li>Ad Location: Default or Subverse specific. If you do not specify a subverse the ad will be considered a default ad and displayed when no subverse ad is available.</li>
                         <li>The Transaction ID of the purchase.</li>
                     </ol>
                 </li>
             </ul>
+            <form name="PrePage" method="post" action="https://Simplecheckout.authorize.net/payment/CatalogPayment.aspx">
+                <input type="hidden" name="LinkId" value="da5610db-9067-4dff-b7ba-a80fc47f2ceb" />
+                <input type="submit" value="Purchase Ad Placement" class="btn-whoaverse btn-block contribute" style="max-width:200px;" />
+            </form>
         </div>
 
         <h1>Terms and Conditions:</h1>
         <div class="md">
             <ol>
-                <li>No refunds are issued once add is placed</li>
+                <li>No refunds are issued once ad is placed</li>
                 <li>Ads are run sequentially, with no gaps in duration, for the number of days (24 hour period) the ad was purchased</li>
                 <li>All ads must be approved by Voat. Any ad not approved by Voat will be refunded within 7 days</li>
                 <li>No animated graphics are permitted (.png, .jpeg only)</li>
-                <li>Voat will not track number of clicks or impressions of the ads run on Voat</li>
+                <li>Voat will not track number of clicks or impressions of ads</li>
                 <li>Voat reserves the right to schedule the start date of the ad</li>
                 <li>Prices may be changed at any time without further notice</li>
                 <li>Dimensions of graphic image must be between 270w x 100h - 270w x 540h</li>
