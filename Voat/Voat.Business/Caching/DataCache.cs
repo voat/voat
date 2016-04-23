@@ -17,19 +17,19 @@ namespace Voat.Caching
 
             public static string CommentTree(int submissionID)
             {
-                return String.Format("Comment:Tree:{0}", submissionID).ToLower();
+                return String.Format("legacy:Comment:Tree:{0}", submissionID).ToLower();
             }
             public static string Submission(int submissionID)
             {
-                return String.Format("submission:{0}", submissionID).ToLower();
+                return String.Format("legacy:submission:{0}", submissionID).ToLower();
             }
             public static string SubverseInfo(string subverse)
             {
-                return String.Format("subverse:{0}:info", subverse).ToLower();
+                return String.Format("legacy:subverse:{0}:info", subverse).ToLower();
             }
             public static string Search(string subverse, string query)
             {
-                return String.Format("search:{0}:{1}", subverse, query).ToLower();
+                return String.Format("legacy:search:{0}:{1}", subverse, query).ToLower();
             }
             public static string Search(string query)
             {

@@ -132,7 +132,7 @@ namespace Voat.Controllers
         {
 
             //IAmAGate: Perf mods for caching
-            string cacheKey = String.Format("LegacyApi.Frontpage").ToLower();
+            string cacheKey = String.Format("legacy:LegacyApi.Frontpage").ToLower();
             List<ApiMessage> cacheData = CacheHandler.Instance.Retrieve<List<ApiMessage>>(cacheKey);
             if (cacheData == null)
             {
@@ -198,7 +198,7 @@ namespace Voat.Controllers
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
             //IAmAGate: Perf mods for caching
-            string cacheKey = String.Format("LegacyApi.SubverseFrontpage.{0}", subverse).ToLower();
+            string cacheKey = String.Format("legacy:LegacyApi.SubverseFrontpage.{0}", subverse).ToLower();
             object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
             if (cacheData == null)
@@ -487,7 +487,7 @@ namespace Voat.Controllers
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            string cacheKey = String.Format("LegacyApi.SubmissionComments.{0}", submissionId).ToLower();
+            string cacheKey = String.Format("legacy:LegacyApi.SubmissionComments.{0}", submissionId).ToLower();
             IEnumerable<ApiComment> cacheData = CacheHandler.Instance.Retrieve<IEnumerable<ApiComment>>(cacheKey);
 
             if (cacheData == null)

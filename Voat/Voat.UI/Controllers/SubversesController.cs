@@ -516,7 +516,7 @@ namespace Voat.Controllers
                     ViewBag.Title = subverse.Description;
 
                     //IAmAGate: Perf mods for caching
-                    string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
+                    string cacheKey = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
                     Tuple<IList<Submission>, int> cacheData = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKey);
 
                     if (cacheData == null)
@@ -594,7 +594,7 @@ namespace Voat.Controllers
 
                 //NEW LOGIC
                 //IAmAGate: Perf mods for caching
-                string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "rank").ToLower();
+                string cacheKeyAll = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "rank").ToLower();
                 Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
                 if (cacheDataAll == null)
@@ -1718,7 +1718,7 @@ namespace Voat.Controllers
 
 
                 //IAmAGate: Perf mods for caching
-                string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
+                string cacheKey = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
                 Tuple<IList<Submission>, int> cacheData = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKey);
 
                 if (cacheData == null)
@@ -1742,7 +1742,7 @@ namespace Voat.Controllers
                 }
 
                 ////IAmAGate: Perf mods for caching
-                //string cacheKey = String.Format("subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
+                //string cacheKey = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
                 //Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)System.Web.HttpContext.Current.Cache[cacheKey];
 
                 //if (cacheData == null)
@@ -1840,7 +1840,7 @@ namespace Voat.Controllers
                     //IAmAGate: Perf mods for caching
                     int pageNumber = page.HasValue ? page.Value : 0;
                     int size = pageSize;
-                    string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "new").ToLower();
+                    string cacheKeyAll = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "new").ToLower();
                     Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
                     if (cacheDataAll == null)
@@ -1884,7 +1884,7 @@ namespace Voat.Controllers
 
                 //IAmAGate: Perf mods for caching
                 int pageNumber = page.HasValue ? page.Value : 0;
-                string cacheKeyAll = String.Format("subverse.{0}.page.{1}.sort.{2}.nsfw", "all", pageNumber, "new").ToLower();
+                string cacheKeyAll = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}.nsfw", "all", pageNumber, "new").ToLower();
                 Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
                 if (cacheDataAll == null)
@@ -1927,10 +1927,12 @@ namespace Voat.Controllers
         public ActionResult TopViewedSubmissions24Hours()
         {
             //var submissions = 
-            var cacheData = CacheHandler.Instance.Register("TopViewedSubmissions24Hours", new Func<object>(() =>
+            var cacheData = CacheHandler.Instance.Register("legacy:TopViewedSubmissions24Hours", new Func<object>(() =>
             {
                 using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                 {
+                    db.Configuration.ProxyCreationEnabled = false;
+                    db.Configuration.LazyLoadingEnabled = false;
                     return SfwSubmissionsFromAllSubversesByViews24Hours(db).ToList();
                 }
 

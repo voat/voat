@@ -313,7 +313,7 @@ namespace Voat.Controllers
                     //IAmAGate: Perf mods for caching
                     int pagesToTake = 2;
                     int subset = pageNumber / pagesToTake;
-                    string cacheKey = String.Format("front.{0}.block.{1}.sort.rank", User.Identity.Name, subset);
+                    string cacheKey = String.Format("legacy:front.{0}.block.{1}.sort.rank", User.Identity.Name, subset);
                     object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
                     if (cacheData == null)
@@ -375,7 +375,7 @@ namespace Voat.Controllers
         public static IList<Submission> GetGuestFrontPage(int pageSize, int pageNumber)
         {
             //IAmAGate: Perf mods for caching
-            string cacheKey = String.Format("front.guest.page.{0}.sort.rank", pageNumber);
+            string cacheKey = String.Format("legacy:front.guest.page.{0}.sort.rank", pageNumber);
             IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
             if (cacheData == null)
             {
@@ -522,7 +522,7 @@ namespace Voat.Controllers
                     //IAmAGate: Perf mods for caching
                     int pagesToTake = 2;
                     int subset = pageNumber / pagesToTake;
-                    string cacheKey = String.Format("front.{0}.block.{1}.sort.new", User.Identity.Name, subset);
+                    string cacheKey = String.Format("legacy:front.{0}.block.{1}.sort.new", User.Identity.Name, subset);
                     object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
                     if (cacheData == null)
@@ -558,7 +558,7 @@ namespace Voat.Controllers
                 {
 
                     //IAmAGate: Perf mods for caching
-                    string cacheKey = String.Format("front.guest.page.{0}.sort.new", pageNumber);
+                    string cacheKey = String.Format("legacy:front.guest.page.{0}.sort.new", pageNumber);
                     object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
                     if (cacheData == null)

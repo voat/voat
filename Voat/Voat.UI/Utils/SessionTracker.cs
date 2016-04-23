@@ -99,7 +99,7 @@ namespace Voat.UI.Utilities
         {
             try
             {
-                string cacheKey = String.Format("activeSubSessions_{0}", subverseName);
+                string cacheKey = String.Format("legacy:activeSubSessions_{0}", subverseName);
 
                 object cacheData = System.Web.HttpContext.Current.Cache[cacheKey];
                 if (cacheData != null)

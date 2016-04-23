@@ -23,7 +23,7 @@ namespace Voat.Utilities
     {
         private static string GetHighestRankingCacheKey(string subverse)
         {
-            return String.Format("subverse.{0}.highest-rank", subverse).ToLower();
+            return String.Format("legacy:subverse.{0}.highest-rank", subverse).ToLower();
         }
         public static double? GetSubverseHighestRanking(string subverse)
         {

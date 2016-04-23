@@ -50,7 +50,7 @@ namespace Voat.Controllers
                     var reportTimeStamp = Repository.CurrentDate.ToString(CultureInfo.InvariantCulture);
                     try
                     {
-                        string cacheKeyCommentReport = String.Format("report.comment.{0}", id.ToString());
+                        string cacheKeyCommentReport = String.Format("legacy:report.comment.{0}", id.ToString());
 
                         //see if comment has been reported before
                         if (CacheHandler.Instance.Retrieve<object>(cacheKeyCommentReport) == null)
@@ -60,7 +60,7 @@ namespace Voat.Controllers
 
                                 
                             string userName = User.Identity.Name;
-                            string cacheKeyUserReportCount = String.Format("report.comment.{0}.count", userName);
+                            string cacheKeyUserReportCount = String.Format("legacy:report.comment.{0}.count", userName);
                             int reportsPerUserThreshold = 5;
 
                             var reportCountViaUser = CacheHandler.Instance.Retrieve<int?>(cacheKeyUserReportCount);
