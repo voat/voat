@@ -95,10 +95,9 @@ namespace Voat.Utilities
                                     return;
 
                                 submission.UpCount++;
-                                double currentScore = submission.UpCount - submission.DownCount;
-                                double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
-                                double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
-                                submission.Rank = newRank;
+
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
                                 // register upvote
                                 var tmpVotingTracker = new SubmissionVoteTracker
@@ -125,10 +124,8 @@ namespace Voat.Utilities
                                 submission.UpCount++;
                                 submission.DownCount--;
 
-                                double currentScore = submission.UpCount - submission.DownCount;
-                                double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
-                                double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
-                                submission.Rank = newRank;
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
                                 previousVote.VoteStatus = 1;
                                 previousVote.CreationDate = Repository.CurrentDate;
@@ -143,11 +140,9 @@ namespace Voat.Utilities
                             {
                                 submission.UpCount--;
 
-                                double currentScore = submission.UpCount - submission.DownCount;
-                                double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
-                                double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
-                                submission.Rank = newRank;
                                 db.SubmissionVoteTrackers.Remove(previousVote);
                                 db.SaveChanges();
 
@@ -211,11 +206,8 @@ namespace Voat.Utilities
 
                                 submission.DownCount++;
 
-                                double currentScore = submission.UpCount - submission.DownCount;
-                                double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
-                                double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
-
-                                submission.Rank = newRank;
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
                                 // register downvote
                                 var tmpVotingTracker = new SubmissionVoteTracker
@@ -240,11 +232,8 @@ namespace Voat.Utilities
                                 submission.UpCount--;
                                 submission.DownCount++;
 
-                                double currentScore = submission.UpCount - submission.DownCount;
-                                double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
-                                double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
-
-                                submission.Rank = newRank;
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
                                 // register Turn DownVote To UpVote
                                 var votingTracker = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userName);
@@ -266,11 +255,9 @@ namespace Voat.Utilities
                                 //ResetMessageVote(userName, submissionID);
                                 submission.DownCount--;
 
-                                double currentScore = submission.UpCount - submission.DownCount;
-                                double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
-                                double newRank = Ranking.CalculateNewRank(submission.Rank, submissionAge, currentScore);
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
-                                submission.Rank = newRank;
                                 db.SubmissionVoteTrackers.Remove(previousVote);
                                 db.SaveChanges();
 

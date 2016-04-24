@@ -15,7 +15,7 @@ namespace Voat.Tests.BugTraps
     {
         [TestMethod]
         [TestCategory("Bug")]
-        public async Task Trap_Spam_Vote_Bug()
+        public async Task Bug_Trap_Spam_Votes()
         {
 
             /*
@@ -44,14 +44,24 @@ namespace Voat.Tests.BugTraps
 
             var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
             System.Threading.Thread.CurrentPrincipal = principle;
-            Action vote = new Action(() => Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User500CCP", "127.0.0.1"));
 
-            int count = 101;
+            Action vote1 = new Action(() => Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User500CCP", "127.0.0.1"));
+            Action vote2 = new Action(() => Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User100CCP", "127.0.0.1"));
+
+            int count = 200;
             var tasks = new List<Task>();
             for (int i = 0; i < count; i++)
             {
-                tasks.Add(Task.Run(vote));
+                if (i % 2 == 0)
+                {
+                    tasks.Add(Task.Run(vote1));
+                }
+                else
+                {
+                    tasks.Add(Task.Run(vote2));
+                }
             }
+
 
             try
             {
