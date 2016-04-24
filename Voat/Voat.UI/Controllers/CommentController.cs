@@ -35,52 +35,50 @@ namespace Voat.Controllers
     public class CommentController : Controller
     {
         private readonly voatEntities _db = new voatEntities();
-        private static readonly object _locker = new object();
 
         // POST: votecomment/{commentId}/{typeOfVote}
         [Authorize]
         public JsonResult VoteComment(int commentId, int typeOfVote)
         {
-            lock (_locker)
-            {
-                int dailyVotingQuota = Settings.DailyVotingQuota;
-                var loggedInUser = User.Identity.Name;
-                var userCcp = Karma.CommentKarma(loggedInUser);
-                var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
-                var totalVotesUsedInPast24Hours = UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name);
+           
+            int dailyVotingQuota = Settings.DailyVotingQuota;
+            var loggedInUser = User.Identity.Name;
+            var userCcp = Karma.CommentKarma(loggedInUser);
+            var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
+            var totalVotesUsedInPast24Hours = UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name);
 
-                switch (typeOfVote)
-                {
-                    case 1:
-                        if (userCcp >= 20)
+            switch (typeOfVote)
+            {
+                case 1:
+                    if (userCcp >= 20)
+                    {
+                        if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {
-                            if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
-                            {
-                                // perform upvoting or resetting
-                                VotingComments.UpvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                            }
-                        }
-                        else if (totalVotesUsedInPast24Hours < 11)
-                        {
-                            // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
+                            // perform upvoting or resetting
                             VotingComments.UpvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                         }
-                        break;
-                    case -1:
-                        if (userCcp >= 100)
+                    }
+                    else if (totalVotesUsedInPast24Hours < 11)
+                    {
+                        // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
+                        VotingComments.UpvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
+                    }
+                    break;
+                case -1:
+                    if (userCcp >= 100)
+                    {
+                        if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
                         {
-                            if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
-                            {
-                                // perform downvoting or resetting
-                                VotingComments.DownvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                            }
+                            // perform downvoting or resetting
+                            VotingComments.DownvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
                         }
-                        break;
-                }
-
-                Response.StatusCode = 200;
-                return Json("Voting ok", JsonRequestBehavior.AllowGet);
+                    }
+                    break;
             }
+
+            Response.StatusCode = 200;
+            return Json("Voting ok", JsonRequestBehavior.AllowGet);
+            
         }
 
         // POST: savecomment/{commentId}
