@@ -24,19 +24,20 @@ namespace Voat.Controllers
                     {
                         var ad = (from x in db.Ads
                                   where
-                                  ((subverse != null && x.Subverse.Equals(subverse, StringComparison.InvariantCultureIgnoreCase) || (subverse == null && x.Subverse == null)))
+                                  ((subverse != null && x.Subverse.Equals(subverse, StringComparison.InvariantCultureIgnoreCase) || (x.Subverse == null)))
                                   && (x.EndDate >= Repository.CurrentDate && x.StartDate <= Repository.CurrentDate)
                                   && x.IsActive
                                   orderby x.Subverse descending
                                   select x).FirstOrDefault();
 
+                        var linkToAdPurchase = String.Format("[Want to advertize on Voat?]({0})", Url.Action("Advertize", "Home"));
                         if (ad != null)
                         {
                             var adModel = new AdViewModel
                             {
                                 Name = ad.Name,
                                 DestinationUrl = ad.DestinationUrl,
-                                Description = ad.Description,
+                                Description = String.Format("{0}\n\n{1}", ad.Description, linkToAdPurchase),
                                 GraphicUrl = ad.GraphicUrl
                             };
                             return View("_Ad", adModel);
@@ -47,7 +48,7 @@ namespace Voat.Controllers
                         {
                             Name = "Advertize on Voat",
                             DestinationUrl = Url.Action("Advertize", "Home"),
-                            Description = String.Format("Want to advertize on Voat? [Click to learn how]({0}).", Url.Action("Advertize", "Home")),
+                            Description = linkToAdPurchase,
                             GraphicUrl = Url.Content("~/Graphics/voat-ad-placeholder.png")
                         };
                         return View("_Ad", placeHolder);
