@@ -1,4 +1,4 @@
-﻿//Voat UI JS framework
+﻿//Voat UI JS framework - Version 0.8beta - 12/09/2014
 //Tested only with the latest version of IE, FF, & Chrome
 
 var UI = window.UI || {};
@@ -202,7 +202,13 @@ UI.ExpandoManager = (function () {
                     if (c.length > 0) {
                         selectorGroup.group.forEach(function (expando) {
                             c.filter(function () {
-                                return expando.getFilter().test(this.href);
+                                //check it expando has preconditions (this was added for .webm as IE doesn't support it)
+                                if (!expando.preConditionMet || expando.preConditionMet && expando.preConditionMet()) {
+                                    try {
+                                        return expando.getFilter().test(this.href);
+                                    } catch(e) { }
+                                }
+                                return false;
                             }).each(function (i, x) {
                                 expando.process(x);
                             });
@@ -458,7 +464,7 @@ var VideoLinkExpando = (function () {
 
     return function (urlRegEx) {
         LinkExpando.call(this, urlRegEx);
-
+        
         this.isMP4Supported = function () {
             return this.isSupported('video/mp4', 'avc1.42E01E,mp4a.40.2');
         };
@@ -477,6 +483,9 @@ var VideoLinkExpando = (function () {
         };
         this.embedVideo = function (source, videoProps, sources, description) {
             
+
+            //videoProps.ID = this.getVideoId();
+
             var item = $('<video/>', videoProps);
             var target = this.options.targetFunc(source);
             target.prop('title', description);
@@ -493,6 +502,11 @@ var VideoLinkExpando = (function () {
             var destination = this.options.destinationFunc(target);
             UI.Common.resizeTarget(item, false, destination.parent());
 
+            //MUTE THE FN THING BY DEFAULT!
+            if (videoProps.muted) {
+                $(item).prop('muted', true);
+            }
+
             destination.empty().append(item);
 
             if (this.options.setTags) {
@@ -505,10 +519,28 @@ var VideoLinkExpando = (function () {
             return destination;
 
         }
+        this.PausePlayToggle = function(target){
+            this.options.toggle(target);
+            var me = this;
+            this.options.destinationFunc(target).slideToggle(400, function () {
+                var visible = LinkExpando.isVisible(target);
+                var loaded = LinkExpando.isLoaded(target);
+
+                var vidElement = me.options.destinationFunc(target).find('video').get(0);
+                if (vidElement != null) {
+                    if (visible && loaded) {
+                        vidElement.play();
+                    } else {
+                        vidElement.pause();
+                    }
+                }
+            });
+
+        }
     }
 
 })();
-VideoLinkExpando.prototype = new ImageLinkExpando();
+VideoLinkExpando.prototype = new LinkExpando();
 VideoLinkExpando.prototype.constructor = VideoLinkExpando;
 
 var GfycatExpando = function (options) {
@@ -545,7 +577,7 @@ var GfycatExpando = function (options) {
                     }
                     target.off('click');
                 }
-                me.getSourceInfo(LinkExpando.dataProp(target, 'id'), 
+                me.getSourceInfo(LinkExpando.dataProp(target, 'id'),
                     function (result) {
 
                         if (!result.gfyItem) {
@@ -560,7 +592,8 @@ var GfycatExpando = function (options) {
                                     'width': result.gfyItem.width,
                                     'height': result.gfyItem.height,
                                     'autoplay': 1,
-                                    'loop': 1
+                                    'loop': 1,
+                                    'muted': 1
                                 },
                                 [{
                                     'id': 'mp4gfycat',
@@ -575,7 +608,7 @@ var GfycatExpando = function (options) {
                             );
 
                             LinkExpando.isLoaded(target, true);
-                            //LinkExpando.toggle(div, true);
+                            LinkExpando.isVisible(target, true);
 
                         } else {
                             //gif - load using default ImageLinkExpando logic
@@ -585,9 +618,13 @@ var GfycatExpando = function (options) {
                     },
                     fnError
                 );
+
+            } else {
+                LinkExpando.isVisible(target, !LinkExpando.isVisible(target));
             }
-            me.options.destinationFunc(target).slideToggle();
-            me.options.toggle(target);
+
+            me.PausePlayToggle(target);
+
         });
         if (me.options.setTags) {
             LinkExpando.setTag($(target), "Gfycat");
@@ -655,7 +692,8 @@ var ImgurGifvExpando = function (options) {
                             'width': '100%',
                             'height': 'auto',
                             'autoplay': 1,
-                            'loop': 1
+                            'loop': 1,
+                            'muted': 1
                         },
                         [{
                             'id': 'mp4source',
@@ -670,14 +708,22 @@ var ImgurGifvExpando = function (options) {
                     );
 
                     LinkExpando.isLoaded(target, true);
+                    LinkExpando.isVisible(target, true);
+
                 } else {
                     //kill it, it looks like imgur removes .gif files
                     target.off('click');
                     LinkExpando.setTag(target);
                 }
+            } else {
+                LinkExpando.isVisible(target, !LinkExpando.isVisible(target));
             }
-            me.options.destinationFunc(target).slideToggle();
-            me.options.toggle(target);
+           
+            me.PausePlayToggle(target);
+
+
+
+
         });
         if (me.options.setTags) {
             LinkExpando.setTag($(target), "Gifv");
@@ -691,7 +737,175 @@ ImgurGifvExpando.prototype.process = function (source) {
     this.hook($(source));
 }
 
+/* Raw .mp4 */
+var WebMExpando = function (options) {
 
+    LinkExpando.call(this, /(.+\.webm)/i, options);
+
+
+    this.preConditionMet = function () {
+        //return true;
+        return this.isWEBMSupported();
+    }
+
+    this.hook = function (source) {
+
+
+        var target = this.options.targetFunc(source);
+        target.prop('title', 'WebM');
+
+        if (LinkExpando.isHooked(target)) {
+            return;
+        } else {
+            LinkExpando.isHooked(target, true);
+        }
+
+        LinkExpando.dataProp(target, 'id', this.getId(source.prop('href')));
+
+        var me = this;
+        target.on('click', function (e) {
+
+            e.preventDefault();
+
+            //var target = me.options.targetFunc($(e.target));
+
+            var id = source.prop('href');
+
+            if (!LinkExpando.isLoaded(target)) {
+
+                if (me.options.setTags) {
+                    LinkExpando.setTag(target, "loading");
+                }
+                if (me.isWEBMSupported()) {
+                    //Alert(id);
+                    //vid
+                    //var videoElementId = Guid
+                    var div = me.embedVideo(source,
+                        {
+                            'width': '100%',
+                            'height': 'auto',
+                            'autoplay': 1,
+                            'loop': 1,
+                            'muted': 1
+                        },
+                        [{
+                            'id': 'webmsource',
+                            'src': id,
+                            'type': 'video/webm'
+                        }], 'WebM Video'
+                    );
+                    //var vid = div.first();
+                    LinkExpando.isLoaded(target, true);
+                    LinkExpando.isVisible(target, true);
+
+                } else {
+
+                    target.off('click');
+                    LinkExpando.setTag(target);
+                }
+            } else {
+                LinkExpando.isVisible(target, !LinkExpando.isVisible(target));
+            }
+            
+            me.PausePlayToggle(target);
+
+
+        });
+        if (me.options.setTags) {
+            LinkExpando.setTag($(target), "WebM");
+        }
+    }
+
+}
+WebMExpando.prototype = new VideoLinkExpando();
+WebMExpando.prototype.constructor = WebMExpando;
+WebMExpando.prototype.process = function (source) {
+    this.hook($(source));
+}
+/* Raw .MP4 (should really combine .webm & .mp4 expandos */
+var MP4Expando = function (options) {
+
+    LinkExpando.call(this, /(.+\.mp4)/i, options);
+
+
+    this.preConditionMet = function () {
+        //return true;
+        return this.isMP4Supported();
+    }
+
+    this.hook = function (source) {
+
+
+        var target = this.options.targetFunc(source);
+        target.prop('title', 'MP4');
+
+        if (LinkExpando.isHooked(target)) {
+            return;
+        } else {
+            LinkExpando.isHooked(target, true);
+        }
+
+        LinkExpando.dataProp(target, 'id', this.getId(source.prop('href')));
+
+        var me = this;
+        target.on('click', function (e) {
+
+            e.preventDefault();
+
+            //var target = me.options.targetFunc($(e.target));
+
+            var id = source.prop('href');
+
+            if (!LinkExpando.isLoaded(target)) {
+
+                if (me.options.setTags) {
+                    LinkExpando.setTag(target, "loading");
+                }
+                if (me.isMP4Supported()) {
+                    //vid
+                    //var videoElementId = Guid
+                    var div = me.embedVideo(source,
+                        {
+                            'width': '100%',
+                            'height': 'auto',
+                            'autoplay': 1,
+                            'loop': 1,
+                            'muted': 1
+                        },
+                        [{
+                            'id': 'mp4source',
+                            'src': id,
+                            'type': 'video/mp4'
+                        }], 'MP4 Video'
+                    );
+                    //var vid = div.first();
+                    LinkExpando.isLoaded(target, true);
+                    LinkExpando.isVisible(target, true);
+
+                } else {
+
+                    target.off('click');
+                    LinkExpando.setTag(target);
+                }
+            } else {
+                LinkExpando.isVisible(target, !LinkExpando.isVisible(target));
+            }
+
+            me.PausePlayToggle(target);
+
+
+        });
+        if (me.options.setTags) {
+            LinkExpando.setTag($(target), "MP4");
+        }
+    }
+
+}
+MP4Expando.prototype = new VideoLinkExpando();
+MP4Expando.prototype.constructor = WebMExpando;
+MP4Expando.prototype.process = function (source) {
+    this.hook($(source));
+}
 
 /* IFrameEmbedder */
 var IFrameEmbedderExpando = function (urlRegEx, options) {
@@ -712,7 +926,7 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
             return;
         }
 
-        LinkExpando.dataProp(target, 'source', this.getSrcUrl(id));
+        //LinkExpando.dataProp(target, 'source', this.getSrcUrl(id));
         target.prop('title', description);
         
         var me = this;
@@ -728,15 +942,38 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
                         me.options.loading(target);
                     }
 
-                    //<iframe width="560" height="315" src="//www.youtube.com/embed/JUDSeb2zHQ0" frameborder="0" allowfullscreen></iframe>
-                    iFrameSettings.src = LinkExpando.dataProp(target, 'source');
-                    var iFrame = $('<iframe/>', iFrameSettings);
-                    displayDiv.empty().html(iFrame);
-                    LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
-                    LinkExpando.isLoaded(target, true);
+                    var funError = function (result) {
+                        //bail
+                        if (me.options.setTags) {
+                            LinkExpando.setTag(target, 'Error');
+                        }
+                        target.off('click');
+                    }
 
-                    //displayDiv.insertAfter(target);
-                    UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
+                    var funDisplay = function (src) {
+                        LinkExpando.dataProp(target, 'source', src);
+                        iFrameSettings.src = LinkExpando.dataProp(target, 'source');
+                        var iFrame = $('<iframe/>', iFrameSettings);
+                        displayDiv.empty().html(iFrame);
+                        LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
+                        LinkExpando.isLoaded(target, true);
+
+                        //displayDiv.insertAfter(target);
+                        UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
+                    };
+
+                    me.getSrcUrl(id, funDisplay, funError);
+
+
+                    ////<iframe width="560" height="315" src="//www.youtube.com/embed/JUDSeb2zHQ0" frameborder="0" allowfullscreen></iframe>
+                    //iFrameSettings.src = LinkExpando.dataProp(target, 'source');
+                    //var iFrame = $('<iframe/>', iFrameSettings);
+                    //displayDiv.empty().html(iFrame);
+                    //LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
+                    //LinkExpando.isLoaded(target, true);
+
+                    ////displayDiv.insertAfter(target);
+                    //UI.Common.resizeTarget($('iframe', displayDiv), false, target.parent());
                 }
                 LinkExpando.isVisible(target, !LinkExpando.isVisible(target));
                 me.options.toggle(target);
@@ -759,7 +996,7 @@ IFrameEmbedderExpando.prototype.constructor = IFrameEmbedderExpando;
 /* YouTube */
 var YouTubeExpando = function (options) {
     IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i, options);
-    this.getSrcUrl = function (id) { return '//www.youtube.com/embed/' + id; };
+    this.getSrcUrl = function (id, fun) { fun('//www.youtube.com/embed/' + id); };
 };
 YouTubeExpando.prototype = new IFrameEmbedderExpando();
 YouTubeExpando.prototype.constructor = YouTubeExpando;
@@ -779,7 +1016,7 @@ YouTubeExpando.prototype.process = function (source) {
 /* Imgur Album */
 var ImgurAlbumExpando = function (options) {
     IFrameEmbedderExpando.call(this, /imgur\.com\/a\/(\w+)\/?/i, options);
-    this.getSrcUrl = function (id) { return '//imgur.com/a/' + id + '/embed'; };
+    this.getSrcUrl = function (id, fun) { fun('//imgur.com/a/' + id + '/embed'); };
 };
 ImgurAlbumExpando.prototype = new IFrameEmbedderExpando();
 ImgurAlbumExpando.prototype.constructor = ImgurAlbumExpando;
@@ -797,7 +1034,7 @@ ImgurAlbumExpando.prototype.process = function (target) {
 /* VIMEO */
 var VimeoExpando = function (options) {
     IFrameEmbedderExpando.call(this, /vimeo\.com\/(?:.\*|.*\/)?([\d]+)\/?/i, options);
-    this.getSrcUrl = function (id) { return '//player.vimeo.com/video/' + id; };
+    this.getSrcUrl = function (id, fun) { fun('//player.vimeo.com/video/' + id); };
 };
 VimeoExpando.prototype = new IFrameEmbedderExpando();
 VimeoExpando.prototype.constructor = VimeoExpando;
@@ -819,7 +1056,7 @@ VimeoExpando.prototype.process = function (target) {
 /* COUB */
 var CoubExpando = function (options) {
     IFrameEmbedderExpando.call(this, /coub\.com\/(?:v|view|embed)\/(\w+)/i, options);
-    this.getSrcUrl = function (id) { return '//coub.com/embed/' + id; };
+    this.getSrcUrl = function (id, fun) { fun('//coub.com/embed/' + id); };
 };
 CoubExpando.prototype = new IFrameEmbedderExpando();
 CoubExpando.prototype.constructor = CoubExpando;
@@ -839,15 +1076,43 @@ CoubExpando.prototype.process = function (target) {
 };
 
 /* SoundCloud */
-var SoundCloudExpando = function () {
-    var clientId = 'ab19f68dc1985a1b24752d987c91b7aa';
-    IFrameEmbedderExpando.call(this, /xxx/i);
+var SoundCloudExpando = function (options) {
+    IFrameEmbedderExpando.call(this, /http(?:s{0,1}):\/\/(?:soundcloud\.com|snd\.sc)\/(.*)\/?/i, options);
+    this.getSrcUrl = function (id, fun, funError) {
+
+        this.getSourceInfo = function (id, fnCallback, fnErrorHandler) {
+            $.getJSON(UI.Common.currentProtocol() + '//soundcloud.com/oembed', {
+                format: 'json',
+                url: 'https://soundcloud.com/' + id,
+                iframe: 'true'
+            }).done(function (json) {
+                if (!json.html) {
+                    fnErrorHandler();
+                    funError();
+                }
+                var regex = /<iframe.*?src="(.*?)"/;
+                var src = regex.exec(json.html)[1];
+                fun(src + '&auto_play=true');
+            }).fail(function (jqxhr, textStatus, error) {
+                funError();
+            });
+        };
+
+        this.getSourceInfo(id, fun, funError);
+    };
+
 };
 SoundCloudExpando.prototype = new IFrameEmbedderExpando();
 SoundCloudExpando.prototype.constructor = SoundCloudExpando;
 SoundCloudExpando.prototype.process = function (target) {
-    //TODO
-    //<iframe width="100%" height="450" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/179814178&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>
+
+    var width = Math.min(560, UI.Common.availableWidth($(target).parent()));
+
+    this.hook($(target), 'SoundCloud', {
+        width: width.toString(),
+        height: (width * this.defaultRatio),
+        frameborder: '0'
+    });
 };
 
 
@@ -943,9 +1208,11 @@ $(document).ready(function () {
             new VimeoExpando(commentOptions),
             new CoubExpando(commentOptions),
             new GfycatExpando(commentOptions),
-            //new SoundCloudExpando,
+            new SoundCloudExpando(commentOptions),
             new ImgurAlbumExpando(commentOptions),
-            new ImgurGifvExpando(commentOptions)
+            new ImgurGifvExpando(commentOptions),
+            new WebMExpando(commentOptions),
+            new MP4Expando(commentOptions)
         ]);
 
 
@@ -1004,10 +1271,13 @@ $(document).ready(function () {
             new ImageLinkExpando(submissionOptions),
             new YouTubeExpando(submissionOptions),
             new VimeoExpando(submissionOptions),
+            new CoubExpando(submissionOptions),
             new GfycatExpando(submissionOptions),
-            //new SoundCloudExpando,
+            new SoundCloudExpando(submissionOptions),
             new ImgurAlbumExpando(submissionOptions),
-            new ImgurGifvExpando(submissionOptions)
+            new ImgurGifvExpando(submissionOptions),
+            new WebMExpando(submissionOptions),
+            new MP4Expando(submissionOptions)
         ]);
 
 
@@ -1032,6 +1302,7 @@ $(document).ready(function () {
 
     UI.SidebarHandler();
 });
+
 
 
 
