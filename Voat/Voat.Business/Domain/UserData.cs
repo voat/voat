@@ -28,8 +28,6 @@ namespace Voat.Domain
         protected UserPreference _prefs;
         protected int? _votesInLast24Hours;
 
-
-
         public UserData(string userName)
         {
             this._userName = userName;

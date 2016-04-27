@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Query;
 using Voat.Models.ViewModels;
 
 namespace Voat.Controllers
@@ -18,6 +19,8 @@ namespace Voat.Controllers
                 using (var db = new voatEntities())
                 {
                     // TODO: check if currently logged in user is a donor or subscriber and has opted out of ads, if so, do not display any ads whatsoever
+                    var userData = new QueryUserData(User.Identity.Name);
+
                     var renderAd = true;
 
                     if (renderAd)

@@ -4,6 +4,9 @@ using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Utilities;
 using System.Linq;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Voat.Data.Models;
 
 namespace Voat.Domain.Query
 {
@@ -38,7 +41,18 @@ namespace Voat.Domain.Query
 
         protected override UserData GetData()
         {
-            return new UserData(_userToRetrieve);
+            if (!String.IsNullOrEmpty(_userToRetrieve))
+            {
+                using (var repo = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+                {
+                    var user = repo.FindByName(_userToRetrieve);
+                    if (user != null)
+                    {
+                        return new UserData(_userToRetrieve);
+                    }
+                }
+            }
+            return null;
         }
     }
 }

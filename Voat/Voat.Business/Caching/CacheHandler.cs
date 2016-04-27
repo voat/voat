@@ -15,6 +15,7 @@ namespace Voat.Caching
 {
     public abstract class CacheHandler : ICacheHandler
     {
+        private bool _ignoreNulls = true;
         private static ICacheHandler _instance = null;
         private static object _lockInstance = new object();
         private LockStore _lockStore = new LockStore();
@@ -171,26 +172,31 @@ namespace Voat.Caching
                     {
                         try
                         {
-                            Debug.Print("Inserting Cache: " + cacheKey);
                             var data = getData();
-                            SetItem(cacheKey, data, cacheTime);
-                            _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, recacheLimit, 0);
-                            if (recacheLimit >= 0)
+                            if (data == null && !_ignoreNulls)
                             {
-                                //old code is http context dependent, rewriting to use cache directly
-                                var cache = System.Runtime.Caching.MemoryCache.Default;
-                                var policy = new CacheItemPolicy() { 
-                                    //SlidingExpiration = TimeSpan.Zero, 
-                                    AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), 
-                                    UpdateCallback = new CacheEntryUpdateCallback(RefetchItem) };
-                                    
-                                cache.Set(cacheKey, new object(), policy);
-                            }
-                            else
-                            {
-                                //old code is http context dependent, rewriting to use cache directly
-                                var cache = System.Runtime.Caching.MemoryCache.Default;
-                                cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+                                Debug.Print("Inserting Cache: " + cacheKey);
+                                SetItem(cacheKey, data, cacheTime);
+                                _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, recacheLimit, 0);
+                                if (recacheLimit >= 0)
+                                {
+                                    //old code is http context dependent, rewriting to use cache directly
+                                    var cache = System.Runtime.Caching.MemoryCache.Default;
+                                    var policy = new CacheItemPolicy()
+                                    {
+                                        //SlidingExpiration = TimeSpan.Zero, 
+                                        AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime),
+                                        UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                                    };
+
+                                    cache.Set(cacheKey, new object(), policy);
+                                }
+                                else
+                                {
+                                    //old code is http context dependent, rewriting to use cache directly
+                                    var cache = System.Runtime.Caching.MemoryCache.Default;
+                                    cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+                                }
                             }
                             return data;
                         }
