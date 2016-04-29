@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Configuration;
 using Voat.Data;
@@ -12,16 +13,22 @@ namespace Voat.Controllers
     public class AdController : Controller
     {
         // GET: Ad
-        public ActionResult RenderAd(string subverse)
+        public async Task<ActionResult> RenderAd(string subverse)
         {
             if (Settings.AdsEnabled)
             {
                 using (var db = new voatEntities())
                 {
                     // TODO: check if currently logged in user is a donor or subscriber and has opted out of ads, if so, do not display any ads whatsoever
-                    var userData = new QueryUserData(User.Identity.Name);
-
                     var renderAd = true;
+
+                    ////Turn off ads for Donors
+                    //var q = new QueryUserData(User.Identity.Name);
+                    //var userData = await q.Execute();
+                    //if (userData != null && userData.Information.Badges.Any(x => x.Name.StartsWith("Donor")))
+                    //{
+                    //    renderAd = userData.Preferences.DisplayAds;
+                    //}
 
                     if (renderAd)
                     {
@@ -40,7 +47,7 @@ namespace Voat.Controllers
                             {
                                 Name = ad.Name,
                                 DestinationUrl = ad.DestinationUrl,
-                                Description = String.Format("{0}\n\n{1}", ad.Description, linkToAdPurchase),
+                                Description = String.Format("{0}\n\n\n\n{1}", ad.Description, linkToAdPurchase),
                                 GraphicUrl = ad.GraphicUrl
                             };
                             return View("_Ad", adModel);
