@@ -1037,7 +1037,12 @@ namespace Voat.Utilities
                 }
 
                 // add a new block
-                var blockedSubverse = new UserBlockedSubverse { UserName = userName, Subverse = subverse };
+                var blockedSubverse = new UserBlockedSubverse
+                {
+                    UserName = userName,
+                    Subverse = subverse,
+                    CreationDate = Repository.CurrentDate
+                };
                 db.UserBlockedSubverses.Add(blockedSubverse);
                 db.SaveChanges();
             }
