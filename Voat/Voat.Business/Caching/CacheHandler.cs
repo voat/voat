@@ -173,7 +173,7 @@ namespace Voat.Caching
                         try
                         {
                             var data = getData();
-                            if (data == null && !_ignoreNulls)
+                            if (data != null || data == null && !_ignoreNulls)
                             {
                                 Debug.Print("Inserting Cache: " + cacheKey);
                                 SetItem(cacheKey, data, cacheTime);
