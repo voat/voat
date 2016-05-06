@@ -196,7 +196,7 @@ $(document).ready(function () {
                 };
 
                 // Start the connection.
-                $.connection.hub.start().done(function () {
+                $.connection.hub.start({ transport: 'webSockets' }).done(function () {
                     //
                 });
             }
