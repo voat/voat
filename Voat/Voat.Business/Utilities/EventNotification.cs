@@ -7,7 +7,6 @@ using Voat.Domain.Models;
 
 namespace Voat.Utilities
 {
-
     public class UserEventArgs : EventArgs
     {
         public string UserID { get; set; }
@@ -33,6 +32,10 @@ namespace Voat.Utilities
 
         public void SendMentionNotice(string userID, MessageType type, int id)
         {
+            if (OnMentionReceived != null)
+            {
+                OnMentionReceived(this, new MessageReceivedEventArgs() { UserID = userID, MessageType = type, ID = id }); 
+            }
             OnMentionReceived?.Invoke(this, new MessageReceivedEventArgs() { UserID = userID, MessageType = type, ID = id });
         }
         public void SendMessageNotice(string userID, MessageType type, int id)
