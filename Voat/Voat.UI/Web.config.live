@@ -8,5 +8,6 @@
   <appSettings>
     <add key="siteDisabled" value="false" />
     <add key="registrationDisabled" value="true" />
+    <add key="signalrDisabled" value="false" />
   </appSettings>
 </configuration>
