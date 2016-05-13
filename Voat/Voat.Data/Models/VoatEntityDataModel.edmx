@@ -14,7 +14,7 @@
           <Property Name="GraphicUrl" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="DestinationUrl" Type="nvarchar" MaxLength="1000" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="2000" Nullable="false" />
           <Property Name="StartDate" Type="datetime" />
           <Property Name="EndDate" Type="datetime" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="50" />
@@ -527,6 +527,11 @@
           <Property Name="UseSubscriptionsMenu" Type="bit" Nullable="false" />
           <Property Name="Bio" Type="nvarchar" MaxLength="100" />
           <Property Name="Avatar" Type="nvarchar" MaxLength="50" />
+          <Property Name="DisplayAds" Type="bit" Nullable="false" />
+          <Property Name="DisplayCommentCount" Type="int" />
+          <Property Name="HighlightMinutes" Type="int" />
+          <Property Name="VanityTitle" Type="varchar" MaxLength="50" />
+          <Property Name="CollapseCommentLimit" Type="int" />
         </EntityType>
         <EntityType Name="UserScore">
           <Key>
@@ -565,6 +570,15 @@
           <Property Name="UserSetID" Type="int" Nullable="false" />
           <Property Name="Order" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserVisit">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubmissionID" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastVisitDate" Type="smalldatetime" Nullable="false" />
         </EntityType>
         <EntityType Name="ViewStatistic">
           <Key>
@@ -950,6 +964,7 @@
           <EntitySet Name="UserSet" EntityType="Self.UserSet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSetList" EntityType="Self.UserSetList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSetSubscription" EntityType="Self.UserSetSubscription" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserVisit" EntityType="Self.UserVisit" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ViewStatistic" EntityType="Self.ViewStatistic" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_ApiClient_ApiPermissionPolicy" Association="Self.FK_ApiClient_ApiPermissionPolicy">
             <End Role="ApiPermissionPolicy" EntitySet="ApiPermissionPolicy" />
@@ -1494,6 +1509,11 @@
           <Property Name="Bio" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Avatar" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DisplayAds" Type="Boolean" Nullable="false" />
+          <Property Name="DisplayCommentCount" Type="Int32" />
+          <Property Name="HighlightMinutes" Type="Int32" />
+          <Property Name="VanityTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CollapseCommentLimit" Type="Int32" />
         </EntityType>
         <EntityType Name="UserScore">
           <Key>
@@ -1996,6 +2016,7 @@
             <End Role="ApiClient" EntitySet="ApiClients" />
           </AssociationSet>
           <EntitySet Name="Ads" EntityType="Models.Ad" />
+          <EntitySet Name="UserVisits" EntityType="Models.UserVisit" />
         </EntityContainer>
         <ComplexType Name="usp_CommentTree_Result">
           <Property Type="Int32" Name="ChildCount" Nullable="true" />
@@ -2156,12 +2177,21 @@
           <Property Name="GraphicUrl" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="DestinationUrl" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="StartDate" Type="DateTime" Precision="3" />
           <Property Name="EndDate" Type="DateTime" Precision="3" />
           <Property Name="Subverse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserVisit">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubmissionID" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastVisitDate" Type="DateTime" Nullable="false" Precision="0" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -2590,6 +2620,11 @@
           <EntitySetMapping Name="UserPreferences">
             <EntityTypeMapping TypeName="Models.UserPreference">
               <MappingFragment StoreEntitySet="UserPreference">
+                <ScalarProperty Name="CollapseCommentLimit" ColumnName="CollapseCommentLimit" />
+                <ScalarProperty Name="VanityTitle" ColumnName="VanityTitle" />
+                <ScalarProperty Name="HighlightMinutes" ColumnName="HighlightMinutes" />
+                <ScalarProperty Name="DisplayCommentCount" ColumnName="DisplayCommentCount" />
+                <ScalarProperty Name="DisplayAds" ColumnName="DisplayAds" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="DisableCSS" ColumnName="DisableCSS" />
                 <ScalarProperty Name="NightMode" ColumnName="NightMode" />
@@ -2801,6 +2836,16 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="DestinationUrl" ColumnName="DestinationUrl" />
                 <ScalarProperty Name="GraphicUrl" ColumnName="GraphicUrl" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserVisits">
+            <EntityTypeMapping TypeName="Models.UserVisit">
+              <MappingFragment StoreEntitySet="UserVisit">
+                <ScalarProperty Name="LastVisitDate" ColumnName="LastVisitDate" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="SubmissionID" ColumnName="SubmissionID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

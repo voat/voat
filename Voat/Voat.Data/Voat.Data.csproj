@@ -212,6 +212,9 @@
     <Compile Include="Models\UserSetSubscription.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\UserVisit.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\usp_CommentTree_Result.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>

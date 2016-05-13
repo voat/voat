@@ -72,6 +72,7 @@ namespace Voat.Data.Models
         public virtual DbSet<ApiPermissionPolicy> ApiPermissionPolicies { get; set; }
         public virtual DbSet<UserBlockedUser> UserBlockedUsers { get; set; }
         public virtual DbSet<Ad> Ads { get; set; }
+        public virtual DbSet<UserVisit> UserVisits { get; set; }
     
         public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {
