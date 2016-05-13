@@ -121,70 +121,18 @@ $(document).ready(function () {
                     }
                 };
 
-                // Hub accessed function to inform the user about new incoming upvotes
-                proxy.client.incomingUpvote = function (type) {
+                proxy.client.voteChange = function (type, value) {
                     var currentValue = 0;
                     if (type == 2) {
                         // this is a comment vote notification
                         // update CCP display
                         currentValue = $('#ccp').html();
-                        currentValue++;
+                        currentValue = currentValue + value;
                         $('#ccp').html(currentValue);
                     } else {
                         // update SCP display
                         currentValue = $('#scp').html();
-                        currentValue++;
-                        $('#scp').html(currentValue);
-                    }
-                };
-
-                // Hub accessed function to inform the user about new incoming downvotes
-                proxy.client.incomingDownvote = function (type) {
-                    var currentValue = 0;
-                    if (type == 2) {
-                        // this is a comment vote notification
-                        // update CCP display
-                        currentValue = $('#ccp').html();
-                        currentValue--;
-                        $('#ccp').html(currentValue);
-                    } else {
-                        // update SCP display
-                        currentValue = $('#scp').html();
-                        currentValue--;
-                        $('#scp').html(currentValue);
-                    }
-                };
-
-                // Hub accessed function to inform the user about new incoming down to upvote
-                proxy.client.incomingDownToUpvote = function (type) {
-                    var currentValue = 0;
-                    if (type == 2) {
-                        // this is a comment vote notification
-                        // update CCP display
-                        currentValue = $('#ccp').html();
-                        currentValue = currentValue + 2;
-                        $('#ccp').html(currentValue);
-                    } else {
-                        // update SCP display
-                        currentValue = $('#scp').html();
-                        currentValue = currentValue + 2;
-                        $('#scp').html(currentValue);
-                    }
-                };
-
-                // Hub accessed function to inform the user about new incoming up to downvote
-                proxy.client.incomingUpToDownvote = function (type) {
-                    var currentValue = 0;
-                    if (type == 2) {
-                        // this is a comment vote notification
-                        // update CCP display
-                        currentValue = $('#ccp').html();
-                        currentValue = currentValue - 2;
-                        $('#ccp').html(currentValue);
-                    } else {
-                        // update SCP display
-                        currentValue = $('#scp').html();
-                        currentValue = currentValue - 2;
+                        currentValue = currentValue + value;
                         $('#scp').html(currentValue);
                     }
                 };

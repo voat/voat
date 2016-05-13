@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Models;
+using Voat.Utilities;
 
 namespace Voat.Domain.Command
 {
@@ -20,6 +21,11 @@ namespace Voat.Domain.Command
             using (var db = new Repository())
             {
                 var outcome = await Task.Run(() => db.VoteComment(CommentID, VoteValue, RevokeOnRevote));
+                //Raise event
+                if (outcome.Successfull)
+                {
+                    EventNotification.Instance.SendVoteNotice(outcome.OwnerUserName, this.UserName, Models.ContentType.Comment, CommentID, outcome.Difference);
+                }
                 return new Tuple<VoteResponse, VoteResponse>(outcome, outcome);
             }
         }
@@ -48,6 +54,11 @@ namespace Voat.Domain.Command
             using (var gateway = new Repository())
             {
                 var outcome = await Task.Factory.StartNew(() => gateway.VoteSubmission(SubmissionID, VoteValue, RevokeOnRevote));
+                //Raise event
+                if (outcome.Successfull)
+                {
+                    EventNotification.Instance.SendVoteNotice(outcome.OwnerUserName, this.UserName, Models.ContentType.Submission, SubmissionID, outcome.Difference);
+                }
                 return new Tuple<VoteResponse, VoteResponse>(outcome, outcome);
             }
         }
@@ -75,5 +86,6 @@ namespace Voat.Domain.Command
 
         public bool RevokeOnRevote { get; protected set; }
         public int VoteValue { get; private set; }
+
     }
 }

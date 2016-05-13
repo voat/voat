@@ -139,6 +139,7 @@
     <Compile Include="Utils\AccountSecurityTests.cs" />
     <Compile Include="Utils\ContentProcessorTests.cs" />
     <Compile Include="Utils\DateTimeExtensionTests.cs" />
+    <Compile Include="Utils\EventNotificationTests.cs" />
     <Compile Include="Utils\MessagingTests.cs" />
     <Compile Include="Utils\MiscUtilsTests.cs" />
     <Compile Include="Rules\RulesEngineTests.cs" />

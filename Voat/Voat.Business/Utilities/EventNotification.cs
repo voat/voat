@@ -7,46 +7,96 @@ using Voat.Domain.Models;
 
 namespace Voat.Utilities
 {
-    public class UserEventArgs : EventArgs
-    {
-        public string UserID { get; set; }
-
-    }
-    public class MessageReceivedEventArgs : UserEventArgs
-    {
-        public MessageType MessageType { get; set; }
-        public int ID { get; set; }
-    }
-    public class VoteReceivedEventArgs : UserEventArgs
-    {
-        public ContentType VoteType { get; set; }
-        public int ID { get; set; }
-    }
+    /// <summary>
+    /// This class is an eventing hub used to simply raise events. 
+    /// </summary>
     public class EventNotification
     {
-        
+        private static EventNotification _instance;
+
         public event EventHandler<MessageReceivedEventArgs> OnMentionReceived;
         public event EventHandler<MessageReceivedEventArgs> OnMessageReceived;
-        public event EventHandler<VoteReceivedEventArgs> OnVoatReceived;
+        public event EventHandler<MessageReceivedEventArgs> OnCommentReplyReceived;
 
+        public event EventHandler<VoteReceivedEventArgs> OnVoteReceived;
 
-        public void SendMentionNotice(string userID, MessageType type, int id)
+        public event EventHandler<BasicMessageEventArgs> OnHeadButtReceived;
+        public event EventHandler<ChatMessageEventArgs> OnChatMessageReceived;
+
+        public static EventNotification Instance
         {
-            if (OnMentionReceived != null)
+            get
             {
-                OnMentionReceived(this, new MessageReceivedEventArgs() { UserID = userID, MessageType = type, ID = id }); 
+                if (_instance == null)
+                {
+                    lock (typeof(EventNotification))
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new EventNotification();
+                        }
+                    }
+                }
+                return _instance;
             }
-            OnMentionReceived?.Invoke(this, new MessageReceivedEventArgs() { UserID = userID, MessageType = type, ID = id });
-        }
-        public void SendMessageNotice(string userID, MessageType type, int id)
-        {
-            OnMessageReceived?.Invoke(this, new MessageReceivedEventArgs() { UserID = userID, MessageType = type, ID = id });
-        }
-        public void SendVoteNotice(string userID, ContentType voteType, int id)
-        {
-            OnVoatReceived?.Invoke(this, new VoteReceivedEventArgs() { UserID = userID, VoteType = voteType, ID = id });
+            set
+            {
+                _instance = value;
+            }
         }
 
+
+        public void SendMentionNotice(string userName, string sendingUserName, ContentType type, int referenceID, string message)
+        {
+            OnMentionReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, MessageType = MessageType.Mention, ReferenceType = type, ReferenceID = referenceID, Message = message });
+        }
+        //public void SendCommentReplyNotice(string userName, MessageType type, int id)
+        //{
+        //    OnCommentReplyReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, MessageType = type, ReferenceID = id });
+        //}
+        public void SendMessageNotice(string userName, string sendingUserName, MessageType type, ContentType? referenceType, int? referenceID, string message = null)
+        {
+            OnMessageReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, SendingUserName = sendingUserName, MessageType = type, ReferenceType = referenceType, ReferenceID = referenceID, Message = message });
+        }
+        public void SendVoteNotice(string userName, string sendingUserName, ContentType referenceType, int referenceID, int voteValue)
+        {
+            OnVoteReceived?.Invoke(this, new VoteReceivedEventArgs() { UserName = userName, SendingUserName = sendingUserName, ReferenceType = referenceType, ReferenceID = referenceID, ChangeValue = voteValue });
+        }
+
+        public void SendHeadButtNotice(string userName, string sendingUserName, string message)
+        {
+            OnHeadButtReceived?.Invoke(this, new BasicMessageEventArgs() { UserName = userName, SendingUserName = sendingUserName, Message = message });
+        }
+        public void SendChatMessageNotice(string userName, string sendingUserName, string chatRoom, string message)
+        {
+            OnChatMessageReceived?.Invoke(this, new ChatMessageEventArgs() { UserName = userName, SendingUserName = sendingUserName, Message = message, Chatroom = chatRoom});
+        }
+    }
+    #region Event Args Classes
+    public class UserEventArgs : EventArgs
+    {
+        public string UserName { get; set; }
+        public string SendingUserName { get; set; }
+    }
+    public class BasicMessageEventArgs : UserEventArgs
+    {
+        public ContentType? ReferenceType { get; set; }
+        public int? ReferenceID { get; set; }
+        public string Message { get; set; }
+    }
+    public class ChatMessageEventArgs : BasicMessageEventArgs
+    {
+        public string Chatroom { get; set; }
+    }
+    public class MessageReceivedEventArgs : BasicMessageEventArgs
+    {
+        public MessageType MessageType { get; set; }
 
     }
+    public class VoteReceivedEventArgs : BasicMessageEventArgs
+    {
+        public int ChangeValue { get; set; }
+    }
+
+    #endregion
 }

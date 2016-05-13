@@ -11,12 +11,33 @@ namespace Voat.Models
     public class VoteResponse : CommandResponse<Score>
     {
         private int? _recordedValue = null;
+        private int _difference = 0;
+        private string _ownerUserName = "";
 
         public VoteResponse(Status result, int? voteRecordedValue, string description) : base(null, result, description)
         {
             this.RecordedValue = voteRecordedValue;
         }
 
+        public int Difference {
+            get {
+                return _difference;
+            }
+            set {
+                _difference = value;
+            }
+        }
+        public string OwnerUserName
+        {
+            get
+            {
+                return _ownerUserName;
+            }
+            set
+            {
+                _ownerUserName = value;
+            }
+        }
         /// <summary>
         /// The users recorded vote value after the operation has completed. Use this value to verify vote operation is recorded correctly. Valid values are: -1 (down voted, 0 (revoked, unvoted), or 1 (up voted)
         /// </summary>

@@ -40,13 +40,39 @@ namespace Voat
 
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
 
-            ContentProcessor.UserNotificationChanged = new Action<string>(recipient => {
+            #region Hook Events
+
+            EventHandler<MessageReceivedEventArgs> updateNotificationCount = delegate(object s, MessageReceivedEventArgs e) {
                 //get count of unread notifications
-                int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(recipient);
+                int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(e.UserName);
                 // send SignalR realtime notification to recipient
                 var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                hubContext.Clients.User(recipient).setNotificationsPending(unreadNotifications);
-            });
+                hubContext.Clients.User(e.UserName).setNotificationsPending(unreadNotifications);
+            };
+            EventNotification.Instance.OnMessageReceived += updateNotificationCount;
+            EventNotification.Instance.OnMentionReceived += updateNotificationCount;
+            EventNotification.Instance.OnCommentReplyReceived += updateNotificationCount;
+
+            EventNotification.Instance.OnVoteReceived += (s, e) => {
+
+                var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+
+                switch (e.ReferenceType)
+                {
+                    case Domain.Models.ContentType.Comment:
+                        hubContext.Clients.User(e.UserName).voteChange(1, e.ChangeValue);
+                        break;
+                    case Domain.Models.ContentType.Submission:
+                        hubContext.Clients.User(e.UserName).voteChange(2, e.ChangeValue);
+                        break;
+                }
+            };
+
+            //TODO:
+            EventNotification.Instance.OnHeadButtReceived += (s, e) => { };
+            EventNotification.Instance.OnChatMessageReceived += (s, e) => { };
+
+            #endregion 
 
             // USE ONLY FOR DEBUG: clear all sessions used for online users count
             // SessionTracker.RemoveAllSessions();

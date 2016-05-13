@@ -100,13 +100,13 @@ namespace Voat.Utilities.Components
                 Comment c = context as Comment;
                 if (c != null && c.LastEditDate == null)
                 {
-                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, c, ContentProcessor.UserNotificationChanged);
+                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, c);
                 }
                 //Message mentions
                 Submission m = context as Submission;
                 if (m != null && m.LastEditDate == null)
                 {
-                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, m, ContentProcessor.UserNotificationChanged);
+                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, m);
                 }
             }
             return match.Value;

@@ -439,16 +439,7 @@ namespace Voat.Controllers
                     }
 
                     // send comment reply notification to parent comment author if the comment is not a new root comment
-                    await NotificationManager.SendCommentNotification(commentModel,
-                        new Action<string>(recipient =>
-                        {
-                            //get count of unread notifications
-                            int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(recipient);
-                            // send SignalR realtime notification to recipient
-                            var hubContext = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                            hubContext.Clients.User(recipient).setNotificationsPending(unreadNotifications);
-                        })
-                    );
+                    await NotificationManager.SendCommentNotification(commentModel);
                 }
                 if (Request.IsAjaxRequest())
                 {

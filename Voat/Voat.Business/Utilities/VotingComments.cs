@@ -70,7 +70,8 @@ namespace Voat.Utilities
                                 db.CommentVoteTrackers.Add(tmpVotingTracker);
                                 db.SaveChanges();
 
-                                Voting.SendVoteNotification(comment.UserName, "upvote");
+                                //Voting.SendVoteNotification(comment.UserName, "upvote");
+                                EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, 1);
                             }
 
                             break;
@@ -93,7 +94,8 @@ namespace Voat.Utilities
                                 }
                                 db.SaveChanges();
 
-                                Voting.SendVoteNotification(comment.UserName, "downtoupvote");
+                                //Voting.SendVoteNotification(comment.UserName, "downtoupvote");
+                                EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, 2);
                             }
 
                             break;
@@ -104,10 +106,10 @@ namespace Voat.Utilities
                             comment.UpCount--;
                             db.SaveChanges();
 
-                            Voting.SendVoteNotification(comment.UserName, "downvote");
-
                             ResetCommentVote(userName, commentId);
 
+                            //Voting.SendVoteNotification(comment.UserName, "downvote");
+                            EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, -1);
                             break;
                     }
                 }
@@ -177,7 +179,8 @@ namespace Voat.Utilities
                                 db.CommentVoteTrackers.Add(tmpVotingTracker);
                                 db.SaveChanges();
 
-                                Voting.SendVoteNotification(comment.UserName, "downvote");
+                                //Voting.SendVoteNotification(comment.UserName, "downvote");
+                                EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, -1);
                             }
 
                             break;
@@ -199,7 +202,8 @@ namespace Voat.Utilities
                                 }
                                 db.SaveChanges();
 
-                                Voting.SendVoteNotification(comment.UserName, "uptodownvote");
+                                //Voting.SendVoteNotification(comment.UserName, "uptodownvote");
+                                EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, -2);
                             }
 
                             break;
@@ -211,7 +215,8 @@ namespace Voat.Utilities
                             db.SaveChanges();
                             ResetCommentVote(userName, commentId);
 
-                            Voting.SendVoteNotification(comment.UserName, "upvote");
+                            //Voting.SendVoteNotification(comment.UserName, "upvote");
+                            EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, 1);
 
                             break;
                     }

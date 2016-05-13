@@ -26,7 +26,7 @@ namespace Voat.Utilities.Components
 {
     public static class NotificationManager
     {
-        public static async Task SendUserMentionNotification(string user, Comment comment, Action<string> onSuccess)
+        public static async Task SendUserMentionNotification(string user, Comment comment)
         {
             if (comment != null)
             {
@@ -67,10 +67,7 @@ namespace Voat.Utilities.Components
                         await _db.SaveChangesAsync();
                     }
 
-                    if (onSuccess != null)
-                    {
-                        onSuccess(recipient);
-                    }
+                    EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
                 }
                 catch (Exception ex) {
                     throw ex;
@@ -78,7 +75,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendUserMentionNotification(string user, Submission submission, Action<string> onSuccess)
+        public static async Task SendUserMentionNotification(string user, Submission submission)
         {
             if (submission != null)
             {
@@ -116,10 +113,8 @@ namespace Voat.Utilities.Components
                         await _db.SaveChangesAsync();
                     }
 
-                    if (onSuccess != null)
-                    {
-                        onSuccess(recipient);
-                    }
+                    EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
+
                 }
                 catch (Exception ex)
                 {
@@ -128,7 +123,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendCommentNotification(Comment comment, Action<string> onSuccess)
+        public static async Task SendCommentNotification(Comment comment)
         {
             try 
             { 
@@ -179,10 +174,8 @@ namespace Voat.Utilities.Components
 
                                         await _db.SaveChangesAsync();
 
-                                        if (onSuccess != null)
-                                        {
-                                            onSuccess(commentReplyNotification.Recipient);
-                                        }
+                                        EventNotification.Instance.SendMessageNotice(commentReplyNotification.Recipient, commentReplyNotification.Sender, Domain.Models.MessageType.Comment, Domain.Models.ContentType.Comment, comment.ID);
+
                                     }
                                 }
                             }
@@ -228,10 +221,8 @@ namespace Voat.Utilities.Components
 
                                     await _db.SaveChangesAsync();
 
-                                    if (onSuccess != null)
-                                    {
-                                        onSuccess(postReplyNotification.Recipient);
-                                    }
+                                    EventNotification.Instance.SendMessageNotice(postReplyNotification.Recipient, postReplyNotification.Sender, Domain.Models.MessageType.Comment, Domain.Models.ContentType.Comment, comment.ID);
+
                                 }
                             }
                         }

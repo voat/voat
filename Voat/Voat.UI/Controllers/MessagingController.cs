@@ -173,8 +173,9 @@ namespace Voat.Controllers
                             singleCommentReply.IsUnread = false;
                         }
                         _db.SaveChanges();
+                        EventNotification.Instance.SendMessageNotice(User.Identity.Name, null, Domain.Models.MessageType.All, null, null);
                         // update notification icon
-                        UpdateNotificationCounts();
+                        //UpdateNotificationCounts();
                     }
                 }
 
@@ -223,8 +224,8 @@ namespace Voat.Controllers
                             singlePostReply.IsUnread = false;
                         }
                         _db.SaveChanges();
-                        // update notification icon
-                        UpdateNotificationCounts();
+
+                        EventNotification.Instance.SendMessageNotice(User.Identity.Name, null, Domain.Models.MessageType.All, null, null);
                     }
                 }
 
@@ -343,12 +344,15 @@ namespace Voat.Controllers
                 {
                     await _db.SaveChangesAsync();
 
-                    // get count of unread notifications
-                    int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(privateMessage.Recipient);
+                    EventNotification.Instance.SendMessageNotice(privateMessage.Recipient, null, Domain.Models.MessageType.Inbox, null, null);
 
-                    // send SignalR realtime notification to recipient
-                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                    hubContext.Clients.User(privateMessage.Recipient).setNotificationsPending(unreadNotifications);
+                    //// get count of unread notifications
+                    //int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(privateMessage.Recipient);
+
+                    //// send SignalR realtime notification to recipient
+                    //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    //hubContext.Clients.User(privateMessage.Recipient).setNotificationsPending(unreadNotifications);
+
                 }
                 catch (Exception)
                 {
@@ -409,15 +413,15 @@ namespace Voat.Controllers
             return Json("Bad request.", JsonRequestBehavior.AllowGet);
         }
 
-        // a method which triggers SignalR notification count update on client side for logged-in user
-        private void UpdateNotificationCounts()
-        {
-            // get count of unread notifications
-            int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(User.Identity.Name);
+        //// a method which triggers SignalR notification count update on client side for logged-in user
+        //private void UpdateNotificationCounts()
+        //{
+        //    // get count of unread notifications
+        //    int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(User.Identity.Name);
 
-            var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-            hubContext.Clients.User(User.Identity.Name).setNotificationsPending(unreadNotifications);
-        }
+        //    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+        //    hubContext.Clients.User(User.Identity.Name).setNotificationsPending(unreadNotifications);
+        //}
 
         [System.Web.Mvc.Authorize]
         [HttpGet]
@@ -435,7 +439,8 @@ namespace Voat.Controllers
                 case "privateMessage":
                     if (await MesssagingUtility.MarkPrivateMessagesAsRead((bool)markAll, User.Identity.Name, itemId))
                     {
-                        UpdateNotificationCounts(); // update notification icon
+                        EventNotification.Instance.SendMessageNotice(User.Identity.Name, null, Domain.Models.MessageType.All, null, null);
+                        //UpdateNotificationCounts(); // update notification icon
                         Response.StatusCode = 200;
                         return Json("Item marked as read.", JsonRequestBehavior.AllowGet);
                     }

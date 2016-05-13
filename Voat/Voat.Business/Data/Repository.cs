@@ -193,6 +193,7 @@ namespace Voat.Data
 
                                             //SendVoteNotification(comment.Name, "upvote");
                                             response = VoteResponse.Success(vote);
+                                            response.Difference = vote;
                                             response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
                                             break;
                                     }
@@ -214,7 +215,7 @@ namespace Voat.Data
                                                 _db.SaveChanges();
 
                                                 response = VoteResponse.Success(0, REVOKE_MSG);
-
+                                                response.Difference = -1;
                                                 response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
 
                                             }
@@ -234,6 +235,7 @@ namespace Voat.Data
                                                 _db.SaveChanges();
 
                                                 response = VoteResponse.Success(vote);
+                                                response.Difference = -2;
                                                 response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
                                             }
                                             break;
@@ -258,6 +260,7 @@ namespace Voat.Data
                                                 _db.CommentVoteTrackers.Remove(votingTracker);
                                                 _db.SaveChanges();
                                                 response = VoteResponse.Success(0, REVOKE_MSG);
+                                                response.Difference = 1;
                                                 response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
                                             }
                                             break;
@@ -274,6 +277,7 @@ namespace Voat.Data
 
                                                 _db.SaveChanges();
                                                 response = VoteResponse.Success(vote);
+                                                response.Difference = 2;
                                                 response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
                                             }
 
@@ -283,6 +287,8 @@ namespace Voat.Data
                                     break;
 
                             }
+                            //Set owner user name for notifications
+                            response.OwnerUserName = comment.UserName;
                             return response;
                         }
                     }
@@ -380,8 +386,8 @@ namespace Voat.Data
                                             _db.SubmissionVoteTrackers.Add(t);
                                             _db.SaveChanges();
 
-                                            //SendVoteNotification(comment.Name, "upvote");
                                             response = VoteResponse.Success(vote);
+                                            response.Difference = vote;
                                             response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
                                             break;
                                     }
@@ -395,17 +401,14 @@ namespace Voat.Data
 
                                             if (votingSubmissionTracker != null)
                                             {
-
                                                 submission.UpCount--;
-
                                                 _db.SubmissionVoteTrackers.Remove(votingSubmissionTracker);
-
                                                 _db.SaveChanges();
 
+                                                response = response = VoteResponse.Success(0, REVOKE_MSG);
+                                                response.Difference = -1;
+                                                response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
                                             }
-
-                                            response = response = VoteResponse.Success(0, REVOKE_MSG);
-                                            response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
                                             break;
                                         case -1:
                                             //change upvote to downvote
@@ -421,8 +424,8 @@ namespace Voat.Data
 
                                                 _db.SaveChanges();
 
-
                                                 response = VoteResponse.Success(vote);
+                                                response.Difference = -2;
                                                 response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
                                             }
                                             break;
@@ -447,7 +450,9 @@ namespace Voat.Data
                                                 submission.DownCount--;
                                                 _db.SubmissionVoteTrackers.Remove(votingSubmissionTracker);
                                                 _db.SaveChanges();
+
                                                 response = VoteResponse.Success(0, REVOKE_MSG);
+                                                response.Difference = 1;
                                                 response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
                                             }
                                             break;
@@ -466,6 +471,7 @@ namespace Voat.Data
 
                                                 _db.SaveChanges();
                                                 response = VoteResponse.Success(vote);
+                                                response.Difference = 2;
                                                 response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
                                             }
 
@@ -476,6 +482,8 @@ namespace Voat.Data
                                     break;
 
                             }
+                            //Set owner user name for notifications
+                            response.OwnerUserName = submission.UserName;
                             return response;
                         }
                     }
