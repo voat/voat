@@ -774,29 +774,33 @@ namespace Voat.Data
             DemandAuthentication();
 
             //Validation stuff
+            if (submission.Title.Equals(submission.Url, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return CommandResponse.Denied<Models.Submission>(null, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
+            }
             if (submission == null || !submission.HasState)
             {
-                throw new VoatValidationException("The submission must not be null or have invalid state.");
+                return CommandResponse.Denied<Models.Submission>(null, "The submission must not be null or have invalid state.");
             }
             if (String.IsNullOrEmpty(subverse))
             {
-                throw new VoatValidationException("A subverse must be provided.");
+                return CommandResponse.Denied<Models.Submission>(null, "A subverse must be provided.");
             }
             if (String.IsNullOrEmpty(submission.Url) && String.IsNullOrEmpty(submission.Content))
             {
-                throw new VoatValidationException("Either a Url or Content must be provided.");
+                return CommandResponse.Denied<Models.Submission>(null, "Either a Url or Content must be provided.");
             }
             if (String.IsNullOrEmpty(submission.Title))
             {
-                throw new VoatValidationException("Submission must have a title.");
+                return CommandResponse.Denied<Models.Submission>(null, "Submission must have a title.");
             }
             if (Submissions.ContainsUnicode(submission.Title))
             {
-                throw new VoatValidationException("Submission title can not contain Unicode characters.");
+                return CommandResponse.Denied<Models.Submission>(null, "Submission title can not contain Unicode characters.");
             }
             if (!SubverseExists(subverse) || subverse.Equals("all", StringComparison.OrdinalIgnoreCase)) //<-- the all subverse actually exists? HA!
             {
-                throw new VoatValidationException(String.Format("Subverse '{0}' does not exist.", subverse));
+                return CommandResponse.Denied<Models.Submission>(null, "Subverse does not exist.");
             }
 
             //Load Subverse Object

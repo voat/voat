@@ -87,5 +87,24 @@ namespace Voat.Tests.CommandTests
 
             //Assert.Inconclusive();
         }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Submission")]
+        public void PreventUrlTitlePosts()
+        {
+            TestHelper.SetPrincipal("TestUser2");
+
+            var cmd = new CreateSubmissionCommand("whatever", new Domain.Models.UserSubmission() { Title = "http://www.yahoo.com", Url = "http://www.yahoo.com" });
+
+            var r = cmd.Execute().Result;
+
+            Assert.IsFalse(r.Successfull);
+
+            Assert.AreEqual(r.Description, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
+
+            //Assert.AreNotEqual(0, r.Response.ID);
+        }
+
     }
 }

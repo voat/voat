@@ -61,7 +61,7 @@ namespace Voat.Tests.Utils
             n.OnMentionReceived += (s, e) => {
                 msgReceived = e.UserName == userName && e.MessageType == MessageType.Mention && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34 && e.Message == null;
             };
-            n.SendMentionNotice(userName, "Atko", ContentType.Comment, 34, String.Format("@{0} is such a horrible admin", userName));
+            n.SendMentionNotice(userName, "Atko", ContentType.Comment, 34, null);
             Assert.IsTrue(msgReceived, "OnMentionReceived failed - no message");
             msgReceived = false;
 

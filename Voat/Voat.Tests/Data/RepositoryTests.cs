@@ -105,19 +105,21 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository")]
-        [ExpectedException(typeof(VoatValidationException))]
+        //[ExpectedException(typeof(VoatValidationException))]
         public void PostSubmission_InvalidSubveseFails()
         {
             using (var db = new Voat.Data.Repository())
             {
                 TestHelper.SetPrincipal("TestUser1");
 
-                db.PostSubmission("**Invalid Subverse**", new UserSubmission()
+                var response = db.PostSubmission("**Invalid Subverse**", new UserSubmission()
                 {
                     Content = "Test",
                     Title = "My title",
                     Url = "http://www.yahoo.com"
                 });
+                Assert.IsFalse(response.Successfull);
+                Assert.AreEqual(response.Description, "Subverse does not exist.");
             }
         }
 
