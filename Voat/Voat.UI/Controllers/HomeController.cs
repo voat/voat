@@ -149,6 +149,13 @@ namespace Voat.Controllers
                 // check if same link was submitted before and deny submission
                 var existingSubmission = _db.Submissions.FirstOrDefault(s => s.Content.Equals(submission.Content, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
+                // check if submission title is the same as target URL and reject if so
+                if (submission.LinkDescription.Equals(submission.Content, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ModelState.AddModelError(string.Empty, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
+                    return View("Submit");
+                }
+
                 // submission is a repost, discard it and inform the user
                 if (existingSubmission != null)
                 {
