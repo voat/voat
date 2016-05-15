@@ -97,6 +97,7 @@ namespace Voat.RulesEngine
                 {
                     if (!Initialized)
                     {
+                        Debug.Print("Starting: Initializing RulesEngine");
                         if (config != null && config.Enabled)
                         {
                             if (config.DiscoverRules)
@@ -147,19 +148,12 @@ namespace Voat.RulesEngine
                                 }
                             }
                         }
+                        Debug.Print("Finished: Initializing RulesEngine");
                         Initialized = true;
                     }
                 }
             }
         }
-
-        //public virtual T Context
-        //{
-        //    get
-        //    {
-        //        return _contextHandler.Context;
-        //    }
-        //}
 
         protected virtual IEnumerable<Rule> GetRulesByScope(RuleScope scope, bool includeGlobalScope, Func<Rule, RuleScope, bool> scopeEvaluator)
         {

@@ -389,16 +389,6 @@ namespace Voat.Caching
         {
             return ItemExists(cacheKey);
         }
-        //public IEnumerable<T> RegisterDictionary<T>(string cacheKey, Func<IEnumerable<T>> getData, Func<T, object> getDictionaryKey, TimeSpan cacheTime, int recacheLimit = -1)
-        //{
-        //    if (!Exists(cacheKey))
-        //    {
-                
-        //    }
-
-        //    Dictionary<object, T> dict = getData().ToDictionary(getDictionaryKey);
-        //    return dict.Values;
-        //}
         public void Remove(string cacheKey, object dictionaryKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
