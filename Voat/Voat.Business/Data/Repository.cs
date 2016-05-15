@@ -96,7 +96,7 @@ namespace Voat.Data
                 #region Comment
                 case ContentType.Comment:
 
-                    var synclock_comment = _lockStore.GetLockObject(String.Format("comment:{0}", userName));
+                    var synclock_comment = _lockStore.GetLockObject(String.Format("comment:{0}", id));
                     lock (synclock_comment)
                     {
                         ruleContext.CommentID = id;
@@ -298,7 +298,7 @@ namespace Voat.Data
                 #region Submission
 
                 case ContentType.Submission:
-                    var synclock_submission = _lockStore.GetLockObject(String.Format("submission:{0}", userName));
+                    var synclock_submission = _lockStore.GetLockObject(String.Format("submission:{0}", id));
                     lock (synclock_submission)
                     {
                         submission = _db.Submissions.FirstOrDefault(x => x.ID == id);
@@ -806,7 +806,7 @@ namespace Voat.Data
 
             //Load Subverse Object
             var cmdSubverse = new QuerySubverse(subverse);
-            var subverseObject = cmdSubverse.Execute().Result;
+            var subverseObject = cmdSubverse.ExecuteAsync().Result;
 
             //Evaluate Rules
             var context = new VoatRuleContext();
@@ -1081,7 +1081,7 @@ namespace Voat.Data
             if (comment != null)
             {
                 var q = new QuerySubmission(comment.SubmissionID.Value);
-                var submission = Task.Run(() => q.Execute()).Result;
+                var submission = Task.Run(() => q.ExecuteAsync()).Result;
 
                 var commentSubverse = submission.Subverse;
                 // delete comment if the comment author is currently logged in user
@@ -1583,7 +1583,7 @@ namespace Voat.Data
             MatchCollection col = Regex.Matches(message.Recipient, @"((?'prefix'@|u/|/u/|v/|/v/)?(?'recipient'[\w-.]+))", RegexOptions.IgnoreCase);
             if (col.Count <= 0)
             {
-                return new CommandResponse(Status.NotProcessed, "No recipient specified", String.Format("message.reciepient can not be matched: {0}", message.Recipient));
+                return new CommandResponse(Status.NotProcessed, "No recipient specified");
             }
 
             //Have to filter distinct because of spamming. If you copy a user name 
@@ -1666,7 +1666,7 @@ namespace Voat.Data
                     }
                     catch (Exception ex)
                     {
-                        return new CommandResponse(Status.Invalid, "Error sending message", ex.Message);
+                        return CommandResponse.Error<CommandResponse>(ex);
                     }
                 }
             }
@@ -2554,7 +2554,7 @@ namespace Voat.Data
 
             //if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
             var m = new QuerySubverseModerators(subverse);
-            var mods = Task.Run(() => m.Execute()).Result;
+            var mods = Task.Run(() => m.ExecuteAsync()).Result;
             return mods.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && (power == null ? true : (x.Power <= power)));
         }
 
@@ -2659,7 +2659,7 @@ namespace Voat.Data
             switch (outcome.Result)
             {
                 case RuleResult.Denied:
-                    return CommandResponse.Denied<T>(result, outcome.Message, outcome.ToString());
+                    return CommandResponse.Denied<T>(result, outcome.Message);
                 default:
                     return CommandResponse.Success(result);
             }

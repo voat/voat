@@ -81,6 +81,7 @@ namespace Voat.Domain.Command
         public string UserName
         {
             get { return _userName; }
+            set { _userName = value; }
         }
 
         //public bool IsAthenticationRequired { get; protected set; }
@@ -92,7 +93,7 @@ namespace Voat.Domain.Command
 
         protected CommandResponse<T> Map<T>(RulesEngine.RuleOutcome outcome)
         {
-            return CommandResponse.Denied<T>(default(T), outcome.Message, outcome.ToString());
+            return CommandResponse.Denied<T>(default(T), outcome.Message);
         }
     }
 
@@ -109,21 +110,7 @@ namespace Voat.Domain.Command
             }
             catch (Exception ex)
             {
-                var r = new T();
-                if (ex is VoatException)
-                {
-                    r.Status = Status.Invalid;
-                    r.Description = ex.Message;
-                    r.SystemDescription = ex.ToString();
-                }
-                else
-                {
-                    r.Status = Status.Error;
-                    r.Description = "System Error";
-                    r.SystemDescription = ex.ToString();
-                }
-                r.Exception = ex;
-                return r;
+                return CommandResponse.Error<T>(ex);
             }
         }
     }

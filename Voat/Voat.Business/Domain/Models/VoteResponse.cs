@@ -59,7 +59,7 @@ namespace Voat.Models
 
         public override string ToString()
         {
-            return String.Format("{0}: {1}", Status.ToString(), SystemDescription);
+            return String.Format("{0}: {1}", Status.ToString(), Message);
         }
 
         #region Helper Methods

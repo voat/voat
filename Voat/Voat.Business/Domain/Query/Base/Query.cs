@@ -4,7 +4,7 @@ namespace Voat.Domain.Query
 {
     public interface IQuery<T>
     {
-        Task<T> Execute();
+        Task<T> ExecuteAsync();
     }
 
     public abstract class Query<T> : IQuery<T>
@@ -12,11 +12,6 @@ namespace Voat.Domain.Query
         //if we wish to pass in a context
         //private voatEntities _dataContext;
         private string _userName;
-
-        //public Query(voatEntities dataContext) : this()
-        //{
-        //    DataContext = dataContext;
-        //}
 
         public Query()
         {
@@ -37,22 +32,10 @@ namespace Voat.Domain.Query
             }
         }
 
-        //protected voatEntities DataContext
-        //{
-        //    get
-        //    {
-        //        if (_dataContext != null)
-        //        {
-        //            return _dataContext;
-        //        }
-        //        return new voatEntities();
-        //    }
-        //    private set
-        //    {
-        //        _dataContext = value;
-        //    }
-        //}
-
-        public abstract Task<T> Execute();
+        public async Task<T> ExecuteAsync()
+        {
+            return await Task.Run(() => Execute());
+        }
+        public abstract T Execute();
     }
 }

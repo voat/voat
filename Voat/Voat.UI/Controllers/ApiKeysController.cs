@@ -18,7 +18,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> Index()
         {
             var cmd = new QueryUserApiKeys();
-            var keys = await cmd.Execute();
+            var keys = await cmd.ExecuteAsync();
             return View(keys);
         }
 

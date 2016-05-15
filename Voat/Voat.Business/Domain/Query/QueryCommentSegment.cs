@@ -28,19 +28,19 @@ namespace Voat.Domain.Query
             _options = options;
         }
 
-        public override async Task<CommentSegment> Execute()
+        public override CommentSegment Execute()
         {
             int startingIndex = _index == null ? 0 : _index.Value;
 
             QueryCommentTree q = new QueryCommentTree(_submissionID);
 
-            var p = await new QueryUserData(UserName).Execute();
+            var p = new QueryUserData(UserName).Execute();
 
             UserPreference preference = p.Preferences;
             //This is for testing
             //options.Count = 3;
 
-            var fullTree = (await q.Execute()).Values;
+            var fullTree = (q.Execute()).Values;
             var queryTree = fullTree.AsQueryable();
             queryTree = queryTree.Where(x => x.ParentID == _parentID);
 
@@ -60,7 +60,7 @@ namespace Voat.Domain.Query
             }
             var queryableTree = queryTree.Skip(startingIndex).Take(_options.Count);
 
-            var commentVotes = await new QueryUserCommentVotesForSubmission(_submissionID).Execute();
+            var commentVotes = new QueryUserCommentVotesForSubmission(_submissionID).Execute();
 
             List<NestedComment> comments = new List<NestedComment>();
 

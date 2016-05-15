@@ -138,7 +138,7 @@ namespace Voat.Domain
         public static bool IsUserSubverseAdmin(string userName, string subverse)
         {
             var q = new QuerySubverseModerators(subverse);
-            var d = Task.Run(() => q.Execute()).Result;
+            var d = Task.Run(() => q.ExecuteAsync()).Result;
             return d.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.Power == 1);
 
             //using (var db = new voatEntities())
@@ -152,7 +152,7 @@ namespace Voat.Domain
         public static bool IsUserSubverseModerator(string userName, string subverse)
         {
             var q = new QuerySubverseModerators(subverse);
-            var d = Task.Run(() => q.Execute()).Result;
+            var d = Task.Run(() => q.ExecuteAsync()).Result;
             return d.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
 
 
@@ -181,7 +181,7 @@ namespace Voat.Domain
         {
             var result = false;
             var q = new QueryUserSubscriptions(userName);
-            var d = Task.Run(() => q.Execute()).Result;
+            var d = Task.Run(() => q.ExecuteAsync()).Result;
             if (d.ContainsKey(DomainType.Subverse.ToString()))
             {
                 result = d[DomainType.Subverse.ToString()].Any(x => x.Equals(subverse, StringComparison.OrdinalIgnoreCase));
@@ -201,7 +201,7 @@ namespace Voat.Domain
 
             var result = false;
             var q = new QueryUserBlocks();
-            var d = Task.Run(() => q.Execute()).Result;
+            var d = Task.Run(() => q.ExecuteAsync()).Result;
             result = d.Any(x => x.Type == Models.DomainType.Subverse && x.Name.Equals(subverse, StringComparison.OrdinalIgnoreCase));
             return result;
 
@@ -217,7 +217,7 @@ namespace Voat.Domain
         {
             var result = false;
             var q = new QueryUserBlocks();
-            var d = Task.Run(() => q.Execute()).Result;
+            var d = Task.Run(() => q.ExecuteAsync()).Result;
             result = d.Any(x => x.Type == Models.DomainType.Set && x.Name.Equals(setName, StringComparison.OrdinalIgnoreCase));
             return result;
 
@@ -292,7 +292,7 @@ namespace Voat.Domain
         {
             var result = 0;
             var q = new QueryUserSubscriptions(userName);
-            var d = Task.Run(() => q.Execute()).Result;
+            var d = Task.Run(() => q.ExecuteAsync()).Result;
             if (d.ContainsKey(DomainType.Subverse.ToString()))
             {
                 result = d[DomainType.Subverse.ToString()].Count();
@@ -311,7 +311,7 @@ namespace Voat.Domain
 
             IEnumerable<string> result = null;
             var q = new QueryUserSubscriptions(userName);
-            var d = Task.Run(() => q.Execute()).Result;
+            var d = Task.Run(() => q.ExecuteAsync()).Result;
             if (d.ContainsKey(DomainType.Subverse.ToString()))
             {
                 result = d[DomainType.Subverse.ToString()];
@@ -338,7 +338,7 @@ namespace Voat.Domain
         public static IEnumerable<Models.UserBadge> UserBadges(string userName)
         {
             var q = new QueryUserInformation(userName);
-            var result = Task.Run(() => q.Execute()).Result;
+            var result = Task.Run(() => q.ExecuteAsync()).Result;
             return result.Badges;
 
             //using (var db = new voatEntities())

@@ -119,7 +119,7 @@ namespace Voat.Tests.Repository
                     Url = "http://www.yahoo.com"
                 });
                 Assert.IsFalse(response.Successfull);
-                Assert.AreEqual(response.Description, "Subverse does not exist.");
+                Assert.AreEqual(response.Message, "Subverse does not exist.");
             }
         }
 

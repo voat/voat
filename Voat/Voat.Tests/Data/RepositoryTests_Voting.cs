@@ -145,7 +145,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteComment(context.CommentID, 1);
 
-                Assert.IsTrue(response.Successfull, response.SystemDescription);
+                Assert.IsTrue(response.Successfull, response.Message);
                 Assert.IsTrue(x.UpCount == (ups + 1));
                 Assert.IsTrue(x.DownCount == downs);
             }
@@ -272,8 +272,8 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, 1);
 
-                Assert.IsTrue(response.Successfull, response.SystemDescription);
-                Assert.IsTrue(response.RecordedValue == 1, response.SystemDescription);
+                Assert.IsTrue(response.Successfull, response.Message);
+                Assert.IsTrue(response.RecordedValue == 1, response.Message);
                 Assert.IsTrue(x.UpCount == (ups + 1));
                 Assert.IsTrue(x.DownCount == downs);
             }

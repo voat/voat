@@ -31,9 +31,9 @@ namespace Voat.Domain.Query
             }
         }
 
-        public override async Task<DateTime> Execute()
+        public override DateTime Execute()
         {
-            var value = await base.Execute();
+            var value = base.Execute();
 
             CacheHandler.Instance.Replace<DateTime>(FullCacheKey, Repository.CurrentDate, CachingPolicy.Duration);
 

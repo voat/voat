@@ -66,24 +66,18 @@ namespace Voat.Domain.Query
             }
         }
 
-        public override async Task<T> Execute()
+        public override T Execute()
         {
             if (CachingPolicy != null && CachingPolicy.IsValid)
             {
                 //I think this will keep data in memory. Need to have method that just inserts data.
-                return await Task.Run(() =>
-                {
-                    CacheHit = true;
-                    return CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), GetFreshData, CachingPolicy.Duration, CachingPolicy.RecacheLimit);
-                });
+                CacheHit = true;
+                return CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), GetFreshData, CachingPolicy.Duration, CachingPolicy.RecacheLimit);
             }
             else
             {
-                return await Task.Run(() =>
-                {
-                    CacheHit = true;
-                    return GetFreshData();
-                });
+                CacheHit = true;
+                return GetFreshData();
             }
         }
 

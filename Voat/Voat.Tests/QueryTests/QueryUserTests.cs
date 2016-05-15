@@ -16,17 +16,17 @@ namespace Voat.Tests.QueryTests
         {
             string user = "";
             var q = new QueryUserData(user);
-            var userData = q.Execute().Result;
+            var userData = q.ExecuteAsync().Result;
             Assert.IsNull(userData, String.Format("UserData expected to be null for value: '{0}'", user));
 
             user = null;
             q = new QueryUserData(null);
-            userData = q.Execute().Result;
+            userData = q.ExecuteAsync().Result;
             Assert.IsNull(userData, String.Format("UserData expected to be null for value: '{0}'", "null"));
 
             user = "____________Doesn't__Exist_________";
             q = new QueryUserData(user);
-            userData = q.Execute().Result;
+            userData = q.ExecuteAsync().Result;
             Assert.IsNull(userData, String.Format("UserData expected to be null for value: '{0}'", user));
 
         }

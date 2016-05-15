@@ -39,7 +39,7 @@ namespace Voat.Domain.Query
                 if (info != null)
                 {
                     var q = new QuerySubverseModerators(_subverse);
-                    var results = Task.Run(() => q.Execute()).Result;
+                    var results = Task.Run(() => q.ExecuteAsync()).Result;
                     info.Moderators = results.Select(x => x.UserName).ToList();
                 }
                 return info;

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using Voat.Common;
 
 namespace Voat.Domain.Command
 {
@@ -18,18 +19,18 @@ namespace Voat.Domain.Command
     //at this time since the data will be present at the time of a command execution.
     public class CommandResponse
     {
-        public CommandResponse(Status status, string description, string systemDescription = "")
+        public CommandResponse(Status status, string description)
         {
             this.Status = status;
-            this.Description = description;
-            this.SystemDescription = systemDescription;
+            this.Message = description;
         }
         public CommandResponse() { }
         /// <summary>
         /// The friendly description to be used if information is displayed on the UI or to the user.
         /// </summary>
-        public virtual string Description { get; set; }
+        public virtual string Message { get; set; }
 
+        [JsonIgnore]
         public Exception Exception { get; set; }
 
         public Status Status { get; set; }
@@ -38,54 +39,63 @@ namespace Voat.Domain.Command
         {
             get { return this.Status == Status.Success; }
         }
-
-        /// <summary>
-        /// The system systemDescription of command response status.
-        /// </summary>
-        [JsonIgnore]
-        public virtual string SystemDescription { get; set; }
-
-        public static CommandResponse<R> Denied<R>(R response, string description, string systemDescription = "")
+        #region Static Helpers
+        public static CommandResponse<R> Denied<R>(R response, string description)
         {
-            return new CommandResponse<R>(response, Status.Denied, description, systemDescription);
+            return new CommandResponse<R>(response, Status.Denied, description);
         }
 
-        public static CommandResponse Denied(string description, string systemDescription = "")
+        public static CommandResponse Denied(string description)
         {
-            return new CommandResponse(Status.Denied, description, systemDescription);
+            return new CommandResponse(Status.Denied, description);
         }
 
-        public static CommandResponse<R> Ignored<R>(R response, string description, string systemDescription = "")
+        public static CommandResponse<R> Ignored<R>(R response, string description)
         {
-            return new CommandResponse<R>(response, Status.Ignored, description, systemDescription);
+            return new CommandResponse<R>(response, Status.Ignored, description);
         }
 
-        public static CommandResponse Ignored(string description, string systemDescription = "")
+        public static CommandResponse Ignored(string description)
         {
-            return new CommandResponse(Status.Ignored, description, systemDescription);
+            return new CommandResponse(Status.Ignored, description);
         }
 
         public static CommandResponse<R> Success<R>(R response)
         {
-            return new CommandResponse<R>(response, Status.Success, "", "");
+            return new CommandResponse<R>(response, Status.Success, "");
         }
-        public static CommandResponse<R> Error<R>(Exception ex, string description = "", string systemDescription = "")
+        public static T Error<T>(Exception ex) where T : CommandResponse, new()
         {
-            return new CommandResponse<R>(default(R), Status.Error, String.IsNullOrEmpty(description) ? "Error occured" : description, String.IsNullOrEmpty(systemDescription) ? ex.ToString() : systemDescription);
+            var r = new T();
+            r.Exception = ex;
+            if (ex is VoatException)
+            {
+                r.Status = Status.Invalid;
+                r.Message = ex.Message;
+            }
+            else
+            {   //protect any system errors
+                r.Status = Status.Error;
+                r.Message = "System Error";
+            }
+            return r;
         }
+        
         public static CommandResponse Success()
         {
-            return new CommandResponse(Status.Success, "", "");
+            return new CommandResponse(Status.Success, "");
         }
         public static CommandResponse<M> Map<T, M>(CommandResponse<T> response, M mapped)
         {
-            return new CommandResponse<M>(mapped, response.Status, response.Description, response.SystemDescription);
+            return new CommandResponse<M>(mapped, response.Status, response.Message);
         }
+        #endregion
+
     }
 
     public class CommandResponse<R> : CommandResponse
     {
-        public CommandResponse(R response, Status status, string description, string systemDescription = "") : base(status, description, systemDescription)
+        public CommandResponse(R response, Status status, string description) : base(status, description)
         {
             this.Response = response;
         }

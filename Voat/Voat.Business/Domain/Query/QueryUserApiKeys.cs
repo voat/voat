@@ -8,7 +8,7 @@ namespace Voat.Domain.Query
 {
     public class QueryUserApiKeys : Query<IEnumerable<Tuple<ApiClient, ApiThrottlePolicy>>>
     {
-        public override async Task<IEnumerable<Tuple<ApiClient, ApiThrottlePolicy>>> Execute()
+        public override IEnumerable<Tuple<ApiClient, ApiThrottlePolicy>> Execute()
         {
             var output = new List<Tuple<ApiClient, ApiThrottlePolicy>>();
             using (var repo = new Repository())
@@ -20,7 +20,7 @@ namespace Voat.Domain.Query
                     if (key.ApiThrottlePolicyID.HasValue)
                     {
                         var cmd = new QueryApiThrottlePolicy(key.ApiThrottlePolicyID.Value);
-                        policy = await cmd.Execute();
+                        policy = cmd.Execute();
                     }
 
                     var tuple = new Tuple<ApiClient, ApiThrottlePolicy>(key, policy);

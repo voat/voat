@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Domain;
 using Voat.Domain.Models;
@@ -11,26 +12,23 @@ namespace Voat.Rules
     public class VoatRuleContext : RequestContext
     {
         private Guid _id = Guid.NewGuid();
-        private Lazy<UserData> _userData;
+        private UserData _userData;
 
         public VoatRuleContext()
         {
             PropertyBag.UserName = System.Threading.Thread.CurrentPrincipal.Identity.Name;
-
-            _userData = new Lazy<UserData>(() =>
-            {
-                var cmd = new QueryUserData(PropertyBag.UserName);
-                var result = cmd.Execute().Result;
-                return result;
-            });
-
         }
 
         public UserData UserData
         {
             get
             {
-                return _userData.Value;
+                if (_userData == null)
+                {
+                    //var cmd = new QueryUserData(PropertyBag.UserName);
+                    _userData = new UserData(PropertyBag.UserName);
+                }
+                return _userData;
             }
         }
 
@@ -86,26 +84,26 @@ namespace Voat.Rules
                     if (SubmissionID != null)
                     {
                         var cmd = new QuerySubmission(SubmissionID.Value);
-                        var submission = cmd.Execute().Result;
+                        var submission = Task.Run(() => cmd.ExecuteAsync()).Result;
                         PropertyBag.Submission = submission;
 
                         var cmdSubverse = new QuerySubverse(submission.Subverse);
-                        var subverse = cmdSubverse.Execute().Result;
+                        var subverse = Task.Run(() => cmd.ExecuteAsync()).Result;
 
                         return subverse;
                     }
                     if (CommentID != null)
                     {
                         var cmdComment = new QueryComment(CommentID.Value);
-                        var comment = cmdComment.Execute().Result;
+                        var comment = Task.Run(() => cmdComment.ExecuteAsync()).Result;
                         PropertyBag.Comment = comment;
 
                         var cmd = new QuerySubmission(comment.SubmissionID.Value);
-                        var submission = cmd.Execute().Result;
+                        var submission = Task.Run(() => cmd.ExecuteAsync()).Result;
                         PropertyBag.Submission = submission;
 
                         var cmdSubverse = new QuerySubverse(submission.Subverse);
-                        var subverse = cmdSubverse.Execute().Result;
+                        var subverse = Task.Run(() => cmd.ExecuteAsync()).Result;
 
                         return subverse;
                     }

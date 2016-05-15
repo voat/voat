@@ -65,7 +65,7 @@ namespace Voat.Utilities
         {
             // if you unlock this the bug is present
 
-            object lockthis = _lockStore.GetLockObject(userName);
+            object lockthis = _lockStore.GetLockObject(submissionID.ToString());
             lock (lockthis)
             {
                 using (var db = new voatEntities())
@@ -158,7 +158,7 @@ namespace Voat.Utilities
         // submit submission downvote
         public static void DownvoteSubmission(int submissionID, string userName, string clientIp)
         {
-            object lockthis = _lockStore.GetLockObject(userName);
+            object lockthis = _lockStore.GetLockObject(submissionID.ToString());
             lock (lockthis)
             {
                 using (var db = new voatEntities())

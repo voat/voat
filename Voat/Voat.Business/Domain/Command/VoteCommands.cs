@@ -53,7 +53,7 @@ namespace Voat.Domain.Command
         {
             using (var gateway = new Repository())
             {
-                var outcome = await Task.Factory.StartNew(() => gateway.VoteSubmission(SubmissionID, VoteValue, RevokeOnRevote));
+                var outcome = await Task.Run(() => gateway.VoteSubmission(SubmissionID, VoteValue, RevokeOnRevote));
                 //Raise event
                 if (outcome.Successfull)
                 {

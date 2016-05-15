@@ -56,7 +56,7 @@ namespace Voat.Domain
             {
                 return GetOrLoad(ref _prefs, username => {
                     var q = new QueryUserPreferences(username);
-                    var result = Task.Run(() => q.Execute()).Result;
+                    var result = q.Execute();
                     return result;
                 });
             }
@@ -73,7 +73,7 @@ namespace Voat.Domain
             {
                 return GetOrLoad(ref _info, username => {
                     var q = new QueryUserInformation(username);
-                    var result = Task.Run(() => q.Execute()).Result;
+                    var result = q.Execute();
                     return result;
                 });
             }

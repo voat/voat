@@ -101,7 +101,7 @@ namespace Voat.Tests.CommandTests
 
             Assert.IsFalse(r.Successfull);
 
-            Assert.AreEqual(r.Description, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
+            Assert.AreEqual(r.Message, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
 
             //Assert.AreNotEqual(0, r.Response.ID);
         }
@@ -118,7 +118,7 @@ namespace Voat.Tests.CommandTests
             var r = cmd.Execute().Result;
 
             Assert.IsFalse(r.Successfull);
-            Assert.AreEqual(r.Description, "A subverse must be provided.");
+            Assert.AreEqual(r.Message, "A subverse must be provided.");
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Voat.Tests.QueryTests
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.RelativeRank;
             var q = new QuerySubmissions(subverse, s);
-            var r = q.Execute().Result;
+            var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
         //Need a way to test this, right now we don't have comments on these entries
@@ -52,7 +52,7 @@ namespace Voat.Tests.QueryTests
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Rank;
             var q = new QuerySubmissions(subverse, s);
-            var r = q.Execute().Result;
+            var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
 
@@ -66,7 +66,7 @@ namespace Voat.Tests.QueryTests
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.New;
             var q = new QuerySubmissions(subverse, s);
-            var r = q.Execute().Result;
+            var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
         [TestMethod]
@@ -79,7 +79,7 @@ namespace Voat.Tests.QueryTests
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Top;
             var q = new QuerySubmissions(subverse, s);
-            var r = q.Execute().Result;
+            var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
         [TestMethod]
@@ -92,7 +92,7 @@ namespace Voat.Tests.QueryTests
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Bottom;
             var q = new QuerySubmissions(subverse, s);
-            var r = q.Execute().Result;
+            var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
 
@@ -106,7 +106,7 @@ namespace Voat.Tests.QueryTests
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Viewed;
             var q = new QuerySubmissions(subverse, s);
-            var r = q.Execute().Result;
+            var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
         [TestMethod]
@@ -119,7 +119,7 @@ namespace Voat.Tests.QueryTests
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Intensity;
             var q = new QuerySubmissions(subverse, s);
-            var r = q.Execute().Result;
+            var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
 

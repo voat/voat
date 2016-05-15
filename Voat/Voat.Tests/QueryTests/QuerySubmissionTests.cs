@@ -68,7 +68,7 @@ namespace Voat.Tests.QueryTests
         public void Query_Comment_Anon()
         {
             var q = new QueryComment(3, null);
-            var result = q.Execute().Result;
+            var result = q.ExecuteAsync().Result;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.ID.ToString(), result.UserName);
         }
@@ -79,7 +79,7 @@ namespace Voat.Tests.QueryTests
         public void Query_CommentTree()
         {
             var q = new QueryCommentTree(1, null);
-            var result = q.Execute().Result.Values;
+            var result = q.ExecuteAsync().Result.Values;
             Assert.IsNotNull(result);
             Assert.AreNotEqual(0, result.Count);
 
@@ -96,7 +96,7 @@ namespace Voat.Tests.QueryTests
         public void Query_CommentTree_Anon()
         {
             var q = new QueryCommentTree(2, null);
-            var result = q.Execute().Result.Values;
+            var result = q.ExecuteAsync().Result.Values;
             Assert.IsNotNull(result);
             Assert.AreNotEqual(0, result.Count);
             foreach (var t in result)
@@ -114,12 +114,12 @@ namespace Voat.Tests.QueryTests
         public void Query_UserPreferences_Default()
         {
             var q = new QueryUserPreferences();
-            var result = q.Execute().Result;
+            var result = q.ExecuteAsync().Result;
             Assert.IsNotNull(result);
             Assert.AreEqual("en", result.Language);
 
             q = new QueryUserPreferences();
-            result = q.Execute().Result;
+            result = q.ExecuteAsync().Result;
             Assert.IsNotNull(result);
             Assert.AreEqual("en", result.Language);
         }
@@ -131,7 +131,7 @@ namespace Voat.Tests.QueryTests
         {
             var q = new QuerySubmissions("_all", SearchOptions.Default, null);
             //q.CachePolicy.Duration = TimeSpan.Zero; //Turn off caching on this request
-            var result = q.Execute().Result;
+            var result = q.ExecuteAsync().Result;
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any());
@@ -145,13 +145,13 @@ namespace Voat.Tests.QueryTests
         {
             var q = new QuerySubmissions("_all", SearchOptions.Default, new CachePolicy(TimeSpan.FromSeconds(30)));
             //q.CachePolicy.Duration = TimeSpan.FromSeconds(30); //Cache this request
-            var result = q.Execute().Result;
+            var result = q.ExecuteAsync().Result;
             Assert.IsNotNull(result);
             Assert.AreEqual(false, q.CacheHit);
             Assert.IsTrue(result.Any());
 
             q = new QuerySubmissions("_all", SearchOptions.Default, new CachePolicy(TimeSpan.FromMinutes(10)));
-            result = q.Execute().Result;
+            result = q.ExecuteAsync().Result;
             Assert.AreEqual(CacheHandler.Instance.CacheEnabled, q.CacheHit); //ensure second query hits cache
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any());
@@ -167,7 +167,7 @@ namespace Voat.Tests.QueryTests
 
             var q = new QuerySubmissions("_all", new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
             //q.CachePolicy.Duration = cacheTime; //Cache this request
-            var result = q.Execute().Result;
+            var result = q.ExecuteAsync().Result;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(false, q.CacheHit);
@@ -177,7 +177,7 @@ namespace Voat.Tests.QueryTests
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(30));
 
             q = new QuerySubmissions("_all", new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
-            result = q.Execute().Result;
+            result = q.ExecuteAsync().Result;
             //ensure we had to retreive new data
             Assert.AreEqual(false, q.CacheHit);
             Assert.IsNotNull(result);
@@ -194,7 +194,7 @@ namespace Voat.Tests.QueryTests
 
             var q = new QuerySubverseInformation("AuthorizedOnly");
             //q.CachePolicy.Duration = cacheTime; //Cache this request
-            var result = q.Execute().Result;
+            var result = q.ExecuteAsync().Result;
 
             Assert.IsNotNull(result, "Expected result is null");
             Assert.IsNotNull(result.Moderators, "Expected Moderators property is null, was expecting list");
