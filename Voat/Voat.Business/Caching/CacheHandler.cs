@@ -273,8 +273,10 @@ namespace Voat.Caching
             {
                 Debug.Print(args.RemovedReason.ToString());
                 Debug.Print(String.Format("Expiring cache: {0}", args.CacheItem.Key));
-                Remove(args.CacheItem.Key);
-
+                if (args.RemovedReason != CacheEntryRemovedReason.CacheSpecificEviction)
+                {
+                    Remove(args.CacheItem.Key);
+                }
             }
             catch (Exception ex)
             {
@@ -400,7 +402,6 @@ namespace Voat.Caching
         public void Remove(string cacheKey, object dictionaryKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
-
             DeleteItem(cacheKey, dictionaryKey);
         }
         public void Replace<T>(string cacheKey, object dictionaryKey, T newObject)

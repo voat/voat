@@ -24,17 +24,20 @@ namespace Voat.Tests
             }
 
             //This causes the voat rules engine to init usin config section for load
-            var x = VoatRulesEngine.Instance;
+            var rulesEngine = VoatRulesEngine.Instance;
 
             LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
             LiveConfigurationManager.Start();
+
+            var defaultHandler = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Construct();
+            defaultHandler.Purge();
+
         }
 
         [AssemblyCleanup]
         public static void AssemblyCleanup()
         {
-            var defaultHandler = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Construct();
-            defaultHandler.Purge();
+
         }
 
     }
