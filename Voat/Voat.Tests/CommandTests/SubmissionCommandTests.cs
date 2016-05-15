@@ -106,5 +106,19 @@ namespace Voat.Tests.CommandTests
             //Assert.AreNotEqual(0, r.Response.ID);
         }
 
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Submission")]
+        public void PreventNoSubversePost()
+        {
+            TestHelper.SetPrincipal("TestUser2");
+
+            var cmd = new CreateSubmissionCommand("", new Domain.Models.UserSubmission() { Title = "Hello Man", Url = "http://www.yahoo.com" });
+
+            var r = cmd.Execute().Result;
+
+            Assert.IsFalse(r.Successfull);
+            Assert.AreEqual(r.Description, "A subverse must be provided.");
+        }
     }
 }

@@ -156,6 +156,7 @@ namespace Voat.Tests.QueryTests
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any());
         }
+
         [TestMethod]
         [TestCategory("Query")]
         [TestCategory("Submission")]
@@ -200,5 +201,6 @@ namespace Voat.Tests.QueryTests
 
             Assert.IsTrue(result.Moderators.Any(x => x == "unit"));
         }
+
     }
 }

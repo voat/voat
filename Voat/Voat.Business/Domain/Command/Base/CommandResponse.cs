@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace Voat.Domain.Command
 {
@@ -8,7 +9,8 @@ namespace Voat.Domain.Command
         Success = 1,
         Denied = 2,
         Ignored = 4,
-        Invalid = 8
+        Invalid = 8,
+        Error = 16
     }
 
     //We are not moving to a full CQRS implementation at this time, so for now some commands need to return
@@ -22,13 +24,15 @@ namespace Voat.Domain.Command
             this.Description = description;
             this.SystemDescription = systemDescription;
         }
-
+        public CommandResponse() { }
         /// <summary>
         /// The friendly description to be used if information is displayed on the UI or to the user.
         /// </summary>
-        public virtual string Description { get; protected set; }
+        public virtual string Description { get; set; }
 
-        public Status Status { get; protected set; }
+        public Exception Exception { get; set; }
+
+        public Status Status { get; set; }
 
         public bool Successfull
         {
@@ -39,7 +43,7 @@ namespace Voat.Domain.Command
         /// The system systemDescription of command response status.
         /// </summary>
         [JsonIgnore]
-        public virtual string SystemDescription { get; protected set; }
+        public virtual string SystemDescription { get; set; }
 
         public static CommandResponse<R> Denied<R>(R response, string description, string systemDescription = "")
         {
@@ -65,7 +69,10 @@ namespace Voat.Domain.Command
         {
             return new CommandResponse<R>(response, Status.Success, "", "");
         }
-
+        public static CommandResponse<R> Error<R>(Exception ex, string description = "", string systemDescription = "")
+        {
+            return new CommandResponse<R>(default(R), Status.Error, String.IsNullOrEmpty(description) ? "Error occured" : description, String.IsNullOrEmpty(systemDescription) ? ex.ToString() : systemDescription);
+        }
         public static CommandResponse Success()
         {
             return new CommandResponse(Status.Success, "", "");
@@ -82,6 +89,7 @@ namespace Voat.Domain.Command
         {
             this.Response = response;
         }
+        public CommandResponse() { }
 
         public R Response { get; set; }
     }

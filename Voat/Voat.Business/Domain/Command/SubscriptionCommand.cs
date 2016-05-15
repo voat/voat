@@ -22,7 +22,7 @@ namespace Voat.Domain.Command
             _name = subscriptionItemName;
         }
 
-        protected override async Task<CommandResponse> ProtectedExecute()
+        protected override async Task<CommandResponse> CacheExecute()
         {
             using (var repo = new Repository())
             {

@@ -53,6 +53,10 @@ namespace Voat.Domain.Query
                 case SortAlgorithm.Top:
                     queryTree = queryTree.OrderByDescending(x => x.UpCount - x.DownCount);
                     break;
+
+                case SortAlgorithm.Bottom:
+                    queryTree = queryTree.OrderByDescending(x => x.DownCount);
+                    break;
             }
             var queryableTree = queryTree.Skip(startingIndex).Take(_options.Count);
 

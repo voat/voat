@@ -99,5 +99,12 @@ namespace Voat.Domain.Models
         /// The view count of the submission.
         /// </summary>
         public int Views { get; set; }
+
+        [JsonIgnore]
+        public double Rank { get; set; }
+
+        [JsonIgnore]
+        public double RelativeRank { get; set; }
+
     }
 }

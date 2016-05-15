@@ -393,6 +393,44 @@ namespace Voat.Tests.Repository
 
             #endregion AddDefaultSubs
 
+            #region AddSubmissionsForSortTesting
+
+            //ID:1 (Standard Subverse)
+            var sortSubverse = context.Subverses.Add(new Subverse()
+            {
+                Name = "sort",
+                Title = "v/sort",
+                Description = "Unit test Sort Testing",
+                SideBar = "For Sort Testing",
+                Type = "link",
+                IsAnonymized = false,
+                CreationDate = DateTime.UtcNow.AddDays(-70),
+            });
+            context.SaveChanges();
+
+            for (int i = 0; i < 100; i++)
+            {
+                var submission = new Submission();
+                bool even = i % 2 == 0;
+
+                submission.CreationDate = DateTime.UtcNow.AddDays(even ? i * -1 : i * -2);
+                submission.Subverse = sortSubverse.Name;
+                submission.Title = String.Format("Sort entry {0}", i);
+                submission.Content = "Sort this mang";
+                submission.Type = 1;
+                submission.UserName = "anon";
+                submission.DownCount = (even ? i : i / 2);
+                submission.UpCount = (!even ? i : i * 2);
+                submission.Views = i * i;
+                Ranking.RerankSubmission(submission);
+                context.Submissions.Add(submission);
+                context.SaveChanges();
+            }
+            
+
+
+            #endregion
+
             //******************************************************************************************************************
             // ADD YOUR STUFF BELOW - DO NOT EDIT THE ABOVE CODE - NOT EVEN ONCE - I'LL SO FIGHT YOU IF YOU DO AND I FIGHT DIRTY
             //******************************************************************************************************************

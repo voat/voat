@@ -24,7 +24,7 @@ namespace Voat.Domain.Command
         public int? ParentCommentID { get; set; }
         public int SubmissionID { get; set; }
 
-        protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, CommandResponse<Comment>>> ProtectedExecute()
+        protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, CommandResponse<Comment>>> CacheExecute()
         {
             var data = await Task.Factory.StartNew(() =>
             {
@@ -67,7 +67,7 @@ namespace Voat.Domain.Command
 
         public int CommentID { get; set; }
 
-        protected override async Task<Tuple<CommandResponse, Comment>> ProtectedExecute()
+        protected override async Task<Tuple<CommandResponse, Comment>> CacheExecute()
         {
             var result = await Task.Factory.StartNew(() =>
             {
@@ -110,7 +110,7 @@ namespace Voat.Domain.Command
         public int CommentID { get; set; }
         public string Content { get; set; }
 
-        protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, Comment>> ProtectedExecute()
+        protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, Comment>> CacheExecute()
         {
             var result = await Task.Factory.StartNew(() =>
             {

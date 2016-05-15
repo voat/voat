@@ -41,24 +41,29 @@ namespace Voat.Domain
                 {
                     return UserGateway.TotalVotesUsedInPast24Hours(username);
                 });
-
                 return (val.HasValue ? val.Value : 0);
-
+            }
+            set
+            {
+                _votesInLast24Hours = value;
+                Recache();
             }
         }
-
 
         public UserPreference Preferences
         {
             get
             {
                 return GetOrLoad(ref _prefs, username => {
-
                     var q = new QueryUserPreferences(username);
                     var result = Task.Run(() => q.Execute()).Result;
                     return result;
-
                 });
+            }
+            set
+            {
+                _prefs = value;
+                Recache();
             }
         }
        
@@ -67,11 +72,9 @@ namespace Voat.Domain
             get
             {
                 return GetOrLoad(ref _info, username => {
-
                     var q = new QueryUserInformation(username);
                     var result = Task.Run(() => q.Execute()).Result;
                     return result;
-
                 });
             }
         }
@@ -84,11 +87,14 @@ namespace Voat.Domain
                 value = loadFunc(this._userName);
                 if (recacheOnLoad)
                 {
-                    Task.Run(() => CacheHandler.Instance.Replace<UserData>(CachingKey.UserData(this._userName), this, TimeSpan.FromMinutes(5)));
+                    Recache();
                 }
             }
             return value;
         }
-
+        private void Recache()
+        {
+            Task.Run(() => CacheHandler.Instance.Replace<UserData>(CachingKey.UserData(this._userName), this, TimeSpan.FromMinutes(5)));
+        }
     }
 }

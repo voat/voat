@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-
+using Voat.Common;
 using Voat.Rules;
 
 namespace Voat.Domain.Command
@@ -22,27 +22,22 @@ namespace Voat.Domain.Command
     {
         Task Update();
     }
-
-    //public interface IExcutableCommandHandler<C,R> where C: Command where R : CommandResponse
-    //{
-    //    Task<R> Execute(C command);
-    //}
-
+    
     /// <summary>
     /// Use this class when the command has all the information necessary to execute UpdateCache method.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public abstract class CacheCommand<T> : Command<T> where T : CommandResponse
+    public abstract class CacheCommand<T> : Command<T> where T : CommandResponse, new()
     {
-        public override async Task<T> Execute()
+        protected override async Task<T> ProtectedExecute()
         {
-            var result = await Task.Run(() => ProtectedExecute());
-            Task t = Task.Run(() => UpdateCache());
+            var result = await ProtectedExecute();
+            Task t = Task.Run(() => UpdateCache()); //don't wait this
             return result;
         }
 
-        protected abstract Task<T> ProtectedExecute();
+        protected abstract Task<T> CacheExecute();
 
         protected abstract void UpdateCache();
     }
@@ -53,16 +48,16 @@ namespace Voat.Domain.Command
     /// <typeparam name="T">Type the Command returns</typeparam>
     /// <typeparam name="C">Type used as input for UpdateCache(C c) method</typeparam>
     [Serializable]
-    public abstract class CacheCommand<T, C> : Command<T> where T : CommandResponse
+    public abstract class CacheCommand<T, C> : Command<T> where T : CommandResponse, new()
     {
-        public override async Task<T> Execute()
+        protected override async Task<T> ProtectedExecute()
         {
-            var result = await Task.Run(() => ProtectedExecute());
-            Task t = Task.Run(() => UpdateCache(result.Item2));
+            var result = await CacheExecute();
+            Task t = Task.Run(() => UpdateCache(result.Item2)); //don't wait this
             return result.Item1;
         }
 
-        protected abstract Task<Tuple<T, C>> ProtectedExecute();
+        protected abstract Task<Tuple<T, C>> CacheExecute();
 
         protected abstract void UpdateCache(C result);
     }
@@ -102,8 +97,34 @@ namespace Voat.Domain.Command
     }
 
     [Serializable]
-    public abstract class Command<T> : Command, IExcutableCommand<T> where T : CommandResponse
+    public abstract class Command<T> : Command, IExcutableCommand<T> where T : CommandResponse, new()
     {
-        public abstract Task<T> Execute();
+        protected abstract Task<T> ProtectedExecute();
+
+        public virtual async Task<T> Execute()
+        {
+            try
+            {
+                return await ProtectedExecute();
+            }
+            catch (Exception ex)
+            {
+                var r = new T();
+                if (ex is VoatException)
+                {
+                    r.Status = Status.Invalid;
+                    r.Description = ex.Message;
+                    r.SystemDescription = ex.ToString();
+                }
+                else
+                {
+                    r.Status = Status.Error;
+                    r.Description = "System Error";
+                    r.SystemDescription = ex.ToString();
+                }
+                r.Exception = ex;
+                return r;
+            }
+        }
     }
 }

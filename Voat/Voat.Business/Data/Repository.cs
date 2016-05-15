@@ -673,7 +673,7 @@ namespace Voat.Data
             return results;
 
         }
-
+       
         public IEnumerable<Models.Submission> GetSubmissions(string subverse, SearchOptions options)
         {
 
@@ -694,7 +694,7 @@ namespace Voat.Data
             {
 
                 //for *special* subverses, this is UNDONE
-                case "_front":
+                case AGGREGATE_SUBVERSE.FRONT:
                     if (User.Identity.IsAuthenticated && UserHelper.SubscriptionCount(User.Identity.Name) > 0)
                     {
                         query = (from x in _db.Submissions
@@ -711,19 +711,19 @@ namespace Voat.Data
                     }
                     break;
 
-                case "_default":
+                case AGGREGATE_SUBVERSE.DEFAULT:
 
                     query = (from x in _db.Submissions
                              join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
                              select x);
                     break;
-                case "_any":
+                case AGGREGATE_SUBVERSE.ANY:
 
                     query = (from x in _db.Submissions
                              where !x.Subverse1.IsAdminPrivate && !x.Subverse1.IsPrivate
                              select x);
                     break;
-                case "_all":
+                case AGGREGATE_SUBVERSE.ALL:
                 case "all":
 
                     var nsfw = (User.Identity.IsAuthenticated ? UserHelper.AdultContentEnabled(User.Identity.Name) : false);
@@ -784,6 +784,7 @@ namespace Voat.Data
             }
             if (String.IsNullOrEmpty(subverse))
             {
+                throw new VoatValidationException("A subverse must be provided.");
                 return CommandResponse.Denied<Models.Submission>(null, "A subverse must be provided.");
             }
             if (String.IsNullOrEmpty(submission.Url) && String.IsNullOrEmpty(submission.Content))
@@ -1003,7 +1004,6 @@ namespace Voat.Data
 
         public IEnumerable<Models.Comment> GetUserComments(string userName, SearchOptions options)
         {
-
             if (String.IsNullOrEmpty(userName))
             {
                 throw new VoatValidationException("A user name must be provided.");
@@ -2357,7 +2357,17 @@ namespace Voat.Data
             switch (options.Sort)
             {
 
-                case SortAlgorithm.Hot:
+                case SortAlgorithm.RelativeRank:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query = query.OrderBy(x => x.RelativeRank);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.RelativeRank);
+                    }
+                    break;
+                case SortAlgorithm.Rank:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
                         query = query.OrderBy(x => x.Rank);
@@ -2429,6 +2439,16 @@ namespace Voat.Data
                         query = query.OrderByDescending(x => x.DownCount);
                     }
                     break;
+                case SortAlgorithm.Intensity:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query = query.OrderBy(x => x.UpCount + x.DownCount);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.UpCount + x.DownCount);
+                    }
+                    break;
             }
 
             query = query.Skip(options.Index).Take(options.Count);
@@ -2471,16 +2491,6 @@ namespace Voat.Data
 
             switch (options.Sort)
             {
-                case SortAlgorithm.Hot:
-                    if (options.SortDirection == SortDirection.Reverse)
-                    {
-                        query = query.OrderBy(x => (x.UpCount - x.DownCount));
-                    }
-                    else
-                    {
-                        query = query.OrderByDescending(x => (x.UpCount - x.DownCount));
-                    }
-                    break;
                 case SortAlgorithm.Top:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
@@ -2499,6 +2509,26 @@ namespace Voat.Data
                     else
                     {
                         query = query.OrderByDescending(x => x.CreationDate);
+                    }
+                    break;
+                case SortAlgorithm.Bottom:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query = query.OrderBy(x => x.DownCount);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.DownCount);
+                    }
+                    break;
+                default:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query = query.OrderBy(x => (x.UpCount - x.DownCount));
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => (x.UpCount - x.DownCount));
                     }
                     break;
             }

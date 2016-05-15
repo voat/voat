@@ -65,8 +65,9 @@ namespace Voat.Domain
                     Type = submission.Type == 1 ? SubmissionType.Text : SubmissionType.Link,
                     Subverse = submission.Subverse,
                     IsAnonymized = submission.IsAnonymized,
-                    IsDeleted = submission.IsDeleted
-                    //Rank = submission.Rank
+                    IsDeleted = submission.IsDeleted,
+                    Rank = submission.Rank,
+                    RelativeRank = submission.RelativeRank
                 };
             }
             return result;

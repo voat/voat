@@ -123,9 +123,14 @@ namespace Voat.Domain.Models
         Top, //order by total upvotes
 
         /// <summary>
-        /// Orders results by relative ranking
+        /// Orders results by absolute ranking
         /// </summary>
-        Hot, //order by rank
+        Rank, //order by rank
+
+        /// <summary>
+        /// Orders results by relative ranking (per subverse)
+        /// </summary>
+        RelativeRank, //order by rel rank
 
         /// <summary>
         /// Orders results by last comment date
@@ -150,7 +155,12 @@ namespace Voat.Domain.Models
         /// <summary>
         /// Orders results by intensity of up/down votes
         /// </summary>
-        Chaos, //order by degree of up vs down compared to sum of votes
+        //Chaos, //order by degree of up vs down compared to sum of votes
+
+        /// <summary>
+        /// Orders results by total amount of votes
+        /// </summary>
+        Intensity
     }
 
     /// <summary>

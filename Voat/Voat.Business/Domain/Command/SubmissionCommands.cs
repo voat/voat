@@ -17,7 +17,7 @@ namespace Voat.Domain.Command
             _submission = submission;
         }
 
-        public override async Task<CommandResponse<Domain.Models.Submission>> Execute()
+        protected override async Task<CommandResponse<Domain.Models.Submission>> ProtectedExecute()
         {
             var result = await Task.Factory.StartNew(() =>
             {
@@ -39,7 +39,7 @@ namespace Voat.Domain.Command
             _submissionID = submissionID;
         }
 
-        protected override async Task<Tuple<CommandResponse, Data.Models.Submission>> ProtectedExecute()
+        protected override async Task<Tuple<CommandResponse, Data.Models.Submission>> CacheExecute()
         {
             var result = await Task.Run(() =>
             {
@@ -68,7 +68,7 @@ namespace Voat.Domain.Command
             _submission = submission;
         }
 
-        protected override async Task<Tuple<CommandResponse<Domain.Models.Submission>, Data.Models.Submission>> ProtectedExecute()
+        protected override async Task<Tuple<CommandResponse<Domain.Models.Submission>, Data.Models.Submission>> CacheExecute()
         {
             var result = await Task.Run(() =>
             {

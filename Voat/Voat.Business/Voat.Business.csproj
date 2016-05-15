@@ -153,6 +153,7 @@
     <Compile Include="Caching\Handlers\RedisCacheHandler.cs" />
     <Compile Include="Caching\CachePolicy.cs" />
     <Compile Include="Common\LockStore.cs" />
+    <Compile Include="Data\AGGREGATE_SUBVERSE.cs" />
     <Compile Include="Data\Selectors.cs" />
     <Compile Include="Domain\Command\Base\Command.cs" />
     <Compile Include="Domain\Command\Base\CommandResponse.cs" />

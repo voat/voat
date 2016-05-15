@@ -8,7 +8,7 @@ namespace Voat.Domain.Command
 {
     public class DeleteUserCommand : Command<CommandResponse>
     {
-        public override Task<CommandResponse> Execute()
+        protected override Task<CommandResponse> ProtectedExecute()
         {
             throw new NotImplementedException();
         }

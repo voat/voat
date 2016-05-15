@@ -20,7 +20,7 @@ namespace Voat.Domain.Command
             this._redirectUrl = redirectUrl;
         }
 
-        public override async Task<CommandResponse> Execute()
+        protected override async Task<CommandResponse> ProtectedExecute()
         {
             if (String.IsNullOrEmpty(_name))
             {
@@ -44,7 +44,7 @@ namespace Voat.Domain.Command
             this.id = apiKeyID;
         }
 
-        protected override async Task<Tuple<CommandResponse, ApiClient>> ProtectedExecute()
+        protected override async Task<Tuple<CommandResponse, ApiClient>> CacheExecute()
         {
             return await Task.Run(() =>
             {

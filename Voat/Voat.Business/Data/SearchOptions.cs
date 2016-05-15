@@ -43,7 +43,7 @@ namespace Voat.Data {
 
         public const int MAX_COUNT = 50;
         
-        private SortAlgorithm _sort = SortAlgorithm.Hot;
+        private SortAlgorithm _sort = SortAlgorithm.Rank;
         private SortDirection _sortDirection = SortDirection.Default;
         private SortSpan _span = SortSpan.All;
 
@@ -129,7 +129,7 @@ namespace Voat.Data {
                         }
                         break;
                     case "sort":
-                        SortAlgorithm sortAlg = SortAlgorithm.Hot;
+                        SortAlgorithm sortAlg = SortAlgorithm.Rank;
                         if (Enum.TryParse(value, true, out sortAlg))
                         {
                             this.Sort = sortAlg;
@@ -395,7 +395,7 @@ namespace Voat.Data {
             {
                 keyValues.Add("index", Index.ToString());
             }
-            if (Sort != SortAlgorithm.Hot)
+            if (Sort != SortAlgorithm.Rank)
             {
                 keyValues.Add("sort", Sort.ToString());
             }

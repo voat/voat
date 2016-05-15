@@ -17,7 +17,7 @@ namespace Voat.Domain.Command
             this._message = message;
         }
 
-        public override async Task<CommandResponse> Execute()
+        protected override async Task<CommandResponse> ProtectedExecute()
         {
             using (var repo = new Repository())
             {

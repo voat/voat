@@ -16,7 +16,7 @@ namespace Voat.Domain.Command
 
         public int CommentID { get; private set; }
 
-        protected override async Task<Tuple<VoteResponse, VoteResponse>> ProtectedExecute()
+        protected override async Task<Tuple<VoteResponse, VoteResponse>> CacheExecute()
         {
             using (var db = new Repository())
             {
@@ -49,7 +49,7 @@ namespace Voat.Domain.Command
 
         public int SubmissionID { get; private set; }
 
-        protected override async Task<Tuple<VoteResponse, VoteResponse>> ProtectedExecute()
+        protected override async Task<Tuple<VoteResponse, VoteResponse>> CacheExecute()
         {
             using (var gateway = new Repository())
             {

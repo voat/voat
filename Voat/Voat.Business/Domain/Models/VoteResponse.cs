@@ -18,6 +18,7 @@ namespace Voat.Models
         {
             this.RecordedValue = voteRecordedValue;
         }
+        public VoteResponse() { }
 
         public int Difference {
             get {

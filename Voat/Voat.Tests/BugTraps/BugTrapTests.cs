@@ -80,7 +80,7 @@ namespace Voat.Tests.BugTraps
             long upCountDiff = beforesubmission.UpCount - aftersubmission.UpCount;
             long downCountDiff = beforesubmission.DownCount - aftersubmission.DownCount;
 
-            Assert.IsTrue(Math.Abs(upCountDiff + downCountDiff) <= 1, String.Format("Difference detected: UpCount Diff: {0}, Down Count Diff: {1}", upCountDiff, downCountDiff));
+            Assert.IsTrue(Math.Abs(upCountDiff + downCountDiff) <= 2, String.Format("Difference detected: UpCount Diff: {0}, Down Count Diff: {1}", upCountDiff, downCountDiff));
             Assert.IsTrue(Math.Abs(upCountDiff) <= 1, String.Format("Before {0} threads: UpCount: {1}, Afterwards: {2}", count, beforesubmission.UpCount, aftersubmission.UpCount));
             Assert.IsTrue(Math.Abs(downCountDiff) <= 1, String.Format("Before {0} threads: DownCount: {1}, Afterwards: {2}", count, beforesubmission.DownCount, aftersubmission.DownCount));
 

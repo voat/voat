@@ -65,7 +65,6 @@ namespace Voat.Domain.Models
         /// </summary>
         public string UserName { get; set; }
 
-
         /// <summary>
         /// The subverses the user moderates
         /// </summary>
