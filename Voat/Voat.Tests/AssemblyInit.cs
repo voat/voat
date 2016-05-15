@@ -16,11 +16,14 @@ namespace Voat.Tests
         [AssemblyInitialize]
         public static void AssemblyInitialize(TestContext context)
         {
-            //Force db to drop & seed
-            Database.SetInitializer(new VoatDataInitializer());
-            using (var db = new voatEntities())
+            if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
             {
-                var data = db.DefaultSubverses.ToList();
+                //Force db to drop & seed
+                Database.SetInitializer(new VoatDataInitializer());
+                using (var db = new voatEntities())
+                {
+                    var data = db.DefaultSubverses.ToList();
+                }
             }
 
             //This causes the voat rules engine to init usin config section for load

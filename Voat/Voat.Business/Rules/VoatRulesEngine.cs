@@ -23,8 +23,8 @@ namespace Voat.Rules
                         if (_engine == null)
                         {
                             _engine = new VoatRulesEngine(/*new RequestHttpContextHandler()*/);
-
                             _engine.Initialize(RuleSection.Instance.Configuration);
+                            _engine.Enabled = RuleSection.Instance.Configuration.Enabled;
                         }
                     }
                 }
@@ -38,17 +38,12 @@ namespace Voat.Rules
 
         public override RuleOutcome EvaluateRuleSet(VoatRuleContext context, RuleScope[] ruleScopes, bool includeGlobalScope = true, Func<Rule, RuleScope, bool> scopeEvaluator = null)
         {
-            Debug.Print("~~~~~ RULE SET EVAL ~~~~~~~");
-            Debug.Print("Scope: {0}", ruleScopes.ToString());
-            Debug.Print("PRE EVAL CONTEXT ----------");
-            Debug.Print(context.ToString());
-            Debug.Print("-");
-            var outcome = base.EvaluateRuleSet(context, ruleScopes, includeGlobalScope, scopeEvaluator);
-            Debug.Print("POST EVAL CONTEXT  --------");
-            Debug.Print(context.ToString());
-            Debug.Print("Outcome: {0}", outcome.Result.ToString());
-            Debug.Print("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            Debug.Print("");
+            var outcome = RuleOutcome.Allowed;
+
+            if (this.Enabled)
+            {
+                outcome = base.EvaluateRuleSet(context, ruleScopes, includeGlobalScope, scopeEvaluator);
+            }
 
             return outcome;
         }

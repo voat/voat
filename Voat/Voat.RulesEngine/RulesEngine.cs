@@ -32,6 +32,7 @@ namespace Voat.RulesEngine
     public abstract class RulesEngine<T> where T : IRequestContext
     {
         private bool _initialized = false;
+        private bool _enabled = true;
         protected HashSet<Rule> _rules = new HashSet<Rule>();
 
         protected Func<Rule, Rule, bool> _validityAddCheck = new Func<Rule, Rule, bool>((existing, adding) =>
@@ -76,7 +77,18 @@ namespace Voat.RulesEngine
                 _initialized = value;
             }
         }
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
 
+            set
+            {
+                _enabled = value;
+            }
+        }
         public void Initialize(RulesConfiguration config)
         {
             if (!Initialized)

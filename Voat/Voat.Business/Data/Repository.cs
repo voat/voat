@@ -303,7 +303,6 @@ namespace Voat.Data
                     {
                         submission = _db.Submissions.FirstOrDefault(x => x.ID == id);
                        
-
                         if (submission != null)
                         {
                             ruleContext.SubmissionID = id;

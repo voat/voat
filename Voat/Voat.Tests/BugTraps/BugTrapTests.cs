@@ -10,12 +10,16 @@ using Voat.Tests.Repository;
 using Voat.Domain.Command;
 using Voat.Models;
 using Voat.Controllers;
+using System.Threading;
 
 namespace Voat.Tests.BugTraps
 {
     [TestClass]
     public class BugTrapTests
     {
+        private int count = 31;
+        private int submissionID = 1;
+
         [TestMethod]
         [TestCategory("Bug")]
         public void Bug_Trap_Spam_Votes()
@@ -37,21 +41,28 @@ namespace Voat.Tests.BugTraps
                         -- EXEC usp_ResetSubmissionVoteCount 301210 --This resets the vote count
 
             */
-            int submissionID = 1;
-            Submission beforesubmission;
+            Submission beforesubmission = GetSubmission();
 
-            using (var repo = new Voat.Data.Repository())
-            {
-                beforesubmission = repo.GetSubmission(submissionID);
-            }
+            int exCount = 0;
+            Func<bool> vote1 = new Func<bool>(() => {
 
-            var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
-            System.Threading.Thread.CurrentPrincipal = principle;
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
 
-            Action vote1 = new Action(() => Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User500CCP", "127.0.0.1"));
-            Action vote2 = new Action(() => Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User100CCP", "127.0.0.1"));
+                Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User500CCP", "127.0.0.1");
+                Interlocked.Increment(ref exCount);
+                return true;
+            });
+            Func<bool> vote2 = new Func<bool>(() => {
 
-            int count = 201;
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
+
+                Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User100CCP", "127.0.0.1");
+                Interlocked.Increment(ref exCount);
+                return true;
+            });
+
             var tasks = new List<Task>();
             for (int i = 0; i < count; i++)
             {
@@ -65,30 +76,10 @@ namespace Voat.Tests.BugTraps
                 }
             }
 
-
-            try
-            {
-                Task.WaitAll(tasks.ToArray());
-            }
-            catch { /*ignore*/ }
-
-            Submission aftersubmission;
-            using (var repo = new Voat.Data.Repository())
-            {
-                aftersubmission = repo.GetSubmission(submissionID);
-            }
-
-            //Assert.Inconclusive(String.Format("Before {0} threads: UpCount:{1}, Afterwards:{2}", count, beforesubmission.UpCount, aftersubmission.UpCount));
-
-            long upCountDiff = beforesubmission.UpCount - aftersubmission.UpCount;
-            long downCountDiff = beforesubmission.DownCount - aftersubmission.DownCount;
-
-            Assert.IsTrue(Math.Abs(upCountDiff + downCountDiff) <= 2, String.Format("Difference detected: UpCount Diff: {0}, Down Count Diff: {1}", upCountDiff, downCountDiff));
-            Assert.IsTrue(Math.Abs(upCountDiff) <= 1, String.Format("Before {0} threads: UpCount: {1}, Afterwards: {2}", count, beforesubmission.UpCount, aftersubmission.UpCount));
-            Assert.IsTrue(Math.Abs(downCountDiff) <= 1, String.Format("Before {0} threads: DownCount: {1}, Afterwards: {2}", count, beforesubmission.DownCount, aftersubmission.DownCount));
-
-
-
+            Task.WaitAll(tasks.ToArray());
+            Submission aftersubmission = GetSubmission();
+            Assert.AreEqual(count, exCount, "Execution count is off");
+            AssertData(beforesubmission, aftersubmission);
         }
         [TestMethod]
         [TestCategory("Bug")]
@@ -96,28 +87,32 @@ namespace Voat.Tests.BugTraps
         {
 
             int submissionID = 1;
-            Submission beforesubmission;
+            Submission beforesubmission = GetSubmission();
 
-            using (var repo = new Voat.Data.Repository())
-            {
-                beforesubmission = repo.GetSubmission(submissionID);
-            }
-            Func<VoteResponse> vote1 = new Func<VoteResponse>(() =>
+            int exCount = 0;
+            Func<Task<VoteResponse>> vote1 = new Func<Task<VoteResponse>>(async () =>
             {
                 var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
                 System.Threading.Thread.CurrentPrincipal = principle;
                 var cmd = new SubmissionVoteCommand(submissionID, 1);
-                return cmd.Execute().Result;
+                Interlocked.Increment(ref exCount);
+                return await cmd.Execute();//.Result;
             });
-            Func<VoteResponse> vote2 = new Func<VoteResponse>(() =>
+
+            Func<Task<VoteResponse>> vote2 = new Func<Task<VoteResponse>>(async () =>
             {
                 var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
                 System.Threading.Thread.CurrentPrincipal = principle;
                 var cmd = new SubmissionVoteCommand(submissionID, 1);
-                return cmd.Execute().Result;
+                Interlocked.Increment(ref exCount);
+                return await cmd.Execute();//.Result;
             });
 
-            int count = 21;
+            //exCount = -2;
+            //var x = vote1().Result;
+            //var y = vote2().Result;
+
+
             var tasks = new List<Task<VoteResponse>>();
             for (int i = 0; i < count; i++)
             {
@@ -131,29 +126,234 @@ namespace Voat.Tests.BugTraps
                 }
             }
 
-            try
+            Task.WaitAll(tasks.ToArray());
+
+            Submission aftersubmission = GetSubmission();
+
+            Assert.AreEqual(count, exCount, "Execution count is off");
+            AssertData(beforesubmission, aftersubmission);
+        }
+      
+        [TestMethod]
+        [TestCategory("Bug")]
+        public void Bug_Trap_Spam_Votes_Repository()
+        {
+            Submission beforesubmission = GetSubmission();
+            int exCount = 0;
+            Func<VoteResponse> vote1 = new Func<VoteResponse>(() =>
             {
-                Task.WaitAll(tasks.ToArray());
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
+                Interlocked.Increment(ref exCount);
+                using (var repo = new Voat.Data.Repository())
+                {
+                    return repo.VoteSubmission(submissionID, 1);
+                }
+            });
+            Func<VoteResponse> vote2 = new Func<VoteResponse>(() =>
+            {
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
+                Interlocked.Increment(ref exCount);
+                using (var repo = new Voat.Data.Repository())
+                {
+                    return repo.VoteSubmission(submissionID, 1);
+                }
+            });
+
+            var tasks = new List<Task<VoteResponse>>();
+            for (int i = 0; i < count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    tasks.Add(Task.Run(vote1));
+                }
+                else
+                {
+                    tasks.Add(Task.Run(vote2));
+                }
             }
-            catch { /*ignore*/ }
-            //System.Threading.Thread.Sleep(100000);
-            Submission aftersubmission;
+
+            Task.WaitAll(tasks.ToArray());
+
+            Submission aftersubmission = GetSubmission();
+            Assert.AreEqual(count, exCount, "Execution count is off");
+            AssertData(beforesubmission, aftersubmission);
+        }
+
+        #region Dups
+
+        [TestMethod]
+        [TestCategory("Bug")]
+        public void Bug_Trap_Spam_Votes_2()
+        {
+
+            /*
+                        Sql to verify: no matter how many runs this value should never go down by more than one
+
+                        SELECT
+                            UpCount = s.UpCount,
+                            RealUpCount = (SELECT ISNULL(SUM(t.VoteStatus), 0) FROM SubmissionVoteTracker t WHERE t.SubmissionID = s.ID AND t.VoteStatus = 1),
+                            DownCount = s.DownCount, 
+                            RealDownCount = (SELECT ISNULL(SUM(t.VoteStatus), 0) FROM SubmissionVoteTracker t WHERE t.SubmissionID = s.ID AND t.VoteStatus = -1) 
+                        FROM Submission s
+                        WHERE s.ID = 301210
+
+                        SELECT * FROM SubmissionVoteTracker WHERE SubmissionID = 301210
+
+                        -- EXEC usp_ResetSubmissionVoteCount 301210 --This resets the vote count
+
+            */
+            Submission beforesubmission = GetSubmission();
+
+            int exCount = 0;
+            Func<bool> vote1 = new Func<bool>(() => {
+
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
+
+                Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User500CCP", "127.0.0.1");
+                Interlocked.Increment(ref exCount);
+                return true;
+            });
+            Func<bool> vote2 = new Func<bool>(() => {
+
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
+
+                Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User100CCP", "127.0.0.1");
+                Interlocked.Increment(ref exCount);
+                return true;
+            });
+
+            var tasks = new List<Task>();
+            for (int i = 0; i < count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    tasks.Add(Task.Run(vote1));
+                }
+                else
+                {
+                    tasks.Add(Task.Run(vote2));
+                }
+            }
+
+            Task.WaitAll(tasks.ToArray());
+            Submission aftersubmission = GetSubmission();
+            Assert.AreEqual(count, exCount, "Execution count is off");
+            AssertData(beforesubmission, aftersubmission);
+        }
+        [TestMethod]
+        [TestCategory("Bug")]
+        public void Bug_Trap_Spam_Votes_VoteCommand_2()
+        {
+
+            int submissionID = 1;
+            Submission beforesubmission = GetSubmission();
+
+            int exCount = 0;
+            Func<Task<VoteResponse>> vote1 = new Func<Task<VoteResponse>>(async () =>
+            {
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
+                var cmd = new SubmissionVoteCommand(submissionID, 1);
+                Interlocked.Increment(ref exCount);
+                return await cmd.Execute();//.Result;
+            });
+            Func<Task<VoteResponse>> vote2 = new Func<Task<VoteResponse>>(async () =>
+            {
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
+                var cmd = new SubmissionVoteCommand(submissionID, 1);
+                Interlocked.Increment(ref exCount);
+                return await cmd.Execute();//.Result;
+            });
+
+            var tasks = new List<Task<VoteResponse>>();
+            for (int i = 0; i < count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    tasks.Add(Task.Run(vote1));
+                }
+                else
+                {
+                    tasks.Add(Task.Run(vote2));
+                }
+            }
+
+            Task.WaitAll(tasks.ToArray());
+
+            Submission aftersubmission = GetSubmission();
+
+            Assert.AreEqual(count, exCount, "Execution count is off");
+            AssertData(beforesubmission, aftersubmission);
+        }
+
+        [TestMethod]
+        [TestCategory("Bug")]
+        public void Bug_Trap_Spam_Votes_Repository_2()
+        {
+            Submission beforesubmission = GetSubmission();
+            int exCount = 0;
+            Func<VoteResponse> vote1 = new Func<VoteResponse>(() =>
+            {
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
+                Interlocked.Increment(ref exCount);
+                using (var repo = new Voat.Data.Repository())
+                {
+                    return repo.VoteSubmission(submissionID, 1);
+                }
+            });
+            Func<VoteResponse> vote2 = new Func<VoteResponse>(() =>
+            {
+                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principle;
+                Interlocked.Increment(ref exCount);
+                using (var repo = new Voat.Data.Repository())
+                {
+                    return repo.VoteSubmission(submissionID, 1);
+                }
+            });
+
+            var tasks = new List<Task<VoteResponse>>();
+            for (int i = 0; i < count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    tasks.Add(Task.Run(vote1));
+                }
+                else
+                {
+                    tasks.Add(Task.Run(vote2));
+                }
+            }
+
+            Task.WaitAll(tasks.ToArray());
+
+            Submission aftersubmission = GetSubmission();
+            Assert.AreEqual(count, exCount, "Execution count is off");
+            AssertData(beforesubmission, aftersubmission);
+        }
+        #endregion
+
+        private Submission GetSubmission()
+        {
             using (var repo = new Voat.Data.Repository())
             {
-                aftersubmission = repo.GetSubmission(submissionID);
+                return repo.GetSubmission(submissionID);
             }
-
-            //Assert.Inconclusive(String.Format("Before {0} threads: UpCount:{1}, Afterwards:{2}", count, beforesubmission.UpCount, aftersubmission.UpCount));
-
-            long upCountDiff = beforesubmission.UpCount - aftersubmission.UpCount;
-            long downCountDiff = beforesubmission.DownCount - aftersubmission.DownCount;
+        }
+        private void AssertData(Submission beforeSubmission, Submission afterSubmission)
+        {
+            long upCountDiff = beforeSubmission.UpCount - afterSubmission.UpCount;
+            long downCountDiff = beforeSubmission.DownCount - afterSubmission.DownCount;
 
             Assert.IsTrue(Math.Abs(upCountDiff + downCountDiff) <= 2, String.Format("Difference detected: UpCount Diff: {0}, Down Count Diff: {1}", upCountDiff, downCountDiff));
-            Assert.IsTrue(Math.Abs(upCountDiff) <= 1, String.Format("Before {0} threads: UpCount: {1}, Afterwards: {2}", count, beforesubmission.UpCount, aftersubmission.UpCount));
-            Assert.IsTrue(Math.Abs(downCountDiff) <= 1, String.Format("Before {0} threads: DownCount: {1}, Afterwards: {2}", count, beforesubmission.DownCount, aftersubmission.DownCount));
-
-
-
+            Assert.IsTrue(Math.Abs(upCountDiff) <= 1, String.Format("Before {0} threads: UpCount: {1}, Afterwards: {2}", count, beforeSubmission.UpCount, afterSubmission.UpCount));
+            Assert.IsTrue(Math.Abs(downCountDiff) <= 1, String.Format("Before {0} threads: DownCount: {1}, Afterwards: {2}", count, beforeSubmission.DownCount, afterSubmission.DownCount));
         }
     }
 }
