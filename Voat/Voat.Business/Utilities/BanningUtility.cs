@@ -60,22 +60,13 @@ namespace Voat.Utilities
 
         public static bool IsDomainBanned(params string[] domains)
         {
-            foreach (string domain in domains)
+            foreach (var domain in domains)
             {
                 using (var db = new voatEntities())
                 {
                     if (domain != null)
                     {
-                        // manual ban for blogspot
-                        if (domain.ToLower().Contains("blogspot"))
-                        {
-                            return true;
-                        }
-                        var result = db.BannedDomains.Any(r => r.Domain.Equals(domain, StringComparison.OrdinalIgnoreCase));
-                        if (result)
-                        {
-                            return result;
-                        }
+                        return db.BannedDomains.Any(r => r.Domain.Equals(domain, StringComparison.OrdinalIgnoreCase));
                     }
                 }
             }
