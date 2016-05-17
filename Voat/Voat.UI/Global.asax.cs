@@ -42,29 +42,35 @@ namespace Voat
 
             #region Hook Events
 
-            EventHandler<MessageReceivedEventArgs> updateNotificationCount = delegate(object s, MessageReceivedEventArgs e) {
-                //get count of unread notifications
-                int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(e.UserName);
-                // send SignalR realtime notification to recipient
-                var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                hubContext.Clients.User(e.UserName).setNotificationsPending(unreadNotifications);
+            EventHandler<MessageReceivedEventArgs> updateNotificationCount = delegate (object s, MessageReceivedEventArgs e)
+            {
+                if (!Settings.SignalRDisabled)
+                {
+                    //get count of unread notifications
+                    int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(e.UserName);
+                    // send SignalR realtime notification to recipient
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    hubContext.Clients.User(e.UserName).setNotificationsPending(unreadNotifications);
+                }
             };
             EventNotification.Instance.OnMessageReceived += updateNotificationCount;
             EventNotification.Instance.OnMentionReceived += updateNotificationCount;
             EventNotification.Instance.OnCommentReplyReceived += updateNotificationCount;
 
-            EventNotification.Instance.OnVoteReceived += (s, e) => {
-
-                var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-
-                switch (e.ReferenceType)
+            EventNotification.Instance.OnVoteReceived += (s, e) =>
+            {
+                if (!Settings.SignalRDisabled)
                 {
-                    case Domain.Models.ContentType.Comment:
-                        hubContext.Clients.User(e.UserName).voteChange(1, e.ChangeValue);
-                        break;
-                    case Domain.Models.ContentType.Submission:
-                        hubContext.Clients.User(e.UserName).voteChange(2, e.ChangeValue);
-                        break;
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    switch (e.ReferenceType)
+                    {
+                        case Domain.Models.ContentType.Comment:
+                            hubContext.Clients.User(e.UserName).voteChange(1, e.ChangeValue);
+                            break;
+                        case Domain.Models.ContentType.Submission:
+                            hubContext.Clients.User(e.UserName).voteChange(2, e.ChangeValue);
+                            break;
+                    }
                 }
             };
 
