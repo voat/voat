@@ -26,20 +26,27 @@ namespace Voat.Domain
         protected string _userName;
         protected UserInformation _info;
         protected UserPreference _prefs;
+        protected IEnumerable<string> _subverseSubscriptions;
+        protected IEnumerable<string> _blockedSubverses;
+        protected IEnumerable<string> _blockedUsers;
+
         protected int? _votesInLast24Hours;
 
         public UserData(string userName)
         {
             this._userName = userName;
         }
-
         public int TotalVotesUsedIn24Hours
         {
             get
             {
                 var val = GetOrLoad(ref _votesInLast24Hours, username =>
                 {
-                    return UserGateway.TotalVotesUsedInPast24Hours(username);
+                    using (var repo = new Repository())
+                    {
+                        return repo.UserVotingBehavior(username, ContentType.Comment | ContentType.Submission, TimeSpan.FromDays(1)).Total;
+                    }
+                    //return UserGateway.TotalVotesUsedInPast24Hours(username);
                 });
                 return (val.HasValue ? val.Value : 0);
             }
@@ -49,7 +56,46 @@ namespace Voat.Domain
                 Recache();
             }
         }
+        public IEnumerable<string> BlockedSubverses
+        {
+            get
+            {
+                var val = GetOrLoad(ref _blockedSubverses, username =>
+                {
+                    var q = new QueryUserBlocks();
+                    var r = q.Execute();
+                    return r.Where(x => x.Type == DomainType.Subverse).Select(x => x.Name);
+                }, false);
+                return val;
+            }
+        }
+        public IEnumerable<string> BlockedUsers
+        {
+            get
+            {
+                var val = GetOrLoad(ref _blockedUsers, username =>
+                {
+                    var q = new QueryUserBlocks();
+                    var r = q.Execute();
+                    return r.Where(x => x.Type == DomainType.User).Select(x => x.Name);
+                }, false);
+                return val;
+            }
+        }
+        public bool IsSubscriber
+        {
+            get
+            {
+                var isSubscriber = false;
+                var subBadge = Information.Badges.FirstOrDefault(x => x.Name == "Subscriber");
+                if (subBadge != null)
+                {
+                    isSubscriber = Repository.CurrentDate.Subtract(subBadge.CreationDate) < TimeSpan.FromDays(180);
+                }
+                return isSubscriber;
+            }
 
+        }
         public UserPreference Preferences
         {
             get
@@ -66,7 +112,29 @@ namespace Voat.Domain
                 Recache();
             }
         }
-       
+        public IEnumerable<string> Subscriptions
+        {
+            get
+            {
+                return GetOrLoad(ref _subverseSubscriptions, username => {
+                    var q = new QueryUserSubscriptions(username);
+                    var result = q.Execute();
+                    if (result != null)
+                    {
+                        return result["Subverse"];
+                    }
+                    else
+                    {
+                        return new List<string>(); //No subs
+                    }
+                }, false);
+            }
+            set
+            {
+                _subverseSubscriptions = value;
+                Recache();
+            }
+        }
         public UserInformation Information
         {
             get
@@ -75,7 +143,7 @@ namespace Voat.Domain
                     var q = new QueryUserInformation(username);
                     var result = q.Execute();
                     return result;
-                });
+                }, false);
             }
         }
 

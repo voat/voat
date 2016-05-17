@@ -18,11 +18,18 @@
     string subverseAge = Age.ToRelative(Model.CreationDate);
     string subverseOwner = "youcanclaimthissub";
 
-    var subOwner = Model.SubverseModerators.FirstOrDefault(n => n.Subverse == Model.Name && n.Power == 1);
 
-    if (subOwner != null)
+    if (String.IsNullOrEmpty(Model.CreatedBy))
     {
-        subverseOwner = subOwner.UserName;
+        var subOwner = Model.SubverseModerators.FirstOrDefault(n => n.Subverse == Model.Name && n.Power == 1);
+        if (subOwner != null)
+        {
+            subverseOwner = subOwner.UserName;
+        }
+    }
+    else
+    {
+        subverseOwner = Model.CreatedBy;
     }
 }
 

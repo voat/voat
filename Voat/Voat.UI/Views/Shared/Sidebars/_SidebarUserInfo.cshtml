@@ -1,4 +1,5 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+﻿@*
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
     available online at http://www.gnu.org/licenses/gpl.txt;
     you may not use this file except in compliance with the License.
@@ -8,11 +9,15 @@
     the specific language governing rights and limitations under the License.
 
     All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
+*@
 
 @{
     string userName = ViewBag.userid;
-    DateTime userRegistrationDateTime = UserHelper.GetUserRegistrationDateTime(ViewBag.userid);
+
+    var q = new Voat.Domain.Query.QueryUserData(userName);
+    var userData = q.Execute();
+    DateTime userRegistrationDateTime = userData.Information.RegistrationDate;
 
     <style>
         .titlebox {
@@ -23,7 +28,7 @@
     <div class="side">
         <div class="titlebox footer rounded">
             <div class="thumbnail may-blank user-avatar">
-                @if (UserHelper.HasAvatar(userName) != null)
+                @if (userData.Information.ProfilePicture != null)
                 {
                     if (Settings.UseContentDeliveryNetwork)
                     {
@@ -41,14 +46,14 @@
             </div>
             &ldquo;
             <span class="user-quote">
-                @UserHelper.UserShortbio(userName)
+                @userData.Information.Bio
             </span>
             &rdquo;
         </div>
         <div class="bottom">
             <p class="h6">
                 Member for: <b>@Age.ToRelative(userRegistrationDateTime)</b><br />
-                <span class="bottommenu">(joined on: @UserHelper.GetUserRegistrationDateTime(userName).ToShortDateString())</span>
+                <span class="bottommenu">(joined on: @userRegistrationDateTime.ToShortDateString())</span>
             </p>
             <a href="#" class="btn-whoaverse-paging disabled">
                 Follow
@@ -69,10 +74,10 @@
             </h2>
             <div class="bottom">
                 <p class="h6">
-                    Submission Contribution Points: <b>@Karma.LinkKarma(userName)</b>
+                    Submission Contribution Points: <b>@userData.Information.SubmissionPoints.Sum</b>
                 </p>
                 <p class="h6">
-                    Comment Contribution Points: <b>@Karma.CommentKarma(userName)</b>
+                    Comment Contribution Points: <b>@userData.Information.CommentPoints.Sum</b>
                 </p>
             </div>
             <div class="titlebox footer rounded">
@@ -80,17 +85,17 @@
                     Badges and trophies
                 </h2>
                 <div class="bottom">
-                    @if (UserHelper.UserBadges(userName).Count > 0)
+                    @if (userData.Information.Badges.Count() > 0)
                     {
-                        foreach (var badge in UserHelper.UserBadges(userName))
+                        foreach (var badge in userData.Information.Badges)
                         {
-                            if (badge.Badge.Graphic != null)
+                            if (badge.Graphic != null)
                             {
-                                <img style="cursor: help" src="~/Graphics/Badges/@badge.Badge.Graphic" data-toggle="popover" data-trigger="focus" title="@badge.Badge.Name" data-content="@badge.Badge.Title, awarded on: @badge.CreationDate.ToShortDateString()" />
+                                <img style="cursor: help" src="@badge.Graphic" data-toggle="popover" data-trigger="focus" title="@badge.Name" data-content="@badge.Title, awarded on: @badge.CreationDate.ToShortDateString()" />
                             }
                             else
                             {
-                                <p class="sidebar-badge" title="@badge.Badge.Title, awarded on: @badge.CreationDate.ToShortDateString()">@badge.Badge.Name</p>
+                                <p class="sidebar-badge" title="@badge.Title, awarded on: @badge.CreationDate.ToShortDateString()">@badge.Name</p>
                             }
                         }
                         if (userRegistrationDateTime < new DateTime(2015, 12, 31))

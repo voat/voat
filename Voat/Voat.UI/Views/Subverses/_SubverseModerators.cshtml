@@ -10,11 +10,9 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@{
-    var subverseModerators = ViewBag.subverseModerators;
-}
+@model IEnumerable<Voat.Data.Models.SubverseModerator>
 
-@foreach (var moderator in subverseModerators)
+@foreach (var moderator in Model)
 {
     <li>
         <a href="/user/@moderator.UserName" class="author may-blank">@moderator.UserName</a><span class="userattrs"></span>

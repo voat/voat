@@ -21,6 +21,7 @@ using System.Web.Mvc;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Query;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
@@ -684,17 +685,14 @@ namespace Voat.Controllers
         }
 
         // GET: list of subverses user moderates
-        [OutputCache(Duration = 600, VaryByParam = "*")]
+        //[OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SubversesUserModerates(string userName)
         {
             if (userName != null)
             {
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", _db.SubverseModerators
-                .Where(x => x.UserName == userName)
-                .Select(s => new SelectListItem { Value = s.Subverse })
-                .OrderBy(s => s.Value)
-                .ToList()
-                .AsEnumerable());
+                var q = new QueryUserData(userName);
+                var r = q.Execute();
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", r.Information.Moderates);
             }
             return new EmptyResult();
         }

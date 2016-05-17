@@ -31,6 +31,7 @@ using Voat.UI.Utilities;
 using Voat.Configuration;
 using Voat.Caching;
 using Voat.Data;
+using Voat.Domain.Query;
 
 namespace Voat.Controllers
 {
@@ -126,6 +127,10 @@ namespace Voat.Controllers
         // GET: stylesheet for selected subverse
         public ActionResult StylesheetForSelectedSubverse(string selectedSubverse)
         {
+            var q = new QuerySubverseStylesheet(selectedSubverse);
+            var r = q.Execute();
+            return Content(r.Minimized);
+
             var subverse = DataCache.Subverse.Retrieve(selectedSubverse);
 
             return Content(subverse != null ? subverse.Stylesheet : string.Empty);
@@ -1457,17 +1462,9 @@ namespace Voat.Controllers
         [ChildActionOnly]
         public ActionResult SubverseModeratorsList(string subverseName)
         {
-            // get 10 administration members for a subverse
-            var subverseAdministration =
-                _db.SubverseModerators
-                .Where(n => n.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
-                .Take(10)
-                .ToList()
-                .OrderBy(s => s.UserName);
-
-            ViewBag.subverseModerators = subverseAdministration;
-
-            return PartialView("~/Views/Subverses/_SubverseModerators.cshtml", subverseAdministration);
+            var q = new QuerySubverseModerators(subverseName);
+            var r = q.Execute();
+            return PartialView("~/Views/Subverses/_SubverseModerators.cshtml", r);
         }
 
         // GET: stickied submission
@@ -1497,8 +1494,10 @@ namespace Voat.Controllers
         {
             try
             {
-                var listOfSubverses = _db.DefaultSubverses.OrderBy(s => s.Order).ToList();
-                return PartialView("_ListOfDefaultSubverses", listOfSubverses);
+                var q = new QueryDefaultSubverses();
+                var r = q.Execute();
+                //var listOfSubverses = _db.DefaultSubverses.OrderBy(s => s.Order).ToList();
+                return PartialView("_ListOfDefaultSubverses", r);
             }
             catch (Exception)
             {

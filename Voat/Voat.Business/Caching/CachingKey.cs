@@ -17,6 +17,10 @@ namespace Voat.Caching
         {
             return String.Format("Subverse:Info:{0}", subverse);
         }
+        public static string SubverseStylesheet(string subverse)
+        {
+            return String.Format("Subverse:Stylesheet:{0}", subverse);
+        }
         public static string SubverseModerators(string subverse)
         {
             return String.Format("Subverse:Mods:{0}", subverse);

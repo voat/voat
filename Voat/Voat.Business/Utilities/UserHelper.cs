@@ -25,6 +25,7 @@ using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;
 using Voat.Data;
+using Voat.Domain.Query;
 
 namespace Voat.Utilities
 {
@@ -279,20 +280,25 @@ namespace Voat.Utilities
         }
 
         // return a list of subverses user is subscribed to
-        public static List<string> UserSubscriptions(string userName)
+        public static IEnumerable<string> UserSubscriptions(string userName)
         {
-            // get a list of subcribed subverses with details and order by subverse names, ascending
-            using (var db = new voatEntities())
-            {
-                var subscribedSubverses = from c in db.Subverses
-                                          join a in db.SubverseSubscriptions
-                                          on c.Name equals a.Subverse
-                                          where a.UserName.Equals(userName)
-                                          orderby a.Subverse ascending
-                                          select c.Name;
 
-                return subscribedSubverses.ToList();
-            }
+            var q = new QueryUserData(userName);
+            var r = q.Execute();
+            return r.Subscriptions;
+
+            //// get a list of subcribed subverses with details and order by subverse names, ascending
+            //using (var db = new voatEntities())
+            //{
+            //    var subscribedSubverses = from c in db.Subverses
+            //                              join a in db.SubverseSubscriptions
+            //                              on c.Name equals a.Subverse
+            //                              where a.UserName.Equals(userName)
+            //                              orderby a.Subverse ascending
+            //                              select c.Name;
+
+            //    return subscribedSubverses.ToList();
+            //}
         }
 
         // return a list of user badges
@@ -539,10 +545,17 @@ namespace Voat.Utilities
                 var comments = db.Comments.Count(a => a.UserName == userName && !a.IsDeleted);
 
                 // voting habits
-                var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
-                var submissionUpvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var submissionDownvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                var q = new QueryUserData(userName);
+                var r = q.Execute();
+                var commentUpvotes = r.Information.CommentVoting.UpCount;
+                var commentDownvotes = r.Information.CommentVoting.DownCount;
+                var submissionUpvotes = r.Information.SubmissionVoting.UpCount;
+                var submissionDownvotes = r.Information.SubmissionVoting.DownCount;
+
+                //var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                //var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                //var submissionUpvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                //var submissionDownvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
                 // get 3 highest rated comments
                 var highestRatedComments = db.Comments
@@ -583,6 +596,7 @@ namespace Voat.Utilities
                 userStatsModel.TotalCommentsSubmitted = comments;
                 userStatsModel.HighestRatedComments = highestRatedComments;
                 userStatsModel.LowestRatedComments = lowestRatedComments;
+
                 userStatsModel.TotalCommentsUpvoted = commentUpvotes;
                 userStatsModel.TotalCommentsDownvoted = commentDownvotes;
                 userStatsModel.TotalSubmissionsUpvoted = submissionUpvotes;

@@ -582,11 +582,19 @@ namespace Voat.Data
 
             return submission;
         }
+        public string GetSubverseStylesheet(string subverse)
+        {
 
+            var sheet = (from x in _db.Subverses
+                              where x.Name == subverse
+                              select x.Stylesheet).FirstOrDefault();
+            return String.IsNullOrEmpty(sheet) ? "" : sheet;
+        }
         public IEnumerable<SubverseModerator> GetSubverseModerators(string subverse)
         {
             var data = (from x in _db.SubverseModerators
                         where x.Subverse == subverse
+                        orderby x.CreationDate ascending
                         select x).ToList();
 
             return data.AsEnumerable();
@@ -1844,17 +1852,18 @@ namespace Voat.Data
 
         public IList<DomainReference> GetBlockedUsers(string userName)
         {
-            return new List<DomainReference>() { new DomainReference() { Name = "PuttItOut", Type = DomainType.User }, new DomainReference() { Name = "Atko", Type = DomainType.User } };
+            var blocked = (from x in _db.UserBlockedUsers
+                           where x.UserName == userName
+                           select new DomainReference() { Name = x.BlockUser, Type = DomainType.User }).ToList();
+            return blocked;
         }
 
         public IList<DomainReference> GetBlockedSubverses(string userName)
         {
-
             var blocked = (from x in _db.UserBlockedSubverses
                            where x.UserName == userName
                            select new DomainReference() { Name = x.Subverse, Type = DomainType.Subverse }).ToList();
             return blocked;
-
         }
 
         public UserInformation GetUserInfo(string userName)
@@ -1916,20 +1925,104 @@ namespace Voat.Data
 
             if ((type & ContentType.Comment) > 0)
             {
-                var c = UserVotingBehaviorComments(userName, span);
+                var c = GetUserVotingBehavior(userName, ContentType.Comment, span);
                 vb.Combine(c);
             }
             if ((type & ContentType.Submission) > 0)
             {
-                var c = UserVotingBehaviorSubmissions(userName, span);
+                var c = GetUserVotingBehavior(userName, ContentType.Submission, span);
                 vb.Combine(c);
             }
 
             return vb;
         }
 
-        private Score UserVotingBehaviorSubmissions(string userName, TimeSpan? span = null)
+
+        //private Score UserVotingBehaviorSubmissionsEF(string userName, TimeSpan? span = null)
+        //{
+
+        //    DateTime? compareDate = null;
+        //    if (span.HasValue)
+        //    {
+        //        compareDate = CurrentDate.Subtract(span.Value);
+        //    }
+
+
+        //    var result = (from x in _db.SubmissionVoteTrackers
+        //                  where x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+        //                  && ((compareDate.HasValue && x.CreationDate >= compareDate) || !compareDate.HasValue)
+        //                  group x by x.VoteStatus into v
+        //                  select new
+        //                  {
+        //                      key = v.Key,
+        //                      votes = v.Count()
+        //                  });
+
+        //    Score vb = new Score();
+
+        //    if (result != null)
+        //    {
+        //        foreach (var r in result)
+        //        {
+        //            if (r.key.HasValue)
+        //            {
+        //                if (r.key.Value == 1)
+        //                {
+        //                    vb.UpCount = r.votes;
+        //                }
+        //                else {
+        //                    vb.DownCount = r.votes;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return vb;
+        //}
+
+        //private Score UserVotingBehaviorCommentsEF(string userName, TimeSpan? span = null)
+        //{
+
+        //    DateTime? compareDate = null;
+        //    if (span.HasValue)
+        //    {
+        //        compareDate = CurrentDate.Subtract(span.Value);
+        //    }
+
+        //    var result = (from x in _db.CommentVoteTrackers
+        //                  where x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+        //                   && ((compareDate.HasValue && x.CreationDate >= compareDate) || !compareDate.HasValue)
+        //                  group x by x.VoteStatus into v
+        //                  select new
+        //                  {
+        //                      key = v.Key,
+        //                      votes = v.Count()
+        //                  });
+
+        //    Score vb = new Score();
+
+        //    if (result != null)
+        //    {
+        //        foreach (var r in result)
+        //        {
+        //            if (r.key.HasValue)
+        //            {
+        //                if (r.key.Value == 1)
+        //                {
+        //                    vb.UpCount = r.votes;
+        //                }
+        //                else
+        //                {
+        //                    vb.DownCount = r.votes;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return vb;
+        //}
+        
+        private Score GetUserVotingBehavior(string userName, ContentType type, TimeSpan? span = null)
         {
+            var score = new Score();
 
             DateTime? compareDate = null;
             if (span.HasValue)
@@ -1937,98 +2030,45 @@ namespace Voat.Data
                 compareDate = CurrentDate.Subtract(span.Value);
             }
 
+            var cmd = _db.Database.Connection.CreateCommand();
+            cmd.CommandText = String.Format(
+                                @"SELECT x.VoteStatus, 'Count' = ABS(ISNULL(SUM(x.VoteStatus), 0))
+                                FROM {0} x WITH (NOLOCK)
+                                WHERE x.UserName = 'PuttItOut'
+                                AND(x.CreationDate >= @CompareDate OR @CompareDate IS NULL)
+                                GROUP BY x.VoteStatus", type == ContentType.Comment ? "CommentVoteTracker" : "SubmissionVoteTracker");
+            cmd.CommandType = System.Data.CommandType.Text;
 
-            var result = (from x in _db.SubmissionVoteTrackers
-                          where x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                          && ((compareDate.HasValue && x.CreationDate >= compareDate) || !compareDate.HasValue)
-                          group x by x.VoteStatus into v
-                          select new
-                          {
-                              key = v.Key,
-                              votes = v.Count()
-                          });
+            var param = cmd.CreateParameter();
+            param.ParameterName = "UserName";
+            param.DbType = System.Data.DbType.String;
+            param.Value = userName;
+            cmd.Parameters.Add(param);
 
-            Score vb = new Score();
+            param = cmd.CreateParameter();
+            param.ParameterName = "CompareDate";
+            param.DbType = System.Data.DbType.DateTime;
+            param.Value = compareDate.HasValue ? compareDate.Value : (object)DBNull.Value;
+            cmd.Parameters.Add(param);
 
-            if (result != null)
+            cmd.Connection.Open();
+            using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
             {
-                foreach (var r in result)
+                
+                while (reader.Read())
                 {
-                    if (r.key.HasValue)
+                    int voteStatus = (int)reader["VoteStatus"];
+                    if (voteStatus == 1)
                     {
-                        if (r.key.Value == 1)
-                        {
-                            vb.UpCount = r.votes;
-                        }
-                        else {
-                            vb.DownCount = r.votes;
-                        }
+                        score.UpCount = (int)reader["Count"];
+                    }
+                    else if (voteStatus == -1)
+                    {
+                        score.DownCount = (int)reader["Count"];
                     }
                 }
             }
-
-            return vb;
-            //OLD CODE - MULTIPLE QUERIES 
-
-            //// get voting habits
-            //var submissionUpvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-            //var submissionDownvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
-
-            //var totalSubmissionVotes = submissionUpvotes + submissionDownvotes;
-
-            //// downvote ratio
-            //var downvotePercentage = (double)submissionDownvotes / totalSubmissionVotes * 100;
-
-            //// upvote ratio
-            //var upvotePercentage = (double)submissionUpvotes / totalSubmissionVotes * 100;
-
-            //return downvotePercentage > upvotePercentage;
-
-
-            //return null;
-
-        }
-
-        private Score UserVotingBehaviorComments(string userName, TimeSpan? span = null)
-        {
-
-            DateTime? compareDate = null;
-            if (span.HasValue)
-            {
-                compareDate = CurrentDate.Subtract(span.Value);
-            }
-
-            var result = (from x in _db.CommentVoteTrackers
-                          where x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                           && ((compareDate.HasValue && x.CreationDate >= compareDate) || !compareDate.HasValue)
-                          group x by x.VoteStatus into v
-                          select new
-                          {
-                              key = v.Key,
-                              votes = v.Count()
-                          });
-
-            Score vb = new Score();
-
-            if (result != null)
-            {
-                foreach (var r in result)
-                {
-                    if (r.key.HasValue)
-                    {
-                        if (r.key.Value == 1)
-                        {
-                            vb.UpCount = r.votes;
-                        }
-                        else {
-                            vb.DownCount = r.votes;
-                        }
-                    }
-                }
-            }
-
-            return vb;
-
+            return score;
         }
 
         public int UserCommentCount(string userName, TimeSpan? span, string subverse = null)
@@ -2040,7 +2080,7 @@ namespace Voat.Data
                 compareDate = CurrentDate.Subtract(span.Value);
             }
 
-            var result = (from x in _db.Comments.Include("Message")
+            var result = (from x in _db.Comments
                           where
                             x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
                             && (x.Submission.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || subverse == null)
@@ -2067,7 +2107,6 @@ namespace Voat.Data
                           select x).Count();
             return result;
         }
-
         public Score UserContributionPoints(string userName, ContentType type, string subverse = null)
         {
 
@@ -2075,7 +2114,77 @@ namespace Voat.Data
 
             if ((type & ContentType.Comment) > 0)
             {
-                var totals = (from x in _db.Comments.Include("Message")
+                var cmd = _db.Database.Connection.CreateCommand();
+                cmd.CommandText = @"SELECT 'UpCount' = CAST(ABS(ISNULL(SUM(c.UpCount),0)) AS INT), 'DownCount' = CAST(ABS(ISNULL(SUM(c.DownCount),0)) AS INT) FROM Comment c WITH (NOLOCK)
+                                    INNER JOIN Submission s WITH (NOLOCK) ON(c.SubmissionID = s.ID)
+                                    WHERE c.UserName = @UserName
+                                    AND(s.Subverse = @Subverse OR @Subverse IS NULL)";
+                cmd.CommandType = System.Data.CommandType.Text;
+
+                var param = cmd.CreateParameter();
+                param.ParameterName = "UserName";
+                param.DbType = System.Data.DbType.String;
+                param.Value = userName;
+                cmd.Parameters.Add(param);
+
+                param = cmd.CreateParameter();
+                param.ParameterName = "Subverse";
+                param.DbType = System.Data.DbType.String;
+                param.Value = String.IsNullOrEmpty(subverse) ? (object)DBNull.Value : subverse;
+                cmd.Parameters.Add(param);
+
+                cmd.Connection.Open();
+                using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                {
+                    if (reader.Read())
+                    {
+                        s.Combine(new Score() { UpCount = (int)reader["UpCount"], DownCount = (int)reader["DownCount"] });
+                    }
+                }
+                
+            }
+            
+            if ((type & ContentType.Submission) > 0)
+            {
+                var cmd = _db.Database.Connection.CreateCommand();
+                cmd.CommandText = @"SELECT 'UpCount' = CAST(ABS(ISNULL(SUM(s.UpCount), 0)) AS INT), 'DownCount' = CAST(ABS(ISNULL(SUM(s.DownCount), 0)) AS INT) FROM Submission s WITH (NOLOCK)
+                                    WHERE s.UserName = @UserName
+                                    AND(s.Subverse = @Subverse OR @Subverse IS NULL)";
+
+                var param = cmd.CreateParameter();
+                param.ParameterName = "UserName";
+                param.DbType = System.Data.DbType.String;
+                param.Value = userName;
+                cmd.Parameters.Add(param);
+
+                param = cmd.CreateParameter();
+                param.ParameterName = "Subverse";
+                param.DbType = System.Data.DbType.String;
+                param.Value = String.IsNullOrEmpty(subverse) ? (object)DBNull.Value : subverse;
+                cmd.Parameters.Add(param);
+
+                cmd.Connection.Open();
+                using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                {
+                    if (reader.Read())
+                    {
+                        s.Combine(new Score() { UpCount = (int)reader["UpCount"], DownCount = (int)reader["DownCount"] });
+                    }
+                }
+            }
+
+            return s;
+
+        }
+
+        public Score UserContributionPointsEF(string userName, ContentType type, string subverse = null)
+        {
+
+            Score s = new Score();
+
+            if ((type & ContentType.Comment) > 0)
+            {
+                var totals = (from x in _db.Comments
                               where x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
                                  && (x.Submission.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || subverse == null)
                               group x by x.UserName into y

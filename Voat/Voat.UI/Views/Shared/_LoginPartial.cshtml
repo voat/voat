@@ -14,9 +14,16 @@
 
 @if (Request.IsAuthenticated)
 {
-    int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
-    int commentKarma = Karma.CommentKarma(User.Identity.GetUserName());
-    int upvotesGiven = Karma.UpvotesGiven(User.Identity.GetUserName());
+    var q = new Voat.Domain.Query.QueryUserData(User.Identity.Name);
+    var r = q.Execute();
+
+    int linkKarma = r.Information.SubmissionPoints.Sum;
+    int commentKarma = r.Information.CommentPoints.Sum;
+    int upvotesGiven = r.Information.CommentVoting.UpCount + r.Information.SubmissionVoting.UpCount;
+
+    //int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
+    //int commentKarma = Karma.CommentKarma(User.Identity.GetUserName());
+    //int upvotesGiven = Karma.UpvotesGiven(User.Identity.GetUserName());
 
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {
