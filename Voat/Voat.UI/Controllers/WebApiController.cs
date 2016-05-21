@@ -46,7 +46,7 @@ namespace Voat.Controllers
         public IEnumerable<string> DefaultSubverses()
         {
 
-            IEnumerable<string> defaultSubs = CacheHandler.Instance.Register<IEnumerable<string>>("LegacyApi.DefaultSubverses",
+            IEnumerable<string> defaultSubs = CacheHandler.Instance.Register<IEnumerable<string>>("Legacy:Api:DefaultSubverses",
                new Func<IList<string>>(() =>
                {
                    using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -66,7 +66,7 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> BannedHostnames()
         {
-            IEnumerable<string> bannedSubs = CacheHandler.Instance.Register<IEnumerable<string>>("LegacyApi.BannedHostnames",
+            IEnumerable<string> bannedSubs = CacheHandler.Instance.Register<IEnumerable<string>>("Legacy:Api:BannedHostnames",
               new Func<IList<string>>(() =>
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -81,7 +81,7 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> BannedUsers()
         {
-            IEnumerable<string> bannedUsers = CacheHandler.Instance.Register<IEnumerable<string>>("LegacyApi.BannedUsers",
+            IEnumerable<string> bannedUsers = CacheHandler.Instance.Register<IEnumerable<string>>("Legacy:Api:BannedUsers",
               new Func<IList<string>>(() =>
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -114,7 +114,7 @@ namespace Voat.Controllers
         [HttpGet]
         public IEnumerable<string> Top200Subverses()
         {
-            IEnumerable<string> top200 = CacheHandler.Instance.Register<IEnumerable<string>>("LegacyApi.Top200Subverses",
+            IEnumerable<string> top200 = CacheHandler.Instance.Register<IEnumerable<string>>("Legacy:Api:Top200Subverses",
                 new Func<IList<string>>(() =>
                 {
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -280,7 +280,7 @@ namespace Voat.Controllers
         public ApiMessage SingleSubmission(int id)
         {
 
-            ApiMessage singleSubmission = CacheHandler.Instance.Register<ApiMessage>(String.Format("LegacyApi.SingleSubmission.{0}", id),
+            ApiMessage singleSubmission = CacheHandler.Instance.Register<ApiMessage>(String.Format("Legacy:Api:SingleSubmission.{0}", id),
               new Func<ApiMessage>(() =>
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -424,7 +424,7 @@ namespace Voat.Controllers
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
 
-            ApiUserInfo userInfo = CacheHandler.Instance.Register<ApiUserInfo>(String.Format("LegacyApi.UserInfo.{0}", userName),
+            ApiUserInfo userInfo = CacheHandler.Instance.Register<ApiUserInfo>(String.Format("Legacy:Api:UserInfo.{0}", userName),
               new Func<ApiUserInfo>(() =>
               {
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -456,7 +456,7 @@ namespace Voat.Controllers
         public ApiBadge BadgeInfo(string badgeId)
         {
 
-            ApiBadge badgeInfo = CacheHandler.Instance.Register<ApiBadge>(String.Format("LegacyApi.ApiBadge.{0}", badgeId),
+            ApiBadge badgeInfo = CacheHandler.Instance.Register<ApiBadge>(String.Format("Legacy:Api:ApiBadge.{0}", badgeId),
              new Func<ApiBadge>(() =>
              {
                  using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
@@ -564,7 +564,7 @@ namespace Voat.Controllers
         [HttpGet]
         public ImageBucket Top100ImagesByDate()
         {
-            IEnumerable<ResponseItem> top100ImagesByDate = CacheHandler.Instance.Register<IEnumerable<ResponseItem>>("LegacyApi.Top100ImagesByDate",
+            IEnumerable<ResponseItem> top100ImagesByDate = CacheHandler.Instance.Register<IEnumerable<ResponseItem>>("Legacy:Api:Top100ImagesByDate",
                 () =>
                 {
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
