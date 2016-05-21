@@ -66,20 +66,23 @@ namespace Voat.Controllers
                 string cacheKey = DataCache.Keys.Search(sub, q);
                 IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
                 if (cacheData == null) {
-
-
                     cacheData = (IList<Submission>)CacheHandler.Instance.Register(cacheKey, new Func<object>(() =>
                     {
-                        var results = (from m in _db.Submissions
-                                       join s in _db.Subverses on m.Subverse equals s.Name
-                                       where
-                                        !s.IsAdminDisabled.Value &&
-                                        !m.IsDeleted &&
-                                        m.Subverse == sub &&
-                                        (m.LinkDescription.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
-                                       orderby m.Rank ascending, m.CreationDate descending
-                                       select m).Take(25).ToList();
-                        return results;
+                        using (var db = new voatEntities())
+                        {
+                            db.Configuration.LazyLoadingEnabled = false;
+                            db.Configuration.ProxyCreationEnabled = false;
+                            var results = (from m in db.Submissions
+                                           join s in db.Subverses on m.Subverse equals s.Name
+                                           where
+                                            !s.IsAdminDisabled.Value &&
+                                            !m.IsDeleted &&
+                                            m.Subverse == sub &&
+                                            (m.LinkDescription.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                           orderby m.Rank ascending, m.CreationDate descending
+                                           select m).Take(25).ToList();
+                            return results;
+                        }
                     }), TimeSpan.FromMinutes(10));
 
                 }
