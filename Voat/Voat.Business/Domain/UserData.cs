@@ -119,7 +119,7 @@ namespace Voat.Domain
                 return GetOrLoad(ref _subverseSubscriptions, username => {
                     var q = new QueryUserSubscriptions(username);
                     var result = q.Execute();
-                    if (result != null)
+                    if (result != null && result.ContainsKey("Subverse"))
                     {
                         return result["Subverse"];
                     }
