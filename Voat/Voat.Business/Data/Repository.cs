@@ -2034,7 +2034,7 @@ namespace Voat.Data
             cmd.CommandText = String.Format(
                                 @"SELECT x.VoteStatus, 'Count' = ABS(ISNULL(SUM(x.VoteStatus), 0))
                                 FROM {0} x WITH (NOLOCK)
-                                WHERE x.UserName = 'PuttItOut'
+                                WHERE x.UserName = @UserName
                                 AND(x.CreationDate >= @CompareDate OR @CompareDate IS NULL)
                                 GROUP BY x.VoteStatus", type == ContentType.Comment ? "CommentVoteTracker" : "SubmissionVoteTracker");
             cmd.CommandType = System.Data.CommandType.Text;
