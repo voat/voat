@@ -1440,7 +1440,12 @@ function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, co
     } else {
         currentPage++;
     }
-    var bucketUrl =  "/comments/" + submissionId + "/" + (parentId == null ? 'null' : parentId) + "/" + command + "/" + startingIndex + "/" + sort;
+
+    var cachePrevention = 'xxxx'.replace(/[xy]/g, function(c) {
+        var rand = Math.random() * 16 | 0
+        return rand.toString(16);
+    });;
+    var bucketUrl = "/comments/" + submissionId + "/" + (parentId == null ? 'null' : parentId) + "/" + command + "/" + startingIndex + "/" + sort + "?nocache=" + cachePrevention;
     loadCommentsRequest2 = $.ajax({
         url: bucketUrl,
         success: function (data) {
