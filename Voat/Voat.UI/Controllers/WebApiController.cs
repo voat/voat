@@ -20,6 +20,7 @@ using System.Net.Mail;
 using System.Web.Http;
 using Voat.Caching;
 using Voat.Data.Models;
+using Voat.Domain.Query;
 using Voat.Models;
 using Voat.Models.ApiModels;
 using Voat.Utilities;
@@ -430,6 +431,17 @@ namespace Voat.Controllers
                   using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                   {
                       var resultModel = new ApiUserInfo();
+
+                      ////Port to new code
+                      //var q = new QueryUserData(userName);
+                      //var r = q.Execute();
+                      //var info = r.Information;
+
+                      //resultModel.Name = userName;
+                      //resultModel.CCP = info.CommentPoints.Sum;
+                      //resultModel.LCP = info.SubmissionPoints.Sum;
+                      //resultModel.RegistrationDate = info.RegistrationDate;
+                      //resultModel.Badges = info.Badges.Select(badge => new ApiUserBadge { Awarded = badge.CreationDate, BadgeName = badge.Name }).ToList();
 
                       var userBadgesList = UserHelper.UserBadges(userName);
                       var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge { Awarded = item.CreationDate, BadgeName = item.Badge.Name }).ToList();

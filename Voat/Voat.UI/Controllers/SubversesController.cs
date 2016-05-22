@@ -354,6 +354,9 @@ namespace Voat.Controllers
                     await _db.SaveChangesAsync();
                     DataCache.Subverse.Remove(existingSubverse.Name);
 
+                    //purge new minified CSS
+                    CacheHandler.Instance.Remove(CachingKey.SubverseStylesheet(existingSubverse.Name));
+
                     // go back to this subverse
                     return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.Name });
 
@@ -437,6 +440,8 @@ namespace Voat.Controllers
 
                     await _db.SaveChangesAsync();
                     DataCache.Subverse.Remove(existingSubverse.Name);
+                    //purge new minified CSS
+                    CacheHandler.Instance.Remove(CachingKey.SubverseStylesheet(existingSubverse.Name));
 
                     // go back to this subverse
                     return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.Name });
