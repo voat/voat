@@ -10,14 +10,14 @@ namespace Voat.Utilities
     public static class VoatPathHelper
     {
 
-        private static string SiteRoot(bool provideProtocol, string forceDomain = null)
+        private static string SiteRoot(bool provideProtocol, bool supportsContentDelivery, string forceDomain = null)
         {
 
             //Defaults
             string domain = "voat.co";
             string protocol = "https";
 
-            if (Settings.UseContentDeliveryNetwork)
+            if (supportsContentDelivery && Settings.UseContentDeliveryNetwork)
             {
                 domain = "cdn.voat.co";
             }
@@ -26,7 +26,7 @@ namespace Voat.Utilities
             {
                 if (System.Web.HttpContext.Current != null && System.Web.HttpContext.Current.Request != null)
                 {
-                    domain = System.Web.HttpContext.Current.Request.Url.Authority;
+                    //domain = System.Web.HttpContext.Current.Request.Url.Authority;
                     protocol = System.Web.HttpContext.Current.Request.Url.Scheme;
                 }
             }
@@ -57,7 +57,7 @@ namespace Voat.Utilities
             //    < img src = "~/Thumbs/@Model.Thumbnail" alt = "@Model.LinkDescription" />
             //}
 
-            return String.Format("{0}/thumbs/{1}", (fullyQualified ? SiteRoot(provideProtocol) : "~"), thumbnailFile);
+            return String.Format("{0}/thumbs/{1}", (fullyQualified ? SiteRoot(provideProtocol, false) : "~"), thumbnailFile);
         }
         public static string BadgePath(string badgeFile, bool fullyQualified = false, bool provideProtocol = false)
         {
@@ -69,7 +69,7 @@ namespace Voat.Utilities
                 return badgeFile;
             }
 
-            return String.Format("{0}/Graphics/Badges/{1}", (fullyQualified ? SiteRoot(provideProtocol, forceDomain) : "~"), badgeFile);
+            return String.Format("{0}/Graphics/Badges/{1}", (fullyQualified ? SiteRoot(provideProtocol, false, forceDomain) : "~"), badgeFile);
         }
         //https://cdn.voat.co/avatars/@(userName).jpg
         public static string AvatarPath(string username, bool fullyQualified = false, bool provideProtocol = false, bool forceResolve = false)
@@ -92,11 +92,11 @@ namespace Voat.Utilities
             if (UserHelper.HasAvatar(username) != null || forceResolve)
             {
                 //different paths depending on cdn or not
-                return String.Format("{0}/{2}/{1}.jpg", (fullyQualified ? SiteRoot(provideProtocol) : "~"), username, (Settings.UseContentDeliveryNetwork ? "avatars" : "Storage/Avatars"));
+                return String.Format("{0}/{2}/{1}.jpg", (fullyQualified ? SiteRoot(provideProtocol, true) : "~"), username, (Settings.UseContentDeliveryNetwork ? "avatars" : "Storage/Avatars"));
             }
             else
             {
-                return String.Format("{0}/Graphics/thumb-placeholder.png", (fullyQualified ? SiteRoot(provideProtocol) : "~"));
+                return String.Format("{0}/Graphics/thumb-placeholder.png", (fullyQualified ? SiteRoot(provideProtocol, false) : "~"));
             }
         }
     }

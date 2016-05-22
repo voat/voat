@@ -28,21 +28,7 @@
     <div class="side">
         <div class="titlebox footer rounded">
             <div class="thumbnail may-blank user-avatar">
-                @if (userData.Information.ProfilePicture != null)
-                {
-                    if (Settings.UseContentDeliveryNetwork)
-                    {
-                        <img src="https://cdn.voat.co/avatars/@(userName).jpg" alt="" class="user-avatar">
-                    }
-                    else
-                    {
-                        <img src="~/Storage/Avatars/@(userName).jpg" alt="" class="user-avatar">
-                    }
-                }
-                else
-                {
-                    <img src="~/Graphics/thumb-placeholder.png" alt="" class="user-avatar">
-                }
+                <img src="@userData.Information.ProfilePicture" alt="" class="user-avatar">
             </div>
             &ldquo;
             <span class="user-quote">
