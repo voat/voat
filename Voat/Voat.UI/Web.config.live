@@ -9,5 +9,6 @@
     <add key="siteDisabled" value="false" />
     <add key="registrationDisabled" value="true" />
     <add key="signalrDisabled" value="false" />
+    <add key="adsEnabled" value="true"/>
   </appSettings>
 </configuration>

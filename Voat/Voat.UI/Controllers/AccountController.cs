@@ -760,6 +760,14 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid) return View("Manage", model);
 
+            // make sure no other accounts use this email address
+            var existingAccount = await UserManager.FindByEmailAsync(model.EmailAddress);
+            if (existingAccount != null)
+            {
+                ModelState.AddModelError(string.Empty, "This email address is already in use.");
+                return View("Manage", model);
+            }
+
             // save changes
             var result = await UserManager.SetEmailAsync(User.Identity.GetUserId(), model.EmailAddress);
             if (result.Succeeded)
