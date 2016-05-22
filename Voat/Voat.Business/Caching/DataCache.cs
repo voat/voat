@@ -65,7 +65,7 @@ namespace Voat.Caching
                             currentData.Add(c);
 
                             return currentData;
-                        }));
+                        }), TimeSpan.FromSeconds(cacheTimeInSeconds));
 
                     }
                     catch (Exception ex)
