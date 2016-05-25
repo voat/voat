@@ -176,6 +176,7 @@ namespace Voat.RulesEngine
                 {
                     foreach (var rule in rules)
                     {
+                        Debug.Print(String.Format("Rule: {0}: {1} ({2} - {3})", rule.Name, rule.Number, scope.ToString(), typeof(Rule).Name));
                         RuleOutcome outcome = ((Rule<T>)rule).Evaluate(context);
                         if (!outcome.IsAllowed)
                         {

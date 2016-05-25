@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Web.Caching;
+using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
 
@@ -36,16 +37,16 @@ namespace Voat.Utilities
 
         private static string CacheKey(string userName, KarmaCacheType type, string subverse = null)
         {
-            return String.Format("{0}_{1}_{2}", userName, type.ToString(), subverse ?? "none");
+            return String.Format("Legacy:Karma:{0}_{1}_{2}", userName, type.ToString(), subverse ?? "none");
         }
 
-        private static System.Runtime.Caching.MemoryCache Cache
-        {
-            get
-            {
-                return System.Runtime.Caching.MemoryCache.Default;
-            }
-        }
+        //private static System.Runtime.Caching.MemoryCache Cache
+        //{
+        //    get
+        //    {
+        //        return System.Runtime.Caching.MemoryCache.Default;
+        //    }
+        //}
 
         // get link contribution points for a user
         public static int LinkKarma(string userName)
@@ -53,7 +54,7 @@ namespace Voat.Utilities
 
             string cacheKey = CacheKey(userName, KarmaCacheType.Link);
 
-            object cacheData = Cache[cacheKey];
+            object cacheData = CacheHandler.Instance.Retrieve<int?>(cacheKey);
             if (cacheData != null)
             {
                 return (int)cacheData;
@@ -78,27 +79,11 @@ namespace Voat.Utilities
                 }
                 long l = (long)cmd.ExecuteScalar();
                 count = (int)l;
-                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
+                CacheHandler.Instance.Replace<int?>(cacheKey, count, TimeSpan.FromSeconds(cacheTimeInSeconds));
 
             }
 
-
             return count;
-
-
-            //using (var db = new voatEntities())
-            //{
-            //    try
-            //    {
-            //        return db.Messages.Where(c => c.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
-            //            .Select(c => c.Likes - c.Dislikes)
-            //            .Sum();
-            //    }
-            //    catch (Exception)
-            //    {
-            //        return 0;
-            //    }
-            //}
         }
 
         // get link contribution points for a user from a given subverse
@@ -107,7 +92,7 @@ namespace Voat.Utilities
 
             string cacheKey = CacheKey(userName, KarmaCacheType.SubverseLink, subverseName);
 
-            object cacheData = Cache[cacheKey];
+            object cacheData = CacheHandler.Instance.Retrieve<int?>(cacheKey);
             if (cacheData != null)
             {
                 return (int)cacheData;
@@ -140,7 +125,7 @@ namespace Voat.Utilities
                 long l = (long)cmd.ExecuteScalar();
                 count = (int)l;
                 //Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
-                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
+                CacheHandler.Instance.Replace<int?>(cacheKey, count, TimeSpan.FromSeconds(cacheTimeInSeconds));
 
             }
 
@@ -169,7 +154,7 @@ namespace Voat.Utilities
 
             string cacheKey = CacheKey(userName, KarmaCacheType.Comment);
 
-            object cacheData = Cache[cacheKey];
+            object cacheData = CacheHandler.Instance.Retrieve<int?>(cacheKey);
             if (cacheData != null)
             {
                 return (int)cacheData;
@@ -196,7 +181,7 @@ namespace Voat.Utilities
                 long l = (long)cmd.ExecuteScalar();
                 count = (int)l;
                 //Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
-                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
+                CacheHandler.Instance.Replace<int?>(cacheKey, count, TimeSpan.FromSeconds(cacheTimeInSeconds));
 
             }
 
@@ -224,7 +209,7 @@ namespace Voat.Utilities
 
             string cacheKey = CacheKey(userName, KarmaCacheType.SubverseComment, subverseName);
 
-            object cacheData = Cache[cacheKey];
+            object cacheData = CacheHandler.Instance.Retrieve<int?>(cacheKey);
             if (cacheData != null)
             {
                 return (int)cacheData;
@@ -261,7 +246,7 @@ namespace Voat.Utilities
                 long l = (long)cmd.ExecuteScalar();
                 count = (int)l;
                 //Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
-                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
+                CacheHandler.Instance.Replace<int?>(cacheKey, count, TimeSpan.FromSeconds(cacheTimeInSeconds));
 
             }
 
@@ -294,7 +279,7 @@ namespace Voat.Utilities
 
             string cacheKey = CacheKey(userName, KarmaCacheType.UpvoteTotal);
 
-            object cacheData = Cache[cacheKey];
+            object cacheData = CacheHandler.Instance.Retrieve<int?>(cacheKey);
             if (cacheData != null)
             {
                 return (int)cacheData;
@@ -324,7 +309,7 @@ namespace Voat.Utilities
                 count = (int)cmd.ExecuteScalar();
                 //count = (int)l;
                 //Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
-                Cache.Set(cacheKey, count, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds));
+                CacheHandler.Instance.Replace<int?>(cacheKey, count, TimeSpan.FromSeconds(cacheTimeInSeconds));
 
             }
 

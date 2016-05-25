@@ -24,6 +24,7 @@ using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Caching;
 using Voat.Common;
+using Voat.Domain.Query;
 
 namespace Voat.Controllers
 {
@@ -174,10 +175,18 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserBasicInfo(string userName)
         {
-            var userRegistrationDateTime = UserHelper.GetUserRegistrationDateTime(userName);
-            var memberFor = Age.ToRelative(userRegistrationDateTime);
-            var scp = Karma.LinkKarma(userName);
-            var ccp = Karma.CommentKarma(userName);
+            var q = new QueryUserData(userName);
+            var r = q.Execute();
+            var info = r.Information;
+
+            var memberFor = Age.ToRelative(info.RegistrationDate);
+            var scp = info.SubmissionPoints.Sum;
+            var ccp = info.CommentPoints.Sum;
+
+            //var userRegistrationDateTime = UserHelper.GetUserRegistrationDateTime(userName);
+            //var memberFor = Age.ToRelative(userRegistrationDateTime);
+            //var scp = Karma.LinkKarma(userName);
+            //var ccp = Karma.CommentKarma(userName);
 
             var userInfoModel = new BasicUserInfo()
             {

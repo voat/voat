@@ -4,9 +4,9 @@ using Voat.Utilities;
 
 namespace Voat.Rules
 {
-    public abstract class BaseBannedRule : VoatRule
+    public abstract class BaseSubverseBanRule : VoatRule
     {
-        public BaseBannedRule(string name, string number, RuleScope scope)
+        public BaseSubverseBanRule(string name, string number, RuleScope scope)
             : base(name, number, scope)
         {
         }

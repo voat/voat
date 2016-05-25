@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Voat.Rules;
 using Voat.RulesEngine;
 using Voat.Tests.Repository;
+using Voat.Utilities;
 
 namespace Voat.Tests.Rules
 {
@@ -37,22 +38,22 @@ namespace Voat.Tests.Rules
             //rulesEngine.Context.PropertyBag.UserName = "AFakeUser";
             //rulesEngine.Context.PropertyBag.CommentID = 5; //A minCCP of 5000 is required in this comment sub
 
-            TestHelper.SetPrincipal("AFakeUser");
+            TestHelper.SetPrincipal("User100CCP");
             var context = new VoatRuleContext();
             context.PropertyBag.CommentID = 5;//A minCCP of 5000 is required in this comment sub
-
+            context.PropertyBag.AddressHash = IpHash.CreateHash("127.0.0.1");
             var outcome = UnitTestRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.DownVoteComment, true);
             Assert.AreEqual(RuleResult.Denied, outcome.Result);
             Assert.AreEqual("5.2", outcome.RuleNumber);
         }
-
+        
         [TestMethod]
         [TestCategory("Rules")]
         public void DownVoat_Submission_Denied()
         {
             //rulesEngine.Context.PropertyBag.UserName = "AFakeUser";
             //rulesEngine.Context.PropertyBag.SubmissionID = 3; //A minCCP of 5000 is required in this sub
-            TestHelper.SetPrincipal("AFakeUser");
+            TestHelper.SetPrincipal("User500CCP");
             var context = new VoatRuleContext();
             context.PropertyBag.SubmissionID = 3; //A minCCP of 5000 is required in this comment sub
 

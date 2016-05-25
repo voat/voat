@@ -43,31 +43,31 @@ namespace Voat.Tests.Utils
 
             if (Settings.UseContentDeliveryNetwork)
             {
-                Assert.IsTrue(result == String.Format("~/avatars/{0}.jpg", username), "Condition:1");
+                Assert.AreEqual(String.Format("~/avatars/{0}.jpg", username), result, "Condition:1");
             }
             else
             {
-                Assert.IsTrue(result == String.Format("~/Storage/Avatars/{0}.jpg", username), "Condition:1.2");
+                Assert.AreEqual(String.Format("~/Storage/Avatars/{0}.jpg", username), result, "Condition:1.2");
             }
 
             result = VoatPathHelper.AvatarPath(username, true, false, true);
             if (Settings.UseContentDeliveryNetwork)
             {
-                Assert.IsTrue(result == String.Format("//cdn.voat.co/avatars/{0}.jpg", username), "Condition:2");
+                Assert.AreEqual(String.Format("//cdn.voat.co/avatars/{0}.jpg", username), result, "Condition:2");
             }
             else
             {
-                Assert.IsTrue(result == String.Format("//voat.co/Storage/Avatars/{0}.jpg", username), "Condition:2.2");
+                Assert.AreEqual(String.Format("//voat.co/Storage/Avatars/{0}.jpg", username), result, "Condition:2.2");
             }
 
             result = VoatPathHelper.AvatarPath(username, true, true, true);
             if (Settings.UseContentDeliveryNetwork)
             {
-                Assert.IsTrue(result == String.Format("https://cdn.voat.co/avatars/{0}.jpg", username), "Condition:3");
+                Assert.AreEqual(String.Format("https://cdn.voat.co/avatars/{0}.jpg", username), result, "Condition:3");
             }
             else
             {
-                Assert.IsTrue(result == String.Format("https://voat.co/Storage/Avatars/{0}.jpg", username), "Condition:3.2");
+                Assert.AreEqual(String.Format("https://voat.co/Storage/Avatars/{0}.jpg", username), result, "Condition:3.2");
             }
 
             //Assert.Inconclusive();
@@ -84,13 +84,13 @@ namespace Voat.Tests.Utils
             domain = (String.IsNullOrEmpty(domain) ? "voat.co" : domain);
 
             result = VoatPathHelper.BadgePath(filename, false);
-            Assert.IsTrue(result == String.Format("~/Graphics/Badges/{0}", filename), "Condition:1");
+            Assert.AreEqual(String.Format("~/Graphics/Badges/{0}", filename), result, "Condition:1");
 
             result = VoatPathHelper.BadgePath(filename, true, true);
-            Assert.IsTrue(result == String.Format("https://{1}/Graphics/Badges/{0}", filename, domain), "Condition:2");
+            Assert.AreEqual(String.Format("https://{1}/Graphics/Badges/{0}", filename, domain), result, "Condition:2");
 
             result = VoatPathHelper.BadgePath(filename, true, true);
-            Assert.IsTrue(result == String.Format("https://{1}/Graphics/Badges/{0}", filename, domain), "Condition:3");
+            Assert.AreEqual(String.Format("https://{1}/Graphics/Badges/{0}", filename, domain), result, "Condition:3");
 
             //Assert.Inconclusive();
         }
@@ -105,31 +105,31 @@ namespace Voat.Tests.Utils
             result = VoatPathHelper.ThumbnailPath(filename);
             if (Settings.UseContentDeliveryNetwork)
             {
-                Assert.IsTrue(result == String.Format("~/thumbs/{0}", filename), "Condition:1");
+                Assert.AreEqual(String.Format("~/thumbs/{0}", filename), result, "Condition:1");
             }
             else
             {
-                Assert.IsTrue(result == String.Format("~/thumbs/{0}", filename), "Condition:1");
+                Assert.AreEqual(String.Format("~/thumbs/{0}", filename), result, "Condition:1");
             }
 
             result = VoatPathHelper.ThumbnailPath(filename, true);
             if (Settings.UseContentDeliveryNetwork)
             {
-                Assert.IsTrue(result == String.Format("//cdn.voat.co/thumbs/{0}", filename), "Condition:2");
+                Assert.AreEqual(String.Format("//cdn.voat.co/thumbs/{0}", filename), result, "Condition:2");
             }
             else
             {
-                Assert.IsTrue(result == String.Format("//voat.co/thumbs/{0}", filename), "Condition:2");
+                Assert.AreEqual(String.Format("//voat.co/thumbs/{0}", filename), result, "Condition:2");
             }
 
             result = VoatPathHelper.ThumbnailPath(filename, true, true);
             if (Settings.UseContentDeliveryNetwork)
             {
-                Assert.IsTrue(result == String.Format("https://cdn.voat.co/thumbs/{0}", filename), "Condition:3");
+                Assert.AreEqual(String.Format("https://cdn.voat.co/thumbs/{0}", filename), result, "Condition:3");
             }
             else
             {
-                Assert.IsTrue(result == String.Format("https://voat.co/thumbs/{0}", filename), "Condition:3");
+                Assert.AreEqual(String.Format("https://voat.co/thumbs/{0}", filename), result, "Condition:3");
             }
         }
     }

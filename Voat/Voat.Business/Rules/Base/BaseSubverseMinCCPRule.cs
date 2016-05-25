@@ -6,9 +6,9 @@ using Voat.Utilities;
 
 namespace Voat.Rules
 {
-    public class BaseSubverseMinCCPRule : VoatRule
+    public abstract class BaseSubverseMinimumCCPRule : VoatRule
     {
-        public BaseSubverseMinCCPRule(string name, string number, RuleScope scope)
+        public BaseSubverseMinimumCCPRule(string name, string number, RuleScope scope)
             : base(name, number, scope)
         {
         }
@@ -33,7 +33,7 @@ namespace Voat.Rules
 
                 if (subverseUserCCP < subMinCCP.Value)
                 {
-                    return CreateOutcome(RuleResult.Denied, String.Format("User {0} has {1} CPP in subverse '{2}' and {3} is required to downvote.", context.UserName, subverseUserCCP, subverse.Name, subMinCCP.Value.ToString()));
+                    return CreateOutcome(RuleResult.Denied, String.Format("Subverse '{0}' requires {1}CCP to downvote", subverse.Name, subMinCCP.Value.ToString()));
                 }
             }
 

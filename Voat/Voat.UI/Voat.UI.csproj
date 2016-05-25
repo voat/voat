@@ -359,6 +359,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\AntispamUtility.cs" />
+    <Compile Include="Utils\JsonNetResult.cs" />
     <Compile Include="Utils\RSSUtility.cs" />
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />

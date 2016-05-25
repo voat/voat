@@ -432,25 +432,25 @@ namespace Voat.Controllers
                   {
                       var resultModel = new ApiUserInfo();
 
-                      ////Port to new code
-                      //var q = new QueryUserData(userName);
-                      //var r = q.Execute();
-                      //var info = r.Information;
-
-                      //resultModel.Name = userName;
-                      //resultModel.CCP = info.CommentPoints.Sum;
-                      //resultModel.LCP = info.SubmissionPoints.Sum;
-                      //resultModel.RegistrationDate = info.RegistrationDate;
-                      //resultModel.Badges = info.Badges.Select(badge => new ApiUserBadge { Awarded = badge.CreationDate, BadgeName = badge.Name }).ToList();
-
-                      var userBadgesList = UserHelper.UserBadges(userName);
-                      var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge { Awarded = item.CreationDate, BadgeName = item.Badge.Name }).ToList();
+                      //Port to new code
+                      var q = new QueryUserData(userName);
+                      var r = q.Execute();
+                      var info = r.Information;
 
                       resultModel.Name = userName;
-                      resultModel.CCP = Karma.CommentKarma(userName);
-                      resultModel.LCP = Karma.LinkKarma(userName);
-                      resultModel.RegistrationDate = UserHelper.GetUserRegistrationDateTime(userName);
-                      resultModel.Badges = resultBadgesList;
+                      resultModel.CCP = info.CommentPoints.Sum;
+                      resultModel.LCP = info.SubmissionPoints.Sum;
+                      resultModel.RegistrationDate = info.RegistrationDate;
+                      resultModel.Badges = info.Badges.Select(badge => new ApiUserBadge { Awarded = badge.CreationDate, BadgeName = badge.Name }).ToList();
+
+                      //var userBadgesList = UserHelper.UserBadges(userName);
+                      //var resultBadgesList = userBadgesList.Select(item => new ApiUserBadge { Awarded = item.CreationDate, BadgeName = item.Badge.Name }).ToList();
+
+                      //resultModel.Name = userName;
+                      //resultModel.CCP = Karma.CommentKarma(userName);
+                      //resultModel.LCP = Karma.LinkKarma(userName);
+                      //resultModel.RegistrationDate = UserHelper.GetUserRegistrationDateTime(userName);
+                      //resultModel.Badges = resultBadgesList;
 
                       return resultModel;
                   }

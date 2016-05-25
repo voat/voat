@@ -111,6 +111,16 @@ namespace Voat.RulesEngine
         Vote = RuleAction.DownVote | RuleAction.UpVote,
 
         /// <summary>
+        /// Applies to any comment vote operation
+        /// </summary>
+        VoteComment = Vote | RuleArea.Comment,
+
+        /// <summary>
+        /// Applies to any comment vote operation
+        /// </summary>
+        VoteSubmission = Vote | RuleArea.Submission,
+
+        /// <summary>
         /// Applies to viewing of a subverse
         /// </summary>
         ViewSubverse = RuleAction.View | RuleArea.Subverse

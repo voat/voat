@@ -32,7 +32,7 @@ namespace Voat.Domain.Command
     {
         protected override async Task<T> ProtectedExecute()
         {
-            var result = await ProtectedExecute();
+            var result = await CacheExecute();
             Task t = Task.Run(() => UpdateCache()); //don't wait this
             return result;
         }

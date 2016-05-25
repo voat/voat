@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 using Voat.Common;
 using Voat.Domain.Command;
@@ -20,6 +21,7 @@ namespace Voat.Models
         }
         public VoteResponse() { }
 
+        [JsonIgnore()]
         public int Difference {
             get {
                 return _difference;
@@ -28,6 +30,7 @@ namespace Voat.Models
                 _difference = value;
             }
         }
+        [JsonIgnore()]
         public string OwnerUserName
         {
             get

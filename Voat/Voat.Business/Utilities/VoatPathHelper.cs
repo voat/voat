@@ -57,7 +57,7 @@ namespace Voat.Utilities
             //    < img src = "~/Thumbs/@Model.Thumbnail" alt = "@Model.LinkDescription" />
             //}
 
-            return String.Format("{0}/thumbs/{1}", (fullyQualified ? SiteRoot(provideProtocol, false) : "~"), thumbnailFile);
+            return String.Format("{0}/thumbs/{1}", (fullyQualified ? SiteRoot(provideProtocol, true) : "~"), thumbnailFile);
         }
         public static string BadgePath(string badgeFile, bool fullyQualified = false, bool provideProtocol = false)
         {

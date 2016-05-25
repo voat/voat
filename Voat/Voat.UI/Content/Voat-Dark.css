@@ -3268,3 +3268,7 @@ textarea.form-control {
 .faqAnchor:visited {
     color: #dfdfdf;
 }
+.vote-error {
+    font-size:13px;
+    color:red;
+}

@@ -47,7 +47,7 @@ namespace Voat.Domain
                         return repo.UserVotingBehavior(username, ContentType.Comment | ContentType.Submission, TimeSpan.FromDays(1)).Total;
                     }
                     //return UserGateway.TotalVotesUsedInPast24Hours(username);
-                });
+                }, false);
                 return (val.HasValue ? val.Value : 0);
             }
             set

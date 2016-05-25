@@ -52,6 +52,9 @@ namespace Voat.Rules
         {
             return EvaluateRuleSet(context, new RuleScope[] { scope }, includeGlobalScope, scopeEvaluator);
         }
-        
+        public RuleOutcome EvaluateRuleSet(VoatRuleContext context, params RuleScope[] scopes)
+        {
+            return EvaluateRuleSet(context, scopes, true, null);
+        }
     }
 }

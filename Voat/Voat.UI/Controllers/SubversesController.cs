@@ -1082,6 +1082,7 @@ namespace Voat.Controllers
         {
             int maximumOwnedSubs = Settings.MaximumOwnedSubs;
 
+            //TODO: These errors are not friendly - please update to redirect or something
             // check if there is an invitation for this user with this id
             var userInvitation = _db.ModeratorInvitations.Find(invitationId);
             if (userInvitation == null)
@@ -1137,6 +1138,8 @@ namespace Voat.Controllers
             confirmation.Append("User " + User.Identity.Name + " has accepted your invitation to moderate subverse /v/" + userInvitation.Subverse + ".");
             confirmation.AppendLine();
             MesssagingUtility.SendPrivateMessage("Voat", userInvitation.CreatedBy, "Moderator invitation for " + userInvitation.Subverse + " accepted", confirmation.ToString());
+            //clear mod cache
+            CacheHandler.Instance.Remove(CachingKey.SubverseModerators(userInvitation.Subverse));
 
             // delete the invitation from database
             _db.ModeratorInvitations.Remove(userInvitation);
@@ -1337,6 +1340,10 @@ namespace Voat.Controllers
             // execute removal
             _db.SubverseModerators.Remove(moderatorToBeRemoved);
             await _db.SaveChangesAsync();
+
+            //clear mod cache
+            CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverse.Name));
+
             return RedirectToAction("SubverseModerators");
         }
 

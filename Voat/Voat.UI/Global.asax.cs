@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -39,6 +40,8 @@ namespace Voat
             ViewEngines.Engines.Add(new RazorViewEngine());
 
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
+
+            JsonConvert.DefaultSettings = () => { return JsonSettings.GetSerializationSettings(); };
 
             #region Hook Events
 

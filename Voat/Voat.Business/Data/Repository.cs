@@ -45,20 +45,19 @@ namespace Voat.Data
 
         #region Vote
 
-        public VoteResponse VoteSubmission(int submissionID, int vote, bool revokeOnRevote = true)
+        public VoteResponse VoteSubmission(int submissionID, int vote, string addressHash, bool revokeOnRevote = true)
         {
-            return Vote(submissionID, ContentType.Submission, vote, revokeOnRevote);
+            return Vote(submissionID, ContentType.Submission, vote, addressHash, revokeOnRevote);
         }
 
-        public VoteResponse VoteComment(int commentID, int vote, bool revokeOnRevote = true)
+        public VoteResponse VoteComment(int commentID, int vote, string addressHash, bool revokeOnRevote = true)
         {
-            return Vote(commentID, ContentType.Comment, vote, revokeOnRevote);
+            return Vote(commentID, ContentType.Comment, vote, addressHash, revokeOnRevote);
         }
 
         [Authorize]
-        private VoteResponse Vote(int id, ContentType type, int vote, bool revokeOnRevote = true)
+        private VoteResponse Vote(int id, ContentType type, int vote, string addressHash, bool revokeOnRevote = true)
         {
-
             DemandAuthentication();
 
             //make sure we don't have bad int values for vote
@@ -69,18 +68,19 @@ namespace Voat.Data
 
             string userName = User.Identity.Name;
             var ruleContext = new VoatRuleContext();
+            ruleContext.PropertyBag.AddressHash = addressHash;
 
             switch (vote)
             {
                 case 1:
-                    var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.UpVote);
+                    var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.UpVote);
                     if (outcome.IsDenied)
                     {
                         return new VoteResponse(Status.Denied, null, outcome.Message);
                     }
                     break;
                 case -1:
-                    var outcome2 = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.DownVote);
+                    var outcome2 = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.DownVote);
                     if (outcome2.IsDenied)
                     {
                         return new VoteResponse(Status.Denied, null, outcome2.Message);
@@ -108,11 +108,11 @@ namespace Voat.Data
 
                             submission = _db.Submissions.First(x => x.ID == comment.SubmissionID);
 
-                            // do not execute voting, subverse is in anonymized mode
-                            if (comment.Submission.IsAnonymized)
-                            {
-                                return VoteResponse.Ignored(0, "Subverse is anonymized, voting disabled");
-                            }
+                            //// do not execute voting, subverse is in anonymized mode
+                            //if (comment.Submission.IsAnonymized)
+                            //{
+                            //    return VoteResponse.Ignored(0, "Subverse is anonymized, voting disabled");
+                            //}
 
                             //ignore votes if comment is users
                             if (String.Equals(comment.UserName, userName, StringComparison.InvariantCultureIgnoreCase))
@@ -155,7 +155,7 @@ namespace Voat.Data
 
                                             if (vote == 1)
                                             {
-                                                var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.UpVoteComment);
+                                                var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.VoteComment, RuleScope.UpVoteComment);
                                                 if (outcome.IsDenied)
                                                 {
                                                     return VoteResponse.Denied(outcome.ToString());
@@ -165,7 +165,7 @@ namespace Voat.Data
                                             else
                                             {
 
-                                                var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.DownVoteComment);
+                                                var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.VoteComment, RuleScope.DownVoteComment);
                                                 if (outcome.IsDenied)
                                                 {
                                                     return VoteResponse.Denied(outcome.ToString());
@@ -185,6 +185,7 @@ namespace Voat.Data
                                                 CommentID = id,
                                                 UserName = userName,
                                                 VoteStatus = vote,
+                                                IPAddress = addressHash,
                                                 CreationDate = Repository.CurrentDate
                                             };
 
@@ -379,6 +380,7 @@ namespace Voat.Data
                                                 SubmissionID = id,
                                                 UserName = userName,
                                                 VoteStatus = vote,
+                                                IPAddress = addressHash,
                                                 CreationDate = Repository.CurrentDate
                                             };
 
@@ -586,14 +588,14 @@ namespace Voat.Data
         {
 
             var sheet = (from x in _db.Subverses
-                              where x.Name == subverse
-                              select x.Stylesheet).FirstOrDefault();
+                         where x.Name.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                         select x.Stylesheet).FirstOrDefault();
             return String.IsNullOrEmpty(sheet) ? "" : sheet;
         }
         public IEnumerable<SubverseModerator> GetSubverseModerators(string subverse)
         {
             var data = (from x in _db.SubverseModerators
-                        where x.Subverse == subverse
+                        where x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                         orderby x.CreationDate ascending
                         select x).ToList();
 
@@ -2118,7 +2120,8 @@ namespace Voat.Data
                 cmd.CommandText = @"SELECT 'UpCount' = CAST(ABS(ISNULL(SUM(c.UpCount),0)) AS INT), 'DownCount' = CAST(ABS(ISNULL(SUM(c.DownCount),0)) AS INT) FROM Comment c WITH (NOLOCK)
                                     INNER JOIN Submission s WITH (NOLOCK) ON(c.SubmissionID = s.ID)
                                     WHERE c.UserName = @UserName
-                                    AND(s.Subverse = @Subverse OR @Subverse IS NULL)";
+                                    AND (s.Subverse = @Subverse OR @Subverse IS NULL)
+                                    AND c.IsAnonymized = 0"; //this prevents anon votes from showing up in stats
                 cmd.CommandType = System.Data.CommandType.Text;
 
                 var param = cmd.CreateParameter();
@@ -2149,7 +2152,8 @@ namespace Voat.Data
                 var cmd = _db.Database.Connection.CreateCommand();
                 cmd.CommandText = @"SELECT 'UpCount' = CAST(ABS(ISNULL(SUM(s.UpCount), 0)) AS INT), 'DownCount' = CAST(ABS(ISNULL(SUM(s.DownCount), 0)) AS INT) FROM Submission s WITH (NOLOCK)
                                     WHERE s.UserName = @UserName
-                                    AND(s.Subverse = @Subverse OR @Subverse IS NULL)";
+                                    AND (s.Subverse = @Subverse OR @Subverse IS NULL)
+                                    AND s.IsAnonymized = 0";
 
                 var param = cmd.CreateParameter();
                 param.ParameterName = "UserName";
@@ -2430,6 +2434,21 @@ namespace Voat.Data
         #endregion
 
         #region Misc
+
+        public bool HasAddressVoted(string addressHash, ContentType contentType, int id)
+        {
+            var result = true;
+            switch (contentType)
+            {
+                case ContentType.Comment:
+                    result = _db.CommentVoteTrackers.Any(x => x.CommentID == id && x.IPAddress == addressHash);
+                    break;
+                case ContentType.Submission:
+                    result = _db.SubmissionVoteTrackers.Any(x => x.SubmissionID == id && x.IPAddress == addressHash);
+                    break;
+            }
+            return result;
+        }
         private static IQueryable<Models.Submission> ApplySubmissionSearch(SearchOptions options, IQueryable<Models.Submission> query)
         {
             //HACK: Warning, Super hacktastic

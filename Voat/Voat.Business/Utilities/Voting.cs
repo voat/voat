@@ -74,11 +74,11 @@ namespace Voat.Utilities
 
                     Submission submission = db.Submissions.Find(submissionID);
 
-                    if (submission.IsAnonymized)
-                    {
-                        // do not execute voting, subverse is in anonymized mode
-                        return;
-                    }
+                    //if (submission.IsAnonymized)
+                    //{
+                    //    // do not execute voting, subverse is in anonymized mode
+                    //    return;
+                    //}
 
                     int result = (previousVote == null ? 0 : previousVote.VoteStatus.Value);
 
@@ -167,11 +167,11 @@ namespace Voat.Utilities
 
                     SubmissionVoteTracker previousVote = db.SubmissionVoteTrackers.Where(u => u.UserName == userName && u.SubmissionID == submissionID).FirstOrDefault();
 
-                    // do not execute downvoting if subverse is in anonymized mode
-                    if (submission.IsAnonymized)
-                    {
-                        return;
-                    }
+                    //// do not execute downvoting if subverse is in anonymized mode
+                    //if (submission.IsAnonymized)
+                    //{
+                    //    return;
+                    //}
 
                     // do not execute downvoting if submission is older than 7 days
                     var submissionPostingDate = submission.CreationDate;

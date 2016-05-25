@@ -84,26 +84,26 @@ namespace Voat.Rules
                     if (SubmissionID != null)
                     {
                         var cmd = new QuerySubmission(SubmissionID.Value);
-                        var submission = Task.Run(() => cmd.ExecuteAsync()).Result;
+                        var submission = cmd.Execute();
                         PropertyBag.Submission = submission;
 
                         var cmdSubverse = new QuerySubverse(submission.Subverse);
-                        var subverse = Task.Run(() => cmd.ExecuteAsync()).Result;
+                        var subverse = cmdSubverse.Execute();
 
                         return subverse;
                     }
                     if (CommentID != null)
                     {
                         var cmdComment = new QueryComment(CommentID.Value);
-                        var comment = Task.Run(() => cmdComment.ExecuteAsync()).Result;
+                        var comment = cmdComment.Execute();
                         PropertyBag.Comment = comment;
 
                         var cmd = new QuerySubmission(comment.SubmissionID.Value);
-                        var submission = Task.Run(() => cmd.ExecuteAsync()).Result;
+                        var submission = cmd.Execute();
                         PropertyBag.Submission = submission;
 
                         var cmdSubverse = new QuerySubverse(submission.Subverse);
-                        var subverse = Task.Run(() => cmd.ExecuteAsync()).Result;
+                        var subverse = cmdSubverse.Execute();
 
                         return subverse;
                     }

@@ -51,6 +51,7 @@ namespace Voat.Utilities
 
                             if (comment.UserName != userName)
                             {
+                                //PORT: TODO
                                 // check if this IP already voted on the same comment, abort voting if true
                                 var ipVotedAlready = db.CommentVoteTrackers.Where(x => x.CommentID == commentId && x.IPAddress == clientIpHash);
                                 if (ipVotedAlready.Any())
@@ -133,13 +134,13 @@ namespace Voat.Utilities
                     {
                         return;
                     }
-
+                    //PORT: Min CCP Rule
                     // do not execute downvoting if user has insufficient CCP for target subverse
                     if (Karma.CommentKarmaForSubverse(userName, comment.Submission.Subverse) < comment.Submission.Subverse1.MinCCPForDownvote)
                     {
                         return;
                     }
-
+                    //PORT: Age Rule
                     // do not execute downvoting if comment is older than 7 days
                     var commentPostingDate = comment.CreationDate;
                     TimeSpan timeElapsed = Repository.CurrentDate - commentPostingDate;
@@ -154,12 +155,14 @@ namespace Voat.Utilities
                         case 0:
 
                             {
+                                //PORT: Down Voat Meanie Rule
                                 // this user is downvoting more than upvoting, don't register the downvote
                                 if (UserHelper.IsUserCommentVotingMeanie(userName))
                                 {
                                     return;
                                 }
 
+                                //PORT: TODO
                                 // check if this IP already voted on the same comment, abort voting if true
                                 var ipVotedAlready = db.CommentVoteTrackers.Where(x => x.CommentID == commentId && x.IPAddress == clientIpHash);
                                 if (ipVotedAlready.Any())

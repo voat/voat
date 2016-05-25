@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
 using Voat.Domain.Command;
+using Voat.Utilities;
 
 namespace Voat.Tests.Repository
 {
@@ -51,7 +52,7 @@ namespace Voat.Tests.Repository
 
                 TestHelper.SetPrincipal("User500CCP", null); //This user has one comment with 101 likes
 
-                var response = db.VoteComment(context.CommentID, -1);
+                var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.IsTrue(response.Successfull, "Vote was not successfull");
                 Assert.AreEqual(-1, response.RecordedValue, "Vote was not successfull");
@@ -68,7 +69,7 @@ namespace Voat.Tests.Repository
             {
                 TestHelper.SetPrincipal("TestUser3", null); //Random User has no CCP
 
-                var response = db.VoteComment(context.CommentID, -1);
+                var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.AreEqual(Status.Denied, response.Status);
             }
@@ -86,14 +87,14 @@ namespace Voat.Tests.Repository
 
                 TestHelper.SetPrincipal("User100CCP", null);
 
-                var response = db.VoteComment(context.CommentID, 1);
+                var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.IsTrue(response.Successfull, response.ToString());
                 Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
                 Assert.IsTrue(x.UpCount == (ups + 1));
 
                 //try to re-up vote, by default should revoke vote
-                response = db.VoteComment(context.CommentID, 1);
+                response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
                 Assert.IsTrue(response.Status == Status.Success);
                 Assert.IsTrue(response.RecordedValue == 0, "Vote value incorrect");
 
@@ -118,14 +119,14 @@ namespace Voat.Tests.Repository
 
                 TestHelper.SetPrincipal("User100CCP", null);
 
-                var response = db.VoteComment(context.CommentID, 1);
+                var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.IsTrue(response.Successfull, response.ToString());
                 Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
                 Assert.IsTrue(x.UpCount == (ups + 1));
 
                 //try to re-up vote, by default should revoke vote
-                response = db.VoteComment(context.CommentID, 1, false);
+                response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"), false);
                 Assert.IsTrue(response.Status == Status.Ignored);
                 Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
             }
@@ -143,7 +144,7 @@ namespace Voat.Tests.Repository
 
                 TestHelper.SetPrincipal("User50CCP", null);
 
-                var response = db.VoteComment(context.CommentID, 1);
+                var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.IsTrue(response.Successfull, response.Message);
                 Assert.IsTrue(x.UpCount == (ups + 1));
@@ -158,7 +159,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                db.VoteComment(121, -2);
+                db.VoteComment(121, -2, IpHash.CreateHash("127.0.0.1"));
             }
         }
 
@@ -169,7 +170,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                db.VoteSubmission(1, 21);
+                db.VoteSubmission(1, 21, IpHash.CreateHash("127.0.0.1"));
             }
         }
 
@@ -185,7 +186,7 @@ namespace Voat.Tests.Repository
 
                 TestHelper.SetPrincipal("User500CCP", null); //This user has one comment with 101 likes
 
-                var response = db.VoteSubmission(context.SubmissionID, -1);
+                var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.IsTrue(response.Successfull, "Vote was not successfull");
                 Assert.IsTrue(response.RecordedValue == -1, "Vote was not successfull");
@@ -202,7 +203,7 @@ namespace Voat.Tests.Repository
             {
                 TestHelper.SetPrincipal("TestUser3", null); //Random User has no CCP
 
-                var response = db.VoteSubmission(context.SubmissionID, -1);
+                var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.AreEqual(Status.Denied, response.Status);
             }
@@ -220,14 +221,14 @@ namespace Voat.Tests.Repository
 
                 TestHelper.SetPrincipal("User100CCP", null);
 
-                var response = db.VoteSubmission(context.SubmissionID, 1);
+                var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.IsTrue(response.Successfull, response.ToString());
                 Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
                 Assert.IsTrue(x.UpCount == (ups + 1));
 
                 //try to re-up vote
-                response = db.VoteSubmission(context.SubmissionID, 1);
+                response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 Assert.IsTrue(response.Status == Status.Success);
                 Assert.IsTrue(response.RecordedValue == 0);
             }
@@ -245,14 +246,14 @@ namespace Voat.Tests.Repository
 
                 TestHelper.SetPrincipal("User100CCP", null);
 
-                var response = db.VoteSubmission(context.SubmissionID, 1);
+                var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.IsTrue(response.Successfull, response.ToString());
                 Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
                 Assert.IsTrue(x.UpCount == (ups + 1));
 
                 //try to re-up vote
-                response = db.VoteSubmission(context.SubmissionID, 1, false);
+                response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"), false);
                 Assert.IsTrue(response.Status == Status.Ignored); //setting tells voting to ignore if submitted vote is current vote
                 Assert.IsTrue(response.RecordedValue == 1); //should still be an upvote
             }
@@ -270,7 +271,7 @@ namespace Voat.Tests.Repository
 
                 TestHelper.SetPrincipal("User50CCP", null);
 
-                var response = db.VoteSubmission(context.SubmissionID, 1);
+                var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.IsTrue(response.Successfull, response.Message);
                 Assert.IsTrue(response.RecordedValue == 1, response.Message);

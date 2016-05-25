@@ -11,6 +11,7 @@ using Voat.Domain.Command;
 using Voat.Models;
 using Voat.Controllers;
 using System.Threading;
+using Voat.Utilities;
 
 namespace Voat.Tests.BugTraps
 {
@@ -147,7 +148,7 @@ namespace Voat.Tests.BugTraps
                 Interlocked.Increment(ref exCount);
                 using (var repo = new Voat.Data.Repository())
                 {
-                    return repo.VoteSubmission(submissionID, 1);
+                    return repo.VoteSubmission(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 }
             });
             Func<VoteResponse> vote2 = new Func<VoteResponse>(() =>
@@ -157,7 +158,7 @@ namespace Voat.Tests.BugTraps
                 Interlocked.Increment(ref exCount);
                 using (var repo = new Voat.Data.Repository())
                 {
-                    return repo.VoteSubmission(submissionID, 1);
+                    return repo.VoteSubmission(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 }
             });
 
@@ -304,7 +305,7 @@ namespace Voat.Tests.BugTraps
                 Interlocked.Increment(ref exCount);
                 using (var repo = new Voat.Data.Repository())
                 {
-                    return repo.VoteSubmission(submissionID, 1);
+                    return repo.VoteSubmission(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 }
             });
             Func<VoteResponse> vote2 = new Func<VoteResponse>(() =>
@@ -314,7 +315,7 @@ namespace Voat.Tests.BugTraps
                 Interlocked.Increment(ref exCount);
                 using (var repo = new Voat.Data.Repository())
                 {
-                    return repo.VoteSubmission(submissionID, 1);
+                    return repo.VoteSubmission(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 }
             });
 
