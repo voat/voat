@@ -3269,6 +3269,5 @@ textarea.form-control {
     color: #dfdfdf;
 }
 .vote-error {
-    font-size:13px;
-    color:red;
+    color:#6f64ba;
 }

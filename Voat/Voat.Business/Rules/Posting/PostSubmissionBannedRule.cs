@@ -11,7 +11,7 @@ namespace Voat.Rules.Posting
     public class PostSubmissionBannedRule : BaseSubverseBanRule
     {
         public PostSubmissionBannedRule()
-            : base("Subverse Submission Ban Rule", "5.7", RuleScope.PostSubmission)
+            : base("Subverse Submission Ban Rule", "8.2", RuleScope.PostSubmission)
         {
         }
 

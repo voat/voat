@@ -26,7 +26,7 @@ namespace Voat.Rules.Voting
 
             if (totalVotesUsedInPast24Hours >= scaledDailyVotingQuota)
             {
-                return CreateOutcome(RuleResult.Denied, "User has exceeded vote throttle limit based on CCP. Available votes per 24 hours: {0}", scaledDailyVotingQuota);
+                return CreateOutcome(RuleResult.Denied, "Vote limit exceeded based on CCP. Available votes per 24 hours: {0}", scaledDailyVotingQuota);
             }
 
             //switch (context)

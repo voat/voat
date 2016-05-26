@@ -99,12 +99,11 @@ namespace Voat.Data
                     var synclock_comment = _lockStore.GetLockObject(String.Format("comment:{0}", id));
                     lock (synclock_comment)
                     {
-                        ruleContext.CommentID = id;
-
                         var comment = _db.Comments.FirstOrDefault(x => x.ID == id);
 
                         if (comment != null)
                         {
+                            ruleContext.CommentID = id;
 
                             submission = _db.Submissions.First(x => x.ID == comment.SubmissionID);
 

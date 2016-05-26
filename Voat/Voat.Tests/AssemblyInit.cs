@@ -26,12 +26,12 @@ namespace Voat.Tests
                 }
             }
 
-            //This causes the voat rules engine to init using config section for load
-            var rulesEngine = VoatRulesEngine.Instance;
-
             //load web.config.live monitor
             LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
             LiveConfigurationManager.Start();
+
+            //This causes the voat rules engine to init using config section for load
+            var rulesEngine = VoatRulesEngine.Instance;
 
             //purge redis for unit tests if enabled
             var defaultHandler = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Enabled && x.Type.ToLower().Contains("redis"));

@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Voat.Configuration;
+using Voat.Rules;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 using Voat.Utilities.Components;
@@ -25,6 +26,9 @@ namespace Voat
 
             LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
             LiveConfigurationManager.Start();
+
+            //forces Rules Engine to load
+            var x = VoatRulesEngine.Instance;
 
             if (!Settings.SignalRDisabled)
             {

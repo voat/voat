@@ -44,10 +44,7 @@ namespace Voat.Controllers
         {
             var cmd = new CommentVoteCommand(commentId, typeOfVote);
             var result = await cmd.Execute();
-
-            Response.StatusCode = result.Successfull ? 200 : 400;
             return Json(result);
-
         }
 
         // POST: savecomment/{commentId}

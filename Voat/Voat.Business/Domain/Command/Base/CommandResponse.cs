@@ -19,10 +19,10 @@ namespace Voat.Domain.Command
     //at this time since the data will be present at the time of a command execution.
     public class CommandResponse
     {
-        public CommandResponse(Status status, string description)
+        public CommandResponse(Status status, string message)
         {
             this.Status = status;
-            this.Message = description;
+            this.Message = message;
         }
         public CommandResponse() { }
         /// <summary>
@@ -95,7 +95,7 @@ namespace Voat.Domain.Command
 
     public class CommandResponse<R> : CommandResponse
     {
-        public CommandResponse(R response, Status status, string description) : base(status, description)
+        public CommandResponse(R response, Status status, string message) : base(status, message)
         {
             this.Response = response;
         }

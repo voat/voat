@@ -372,25 +372,13 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\markdownEditor.min.css">
-      <DependentUpon>markdownEditor.css</DependentUpon>
-    </Content>
     <Content Include="Content\tooltipster.css" />
-    <Content Include="Content\tooltipster.min.css">
-      <DependentUpon>tooltipster.css</DependentUpon>
-    </Content>
     <Content Include="Content\ui-themes\autocomplete\autocomplete.css" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.min.css" />
     <Content Include="Content\ui-themes\autocomplete\core.css" />
     <Content Include="Content\ui-themes\autocomplete\menu.css" />
     <Content Include="Content\ui-themes\autocomplete\theme.css" />
-    <Content Include="Content\Voat-Dark.min.css">
-      <DependentUpon>Voat-Dark.css</DependentUpon>
-    </Content>
-    <Content Include="Content\Voat.min.css">
-      <DependentUpon>Voat.css</DependentUpon>
-    </Content>
     <Content Include="ddos.min.htm">
       <DependentUpon>ddos.htm</DependentUpon>
     </Content>
@@ -514,12 +502,6 @@
     <None Include="Scripts\_references.js" />
     <Content Include="Storage\Avatars\Placeholder.txt" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
-    <Content Include="Content\PagedList.min.css">
-      <DependentUpon>PagedList.css</DependentUpon>
-    </Content>
-    <Content Include="Content\Site.min.css">
-      <DependentUpon>Site.css</DependentUpon>
-    </Content>
     <Content Include="Content\Voat-Dark.css" />
     <Content Include="Content\Voat.css" />
     <Content Include="favicon.ico" />

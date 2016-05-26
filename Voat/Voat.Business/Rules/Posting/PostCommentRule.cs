@@ -15,7 +15,7 @@ namespace Voat.Rules.Posting
     {
 
         public PostCommentRule()
-            : base("Comment Post Rule", "4.4", RuleScope.PostComment)
+            : base("Comment Post Rule", "7.0", RuleScope.PostComment)
         {
 
         }

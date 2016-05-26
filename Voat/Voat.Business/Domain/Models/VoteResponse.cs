@@ -15,7 +15,7 @@ namespace Voat.Models
         private int _difference = 0;
         private string _ownerUserName = "";
 
-        public VoteResponse(Status result, int? voteRecordedValue, string description) : base(null, result, description)
+        public VoteResponse(Status result, int? voteRecordedValue, string message) : base(null, result, message)
         {
             this.RecordedValue = voteRecordedValue;
         }

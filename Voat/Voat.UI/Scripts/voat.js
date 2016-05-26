@@ -368,18 +368,24 @@ function voteComment(commentid, voteValue) {
                 var comment = $(".comment.id-" + commentid);
                 var div = comment.children(".entry");
                 div.children('span').remove();
-                div.prepend('<span class="vote-error">' + data.responseJSON.message + '</span>');
+                div.prepend('<span class="vote-error">An Error Occured :(</span>');
             },
             success: function (data) {
                 //TODO: data object includes vote related json, the below code can use the values this object contains, but not changing right now.
                 //alert(data.message);
-
-
                 var comment = $(".comment.id-" + commentid);
                 //remove error span if present
                 comment.children(".entry").children('span').remove();
-                var div = comment.children(".midcol");
                 
+                if (!data.successfull)
+                {
+                    var err = comment.children(".entry");
+                    err.children('span').remove();
+                    err.prepend('<span class="vote-error">' + data.message + '</span>');
+                    return;
+                }
+                var div = comment.children(".midcol");
+
                 // get current score
                 var scoreLikes = +(comment.find('.post_upvotes').filter(":first").html());
                 var scoreDislikes = -(comment.find('.post_downvotes').filter(":first").html());
@@ -1610,7 +1616,7 @@ function checkUsernameAvailability(obj) {
                 data: { userName: $(obj).val() },
                 success: function (data) {
                     // analyze response and inform the user
-                    if (data.Available) {
+                    if (data.available) {
                         $('#usernameAvailabilityStatus').hide();
                     } else {
                         $('#usernameAvailabilityStatus').show();
