@@ -146,6 +146,20 @@ namespace Voat.RulesEngine
             return EvaluateRule(context);
         }
 
+        public bool TryEvaluate(T context, out RuleOutcome outcome)
+        {
+            outcome = null;
+            try
+            {
+                outcome = EvaluateRule(context);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
         protected abstract RuleOutcome EvaluateRule(T context);
 
         //ProtoType feature: Allows rules to describe the needed context and datatypes they require to execute correctly.

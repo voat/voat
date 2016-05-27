@@ -24,10 +24,6 @@ namespace Voat.Rules
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
-            if (UserHelper.IsUserGloballyBanned(context.UserName))
-            {
-                return CreateOutcome(RuleResult.Denied, "User is globally banned");
-            }
             return Allowed;
         }
     }

@@ -377,8 +377,14 @@ function voteComment(commentid, voteValue) {
                 //remove error span if present
                 comment.children(".entry").children('span').remove();
                 
-                if (!data.successfull)
-                {
+                if (!data.successfull) {
+
+                    if (data.message.indexOf('2.2', 0) > 0) {
+                        notEnoughCCP();
+                    } else if (data.message.indexOf('4.0', 0) > 0 || data.message.indexOf('2.1', 0) > 0) {
+                        notEnoughCCPUpVote();
+                    }
+
                     var err = comment.children(".entry");
                     err.children('span').remove();
                     err.prepend('<span class="vote-error">' + data.message + '</span>');

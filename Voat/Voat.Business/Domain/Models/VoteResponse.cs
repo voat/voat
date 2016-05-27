@@ -3,6 +3,7 @@ using System;
 
 using Voat.Common;
 using Voat.Domain.Command;
+using Voat.RulesEngine;
 
 namespace Voat.Models
 {
@@ -66,6 +67,20 @@ namespace Voat.Models
         }
 
         #region Helper Methods
+
+        public static VoteResponse Create(RuleOutcome outcome, int? recordedValue = null)
+        {
+            var status = Status.NotProcessed;
+            if (outcome.Result == RuleResult.Allowed)
+            {
+                status = Status.Success;
+            }
+            if (outcome.Result == RuleResult.Denied)
+            {
+                status = Status.Denied;
+            }
+            return new VoteResponse(status, recordedValue, outcome.ToString()); 
+        }
 
         public static VoteResponse Denied()
         {

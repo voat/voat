@@ -11,7 +11,7 @@ namespace Voat.Rules.Posting
     [RuleDiscovery("Approved if user who has -50 CCP or less has submitted fewer than 5 comments in a 24 hour sliding window.", "approved = (user.CCP <= -50 and TotalCommentsInPast24Hours < 5 or user.CCP > -50)")]
     public class PostCommentCCPRule : MinimumCCPRule
     {
-        public PostCommentCCPRule() : base("Comment CCP Throttle", "7.1", -50, RuleScope.PostComment)
+        public PostCommentCCPRule() : base("Comment CCP Throttle", "4.3", -50, RuleScope.PostComment)
         {
         }
 

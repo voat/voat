@@ -10,7 +10,7 @@ namespace Voat.Rules.Voting
     [RuleDiscovery("Approved if user has more upvotes than downvotes on comments", "approved = (user.Comment.UpVotes > user.Comment.DownVotes)")]
     public class DownVoteCommentMeanieRule : VoatRule
     {
-        public DownVoteCommentMeanieRule() : base("Comment Meanie", "6.2", RuleScope.DownVoteComment)
+        public DownVoteCommentMeanieRule() : base("Comment Voting Meanie", "2.3", RuleScope.DownVoteComment)
         {
         }
 

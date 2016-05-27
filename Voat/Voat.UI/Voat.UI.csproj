@@ -714,6 +714,7 @@
     <Content Include="Views\Ad\_Ad.cshtml" />
     <Content Include="Views\ApiKeys\Create.cshtml" />
     <Content Include="Views\ApiKeys\Index.cshtml" />
+    <Content Include="Views\Home\Rules.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -16,7 +16,6 @@ namespace Voat.Rules
             DemandContext(context);
 
             Subverse subverse = context.PropertyBag.Subverse;
-
             if (UserHelper.IsUserBannedFromSubverse(context.UserName, subverse.Name))
             {
                 return CreateOutcome(RuleResult.Denied, "User is banned from v/{0}", subverse.Name);

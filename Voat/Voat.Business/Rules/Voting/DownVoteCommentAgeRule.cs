@@ -9,10 +9,10 @@ using Voat.RulesEngine;
 
 namespace Voat.Rules.Voting
 {
-    [RuleDiscovery("Approved if comment is less that 7 days old", "approved = (comment.Age < 7 days)")]
+    [RuleDiscovery("Approved if comment is not older than 7 days", "approved = (comment.Age <= 7 days)")]
     public class DownVoteCommentAgeRule : VoatRule
     {
-        public DownVoteCommentAgeRule() : base("Downvote Comment Age", "6.3", RuleScope.DownVoteComment)
+        public DownVoteCommentAgeRule() : base("Downvote Comment Age", "2.5", RuleScope.DownVoteComment)
         {
         }
 

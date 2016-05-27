@@ -15,6 +15,7 @@ All Rights Reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -24,6 +25,8 @@ using Voat.Data.Models;
 using Voat.Domain.Query;
 using Voat.Models;
 using Voat.Models.ViewModels;
+using Voat.Rules;
+using Voat.RulesEngine;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 
@@ -722,5 +725,37 @@ namespace Voat.Controllers
 
             return PartialView("~/Views/Subverses/_FeaturedSub.cshtml", featuredSub);
         }
+        [HttpGet]
+        public ActionResult Rules()
+        {
+            var ruleinfo = RuleDiscoveryProvider.GetDescriptions(Assembly.GetAssembly(typeof(VoatRuleContext))).Where(x => x.Enabled).Select(x => new RuleInformationWithOutcome(x)).OrderBy(x => x.Info.Rule.Number).ToList();
+            RuleOutcome unevaluated = new RuleOutcome(RuleResult.Unevaluated, "UnevaluatedRule", "0.0", "This rule is unevaluated.");
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var context = new VoatRuleContext();
+                context.UserName = User.Identity.Name;
+
+                //run every rule we can for the current user
+                foreach (var rule in VoatRulesEngine.Instance.Rules)
+                {
+                    var info = ruleinfo.FirstOrDefault(x => x.Info.Rule.Name == rule.Name && x.Info.Rule.Number == rule.Number);
+                    if (info != null)
+                    {
+                        RuleOutcome outcome = null;
+                        if (((Rule<VoatRuleContext>)rule).TryEvaluate(context, out outcome))
+                        {
+                            info.Outcome = outcome;
+                        }
+                        else
+                        {
+                            info.Outcome = unevaluated;
+                        }
+                    }
+                }
+            }
+            return View("Rules", ruleinfo);
+        }
+      
     }
 }

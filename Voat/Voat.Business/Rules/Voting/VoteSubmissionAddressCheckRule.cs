@@ -9,10 +9,11 @@ using Voat.RulesEngine;
 
 namespace Voat.Rules.Voting
 {
+    [RuleDiscovery("Approved if vote hasn't been registered from same device.", "approved = (hasVoted(Submission, AddressHash) == false)")]
     public class VoteSubmissionAddressCheckRule : VoatRule
     {
         public VoteSubmissionAddressCheckRule() 
-            : base("Check Comment Vote IP Address", "8.2", RulesEngine.RuleScope.VoteSubmission, 10)
+            : base("Submission Vote Identity", "2.6", RulesEngine.RuleScope.VoteSubmission, 10)
         {
 
         }

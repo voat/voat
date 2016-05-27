@@ -45,18 +45,7 @@ namespace Voat.Data
 
         #region Vote
 
-        public VoteResponse VoteSubmission(int submissionID, int vote, string addressHash, bool revokeOnRevote = true)
-        {
-            return Vote(submissionID, ContentType.Submission, vote, addressHash, revokeOnRevote);
-        }
-
         public VoteResponse VoteComment(int commentID, int vote, string addressHash, bool revokeOnRevote = true)
-        {
-            return Vote(commentID, ContentType.Comment, vote, addressHash, revokeOnRevote);
-        }
-
-        [Authorize]
-        private VoteResponse Vote(int id, ContentType type, int vote, string addressHash, bool revokeOnRevote = true)
         {
             DemandAuthentication();
 
@@ -69,430 +58,393 @@ namespace Voat.Data
             string userName = User.Identity.Name;
             var ruleContext = new VoatRuleContext();
             ruleContext.PropertyBag.AddressHash = addressHash;
-
-            switch (vote)
-            {
-                case 1:
-                    var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.UpVote);
-                    if (outcome.IsDenied)
-                    {
-                        return new VoteResponse(Status.Denied, null, outcome.Message);
-                    }
-                    break;
-                case -1:
-                    var outcome2 = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.DownVote);
-                    if (outcome2.IsDenied)
-                    {
-                        return new VoteResponse(Status.Denied, null, outcome2.Message);
-                    }
-                    break;
-            }
+            RuleOutcome outcome = null;
 
             string REVOKE_MSG = "Vote has been revoked";
             Data.Models.Submission submission = null;
 
-            switch (type)
+            var synclock_comment = _lockStore.GetLockObject(String.Format("comment:{0}", commentID));
+            lock (synclock_comment)
             {
-                #region Comment
-                case ContentType.Comment:
+                var comment = _db.Comments.FirstOrDefault(x => x.ID == commentID);
 
-                    var synclock_comment = _lockStore.GetLockObject(String.Format("comment:{0}", id));
-                    lock (synclock_comment)
+                if (comment != null)
+                {
+                    //set properties for rules engine
+                    ruleContext.CommentID = commentID;
+                    ruleContext.SubmissionID = comment.SubmissionID;
+                    
+                    //execute rules engine 
+                    switch (vote)
                     {
-                        var comment = _db.Comments.FirstOrDefault(x => x.ID == id);
-
-                        if (comment != null)
-                        {
-                            ruleContext.CommentID = id;
-
-                            submission = _db.Submissions.First(x => x.ID == comment.SubmissionID);
-
-                            //// do not execute voting, subverse is in anonymized mode
-                            //if (comment.Submission.IsAnonymized)
-                            //{
-                            //    return VoteResponse.Ignored(0, "Subverse is anonymized, voting disabled");
-                            //}
-
-                            //ignore votes if comment is users
-                            if (String.Equals(comment.UserName, userName, StringComparison.InvariantCultureIgnoreCase))
+                        case 1:
+                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.VoteComment, RuleScope.UpVote, RuleScope.UpVoteComment);
+                            if (outcome.IsDenied)
                             {
-                                return VoteResponse.Ignored(0, "User is prevented from voting on own content");
+                                return VoteResponse.Create(outcome);
                             }
-
-                            var existingVote = 0;
-
-                            var existingCommentVote = _db.CommentVoteTrackers.FirstOrDefault(x => x.CommentID == id && x.UserName == userName);
-
-                            if (existingCommentVote != null && existingCommentVote.VoteStatus.HasValue)
+                            break;
+                        case -1:
+                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.VoteComment, RuleScope.DownVote, RuleScope.DownVoteComment);
+                            if (outcome.IsDenied)
                             {
-                                existingVote = existingCommentVote.VoteStatus.Value;
+                                return VoteResponse.Create(outcome);
                             }
-
-                            // do not execute voting, user has already up/down voted item and is submitting a vote that matches their existing vote
-                            if (existingVote == vote && !revokeOnRevote)
-                            {
-                                return VoteResponse.Ignored(existingVote, "User has already voted this way.");
-                            }
-
-
-                            VoteResponse response = new VoteResponse(Status.NotProcessed, 0, "Vote not processed.");
-                            var votingTracker = _db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == id && b.UserName == userName);
-
-                            switch (existingVote)
-                            {
-
-
-                                case 0: //Never voted or No vote
-
-                                    switch (vote)
-                                    {
-                                        case 0:
-                                            response = VoteResponse.Ignored(0, "A revoke on an unvoted item has opened a worm hole! Run!");
-                                            break;
-                                        case 1:
-                                        case -1:
-
-                                            if (vote == 1)
-                                            {
-                                                var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.VoteComment, RuleScope.UpVoteComment);
-                                                if (outcome.IsDenied)
-                                                {
-                                                    return VoteResponse.Denied(outcome.ToString());
-                                                }
-                                                comment.UpCount++;
-                                            }
-                                            else
-                                            {
-
-                                                var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.VoteComment, RuleScope.DownVoteComment);
-                                                if (outcome.IsDenied)
-                                                {
-                                                    return VoteResponse.Denied(outcome.ToString());
-                                                }
-
-                                                //TODO: Fix this
-                                                //if (!UserHelper.CanUserDownVoteInSubverse(comment.Submission.Subverse, userName))
-                                                //{
-                                                //    return VoteResponse.Denied("Subverse MinCPP requirement not met for downvote.");
-                                                //}
-
-                                                comment.DownCount++;
-                                            }
-
-                                            var newVotingTracker = new CommentVoteTracker
-                                            {
-                                                CommentID = id,
-                                                UserName = userName,
-                                                VoteStatus = vote,
-                                                IPAddress = addressHash,
-                                                CreationDate = Repository.CurrentDate
-                                            };
-
-                                            _db.CommentVoteTrackers.Add(newVotingTracker);
-                                            _db.SaveChanges();
-
-                                            //SendVoteNotification(comment.Name, "upvote");
-                                            response = VoteResponse.Success(vote);
-                                            response.Difference = vote;
-                                            response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
-                                            break;
-                                    }
-                                    break;
-                                case 1: //Previous Upvote
-
-                                    switch (vote)
-                                    {
-                                        case 0: //revoke
-                                        case 1: //revote which means revoke if we are here
-
-                                            if (votingTracker != null)
-                                            {
-
-                                                comment.UpCount--;
-
-                                                _db.CommentVoteTrackers.Remove(votingTracker);
-
-                                                _db.SaveChanges();
-
-                                                response = VoteResponse.Success(0, REVOKE_MSG);
-                                                response.Difference = -1;
-                                                response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
-
-                                            }
-                                            break;
-                                        case -1:
-                                            //change upvote to downvote
-
-
-                                            if (votingTracker != null)
-                                            {
-
-                                                comment.UpCount--;
-                                                comment.DownCount++;
-
-                                                votingTracker.VoteStatus = vote;
-                                                votingTracker.CreationDate = CurrentDate;
-                                                _db.SaveChanges();
-
-                                                response = VoteResponse.Success(vote);
-                                                response.Difference = -2;
-                                                response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
-                                            }
-                                            break;
-                                    }
-
-                                    //SendVoteNotification(comment.Name, "downvote");
-                                    //ResetCommentVote(userWhichUpvoted, commentId);
-
-                                    break;
-
-                                case -1: //Previous downvote
-
-                                    switch (vote)
-                                    {
-
-                                        case 0: //revoke
-                                        case -1: //revote which means revoke
-
-                                            if (votingTracker != null)
-                                            {
-                                                comment.DownCount--;
-                                                _db.CommentVoteTrackers.Remove(votingTracker);
-                                                _db.SaveChanges();
-                                                response = VoteResponse.Success(0, REVOKE_MSG);
-                                                response.Difference = 1;
-                                                response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
-                                            }
-                                            break;
-                                        case 1:
-
-                                            //change downvote to upvote
-                                            if (votingTracker != null)
-                                            {
-                                                comment.UpCount++;
-                                                comment.DownCount--;
-
-                                                votingTracker.VoteStatus = vote;
-                                                votingTracker.CreationDate = CurrentDate;
-
-                                                _db.SaveChanges();
-                                                response = VoteResponse.Success(vote);
-                                                response.Difference = 2;
-                                                response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
-                                            }
-
-                                            break;
-                                    }
-                                    //SendVoteNotification(comment.Name, "downtoupvote");
-                                    break;
-
-                            }
-                            //Set owner user name for notifications
-                            response.OwnerUserName = comment.UserName;
-                            return response;
-                        }
+                            break;
                     }
-                    break;
 
-                #endregion
-                #region Submission
+                    submission = _db.Submissions.First(x => x.ID == comment.SubmissionID);
 
-                case ContentType.Submission:
-                    var synclock_submission = _lockStore.GetLockObject(String.Format("submission:{0}", id));
-                    lock (synclock_submission)
+                    //ignore votes if comment is users
+                    if (String.Equals(comment.UserName, userName, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        submission = _db.Submissions.FirstOrDefault(x => x.ID == id);
-                       
-                        if (submission != null)
-                        {
-                            ruleContext.SubmissionID = id;
-                            
-                            // do not execute voting, subverse is in anonymized mode
-                            if (submission.IsAnonymized)
-                            {
-                                return VoteResponse.Ignored(0, "Subverse is anonymized, voting disabled");
-                            }
-
-                            //ignore votes if comment is users
-                            if (String.Equals(submission.UserName, userName, StringComparison.OrdinalIgnoreCase))
-                            {
-                                return VoteResponse.Ignored(0, "User is prevented from voting on own content");
-                            }
-
-                            var existingVote = 0;
-
-                            var existingCommentVote = _db.SubmissionVoteTrackers.FirstOrDefault(x => x.SubmissionID == id && x.UserName == userName);
-
-                            if (existingCommentVote != null && existingCommentVote.VoteStatus.HasValue)
-                            {
-                                existingVote = existingCommentVote.VoteStatus.Value;
-                            }
-
-                            // do not execute voting, user has already up/down voted item and is submitting a vote that matches their existing vote
-                            if (existingVote == vote && !revokeOnRevote)
-                            {
-                                return VoteResponse.Ignored(existingVote, "User has already voted this way");
-                            }
-
-
-                            VoteResponse response = new VoteResponse(Status.NotProcessed, 0, "Vote not processed.");
-                            var votingSubmissionTracker = _db.SubmissionVoteTrackers.FirstOrDefault(x => x.SubmissionID == id && x.UserName == userName);
-
-
-                            switch (existingVote)
-                            {
-
-                                case 0: //Never voted or No vote
-
-                                    switch (vote)
-                                    {
-                                        case 0: //revoke
-
-                                            response = VoteResponse.Ignored(0, "A revoke on an unvoted item has opened a worm hole! Run!");
-
-                                            break;
-                                        case 1:
-                                        case -1:
-
-                                            if (vote == 1)
-                                            {
-                                                var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.UpVoteSubmission);
-                                                if (outcome.IsDenied)
-                                                {
-                                                    return VoteResponse.Denied(outcome.ToString());
-                                                }
-                                                submission.UpCount++;
-                                            }
-                                            else
-                                            {
-                                                var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.DownVoteSubmission);
-                                                if (outcome.IsDenied)
-                                                {
-                                                    return VoteResponse.Denied(outcome.ToString());
-                                                }
-
-                                                submission.DownCount++;
-                                            }
-
-                                            var t = new SubmissionVoteTracker
-                                            {
-                                                SubmissionID = id,
-                                                UserName = userName,
-                                                VoteStatus = vote,
-                                                IPAddress = addressHash,
-                                                CreationDate = Repository.CurrentDate
-                                            };
-
-                                            _db.SubmissionVoteTrackers.Add(t);
-                                            _db.SaveChanges();
-
-                                            response = VoteResponse.Success(vote);
-                                            response.Difference = vote;
-                                            response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
-                                            break;
-                                    }
-                                    break;
-                                case 1: //Previous Upvote
-
-                                    switch (vote)
-                                    {
-                                        case 0: //revoke
-                                        case 1: //revote which means revoke if we are here
-
-                                            if (votingSubmissionTracker != null)
-                                            {
-                                                submission.UpCount--;
-                                                _db.SubmissionVoteTrackers.Remove(votingSubmissionTracker);
-                                                _db.SaveChanges();
-
-                                                response = response = VoteResponse.Success(0, REVOKE_MSG);
-                                                response.Difference = -1;
-                                                response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
-                                            }
-                                            break;
-                                        case -1:
-                                            //change upvote to downvote
-
-                                            if (votingSubmissionTracker != null)
-                                            {
-
-                                                submission.UpCount--;
-                                                submission.DownCount++;
-
-                                                votingSubmissionTracker.VoteStatus = vote;
-                                                votingSubmissionTracker.CreationDate = CurrentDate;
-
-                                                _db.SaveChanges();
-
-                                                response = VoteResponse.Success(vote);
-                                                response.Difference = -2;
-                                                response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
-                                            }
-                                            break;
-                                    }
-
-                                    //SendVoteNotification(comment.Name, "downvote");
-                                    //ResetCommentVote(userWhichUpvoted, commentId);
-
-                                    break;
-
-                                case -1: //Previous downvote
-
-                                    switch (vote)
-                                    {
-
-                                        case 0: //revoke
-                                        case -1: //revote which means revoke if we are here
-                                                 // delete existing downvote
-
-                                            if (votingSubmissionTracker != null)
-                                            {
-                                                submission.DownCount--;
-                                                _db.SubmissionVoteTrackers.Remove(votingSubmissionTracker);
-                                                _db.SaveChanges();
-
-                                                response = VoteResponse.Success(0, REVOKE_MSG);
-                                                response.Difference = 1;
-                                                response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
-                                            }
-                                            break;
-                                        case 1:
-
-                                            //change downvote to upvote
-                                            var votingTracker = _db.SubmissionVoteTrackers.FirstOrDefault(x => x.SubmissionID == id && x.UserName == userName);
-
-                                            if (votingTracker != null)
-                                            {
-                                                submission.UpCount++;
-                                                submission.DownCount--;
-
-                                                votingTracker.VoteStatus = vote;
-                                                votingTracker.CreationDate = CurrentDate;
-
-                                                _db.SaveChanges();
-                                                response = VoteResponse.Success(vote);
-                                                response.Difference = 2;
-                                                response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
-                                            }
-
-
-                                            break;
-                                    }
-                                    //SendVoteNotification(comment.Name, "downtoupvote");
-                                    break;
-
-                            }
-                            //Set owner user name for notifications
-                            response.OwnerUserName = submission.UserName;
-                            return response;
-                        }
+                        return VoteResponse.Ignored(0, "User is prevented from voting on own content");
                     }
-                    break;
-                    #endregion
+
+                    var existingVote = 0;
+
+                    var existingVoteTracker = _db.CommentVoteTrackers.FirstOrDefault(x => x.CommentID == commentID && x.UserName == userName);
+
+                    if (existingVoteTracker != null && existingVoteTracker.VoteStatus.HasValue)
+                    {
+                        existingVote = existingVoteTracker.VoteStatus.Value;
+                    }
+
+                    // do not execute voting, user has already up/down voted item and is submitting a vote that matches their existing vote
+                    if (existingVote == vote && !revokeOnRevote)
+                    {
+                        return VoteResponse.Ignored(existingVote, "User has already voted this way.");
+                    }
+
+                    VoteResponse response = new VoteResponse(Status.NotProcessed, 0, "Vote not processed.");
+                    switch (existingVote)
+                    {
+                        case 0: //Never voted or No vote
+
+                            switch (vote)
+                            {
+                                case 0:
+                                    response = VoteResponse.Ignored(0, "A revoke on an unvoted item has opened a worm hole! Run!");
+                                    break;
+                                case 1:
+                                case -1:
+
+                                    if (vote == 1)
+                                    {
+                                        comment.UpCount++;
+                                    }
+                                    else
+                                    {
+                                        comment.DownCount++;
+                                    }
+
+                                    var newVotingTracker = new CommentVoteTracker
+                                    {
+                                        CommentID = commentID,
+                                        UserName = userName,
+                                        VoteStatus = vote,
+                                        IPAddress = addressHash,
+                                        CreationDate = Repository.CurrentDate
+                                    };
+
+                                    _db.CommentVoteTrackers.Add(newVotingTracker);
+                                    _db.SaveChanges();
+
+                                    //SendVoteNotification(comment.Name, "upvote");
+                                    response = VoteResponse.Success(vote);
+                                    response.Difference = vote;
+                                    response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
+                                    break;
+                            }
+                            break;
+                        case 1: //Previous Upvote
+
+                            switch (vote)
+                            {
+                                case 0: //revoke
+                                case 1: //revote which means revoke if we are here
+
+                                    if (existingVoteTracker != null)
+                                    {
+
+                                        comment.UpCount--;
+
+                                        _db.CommentVoteTrackers.Remove(existingVoteTracker);
+
+                                        _db.SaveChanges();
+
+                                        response = VoteResponse.Success(0, REVOKE_MSG);
+                                        response.Difference = -1;
+                                        response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
+
+                                    }
+                                    break;
+                                case -1:
+                                    //change upvote to downvote
+
+
+                                    if (existingVoteTracker != null)
+                                    {
+
+                                        comment.UpCount--;
+                                        comment.DownCount++;
+
+                                        existingVoteTracker.VoteStatus = vote;
+                                        existingVoteTracker.CreationDate = CurrentDate;
+                                        _db.SaveChanges();
+
+                                        response = VoteResponse.Success(vote);
+                                        response.Difference = -2;
+                                        response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
+                                    }
+                                    break;
+                            }
+                            break;
+                        case -1: //Previous downvote
+
+                            switch (vote)
+                            {
+                                case 0: //revoke
+                                case -1: //revote which means revoke
+
+                                    if (existingVoteTracker != null)
+                                    {
+                                        comment.DownCount--;
+                                        _db.CommentVoteTrackers.Remove(existingVoteTracker);
+                                        _db.SaveChanges();
+                                        response = VoteResponse.Success(0, REVOKE_MSG);
+                                        response.Difference = 1;
+                                        response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
+                                    }
+                                    break;
+                                case 1:
+
+                                    //change downvote to upvote
+                                    if (existingVoteTracker != null)
+                                    {
+                                        comment.UpCount++;
+                                        comment.DownCount--;
+
+                                        existingVoteTracker.VoteStatus = vote;
+                                        existingVoteTracker.CreationDate = CurrentDate;
+
+                                        _db.SaveChanges();
+                                        response = VoteResponse.Success(vote);
+                                        response.Difference = 2;
+                                        response.Response = new Score() { DownCount = (int)comment.DownCount, UpCount = (int)comment.UpCount };
+                                    }
+
+                                    break;
+                            }
+                            break;
+                    }
+                    //Set owner user name for notifications
+                    response.OwnerUserName = comment.UserName;
+                    return response;
+                }
             }
             return VoteResponse.Denied();
         }
 
+        [Authorize]
+        public VoteResponse VoteSubmission(int submissionID, int vote, string addressHash, bool revokeOnRevote = true)
+        {
+            DemandAuthentication();
+
+            //make sure we don't have bad int values for vote
+            if (Math.Abs(vote) > 1)
+            {
+                throw new ArgumentOutOfRangeException("vote", "Valid values for vote are only: -1, 0, 1");
+            }
+
+            string userName = User.Identity.Name;
+            var ruleContext = new VoatRuleContext();
+            ruleContext.PropertyBag.AddressHash = addressHash;
+            RuleOutcome outcome = null;
+
+            string REVOKE_MSG = "Vote has been revoked";
+            Data.Models.Submission submission = null;
+            var synclock_submission = _lockStore.GetLockObject(String.Format("submission:{0}", submissionID));
+            lock (synclock_submission)
+            {
+                submission = _db.Submissions.FirstOrDefault(x => x.ID == submissionID);
+
+                if (submission != null)
+                {
+                    ruleContext.SubmissionID = submissionID;
+
+                    switch (vote)
+                    {
+                        case 1:
+                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.UpVote, RuleScope.VoteSubmission, RuleScope.UpVoteSubmission);
+                            if (outcome.IsDenied)
+                            {
+                                return VoteResponse.Create(outcome);
+                            }
+                            break;
+                        case -1:
+                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.DownVote, RuleScope.VoteSubmission, RuleScope.DownVoteSubmission);
+                            if (outcome.IsDenied)
+                            {
+                                return VoteResponse.Create(outcome);
+                            }
+                            break;
+                    }
+
+                    // do not execute voting, subverse is in anonymized mode
+                    if (submission.IsAnonymized)
+                    {
+                        return VoteResponse.Ignored(0, "Subverse is anonymized, voting disabled");
+                    }
+
+                    //ignore votes if comment is users
+                    if (String.Equals(submission.UserName, userName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return VoteResponse.Ignored(0, "User is prevented from voting on own content");
+                    }
+
+                    var existingVote = 0;
+
+                    var existingVoteTracker = _db.SubmissionVoteTrackers.FirstOrDefault(x => x.SubmissionID == submissionID && x.UserName == userName);
+
+                    if (existingVoteTracker != null && existingVoteTracker.VoteStatus.HasValue)
+                    {
+                        existingVote = existingVoteTracker.VoteStatus.Value;
+                    }
+
+                    // do not execute voting, user has already up/down voted item and is submitting a vote that matches their existing vote
+                    if (existingVote == vote && !revokeOnRevote)
+                    {
+                        return VoteResponse.Ignored(existingVote, "User has already voted this way");
+                    }
+                    VoteResponse response = new VoteResponse(Status.NotProcessed, 0, "Vote not processed.");
+
+
+                    switch (existingVote)
+                    {
+
+                        case 0: //Never voted or No vote
+
+                            switch (vote)
+                            {
+                                case 0: //revoke
+
+                                    response = VoteResponse.Ignored(0, "A revoke on an unvoted item has opened a worm hole! Run!");
+
+                                    break;
+                                case 1:
+                                case -1:
+
+                                    if (vote == 1)
+                                    {
+                                        submission.UpCount++;
+                                    }
+                                    else
+                                    {
+                                        submission.DownCount++;
+                                    }
+
+                                    var t = new SubmissionVoteTracker
+                                    {
+                                        SubmissionID = submissionID,
+                                        UserName = userName,
+                                        VoteStatus = vote,
+                                        IPAddress = addressHash,
+                                        CreationDate = Repository.CurrentDate
+                                    };
+
+                                    _db.SubmissionVoteTrackers.Add(t);
+                                    _db.SaveChanges();
+
+                                    response = VoteResponse.Success(vote);
+                                    response.Difference = vote;
+                                    response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
+                                    break;
+                            }
+                            break;
+                        case 1: //Previous Upvote
+
+                            switch (vote)
+                            {
+                                case 0: //revoke
+                                case 1: //revote which means revoke if we are here
+
+                                    if (existingVoteTracker != null)
+                                    {
+                                        submission.UpCount--;
+                                        _db.SubmissionVoteTrackers.Remove(existingVoteTracker);
+                                        _db.SaveChanges();
+
+                                        response = response = VoteResponse.Success(0, REVOKE_MSG);
+                                        response.Difference = -1;
+                                        response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
+                                    }
+                                    break;
+                                case -1:
+                                    //change upvote to downvote
+
+                                    if (existingVoteTracker != null)
+                                    {
+
+                                        submission.UpCount--;
+                                        submission.DownCount++;
+
+                                        existingVoteTracker.VoteStatus = vote;
+                                        existingVoteTracker.CreationDate = CurrentDate;
+
+                                        _db.SaveChanges();
+
+                                        response = VoteResponse.Success(vote);
+                                        response.Difference = -2;
+                                        response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
+                                    }
+                                    break;
+                            }
+                            break;
+                        case -1: //Previous downvote
+                            switch (vote)
+                            {
+                                case 0: //revoke
+                                case -1: //revote which means revoke if we are here
+                                         // delete existing downvote
+
+                                    if (existingVoteTracker != null)
+                                    {
+                                        submission.DownCount--;
+                                        _db.SubmissionVoteTrackers.Remove(existingVoteTracker);
+                                        _db.SaveChanges();
+
+                                        response = VoteResponse.Success(0, REVOKE_MSG);
+                                        response.Difference = 1;
+                                        response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
+                                    }
+                                    break;
+                                case 1:
+                                    //change downvote to upvote
+                                    if (existingVoteTracker != null)
+                                    {
+                                        submission.UpCount++;
+                                        submission.DownCount--;
+
+                                        existingVoteTracker.VoteStatus = vote;
+                                        existingVoteTracker.CreationDate = CurrentDate;
+
+                                        _db.SaveChanges();
+                                        response = VoteResponse.Success(vote);
+                                        response.Difference = 2;
+                                        response.Response = new Score() { DownCount = (int)submission.DownCount, UpCount = (int)submission.UpCount };
+                                    }
+                                    break;
+                            }
+                            break;
+                    }
+                    //Set owner user name for notifications
+                    response.OwnerUserName = submission.UserName;
+                    return response;
+                }
+                return VoteResponse.Denied();
+            }
+        }
         #endregion
 
         #region Subverse

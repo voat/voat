@@ -79,7 +79,7 @@ namespace Voat.RulesEngine
 
         public override string ToString()
         {
-            return String.Format("{2}. {0} ({1}): {3}", RuleName, RuleNumber, Result.ToString(), Message);
+            return String.Format("{0} - {1} ({2} {3})", Result.ToString(), Message, RuleName, RuleNumber);
         }
 
         public static RuleOutcome Allowed

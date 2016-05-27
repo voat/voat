@@ -14,7 +14,7 @@ namespace Voat.Rules.Posting
     public class PostSubmissionRule : BaseSubverseBanRule
     {
         public PostSubmissionRule()
-            : base("Submission Post Rule", "8.0", RuleScope.PostSubmission)
+            : base("Submission Throttle", "4.1", RuleScope.PostSubmission)
         {
         }
 
