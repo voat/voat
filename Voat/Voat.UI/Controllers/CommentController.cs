@@ -42,7 +42,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> VoteComment(int commentId, int typeOfVote)
         {
-            var cmd = new CommentVoteCommand(commentId, typeOfVote);
+            var cmd = new CommentVoteCommand(commentId, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
             var result = await cmd.Execute();
             return Json(result);
         }

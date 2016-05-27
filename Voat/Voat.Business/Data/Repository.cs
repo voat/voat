@@ -104,8 +104,11 @@ namespace Voat.Data
                     var existingVote = 0;
 
                     var existingVoteTracker = _db.CommentVoteTrackers.FirstOrDefault(x => x.CommentID == commentID && x.UserName == userName);
-
-                    if (existingVoteTracker != null && existingVoteTracker.VoteStatus.HasValue)
+                    if (existingVoteTracker == null)
+                    {
+                        //invoke comment address check
+                    }
+                    else if (existingVoteTracker != null && existingVoteTracker.VoteStatus.HasValue)
                     {
                         existingVote = existingVoteTracker.VoteStatus.Value;
                     }
