@@ -47,6 +47,7 @@ namespace Voat.Utilities
         //                .AsNoTracking()
         //                .FirstOrDefault();
         //}
+
         // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetMessageVote(string userWhichVoted, int submissionID)
         {

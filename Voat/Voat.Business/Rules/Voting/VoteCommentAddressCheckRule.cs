@@ -22,7 +22,9 @@ namespace Voat.Rules.Voting
         {
             using (var repo = new Repository())
             {
-                if (repo.HasAddressVoted(context.PropertyBag.AddressHash, ContentType.Comment, context.CommentID.Value))
+                int? existingVote = context.PropertyBag.CurrentVoteValue;
+
+                if ((existingVote == null || existingVote.Value == 0) && repo.HasAddressVoted(context.PropertyBag.AddressHash, ContentType.Comment, context.CommentID.Value))
                 {
                     return CreateOutcome(RuleResult.Denied, "Vote has already been registered");
                 }

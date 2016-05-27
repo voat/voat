@@ -18,6 +18,7 @@ using Voat.Utilities;
 using Voat.Utilities.Components;
 using Voat.Domain.Command;
 using System.Text.RegularExpressions;
+using Voat.Rules.Voting;
 
 namespace Voat.Data
 {
@@ -61,8 +62,7 @@ namespace Voat.Data
             RuleOutcome outcome = null;
 
             string REVOKE_MSG = "Vote has been revoked";
-            Data.Models.Submission submission = null;
-
+            
             var synclock_comment = _lockStore.GetLockObject(String.Format("comment:{0}", commentID));
             lock (synclock_comment)
             {
@@ -70,45 +70,16 @@ namespace Voat.Data
 
                 if (comment != null)
                 {
-                    //set properties for rules engine
-                    ruleContext.CommentID = commentID;
-                    ruleContext.SubmissionID = comment.SubmissionID;
-                    
-                    //execute rules engine 
-                    switch (vote)
-                    {
-                        case 1:
-                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.VoteComment, RuleScope.UpVote, RuleScope.UpVoteComment);
-                            if (outcome.IsDenied)
-                            {
-                                return VoteResponse.Create(outcome);
-                            }
-                            break;
-                        case -1:
-                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.VoteComment, RuleScope.DownVote, RuleScope.DownVoteComment);
-                            if (outcome.IsDenied)
-                            {
-                                return VoteResponse.Create(outcome);
-                            }
-                            break;
-                    }
-
-                    submission = _db.Submissions.First(x => x.ID == comment.SubmissionID);
-
                     //ignore votes if comment is users
                     if (String.Equals(comment.UserName, userName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         return VoteResponse.Ignored(0, "User is prevented from voting on own content");
                     }
 
-                    var existingVote = 0;
-
+                    //check existing vote
+                    int existingVote = 0;
                     var existingVoteTracker = _db.CommentVoteTrackers.FirstOrDefault(x => x.CommentID == commentID && x.UserName == userName);
-                    if (existingVoteTracker == null)
-                    {
-                        //invoke comment address check
-                    }
-                    else if (existingVoteTracker != null && existingVoteTracker.VoteStatus.HasValue)
+                    if (existingVoteTracker != null && existingVoteTracker.VoteStatus.HasValue)
                     {
                         existingVote = existingVoteTracker.VoteStatus.Value;
                     }
@@ -119,6 +90,28 @@ namespace Voat.Data
                         return VoteResponse.Ignored(existingVote, "User has already voted this way.");
                     }
 
+                    //set properties for rules engine
+                    ruleContext.CommentID = commentID;
+                    ruleContext.SubmissionID = comment.SubmissionID;
+                    ruleContext.PropertyBag.CurrentVoteValue = existingVote; //set existing vote value so rules engine can avoid checks on revotes
+                                        
+                    //execute rules engine 
+                    switch (vote)
+                    {
+                        case 1:
+                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.VoteComment, RuleScope.UpVote, RuleScope.UpVoteComment);
+                            break;
+                        case -1:
+                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.VoteComment, RuleScope.DownVote, RuleScope.DownVoteComment);
+                            break;
+                    }
+
+                    //return if rules engine denies
+                    if (outcome.IsDenied)
+                    {
+                        return VoteResponse.Create(outcome);
+                    }
+                    
                     VoteResponse response = new VoteResponse(Status.NotProcessed, 0, "Vote not processed.");
                     switch (existingVote)
                     {
