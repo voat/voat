@@ -1851,7 +1851,7 @@ namespace Voat.Controllers
             }
             #endregion
 
-            #region guest users SFW submissions
+            #region guest users: SFW submissions
             // guest users: check if user wants to see NSFW content by reading NSFW cookie
             if (!HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
             {
@@ -1888,18 +1888,64 @@ namespace Voat.Controllers
                 }
                 if (sortingmode.Equals("top"))
                 {
-                    paginatedSubmissions = new PaginatedList<Submission>(SfwSubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
+                    string cacheKeyTopSfw = $"legacy:subverse.all.guest.page.{pageNumber}.sort.top.{daterange}.sfw"; // daterange may be null, no biggie
+                    Tuple<IList<Submission>, int> cacheDataTopSfw = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyTopSfw);
+                    if (cacheDataTopSfw == null)
+                    {
+                        var getDataFunc = new Func<object>(() =>
+                        {
+                            using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
+                            {
+                                //Turn off all automatic behavior as we are caching
+                                db.Configuration.ProxyCreationEnabled = false;
+                                db.Configuration.LazyLoadingEnabled = false;
+
+                                var dataToCache = SfwSubmissionsFromAllSubversesByTop(startDate, db);
+                                int count = 50000;
+                                List<Submission> content = dataToCache.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                                return new Tuple<IList<Submission>, int>(content, count);
+                            }
+                        });
+
+                        cacheDataTopSfw = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyTopSfw, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                    }
+
+                    // paginatedSubmissions = new PaginatedList<Submission>(SfwSubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
+                    paginatedSubmissions = new PaginatedList<Submission>(cacheDataTopSfw.Item1, pageNumber, pageSize, cacheDataTopSfw.Item2);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
 
-                //QUE: I don't think this code is reachable
                 // default sorting mode by rank
-                paginatedSubmissions = new PaginatedList<Submission>(SfwSubmissionsFromAllSubversesByRank(_db), page ?? 0, pageSize);
+                // TODO: cache this
+                string cacheKeyRankNsfw = $"legacy:subverse.all.guest.page.{pageNumber}.sort.rank.sfw";
+                Tuple<IList<Submission>, int> cacheDataRankNsfw = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyRankNsfw);
+                if (cacheDataRankNsfw == null)
+                {
+                    var getDataFunc = new Func<object>(() =>
+                    {
+                        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
+                        {
+                            //Turn off all automatic behavior as we are caching
+                            db.Configuration.ProxyCreationEnabled = false;
+                            db.Configuration.LazyLoadingEnabled = false;
+
+                            var dataToCache = SfwSubmissionsFromAllSubversesByRank(db);
+                            int count = 50000;
+                            List<Submission> content = dataToCache.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                            return new Tuple<IList<Submission>, int>(content, count);
+                        }
+                    });
+
+                    cacheDataRankNsfw = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyRankNsfw, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                }
+
+                // paginatedSubmissions = new PaginatedList<Submission>(SfwSubmissionsFromAllSubversesByRank(_db), page ?? 0, pageSize);
+                paginatedSubmissions = new PaginatedList<Submission>(cacheDataRankNsfw.Item1, pageNumber, pageSize, cacheDataRankNsfw.Item2);
                 return View("SubverseIndex", paginatedSubmissions);
             }
             #endregion
 
-            #region guest users submissions including NSFW
+            #region guest users: submissions including NSFW
             if (sortingmode.Equals("new"))
             {
                 //IAmAGate: Perf mods for caching
@@ -1925,20 +1971,65 @@ namespace Voat.Controllers
 
                     cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
                 }
-                paginatedSubmissions = new PaginatedList<Submission>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
-
                 //paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
+                paginatedSubmissions = new PaginatedList<Submission>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
                 return View("SubverseIndex", paginatedSubmissions);
             }
 
             if (sortingmode.Equals("top"))
             {
-                paginatedSubmissions = new PaginatedList<Submission>(SubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
+                string cacheKeyTop = $"legacy:subverse.all.guest.page.{pageNumber}.sort.top.{daterange}.nsfw";
+                Tuple<IList<Submission>, int> cacheDataTop = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyTop);
+                if (cacheDataTop == null)
+                {
+                    var getDataFunc = new Func<object>(() =>
+                    {
+                        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
+                        {
+                            //Turn off all automatic behavior as we are caching
+                            db.Configuration.ProxyCreationEnabled = false;
+                            db.Configuration.LazyLoadingEnabled = false;
+
+                            var dataToCache = SubmissionsFromAllSubversesByTop(startDate, db);
+                            int count = 50000;
+                            List<Submission> content = dataToCache.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                            return new Tuple<IList<Submission>, int>(content, count);
+                        }
+                    });
+
+                    cacheDataTop = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyTop, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                }
+
+                // paginatedSubmissions = new PaginatedList<Submission>(SubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
+                paginatedSubmissions = new PaginatedList<Submission>(cacheDataTop.Item1, pageNumber, pageSize, cacheDataTop.Item2);
                 return View("SubverseIndex", paginatedSubmissions);
             }
 
             // default sorting mode by rank
-            paginatedSubmissions = new PaginatedList<Submission>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+            string cacheKeyRank = $"legacy:subverse.all.guest.page.{pageNumber}.sort.rank.nsfw";
+            Tuple<IList<Submission>, int> cacheDataRank = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyRank);
+            if (cacheDataRank == null)
+            {
+                var getDataFunc = new Func<object>(() =>
+                {
+                    using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
+                    {
+                        //Turn off all automatic behavior as we are caching
+                        db.Configuration.ProxyCreationEnabled = false;
+                        db.Configuration.LazyLoadingEnabled = false;
+
+                        var dataToCache = SubmissionsFromAllSubversesByRank(db);
+                        int count = 50000;
+                        List<Submission> content = dataToCache.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                        return new Tuple<IList<Submission>, int>(content, count);
+                    }
+                });
+
+                cacheDataRank = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyRank, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+            }
+
+            // paginatedSubmissions = new PaginatedList<Submission>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+            paginatedSubmissions = new PaginatedList<Submission>(cacheDataRank.Item1, pageNumber, pageSize, cacheDataRank.Item2);
             return View("SubverseIndex", paginatedSubmissions);
             #endregion
         }
@@ -2010,8 +2101,12 @@ namespace Voat.Controllers
             return sfwSubmissionsFromAllSubversesByRank;
         }
 
-        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByTop(DateTime startDate)
+        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByTop(DateTime startDate, voatEntities _db = null)
         {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
             IQueryable<Submission> sfwSubmissionsFromAllSubversesByTop = (from message in _db.Submissions
                                                                           join subverse in _db.Subverses on message.Subverse equals subverse.Name
                                                                        where !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdult == false && subverse.MinCCPForDownvote == 0
@@ -2066,8 +2161,12 @@ namespace Voat.Controllers
             return submissionsFromAllSubversesByDate;
         }
 
-        private IQueryable<Submission> SubmissionsFromAllSubversesByRank()
+        private IQueryable<Submission> SubmissionsFromAllSubversesByRank(voatEntities _db = null)
         {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
             IQueryable<Submission> submissionsFromAllSubversesByRank = (from message in _db.Submissions
                                                                         join subverse in _db.Subverses on message.Subverse equals subverse.Name
                                                                      where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0 && message.Rank > 0.00009
@@ -2079,8 +2178,13 @@ namespace Voat.Controllers
             return submissionsFromAllSubversesByRank;
         }
 
-        private IQueryable<Submission> SubmissionsFromAllSubversesByTop(DateTime startDate)
+        private IQueryable<Submission> SubmissionsFromAllSubversesByTop(DateTime startDate, voatEntities _db = null)
         {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+
             IQueryable<Submission> submissionsFromAllSubversesByTop = (from message in _db.Submissions
                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.Name
                                                                     where !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote  == 0
