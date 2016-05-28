@@ -370,7 +370,7 @@ namespace Voat
             // vote
             routes.MapRoute(
                 name: "vote",
-                url: "vote/{messageId}/{typeOfVote}",
+                url: "vote/{submissionID}/{typeOfVote}",
                 defaults: new { controller = "Submissions", action = "Vote" }
             );
 

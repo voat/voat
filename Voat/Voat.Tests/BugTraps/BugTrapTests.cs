@@ -95,7 +95,7 @@ namespace Voat.Tests.BugTraps
             {
                 var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
                 System.Threading.Thread.CurrentPrincipal = principle;
-                var cmd = new SubmissionVoteCommand(submissionID, 1);
+                var cmd = new SubmissionVoteCommand(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 Interlocked.Increment(ref exCount);
                 return await cmd.Execute();//.Result;
             });
@@ -104,7 +104,7 @@ namespace Voat.Tests.BugTraps
             {
                 var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
                 System.Threading.Thread.CurrentPrincipal = principle;
-                var cmd = new SubmissionVoteCommand(submissionID, 1);
+                var cmd = new SubmissionVoteCommand(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 Interlocked.Increment(ref exCount);
                 return await cmd.Execute();//.Result;
             });
@@ -258,7 +258,7 @@ namespace Voat.Tests.BugTraps
             {
                 var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
                 System.Threading.Thread.CurrentPrincipal = principle;
-                var cmd = new SubmissionVoteCommand(submissionID, 1);
+                var cmd = new SubmissionVoteCommand(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 Interlocked.Increment(ref exCount);
                 return await cmd.Execute();//.Result;
             });
@@ -266,7 +266,7 @@ namespace Voat.Tests.BugTraps
             {
                 var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
                 System.Threading.Thread.CurrentPrincipal = principle;
-                var cmd = new SubmissionVoteCommand(submissionID, 1);
+                var cmd = new SubmissionVoteCommand(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 Interlocked.Increment(ref exCount);
                 return await cmd.Execute();//.Result;
             });

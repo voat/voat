@@ -24,7 +24,7 @@ namespace Voat.Rules.Voting
             {
                 int? existingVote = context.PropertyBag.CurrentVoteValue;
 
-                if ((existingVote == null || existingVote.Value == 0) && repo.HasAddressVoted(context.PropertyBag.AddressHash, ContentType.Submission, context.CommentID.Value))
+                if ((existingVote == null || existingVote.Value == 0) && repo.HasAddressVoted(context.PropertyBag.AddressHash, ContentType.Submission, context.SubmissionID.Value))
                 {
                     return CreateOutcome(RuleResult.Denied, "Vote has already been registered for device");
                 }

@@ -267,42 +267,15 @@ namespace Voat.Data
 
                 if (submission != null)
                 {
-                    ruleContext.SubmissionID = submissionID;
-
-                    switch (vote)
-                    {
-                        case 1:
-                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.UpVote, RuleScope.VoteSubmission, RuleScope.UpVoteSubmission);
-                            if (outcome.IsDenied)
-                            {
-                                return VoteResponse.Create(outcome);
-                            }
-                            break;
-                        case -1:
-                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.DownVote, RuleScope.VoteSubmission, RuleScope.DownVoteSubmission);
-                            if (outcome.IsDenied)
-                            {
-                                return VoteResponse.Create(outcome);
-                            }
-                            break;
-                    }
-
-                    // do not execute voting, subverse is in anonymized mode
-                    if (submission.IsAnonymized)
-                    {
-                        return VoteResponse.Ignored(0, "Subverse is anonymized, voting disabled");
-                    }
-
                     //ignore votes if comment is users
-                    if (String.Equals(submission.UserName, userName, StringComparison.OrdinalIgnoreCase))
+                    if (String.Equals(submission.UserName, userName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         return VoteResponse.Ignored(0, "User is prevented from voting on own content");
                     }
 
-                    var existingVote = 0;
-
+                    //check existing vote
+                    int existingVote = 0;
                     var existingVoteTracker = _db.SubmissionVoteTrackers.FirstOrDefault(x => x.SubmissionID == submissionID && x.UserName == userName);
-
                     if (existingVoteTracker != null && existingVoteTracker.VoteStatus.HasValue)
                     {
                         existingVote = existingVoteTracker.VoteStatus.Value;
@@ -311,11 +284,31 @@ namespace Voat.Data
                     // do not execute voting, user has already up/down voted item and is submitting a vote that matches their existing vote
                     if (existingVote == vote && !revokeOnRevote)
                     {
-                        return VoteResponse.Ignored(existingVote, "User has already voted this way");
+                        return VoteResponse.Ignored(existingVote, "User has already voted this way.");
                     }
+
+                    //set properties for rules engine
+                    ruleContext.SubmissionID = submission.ID;
+                    ruleContext.PropertyBag.CurrentVoteValue = existingVote; //set existing vote value so rules engine can avoid checks on revotes
+
+                    //execute rules engine 
+                    switch (vote)
+                    {
+                        case 1:
+                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.VoteSubmission, RuleScope.UpVote, RuleScope.UpVoteSubmission);
+                            break;
+                        case -1:
+                            outcome = VoatRulesEngine.Instance.EvaluateRuleSet(ruleContext, RuleScope.Vote, RuleScope.VoteSubmission, RuleScope.DownVote, RuleScope.DownVoteSubmission);
+                            break;
+                    }
+
+                    //return if rules engine denies
+                    if (outcome.IsDenied)
+                    {
+                        return VoteResponse.Create(outcome);
+                    }
+
                     VoteResponse response = new VoteResponse(Status.NotProcessed, 0, "Vote not processed.");
-
-
                     switch (existingVote)
                     {
 
@@ -324,9 +317,7 @@ namespace Voat.Data
                             switch (vote)
                             {
                                 case 0: //revoke
-
                                     response = VoteResponse.Ignored(0, "A revoke on an unvoted item has opened a worm hole! Run!");
-
                                     break;
                                 case 1:
                                 case -1:
@@ -339,6 +330,9 @@ namespace Voat.Data
                                     {
                                         submission.DownCount++;
                                     }
+                                    
+                                    //calculate new ranks
+                                    Ranking.RerankSubmission(submission);
 
                                     var t = new SubmissionVoteTracker
                                     {
@@ -368,6 +362,10 @@ namespace Voat.Data
                                     if (existingVoteTracker != null)
                                     {
                                         submission.UpCount--;
+                                        
+                                        //calculate new ranks
+                                        Ranking.RerankSubmission(submission);
+
                                         _db.SubmissionVoteTrackers.Remove(existingVoteTracker);
                                         _db.SaveChanges();
 
@@ -384,6 +382,9 @@ namespace Voat.Data
 
                                         submission.UpCount--;
                                         submission.DownCount++;
+                                        
+                                        //calculate new ranks
+                                        Ranking.RerankSubmission(submission);
 
                                         existingVoteTracker.VoteStatus = vote;
                                         existingVoteTracker.CreationDate = CurrentDate;
@@ -407,6 +408,10 @@ namespace Voat.Data
                                     if (existingVoteTracker != null)
                                     {
                                         submission.DownCount--;
+
+                                        //calculate new ranks
+                                        Ranking.RerankSubmission(submission);
+
                                         _db.SubmissionVoteTrackers.Remove(existingVoteTracker);
                                         _db.SaveChanges();
 
@@ -421,6 +426,9 @@ namespace Voat.Data
                                     {
                                         submission.UpCount++;
                                         submission.DownCount--;
+
+                                        //calculate new ranks
+                                        Ranking.RerankSubmission(submission);
 
                                         existingVoteTracker.VoteStatus = vote;
                                         existingVoteTracker.CreationDate = CurrentDate;

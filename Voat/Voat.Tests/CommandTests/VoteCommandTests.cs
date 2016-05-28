@@ -45,7 +45,7 @@ namespace Voat.Tests.CommandTests
             EventNotification.Instance.OnVoteReceived += (s, e) => {
               voteEventReceived = e.UserName == "unit" && e.SendingUserName == "User500CCP" && e.ChangeValue == -1 && e.ReferenceType == Domain.Models.ContentType.Comment && e.ReferenceID == 1;
             };
-            var cmd = new CommentVoteCommand(1, -1);
+            var cmd = new CommentVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
             Assert.IsTrue(c.Successfull);
@@ -71,7 +71,7 @@ namespace Voat.Tests.CommandTests
         {
             TestHelper.SetPrincipal("User0CCP");
 
-            var cmd = new CommentVoteCommand(5, -1); //SubmissionID: 3 is in MinCCP sub
+            var cmd = new CommentVoteCommand(5, -1, IpHash.CreateHash("127.0.0.1")); //SubmissionID: 3 is in MinCCP sub
 
             var c = cmd.Execute().Result;
             Assert.IsFalse(c.Successfull);
@@ -86,7 +86,7 @@ namespace Voat.Tests.CommandTests
         public void InvalidVoteValue_Comment_Low()
         {
             TestHelper.SetPrincipal("unit");
-            var cmd = new CommentVoteCommand(1, -2);
+            var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));
             var c = cmd.Execute().Result;
         }
 
@@ -97,7 +97,7 @@ namespace Voat.Tests.CommandTests
         public void UpvoteComment()
         {
             TestHelper.SetPrincipal("User50CCP");
-            var cmd = new CommentVoteCommand(1, 1);
+            var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
             Assert.IsTrue(c.Successfull);
@@ -134,7 +134,7 @@ namespace Voat.Tests.CommandTests
                     && e.ReferenceType == Domain.Models.ContentType.Submission 
                     && e.ReferenceID == 1;
             };
-            var cmd = new SubmissionVoteCommand(1, -1);
+            var cmd = new SubmissionVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
             Assert.IsTrue(c.Successfull);
@@ -168,7 +168,7 @@ namespace Voat.Tests.CommandTests
                     && e.ReferenceType == Domain.Models.ContentType.Submission
                     && e.ReferenceID == 1;
             };
-            var cmd = new SubmissionVoteCommand(1, 1);
+            var cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
             Assert.IsTrue(c.Successfull);
@@ -193,7 +193,7 @@ namespace Voat.Tests.CommandTests
         {
             TestHelper.SetPrincipal("User0CCP");
 
-            var cmd = new SubmissionVoteCommand(3, -1); //SubmissionID: 3 is in MinCCP sub
+            var cmd = new SubmissionVoteCommand(3, -1, IpHash.CreateHash("127.0.0.1")); //SubmissionID: 3 is in MinCCP sub
 
             var c = cmd.Execute().Result;
             Assert.IsFalse(c.Successfull);
@@ -209,7 +209,7 @@ namespace Voat.Tests.CommandTests
         {
             TestHelper.SetPrincipal("unit");
 
-            var cmd = new SubmissionVoteCommand(1, 2);
+            var cmd = new SubmissionVoteCommand(1, 2, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
         }
@@ -223,7 +223,7 @@ namespace Voat.Tests.CommandTests
         {
             TestHelper.SetPrincipal("unit");
 
-            var cmd = new CommentVoteCommand(1, -2);
+            var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
         }

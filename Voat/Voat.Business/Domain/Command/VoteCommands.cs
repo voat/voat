@@ -8,10 +8,8 @@ namespace Voat.Domain.Command
 {
     public class CommentVoteCommand : VoteCommand
     {
-        public CommentVoteCommand(int commentID, int voteValue, bool revokeOnRevote = true) : this(commentID, voteValue, IpHash.CreateHash("127.0.0.1"), revokeOnRevote)
-        {
-        }
-        public CommentVoteCommand(int commentID, int voteValue, string addressHash, bool revokeOnRevote = true) : base(voteValue, addressHash)
+        public CommentVoteCommand(int commentID, int voteValue, string addressHash, bool revokeOnRevote = true) 
+            : base(voteValue, addressHash)
         {
             CommentID = commentID;
             RevokeOnRevote = revokeOnRevote;
@@ -44,10 +42,8 @@ namespace Voat.Domain.Command
 
     public class SubmissionVoteCommand : VoteCommand
     {
-        public SubmissionVoteCommand(int submissionID, int voteValue, bool revokeOnRevote = true) : this(submissionID, voteValue, IpHash.CreateHash("127.0.0.1"), revokeOnRevote)
-        {
-        }
-        public SubmissionVoteCommand(int submissionID, int voteValue, string addressHash, bool revokeOnRevote = true) : base(voteValue, addressHash)
+        public SubmissionVoteCommand(int submissionID, int voteValue, string addressHash, bool revokeOnRevote = true) 
+            : base(voteValue, addressHash)
         {
             SubmissionID = submissionID;
             RevokeOnRevote = revokeOnRevote;

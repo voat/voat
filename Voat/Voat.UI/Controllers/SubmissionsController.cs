@@ -21,6 +21,7 @@ using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Command;
 using Voat.Models;
 using Voat.Utilities;
 
@@ -128,44 +129,11 @@ namespace Voat.Controllers
         // vote on a submission
         // POST: vote/{messageId}/{typeOfVote}
         [Authorize]
-        public JsonResult Vote(int messageId, int typeOfVote)
+        public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
         {
-            int dailyVotingQuota = Settings.DailyVotingQuota;
-            var loggedInUser = User.Identity.Name;
-            var userCcp = Karma.CommentKarma(loggedInUser);
-            var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
-            var totalVotesUsedInPast24Hours = UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name);
-
-            switch (typeOfVote)
-            {
-                case 1:
-                    if (userCcp >= 20)
-                    {
-                        if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
-                        {
-                            // perform upvoting or resetting
-                            Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                        }
-                    }
-                    else if (totalVotesUsedInPast24Hours < 11)
-                    {
-                        // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
-                        Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                    }
-                    break;
-                case -1:
-                    if (userCcp >= 100)
-                    {
-                        if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
-                        {
-                            // perform downvoting or resetting
-                            Voting.DownvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                        }
-                    }
-                    break;
-            }
-            return Json("Voting ok", JsonRequestBehavior.AllowGet);
-            
+            var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+            var result = await cmd.Execute();
+            return Json(result);
         }
 
         // save a submission
