@@ -1793,14 +1793,17 @@ namespace Voat.Controllers
             const int pageSize = 25;
             DateTime startDate = DateTimeUtility.DateRangeToDateTime(daterange);
             PaginatedList<Submission> paginatedSubmissions;
+            int pageNumber = page ?? 0;
 
             ViewBag.SelectedSubverse = "all";
 
+            #region authenticated users
             if (User.Identity.IsAuthenticated)
             {
                 var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
                 IQueryable<Submission> submissionsExcludingBlockedSubverses;
 
+                #region authenticated users NSFW content
                 // check if user wants to see NSFW content by reading user preference and exclude submissions from blocked subverses
                 if (Voat.Utilities.UserHelper.AdultContentEnabled(User.Identity.Name))
                 {
@@ -1823,7 +1826,9 @@ namespace Voat.Controllers
                     paginatedSubmissions = new PaginatedList<Submission>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
                     return View("SubverseIndex", paginatedSubmissions);
                 }
+                #endregion
 
+                #region authenticated users SFW content
                 // user does not want to see NSFW content
                 if (sortingmode.Equals("new"))
                 {
@@ -1842,15 +1847,17 @@ namespace Voat.Controllers
                 submissionsExcludingBlockedSubverses = SfwSubmissionsFromAllSubversesByRank(_db).Where(x => !blockedSubverses.Contains(x.Subverse));
                 paginatedSubmissions = new PaginatedList<Submission>(submissionsExcludingBlockedSubverses, page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
+                #endregion
             }
+            #endregion
 
+            #region guest users SFW submissions
             // guest users: check if user wants to see NSFW content by reading NSFW cookie
             if (!HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
             {
                 if (sortingmode.Equals("new"))
                 {
                     //IAmAGate: Perf mods for caching
-                    int pageNumber = page.HasValue ? page.Value : 0;
                     int size = pageSize;
                     string cacheKeyAll = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "new").ToLower();
                     Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
@@ -1890,12 +1897,12 @@ namespace Voat.Controllers
                 paginatedSubmissions = new PaginatedList<Submission>(SfwSubmissionsFromAllSubversesByRank(_db), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
+            #endregion
 
+            #region guest users submissions including NSFW
             if (sortingmode.Equals("new"))
             {
-
                 //IAmAGate: Perf mods for caching
-                int pageNumber = page.HasValue ? page.Value : 0;
                 string cacheKeyAll = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}.nsfw", "all", pageNumber, "new").ToLower();
                 Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
@@ -1923,6 +1930,7 @@ namespace Voat.Controllers
                 //paginatedSubmissions = new PaginatedList<Message>(SubmissionsFromAllSubversesByDate(), page ?? 0, pageSize);
                 return View("SubverseIndex", paginatedSubmissions);
             }
+
             if (sortingmode.Equals("top"))
             {
                 paginatedSubmissions = new PaginatedList<Submission>(SubmissionsFromAllSubversesByTop(startDate), page ?? 0, pageSize);
@@ -1932,6 +1940,7 @@ namespace Voat.Controllers
             // default sorting mode by rank
             paginatedSubmissions = new PaginatedList<Submission>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
             return View("SubverseIndex", paginatedSubmissions);
+            #endregion
         }
 
         [ChildActionOnly]
