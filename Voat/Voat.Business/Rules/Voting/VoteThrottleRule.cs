@@ -24,7 +24,10 @@ namespace Voat.Rules.Voting
             var scaledDailyVotingQuota = (userCCP >= 20 ? Math.Max(dailyVotingQuota, userCCP / 2) : 10);
             var totalVotesUsedInPast24Hours = context.UserData.TotalVotesUsedIn24Hours;
 
-            if (totalVotesUsedInPast24Hours >= scaledDailyVotingQuota)
+            //see if they have a current vote on this item and only evaluate if they don't
+            int? existingVote = context.PropertyBag.CurrentVoteValue;
+
+            if ((existingVote == null || existingVote.Value == 0) && totalVotesUsedInPast24Hours >= scaledDailyVotingQuota)
             {
                 return CreateOutcome(RuleResult.Denied, "Vote limit exceeded based on CCP. Available votes per 24 hours: {0}", scaledDailyVotingQuota);
             }
