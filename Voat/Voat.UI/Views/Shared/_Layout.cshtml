@@ -228,6 +228,8 @@
 
     @if (User.Identity.IsAuthenticated)
     {
+        var userCCP = Karma.CommentKarma(User.Identity.Name);
+        var scaledQuota = userCCP >= 20 ? Math.Max(Settings.DailyVotingQuota, (userCCP / 2)) : 10;
         @* Not enough comment contribution points Modal *@
         <div class="modal fade" id="notenoughccp" tabindex="-1" role="dialog" aria-labelledby="notenoughccplabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -240,7 +242,7 @@
                         <p>Welcome to @Settings.SiteName!</p>
                         <p>In order to downvote comments or submissions you need to have at least 100 comment contribution points.</p>
                         <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>
-                        <p>You currently have @Karma.CommentKarma(User.Identity.Name) comment contribution points.</p>
+                        <p>You currently have @userCCP comment contribution points.</p>
                         <p>Tip: a good way to earn more contribution points is to take part in discussions or say hi in /v/introductions.</p>
                         <p>This requirement was established as a measure to encourage new members to get involved and participate in discussions.</p>
                     </div>
@@ -260,11 +262,11 @@
                     </div>
                     <div class="modal-body">
                         <p>Welcome to @Settings.SiteName!</p>
-                        <p>In order to be able to upvote comments or submissions without limitations, you need to have at least 20 comment contribution points.</p>
-                        <p>You are currently limited to @Math.Max(10, (Karma.CommentKarma(User.Identity.Name) / 2)) upvotes per 24 hours.</p>
+                        <p>The number of votes you can place is tied to your comment contribution points.</p>
+                        <p>You are currently limited to @scaledQuota votes per 24 hours.</p>
                         <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>
-                        <p>You currently have @Karma.CommentKarma(User.Identity.Name) comment contribution points.</p>
-                        <p>Tip: a good way to earn more contribution points is to take part in discussions or say hi in /v/introductions.</p>
+                        <p>You currently have @userCCP comment contribution points.</p>
+                        <p>Tip: a good way to earn more contribution points is to take part in discussions or say hi in v/introductions.</p>
                         <p>This requirement was established as a measure to encourage new members to get involved and participate in discussions.</p>
                     </div>
                     <div class="modal-footer">
