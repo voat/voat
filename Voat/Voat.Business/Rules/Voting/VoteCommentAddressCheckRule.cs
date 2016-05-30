@@ -14,7 +14,7 @@ namespace Voat.Rules.Voting
     public class VoteCommentAddressCheckRule : VoatRule
     {
         public VoteCommentAddressCheckRule() 
-            : base("Comment Vote Identity", "2.7", RulesEngine.RuleScope.VoteComment, 10)
+            : base("Comment Vote Identity", "2.8", RulesEngine.RuleScope.VoteComment, 10)
         {
         }
 

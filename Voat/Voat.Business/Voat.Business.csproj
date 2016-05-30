@@ -256,6 +256,7 @@
     <Compile Include="Rules\Voting\DownVoteCommentMeanieRule.cs" />
     <Compile Include="Rules\Voting\DownVoteRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionRule.cs" />
+    <Compile Include="Rules\Voting\DownVoteSubmissionAgeRule.cs" />
     <Compile Include="Rules\Voting\DownVoteSubverseMinCCPRule.cs" />
     <Compile Include="Rules\Voting\UpVoteRule.cs" />
     <Compile Include="Rules\Voting\VoteCommentAddressCheckRule.cs" />

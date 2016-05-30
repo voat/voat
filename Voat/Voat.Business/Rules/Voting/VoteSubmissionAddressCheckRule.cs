@@ -13,7 +13,7 @@ namespace Voat.Rules.Voting
     public class VoteSubmissionAddressCheckRule : VoatRule
     {
         public VoteSubmissionAddressCheckRule() 
-            : base("Submission Vote Identity", "2.6", RulesEngine.RuleScope.VoteSubmission, 10)
+            : base("Submission Vote Identity", "2.7", RulesEngine.RuleScope.VoteSubmission, 10)
         {
 
         }
