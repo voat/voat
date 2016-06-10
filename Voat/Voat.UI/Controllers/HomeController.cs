@@ -245,7 +245,10 @@ namespace Voat.Controllers
             if (whattodisplay != null && whattodisplay == "comments")
             {
                 var userComments = from c in _db.Comments.OrderByDescending(c => c.CreationDate)
-                                   where (c.UserName.Equals(id) && c.Submission.IsAnonymized == false && !c.IsDeleted) && (c.UserName.Equals(id) && c.Submission.Subverse1.IsAnonymized == false)
+                                   where c.UserName.Equals(id) 
+                                   && !c.IsAnonymized 
+                                   && !c.IsDeleted
+                                   //&& !c.Submission.Subverse1.IsAnonymized //Don't think we need this condition
                                    select c;
 
                 PaginatedList<Comment> paginatedUserComments = new PaginatedList<Comment>(userComments, page ?? 0, pageSize);
@@ -256,9 +259,12 @@ namespace Voat.Controllers
             // show submissions                        
             if (whattodisplay != null && whattodisplay == "submissions")
             {
-                var userSubmissions = from b in _db.Submissions.OrderByDescending(s => s.CreationDate)
-                                      where (b.UserName.Equals(id) && b.IsAnonymized == false && !b.IsDeleted) && (b.UserName.Equals(id) && b.Subverse1.IsAnonymized == false)
-                                      select b;
+                var userSubmissions = from s in _db.Submissions.OrderByDescending(s => s.CreationDate)
+                                      where s.UserName.Equals(id) 
+                                      && !s.IsAnonymized 
+                                      && !s.IsDeleted
+                                      && !s.Subverse1.IsAnonymized //Don't think we need this condition
+                                      select s;
 
                 PaginatedList<Submission> paginatedUserSubmissions = new PaginatedList<Submission>(userSubmissions, page ?? 0, pageSize);
 

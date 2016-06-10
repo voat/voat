@@ -20,9 +20,11 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserSubmissions(string id, int? page, string whattodisplay)
         {
-                var userSubmissions = from b in _db.Submissions.OrderByDescending(s => s.CreationDate)
-                                      where (b.UserName.Equals(id) && b.IsAnonymized == false) && (b.UserName.Equals(id) && b.Subverse1.IsAnonymized == false)
-                                      select b;
+                var userSubmissions = from s in _db.Submissions.OrderByDescending(s => s.CreationDate)
+                                      where s.UserName.Equals(id) 
+                                      && s.IsAnonymized == false 
+                                      && s.Subverse1.IsAnonymized == false
+                                      select s;
 
                 PaginatedList<Submission> paginatedUserSubmissions = new PaginatedList<Submission>(userSubmissions, page ?? 0, pageSize);
 
@@ -36,7 +38,8 @@ namespace Voat.Controllers
         public ActionResult UserComments(string id, int? page, string whattodisplay)
         {
                 var userComments = from c in _db.Comments.OrderByDescending(c => c.CreationDate)
-                                   where (c.UserName.Equals(id) && c.Submission.IsAnonymized == false) && (c.UserName.Equals(id) && c.Submission.Subverse1.IsAnonymized == false)
+                                   where c.UserName.Equals(id) 
+                                   && c.IsAnonymized == false
                                    select c;
 
                 PaginatedList<Comment> paginatedUserComments = new PaginatedList<Comment>(userComments, page ?? 0, pageSize);
