@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -90,17 +91,10 @@ namespace Voat.Utilities
             return duration.TotalHours;
         }
 
-        // check if a string contains unicode characters
-        public static bool ContainsUnicode(string stringToTest)
+        // remove illegal unicode characters from a string
+        public static string StripIllegalUnicode(string stringToClean)
         {
-            const int maxAnsiCode = 255;
-            return stringToTest.Any(c => c > maxAnsiCode);
-        }
-
-        // string unicode characters from a string
-        public static string StripUnicode(string stringToClean)
-        {
-            return Regex.Replace(stringToClean, @"[^\u0000-\u007F]", string.Empty);
+            return Regex.Replace(stringToClean, @"[^\p{L}\p{N}\p{M}\p{P}\p{Zs}\u0020-\u007F]", string.Empty).Normalize(NormalizationForm.FormKC);
         }
 
         // add new submission
@@ -112,10 +106,7 @@ namespace Voat.Utilities
                 if (submissionModel.Type == 2)
                 {
                     // strip unicode if title contains unicode
-                    if (ContainsUnicode(submissionModel.LinkDescription))
-                    {
-                        submissionModel.LinkDescription = StripUnicode(submissionModel.LinkDescription);
-                    }
+                    submissionModel.LinkDescription = StripIllegalUnicode(submissionModel.LinkDescription);
 
                     // reject if title is whitespace or < than 5 characters
                     if (submissionModel.LinkDescription.Length < 5 || String.IsNullOrWhiteSpace(submissionModel.LinkDescription))
@@ -169,10 +160,7 @@ namespace Voat.Utilities
                 // MESSAGE TYPE SUBMISSION
                 {
                     // strip unicode if submission contains unicode
-                    if (ContainsUnicode(submissionModel.Title))
-                    {
-                        submissionModel.Title = StripUnicode(submissionModel.Title);
-                    }
+                    submissionModel.Title = StripIllegalUnicode(submissionModel.Title);
 
                     // reject if title is whitespace or less than 5 characters
                     if (submissionModel.Title.Length < 5 || String.IsNullOrWhiteSpace(submissionModel.Title))
