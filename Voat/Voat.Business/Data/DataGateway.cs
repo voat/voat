@@ -724,8 +724,8 @@ namespace Voat.Data {
             if (String.IsNullOrEmpty(submission.Title)) {
                 throw new VoatValidationException("Submission must have a title.");
             }
-            if (Submissions.ContainsUnicode(submission.Title)) {
-                throw new VoatValidationException("Submission title can not contain Unicode characters.");
+            if (!submission.Title.Equals(Submissions.StripIllegalUnicode(submission.Title))) {
+                throw new VoatValidationException("Submission title can not contain illegal Unicode characters.");
             }
             if (!SubverseExists(subverse)) {
                 throw new VoatValidationException(String.Format("Subverse '{0}' does not exist.", subverse));
@@ -797,8 +797,8 @@ namespace Voat.Data {
             //allow edit of title if in 10 minute window
             if (CurrentDate.Subtract(m.CreationDate).TotalMinutes <= 10.0f) {
 
-                if (!String.IsNullOrEmpty(submission.Title) && Utilities.Submissions.ContainsUnicode(submission.Title)) {
-                    throw new VoatValidationException("Submission title can not contain Unicode characters.");
+                if (!String.IsNullOrEmpty(submission.Title) && !submission.Title.Equals(Submissions.StripIllegalUnicode(submission.Title))) {
+                    throw new VoatValidationException("Submission title can not contain illegal Unicode characters.");
                 }
 
                 if (m.Type == 1) {
