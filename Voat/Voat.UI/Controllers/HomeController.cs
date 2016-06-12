@@ -150,8 +150,15 @@ namespace Voat.Controllers
             // submission is a link post
             if (submission.Type == 2 && submission.Content != null && submission.LinkDescription != null)
             {
+                //Ensure URL is valid - Exploit trap for non-UI submitted submissions
+                if (!UrlUtility.IsUriValid(submission.Content))
+                {
+                    ModelState.AddModelError(string.Empty, "Link submissions must contain a valid url");
+                    return View("Submit");
+                }
+
                 // check if same link was submitted before and deny submission
-                var existingSubmission = _db.Submissions.FirstOrDefault(s => s.Content.Equals(submission.Content, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
+                    var existingSubmission = _db.Submissions.FirstOrDefault(s => s.Content.Equals(submission.Content, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
                 // check if submission title is the same as target URL and reject if so
                 if (submission.LinkDescription.Equals(submission.Content, StringComparison.InvariantCultureIgnoreCase))

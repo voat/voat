@@ -154,15 +154,33 @@ namespace Voat.Controllers
         {
             var existingSubmission = _db.Submissions.Find(model.SubmissionId);
 
-            if (existingSubmission == null) return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+            if (existingSubmission == null)
+            {
+                return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+            }
+            if (existingSubmission.IsDeleted)
+            {
+                return Json("This submission has been deleted.", JsonRequestBehavior.AllowGet);
+            }
+            if (existingSubmission.UserName.Trim() != User.Identity.Name)
+            {
+                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+            }
 
-            if (existingSubmission.IsDeleted) return Json("This submission has been deleted.", JsonRequestBehavior.AllowGet);
-            if (existingSubmission.UserName.Trim() != User.Identity.Name) return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+            //Ensure URL is valid - Exploit trap for non-UI submitted submissions
+            if (existingSubmission.Type == 2)
+            {
+                return Json("Link posts can not be edited", JsonRequestBehavior.AllowGet);
+                //if (!UrlUtility.IsUriValid(model.SubmissionContent))
+                //{
+                //    return Json("Invalid Url", JsonRequestBehavior.AllowGet);
+                //}
+            }
 
             existingSubmission.Content = model.SubmissionContent;
             existingSubmission.LastEditDate = Repository.CurrentDate;
-
             _db.SaveChanges();
+
             DataCache.Submission.Remove(model.SubmissionId);
 
             // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
