@@ -191,7 +191,8 @@ namespace Voat.Controllers
 
             if (existingSubmission.IsDeleted) return Json("This submission has been deleted.", JsonRequestBehavior.AllowGet);
             if (existingSubmission.UserName.Trim() != User.Identity.Name) return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
-
+            if (existingSubmission.Type == 2 && !UrlUtility.IsUriValid(model.SubmissionContent)) return Json("Invalid URI.", JsonRequestBehavior.AllowGet);
+            
             existingSubmission.Content = model.SubmissionContent;
             existingSubmission.LastEditDate = DateTime.Now;
 
