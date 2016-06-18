@@ -16,6 +16,7 @@
     var classNew = "";
     var classSearch = "";
     var classSubscribed = "";
+    var classBlocked = "";
 
     string subversesView = ViewBag.SubversesView;
     string sortingMode = ViewBag.sortingMode;
@@ -28,6 +29,7 @@
             classHot = "disabled";
             classSubscribed = "disabled";
             classSearch = "disabled";
+            classBlocked = "disabled";
             break;
         case "active":
             classActive = "selected";
@@ -35,6 +37,7 @@
             classHot = "disabled";
             classSubscribed = "disabled";
             classSearch = "disabled";
+            classBlocked = "disabled";
             break;
         case "search":
             classSearch = "selected";
@@ -42,6 +45,15 @@
             classNew = "disabled";
             classHot = "disabled";
             classSubscribed = "disabled";
+            classBlocked = "disabled";
+            break;
+        case "blocked":
+            classSearch = "disabled";
+            classActive = "disabled";
+            classNew = "disabled";
+            classHot = "disabled";
+            classSubscribed = "disabled";
+            classBlocked = "selected";
             break;
         default:
             classHot = "selected";
@@ -49,6 +61,7 @@
             classActive = "disabled";
             classSearch = "disabled";
             classSubscribed = "disabled";
+            classBlocked = "disabled";
             break;
     }
 
@@ -61,12 +74,21 @@
                 classHot = "disabled";
                 classNew = "disabled";
                 classSubscribed = "disabled";
+                classBlocked = "disabled";
+                break;
+            case "blocked":
+                classSearch = "disabled";
+                classHot = "disabled";
+                classNew = "disabled";
+                classSubscribed = "disabled";
+                classBlocked = "selected";
                 break;
             default:
                 classSubscribed = "selected";
                 classHot = "disabled";
                 classNew = "disabled";
                 classSearch = "disabled";
+                classBlocked = "disabled";
                 break;
         }
     }
@@ -77,5 +99,6 @@
     <li class="@classActive"><a href="/subverses/active">Active</a></li>
     <li class="@classNew"><a href="/subverses/new">New</a></li>
     <li class="@classSubscribed"><a href="/subverses/subscribed">Subscribed</a></li>
+    <li class="@classBlocked"><a href="/subverses/blocked">Blocked</a></li>
     <li class="@classSearch"><a href="/subverses/search">Search</a></li>
 </ul>

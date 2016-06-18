@@ -137,6 +137,13 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "SubversesSubscribed" }
             );
 
+            // /subverses/blocked
+            routes.MapRoute(
+                name: "BlockedSubverses",
+                url: "subverses/blocked",
+                defaults: new { controller = "Subverses", action = "SubversesBlockedByUser" }
+            );
+
             // /subverses/active
             routes.MapRoute(
                 name: "ActiveSubverses",
