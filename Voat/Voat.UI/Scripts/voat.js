@@ -65,6 +65,7 @@ $(document).ready(function () {
     $('.userinfo').tooltipster({
         content: 'Loading user info...',
         contentAsHTML: 'true',
+        animation: 'grow',
 
         functionBefore: function (origin, continueTooltip) {
 
@@ -1425,6 +1426,31 @@ function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, co
             //$("#comments-" + submissionId + "-page").remove();
             appendTarget.append(data);
             window.setTimeout(function () { UI.Notifications.raise('DOM', appendTarget); });
+            // initialize tooltips for newly loaded comments
+            $('.userinfo:not(.tooltipstered)').tooltipster({
+                content: 'Loading user info...',
+                contentAsHTML: 'true',
+                animation: 'grow',
+
+                functionBefore: function (origin, continueTooltip) {
+
+                    // make this asynchronous and allow the tooltip to show
+                    continueTooltip();
+
+                    // next, we want to check if our data has already been cached
+                    if (origin.data('ajax') !== 'cached') {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/ajaxhelpers/userinfo/' + origin.attr('data-username'),
+                            success: function (data) {
+                                // update our tooltip content with our returned data and cache it
+                                origin.tooltipster('content', data).data('ajax', 'cached');
+                            }
+                        });
+                    }
+                }
+            });
+
             eventSource.parent().remove();
         },
         error: function () {
