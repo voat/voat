@@ -335,7 +335,9 @@ namespace Voat.Controllers
                 // if user CCP is negative or account less than 6 months old, allow only x comment submissions per 24 hours
                 var userRegistrationDate = UserHelper.GetUserRegistrationDateTime(User.Identity.Name);
                 TimeSpan userMembershipTimeSpan = Repository.CurrentDate - userRegistrationDate;
-                if (userMembershipTimeSpan.TotalDays < 180 || userCcp < 1)
+
+                // throttle comment posting if CCP is low, regardless of account age
+                if (userCcp < 1)
                 {
                     var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
                     if (quotaUsed)
