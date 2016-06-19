@@ -332,10 +332,10 @@ namespace Voat.Controllers
                 var userCcp = Karma.CommentKarma(User.Identity.Name);
                 commentModel.IsAnonymized = submission.IsAnonymized || subverse.IsAnonymized;
 
-                // if user CCP is negative and account less than 6 months old, allow only x comment submissions per 24 hours
+                // if user CCP is negative or account less than 6 months old, allow only x comment submissions per 24 hours
                 var userRegistrationDate = UserHelper.GetUserRegistrationDateTime(User.Identity.Name);
                 TimeSpan userMembershipTimeSpan = Repository.CurrentDate - userRegistrationDate;
-                if (userMembershipTimeSpan.TotalDays < 180 && userCcp < 1)
+                if (userMembershipTimeSpan.TotalDays < 180 || userCcp < 1)
                 {
                     var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
                     if (quotaUsed)
