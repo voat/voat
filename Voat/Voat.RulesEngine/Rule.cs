@@ -78,6 +78,7 @@ namespace Voat.RulesEngine
         public int Order
         {
             get { return _order; }
+            set { _order = value; }
         }
 
         public RuleScope Scope

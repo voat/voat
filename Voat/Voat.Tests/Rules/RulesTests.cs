@@ -33,33 +33,29 @@ namespace Voat.Tests.Rules
     {
         [TestMethod]
         [TestCategory("Rules")]
-        public void DownVoat_Comment_Denied()
+        public void DownVoat_Comment_Denied_MinCCPInSubverse()
         {
-            //rulesEngine.Context.PropertyBag.UserName = "AFakeUser";
-            //rulesEngine.Context.PropertyBag.CommentID = 5; //A minCCP of 5000 is required in this comment sub
-
             TestHelper.SetPrincipal("User100CCP");
             var context = new VoatRuleContext();
             context.PropertyBag.CommentID = 5;//A minCCP of 5000 is required in this comment sub
             context.PropertyBag.AddressHash = IpHash.CreateHash("127.0.0.1");
-            var outcome = UnitTestRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.DownVoteComment, true);
+            var outcome = UnitTestRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.DownVoteComment, RuleScope.DownVote, RuleScope.Vote);
             Assert.AreEqual(RuleResult.Denied, outcome.Result);
-            Assert.AreEqual("5.2", outcome.RuleNumber);
+
+            Assert.AreEqual("2.4", outcome.RuleNumber);
         }
         
         [TestMethod]
         [TestCategory("Rules")]
-        public void DownVoat_Submission_Denied()
+        public void DownVoat_Submission_Denied_MinCCPInSubverse()
         {
-            //rulesEngine.Context.PropertyBag.UserName = "AFakeUser";
-            //rulesEngine.Context.PropertyBag.SubmissionID = 3; //A minCCP of 5000 is required in this sub
-            TestHelper.SetPrincipal("User500CCP");
+            TestHelper.SetPrincipal("User100CCP");
             var context = new VoatRuleContext();
             context.PropertyBag.SubmissionID = 3; //A minCCP of 5000 is required in this comment sub
 
-            var outcome = UnitTestRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.DownVoteSubmission, true);
+            var outcome = UnitTestRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.DownVoteSubmission, RuleScope.DownVote, RuleScope.Vote);
             Assert.AreEqual(RuleResult.Denied, outcome.Result);
-            Assert.AreEqual("5.1", outcome.RuleNumber);
+            Assert.AreEqual("2.4", outcome.RuleNumber);
         }
 
         [TestInitialize]

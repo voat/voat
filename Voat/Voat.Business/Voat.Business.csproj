@@ -245,8 +245,10 @@
     <Compile Include="Rules\Posting\PostCommentBannedRule.cs" />
     <Compile Include="Rules\Posting\PostCommentCCPRule.cs" />
     <Compile Include="Rules\Posting\PostCommentRule.cs" />
-    <Compile Include="Rules\Posting\PostSubmissionBannedRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionBannedUserRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionCCPRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionValidityRule.cs" />
     <Compile Include="Rules\RuleInformationWithOutcome.cs" />
     <Compile Include="Rules\VoatRuleContext.cs" />
     <Compile Include="Rules\VoatRuleException.cs" />
@@ -255,8 +257,8 @@
     <Compile Include="Rules\Voting\DownVoteCommentAgeRule.cs" />
     <Compile Include="Rules\Voting\DownVoteCommentMeanieRule.cs" />
     <Compile Include="Rules\Voting\DownVoteRule.cs" />
-    <Compile Include="Rules\Posting\PostSubmissionRule.cs" />
     <Compile Include="Rules\Voting\DownVoteSubmissionAgeRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionThrottleRule.cs" />
     <Compile Include="Rules\Voting\DownVoteSubverseMinCCPRule.cs" />
     <Compile Include="Rules\Voting\UpVoteRule.cs" />
     <Compile Include="Rules\Voting\VoteCommentAddressCheckRule.cs" />

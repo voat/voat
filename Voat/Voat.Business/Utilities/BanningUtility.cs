@@ -24,16 +24,16 @@ namespace Voat.Utilities
 {
     public class BanningUtility
     {
-        public static bool ContentContainsBannedDomain(string subverse, string comment)
+        public static bool ContentContainsBannedDomain(string subverse, string contentToEvaluate)
         {
-            if (!String.IsNullOrEmpty(comment))
+            if (!String.IsNullOrEmpty(contentToEvaluate))
             {
                 //TODO: Change this to Query
                 var s = DataCache.Subverse.Retrieve(subverse);
                 if (s == null || (s != null && !s.ExcludeSitewideBans))
                 {
 
-                    MatchCollection matches = Regex.Matches(comment, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
+                    MatchCollection matches = Regex.Matches(contentToEvaluate, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
                     List<string> domains = new List<string>();
                     foreach (Match match in matches)
                     {

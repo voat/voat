@@ -8,13 +8,11 @@ namespace Voat.Domain.Command
 {
     public class CreateSubmissionCommand : Command<CommandResponse<Domain.Models.Submission>>
     {
-        private UserSubmission _submission;
-        private string _subverse;
+        private UserSubmission _userSubmission;
 
-        public CreateSubmissionCommand(string subverse, UserSubmission submission)
+        public CreateSubmissionCommand(UserSubmission submission)
         {
-            _subverse = subverse;
-            _submission = submission;
+            _userSubmission = submission;
         }
 
         protected override async Task<CommandResponse<Domain.Models.Submission>> ProtectedExecute()
@@ -23,7 +21,7 @@ namespace Voat.Domain.Command
             {
                 using (var db = new Repository())
                 {
-                    return db.PostSubmission(_subverse, _submission);
+                    return db.PostSubmission(_userSubmission);
                 }
             });
             return CommandResponse.Map(result, result.Response.Map());

@@ -15,6 +15,9 @@ namespace Voat.Domain.Models
         public string Content { get; set; }
 
         [JsonIgnore]
+        public string Subverse { get; set; }
+
+        [JsonIgnore]
         public bool HasState
         {
             get
@@ -22,6 +25,24 @@ namespace Voat.Domain.Models
                 return (!String.IsNullOrEmpty(Title) || !String.IsNullOrEmpty(Url) || !String.IsNullOrEmpty(Content));
             }
         }
+
+        [JsonIgnore]
+        public bool IsValid
+        {
+            get
+            {
+                return (Type == SubmissionType.Link ? !String.IsNullOrEmpty(Url) : true) && !String.IsNullOrEmpty(Title) && !String.IsNullOrEmpty(Subverse);
+            }
+        }
+        [JsonIgnore]
+        public SubmissionType Type
+        {
+            get
+            {
+                return String.IsNullOrEmpty(Url) ? SubmissionType.Text : SubmissionType.Link;
+            }
+        }
+
 
         /// <summary>
         /// Not Implemented. Specifies if the submission is NSFW or not.

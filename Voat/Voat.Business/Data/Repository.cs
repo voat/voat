@@ -594,11 +594,19 @@ namespace Voat.Data
         public Models.Submission GetSubmission(int submissionID)
         {
 
+            var record = Selectors.SecureSubmission(GetSubmissionUnprotected(submissionID));
+
+            return record;
+
+        }
+        private Models.Submission GetSubmissionUnprotected(int submissionID)
+        {
+
             var query = (from x in _db.Submissions
                          where x.ID == submissionID
                          select x);
 
-            var record = query.Select(Selectors.SecureSubmission).FirstOrDefault();
+            var record = query.FirstOrDefault();
 
             return record;
 
@@ -733,60 +741,22 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public CommandResponse<Models.Submission> PostSubmission(string subverse, UserSubmission submission)
+        public CommandResponse<Models.Submission> PostSubmission(UserSubmission userSubmission)
         {
             DemandAuthentication();
-
-            //Validation stuff
-            if (submission.Title.Equals(submission.Url, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return CommandResponse.Denied<Models.Submission>(null, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
-            }
-            if (submission == null || !submission.HasState)
-            {
-                return CommandResponse.Denied<Models.Submission>(null, "The submission must not be null or have invalid state.");
-            }
-            if (String.IsNullOrEmpty(subverse))
-            {
-                throw new VoatValidationException("A subverse must be provided.");
-                return CommandResponse.Denied<Models.Submission>(null, "A subverse must be provided.");
-            }
-            if (String.IsNullOrEmpty(submission.Url) && String.IsNullOrEmpty(submission.Content))
-            {
-                return CommandResponse.Denied<Models.Submission>(null, "Either a Url or Content must be provided.");
-            }
-            if (String.IsNullOrEmpty(submission.Title))
-            {
-                return CommandResponse.Denied<Models.Submission>(null, "Submission must have a title.");
-            }
-            if (Submissions.ContainsUnicode(submission.Title))
-            {
-                return CommandResponse.Denied<Models.Submission>(null, "Submission title can not contain Unicode characters.");
-            }
-            if (!SubverseExists(subverse) || subverse.Equals("all", StringComparison.OrdinalIgnoreCase)) //<-- the all subverse actually exists? HA!
-            {
-                return CommandResponse.Denied<Models.Submission>(null, "Subverse does not exist.");
-            }
-
             //Load Subverse Object
-            var cmdSubverse = new QuerySubverse(subverse);
-            var subverseObject = cmdSubverse.ExecuteAsync().Result;
+            var cmdSubverse = new QuerySubverse(userSubmission.Subverse);
+            var subverseObject = cmdSubverse.Execute();
 
             //Evaluate Rules
             var context = new VoatRuleContext();
             context.Subverse = subverseObject;
-            var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.PostSubmission, true);
-
+            context.PropertyBag.UserSubmission = userSubmission;
+            var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.Post, RuleScope.PostSubmission);
+            //if rules engine denies bail.
             if (!outcome.IsAllowed)
             {
                 return MapRuleOutCome<Models.Submission>(outcome, null);
-            }
-
-            //Check for banned domain content
-            var containsBannedDomain = BanningUtility.ContentContainsBannedDomain(subverse, submission.Content);
-            if (containsBannedDomain)
-            {
-                return CommandResponse.Denied<Models.Submission>(null, "Sorry, this post contains links to banned domains.");
             }
 
             //Save submission
@@ -794,23 +764,46 @@ namespace Voat.Data
             m.UpCount = 1; //https://voat.co/v/PreviewAPI/comments/877596
             m.UserName = User.Identity.Name;
             m.CreationDate = CurrentDate;
-            m.Subverse = subverseObject.Name; 
+            m.Subverse = subverseObject.Name;
+            //TODO: Allow this value to be passed in and verified instead of hard coding
+            m.IsAnonymized = subverseObject.IsAnonymized;
+            //m.IsAdult = submission.IsAdult;
 
-            //1: Self Post, 2: Link Post
-            m.Type = (String.IsNullOrEmpty(submission.Url) ? 1 : 2);
+            //1: Text, 2: Link
+            m.Type = (String.IsNullOrEmpty(userSubmission.Url) ? 1 : 2);
 
             if (m.Type == 1)
             {
-                m.Title = submission.Title;
-                m.Content = submission.Content;
+                m.Title = userSubmission.Title;
+                m.Content = userSubmission.Content;
                 m.LinkDescription = null;
             }
             else
             {
                 m.Title = null;
-                m.Content = submission.Url;
-                m.LinkDescription = submission.Title;
+                m.Content = userSubmission.Url;
+                m.LinkDescription = userSubmission.Title;
             }
+
+            //TODO:
+            //    // check if target subverse has thumbnails setting enabled before generating a thumbnail
+            //    if (targetSubverse.IsThumbnailEnabled)
+            //    {
+            //        // try to generate and assign a thumbnail to submission model
+            //        submissionModel.Thumbnail = await ThumbGenerator.ThumbnailFromSubmissionModel(submissionModel);
+            //    }
+
+            //    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+            //    {
+            //        submissionModel.Content = ContentProcessor.Instance.Process(submissionModel.Content, ProcessingStage.InboundPreSave, submissionModel);
+            //    }
+
+            //    await db.SaveChangesAsync();
+
+            //    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+            //    {
+            //        ContentProcessor.Instance.Process(submissionModel.Content, ProcessingStage.InboundPostSave, submissionModel);
+            //    }
 
             _db.Submissions.Add(m);
 
@@ -832,7 +825,7 @@ namespace Voat.Data
             //    throw new VoatValidationException("Either a Url or Content must be provided.");
             //}
 
-            var m = GetSubmission(submissionID);
+            var m = GetSubmissionUnprotected(submissionID);
 
             if (m == null)
             {
@@ -2058,9 +2051,10 @@ namespace Voat.Data
             var result = (from x in _db.Submissions
                           where
                             x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                            && (x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || subverse == null)
+                            && 
+                            ((x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || subverse == null)
                             && (compareDate.HasValue && x.CreationDate >= compareDate)
-                            && (type != null && x.Type == (int)type.Value) || type == null
+                            && (type != null && x.Type == (int)type.Value) || type == null)
                           select x).Count();
             return result;
         }

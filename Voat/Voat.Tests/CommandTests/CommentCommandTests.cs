@@ -35,6 +35,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
         public void CreateComment_Anon()
         {
             TestHelper.SetPrincipal("TestUser1");
@@ -67,6 +68,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
         public void CreateComment()
         {
             TestHelper.SetPrincipal("TestUser2");
@@ -92,6 +94,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
         public void CreateComment_WithBannedSubUser()
         {
             TestHelper.SetPrincipal("BannedFromVUnit");
@@ -106,6 +109,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
         public void CreateComment_WithGloballyBannedUser()
         {
             TestHelper.SetPrincipal("BannedGlobally");
@@ -120,6 +124,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
         public void DeleteComment()
         {
             TestHelper.SetPrincipal("TestUser1");
@@ -144,6 +149,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
         public void EditComment()
         {
             TestHelper.SetPrincipal("unit");

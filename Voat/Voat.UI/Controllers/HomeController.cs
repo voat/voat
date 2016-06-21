@@ -22,6 +22,7 @@ using System.Web.Mvc;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Models;
 using Voat.Models.ViewModels;
@@ -100,10 +101,74 @@ namespace Voat.Controllers
         [Authorize]
         [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
-        public async Task<ActionResult> Submit([Bind(Include = "ID,Votes,Name,CreationDate,Type,LinkDescription,Title,Rank,Content,Subverse")] Submission submission)
+        public async Task<ActionResult> Submit([Bind(Include = "ID,Votes,Name,CreationDate,Type,LinkDescription,Title,Rank,Content,Subverse")] Data.Models.Submission submission)
         {
+
             // abort if model state is invalid
-            if (!ModelState.IsValid) return View();
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            //Check Captcha
+            var userQuery = new QueryUserData(User.Identity.Name);
+            var userData = await userQuery.ExecuteAsync();
+            if (userData.Information.CommentPoints.Sum < 25)
+            {
+                var captchaSuccess = await ReCaptchaUtility.Validate(Request);
+                if (!captchaSuccess)
+                {
+                    ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer.");
+                    return View("Submit");
+                }
+            }
+
+            //new pipeline
+            var userSubmission = new Domain.Models.UserSubmission();
+            userSubmission.Subverse = submission.Subverse;
+            //1: text
+            //2: link
+            if (submission.Type == 1)
+            {
+                userSubmission.Title = submission.Title;
+                userSubmission.Content = submission.Content;
+            }
+            else
+            {
+                userSubmission.Title = submission.LinkDescription;
+                userSubmission.Url = submission.Content;
+            }
+            var q = new CreateSubmissionCommand(userSubmission);
+            var result = await q.Execute();
+
+            if (result.Successfull)
+            {
+                // redirect to comments section of newly posted submission
+                return RedirectToRoute(
+                    "SubverseComments",
+                    new
+                    {
+                        controller = "Comment",
+                        action = "Comments",
+                        id = result.Response.ID,
+                        subversetoshow = result.Response.Subverse
+                    }
+                    );
+            }
+            else
+            {
+                // save temp values for the view in case submission fails
+                ViewBag.selectedSubverse = submission.Subverse;
+                ViewBag.message = submission.Content;
+                ViewBag.title = submission.Title;
+                ViewBag.linkDescription = submission.LinkDescription;
+
+                //show error
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View("Submit");
+            }
+
+            //OLD CODE BELOW
 
             // save temp values for the view in case submission fails
             ViewBag.selectedSubverse = submission.Subverse;
@@ -157,9 +222,11 @@ namespace Voat.Controllers
                     return View("Submit");
                 }
 
+                //TODO: Port Check
                 // check if same link was submitted before and deny submission
                     var existingSubmission = _db.Submissions.FirstOrDefault(s => s.Content.Equals(submission.Content, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
+                //Ported via 
                 // check if submission title is the same as target URL and reject if so
                 if (submission.LinkDescription.Equals(submission.Content, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -199,6 +266,7 @@ namespace Voat.Controllers
             // submission is a message type submission
             else if (submission.Type == 1 && submission.Title != null)
             {
+                //Ported via PostSubmissionBannedRule
                 var containsBannedDomain = BanningUtility.ContentContainsBannedDomain(targetSubverse.Name, submission.Content);
                 if (containsBannedDomain)
                 {

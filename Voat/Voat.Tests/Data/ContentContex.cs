@@ -49,7 +49,7 @@ namespace Voat.Tests.Repository
             {
                 using (var db = new Voat.Data.Repository())
                 {
-                    var m = db.PostSubmission("unit", new UserSubmission() { Title = "Test Post", Content = "Test Content" });
+                    var m = db.PostSubmission(new UserSubmission() { Subverse="unit", Title = "Test Post", Content = "Test Content" });
                     Assert.AreEqual(Status.Success, m.Status, String.Format("NewContext PostSubmission for user {0} received non-success message : {1}", userName, m.Message));
                     var submissionid = m.Response.ID;
 

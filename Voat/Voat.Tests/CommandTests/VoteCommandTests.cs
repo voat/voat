@@ -37,7 +37,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
-        [TestCategory("Command.Vote.Comment")]
+        [TestCategory("Command.Comment.Vote")]
         public void DownvoteComment()
         {
             TestHelper.SetPrincipal("User500CCP");
@@ -66,7 +66,30 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
-        [TestCategory("Command.Vote.Submission")]
+        [TestCategory("Command.Submission.Vote")]
+        public void UpvoteSubmission_DeniesSameIP()
+        {
+            TestHelper.SetPrincipal("UnitTestUser45");
+            var cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1")); 
+            var c = cmd.Execute().Result;
+            Assert.IsNotNull(c, "Response is null");
+            Assert.IsTrue(c.Successfull, c.Message);
+            Assert.IsNotNull(c.Response);
+
+            TestHelper.SetPrincipal("UnitTestUser46");
+            cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1"));
+            c = cmd.Execute().Result;
+            Assert.IsNotNull(c, "Response is null");
+            Assert.IsFalse(c.Successfull, c.Message);
+            Assert.IsNull(c.Response);
+
+
+        }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Command.Vote")]
+        [TestCategory("Command.Submission.Vote")]
         public void DownvoteComment_MinCCP()
         {
             TestHelper.SetPrincipal("User0CCP");
@@ -81,7 +104,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
-        [TestCategory("Command.Vote.Comment")]
+        [TestCategory("Command.Comment.Vote")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void InvalidVoteValue_Comment_Low()
         {
@@ -93,14 +116,15 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
-        [TestCategory("Command.Vote.Comment")]
+        [TestCategory("Command.Comment.Vote")]
         public void UpvoteComment()
         {
             TestHelper.SetPrincipal("User50CCP");
-            var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash("127.0.0.1"));
+            var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash("127.0.0.2"));
 
             var c = cmd.Execute().Result;
-            Assert.IsTrue(c.Successfull);
+            Assert.IsNotNull(c, "Response is null");
+            Assert.IsTrue(c.Successfull, c.Message);
             Assert.IsNotNull(c.Response);
 
             //verify in db
@@ -120,7 +144,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
-        [TestCategory("Command.Vote.Submission")]
+        [TestCategory("Command.Submission.Vote")]
         public void DownvoteSubmission()
         {
             TestHelper.SetPrincipal("User500CCP");
@@ -154,7 +178,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
-        [TestCategory("Command.Vote.Submission")]
+        [TestCategory("Command.Submission.Vote")]
         public void UpvoteSubmission()
         {
             TestHelper.SetPrincipal("User50CCP");
@@ -168,10 +192,11 @@ namespace Voat.Tests.CommandTests
                     && e.ReferenceType == Domain.Models.ContentType.Submission
                     && e.ReferenceID == 1;
             };
-            var cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("127.0.0.1"));
+            var cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("127.0.0.2"));
 
             var c = cmd.Execute().Result;
-            Assert.IsTrue(c.Successfull);
+            Assert.IsNotNull(c, "Response is null");
+            Assert.IsTrue(c.Successfull, c.Message);
             Assert.IsNotNull(c.Response);
 
             //verify in db
@@ -188,7 +213,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
-        [TestCategory("Command.Vote.Submission")]
+        [TestCategory("Command.Submission.Vote")]
         public void DownvoteSubmission_MinCCP()
         {
             TestHelper.SetPrincipal("User0CCP");
@@ -203,7 +228,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
-        [TestCategory("Command.Vote.Comment")]
+        [TestCategory("Command.Comment.Vote")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void InvalidVoteValue_Submission_High()
         {
@@ -217,7 +242,7 @@ namespace Voat.Tests.CommandTests
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
-        [TestCategory("Command.Vote.Comment")]
+        [TestCategory("Command.Comment.Vote")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void InvalidVoteValue_Submission_Low()
         {

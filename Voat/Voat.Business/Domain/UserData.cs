@@ -31,6 +31,7 @@ namespace Voat.Domain
         protected IEnumerable<string> _blockedUsers;
 
         protected int? _votesInLast24Hours;
+        protected int? _submissionsInLast24Hours;
 
         public UserData(string userName)
         {
@@ -45,6 +46,26 @@ namespace Voat.Domain
                     using (var repo = new Repository())
                     {
                         return repo.UserVotingBehavior(username, ContentType.Comment | ContentType.Submission, TimeSpan.FromDays(1)).Total;
+                    }
+                    //return UserGateway.TotalVotesUsedInPast24Hours(username);
+                }, false);
+                return (val.HasValue ? val.Value : 0);
+            }
+            set
+            {
+                _votesInLast24Hours = value;
+                Recache();
+            }
+        }
+        public int TotalSubmissionsPostedIn24Hours
+        {
+            get
+            {
+                var val = GetOrLoad(ref _submissionsInLast24Hours, username =>
+                {
+                    using (var repo = new Repository())
+                    {
+                        return repo.UserSubmissionCount(username, TimeSpan.FromDays(1));
                     }
                     //return UserGateway.TotalVotesUsedInPast24Hours(username);
                 }, false);
