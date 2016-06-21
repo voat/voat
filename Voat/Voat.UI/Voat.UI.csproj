@@ -500,6 +500,7 @@
     <Content Include="Scripts\markdownEditor.js" />
     <Content Include="Scripts\libs\npm.js" />
     <None Include="Scripts\_references.js" />
+    <Content Include="sitemap.xml" />
     <Content Include="Storage\Avatars\Placeholder.txt" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
     <Content Include="Content\Voat-Dark.css" />
