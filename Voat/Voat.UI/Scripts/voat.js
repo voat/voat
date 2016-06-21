@@ -62,28 +62,7 @@ $(document).ready(function () {
     });
 
     // tooltipster wireup
-    $('.userinfo').tooltipster({
-        content: 'Loading user info...',
-        contentAsHTML: 'true',
-
-        functionBefore: function (origin, continueTooltip) {
-
-            // make this asynchronous and allow the tooltip to show
-            continueTooltip();
-
-            // next, we want to check if our data has already been cached
-            if (origin.data('ajax') !== 'cached') {
-                $.ajax({
-                    type: 'GET',
-                    url: '/ajaxhelpers/userinfo/' + origin.attr('data-username'),
-                    success: function (data) {
-                        // update our tooltip content with our returned data and cache it
-                        origin.tooltipster('content', data).data('ajax', 'cached');
-                    }
-                });
-            }
-        }
-    });
+    wireTooltips();
 
     // SignalR helper methods to start hub connection, update the page and send messages
     $(function () {
@@ -164,6 +143,32 @@ $(document).ready(function () {
     });
 
 });
+
+function wireTooltips() {
+    $('.userinfo:not(.tooltipstered)').tooltipster({
+        content: 'Loading user info...',
+        contentAsHTML: 'true',
+        animation: 'grow',
+
+        functionBefore: function (origin, continueTooltip) {
+
+            // make this asynchronous and allow the tooltip to show
+            continueTooltip();
+
+            // next, we want to check if our data has already been cached
+            if (origin.data('ajax') !== 'cached') {
+                $.ajax({
+                    type: 'GET',
+                    url: '/ajaxhelpers/userinfo/' + origin.attr('data-username'),
+                    success: function (data) {
+                        // update our tooltip content with our returned data and cache it
+                        origin.tooltipster('content', data).data('ajax', 'cached');
+                    }
+                });
+            }
+        }
+    });
+}
 
 // a function which handles mouse drop events (sharing links by dragging and dropping)
 function dropFunction(event) {
@@ -1425,6 +1430,9 @@ function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, co
             //$("#comments-" + submissionId + "-page").remove();
             appendTarget.append(data);
             window.setTimeout(function () { UI.Notifications.raise('DOM', appendTarget); });
+            
+            wireTooltips();
+
             eventSource.parent().remove();
         },
         error: function () {

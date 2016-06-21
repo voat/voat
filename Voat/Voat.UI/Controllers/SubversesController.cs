@@ -137,7 +137,6 @@ namespace Voat.Controllers
         }
 
         // POST: Create a new Subverse
-        // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -282,7 +281,6 @@ namespace Voat.Controllers
         }
 
         // POST: Eddit a Subverse
-        // To protect from overposting attacks, enable the specific properties you want to bind to 
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [ValidateAntiForgeryToken]
@@ -751,6 +749,39 @@ namespace Voat.Controllers
             var paginatedSubscribedSubverses = new PaginatedList<SubverseDetailsViewModel>(subscribedSubverses, page ?? 0, pageSize);
 
             return View("SubscribedSubverses", paginatedSubscribedSubverses);
+        }
+
+        [Authorize]
+        public ViewResult SubversesBlockedByUser(int? page)
+        {
+            ViewBag.SelectedSubverse = "subverses";
+            ViewBag.SubversesView = "blocked";
+            const int pageSize = 25;
+            int pageNumber = (page ?? 0);
+
+            if (pageNumber < 0)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            // get a list of user blocked subverses with details and order by subverse name, ascending
+            IQueryable<SubverseDetailsViewModel> blockedSubverses = from c in _db.Subverses
+                                                                       join a in _db.UserBlockedSubverses
+                                                                       on c.Name equals a.Subverse
+                                                                       where a.UserName.Equals(User.Identity.Name)
+                                                                       orderby a.Subverse ascending
+                                                                       select new SubverseDetailsViewModel
+                                                                       {
+                                                                           Name = c.Name,
+                                                                           Title = c.Title,
+                                                                           Description = c.Description,
+                                                                           Creation_date = c.CreationDate,
+                                                                           Subscribers = c.SubscriberCount
+                                                                       };
+
+            var paginatedBlockedSubverses = new PaginatedList<SubverseDetailsViewModel>(blockedSubverses, page ?? 0, pageSize);
+
+            return View(paginatedBlockedSubverses);
         }
 
         // GET: sidebar for selected subverse

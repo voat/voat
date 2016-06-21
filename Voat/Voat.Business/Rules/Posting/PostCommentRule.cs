@@ -34,7 +34,7 @@ namespace Voat.Rules.Posting
                 if (userCcp <= 0)
                 {
                     var userMembershipTimeSpam = Repository.CurrentDate - context.UserData.Information.RegistrationDate;
-                    // if user CCP is negative and account less than 6 months old, allow only x comment submissions per 24 hours
+                    // if user CCP is negative or account less than 6 months old, allow only x comment submissions per 24 hours
                     if ((userMembershipTimeSpam.TotalDays < 180 || userCcp <= -50) && UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(context.UserName))
                     {
                         result = CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", Settings.DailyCommentPostingQuotaForNegativeScore.ToString()));

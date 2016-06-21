@@ -716,6 +716,8 @@
     <Content Include="Views\ApiKeys\Create.cshtml" />
     <Content Include="Views\ApiKeys\Index.cshtml" />
     <Content Include="Views\Home\Rules.cshtml" />
+    <Content Include="Views\Subverses\SubversesBlockedByUser.cshtml" />
+    <Content Include="Views\Subverses\_BlockedSubverseDetails.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
