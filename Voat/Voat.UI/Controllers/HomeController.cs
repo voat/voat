@@ -416,7 +416,7 @@ namespace Voat.Controllers
                         var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
 
                         IQueryable<Submission> submissions = (from message in db.Submissions.AsNoTracking()
-                                                              where !message.IsArchived && !message.IsDeleted && message.UpCount >= 3 && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
+                                                              where !message.IsArchived && !message.IsDeleted && (message.UpCount - message.DownCount >= 20) && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
                                                               where !(from bu in db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                               join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
                                                               select message).OrderByDescending(s => s.RelativeRank);
