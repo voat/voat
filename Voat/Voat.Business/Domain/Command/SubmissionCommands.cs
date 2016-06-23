@@ -46,7 +46,7 @@ namespace Voat.Domain.Command
                     return db.DeleteSubmission(_submissionID);
                 }
             });
-            return Tuple.Create(CommandResponse.Success(), result);
+            return Tuple.Create(CommandResponse.Successful(), result);
         }
 
         protected override void UpdateCache(Data.Models.Submission result)
@@ -75,7 +75,7 @@ namespace Voat.Domain.Command
                     return db.EditSubmission(_submissionID, _submission);
                 }
             });
-            return Tuple.Create(CommandResponse.Success(result.Map()), result);
+            return Tuple.Create(CommandResponse.Successful(result.Map()), result);
         }
 
         protected override void UpdateCache(Data.Models.Submission result)

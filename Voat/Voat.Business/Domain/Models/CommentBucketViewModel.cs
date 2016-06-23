@@ -20,6 +20,17 @@ namespace Voat.Models
             Subverse = DataCache.Subverse.Retrieve(Submission.Subverse);
         }
 
+        public CommentBucketViewModel(Domain.Models.Comment comment) : this()
+        {
+            var singleComment = Domain.DomainMaps.MapToTree(comment);
+
+            var commentTree = new List<usp_CommentTree_Result> { singleComment };
+            DisplayTree = commentTree.AsQueryable();
+            CommentTree = commentTree;
+            Submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+            Subverse = DataCache.Subverse.Retrieve(Submission.Subverse);
+        }
+
         //set defaults in comment display behavior
         public CommentBucketViewModel()
         {

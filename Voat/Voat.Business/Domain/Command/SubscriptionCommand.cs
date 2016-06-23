@@ -28,7 +28,7 @@ namespace Voat.Domain.Command
             {
                 await Task.Run(() => repo.SubscribeUser(_domainType, _action, _name));
             }
-            return CommandResponse.Success();
+            return CommandResponse.Successful();
         }
 
         protected override void UpdateCache()

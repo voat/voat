@@ -43,7 +43,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(2, null, "This is my data");
             var c = cmd.Execute().Result;
 
-            Assert.IsTrue(c.Successfull);
+            Assert.IsTrue(c.Success);
             Assert.IsNotNull(c.Response);
             Assert.AreNotEqual(0, c.Response.ID);
             Assert.AreEqual(true, c.Response.IsAnonymized);
@@ -76,7 +76,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "This is my data");
             var c = cmd.Execute().Result;
 
-            Assert.IsTrue(c.Successfull);
+            Assert.IsTrue(c.Success);
             Assert.IsNotNull(c.Response);
             Assert.AreNotEqual(0, c.Response.ID);
 
@@ -99,10 +99,10 @@ namespace Voat.Tests.CommandTests
         {
             TestHelper.SetPrincipal("BannedFromVUnit");
 
-            var cmd = new CreateCommentCommand(1, null, "This is my data");
+            var cmd = new CreateCommentCommand(1, null, "This is my data with banned user");
             var c = cmd.Execute().Result;
 
-            Assert.IsFalse(c.Successfull, "User should be banned from commenting");
+            Assert.IsFalse(c.Success, "User should be banned from commenting");
             Assert.AreEqual(Status.Denied, c.Status);
         }
 
@@ -117,7 +117,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "This is my data");
             var c = cmd.Execute().Result;
 
-            Assert.IsFalse(c.Successfull, "User should be banned from commenting");
+            Assert.IsFalse(c.Success, "User should be banned from commenting");
             Assert.AreEqual(Status.Denied, c.Status);
         }
 
@@ -128,14 +128,18 @@ namespace Voat.Tests.CommandTests
         public void DeleteComment()
         {
             TestHelper.SetPrincipal("TestUser1");
-            var cmdcreate = new CreateCommentCommand(1, null, "This is my data");
+            var cmdcreate = new CreateCommentCommand(1, null, "This is my data too you know");
             var c = cmdcreate.Execute().Result;
+
+            Assert.IsNotNull(c, "response null");
+            Assert.IsTrue(c.Success, c.Message);
+            Assert.IsNotNull(c.Response, "Response payload null");
 
             int id = c.Response.ID;
 
             var cmd = new DeleteCommentCommand(id);
             var r = cmd.Execute().Result;
-            Assert.IsTrue(r.Successfull);
+            Assert.IsTrue(r.Success);
 
             //verify
             using (var db = new Voat.Data.Repository())
@@ -155,7 +159,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("unit");
             var cmd = new EditCommentCommand(1, "This is data [howdy](http://www.howdy.com)");
             var r = cmd.Execute().Result;
-            Assert.IsTrue(r.Successfull);
+            Assert.IsTrue(r.Success);
 
             //verify
             using (var db = new Voat.Data.Repository())

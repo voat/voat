@@ -102,12 +102,12 @@ namespace Voat.Models
             return new VoteResponse(Status.Ignored, voteValue, message);
         }
 
-        public static VoteResponse Success(int voteValue)
+        public static VoteResponse Successful(int voteValue)
         {
-            return Success(voteValue, "Vote registered");
+            return Successful(voteValue, "Vote registered");
         }
 
-        public static VoteResponse Success(int voteValue, string message)
+        public static VoteResponse Successful(int voteValue, string message)
         {
             return new VoteResponse(Status.Success, voteValue, message);
         }

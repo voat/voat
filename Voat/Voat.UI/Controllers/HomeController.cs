@@ -141,7 +141,7 @@ namespace Voat.Controllers
             var q = new CreateSubmissionCommand(userSubmission);
             var result = await q.Execute();
 
-            if (result.Successfull)
+            if (result.Success)
             {
                 // redirect to comments section of newly posted submission
                 return RedirectToRoute(
@@ -168,7 +168,7 @@ namespace Voat.Controllers
                 return View("Submit");
             }
 
-            //OLD CODE BELOW
+            //OLD CODE BELOW - Won't hit
 
             // save temp values for the view in case submission fails
             ViewBag.selectedSubverse = submission.Subverse;

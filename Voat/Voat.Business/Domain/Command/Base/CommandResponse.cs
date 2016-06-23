@@ -35,7 +35,7 @@ namespace Voat.Domain.Command
 
         public Status Status { get; set; }
 
-        public bool Successfull
+        public bool Success
         {
             get { return this.Status == Status.Success; }
         }
@@ -60,7 +60,7 @@ namespace Voat.Domain.Command
             return new CommandResponse(Status.Ignored, description);
         }
 
-        public static CommandResponse<R> Success<R>(R response)
+        public static CommandResponse<R> Successful<R>(R response)
         {
             return new CommandResponse<R>(response, Status.Success, "");
         }
@@ -81,7 +81,7 @@ namespace Voat.Domain.Command
             return r;
         }
         
-        public static CommandResponse Success()
+        public static CommandResponse Successful()
         {
             return new CommandResponse(Status.Success, "");
         }

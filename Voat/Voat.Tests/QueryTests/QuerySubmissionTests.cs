@@ -186,7 +186,7 @@ namespace Voat.Tests.QueryTests
         
         [TestMethod]
         [TestCategory("Query")]
-        [TestCategory("Submission")]
+        [TestCategory("Subverse")]
         [TestCategory("Cache")]
         public void QuerySubverseInformation_verify_moderators_works()
         {
@@ -200,6 +200,29 @@ namespace Voat.Tests.QueryTests
             Assert.IsNotNull(result.Moderators, "Expected Moderators property is null, was expecting list");
 
             Assert.IsTrue(result.Moderators.Any(x => x == "unit"));
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        [TestCategory("Submission")]
+        [TestCategory("Cache")]
+        public void QuerySubmissions_Verify_BlockedSubverses()
+        {
+
+            //Ensure v/unit does not show up in v/all for user BlocksUnit
+
+            TestHelper.SetPrincipal("BlocksUnit");
+            var q = new QuerySubmissions("_all", SearchOptions.Default);
+            //q.CachePolicy.Duration = cacheTime; //Cache this request
+            var result = q.ExecuteAsync().Result;
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Any(), "Found no results");
+
+            foreach (var s in result)
+            {
+                Assert.AreNotEqual("unit", s.Subverse.ToLower(), "Found blocked sub in BlocksUnit's v/all query");
+            }
         }
 
     }

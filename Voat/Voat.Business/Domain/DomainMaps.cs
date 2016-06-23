@@ -153,5 +153,33 @@ namespace Voat.Domain
             }
             return result;
         }
+        public static usp_CommentTree_Result MapToTree(this Domain.Models.Comment comment)
+        {
+            usp_CommentTree_Result result = null;
+            if (comment != null)
+            {
+                result = new usp_CommentTree_Result()
+                {
+                    ID = comment.ID,
+                    Content = comment.Content,
+                    IsAnonymized = comment.IsAnonymized,
+                    ChildCount = 0,
+                    CreationDate = comment.CreationDate,
+                    DownCount = comment.DownCount,
+                    Depth = 0,
+                    FormattedContent = comment.FormattedContent,
+                    IsDistinguished = comment.IsDistinguished,
+                    LastEditDate = comment.LastEditDate,
+                    UpCount = comment.UpCount,
+                    SubmissionID = comment.SubmissionID,
+                    UserName = comment.UserName,
+                    ParentID = comment.ParentID,
+                    Path = "",
+                    Subverse = "",
+                    Votes = 0 //don't think we use this.
+                };
+            }
+            return result;
+        }
     }
 }

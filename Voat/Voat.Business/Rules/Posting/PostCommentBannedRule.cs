@@ -13,10 +13,12 @@ namespace Voat.Rules.Posting
         public PostCommentBannedRule()
             : base("Subverse Comment Ban Rule", "5.3", RuleScope.PostComment)
         {
+            this.Order = 1;
         }
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
+            //base class will check for subverse and global bans here
             return base.EvaluateRule(context);
         }
     }

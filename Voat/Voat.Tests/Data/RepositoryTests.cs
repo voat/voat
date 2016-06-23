@@ -119,7 +119,7 @@ namespace Voat.Tests.Repository
                     Title = "My title",
                     Url = "http://www.yahoo.com"
                 });
-                Assert.IsFalse(response.Successfull);
+                Assert.IsFalse(response.Success);
                 Assert.AreEqual(response.Message, "Subverse does not exist");
             }
         }
@@ -297,7 +297,7 @@ namespace Voat.Tests.Repository
 
                 var result = db.PostSubmission(new UserSubmission() { Subverse = "unit", Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
                 Assert.IsNotNull(result, "Result was null");
-                Assert.IsFalse(result.Successfull, "Submitting content with banned domain did not get rejected");
+                Assert.IsFalse(result.Success, "Submitting content with banned domain did not get rejected");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
             }
         }
@@ -312,7 +312,7 @@ namespace Voat.Tests.Repository
 
                 var result = db.PostComment(1, null, "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics");
                 Assert.IsNotNull(result, "Result was null");
-                Assert.IsFalse(result.Successfull, "Submitting content with banned domain did not get rejected");
+                Assert.IsFalse(result.Success, "Submitting content with banned domain did not get rejected");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
             }
         }
@@ -327,7 +327,7 @@ namespace Voat.Tests.Repository
 
                 var result = db.PostSubmission(new UserSubmission() { Subverse = "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
                 Assert.IsNotNull(result, "Result was null");
-                Assert.IsTrue(result.Successfull, "Submitting to authorized only subverse was not allowed by admin");
+                Assert.IsTrue(result.Success, "Submitting to authorized only subverse was not allowed by admin");
                 Assert.AreEqual(Status.Success, result.Status, "Expecting a success status");
             }
         }
@@ -342,7 +342,7 @@ namespace Voat.Tests.Repository
 
                 var result = db.PostSubmission( new UserSubmission() { Subverse= "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
                 Assert.IsNotNull(result, "Result was null");
-                Assert.IsFalse(result.Successfull, "Submitting to authorized only subverse was allowed by non admin");
+                Assert.IsFalse(result.Success, "Submitting to authorized only subverse was allowed by non admin");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
             }
         }

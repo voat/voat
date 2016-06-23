@@ -41,14 +41,19 @@ namespace Voat.Domain.Command
 
         protected override void UpdateCache(CommandResponse<Comment> result)
         {
-            if (result.Successfull)
+            if (result.Success)
             {
                 var c = result.Response;
 
                 //HACK: Pretty sure this will fail if dictionary isn't already in cache.
                 var key = CachingKey.CommentTree(result.Response.SubmissionID.Value);
-                var treeItem = c.MapToTree();
-                CacheHandler.Instance.Replace(key, c.ID, treeItem);
+
+                //Prevent key-ed entries if parent isn't in cache with expiration date
+                if (CacheHandler.Instance.Exists(key))
+                {
+                    var treeItem = c.MapToTree();
+                    CacheHandler.Instance.Replace(key, c.ID, treeItem);
+                }
             }
         }
     }
@@ -76,7 +81,7 @@ namespace Voat.Domain.Command
                     return db.DeleteComment(this.CommentID);
                 }
             });
-            return Tuple.Create(CommandResponse.Success(), result);
+            return Tuple.Create(CommandResponse.Successful(), result);
         }
 
         protected override void UpdateCache(Comment result)
@@ -84,16 +89,23 @@ namespace Voat.Domain.Command
             if (result != null)
             {
                 var key = CachingKey.CommentTree(result.SubmissionID.Value);
+                //Prevent key-ed entries if parent isn't in cache with expiration date
+                if (CacheHandler.Instance.Exists(key))
+                {
+                    var treeItem = result.MapToTree();
+                    CacheHandler.Instance.Replace(key, result.ID, treeItem);
+                }
 
-                CacheHandler.Instance.Replace(key, CommentID,
-                    new Func<usp_CommentTree_Result, usp_CommentTree_Result>(x =>
-                    {
-                        x.Content = result.Content;
-                        x.FormattedContent = result.FormattedContent;
-                        x.IsDeleted = result.IsDeleted;
-                        return x;
-                    })
-               );
+
+                // CacheHandler.Instance.Replace(key, CommentID,
+                //     new Func<usp_CommentTree_Result, usp_CommentTree_Result>(x =>
+                //     {
+                //         x.Content = result.Content;
+                //         x.FormattedContent = result.FormattedContent;
+                //         x.IsDeleted = result.IsDeleted;
+                //         return x;
+                //     })
+                //);
             }
         }
     }
@@ -119,7 +131,7 @@ namespace Voat.Domain.Command
                     return db.EditComment(this.CommentID, this.Content);
                 }
             });
-            return Tuple.Create(CommandResponse.Success(result.Map()), result);
+            return Tuple.Create(CommandResponse.Successful(result.Map()), result);
         }
 
         protected override void UpdateCache(Comment result)
@@ -127,20 +139,25 @@ namespace Voat.Domain.Command
             if (result != null)
             {
                 var key = CachingKey.CommentTree(result.SubmissionID.Value);
-
-                CacheHandler.Instance.Replace(key, CommentID,
-                    new Func<usp_CommentTree_Result, usp_CommentTree_Result>(x =>
-                    {
-                        //update cache content only
-                        x.Content = result.Content;
-                        x.FormattedContent = result.FormattedContent;
-                        x.UpCount = result.UpCount;
-                        x.DownCount = result.DownCount;
-                        x.LastEditDate = result.LastEditDate;
-                        x.IsDistinguished = result.IsDistinguished;
-                        return x;
-                    })
-               );
+                //Prevent key-ed entries if parent isn't in cache with expiration date
+                if (CacheHandler.Instance.Exists(key))
+                {
+                    var treeItem = result.MapToTree();
+                    CacheHandler.Instance.Replace(key, result.ID, treeItem);
+                }
+                // CacheHandler.Instance.Replace(key, CommentID,
+                //     new Func<usp_CommentTree_Result, usp_CommentTree_Result>(x =>
+                //     {
+                //         //update cache content only
+                //         x.Content = result.Content;
+                //         x.FormattedContent = result.FormattedContent;
+                //         x.UpCount = result.UpCount;
+                //         x.DownCount = result.DownCount;
+                //         x.LastEditDate = result.LastEditDate;
+                //         x.IsDistinguished = result.IsDistinguished;
+                //         return x;
+                //     })
+                //);
             }
         }
     }

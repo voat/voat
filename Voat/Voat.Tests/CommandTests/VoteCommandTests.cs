@@ -48,7 +48,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CommentVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
-            Assert.IsTrue(c.Successfull);
+            Assert.IsTrue(c.Success);
             Assert.IsNotNull(c.Response);
 
             //verify in db
@@ -73,14 +73,14 @@ namespace Voat.Tests.CommandTests
             var cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1")); 
             var c = cmd.Execute().Result;
             Assert.IsNotNull(c, "Response is null");
-            Assert.IsTrue(c.Successfull, c.Message);
+            Assert.IsTrue(c.Success, c.Message);
             Assert.IsNotNull(c.Response);
 
             TestHelper.SetPrincipal("UnitTestUser46");
             cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1"));
             c = cmd.Execute().Result;
             Assert.IsNotNull(c, "Response is null");
-            Assert.IsFalse(c.Successfull, c.Message);
+            Assert.IsFalse(c.Success, c.Message);
             Assert.IsNull(c.Response);
 
 
@@ -97,7 +97,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CommentVoteCommand(5, -1, IpHash.CreateHash("127.0.0.1")); //SubmissionID: 3 is in MinCCP sub
 
             var c = cmd.Execute().Result;
-            Assert.IsFalse(c.Successfull);
+            Assert.IsFalse(c.Success);
             Assert.IsNull(c.Response);
         }
 
@@ -124,7 +124,7 @@ namespace Voat.Tests.CommandTests
 
             var c = cmd.Execute().Result;
             Assert.IsNotNull(c, "Response is null");
-            Assert.IsTrue(c.Successfull, c.Message);
+            Assert.IsTrue(c.Success, c.Message);
             Assert.IsNotNull(c.Response);
 
             //verify in db
@@ -161,7 +161,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new SubmissionVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
-            Assert.IsTrue(c.Successfull);
+            Assert.IsTrue(c.Success);
             Assert.IsNotNull(c.Response);
 
             //verify in db
@@ -196,7 +196,7 @@ namespace Voat.Tests.CommandTests
 
             var c = cmd.Execute().Result;
             Assert.IsNotNull(c, "Response is null");
-            Assert.IsTrue(c.Successfull, c.Message);
+            Assert.IsTrue(c.Success, c.Message);
             Assert.IsNotNull(c.Response);
 
             //verify in db
@@ -221,7 +221,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new SubmissionVoteCommand(3, -1, IpHash.CreateHash("127.0.0.1")); //SubmissionID: 3 is in MinCCP sub
 
             var c = cmd.Execute().Result;
-            Assert.IsFalse(c.Successfull);
+            Assert.IsFalse(c.Success);
             Assert.IsNull(c.Response);
         }
 

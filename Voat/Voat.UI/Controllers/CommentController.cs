@@ -319,6 +319,41 @@ namespace Voat.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
+
+            if (ModelState.IsValid)
+            {
+                var cmd = new CreateCommentCommand(commentModel.SubmissionID.Value, commentModel.ParentID, commentModel.Content);
+                var result = await cmd.Execute();
+
+                if (result.Success)
+                {
+                    if (Request.IsAjaxRequest())
+                    {
+                        var comment = result.Response;
+                        //Short term hack as commands use different comment tree cache current in UI
+                        DataCache.CommentTree.AddCommentToTree(comment);
+
+                        var model = new CommentBucketViewModel(comment);
+                        ViewBag.CommentId = comment.ID; //why?
+                        ViewBag.rootComment = comment.ParentID == null; //why?
+                        return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", model);
+                        //return new HttpStatusCodeResult(HttpStatusCode.OK);
+                    }
+                    if (Request.UrlReferrer != null)
+                    {
+                        var url = Request.UrlReferrer.AbsolutePath;
+                        return Redirect(url);
+                    }
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
+                }
+            }
+
+
+
+            //OLD CODE
             commentModel.CreationDate = Repository.CurrentDate;
             commentModel.UserName = User.Identity.Name;
             commentModel.Votes = 0;

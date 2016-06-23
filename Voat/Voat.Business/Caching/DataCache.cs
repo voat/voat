@@ -75,6 +75,38 @@ namespace Voat.Caching
                 });
                 t.Start();
             }
+            //HACK ATTACK: This is short term hack. Sorry.
+            public static void AddCommentToTree(Domain.Models.Comment comment)
+            {
+                var t = new Task(() => {
+                    try
+                    {
+                        string key = DataCache.Keys.CommentTree(comment.SubmissionID.Value);
+
+                        //not in any way thread safe, will be jacked in high concurrency situations
+                        var c = Domain.DomainMaps.MapToTree(comment);
+
+                        CacheHandler.Instance.Replace<List<usp_CommentTree_Result>>(key, new Func<List<usp_CommentTree_Result>, List<usp_CommentTree_Result>>(currentData =>
+                        {
+                            usp_CommentTree_Result parent = null;
+                            if (c.ParentID != null)
+                            {
+                                parent = currentData.FirstOrDefault(x => x.ID == c.ParentID);
+                                parent.ChildCount += 1;
+                            }
+                            currentData.Add(c);
+
+                            return currentData;
+                        }), TimeSpan.FromSeconds(cacheTimeInSeconds));
+
+                    }
+                    catch (Exception ex)
+                    {
+                        /*no-op*/
+                    }
+                });
+                t.Start();
+            }
 
             public static void Remove(int submissionID)
             {

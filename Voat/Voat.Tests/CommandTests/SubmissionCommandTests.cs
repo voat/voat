@@ -45,7 +45,7 @@ namespace Voat.Tests.CommandTests
 
             Assert.IsNotNull(r, "Response is null");
 
-            Assert.IsTrue(r.Successfull, r.Message);
+            Assert.IsTrue(r.Success, r.Message);
 
             Assert.IsNotNull(r.Response, "Expecting a non null response");
 
@@ -64,7 +64,7 @@ namespace Voat.Tests.CommandTests
             var r = cmd.Execute().Result;
 
             Assert.IsNotNull(r, "Response is null");
-            Assert.IsTrue(r.Successfull, r.Message);
+            Assert.IsTrue(r.Success, r.Message);
             Assert.IsNotNull(r.Response, "Expecting a non null response");
             Assert.AreNotEqual(0, r.Response.ID, "Expected a valid ID");
             Assert.AreNotEqual("TestUser2", r.Response.UserName);
@@ -82,7 +82,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new DeleteSubmissionCommand(1);
             var r = cmd.Execute().Result;
 
-            Assert.IsTrue(r.Successfull);
+            Assert.IsTrue(r.Success);
             //Assert.Inconclusive();
         }
 
@@ -99,13 +99,13 @@ namespace Voat.Tests.CommandTests
             var s = x.Execute().Result;
 
             Assert.IsNotNull(s, "Response is null");
-            Assert.IsTrue(s.Successfull, s.Message);
+            Assert.IsTrue(s.Success, s.Message);
 
             var cmd = new EditSubmissionCommand(s.Response.ID, new Domain.Models.UserSubmission() { Title = "yyyyyy", Content = "yyyyyy" });
             var r = cmd.Execute().Result;
 
             Assert.IsNotNull(r, "Response is null");
-            Assert.IsTrue(r.Successfull, "Edit Submission failed to return true: " + r.Message);
+            Assert.IsTrue(r.Success, "Edit Submission failed to return true: " + r.Message);
 
             using (var repo = new Voat.Data.Repository())
             {
@@ -129,7 +129,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "http://www.yahoo.com", Url = "http://www.yahoo.com" });
 
             var r = cmd.Execute().Result;
-            Assert.IsFalse(r.Successfull);
+            Assert.IsFalse(r.Success);
             Assert.AreEqual(r.Message, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
             //Assert.AreNotEqual(0, r.Response.ID);
         }
@@ -144,7 +144,7 @@ namespace Voat.Tests.CommandTests
 
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "www.yahoo.com", Url = "http://www.yahoo.com" });
             var r = cmd.Execute().Result;
-            Assert.IsFalse(r.Successfull);
+            Assert.IsFalse(r.Success);
             Assert.AreEqual(r.Message, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
             //Assert.AreNotEqual(0, r.Response.ID);
         }
@@ -160,7 +160,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "Super rad website", Url = "http//www.yahoo.com" });
 
             var r = cmd.Execute().Result;
-            Assert.IsFalse(r.Successfull);
+            Assert.IsFalse(r.Success);
             Assert.AreEqual(r.Message, "The url you are trying to submit is invalid");
             //Assert.AreNotEqual(0, r.Response.ID);
         }
@@ -177,7 +177,7 @@ namespace Voat.Tests.CommandTests
 
             var r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
-            Assert.IsFalse(r.Successfull, "Expecting a false response");
+            Assert.IsFalse(r.Success, "Expecting a false response");
             Assert.AreEqual(r.Message, "A subverse must be provided");
         }
         [TestMethod]
@@ -198,13 +198,13 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man", Url = "http://www.saiddit.com/images/feelsgoodman.jpg" });
             var r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
-            Assert.IsFalse(r.Successfull, r.Message);
+            Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "Submission contains banned domains");
 
             cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man", Content = "Check out this cool image I found using dogpile.com: http://saiddit.com/images/feelsgoodman.jpg" });
             r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
-            Assert.IsFalse(r.Successfull, r.Message);
+            Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "Submission contains banned domains");
 
         }
@@ -216,7 +216,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "What", Url = "http://www.saiddit.com/images/feelsgoodman.jpg" });
             var r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
-            Assert.IsFalse(r.Successfull, r.Message);
+            Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "A title may not be less than 5 characters");
 
 

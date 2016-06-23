@@ -244,7 +244,7 @@ function voteSubmission(submissionID, voteValue) {
                 //remove error span if present
                 submission.children(".entry").children('span').remove();
                 
-                if (!data.successfull) {
+                if (!data.success) {
 
                     if (data.message.indexOf('2.2', 0) > 0) {
                         notEnoughCCP();
@@ -374,7 +374,7 @@ function voteComment(commentid, voteValue) {
                 //remove error span if present
                 comment.children(".entry").children('span').remove();
                 
-                if (!data.successfull) {
+                if (!data.success) {
 
                     if (data.message.indexOf('2.2', 0) > 0) {
                         notEnoughCCP();

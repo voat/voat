@@ -23,7 +23,7 @@ namespace Voat.Domain.Command
             {
                 var outcome = await Task.Run(() => db.VoteComment(CommentID, VoteValue, AddressHash, RevokeOnRevote));
                 //Raise event
-                if (outcome.Successfull)
+                if (outcome.Success)
                 {
                     EventNotification.Instance.SendVoteNotice(outcome.OwnerUserName, this.UserName, Models.ContentType.Comment, CommentID, outcome.Difference);
                 }
@@ -33,7 +33,7 @@ namespace Voat.Domain.Command
 
         protected override void UpdateCache(VoteResponse result)
         {
-            if (result.Successfull)
+            if (result.Success)
             {
                 //update cache somehow
             }
@@ -57,7 +57,7 @@ namespace Voat.Domain.Command
             {
                 var outcome = await Task.Run(() => gateway.VoteSubmission(SubmissionID, VoteValue, AddressHash, RevokeOnRevote));
                 //Raise event
-                if (outcome.Successfull)
+                if (outcome.Success)
                 {
                     EventNotification.Instance.SendVoteNotice(outcome.OwnerUserName, this.UserName, Models.ContentType.Submission, SubmissionID, outcome.Difference);
                 }
@@ -67,7 +67,7 @@ namespace Voat.Domain.Command
 
         protected override void UpdateCache(VoteResponse result)
         {
-            if (result.Successfull)
+            if (result.Success)
             {
                 //update cache somehow
             }

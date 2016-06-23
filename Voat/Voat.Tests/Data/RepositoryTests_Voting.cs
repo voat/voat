@@ -54,7 +54,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Successfull, "Vote was not successfull");
+                Assert.IsTrue(response.Success, "Vote was not successfull");
                 Assert.AreEqual(-1, response.RecordedValue, "Vote was not successfull");
                 Assert.AreEqual(ups, x.UpCount);
                 Assert.AreEqual((downs + 1), x.DownCount);
@@ -89,7 +89,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Successfull, response.ToString());
+                Assert.IsTrue(response.Success, response.ToString());
                 Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
                 Assert.IsTrue(x.UpCount == (ups + 1));
 
@@ -121,7 +121,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Successfull, response.ToString());
+                Assert.IsTrue(response.Success, response.ToString());
                 Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
                 Assert.IsTrue(x.UpCount == (ups + 1));
 
@@ -146,7 +146,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Successfull, response.Message);
+                Assert.IsTrue(response.Success, response.Message);
                 Assert.IsTrue(x.UpCount == (ups + 1));
                 Assert.IsTrue(x.DownCount == downs);
             }
@@ -188,7 +188,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Successfull, "Vote was not successfull");
+                Assert.IsTrue(response.Success, "Vote was not successfull");
                 Assert.IsTrue(response.RecordedValue == -1, "Vote was not successfull");
                 Assert.IsTrue(x.UpCount == ups);
                 Assert.IsTrue(x.DownCount == (downs + 1));
@@ -223,7 +223,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Successfull, response.ToString());
+                Assert.IsTrue(response.Success, response.ToString());
                 Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
                 Assert.IsTrue(x.UpCount == (ups + 1));
 
@@ -248,7 +248,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Successfull, response.ToString());
+                Assert.IsTrue(response.Success, response.ToString());
                 Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
                 Assert.IsTrue(x.UpCount == (ups + 1));
 
@@ -273,7 +273,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Successfull, response.Message);
+                Assert.IsTrue(response.Success, response.Message);
                 Assert.IsTrue(response.RecordedValue == 1, response.Message);
                 Assert.IsTrue(x.UpCount == (ups + 1));
                 Assert.IsTrue(x.DownCount == downs);

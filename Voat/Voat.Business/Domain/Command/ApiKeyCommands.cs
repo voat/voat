@@ -31,7 +31,7 @@ namespace Voat.Domain.Command
             {
                 await Task.Run(() => repo.CreateApiKey(_name, _description, _url, _redirectUrl));
             }
-            return CommandResponse.Success();
+            return CommandResponse.Successful();
         }
     }
 
@@ -51,7 +51,7 @@ namespace Voat.Domain.Command
                 using (var repo = new Repository())
                 {
                     var apiClient = repo.DeleteApiKey(id);
-                    return new Tuple<CommandResponse, ApiClient>(CommandResponse.Success(), apiClient);
+                    return new Tuple<CommandResponse, ApiClient>(CommandResponse.Successful(), apiClient);
                 }
             });
         }

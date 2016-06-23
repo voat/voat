@@ -21,7 +21,7 @@ namespace Voat.Domain.Command
             {
                 await Task.Run(() => db.Block(_domainType, _name, true));
             }
-            return CommandResponse.Success();
+            return CommandResponse.Successful();
         }
     }
 
@@ -37,7 +37,7 @@ namespace Voat.Domain.Command
             {
                 await Task.Run(() => db.Block(_domainType, _name, false));
             }
-            return CommandResponse.Success();
+            return CommandResponse.Successful();
         }
     }
 }

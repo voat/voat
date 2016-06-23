@@ -22,5 +22,6 @@ namespace Voat.Tests
             GenericPrincipal p = new GenericPrincipal(new GenericIdentity(name), roles);
             System.Threading.Thread.CurrentPrincipal = p;
         }
+       
     }
 }

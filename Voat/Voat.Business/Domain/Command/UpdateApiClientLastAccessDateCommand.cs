@@ -22,7 +22,7 @@ namespace Voat.Domain.Command
                     await Task.Run(() => repo.UpdateApiClientLastAccessDate(_client.ID));
                 }
             }
-            return CommandResponse.Success();
+            return CommandResponse.Successful();
         }
     }
 }

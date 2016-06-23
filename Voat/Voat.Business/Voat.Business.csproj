@@ -244,7 +244,8 @@
     <Compile Include="Rules\Global\RuntimeStateReadOnlyRule.cs" />
     <Compile Include="Rules\Posting\PostCommentBannedRule.cs" />
     <Compile Include="Rules\Posting\PostCommentCCPRule.cs" />
-    <Compile Include="Rules\Posting\PostCommentRule.cs" />
+    <Compile Include="Rules\Posting\PostCommentUniquenessRule.cs" />
+    <Compile Include="Rules\Posting\PostCommentBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionBannedUserRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionCCPRule.cs" />
