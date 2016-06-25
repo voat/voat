@@ -71,10 +71,10 @@ namespace Voat
                     var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
                     switch (e.ReferenceType)
                     {
-                        case Domain.Models.ContentType.Comment:
+                        case Domain.Models.ContentType.Submission:
                             hubContext.Clients.User(e.UserName).voteChange(1, e.ChangeValue);
                             break;
-                        case Domain.Models.ContentType.Submission:
+                        case Domain.Models.ContentType.Comment:
                             hubContext.Clients.User(e.UserName).voteChange(2, e.ChangeValue);
                             break;
                     }

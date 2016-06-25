@@ -106,12 +106,12 @@ $(document).ready(function () {
                         // this is a comment vote notification
                         // update CCP display
                         currentValue = $('#ccp').html();
-                        currentValue = currentValue + value;
+                        currentValue = parseInt(currentValue) + parseInt(value); //Fix concat issue
                         $('#ccp').html(currentValue);
                     } else {
                         // update SCP display
                         currentValue = $('#scp').html();
-                        currentValue = currentValue + value;
+                        currentValue = parseInt(currentValue) + parseInt(value); //Fix concat issue
                         $('#scp').html(currentValue);
                     }
                 };
