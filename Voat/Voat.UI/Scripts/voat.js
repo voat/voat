@@ -75,70 +75,73 @@ $(document).ready(function () {
             }
         });
     });
+    //register signalr callbacks
+    $(function () {
+        if ($.connection != null) {
+            var proxy = $.connection.messagingHub;
+            if (proxy != null) {
+                // Hub accessed function to inform the user about new pending notifications
+                proxy.client.setNotificationsPending = function (count) {
+                    var originalTitle = $('meta[property="og:title"]').attr('content');
+                    if (count > 0) {
+                        // set mail icon
+                        if ($('#mail').hasClass('nohavemail')) {
+                            $('#mail').removeClass('nohavemail').addClass('havemail');
+                        };
+                        $('#mail').prop('title', 'your have ' + count + ' unread notifications');
+                        // show mail counter
+                        $('#mailcounter').show();
+                        $('#mailcounter').html(count);
+                        // set browser title
+                        document.title = '(' + count + ') ' + originalTitle;
+                    } else {
+                        // set no new mail icon
+                        if ($('#mail').hasClass('havemail')) {
+                            $('#mail').removeClass('havemail').addClass('nohavemail');
+                        };
+                        $('#mail').prop('title', 'no new messages');
+                        // hide mail counter and set count to 0
+                        $('#mailcounter').html(0);
+                        $('#mailcounter').hide();
+                        // set browser title
+                        document.title = originalTitle;
+                    }
+                };
 
+                proxy.client.voteChange = function (type, value) {
+                    var currentValue = 0;
+                    if (type == 1) {
+                        // this is a comment vote notification
+                        // update CCP display
+                        currentValue = $('#ccp').html();
+                        currentValue = parseInt(currentValue) + parseInt(value); //Fix concat issue
+                        $('#ccp').html(currentValue);
+                    } else {
+                        // update SCP display
+                        currentValue = $('#scp').html();
+                        currentValue = parseInt(currentValue) + parseInt(value); //Fix concat issue
+                        $('#scp').html(currentValue);
+                    }
+                };
+
+                // Hub accessed function to append incoming chat message
+                proxy.client.appendChatMessage = function (sender, chatMessage) {
+                    $("#subverseChatRoom").append('<p><b>' + sender + '</b>: ' + chatMessage + '</p>');
+                    scrollChatToBottom();
+                };
+            }
+        }
+    });
 });
 
-// SignalR helper methods to start hub connection, update the page and send messages
+//SignalR helper methods to start hub connection, update the page and send messages
 function initiateWSConnection() {
     if ($.connection != null) {
-        var proxy = $.connection.messagingHub;
-        if (proxy != null) {
-            // Hub accessed function to inform the user about new pending notifications
-            proxy.client.setNotificationsPending = function (count) {
-                var originalTitle = $('meta[property="og:title"]').attr('content');
-                if (count > 0) {
-                    // set mail icon
-                    if ($('#mail').hasClass('nohavemail')) {
-                        $('#mail').removeClass('nohavemail').addClass('havemail');
-                    };
-                    $('#mail').prop('title', 'your have ' + count + ' unread notifications');
-                    // show mail counter
-                    $('#mailcounter').show();
-                    $('#mailcounter').html(count);
-                    // set browser title
-                    document.title = '(' + count + ') ' + originalTitle;
-                } else {
-                    // set no new mail icon
-                    if ($('#mail').hasClass('havemail')) {
-                        $('#mail').removeClass('havemail').addClass('nohavemail');
-                    };
-                    $('#mail').prop('title', 'no new messages');
-                    // hide mail counter and set count to 0
-                    $('#mailcounter').html(0);
-                    $('#mailcounter').hide();
-                    // set browser title
-                    document.title = originalTitle;
-                }
-            };
-
-            proxy.client.voteChange = function (type, value) {
-                var currentValue = 0;
-                if (type == 1) {
-                    // this is a comment vote notification
-                    // update CCP display
-                    currentValue = $('#ccp').html();
-                    currentValue = parseInt(currentValue) + parseInt(value); //Fix concat issue
-                    $('#ccp').html(currentValue);
-                } else {
-                    // update SCP display
-                    currentValue = $('#scp').html();
-                    currentValue = parseInt(currentValue) + parseInt(value); //Fix concat issue
-                    $('#scp').html(currentValue);
-                }
-            };
-
-            // Hub accessed function to append incoming chat message
-            proxy.client.appendChatMessage = function (sender, chatMessage) {
-                $("#subverseChatRoom").append('<p><b>' + sender + '</b>: ' + chatMessage + '</p>');
-                scrollChatToBottom();
-            };
-
-            // Start the connection.
-            $.connection.hub.start({ transport: 'webSockets' })
-                .done(function () {
-                    //
-                });
-        }
+        // Start the connection.
+        $.connection.hub.start({ transport: 'webSockets' })
+            .done(function () {
+                //what shall we do? Read a book.
+            });
     }
 }
 
