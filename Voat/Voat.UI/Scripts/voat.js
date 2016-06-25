@@ -64,72 +64,6 @@ $(document).ready(function () {
     // tooltipster wireup
     wireTooltips();
 
-    // SignalR helper methods to start hub connection, update the page and send messages
-    $(function () {
-        // Reference the auto-generated proxy for the hub.
-        if ($.connection != null) {
-            var proxy = $.connection.messagingHub;
-
-            if (proxy != null) {
-
-                // Hub accessed function to inform the user about new pending notifications
-                proxy.client.setNotificationsPending = function (count) {
-                    var originalTitle = $('meta[property="og:title"]').attr('content');
-                    if (count > 0) {
-                        // set mail icon
-                        if ($('#mail').hasClass('nohavemail')) {
-                            $('#mail').removeClass('nohavemail').addClass('havemail');
-                        };
-                        $('#mail').prop('title', 'your have ' + count + ' unread notifications');
-                        // show mail counter
-                        $('#mailcounter').show();
-                        $('#mailcounter').html(count);
-                        // set browser title
-                        document.title = '(' + count + ') ' + originalTitle;
-                    } else {
-                        // set no new mail icon
-                        if ($('#mail').hasClass('havemail')) {
-                            $('#mail').removeClass('havemail').addClass('nohavemail');
-                        };
-                        $('#mail').prop('title', 'no new messages');
-                        // hide mail counter and set count to 0
-                        $('#mailcounter').html(0);
-                        $('#mailcounter').hide();
-                        // set browser title
-                        document.title = originalTitle;
-                    }
-                };
-
-                proxy.client.voteChange = function (type, value) {
-                    var currentValue = 0;
-                    if (type == 2) {
-                        // this is a comment vote notification
-                        // update CCP display
-                        currentValue = $('#ccp').html();
-                        currentValue = currentValue + value;
-                        $('#ccp').html(currentValue);
-                    } else {
-                        // update SCP display
-                        currentValue = $('#scp').html();
-                        currentValue = currentValue + value;
-                        $('#scp').html(currentValue);
-                    }
-                };
-
-                // Hub accessed function to append incoming chat message
-                proxy.client.appendChatMessage = function (sender, chatMessage) {
-                    $("#subverseChatRoom").append('<p><b>' + sender + '</b>: ' + chatMessage + '</p>');
-                    scrollChatToBottom();
-                };
-
-                // Start the connection.
-                $.connection.hub.start({ transport: 'webSockets' }).done(function () {
-                    //
-                });
-            }
-        }
-    });
-
     // hook scroll event to load more button for endless scrolling
     $(function () {
         var $win = $(window);
@@ -143,6 +77,70 @@ $(document).ready(function () {
     });
 
 });
+
+// SignalR helper methods to start hub connection, update the page and send messages
+function initiateWSConnection() {
+    if ($.connection != null) {
+        var proxy = $.connection.messagingHub;
+        if (proxy != null) {
+            // Hub accessed function to inform the user about new pending notifications
+            proxy.client.setNotificationsPending = function (count) {
+                var originalTitle = $('meta[property="og:title"]').attr('content');
+                if (count > 0) {
+                    // set mail icon
+                    if ($('#mail').hasClass('nohavemail')) {
+                        $('#mail').removeClass('nohavemail').addClass('havemail');
+                    };
+                    $('#mail').prop('title', 'your have ' + count + ' unread notifications');
+                    // show mail counter
+                    $('#mailcounter').show();
+                    $('#mailcounter').html(count);
+                    // set browser title
+                    document.title = '(' + count + ') ' + originalTitle;
+                } else {
+                    // set no new mail icon
+                    if ($('#mail').hasClass('havemail')) {
+                        $('#mail').removeClass('havemail').addClass('nohavemail');
+                    };
+                    $('#mail').prop('title', 'no new messages');
+                    // hide mail counter and set count to 0
+                    $('#mailcounter').html(0);
+                    $('#mailcounter').hide();
+                    // set browser title
+                    document.title = originalTitle;
+                }
+            };
+
+            proxy.client.voteChange = function (type, value) {
+                var currentValue = 0;
+                if (type == 1) {
+                    // this is a comment vote notification
+                    // update CCP display
+                    currentValue = $('#ccp').html();
+                    currentValue = parseInt(currentValue) + parseInt(value); //Fix concat issue
+                    $('#ccp').html(currentValue);
+                } else {
+                    // update SCP display
+                    currentValue = $('#scp').html();
+                    currentValue = parseInt(currentValue) + parseInt(value); //Fix concat issue
+                    $('#scp').html(currentValue);
+                }
+            };
+
+            // Hub accessed function to append incoming chat message
+            proxy.client.appendChatMessage = function (sender, chatMessage) {
+                $("#subverseChatRoom").append('<p><b>' + sender + '</b>: ' + chatMessage + '</p>');
+                scrollChatToBottom();
+            };
+
+            // Start the connection.
+            $.connection.hub.start({ transport: 'webSockets' })
+                .done(function () {
+                    //
+                });
+        }
+    }
+}
 
 function wireTooltips() {
     $('.userinfo:not(.tooltipstered)').tooltipster({
@@ -243,7 +241,7 @@ function voteSubmission(submissionID, voteValue) {
                 var submission = $(".submission.id-" + submissionID);
                 //remove error span if present
                 submission.children(".entry").children('span').remove();
-                
+
                 if (!data.successfull) {
 
                     if (data.message.indexOf('2.2', 0) > 0) {
@@ -258,7 +256,7 @@ function voteSubmission(submissionID, voteValue) {
                     return;
                 }
                 var div = submission.children(".midcol");
-            
+
 
                 var scoreLikes = +(submission.find('.score.likes').html());
                 var scoreDislikes = +(submission.find('.score.dislikes').html());
@@ -337,7 +335,7 @@ function voteSubmission(submissionID, voteValue) {
                         submission.find('.score.likes').html(scoreLikes);
                     }
                 }
-              
+
             }
         });
     }
@@ -373,7 +371,7 @@ function voteComment(commentid, voteValue) {
                 var comment = $(".comment.id-" + commentid);
                 //remove error span if present
                 comment.children(".entry").children('span').remove();
-                
+
                 if (!data.successfull) {
 
                     if (data.message.indexOf('2.2', 0) > 0) {
@@ -583,7 +581,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
                 $form.find("#errorMessage").toggle(true);
             },
             success: function (response) {
-             
+
                 removereplyform(parentcommentid);
                 $(".id-" + parentcommentid).append(response);
 
@@ -1419,7 +1417,7 @@ function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, co
         currentPage++;
     }
 
-    var cachePrevention = 'xxxx'.replace(/[xy]/g, function(c) {
+    var cachePrevention = 'xxxx'.replace(/[xy]/g, function (c) {
         var rand = Math.random() * 16 | 0
         return rand.toString(16);
     });;
@@ -1430,7 +1428,7 @@ function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, co
             //$("#comments-" + submissionId + "-page").remove();
             appendTarget.append(data);
             window.setTimeout(function () { UI.Notifications.raise('DOM', appendTarget); });
-            
+
             wireTooltips();
 
             eventSource.parent().remove();
