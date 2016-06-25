@@ -9,6 +9,9 @@
 
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
+
+@using Voat.Models.ViewModels
+
 @{
     ViewBag.Title = "Manage Account";
 }
@@ -25,51 +28,29 @@
 
                 @if (ViewBag.StatusMessage != String.Empty)
                 {
-                    <p class="alert alert-danger">@ViewBag.StatusMessage</p>
+                    <p class="validation-summary-errors">@ViewBag.StatusMessage</p>
                 }
 
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <section id="userPreferences">
-                        @Html.Action("UserPreferencesAbout")
-                    </section>
-                }
+                <section id="userPreferences">
+                    @{ Html.RenderAction("GetUserPreferencesAbout"); }
+                </section>
                 <div class="alert-title">User preferences</div>
 
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <section id="userPreferences">
-                        @Html.Action("UserPreferences")
-                    </section>
-                }
+                <section id="userPreferences">
+                    @Html.Action("GetUserPreferences")
+                </section>
 
                 <div class="alert-title">Account e-mail</div>
                 <section id="userEmail">
-                    @Html.Action("UserAccountEmail")
+                    @Html.Action("GetUserAccountEmail")
                 </section>
 
                 <div class="alert-title">Change your password</div>
-
-                @if (User.Identity.IsAuthenticated)
-                {
-                    @Html.Partial("_ChangeAccountSettings")
-                }
-                else
-                {
-                    @Html.Partial("_SetPasswordPartial")
-                }
+                @Html.Partial("_ChangeAccountSettings", new ManageUserViewModel())
 
                 <div class="alert-title">Delete your account</div>
 
-                @if (User.Identity.IsAuthenticated)
-                {
-                    @Html.Partial("_DeleteAccount")
-                }
-
-                <section id="externalLogins">
-                    @Html.Action("RemoveAccountList")
-                </section>
-
+                @Html.Partial("_DeleteAccount", new DeleteAccountViewModel())
             </div>
             @section Scripts {
                 @Scripts.Render("~/bundles/jqueryval")
