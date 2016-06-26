@@ -57,9 +57,9 @@ namespace Voat.Rules.Posting
             {
                 return CreateOutcome(RuleResult.Denied, "A text submission must include a title");
             }
-            if (userSubmission.Title.Length < 5)
+            if (userSubmission.Title.Length < 10)
             {
-                return CreateOutcome(RuleResult.Denied, "A title may not be less than 5 characters");
+                return CreateOutcome(RuleResult.Denied, "A title may not be less than 10 characters");
             }
             if (Submissions.ContainsUnicode(userSubmission.Title))
             {

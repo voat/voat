@@ -47,6 +47,29 @@ namespace Voat.Tests.Utils
 
         [TestMethod]
         [TestCategory("Utility")]
+        public void TrapInjectableJavascript()
+        {
+            var url = "javascript: alert(1);void(​0));";
+            Assert.IsTrue(UrlUtility.InjectableJavascriptDetected(url), url);
+
+            url = " JAVASCRIPT : alert(1);void(​0));";
+            Assert.IsTrue(UrlUtility.InjectableJavascriptDetected(url), url);
+
+            url = "&#106;avascript:alert(1);void(​0);";
+            Assert.IsTrue(UrlUtility.InjectableJavascriptDetected(url), url);
+
+            url = "http://javascript.com/someurl";
+            Assert.IsFalse(UrlUtility.InjectableJavascriptDetected(url), url);
+
+            url = "https://preview.voat.co/v/test/comments/1088839/5419812";
+            Assert.IsFalse(UrlUtility.InjectableJavascriptDetected(url), url);
+
+        }
+
+
+
+        [TestMethod]
+        [TestCategory("Utility")]
         public void TestEscapedQuotesInTitle()
         {
             Uri testUri = new Uri("https://lwn.net/Articles/653411/");

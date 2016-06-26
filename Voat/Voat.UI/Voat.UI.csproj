@@ -397,6 +397,7 @@
     <Content Include="gizmo\src\js\jquery.swipebox.js" />
     <Content Include="gizmo\src\js\jquery.swipebox.min.js" />
     <Content Include="gizmo\src\js\voatgallery.js" />
+    <Content Include="Graphics\Badges\bug_punisher.png" />
     <Content Include="Graphics\Badges\mb.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
@@ -547,11 +548,7 @@
     <Content Include="Views\About\About.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ChangeAccountSettings.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
-    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
-    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Manage.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />

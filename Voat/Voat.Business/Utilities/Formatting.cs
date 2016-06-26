@@ -15,6 +15,7 @@ All Rights Reserved.
 using System;
 using MarkdownDeep;
 using Voat.Utilities.Components;
+using System.Text.RegularExpressions;
 
 namespace Voat.Utilities
 {
@@ -37,7 +38,6 @@ namespace Voat.Utilities
                 newWindow = UserHelper.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name);
             }
 
-
             var m = new Markdown
             {
                 PrepareLink = new Func<HtmlTag, bool>(x =>
@@ -46,8 +46,7 @@ namespace Voat.Utilities
                     string href = x.attributes["href"];
                     if (!String.IsNullOrEmpty(href))
                     {
-                        //I think it needs the javascript: prefix to work at all but there might be more holes as this is just a simple check.
-                        if (href.ToLower().Trim().Contains("javascript"))
+                        if (UrlUtility.InjectableJavascriptDetected(href))
                         {
                             x.attributes["href"] = "#";
                             //add it to the output for verification?
@@ -64,7 +63,7 @@ namespace Voat.Utilities
 
             try
             {
-                return m.Transform(originalMessage);
+                return m.Transform(originalMessage).Trim();
             }
             catch (Exception ex) 
             {

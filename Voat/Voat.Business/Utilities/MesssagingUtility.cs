@@ -28,6 +28,11 @@ namespace Voat.Utilities
         // a method to send a private message to a user, invoked by other methods
         public static bool SendPrivateMessage(string sender, string recipientList, string subject, string body)
         {
+            if (Voat.Utilities.BanningUtility.ContentContainsBannedDomain(null, body))
+            {
+                return false;
+            }
+
             if (Voat.Utilities.UserHelper.IsUserGloballyBanned(System.Web.HttpContext.Current.User.Identity.Name))
             {
                 return false;

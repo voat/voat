@@ -170,133 +170,133 @@ namespace Voat.Controllers
 
             //OLD CODE BELOW - Won't hit
 
-            // save temp values for the view in case submission fails
-            ViewBag.selectedSubverse = submission.Subverse;
-            ViewBag.message = submission.Content;
-            ViewBag.title = submission.Title;
-            ViewBag.linkDescription = submission.LinkDescription;
+            //// save temp values for the view in case submission fails
+            //ViewBag.selectedSubverse = submission.Subverse;
+            //ViewBag.message = submission.Content;
+            //ViewBag.title = submission.Title;
+            //ViewBag.linkDescription = submission.LinkDescription;
 
-            // grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
-            submission.CreationDate = Repository.CurrentDate;
+            //// grab server timestamp and modify submission timestamp to have posting time instead of "started writing submission" time
+            //submission.CreationDate = Repository.CurrentDate;
 
-            // check if user is banned
-            if (UserHelper.IsUserGloballyBanned(User.Identity.Name) || UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
-            {
-                ViewBag.SelectedSubverse = submission.Subverse;
-                return View("~/Views/Home/Comments.cshtml", submission);
-            }
-            if (String.IsNullOrEmpty(submission.Subverse))
-            {
-                ModelState.AddModelError(string.Empty, "Please enter a subverse.");
-                return View("Submit");
-            }
-            // check if subverse exists
-            var targetSubverse = _db.Subverses.Find(submission.Subverse.Trim());
+            //// check if user is banned
+            //if (UserHelper.IsUserGloballyBanned(User.Identity.Name) || UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
+            //{
+            //    ViewBag.SelectedSubverse = submission.Subverse;
+            //    return View("~/Views/Home/Comments.cshtml", submission);
+            //}
+            //if (String.IsNullOrEmpty(submission.Subverse))
+            //{
+            //    ModelState.AddModelError(string.Empty, "Please enter a subverse.");
+            //    return View("Submit");
+            //}
+            //// check if subverse exists
+            //var targetSubverse = _db.Subverses.Find(submission.Subverse.Trim());
 
-            if (targetSubverse == null || targetSubverse.Name.Equals("all", StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
-                return View("Submit");
-            }
+            //if (targetSubverse == null || targetSubverse.Name.Equals("all", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to post to does not exist.");
+            //    return View("Submit");
+            //}
 
-            //wrap captcha check in anon method as following method is in non UI dll
-            var captchaCheck = new Func<HttpRequestBase, Task<bool>>(request => {
-                return ReCaptchaUtility.Validate(request);
-            });
+            ////wrap captcha check in anon method as following method is in non UI dll
+            //var captchaCheck = new Func<HttpRequestBase, Task<bool>>(request => {
+            //    return ReCaptchaUtility.Validate(request);
+            //});
 
-            // check if this submission is valid and good to go
-            var preProcessCheckResult = await Submissions.PreAddSubmissionCheck(submission, Request, User.Identity.Name, targetSubverse, captchaCheck);
-            if (preProcessCheckResult != null)
-            {
-                ModelState.AddModelError(string.Empty, preProcessCheckResult);
-                return View("Submit");
-            }
+            //// check if this submission is valid and good to go
+            //var preProcessCheckResult = await Submissions.PreAddSubmissionCheck(submission, Request, User.Identity.Name, targetSubverse, captchaCheck);
+            //if (preProcessCheckResult != null)
+            //{
+            //    ModelState.AddModelError(string.Empty, preProcessCheckResult);
+            //    return View("Submit");
+            //}
 
-            // submission is a link post
-            if (submission.Type == 2 && submission.Content != null && submission.LinkDescription != null)
-            {
-                //Ensure URL is valid - Exploit trap for non-UI submitted submissions
-                if (!UrlUtility.IsUriValid(submission.Content))
-                {
-                    ModelState.AddModelError(string.Empty, "Link submissions must contain a valid url");
-                    return View("Submit");
-                }
+            //// submission is a link post
+            //if (submission.Type == 2 && submission.Content != null && submission.LinkDescription != null)
+            //{
+            //    //Ensure URL is valid - Exploit trap for non-UI submitted submissions
+            //    if (!UrlUtility.IsUriValid(submission.Content))
+            //    {
+            //        ModelState.AddModelError(string.Empty, "Link submissions must contain a valid url");
+            //        return View("Submit");
+            //    }
 
-                //TODO: Port Check
-                // check if same link was submitted before and deny submission
-                    var existingSubmission = _db.Submissions.FirstOrDefault(s => s.Content.Equals(submission.Content, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
+            //    //TODO: Port Check
+            //    // check if same link was submitted before and deny submission
+            //        var existingSubmission = _db.Submissions.FirstOrDefault(s => s.Content.Equals(submission.Content, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
-                //Ported via 
-                // check if submission title is the same as target URL and reject if so
-                if (submission.LinkDescription.Equals(submission.Content, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    ModelState.AddModelError(string.Empty, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
-                    return View("Submit");
-                }
+            //    //Ported via 
+            //    // check if submission title is the same as target URL and reject if so
+            //    if (submission.LinkDescription.Equals(submission.Content, StringComparison.InvariantCultureIgnoreCase))
+            //    {
+            //        ModelState.AddModelError(string.Empty, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
+            //        return View("Submit");
+            //    }
 
-                // submission is a repost, discard it and inform the user
-                if (existingSubmission != null)
-                {
-                    ModelState.AddModelError(string.Empty, "Sorry, this link has already been submitted by someone else.");
+            //    // submission is a repost, discard it and inform the user
+            //    if (existingSubmission != null)
+            //    {
+            //        ModelState.AddModelError(string.Empty, "Sorry, this link has already been submitted by someone else.");
 
-                    // todo: offer the option to repost after informing the user about it
-                    return RedirectToRoute(
-                        "SubverseComments",
-                        new
-                        {
-                            controller = "Comment",
-                            action = "Comments",
-                            id = existingSubmission.ID,
-                            subversetoshow = existingSubmission.Subverse
-                        }
-                        );
-                }
+            //        // todo: offer the option to repost after informing the user about it
+            //        return RedirectToRoute(
+            //            "SubverseComments",
+            //            new
+            //            {
+            //                controller = "Comment",
+            //                action = "Comments",
+            //                id = existingSubmission.ID,
+            //                subversetoshow = existingSubmission.Subverse
+            //            }
+            //            );
+            //    }
 
-                // process new link submission
-                var addLinkSubmissionResult = await Submissions.AddNewSubmission(submission, targetSubverse, User.Identity.Name);
-                if (addLinkSubmissionResult != null)
-                {
-                    ModelState.AddModelError(string.Empty, addLinkSubmissionResult);
-                    return View("Submit");
-                }
-                // update last submission received date for target subverse
-                targetSubverse.LastSubmissionDate = Repository.CurrentDate;
-                await _db.SaveChangesAsync();
-            }
-            // submission is a message type submission
-            else if (submission.Type == 1 && submission.Title != null)
-            {
-                //Ported via PostSubmissionBannedRule
-                var containsBannedDomain = BanningUtility.ContentContainsBannedDomain(targetSubverse.Name, submission.Content);
-                if (containsBannedDomain)
-                {
-                    ModelState.AddModelError(string.Empty, "Sorry, this post contains links to banned domains.");
-                    return View("Submit");
-                }
+            //    // process new link submission
+            //    var addLinkSubmissionResult = await Submissions.AddNewSubmission(submission, targetSubverse, User.Identity.Name);
+            //    if (addLinkSubmissionResult != null)
+            //    {
+            //        ModelState.AddModelError(string.Empty, addLinkSubmissionResult);
+            //        return View("Submit");
+            //    }
+            //    // update last submission received date for target subverse
+            //    targetSubverse.LastSubmissionDate = Repository.CurrentDate;
+            //    await _db.SaveChangesAsync();
+            //}
+            //// submission is a message type submission
+            //else if (submission.Type == 1 && submission.Title != null)
+            //{
+            //    //Ported via PostSubmissionBannedRule
+            //    var containsBannedDomain = BanningUtility.ContentContainsBannedDomain(targetSubverse.Name, submission.Content);
+            //    if (containsBannedDomain)
+            //    {
+            //        ModelState.AddModelError(string.Empty, "Sorry, this post contains links to banned domains.");
+            //        return View("Submit");
+            //    }
 
-                // process new message type submission
-                var addMessageSubmissionResult = await Submissions.AddNewSubmission(submission, targetSubverse, User.Identity.Name);
-                if (addMessageSubmissionResult != null)
-                {
-                    ModelState.AddModelError(string.Empty, addMessageSubmissionResult);
-                    return View("Submit");
-                }
-                // update last submission received date for target subverse
-                targetSubverse.LastSubmissionDate = Repository.CurrentDate;
-                await _db.SaveChangesAsync();
-            }
+            //    // process new message type submission
+            //    var addMessageSubmissionResult = await Submissions.AddNewSubmission(submission, targetSubverse, User.Identity.Name);
+            //    if (addMessageSubmissionResult != null)
+            //    {
+            //        ModelState.AddModelError(string.Empty, addMessageSubmissionResult);
+            //        return View("Submit");
+            //    }
+            //    // update last submission received date for target subverse
+            //    targetSubverse.LastSubmissionDate = Repository.CurrentDate;
+            //    await _db.SaveChangesAsync();
+            //}
 
-            // redirect to comments section of newly posted submission
-            return RedirectToRoute(
-                "SubverseComments",
-                new
-                {
-                    controller = "Comment",
-                    action = "Comments",
-                    id = submission.ID,
-                    subversetoshow = submission.Subverse
-                }
-                );
+            //// redirect to comments section of newly posted submission
+            //return RedirectToRoute(
+            //    "SubverseComments",
+            //    new
+            //    {
+            //        controller = "Comment",
+            //        action = "Comments",
+            //        id = submission.ID,
+            //        subversetoshow = submission.Subverse
+            //    }
+            //    );
         }
 
         // GET: user/id

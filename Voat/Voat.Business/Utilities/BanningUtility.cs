@@ -29,7 +29,11 @@ namespace Voat.Utilities
             if (!String.IsNullOrEmpty(contentToEvaluate))
             {
                 //TODO: Change this to Query
-                var s = DataCache.Subverse.Retrieve(subverse);
+                Subverse s = null;
+                if (!String.IsNullOrEmpty(subverse))
+                {
+                    s = DataCache.Subverse.Retrieve(subverse);
+                }
                 if (s == null || (s != null && !s.ExcludeSitewideBans))
                 {
 

@@ -70,7 +70,14 @@ namespace Voat.Data
 
                 if (comment != null)
                 {
-                    //ignore votes if comment is users
+
+                    if (comment.IsDeleted)
+                    {
+                        return VoteResponse.Ignored(0, "Deleted comments cannot be voted");
+                        //throw new VoatValidationException("Deleted comments cannot be voted");
+                    }
+
+                    //ignore votes if user owns it
                     if (String.Equals(comment.UserName, userName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         return VoteResponse.Ignored(0, "User is prevented from voting on own content");
@@ -267,7 +274,13 @@ namespace Voat.Data
 
                 if (submission != null)
                 {
-                    //ignore votes if comment is users
+                    if (submission.IsDeleted)
+                    {
+                        return VoteResponse.Ignored(0, "Deleted submissions cannot be voted");
+                        //return VoteResponse.Ignored(0, "User is prevented from voting on own content");
+                    }
+
+                    //ignore votes if user owns it
                     if (String.Equals(submission.UserName, userName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         return VoteResponse.Ignored(0, "User is prevented from voting on own content");
@@ -826,59 +839,64 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public Models.Submission EditSubmission(int submissionID, UserSubmission submission)
+        public Models.Submission EditSubmission(int submissionID, UserSubmission userSubmission)
         {
-
-            if (submission == null || !submission.HasState)
+            if (userSubmission == null || !userSubmission.HasState)
             {
-                throw new VoatValidationException("The submission must not be null or have invalid state.");
+                throw new VoatValidationException("The submission must not be null or have invalid state");
             }
 
             //if (String.IsNullOrEmpty(submission.Url) && String.IsNullOrEmpty(submission.Content)) {
             //    throw new VoatValidationException("Either a Url or Content must be provided.");
             //}
 
-            var m = GetSubmissionUnprotected(submissionID);
+            var submission = GetSubmissionUnprotected(submissionID);
 
-            if (m == null)
+            if (submission == null)
             {
                 throw new VoatNotFoundException(String.Format("Can't find submission with ID {0}", submissionID));
             }
 
-            if (m.UserName != User.Identity.Name)
+            if (submission.IsDeleted)
+            {
+                throw new VoatValidationException("Deleted submissions cannot be edited");
+            }
+
+
+            if (submission.UserName != User.Identity.Name)
             {
                 throw new VoatSecurityException(String.Format("Submission can not be edited by account"));
             }
 
             //only allow edits for self posts
-            if (m.Type == 1)
+            if (submission.Type == 1)
             {
-                m.Content = submission.Content ?? m.Content;
+                submission.Content = userSubmission.Content ?? submission.Content;
             }
 
             //allow edit of title if in 10 minute window
-            if (CurrentDate.Subtract(m.CreationDate).TotalMinutes <= 10.0f)
+            if (CurrentDate.Subtract(submission.CreationDate).TotalMinutes <= 10.0f)
             {
 
-                if (!String.IsNullOrEmpty(submission.Title) && Utilities.Submissions.ContainsUnicode(submission.Title))
+                if (!String.IsNullOrEmpty(userSubmission.Title) && Utilities.Submissions.ContainsUnicode(userSubmission.Title))
                 {
-                    throw new VoatValidationException("Submission title can not contain Unicode characters.");
+                    throw new VoatValidationException("Submission title can not contain Unicode characters");
                 }
 
-                if (m.Type == 1)
+                if (submission.Type == 1)
                 {
-                    m.Title = (String.IsNullOrEmpty(submission.Title) ? m.Title : submission.Title);
+                    submission.Title = (String.IsNullOrEmpty(userSubmission.Title) ? submission.Title : userSubmission.Title);
                 }
                 else {
-                    m.LinkDescription = (String.IsNullOrEmpty(submission.Title) ? m.LinkDescription : submission.Title);
+                    submission.LinkDescription = (String.IsNullOrEmpty(userSubmission.Title) ? submission.LinkDescription : userSubmission.Title);
                 }
             }
 
-            m.LastEditDate = CurrentDate;
+            submission.LastEditDate = CurrentDate;
 
             _db.SaveChanges();
 
-            return Selectors.SecureSubmission(m);
+            return Selectors.SecureSubmission(submission);
         }
 
         [Authorize]
@@ -1098,6 +1116,10 @@ namespace Voat.Data
 
             if (current != null)
             {
+                if (current.IsDeleted)
+                {
+                    throw new VoatValidationException("Deleted comments cannot be edited");
+                }
 
                 if (current.UserName.Trim() == User.Identity.Name)
                 {
@@ -1807,19 +1829,19 @@ namespace Voat.Data
 
         }
 
-        public IList<DomainReference> GetBlockedUsers(string userName)
+        public IList<BlockedItem> GetBlockedUsers(string userName)
         {
             var blocked = (from x in _db.UserBlockedUsers
                            where x.UserName == userName
-                           select new DomainReference() { Name = x.BlockUser, Type = DomainType.User }).ToList();
+                           select new BlockedItem() { Name = x.BlockUser, Type = DomainType.User, CreationDate = x.CreationDate }).ToList();
             return blocked;
         }
 
-        public IList<DomainReference> GetBlockedSubverses(string userName)
+        public IList<BlockedItem> GetBlockedSubverses(string userName)
         {
             var blocked = (from x in _db.UserBlockedSubverses
                            where x.UserName == userName
-                           select new DomainReference() { Name = x.Subverse, Type = DomainType.Subverse }).ToList();
+                           select new BlockedItem() { Name = x.Subverse, Type = DomainType.Subverse, CreationDate = x.CreationDate }).ToList();
             return blocked;
         }
 
@@ -2337,43 +2359,55 @@ namespace Voat.Data
         /// <param name="domainType"></param>
         /// <param name="name"></param>
         /// <param name="block">If null then toggles, else, blocks or unblocks based on value</param>
-        public void Block(DomainType domainType, string name, bool? block)
+        public CommandResponse<bool?> Block(DomainType domainType, string name, bool? block)
         {
             DemandAuthentication();
-
+            var response = new CommandResponse<bool?>();
+            
             using (var db = new voatEntities())
             {
                 switch (domainType)
                 {
                     case DomainType.Subverse:
 
-                        var exists = db.Subverses.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-                        if (!exists)
+                        var exists = db.Subverses.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                        if (exists == null)
                         {
                             throw new VoatNotFoundException("Subverse '{0}' does not exist", name);
                         }
+                        //Set propercased name
+                        name = exists.Name;
 
                         var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
                         if (subverseBlock == null && ((block.HasValue && block.Value) || !block.HasValue))
                         {
                             db.UserBlockedSubverses.Add(new UserBlockedSubverse { UserName = User.Identity.Name, Subverse = name, CreationDate = Repository.CurrentDate });
+                            response.Response = true;
                         }
                         else if (subverseBlock != null && ((block.HasValue && !block.Value) || !block.HasValue))
                         {
                             db.UserBlockedSubverses.Remove(subverseBlock);
+                            response.Response = false;
                         }
                         db.SaveChanges();
                         break;
                     case DomainType.User:
-
+                        //Ensure user exists, get propercased user name
+                        name = UserHelper.OriginalUsername(name);
+                        if (String.IsNullOrEmpty(name))
+                        {
+                            return new CommandResponse<bool?>(null, Status.Error, "User does not exist");
+                        }
                         var userBlock = db.UserBlockedUsers.FirstOrDefault(n => n.BlockUser.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
                         if (userBlock == null && ((block.HasValue && block.Value) || !block.HasValue))
                         {
                             db.UserBlockedUsers.Add(new UserBlockedUser { UserName = User.Identity.Name, BlockUser = name, CreationDate = Repository.CurrentDate });
+                            response.Response = true;
                         }
                         else if (userBlock != null && ((block.HasValue && !block.Value) || !block.HasValue))
                         {
                             db.UserBlockedUsers.Remove(userBlock);
+                            response.Response = false;
                         }
 
                         db.SaveChanges();
@@ -2385,6 +2419,8 @@ namespace Voat.Data
 
                 }
             }
+            response.Status = Status.Success;
+            return response;
         }
 
         #endregion

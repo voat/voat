@@ -1,4 +1,6 @@
-﻿namespace Voat.Domain.Models
+﻿using System;
+
+namespace Voat.Domain.Models
 {
     public class DomainReference
     {
@@ -11,6 +13,9 @@
         /// Specifies the type of domain object.
         /// </summary>
         public DomainType Type { get; set; }
+    }
+    public class BlockedItem : DomainReference {
+        public DateTime? CreationDate { get; set; }
     }
 
     public class DomainReference<T> : DomainReference
