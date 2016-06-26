@@ -117,10 +117,19 @@ namespace Voat.Utilities
                 {
                     try
                     {
+                        //substring - db column is nvarchar(50) and any longer breaks EF
+                        messages.ForEach(x =>
+                        {
+                            if (x.Subject.Length > 50)
+                            {
+                                x.Subject = x.Subject.Substring(0, 50);
+                            }
+                        });
+
                         db.PrivateMessages.AddRange(messages);
                         db.SaveChanges();
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         return false;
                     }

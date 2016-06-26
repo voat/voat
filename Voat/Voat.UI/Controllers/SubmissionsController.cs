@@ -244,7 +244,7 @@ namespace Voat.Controllers
                     {
                         // notify submission author that his submission has been deleted by a moderator
                         MesssagingUtility.SendPrivateMessage(
-                            "Voat",
+                            $"v/{submissionToDelete.Subverse}",
                             submissionToDelete.UserName,
                             "Your submission has been deleted by a moderator",
                             "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
@@ -259,7 +259,7 @@ namespace Voat.Controllers
                     {
                         // notify submission author that his submission has been deleted by a moderator
                         MesssagingUtility.SendPrivateMessage(
-                            "Voat",
+                            $"v/{submissionToDelete.Subverse}",
                             submissionToDelete.UserName,
                             "Your submission has been deleted by a moderator",
                             "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
