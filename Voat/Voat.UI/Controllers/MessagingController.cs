@@ -330,39 +330,10 @@ namespace Voat.Controllers
             if (!ModelState.IsValid) return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
-            // check if recipient exists
-            if (UserHelper.UserExists(privateMessage.Recipient))
-            {
-                // send the submission
-                privateMessage.CreationDate = Repository.CurrentDate;
-                privateMessage.Sender = User.Identity.Name;
-                privateMessage.IsUnread = true;
-                if (Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name)) return new HttpStatusCodeResult(HttpStatusCode.OK);
-                _db.PrivateMessages.Add(privateMessage);
 
-                try
-                {
-                    await _db.SaveChangesAsync();
+            MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
 
-                    EventNotification.Instance.SendMessageNotice(privateMessage.Recipient, null, Domain.Models.MessageType.Inbox, null, null);
-
-                    //// get count of unread notifications
-                    //int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(privateMessage.Recipient);
-
-                    //// send SignalR realtime notification to recipient
-                    //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                    //hubContext.Clients.User(privateMessage.Recipient).setNotificationsPending(unreadNotifications);
-
-                }
-                catch (Exception)
-                {
-                    return View("~/Views/Errors/DbNotResponding.cshtml");
-                }
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-            }
+            //EventNotification.Instance.SendMessageNotice(privateMessage.Recipient, null, Domain.Models.MessageType.Inbox, null, null);
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
