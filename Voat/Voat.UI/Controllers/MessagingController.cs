@@ -26,6 +26,7 @@ using Voat.Utilities;
 using Voat.Data.Models;
 using Voat.UI.Utilities;
 using Voat.Data;
+using Voat.Domain.Command;
 
 namespace Voat.Controllers
 {
@@ -315,7 +316,17 @@ namespace Voat.Controllers
                 }
             }
 
-            var response = MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
+            var message = new Domain.Models.SendMessage()
+            {
+                //Sender = User.Identity.Name,
+                Recipient = privateMessage.Recipient,
+                Subject = privateMessage.Subject,
+                Message = privateMessage.Body
+            };
+            var cmd = new SendMessageCommand(message);
+            var response = await cmd.Execute();
+
+            //var response = MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
 
             return RedirectToAction("Sent", "Messaging");
         }
@@ -327,11 +338,25 @@ namespace Voat.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SendPrivateMessage([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
         {
-            if (!ModelState.IsValid) return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
+            {
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
 
-            MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
+            var message = new Domain.Models.SendMessage()
+            {
+                //Sender = User.Identity.Name,
+                Recipient = privateMessage.Recipient,
+                Subject = privateMessage.Subject,
+                Message = privateMessage.Body
+            };
+            var cmd = new SendMessageCommand(message);
+            var response = await cmd.Execute();
+            //MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
 
             //EventNotification.Instance.SendMessageNotice(privateMessage.Recipient, null, Domain.Models.MessageType.Inbox, null, null);
 

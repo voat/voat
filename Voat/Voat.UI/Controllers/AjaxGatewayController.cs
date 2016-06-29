@@ -176,8 +176,9 @@ namespace Voat.Controllers
         public ActionResult UserBasicInfo(string userName)
         {
             var q = new QueryUserData(userName);
-            var r = q.Execute();
-            var info = r.Information;
+            var userData = q.Execute();
+            //var userData = new UserData(User.Identity.Name);
+            var info = userData.Information;
 
             var memberFor = Age.ToRelative(info.RegistrationDate);
             var scp = info.SubmissionPoints.Sum;

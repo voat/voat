@@ -17,9 +17,7 @@ namespace Voat.Utilities
         public event EventHandler<MessageReceivedEventArgs> OnMentionReceived;
         public event EventHandler<MessageReceivedEventArgs> OnMessageReceived;
         public event EventHandler<MessageReceivedEventArgs> OnCommentReplyReceived;
-
         public event EventHandler<VoteReceivedEventArgs> OnVoteReceived;
-
         public event EventHandler<BasicMessageEventArgs> OnHeadButtReceived;
         public event EventHandler<ChatMessageEventArgs> OnChatMessageReceived;
 

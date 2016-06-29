@@ -50,7 +50,7 @@ namespace Voat.Utilities
             {
                 if (highestRankCacheEntry < newRank)
                 {
-                    CacheHandler.Instance.Replace(GetHighestRankingCacheKey(subverse), new Func<double?, double?>(current => highestRankCacheEntry));
+                    CacheHandler.Instance.Replace<double?>(GetHighestRankingCacheKey(subverse),  highestRankCacheEntry, TimeSpan.FromMinutes(30));
                 }
             }
         }

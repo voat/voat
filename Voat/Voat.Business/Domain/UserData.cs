@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Caching;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
@@ -25,7 +28,7 @@ namespace Voat.Domain
     {
         protected string _userName;
         protected UserInformation _info;
-        protected UserPreference _prefs;
+        protected Data.Models.UserPreference _prefs;
         protected IEnumerable<string> _subverseSubscriptions;
         protected IEnumerable<string> _blockedSubverses;
         protected IEnumerable<string> _blockedUsers;
@@ -33,8 +36,23 @@ namespace Voat.Domain
         protected int? _votesInLast24Hours;
         protected int? _submissionsInLast24Hours;
 
-        public UserData(string userName)
+        public UserData(string userName, bool validateUserExists = false)
         {
+            if (validateUserExists)
+            {
+                VoatUser user = null;
+                if (!String.IsNullOrWhiteSpace(userName))
+                {
+                    using (var repo = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+                    {
+                        user = repo.FindByName(userName);
+                    }
+                }
+                if (user == null)
+                {
+                    throw new VoatNotFoundException("User doesn't exist");
+                }
+            }
             this._userName = userName;
         }
         public int TotalVotesUsedIn24Hours
@@ -117,7 +135,7 @@ namespace Voat.Domain
             }
 
         }
-        public UserPreference Preferences
+        public Data.Models.UserPreference Preferences
         {
             get
             {

@@ -20,6 +20,7 @@ using System.Net.Mail;
 using System.Web.Http;
 using Voat.Caching;
 using Voat.Data.Models;
+using Voat.Domain;
 using Voat.Domain.Query;
 using Voat.Models;
 using Voat.Models.ApiModels;
@@ -434,8 +435,9 @@ namespace Voat.Controllers
 
                       //Port to new code
                       var q = new QueryUserData(userName);
-                      var r = q.Execute();
-                      var info = r.Information;
+                      var userData = q.Execute();
+                      //var userData = new UserData(User.Identity.Name);
+                      var info = userData.Information;
 
                       resultModel.Name = userName;
                       resultModel.CCP = info.CommentPoints.Sum;

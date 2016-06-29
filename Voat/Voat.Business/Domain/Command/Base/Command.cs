@@ -33,7 +33,11 @@ namespace Voat.Domain.Command
         protected override async Task<T> ProtectedExecute()
         {
             var result = await CacheExecute();
-            Task t = Task.Run(() => UpdateCache()); //don't wait this
+            if (result.Success)
+            {
+                UpdateCache();
+            }
+            //Task t = Task.Run(() => UpdateCache()); //don't wait this
             return result;
         }
 
@@ -53,7 +57,11 @@ namespace Voat.Domain.Command
         protected override async Task<T> ProtectedExecute()
         {
             var result = await CacheExecute();
-            Task t = Task.Run(() => UpdateCache(result.Item2)); //don't wait this
+            if (result.Item1.Success)
+            {
+                UpdateCache(result.Item2);
+            }
+            //Task t = Task.Run(() => UpdateCache(result.Item2)); //don't wait this
             return result.Item1;
         }
 

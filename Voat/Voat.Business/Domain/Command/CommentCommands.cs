@@ -61,16 +61,18 @@ namespace Voat.Domain.Command
     [Serializable]
     public class DeleteCommentCommand : CacheCommand<CommandResponse, Comment>
     {
-        public DeleteCommentCommand(int commentID)
+        public DeleteCommentCommand(int commentID, string reason = null)
         {
             if (commentID <= 0)
             {
                 throw new ArgumentOutOfRangeException("CommentID is not valid");
             }
             this.CommentID = commentID;
+            this.Reason = reason;
         }
 
         public int CommentID { get; set; }
+        public string Reason { get; set; }
 
         protected override async Task<Tuple<CommandResponse, Comment>> CacheExecute()
         {
@@ -78,7 +80,7 @@ namespace Voat.Domain.Command
             {
                 using (var db = new Repository())
                 {
-                    return db.DeleteComment(this.CommentID);
+                    return db.DeleteComment(this.CommentID, this.Reason);
                 }
             });
             return Tuple.Create(CommandResponse.Successful(), result);

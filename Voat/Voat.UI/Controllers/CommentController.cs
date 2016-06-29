@@ -562,17 +562,21 @@ namespace Voat.Controllers
                 // delete comment if delete request is issued by subverse moderator
                 else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
                 {
+
                     // notify comment author that his comment has been deleted by a moderator
-                    MesssagingUtility.SendPrivateMessage(
-                        "Voat",
-                        commentToDelete.UserName,
-                        "Your comment has been deleted by a moderator",
-                        "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
-                        "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
-                        "Original comment content was: " + Environment.NewLine +
-                        "---" + Environment.NewLine +
-                        commentToDelete.Content
-                        );
+                    var message = new Domain.Models.SendMessage()
+                    {
+                        Sender = $"v/{commentSubverse}",
+                        Recipient = commentToDelete.UserName,
+                        Subject = "Your comment has been deleted by a moderator",
+                        Message =  "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
+                                    "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
+                                    "Original comment content was: " + Environment.NewLine +
+                                    "---" + Environment.NewLine +
+                                    commentToDelete.Content
+                    };
+                    var cmd = new SendMessageCommand(message);
+                    await cmd.Execute();
 
                     commentToDelete.IsDeleted = true;
 

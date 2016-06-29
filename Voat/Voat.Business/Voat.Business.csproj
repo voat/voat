@@ -167,6 +167,7 @@
     <Compile Include="Domain\Command\SubmissionCommands.cs" />
     <Compile Include="Domain\Command\SubscriptionCommand.cs" />
     <Compile Include="Domain\Command\UpdateApiClientLastAccessDateCommand.cs" />
+    <Compile Include="Domain\Command\UpdateUserPreferencesCommand.cs" />
     <Compile Include="Domain\Command\VoteCommands.cs" />
     <Compile Include="Common\Age.cs" />
     <Compile Include="Common\Score.cs" />

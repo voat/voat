@@ -240,36 +240,26 @@ namespace Voat.Controllers
 
                     _db.SubmissionRemovalLogs.Add(removalLog);
 
-                    if (submissionToDelete.Type == 1)
+                    // notify submission author that his submission has been deleted by a moderator
+                    var message = new Domain.Models.SendMessage()
                     {
-                        // notify submission author that his submission has been deleted by a moderator
-                        MesssagingUtility.SendPrivateMessage(
-                            $"v/{submissionToDelete.Subverse}",
-                            submissionToDelete.UserName,
-                            "Your submission has been deleted by a moderator",
-                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
-                            "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
-                            "Original submission content was: " + Environment.NewLine +
-                            "---" + Environment.NewLine +
-                            "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
-                            "Submission content: " + submissionToDelete.Content
-                            );
-                    }
-                    else
-                    {
-                        // notify submission author that his submission has been deleted by a moderator
-                        MesssagingUtility.SendPrivateMessage(
-                            $"v/{submissionToDelete.Subverse}",
-                            submissionToDelete.UserName,
-                            "Your submission has been deleted by a moderator",
-                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
-                            "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
-                            "Original submission content was: " + Environment.NewLine +
-                            "---" + Environment.NewLine +
-                            "Link description: " + submissionToDelete.LinkDescription + ", " + Environment.NewLine +
-                            "Link URL: " + submissionToDelete.Content
-                            );
-                    }
+                        Sender = $"v/{submissionToDelete.Subverse}",
+                        Recipient = submissionToDelete.UserName,
+                        Subject = "Your submission has been deleted by a moderator",
+                        Message =   "Your [submission](v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
+                                    "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
+                                    "Original submission content was: " + Environment.NewLine +
+                                    "---" + Environment.NewLine +
+                                    (submissionToDelete.Type == 1 ? 
+                                    "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
+                                    "Submission content: " + submissionToDelete.Content
+                                    :
+                                    "Link description: " + submissionToDelete.LinkDescription + ", " + Environment.NewLine +
+                                    "Link URL: " + submissionToDelete.Content
+                                    )
+                    };
+                    var cmd = new SendMessageCommand(message);
+                    await cmd.Execute();
 
                     // remove sticky if submission was stickied
                     var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionId);

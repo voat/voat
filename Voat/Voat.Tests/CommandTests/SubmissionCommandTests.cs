@@ -22,6 +22,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Tests.Repository;
@@ -75,14 +76,14 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Submission")]
         [TestCategory("Command.Submission.Post")]
-        public void DeleteSubmission()
+        public async Task DeleteSubmission()
         {
             TestHelper.SetPrincipal("anon");
 
-            var cmd = new DeleteSubmissionCommand(1);
-            var r = cmd.Execute().Result;
+            var cmd = new DeleteSubmissionCommand(3);
+            var r = await cmd.Execute();
 
-            Assert.IsTrue(r.Success);
+            Assert.IsTrue(r.Success, r.Message);
             //Assert.Inconclusive();
         }
 
@@ -95,13 +96,13 @@ namespace Voat.Tests.CommandTests
         {
             TestHelper.SetPrincipal("anon");
 
-            var x = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "xxxxxx", Content = "xxxxxx" });
+            var x = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "xxxxxxxxxxxx", Content = "xxxxxxxxxxxx" });
             var s = x.Execute().Result;
 
             Assert.IsNotNull(s, "Response is null");
             Assert.IsTrue(s.Success, s.Message);
 
-            var cmd = new EditSubmissionCommand(s.Response.ID, new Domain.Models.UserSubmission() { Title = "yyyyyy", Content = "yyyyyy" });
+            var cmd = new EditSubmissionCommand(s.Response.ID, new Domain.Models.UserSubmission() { Title = "yyyyyyyyyyyy", Content = "yyyyyyyyyyyy" });
             var r = cmd.Execute().Result;
 
             Assert.IsNotNull(r, "Response is null");
@@ -111,8 +112,8 @@ namespace Voat.Tests.CommandTests
             {
                 var submission = repo.GetSubmission(s.Response.ID);
                 Assert.IsNotNull(submission, "Can't find submission from repo");
-                Assert.AreEqual("yyyyyy", submission.Title);
-                Assert.AreEqual("yyyyyy", submission.Content);
+                Assert.AreEqual("yyyyyyyyyyyy", submission.Title);
+                Assert.AreEqual("yyyyyyyyyyyy", submission.Content);
             }
 
             //Assert.Inconclusive();
@@ -195,13 +196,13 @@ namespace Voat.Tests.CommandTests
 
             TestHelper.SetPrincipal("TestUser2");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man", Url = "http://www.saiddit.com/images/feelsgoodman.jpg" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://www.saiddit.com/images/feelsgoodman.jpg" });
             var r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "Submission contains banned domains");
 
-            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man", Content = "Check out this cool image I found using dogpile.com: http://saiddit.com/images/feelsgoodman.jpg" });
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Content = "Check out this cool image I found using dogpile.com: http://saiddit.com/images/feelsgoodman.jpg" });
             r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);

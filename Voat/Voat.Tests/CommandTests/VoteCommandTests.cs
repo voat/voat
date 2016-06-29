@@ -161,8 +161,8 @@ namespace Voat.Tests.CommandTests
             var cmd = new SubmissionVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
-            Assert.IsTrue(c.Success);
-            Assert.IsNotNull(c.Response);
+            Assert.IsTrue(c.Success, c.Message);
+            Assert.IsNotNull(c.Response, "Expecting payload");
 
             //verify in db
             using (var db = new Voat.Data.Repository())

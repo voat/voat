@@ -57,16 +57,7 @@ namespace Voat.Domain.Query
             if (pref == null)
             {
                 pref = new UserPreference();
-                pref.Language = "en";
-                pref.NightMode = false;
-                pref.OpenInNewWindow = false;
-                pref.UseSubscriptionsMenu = true;
-                pref.DisableCSS = false;
-                pref.DisplaySubscriptions = false;
-                pref.DisplayVotes = false;
-                pref.EnableAdultContent = false;
-                pref.Bio = "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.";
-                pref.Avatar = "default.jpg";
+                Repository.SetDefaultUserPreferences(pref);
                 pref.UserName = _userToRetrieve;
             }
             return pref;

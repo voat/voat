@@ -704,7 +704,10 @@ namespace Voat.Data
                 case AGGREGATE_SUBVERSE.ANY:
 
                     query = (from x in _db.Submissions
-                             where !x.Subverse1.IsAdminPrivate && !x.Subverse1.IsPrivate && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value)
+                             where 
+                             !x.Subverse1.IsAdminPrivate 
+                             && !x.Subverse1.IsPrivate
+                             && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value)
                              select x);
                     break;
                 case AGGREGATE_SUBVERSE.ALL:
@@ -750,10 +753,10 @@ namespace Voat.Data
                     b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) 
                     && b.Subverse.Equals(s.Subverse, StringComparison.OrdinalIgnoreCase)).Any());
                 //filter blocked users (Currently commented out do to a collation issue)
-                //query = query.Where(s => !_db.UserBlockedUsers.Where(b => 
-                //    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) 
-                //    && s.UserName.Equals(b.BlockUser, StringComparison.OrdinalIgnoreCase)
-                //    ).Any());
+                query = query.Where(s => !_db.UserBlockedUsers.Where(b =>
+                    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                    && s.UserName.Equals(b.BlockUser, StringComparison.OrdinalIgnoreCase)
+                    ).Any());
                 //filter global banned users
                 query = query.Where(s => !_db.BannedUsers.Where(b => b.UserName.Equals(s.UserName, StringComparison.OrdinalIgnoreCase)).Any());
             }
@@ -901,25 +904,26 @@ namespace Voat.Data
 
         [Authorize]
         //LOGIC COPIED FROM SubmissionController.DeleteSubmission(int)
-        public Models.Submission DeleteSubmission(int submissionID)
+        public Models.Submission DeleteSubmission(int submissionID, string reason = null)
         {
             DemandAuthentication();
 
-            var submissionToDelete = _db.Submissions.Find(submissionID);
+            var submission = _db.Submissions.Find(submissionID);
 
-            if (submissionToDelete != null)
+            if (submission != null && !submission.IsDeleted)
             {
                 // delete submission if delete request is issued by submission author
-                if (submissionToDelete.UserName == User.Identity.Name)
+                if (submission.UserName == User.Identity.Name)
                 {
-                    submissionToDelete.IsDeleted = true;
+                    submission.IsDeleted = true;
 
-                    if (submissionToDelete.Type == 1)
+                    if (submission.Type == 1)
                     {
-                        submissionToDelete.Content = "deleted by author at " + Repository.CurrentDate;
+                        submission.Content = "Deleted by author at " + Repository.CurrentDate;
                     }
-                    else {
-                        submissionToDelete.Content = "http://voat.co";
+                    else
+                    {
+                        submission.Content = "http://voat.co";
                     }
 
                     // remove sticky if submission was stickied
@@ -933,15 +937,23 @@ namespace Voat.Data
                 }
 
                 // delete submission if delete request is issued by subverse moderator
-                else if (IsUserModerator(submissionToDelete.Subverse))
+                else if (IsUserModerator(submission.Subverse))
                 {
+
+                    if (String.IsNullOrEmpty(reason))
+                    {
+                        var ex = new VoatValidationException("A reason for deletion is required");
+                        ex.Data["SubmissionID"] = submissionID;
+                        throw ex;
+                    }
+
                     // mark submission as deleted
-                    submissionToDelete.IsDeleted = true;
+                    submission.IsDeleted = true;
 
                     // move the submission to removal log
                     var removalLog = new SubmissionRemovalLog
                     {
-                        SubmissionID = submissionToDelete.ID,
+                        SubmissionID = submission.ID,
                         Moderator = User.Identity.Name,
                         Reason = "This feature is not yet implemented",
                         CreationDate = Repository.CurrentDate
@@ -950,25 +962,25 @@ namespace Voat.Data
                     _db.SubmissionRemovalLogs.Add(removalLog);
 
                     // notify submission author that his submission has been deleted by a moderator
-                    var message =
-                        "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
-                        "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
-                        "Original submission content was: " + Environment.NewLine + "---" + Environment.NewLine +
-                        (submissionToDelete.Type == 1 ?
-                            "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
-                            "Submission content: " + submissionToDelete.Content
-                        :
-                            "Link description: " + submissionToDelete.LinkDescription + ", " + Environment.NewLine +
-                            "Link URL: " + submissionToDelete.Content
-                        );
-
-                    MesssagingUtility.SendPrivateMessage(
-                           "Voat",
-                           submissionToDelete.UserName,
-                           "Your submission has been deleted by a moderator",
-                           message
-                    );
-
+                    var message = new Domain.Models.SendMessage()
+                    {
+                        Sender = $"v/{submission.Subverse}",
+                        Recipient = submission.UserName,
+                        Subject = "Your submission has been deleted by a moderator",
+                        Message = "Your [submission](v/" + submission.Subverse + "/comments/" + submission.ID + ") has been deleted by: " +
+                                    "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
+                                    "Original submission content was: " + Environment.NewLine +
+                                    "---" + Environment.NewLine +
+                                    (submission.Type == 1 ?
+                                    "Submission title: " + submission.Title + ", " + Environment.NewLine +
+                                    "Submission content: " + submission.Content
+                                    :
+                                    "Link description: " + submission.LinkDescription + ", " + Environment.NewLine +
+                                    "Link URL: " + submission.Content
+                                    )
+                    };
+                    var cmd = new SendMessageCommand(message);
+                    cmd.Execute();
 
                     // remove sticky if submission was stickied
                     var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionID);
@@ -978,12 +990,95 @@ namespace Voat.Data
                     }
 
                     _db.SaveChanges();
+
                 }
-                else {
+                else
+                {
                     throw new VoatSecurityException("User doesn't have permission to delete submission.");
                 }
             }
-            return Selectors.SecureSubmission(submissionToDelete);
+
+            return Selectors.SecureSubmission(submission);
+
+            //var submissionToDelete = _db.Submissions.Find(submissionID);
+
+            //if (submissionToDelete != null)
+            //{
+            //    // delete submission if delete request is issued by submission author
+            //    if (submissionToDelete.UserName == User.Identity.Name)
+            //    {
+            //        submissionToDelete.IsDeleted = true;
+
+            //        if (submissionToDelete.Type == 1)
+            //        {
+            //            submissionToDelete.Content = "deleted by author at " + Repository.CurrentDate;
+            //        }
+            //        else {
+            //            submissionToDelete.Content = "http://voat.co";
+            //        }
+
+            //        // remove sticky if submission was stickied
+            //        var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionID);
+            //        if (existingSticky != null)
+            //        {
+            //            _db.StickiedSubmissions.Remove(existingSticky);
+            //        }
+
+            //        _db.SaveChanges();
+            //    }
+
+            //    // delete submission if delete request is issued by subverse moderator
+            //    else if (IsUserModerator(submissionToDelete.Subverse))
+            //    {
+            //        // mark submission as deleted
+            //        submissionToDelete.IsDeleted = true;
+
+            //        // move the submission to removal log
+            //        var removalLog = new SubmissionRemovalLog
+            //        {
+            //            SubmissionID = submissionToDelete.ID,
+            //            Moderator = User.Identity.Name,
+            //            Reason = "This feature is not yet implemented",
+            //            CreationDate = Repository.CurrentDate
+            //        };
+
+            //        _db.SubmissionRemovalLogs.Add(removalLog);
+
+            //        // notify submission author that his submission has been deleted by a moderator
+            //        var message =
+            //            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
+            //            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
+            //            "Original submission content was: " + Environment.NewLine + "---" + Environment.NewLine +
+            //            (submissionToDelete.Type == 1 ?
+            //                "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
+            //                "Submission content: " + submissionToDelete.Content
+            //            :
+            //                "Link description: " + submissionToDelete.LinkDescription + ", " + Environment.NewLine +
+            //                "Link URL: " + submissionToDelete.Content
+            //            );
+
+            //        MesssagingUtility.SendPrivateMessage(
+            //               "Voat",
+            //               submissionToDelete.UserName,
+            //               "Your submission has been deleted by a moderator",
+            //               message
+            //        );
+
+
+            //        // remove sticky if submission was stickied
+            //        var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionID);
+            //        if (existingSticky != null)
+            //        {
+            //            _db.StickiedSubmissions.Remove(existingSticky);
+            //        }
+
+            //        _db.SaveChanges();
+            //    }
+            //    else {
+            //        throw new VoatSecurityException("User doesn't have permission to delete submission.");
+            //    }
+            //}
+            //return Selectors.SecureSubmission(submissionToDelete);
         }
 
         #endregion
@@ -1060,51 +1155,76 @@ namespace Voat.Data
         }
         
         [Authorize]
-        public Models.Comment DeleteComment(int commentID)
+        public Models.Comment DeleteComment(int commentID, string reason = null)
         {
-            DemandAuthentication();
 
             var comment = _db.Comments.Find(commentID);
 
-            if (comment != null)
+            if (comment != null && !comment.IsDeleted)
             {
-                var q = new QuerySubmission(comment.SubmissionID.Value);
-                var submission = Task.Run(() => q.ExecuteAsync()).Result;
-
-                var commentSubverse = submission.Subverse;
-                // delete comment if the comment author is currently logged in user
-                if (comment.UserName == User.Identity.Name)
+                var submission = _db.Submissions.Find(comment.SubmissionID);
+                if (submission != null)
                 {
-                    comment.IsDeleted = true;
-                    comment.Content = "deleted by author at " + CurrentDate.ToLongDateString();
-                }
-                else
-                {
-                    if (IsUserModerator(commentSubverse))
+                    var subverseName = submission.Subverse;
+                    // delete comment if the comment author is currently logged in user
+                    if (comment.UserName == User.Identity.Name)
                     {
                         comment.IsDeleted = true;
-                        comment.Content = "deleted by moderator at " + CurrentDate;
-
-                        // notify comment author that his comment has been deleted by a moderator
-                        MesssagingUtility.SendPrivateMessage(
-                            "Voat",
-                            comment.UserName,
-                            "Your comment has been deleted by a moderator",
-                            "Your [comment](/v/" + commentSubverse + "/comments/" + comment.SubmissionID + "/" + comment.ID + ") has been deleted by: " +
-                            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " on: " + CurrentDate + "  " + Environment.NewLine +
-                            "Original comment content was: " + Environment.NewLine +
-                            "---" + Environment.NewLine +
-                            comment.Content
-                            );
+                        comment.Content = "Deleted by author at " + Repository.CurrentDate;
+                        _db.SaveChanges();
                     }
+
+                    // delete comment if delete request is issued by subverse moderator
                     else
                     {
-                        var ex = new VoatSecurityException("User doesn't have permissions to perform requested action");
-                        ex.Data["CommentID"] = commentID;
-                        throw ex;
+                        if (IsUserModerator(subverseName))
+                        {
+                            if (String.IsNullOrEmpty(reason))
+                            {
+                                var ex = new VoatValidationException("A reason for deletion is required");
+                                ex.Data["CommentID"] = commentID;
+                                throw ex;
+                            }
+
+                            // notify comment author that his comment has been deleted by a moderator
+                            var message = new Domain.Models.SendMessage()
+                            {
+                                Sender = $"v/{subverseName}",
+                                Recipient = comment.UserName,
+                                Subject = "Your comment has been deleted by a moderator",
+                                Message = "Your [comment](/v/" + subverseName + "/comments/" + comment.SubmissionID + "/" + comment.ID + ") has been deleted by: " +
+                                            "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
+                                            "Original comment content was: " + Environment.NewLine +
+                                            "---" + Environment.NewLine +
+                                            comment.Content
+                            };
+                            var cmd = new SendMessageCommand(message);
+                            cmd.Execute();
+
+                            comment.IsDeleted = true;
+
+                            // move the comment to removal log
+                            var removalLog = new CommentRemovalLog
+                            {
+                                CommentID = comment.ID,
+                                Moderator = User.Identity.Name,
+                                Reason = reason,
+                                CreationDate = Repository.CurrentDate
+                            };
+
+                            _db.CommentRemovalLogs.Add(removalLog);
+
+                            comment.Content = "Deleted by a moderator at " + Repository.CurrentDate;
+                            _db.SaveChanges();
+                        }
+                        else
+                        {
+                            var ex = new VoatSecurityException("User doesn't have permissions to perform requested action");
+                            ex.Data["CommentID"] = commentID;
+                            throw ex;
+                        }
                     }
                 }
-                _db.SaveChanges();
             }
             return Selectors.SecureComment(comment);
         }
@@ -1473,9 +1593,25 @@ namespace Voat.Data
             return (forceAction.HasValue ? forceAction.Value : isSaved);
 
         }
-
+        public static void SetDefaultUserPreferences(Data.Models.UserPreference p)
+        {
+            p.Language = "en";
+            p.NightMode = false;
+            p.OpenInNewWindow = false;
+            p.UseSubscriptionsMenu = true;
+            p.DisableCSS = false;
+            p.DisplaySubscriptions = false;
+            p.DisplayVotes = false;
+            p.EnableAdultContent = false;
+            p.Bio = "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.";
+            p.Avatar = "default.jpg";
+            p.CollapseCommentLimit = 4;
+            p.DisplayCommentCount = 5;
+            p.HighlightMinutes = 30;
+            p.VanityTitle = null;
+        }
         [Authorize]
-        public void SaveUserPrefernces(UserPreference preferences)
+        public void SaveUserPrefernces(Domain.Models.UserPreference preferences)
         {
             DemandAuthentication();
 
@@ -1485,14 +1621,16 @@ namespace Voat.Data
 
             if (p == null)
             {
-                p = new UserPreference();
+                p = new Data.Models.UserPreference();
                 p.UserName = User.Identity.Name;
+                SetDefaultUserPreferences(p);
+                _db.UserPreferences.Add(p);
             }
 
-            if (!String.IsNullOrEmpty(preferences.Avatar))
-            {
-                p.Avatar = preferences.Avatar;
-            }
+            //if (!String.IsNullOrEmpty(preferences.Avatar))
+            //{
+            //    p.Avatar = preferences.Avatar;
+            //}
             if (!String.IsNullOrEmpty(preferences.Bio))
             {
                 p.Bio = preferences.Bio;
@@ -1501,16 +1639,54 @@ namespace Voat.Data
             {
                 p.Language = preferences.Language;
             }
-            p.OpenInNewWindow = preferences.OpenInNewWindow;
-            p.DisableCSS = preferences.DisableCSS;
-            p.EnableAdultContent = preferences.EnableAdultContent;
-            p.NightMode = preferences.NightMode;
-            p.DisplaySubscriptions = preferences.DisplaySubscriptions;
-            p.DisplayVotes = preferences.DisplayVotes;
-            p.UseSubscriptionsMenu = preferences.UseSubscriptionsMenu;
-
-            _db.UserPreferences.Add(p);
-
+            if (preferences.OpenInNewWindow.HasValue)
+            {
+                p.OpenInNewWindow = preferences.OpenInNewWindow.Value;
+            }
+            if (preferences.DisableCSS.HasValue)
+            {
+                p.DisableCSS = preferences.DisableCSS.Value;
+            }
+            if (preferences.EnableAdultContent.HasValue)
+            {
+                p.EnableAdultContent = preferences.EnableAdultContent.Value;
+            }
+            if (preferences.NightMode.HasValue)
+            {
+                p.NightMode = preferences.NightMode.Value;
+            }
+            if (preferences.DisplaySubscriptions.HasValue)
+            {
+                p.DisplaySubscriptions = preferences.DisplaySubscriptions.Value;
+            }
+            if (preferences.DisplayVotes.HasValue)
+            {
+                p.DisplayVotes = preferences.DisplayVotes.Value;
+            }
+            if (preferences.UseSubscriptionsMenu.HasValue)
+            {
+                p.UseSubscriptionsMenu = preferences.UseSubscriptionsMenu.Value;
+            }
+            if (preferences.DisplayCommentCount.HasValue)
+            {
+                p.DisplayCommentCount = preferences.DisplayCommentCount.Value;
+            }
+            if (preferences.HighlightMinutes.HasValue)
+            {
+                p.HighlightMinutes = preferences.HighlightMinutes.Value;
+            }
+            if (!String.IsNullOrEmpty(preferences.VanityTitle))
+            {
+                p.VanityTitle = preferences.VanityTitle;
+            }
+            if (preferences.CollapseCommentLimit.HasValue)
+            {
+                p.CollapseCommentLimit = preferences.CollapseCommentLimit.Value;
+            }
+            if (preferences.DisplayAds.HasValue)
+            {
+                p.DisplayAds = preferences.DisplayAds.Value;
+            }
             _db.SaveChanges();
 
         }
@@ -1555,14 +1731,21 @@ namespace Voat.Data
         {
             DemandAuthentication();
 
-            if (Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name))
+            //If sender isn't a subverse (automated messages) run sender checks
+            if (!Regex.IsMatch(message.Sender, @"^v/\w*"))
             {
-                return CommandResponse.Ignored("User is banned");
-            }
-
-            if (Voat.Utilities.Karma.CommentKarma(User.Identity.Name) < 10)
-            {
-                return CommandResponse.Ignored("Comment points too low to send messages", "CCP < 10");
+                if (Voat.Utilities.BanningUtility.ContentContainsBannedDomain(null, message.Message))
+                {
+                    return CommandResponse.Ignored("Message contains banned domain");
+                }
+                if (Voat.Utilities.UserHelper.IsUserGloballyBanned(message.Sender))
+                {
+                    return CommandResponse.Ignored("User is banned");
+                }
+                if (Voat.Utilities.Karma.CommentKarma(message.Sender) < 10)
+                {
+                    return CommandResponse.Ignored("Comment points too low to send messages", "CCP < 10");
+                }
             }
 
             List<PrivateMessage> messages = new List<PrivateMessage>();
@@ -1587,13 +1770,10 @@ namespace Voat.Data
                 var recipient = m.recipient;
                 var prefix = m.prefix;
 
-                //var recipient = m.Groups["recipient"].Value;
-                //var prefix = m.Groups["prefix"].Value;
-
                 if (!String.IsNullOrEmpty(prefix) && prefix.ToLower().Contains("v"))
                 {
                     //don't allow banned users to send to subverses
-                    if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, recipient))
+                    if (!UserHelper.IsUserBannedFromSubverse(message.Sender, recipient))
                     {
                         //send to subverse mods
                         using (var db = new voatEntities())
@@ -1608,7 +1788,7 @@ namespace Voat.Data
                             {
                                 messages.Add(new PrivateMessage
                                 {
-                                    Sender = User.Identity.Name,
+                                    Sender = message.Sender,
                                     Recipient = moderator.UserName,
                                     CreationDate = Repository.CurrentDate,
                                     Subject = String.Format("[v/{0}] {1}", recipient, message.Subject),
@@ -1622,14 +1802,14 @@ namespace Voat.Data
                 }
                 else
                 {
+                    //ensure proper cased
                     recipient = UserHelper.OriginalUsername(recipient);
 
-                    if (!String.IsNullOrEmpty(recipient) && UserHelper.UserExists(recipient))
+                    if (!String.IsNullOrEmpty(recipient) && Voat.Utilities.UserHelper.UserExists(recipient))
                     {
-                        //TODO: Check banned user list
                         messages.Add(new PrivateMessage
                         {
-                            Sender = User.Identity.Name,
+                            Sender = message.Sender,
                             Recipient = recipient,
                             CreationDate = Repository.CurrentDate,
                             Subject = message.Subject,
@@ -1647,17 +1827,28 @@ namespace Voat.Data
                 {
                     try
                     {
+                        //substring - db column is nvarchar(50) and any longer breaks EF
+                        messages.ForEach(x =>
+                        {
+                            if (x.Subject.Length > 50)
+                            {
+                                x.Subject = x.Subject.Substring(0, 50);
+                            }
+                        });
+
                         db.PrivateMessages.AddRange(messages);
                         db.SaveChanges();
                     }
                     catch (Exception ex)
                     {
+                        //TODO Log this
                         return CommandResponse.Error<CommandResponse>(ex);
                     }
                 }
+                //send notices async
+                Task.Run(() => messages.ForEach(x => EventNotification.Instance.SendMessageNotice(x.Recipient, x.Sender, Domain.Models.MessageType.Inbox, null, null, x.Body)));
             }
             return CommandResponse.Successful();
-
         }
 
         [Authorize]

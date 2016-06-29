@@ -302,7 +302,7 @@ namespace Voat.Tests.Utils
             string content = "[Title Here](http://voat.co)";
 
             string processed = Formatting.FormatMessage(content);
-            Assert.IsTrue(processed == "<p><a href=\"http://voat.co\">Title Here</a></p>\n");
+            Assert.IsTrue(processed == "<p><a href=\"http://voat.co\">Title Here</a></p>");
         }
 
         [TestMethod]
@@ -313,7 +313,7 @@ namespace Voat.Tests.Utils
             string content = "[Title Here](ftp://voat.co)";
 
             string processed = Formatting.FormatMessage(content);
-            Assert.IsTrue(processed == "<p><a href=\"ftp://voat.co\">Title Here</a></p>\n");
+            Assert.IsTrue(processed == "<p><a href=\"ftp://voat.co\">Title Here</a></p>");
         }
 
         [TestMethod]
@@ -325,7 +325,7 @@ namespace Voat.Tests.Utils
             string content = "[Title Here](javascript:alert('test'))";
 
             string processed = Formatting.FormatMessage(content);
-            Assert.IsTrue(processed == "<p><a href=\"#\" data-ScriptStrip=\"/* script detected: javascript:alert('test') */\">Title Here</a></p>\n");
+            Assert.IsTrue(processed == "<p><a href=\"#\" data-ScriptStrip=\"/* script detected: javascript:alert('test') */\">Title Here</a></p>");
         }
 
         [TestMethod]
@@ -336,7 +336,7 @@ namespace Voat.Tests.Utils
         {
             string content = "[Title Here]( javascript  : alert('test'))";
             string processed = Formatting.FormatMessage(content);
-            Assert.IsTrue(processed == String.Format("<p>{0}</p>\n", content));
+            Assert.IsTrue(processed == String.Format("<p>{0}</p>", content));
         }
     }
 }

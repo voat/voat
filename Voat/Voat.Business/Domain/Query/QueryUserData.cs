@@ -10,6 +10,7 @@ using Voat.Data.Models;
 
 namespace Voat.Domain.Query
 {
+    [Obsolete("No longer going to cache UserData")]
     public class QueryUserData : CachedQuery<UserData>
     {
         private string _userToRetrieve;
@@ -41,18 +42,15 @@ namespace Voat.Domain.Query
 
         protected override UserData GetData()
         {
-            if (!String.IsNullOrEmpty(_userToRetrieve))
+            try
             {
-                using (var repo = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-                {
-                    var user = repo.FindByName(_userToRetrieve);
-                    if (user != null)
-                    {
-                        return new UserData(_userToRetrieve);
-                    }
-                }
+                return new UserData(_userToRetrieve, true);
             }
-            return null;
+            catch (Exception ex)
+            {
+                //TODO: Log exception
+                return null;
+            }
         }
     }
 }

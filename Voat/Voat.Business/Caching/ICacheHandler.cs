@@ -47,7 +47,7 @@ namespace Voat.Caching
         void Purge();
 
         /// <summary>
-        /// Replaces cached item at key after processing via Func."/>
+        /// Replaces cached item at key after processing via Func.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="cacheKey"></param>
@@ -55,7 +55,7 @@ namespace Voat.Caching
         void Replace<T>(string cacheKey, Func<T, T> replaceAlg, TimeSpan? cacheTime = null);
 
         /// <summary>
-        /// Replaces cached item at key after processing via Func."/>
+        /// Replaces cached item at key after processing via Func
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="cacheKey"></param>

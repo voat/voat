@@ -21,7 +21,7 @@
 #endregion LICENSE
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using System;
 using System.Linq;
 using Voat.Common;
 using Voat.Data;
@@ -115,8 +115,8 @@ namespace Voat.Tests.Repository
                 var response = db.PostSubmission(new UserSubmission()
                 {
                     Subverse = "** Invalid Subverse * *",
-                    Content = "Test",
-                    Title = "My title",
+                    Content = "Test - " + Guid.NewGuid().ToString(),
+                    Title = "My title - PostSubmission_InvalidSubveseFails",
                     Url = "http://www.yahoo.com"
                 });
                 Assert.IsFalse(response.Success);

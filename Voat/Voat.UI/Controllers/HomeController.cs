@@ -22,6 +22,7 @@ using System.Web.Mvc;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Models;
@@ -113,6 +114,7 @@ namespace Voat.Controllers
             //Check Captcha
             var userQuery = new QueryUserData(User.Identity.Name);
             var userData = await userQuery.ExecuteAsync();
+            //var userData = new UserData(User.Identity.Name);
             if (userData.Information.CommentPoints.Sum < 25)
             {
                 var captchaSuccess = await ReCaptchaUtility.Validate(Request);
@@ -775,8 +777,9 @@ namespace Voat.Controllers
             if (userName != null)
             {
                 var q = new QueryUserData(userName);
-                var r = q.Execute();
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", r.Information.Moderates);
+                var userData = q.Execute();
+                //var userData = new UserData(User.Identity.Name);
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", userData.Information.Moderates);
             }
             return new EmptyResult();
         }

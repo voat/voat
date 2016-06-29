@@ -31,10 +31,12 @@ namespace Voat.Domain.Command
     public class DeleteSubmissionCommand : CacheCommand<CommandResponse, Data.Models.Submission>
     {
         private int _submissionID = 0;
+        private string _reason = null;
 
-        public DeleteSubmissionCommand(int submissionID)
+        public DeleteSubmissionCommand(int submissionID, string reason = null)
         {
             _submissionID = submissionID;
+            _reason = reason;
         }
 
         protected override async Task<Tuple<CommandResponse, Data.Models.Submission>> CacheExecute()
@@ -43,7 +45,7 @@ namespace Voat.Domain.Command
             {
                 using (var db = new Repository())
                 {
-                    return db.DeleteSubmission(_submissionID);
+                    return db.DeleteSubmission(_submissionID, _reason);
                 }
             });
             return Tuple.Create(CommandResponse.Successful(), result);
@@ -51,7 +53,8 @@ namespace Voat.Domain.Command
 
         protected override void UpdateCache(Data.Models.Submission result)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            CacheHandler.Instance.Remove(CachingKey.Submission(result.ID));
         }
     }
 

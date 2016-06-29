@@ -17,10 +17,12 @@ using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Command;
 using Voat.Models;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -35,7 +37,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public ActionResult ReportComment(int id)
+        public async Task<ActionResult> ReportComment(int id)
         {
             var commentToReport = _db.Comments.Find(id);
 
@@ -78,7 +80,19 @@ namespace Voat.Controllers
                                 }
 
                                 string body = String.Format("This comment has been reported as spam:\r\n\r\nhttps://voat.co/v/{0}/comments/{1}/{2}/{2}#{2}\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", commentSubverse, commentToReport.SubmissionID, id);
-                                MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : userName, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
+
+                                var message = new Domain.Models.SendMessage()
+                                {
+                                    Sender = commentToReport.IsAnonymized ? "Anon" : userName,
+                                    Recipient = $"v/{commentSubverse}",
+                                    Subject = "Comment Spam Report",
+                                    Message = body
+                                };
+                                var cmd = new SendMessageCommand(message);
+                                await cmd.Execute();
+
+                                //MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : userName, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
+
 
                             }
 

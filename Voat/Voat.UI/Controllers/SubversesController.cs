@@ -32,6 +32,7 @@ using Voat.Configuration;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Query;
+using Voat.Domain.Command;
 
 namespace Voat.Controllers
 {
@@ -1018,7 +1019,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddModerator([Bind(Include = "ID,Subverse,Username,Power")] SubverseModerator subverseAdmin)
+        public async Task<ActionResult> AddModerator([Bind(Include = "ID,Subverse,Username,Power")] SubverseModerator subverseAdmin)
         {
             if (!ModelState.IsValid) return View(subverseAdmin);
 
@@ -1068,7 +1069,7 @@ namespace Voat.Controllers
                     var invitationBody = new StringBuilder();
                     invitationBody.Append("Hello,");
                     invitationBody.Append(Environment.NewLine);
-                    invitationBody.Append("You are invited to moderate /v/" + subverseAdmin.Subverse + ".");
+                    invitationBody.Append("You are invited to moderate v/" + subverseAdmin.Subverse + ".");
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append("Please visit the following link if you want to accept this invitation: " + "https://" + Request.ServerVariables["HTTP_HOST"] + "/acceptmodinvitation/" + invitationId);
@@ -1076,7 +1077,13 @@ namespace Voat.Controllers
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append("Thank you.");
 
-                    MesssagingUtility.SendPrivateMessage(User.Identity.Name, subverseAdmin.UserName, "/v/" + subverseAdmin.Subverse + " moderator invitation", invitationBody.ToString());
+                    var cmd = new SendMessageCommand(new Domain.Models.SendMessage() {
+                        Recipient = subverseAdmin.UserName,
+                        Subject = $"v/{subverseAdmin.Subverse} moderator invitation",
+                        Message = invitationBody.ToString()
+                    });
+                    await cmd.Execute();
+                    //MesssagingUtility.SendPrivateMessage(User.Identity.Name, subverseAdmin.UserName, "/v/" + subverseAdmin.Subverse + " moderator invitation", invitationBody.ToString());
 
                     return RedirectToAction("SubverseModerators");
                 }
@@ -1109,7 +1116,7 @@ namespace Voat.Controllers
 
         [HttpGet]
         [Authorize]
-        public ActionResult AcceptModInvitation(int invitationId)
+        public async Task<ActionResult> AcceptModInvitation(int invitationId)
         {
             int maximumOwnedSubs = Settings.MaximumOwnedSubs;
 
@@ -1165,10 +1172,16 @@ namespace Voat.Controllers
             _db.SubverseModerators.Add(subAdm);
 
             // notify sender that user has accepted the invitation
-            StringBuilder confirmation = new StringBuilder();
-            confirmation.Append("User " + User.Identity.Name + " has accepted your invitation to moderate subverse /v/" + userInvitation.Subverse + ".");
-            confirmation.AppendLine();
-            MesssagingUtility.SendPrivateMessage("Voat", userInvitation.CreatedBy, "Moderator invitation for " + userInvitation.Subverse + " accepted", confirmation.ToString());
+            var message = new Domain.Models.SendMessage() {
+                Sender = $"v/{subverseToAddModTo}",
+                Subject = $"Moderator invitation for v/{userInvitation.Subverse} accepted",
+                Recipient = userInvitation.CreatedBy,
+                Message = $"User {User.Identity.Name} has accepted your invitation to moderate subverse /v/{userInvitation.Subverse}."
+            };
+            var cmd = new SendMessageCommand(message);
+            await cmd.Execute();
+            //MesssagingUtility.SendPrivateMessage("v/{subverseToAddModTo}", userInvitation.CreatedBy, "Moderator invitation for " + userInvitation.Subverse + " accepted", confirmation.ToString());
+
             //clear mod cache
             CacheHandler.Instance.Remove(CachingKey.SubverseModerators(userInvitation.Subverse));
 

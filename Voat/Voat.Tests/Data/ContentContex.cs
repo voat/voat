@@ -49,11 +49,11 @@ namespace Voat.Tests.Repository
             {
                 using (var db = new Voat.Data.Repository())
                 {
-                    var m = db.PostSubmission(new UserSubmission() { Subverse="unit", Title = "Test Post", Content = "Test Content" });
+                    var m = db.PostSubmission(new UserSubmission() { Subverse="unit", Title = "Test Post for Unit Testing", Content = "Test Content" });
                     Assert.AreEqual(Status.Success, m.Status, String.Format("NewContext PostSubmission for user {0} received non-success message : {1}", userName, m.Message));
                     var submissionid = m.Response.ID;
 
-                    var c = db.PostComment(submissionid, -1, "This is a comment");
+                    var c = db.PostComment(submissionid, -1, "This is a comment + " + Guid.NewGuid().ToString());
                     Assert.AreEqual(Status.Success, c.Status, String.Format("NewContext PostComment for user {0} received non-success message : {1}", userName, m.Message));
                     var commentid = c.Response.ID;
                     context = new ContentContext() { UserName = userName, CommentID = commentid, SubmissionID = submissionid };

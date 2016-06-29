@@ -90,7 +90,8 @@ namespace Voat.Domain.Query
         private T GetFreshData()
         {
             CacheHit = false;
-            return GetData();
+            T data = GetData();
+            return data;
         }
     }
 }

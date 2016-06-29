@@ -36,7 +36,7 @@ namespace Voat.Domain.Query
 
             var p = new QueryUserData(UserName).Execute();
 
-            UserPreference preference = p.Preferences;
+            var preference = p.Preferences;
             //This is for testing
             //options.Count = 3;
 
