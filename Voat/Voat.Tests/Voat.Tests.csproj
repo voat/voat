@@ -109,7 +109,9 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
@@ -147,6 +149,7 @@
     <Compile Include="Rules\RulesEngineTests.cs" />
     <Compile Include="Utils\SubdomainForwardingTests.cs" />
     <Compile Include="Utils\AgeTests.cs" />
+    <Compile Include="Utils\GenerateThumbnailTests.cs" />
     <Compile Include="Utils\UrlUtilityTests.cs" />
     <Compile Include="Utils\UtilityTests.cs" />
     <Compile Include="Utils\VoatPathHelperTests.cs" />

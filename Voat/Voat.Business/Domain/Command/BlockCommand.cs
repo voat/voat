@@ -32,25 +32,30 @@ namespace Voat.Domain.Command
         {
             if (result.HasValue)
             {
-                if (result.Value)
+                string key = CachingKey.UserBlocks(UserName);
+                if (result.HasValue && CacheHandler.Instance.Exists(key))
                 {
-                    //Added block
-                    CacheHandler.Instance.Replace(CachingKey.UserBlocks(UserName), new Func<IList<BlockedItem>, IList<BlockedItem>>(x => {
-                        x.Add(new BlockedItem() { Type = this._domainType, Name = this._name, CreationDate = Repository.CurrentDate });
-                        return x;
-                    }));
-                }
-                else
-                {
-                    //Removed block
-                    CacheHandler.Instance.Replace(CachingKey.UserBlocks(UserName), new Func<IList<BlockedItem>, IList<BlockedItem>>(x => {
-                        var entry = x.FirstOrDefault(b => b.Type == _domainType && b.Name == _name);
-                        if (entry != null)
-                        {
-                            x.Remove(entry);
-                        }
-                        return x;
-                    }));
+                    if (result.Value)
+                    {
+                        //Added block
+                        CacheHandler.Instance.Replace<IList<BlockedItem>>(key, new Func<IList<BlockedItem>, IList<BlockedItem>>(x => {
+                            x.Add(new BlockedItem() { Type = this._domainType, Name = this._name, CreationDate = Repository.CurrentDate });
+                            return x;
+                        }), TimeSpan.FromMinutes(10));
+                    }
+                    else
+                    {
+                        //Removed block
+                        CacheHandler.Instance.Replace<IList<BlockedItem>>(key, new Func<IList<BlockedItem>, IList<BlockedItem>>(x => {
+                            var entry = x.FirstOrDefault(b => b.Type == _domainType && b.Name == _name);
+                            if (entry != null)
+                            {
+                                x.Remove(entry);
+                            }
+                            return x;
+                        }), TimeSpan.FromMinutes(10));
+                    }
+
                 }
             }
         }

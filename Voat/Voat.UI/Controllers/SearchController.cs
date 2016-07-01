@@ -160,7 +160,7 @@ namespace Voat.Controllers
 
             // find a subverse by name and/or description, sort search results by number of subscribers
             var subversesByName = _db.Subverses
-                .Where(s => s.Name.ToLower().Contains(q))
+                .Where(s => s.Name.ToLower().Contains(q) && (s.IsAdminDisabled != true))
                 .OrderByDescending(s => s.SubscriberCount);
 
             if (d != null)

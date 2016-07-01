@@ -14,44 +14,68 @@ namespace Voat.Utilities
 {
     public static class ThumbGenerator
     {
-        // public folder where thumbs should be saved
-        private static readonly string DestinationPathThumbs = HttpContext.Current.Server.MapPath("~/Thumbs");
-        private static readonly string DestinationPathAvatars = HttpContext.Current.Server.MapPath("~/Storage/Avatars");
+        private static string _destinationPathThumbs = null;
+        private static string _destinationPathAvatars = null;
+
+        public static string DestinationPathThumbs { get { return _destinationPathThumbs; } }
+        public static string DestinationPathAvatars { get { return _destinationPathAvatars; } }
+
+
+        static ThumbGenerator()
+        {
+            //For UI/API
+            if (HttpContext.Current != null)
+            {
+                _destinationPathThumbs = HttpContext.Current.Server.MapPath("~/Storage/Thumbs");
+                _destinationPathAvatars = HttpContext.Current.Server.MapPath("~/Storage/Avatars");
+            }
+            //For Unit Testing
+            else
+            {
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                _destinationPathThumbs = Path.Combine(baseDir, @"Storage\Thumbs");
+                _destinationPathAvatars = Path.Combine(baseDir, @"Storage\Avatars");
+                if (!Directory.Exists(_destinationPathThumbs))
+                {
+                    Directory.CreateDirectory(_destinationPathThumbs);
+                }
+                if (!Directory.Exists(_destinationPathAvatars))
+                {
+                    Directory.CreateDirectory(_destinationPathAvatars);
+                }
+            }
+        }
 
         // setup default thumb resolution
         private const int MaxHeight = 70;
         private const int MaxWidth = 70;
 
         // generate a thumbnail while removing transparency and preserving aspect ratio
-        public static async Task<string> GenerateThumbFromUrl(string sourceUrl)
+        public static async Task<string> GenerateThumbFromImageUrl(string imageUrl)
         {
             var randomFileName = GenerateRandomFilename();
+            var tempPath = Path.Combine(DestinationPathThumbs, $"{randomFileName}.jpg");
 
-            var request = WebRequest.Create(sourceUrl);
-            request.Timeout = 300;
+            var request = WebRequest.Create(imageUrl);
+            request.Timeout = 3000; //Putts: extended this from 300 mills
             using (var response = request.GetResponse())
             {
-
                 var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
-
-
-                originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathThumbs + '\\' + randomFileName + ".jpg", 90);
+                originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
             }
             // call upload to storage method if CDN config is enabled
             if (Settings.UseContentDeliveryNetwork)
             {
-                string tempThumbLocation = DestinationPathThumbs + '\\' + randomFileName + ".jpg";
-
-                if (FileSystemUtility.FileExists(tempThumbLocation, DestinationPathThumbs))
+                if (FileSystemUtility.FileExists(tempPath, DestinationPathThumbs))
                 {
-                    await CloudStorageUtility.UploadBlobToStorageAsync(tempThumbLocation, "thumbs");
+                    await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
 
                     // delete local file after uploading to CDN
-                    File.Delete(tempThumbLocation);
+                    File.Delete(tempPath);
                 }
             }
 
-            return randomFileName + ".jpg";
+            return Path.GetFileName(tempPath);
         }
 
         // store uploaded avatar
@@ -113,9 +137,9 @@ namespace Voat.Utilities
         
 
         // generate a thumbnail if submission is a direct link to image or video
-        public static async Task<string> ThumbnailFromSubmissionModel(Data.Models.Submission submissionModel)
+        public static async Task<string> GenerateThumbFromWebpageUrl(string websiteUrl)
         {
-            var extension = Path.GetExtension(submissionModel.Content);
+            var extension = Path.GetExtension(websiteUrl);
 
             // this is a direct link to image
             if (extension != String.Empty)
@@ -124,7 +148,7 @@ namespace Voat.Utilities
                 {
                     try
                     {
-                        var thumbFileName = await GenerateThumbFromUrl(submissionModel.Content);
+                        var thumbFileName = await GenerateThumbFromImageUrl(websiteUrl);
                         return thumbFileName;
                     }
                     catch (Exception)
@@ -137,13 +161,13 @@ namespace Voat.Utilities
                 // try generating a thumbnail by using the Open Graph Protocol
                 try
                 {
-                    var graphUri = new Uri(submissionModel.Content);
+                    var graphUri = new Uri(websiteUrl);
                     var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
-
+                    
                     // open graph failed to find og:image element, abort thumbnail generation
                     if (graph.Image == null) return null;
 
-                    var thumbFileName = await GenerateThumbFromUrl(graph.Image.ToString());
+                    var thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString());
                     return thumbFileName;
                 }
                 catch (Exception)
@@ -157,13 +181,13 @@ namespace Voat.Utilities
             // try generating a thumbnail by using the Open Graph Protocol
             try
             {
-                var graphUri = new Uri(submissionModel.Content);
+                var graphUri = new Uri(websiteUrl);
                 var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
 
                 // open graph failed to find og:image element, abort thumbnail generation
                 if (graph.Image == null) return null;
 
-                var thumbFileName = await GenerateThumbFromUrl(graph.Image.ToString());
+                var thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString());
                 return thumbFileName;
             }
             catch (Exception)

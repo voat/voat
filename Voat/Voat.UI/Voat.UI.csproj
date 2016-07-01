@@ -504,6 +504,7 @@
     <None Include="Scripts\_references.js" />
     <Content Include="sitemap.xml" />
     <Content Include="Storage\Avatars\Placeholder.txt" />
+    <Content Include="Storage\Thumbs\Placeholder.txt" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
     <Content Include="Content\Voat-Dark.css" />
     <Content Include="Content\Voat.css" />
@@ -536,7 +537,6 @@
     <Content Include="Scripts\libs\respond.min.js" />
     <Content Include="Scripts\voat.js" />
     <Content Include="Scripts\voat.ui.js" />
-    <Content Include="Thumbs\Placeholder.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

@@ -25,7 +25,11 @@ namespace Voat.Caching
         {
             return String.Format("Subverse:Mods:{0}", subverse);
         }
-
+        public static string SubverseUserBans(string subverse)
+        {
+            return String.Format("Subverse:Bans:{0}", subverse);
+        }
+        
         public static string Submission(int submissionID)
         {
             return String.Format("Submission:{0}", submissionID);
@@ -41,6 +45,10 @@ namespace Voat.Caching
         public static string CommentTree(int submissionID)
         {
             return String.Format("Comment:Tree:{0}", submissionID);
+        }
+        public static string UserSet(string setName)
+        {
+            return String.Format("User:Set:{0}", setName);
         }
         public static string UserPreferences(string userName)
         {
@@ -87,12 +95,10 @@ namespace Voat.Caching
         {
             return "Api:Cors";
         }
-        
         public static string ApiStreamLastCallDate(ContentType contentType, string userName)
         {
             return String.Format("Api:Stream:{0}:{1}", String.IsNullOrEmpty(userName) ? "unknown" : userName, contentType.ToString());
         }
-
         public static string SiteSearch(string subverse, string phrase)
         {
             return String.Format("Search:{0}:{1}", String.IsNullOrEmpty(subverse) ? "_" : subverse, phrase);

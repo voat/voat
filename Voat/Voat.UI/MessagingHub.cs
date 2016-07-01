@@ -55,7 +55,7 @@ namespace Voat
                 }
 
                 // discard message if it contains unicode
-                if (Submissions.ContainsUnicode(message))
+                if (Formatting.ContainsUnicode(message))
                 {
                     return;
                 }

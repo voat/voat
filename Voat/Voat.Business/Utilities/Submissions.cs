@@ -39,18 +39,7 @@ namespace Voat.Utilities
             return duration.TotalHours;
         }
 
-        // check if a string contains unicode characters
-        public static bool ContainsUnicode(string stringToTest)
-        {
-            const int maxAnsiCode = 255;
-            return stringToTest.Any(c => c > maxAnsiCode);
-        }
-
-        // string unicode characters from a string
-        public static string StripUnicode(string stringToClean)
-        {
-            return Regex.Replace(stringToClean, @"[^\u0000-\u007F]", string.Empty);
-        }
+      
 
         // add new submission
         public static async Task<string> AddNewSubmission(Submission submissionModel, Subverse targetSubverse, string userName)
@@ -61,9 +50,9 @@ namespace Voat.Utilities
                 if (submissionModel.Type == 2)
                 {
                     // strip unicode if title contains unicode
-                    if (ContainsUnicode(submissionModel.LinkDescription))
+                    if (Formatting.ContainsUnicode(submissionModel.LinkDescription))
                     {
-                        submissionModel.LinkDescription = StripUnicode(submissionModel.LinkDescription);
+                        submissionModel.LinkDescription = Formatting.StripUnicode(submissionModel.LinkDescription);
                     }
 
                     // reject if title is whitespace or < than 5 characters
@@ -102,7 +91,7 @@ namespace Voat.Utilities
                     if (targetSubverse.IsThumbnailEnabled)
                     {
                         // try to generate and assign a thumbnail to submission model
-                        submissionModel.Thumbnail = await ThumbGenerator.ThumbnailFromSubmissionModel(submissionModel);
+                        submissionModel.Thumbnail = await ThumbGenerator.GenerateThumbFromWebpageUrl(submissionModel.Content);
                     }
 
                     // flag the submission as anonymized if it was submitted to a subverse with active anonymized_mode
@@ -118,9 +107,9 @@ namespace Voat.Utilities
                 // MESSAGE TYPE SUBMISSION
                 {
                     // strip unicode if submission contains unicode
-                    if (ContainsUnicode(submissionModel.Title))
+                    if (Formatting.ContainsUnicode(submissionModel.Title))
                     {
-                        submissionModel.Title = StripUnicode(submissionModel.Title);
+                        submissionModel.Title = Formatting.StripUnicode(submissionModel.Title);
                     }
 
                     // reject if title is whitespace or less than 5 characters

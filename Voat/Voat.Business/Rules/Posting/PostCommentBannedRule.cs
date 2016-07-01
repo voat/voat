@@ -8,7 +8,7 @@ using Voat.RulesEngine;
 namespace Voat.Rules.Posting
 {
     [RuleDiscovery("Approves a comment post if user is not banned in subverse.", "approved = (user.IsBannedFromSubverse(subverse) == false)")]
-    public class PostCommentBannedRule : BaseSubverseBanRule
+    public class PostCommentBannedRule : BaseSubverseRule
     {
         public PostCommentBannedRule()
             : base("Subverse Comment Ban Rule", "5.3", RuleScope.PostComment)

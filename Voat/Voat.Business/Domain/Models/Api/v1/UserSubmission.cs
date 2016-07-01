@@ -75,7 +75,7 @@ namespace Voat.Domain.Models
             get { return _title; }
             set {
                 //string whitespace
-                _title = String.IsNullOrEmpty(value) ? null : value.Trim();
+                _title = String.IsNullOrEmpty(value) ? null : Utilities.Formatting.StripWhiteSpace(value);
             }
         }
 

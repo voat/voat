@@ -120,8 +120,8 @@ namespace Voat.Tests.QueryTests
 
             q = new QueryUserPreferences();
             result = q.ExecuteAsync().Result;
-            Assert.IsNotNull(result);
-            Assert.AreEqual("en", result.Language);
+            Assert.IsNotNull(result, this.GetType().Name);
+            Assert.AreEqual("en", result.Language, this.GetType().Name);
         }
 
         [TestMethod]
@@ -133,8 +133,8 @@ namespace Voat.Tests.QueryTests
             //q.CachePolicy.Duration = TimeSpan.Zero; //Turn off caching on this request
             var result = q.ExecuteAsync().Result;
 
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Any());
+            Assert.IsNotNull(result, this.GetType().Name);
+            Assert.IsTrue(result.Any(), this.GetType().Name);
         }
 
         [TestMethod]
@@ -152,9 +152,9 @@ namespace Voat.Tests.QueryTests
 
             q = new QuerySubmissions("_all", SearchOptions.Default, new CachePolicy(TimeSpan.FromMinutes(10)));
             result = q.ExecuteAsync().Result;
-            Assert.AreEqual(CacheHandler.Instance.CacheEnabled, q.CacheHit); //ensure second query hits cache
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Any());
+            Assert.AreEqual(CacheHandler.Instance.CacheEnabled, q.CacheHit, this.GetType().Name); //ensure second query hits cache
+            Assert.IsNotNull(result, this.GetType().Name);
+            Assert.IsTrue(result.Any(), this.GetType().Name);
         }
 
         [TestMethod]
@@ -173,15 +173,26 @@ namespace Voat.Tests.QueryTests
             Assert.AreEqual(false, q.CacheHit);
             Assert.IsTrue(result.Any());
 
+            int waitTime = 0;
+            //adjust sleep times based on cache type (trying to not have long running unit tests)
+            if (this is BaseQueryRedisCache)
+            {
+                waitTime = 35;
+            }
+            else if (this is BaseQueryMemoryCache)
+            {
+                waitTime = 20;
+            }
+
             //wait for cache to expire - Runtime caches aren't precise so wait long enough to ensure cached item is removed.
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(30));
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(waitTime));
 
             q = new QuerySubmissions("_all", new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
             result = q.ExecuteAsync().Result;
             //ensure we had to retreive new data
-            Assert.AreEqual(false, q.CacheHit);
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Any());
+            Assert.AreEqual(false, q.CacheHit, this.GetType().Name);
+            Assert.IsNotNull(result, this.GetType().Name);
+            Assert.IsTrue(result.Any(), this.GetType().Name);
         }
         
         [TestMethod]

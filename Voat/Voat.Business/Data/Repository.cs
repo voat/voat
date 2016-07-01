@@ -560,6 +560,15 @@ namespace Voat.Data
                          select x.Stylesheet).FirstOrDefault();
             return String.IsNullOrEmpty(sheet) ? "" : sheet;
         }
+        public IEnumerable<SubverseBan> GetSubverseUserBans(string subverse)
+        {
+            var data = (from x in _db.SubverseBans
+                        where x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                        orderby x.CreationDate ascending
+                        select x).ToList();
+
+            return data.AsEnumerable();
+        }
         public IEnumerable<SubverseModerator> GetSubverseModerators(string subverse)
         {
             var data = (from x in _db.SubverseModerators
@@ -608,9 +617,23 @@ namespace Voat.Data
         {
 
             var record = Selectors.SecureSubmission(GetSubmissionUnprotected(submissionID));
-
             return record;
-
+        }
+        public Models.Submission FindSubverseLinkSubmission(string subverse, string url, TimeSpan cutOffTimeSpan)
+        {
+            var cutOffDate = CurrentDate.Subtract(cutOffTimeSpan);
+            return _db.Submissions.AsNoTracking().FirstOrDefault(s => 
+                s.Content.Equals(url, StringComparison.OrdinalIgnoreCase) 
+                && s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                && s.CreationDate > cutOffDate);
+        }
+        public int FindUserLinkSubmissionCount(string userName, string url, TimeSpan cutOffTimeSpan)
+        {
+            var cutOffDate = CurrentDate.Subtract(cutOffTimeSpan);
+            return _db.Submissions.Count(s =>
+                s.Content.Equals(url, StringComparison.OrdinalIgnoreCase)
+                && s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                && s.CreationDate > cutOffDate);
         }
         private Models.Submission GetSubmissionUnprotected(int submissionID)
         {
@@ -770,7 +793,7 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public CommandResponse<Models.Submission> PostSubmission(UserSubmission userSubmission)
+        public async Task<CommandResponse<Models.Submission>> PostSubmission(UserSubmission userSubmission)
         {
             DemandAuthentication();
             //Load Subverse Object
@@ -799,10 +822,16 @@ namespace Voat.Data
             //m.IsAdult = submission.IsAdult;
 
             //1: Text, 2: Link
-            m.Type = (String.IsNullOrEmpty(userSubmission.Url) ? 1 : 2);
+            m.Type = (int)userSubmission.Type;
 
-            if (m.Type == 1)
+            if (userSubmission.Type == SubmissionType.Text)
             {
+
+                if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                {
+                    userSubmission.Content = ContentProcessor.Instance.Process(userSubmission.Content, ProcessingStage.InboundPreSave, m);
+                }
+
                 m.Title = userSubmission.Title;
                 m.Content = userSubmission.Content;
                 m.LinkDescription = null;
@@ -812,31 +841,23 @@ namespace Voat.Data
                 m.Title = null;
                 m.Content = userSubmission.Url;
                 m.LinkDescription = userSubmission.Title;
+
+                if (subverseObject.IsThumbnailEnabled)
+                {
+                    // try to generate and assign a thumbnail to submission model
+                    m.Thumbnail = await ThumbGenerator.GenerateThumbFromWebpageUrl(userSubmission.Url);
+                }
             }
-
-            //TODO:
-            //    // check if target subverse has thumbnails setting enabled before generating a thumbnail
-            //    if (targetSubverse.IsThumbnailEnabled)
-            //    {
-            //        // try to generate and assign a thumbnail to submission model
-            //        submissionModel.Thumbnail = await ThumbGenerator.ThumbnailFromSubmissionModel(submissionModel);
-            //    }
-
-            //    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
-            //    {
-            //        submissionModel.Content = ContentProcessor.Instance.Process(submissionModel.Content, ProcessingStage.InboundPreSave, submissionModel);
-            //    }
-
-            //    await db.SaveChangesAsync();
-
-            //    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-            //    {
-            //        ContentProcessor.Instance.Process(submissionModel.Content, ProcessingStage.InboundPostSave, submissionModel);
-            //    }
 
             _db.Submissions.Add(m);
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
+
+            //This sends notifications by parsing content
+            if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+            {
+                ContentProcessor.Instance.Process(m.Content, ProcessingStage.InboundPostSave, m);
+            }
 
             return CommandResponse.Successful(Selectors.SecureSubmission(m));
         }
@@ -881,7 +902,7 @@ namespace Voat.Data
             if (CurrentDate.Subtract(submission.CreationDate).TotalMinutes <= 10.0f)
             {
 
-                if (!String.IsNullOrEmpty(userSubmission.Title) && Utilities.Submissions.ContainsUnicode(userSubmission.Title))
+                if (!String.IsNullOrEmpty(userSubmission.Title) && Formatting.ContainsUnicode(userSubmission.Title))
                 {
                     throw new VoatValidationException("Submission title can not contain Unicode characters");
                 }
@@ -1713,7 +1734,7 @@ namespace Voat.Data
             if (sub != null)
             {
                 PostComment(sub.SubmissionID, sub.CommentID, value);
-                return new CommandResponse(Status.Success, "Comment reply sent");
+                return new CommandResponse(Status.Success, "Submission reply sent");
             }
             var pm = (from x in _db.PrivateMessages
                       where x.ID == id && x.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
@@ -2393,11 +2414,21 @@ namespace Voat.Data
             return s;
 
         }
-        public void SubscribeUser(DomainType domainType, SubscriptionAction action, string subscriptionName)
+        public CommandResponse SubscribeUser(DomainType domainType, SubscriptionAction action, string subscriptionName)
         {
             switch (domainType)
             {
                 case DomainType.Subverse:
+
+                    var subverse = GetSubverseInfo(subscriptionName);
+                    if (subverse == null)
+                    {
+                        return CommandResponse.Denied("Subverse does not exist");
+                    }
+                    if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
+                    {
+                        return CommandResponse.Denied("Subverse is disabled");
+                    }
 
                     if (action == SubscriptionAction.Subscribe)
                     {
@@ -2432,6 +2463,7 @@ namespace Voat.Data
                     break;
 
             }
+            return CommandResponse.Successful();
         }
 
         #endregion

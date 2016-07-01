@@ -17,14 +17,11 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse<Domain.Models.Submission>> ProtectedExecute()
         {
-            var result = await Task.Factory.StartNew(() =>
+            using (var db = new Repository())
             {
-                using (var db = new Repository())
-                {
-                    return db.PostSubmission(_userSubmission);
-                }
-            });
-            return CommandResponse.Map(result, result.Response.Map());
+                var result = await  db.PostSubmission(_userSubmission);
+                return CommandResponse.Map(result, result.Response.Map());
+            }
         }
     }
 

@@ -57,13 +57,14 @@ namespace Voat.Rules.Posting
             {
                 return CreateOutcome(RuleResult.Denied, "A text submission must include a title");
             }
-            if (userSubmission.Title.Length < 10)
+            if (Formatting.ContainsUnicode(userSubmission.Title))
             {
-                return CreateOutcome(RuleResult.Denied, "A title may not be less than 10 characters");
+                return CreateOutcome(RuleResult.Denied, "Submission title can not contain Unicode or unprintable characters");
             }
-            if (Submissions.ContainsUnicode(userSubmission.Title))
+            int minTitleLength = 5;
+            if (userSubmission.Title.Length < minTitleLength)
             {
-                return CreateOutcome(RuleResult.Denied,  "Submission title can not contain Unicode characters");
+                return CreateOutcome(RuleResult.Denied, $"A title may not be less than {minTitleLength} characters");
             }
 
             //if context.Subverse is null this means that it can't be found/doesn't exist
@@ -71,7 +72,10 @@ namespace Voat.Rules.Posting
             {
                 return CreateOutcome(RuleResult.Denied, "Subverse does not exist");
             }
-
+            //if (context.Subverse.IsAdminDisabled.HasValue && context.Subverse.IsAdminDisabled.Value)
+            //{
+            //    return CreateOutcome(RuleResult.Denied, "Submissions to disabled subverses are not allowed");
+            //}
 
             //// LINK TYPE SUBMISSION
             //if (submissionModel.Type == 2)

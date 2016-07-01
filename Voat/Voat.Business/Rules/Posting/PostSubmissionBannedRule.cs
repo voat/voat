@@ -10,10 +10,10 @@ using Voat.Utilities;
 namespace Voat.Rules.Posting
 {
     [RuleDiscovery("Approves a submission post if user is not banned in subverse.", "approved = (user.IsBannedFromSubverse(subverse) == false)")]
-    public class PostSubmissionBannedUserRule : BaseSubverseBanRule
+    public class PostSubmissionBannedRule : BaseSubverseRule
     {
-        public PostSubmissionBannedUserRule()
-            : base("Submission Banned User", "5.6", RuleScope.PostSubmission)
+        public PostSubmissionBannedRule()
+            : base("Subverse Submission Ban Rule", "5.6", RuleScope.PostSubmission)
         {
         }
 

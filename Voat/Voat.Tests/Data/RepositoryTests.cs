@@ -23,6 +23,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Command;
@@ -106,13 +107,13 @@ namespace Voat.Tests.Repository
         [TestMethod]
         [TestCategory("Repository")]
         //[ExpectedException(typeof(VoatValidationException))]
-        public void PostSubmission_InvalidSubveseFails()
+        public async Task PostSubmission_InvalidSubveseFails()
         {
             using (var db = new Voat.Data.Repository())
             {
                 TestHelper.SetPrincipal("TestUser1");
 
-                var response = db.PostSubmission(new UserSubmission()
+                var response = await db.PostSubmission(new UserSubmission()
                 {
                     Subverse = "** Invalid Subverse * *",
                     Content = "Test - " + Guid.NewGuid().ToString(),
@@ -199,13 +200,13 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository")]
-        public void PostSubmission()
+        public async Task PostSubmission()
         {
             using (var db = new Voat.Data.Repository())
             {
                 TestHelper.SetPrincipal("TestUser1");
 
-                var m = db.PostSubmission(new UserSubmission()
+                var m = await db.PostSubmission(new UserSubmission()
                 {
                     Subverse = "unit",
                     Url = "http://www.LearnToGolfLikeJordanSpiethOrYourMoneyBack.com",
@@ -289,13 +290,13 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
-        public void PostSubmission_BannedDomain()
+        public async Task PostSubmission_BannedDomain()
         {
             using (var db = new Voat.Data.Repository())
             {
                 TestHelper.SetPrincipal("TestUser10");
 
-                var result = db.PostSubmission(new UserSubmission() { Subverse = "unit", Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
+                var result = await db.PostSubmission(new UserSubmission() { Subverse = "unit", Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting content with banned domain did not get rejected");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
@@ -319,13 +320,13 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
-        public void PostSubmission_AuthorizedOnly_Allow()
+        public async Task PostSubmission_AuthorizedOnly_Allow()
         {
             using (var db = new Voat.Data.Repository())
             {
                 TestHelper.SetPrincipal("unit");
 
-                var result = db.PostSubmission(new UserSubmission() { Subverse = "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
+                var result = await db.PostSubmission(new UserSubmission() { Subverse = "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsTrue(result.Success, "Submitting to authorized only subverse was not allowed by admin");
                 Assert.AreEqual(Status.Success, result.Status, "Expecting a success status");
@@ -334,13 +335,13 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
-        public void PostSubmission_AuthorizedOnly_Denied()
+        public async Task PostSubmission_AuthorizedOnly_Denied()
         {
             using (var db = new Voat.Data.Repository())
             {
                 TestHelper.SetPrincipal("TestUser11");
 
-                var result = db.PostSubmission( new UserSubmission() { Subverse= "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
+                var result = await db.PostSubmission( new UserSubmission() { Subverse= "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting to authorized only subverse was allowed by non admin");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");

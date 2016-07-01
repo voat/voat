@@ -176,6 +176,7 @@
     <Compile Include="Domain\DomainMaps.cs" />
     <Compile Include="Domain\Models\API\v1\UserMessage.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
+    <Compile Include="Domain\Models\UserSet.cs" />
     <Compile Include="Domain\Query\Base\CachedQuery.cs" />
     <Compile Include="Domain\Query\Queries.cs" />
     <Compile Include="Domain\Query\QueryApiCorsPolicies.cs" />
@@ -189,6 +190,7 @@
     <Compile Include="Domain\Query\QueryComments.cs" />
     <Compile Include="Domain\Query\QuerySubmissions.cs" />
     <Compile Include="Domain\Query\QuerySubverse.cs" />
+    <Compile Include="Domain\Query\QuerySubverseUserBans.cs" />
     <Compile Include="Domain\Query\QuerySubverseModerators.cs" />
     <Compile Include="Domain\Query\QuerySubverseSearch.cs" />
     <Compile Include="Domain\Query\QuerySubverseStylesheet.cs" />
@@ -202,6 +204,7 @@
     <Compile Include="Domain\Query\QueryUserData.cs" />
     <Compile Include="Domain\Query\QueryUserPreferences.cs" />
     <Compile Include="Domain\Query\QueryUserInformation.cs" />
+    <Compile Include="Domain\Query\QueryUserSet.cs" />
     <Compile Include="Domain\Query\QueryUserSubscriptions.cs" />
     <Compile Include="Domain\Query\Selectors.cs" />
     <Compile Include="Data\Repository.cs" />
@@ -235,7 +238,7 @@
     <Compile Include="Domain\UserGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Domain\Query\Base\Query.cs" />
-    <Compile Include="Rules\Base\BaseSubverseBanRule.cs" />
+    <Compile Include="Rules\Base\BaseSubverseRule.cs" />
     <Compile Include="Rules\Base\BaseCCPRule.cs" />
     <Compile Include="Rules\Base\BaseSubverseMinCCPRule.cs" />
     <Compile Include="Rules\Base\VoatRule.cs" />
@@ -247,9 +250,10 @@
     <Compile Include="Rules\Posting\PostCommentCCPRule.cs" />
     <Compile Include="Rules\Posting\PostCommentUniquenessRule.cs" />
     <Compile Include="Rules\Posting\PostCommentBannedDomainRule.cs" />
-    <Compile Include="Rules\Posting\PostSubmissionBannedUserRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionBannedRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionCCPRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionRecentlySubmittedRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionValidityRule.cs" />
     <Compile Include="Rules\RuleInformationWithOutcome.cs" />
     <Compile Include="Rules\VoatRuleContext.cs" />

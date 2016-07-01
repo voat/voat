@@ -32,11 +32,11 @@ namespace Voat.Rules.Posting
 
             if (context.UserData.Information.CommentPoints.Sum <= base.MinimumCommentPoints && context.UserData.TotalSubmissionsPostedIn24Hours >= postThreshold)
             {
-                return CreateOutcome(RuleResult.Denied, "An Account with a CCP value of {0} is limited to {1} posts(s) in 24 hours", context.PropertyBag.CCP, postThreshold);
+                return CreateOutcome(RuleResult.Denied, "An Account with a CCP value of {0} is limited to {1} posts(s) in 24 hours", context.UserData.Information.CommentPoints.Sum, postThreshold);
             }
             if (context.UserData.Information.SubmissionPoints.Sum <= base.MinimumCommentPoints && context.UserData.TotalSubmissionsPostedIn24Hours >= postThreshold)
             {
-                return CreateOutcome(RuleResult.Denied, "An Account with a SCP value of {0} is limited to {1} posts(s) in 24 hours", context.PropertyBag.CCP, postThreshold);
+                return CreateOutcome(RuleResult.Denied, "An Account with a SCP value of {0} is limited to {1} posts(s) in 24 hours", context.UserData.Information.SubmissionPoints.Sum, postThreshold);
             }
 
             return base.EvaluateRule(context);

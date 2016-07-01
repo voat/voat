@@ -164,7 +164,8 @@ namespace Voat.Controllers
                 ViewBag.message = submission.Content;
                 ViewBag.title = submission.Title;
                 ViewBag.linkDescription = submission.LinkDescription;
-
+                ViewBag.content = submission.Content;
+                ViewBag.linkUrl = submission.Content;
                 //show error
                 ModelState.AddModelError(string.Empty, result.Message);
                 return View("Submit");

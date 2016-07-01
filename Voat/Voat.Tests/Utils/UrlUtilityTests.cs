@@ -107,7 +107,36 @@ namespace Voat.Tests.Utils
             bool result = UrlUtility.IsUriValid(testUri.ToString());
             Assert.AreEqual(true, result, "The input URI was invalid.");
         }
+        [TestCategory("Utility")]
+        [TestMethod]
+        public void TestIsUriValid2()
+        {
+            Uri testUri = new Uri("http://😍.😍");
 
+            bool result = UrlUtility.IsUriValid(testUri.ToString(), false);
+            Assert.AreEqual(true, result, "The input URI was invalid 1");
+
+            result = UrlUtility.IsUriValid(testUri.ToString(), true);
+            Assert.AreEqual(false, result, "The input URI was invalid 2");
+
+            result = UrlUtility.IsUriValid(testUri.ToString());
+            Assert.AreEqual(false, result, "The input URI was invalid 3");
+        }
+        [TestCategory("Utility")]
+        [TestMethod]
+        public void TestIsUriValid3()
+        {
+            Uri testUri = new Uri("http://​.​");
+
+            bool result = UrlUtility.IsUriValid(testUri.ToString(), false);
+            Assert.AreEqual(true, result, "The input URI was invalid 1");
+
+            result = UrlUtility.IsUriValid(testUri.ToString(), true);
+            Assert.AreEqual(false, result, "The input URI was invalid 2");
+
+            result = UrlUtility.IsUriValid(testUri.ToString());
+            Assert.AreEqual(false, result, "The input URI was invalid 3");
+        }
         [TestMethod]
         [TestCategory("Utility")]
         public void TestTagInTitle()

@@ -61,17 +61,6 @@ namespace Voat.Domain.Models
         public MessageType Type { get; set; }
 
         /// <summary>
-        /// The text description of the type of message this is.
-        /// </summary>
-        public string TypeName
-        {
-            get
-            {
-                return this.Type.ToString();
-            }
-        }
-
-        /// <summary>
         /// A flag regarding the read state of message.
         /// </summary>
         public bool IsRead { get; set; }

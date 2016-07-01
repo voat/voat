@@ -9,7 +9,7 @@ using Voat.Utilities;
 namespace Voat.Rules.Posting
 {
     [RuleDiscovery("Approves a comment if it hasn't been submitted before.", "approved = (comment.Exists(content) == false)")]
-    public class PostCommentUniquenessRule : BaseSubverseBanRule
+    public class PostCommentUniquenessRule : BaseSubverseRule
     {
 
         public PostCommentUniquenessRule()

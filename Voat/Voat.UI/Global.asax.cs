@@ -29,6 +29,8 @@ namespace Voat
 
             //forces Rules Engine to load
             var x = VoatRulesEngine.Instance;
+            //forces thumbgenerator to initialize
+            var p = ThumbGenerator.DestinationPathThumbs;
 
             if (!Settings.SignalRDisabled)
             {
