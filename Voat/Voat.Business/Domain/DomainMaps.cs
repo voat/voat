@@ -116,6 +116,7 @@ namespace Voat.Domain
                     RatedAdult = subverse.IsAdult,
                     Sidebar = subverse.SideBar,
                     Type = subverse.Type,
+                    //IsAdminDisabled = (subverse.IsAdminDisabled.HasValue ? subverse.IsAdminDisabled.Value : false),
                     CreatedBy = subverse.CreatedBy
                 };
                 result.FormattedSidebar = Formatting.FormatMessage(subverse.SideBar, true);

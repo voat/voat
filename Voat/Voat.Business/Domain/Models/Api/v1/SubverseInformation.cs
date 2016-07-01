@@ -12,6 +12,7 @@ All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -33,6 +34,8 @@ namespace Voat.Domain.Models
         public string Title { get; set; }
         public string Type { get; set; }
 
+        //[JsonIgnore]
+        //public bool IsAdminDisabled { get; set; }
         public IEnumerable<string> Moderators { get; set; }
     }
 }

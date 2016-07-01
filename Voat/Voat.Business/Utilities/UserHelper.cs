@@ -147,9 +147,7 @@ namespace Voat.Utilities
                             }
                         }
 
-                        // TODO:
-                        // keep this updated as new features are added (delete sets etc)
-
+                        // UNDONE: keep this updated as new features are added (delete sets etc)
                         // username will stay permanently reserved to prevent someone else from registering it and impersonating
 
                         db.SaveChanges();

@@ -118,7 +118,6 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            //HACK: Disable subverse
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
@@ -246,7 +245,6 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            //HACK: Disable subverse
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;

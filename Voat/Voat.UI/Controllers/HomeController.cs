@@ -225,7 +225,6 @@ namespace Voat.Controllers
             //        return View("Submit");
             //    }
 
-            //    //TODO: Port Check
             //    // check if same link was submitted before and deny submission
             //        var existingSubmission = _db.Submissions.FirstOrDefault(s => s.Content.Equals(submission.Content, StringComparison.OrdinalIgnoreCase) && s.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
@@ -242,7 +241,7 @@ namespace Voat.Controllers
             //    {
             //        ModelState.AddModelError(string.Empty, "Sorry, this link has already been submitted by someone else.");
 
-            //        // todo: offer the option to repost after informing the user about it
+
             //        return RedirectToRoute(
             //            "SubverseComments",
             //            new
@@ -425,8 +424,7 @@ namespace Voat.Controllers
 
                                 var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
                                 
-                                // TODO: 
-                                // check if user wants to exclude downvoted submissions from frontpage
+                                // TODO: check if user wants to exclude downvoted submissions from frontpage
                                 var downvotedSubmissionIds = db.SubmissionVoteTrackers.AsNoTracking().Where(vt => vt.UserName.Equals(User.Identity.Name) && vt.VoteStatus == -1).Select(s=>s.SubmissionID);
 
                                 IQueryable<Submission> submissions = (from m in db.Submissions.Include("Subverse").AsNoTracking()

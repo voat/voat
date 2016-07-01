@@ -543,13 +543,16 @@ namespace Voat.Data
             return subs;
         }
 
-        public Subverse GetSubverseInfo(string subverse)
+        public Subverse GetSubverseInfo(string subverse, bool filterDisabled = false)
         {
-
-            var submission = (from x in _db.Subverses
-                              where x.Name == subverse
-                              select x).FirstOrDefault();
-
+            var query = (from x in _db.Subverses
+                         where x.Name == subverse
+                         select x);
+            if (filterDisabled)
+            {
+                query = query.Where(x => x.IsAdminDisabled != true);
+            }
+            var submission = query.FirstOrDefault();
             return submission;
         }
         public string GetSubverseStylesheet(string subverse)

@@ -59,6 +59,7 @@ namespace Voat.Domain.Query
             using (var db = new Repository())
             {
                 var result = db.GetSubmission(this._submissionID);
+                //TODO: This returns submissions from disabled subs
                 return result.Map();
             }
         }

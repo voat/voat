@@ -160,9 +160,7 @@ namespace Voat.Controllers
                 {
                     ModelState.AddModelError("", "Incorrect recaptcha answer.");
 
-                    // TODO 
-                    // SET PREVENT SPAM DELAY TO 0
-
+                    // TODO: SET PREVENT SPAM DELAY TO 0
                     return View();
                 }
             }

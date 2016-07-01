@@ -34,7 +34,7 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var info = db.GetSubverseInfo(_subverse).Map();
+                var info = db.GetSubverseInfo(_subverse, true).Map();
 
                 if (info != null)
                 {
