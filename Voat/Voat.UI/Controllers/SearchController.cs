@@ -159,22 +159,16 @@ namespace Voat.Controllers
             }
 
             // find a subverse by name and/or description, sort search results by number of subscribers
-            var subversesByName = _db.Subverses
-                .Where(s => s.Name.ToLower().Contains(q) && (s.IsAdminDisabled != true))
-                .OrderByDescending(s => s.SubscriberCount);
-
+            results = _db.Subverses.Where(s => s.IsAdminDisabled != true);
             if (d != null)
             {
-                var subversesByDescription = _db.Subverses
-                    .Where(s => s.Description.ToLower().Contains(q))
-                    .OrderByDescending(s => s.SubscriberCount);
-
-                results = subversesByName.Concat(subversesByDescription).OrderByDescending(s=>s.SubscriberCount);
+                results = results.Where(x => x.Name.ToLower().Contains(q) || x.Description.ToLower().Contains(q));
             }
             else
             {
-                results = subversesByName.OrderByDescending(s => s.SubscriberCount);
+                results = results.Where(x => x.Name.ToLower().Contains(q));
             }
+            results = results.OrderByDescending(s => s.SubscriberCount);
 
             ViewBag.Title = "Search results";
 
