@@ -35,6 +35,7 @@ using Voat.Utilities;
 using Voat.Configuration;
 using Voat.UI.Utilities;
 using Voat.Data;
+using Voat.Domain;
 
 namespace Voat.Controllers
 {
@@ -120,7 +121,7 @@ namespace Voat.Controllers
             await UserManager.ResetAccessFailedCountAsync(user.Id);
 
             // get user IP address
-            string clientIpAddress = UserHelper.UserIpAddress(Request);
+            string clientIpAddress = UserGateway.UserIpAddress(Request);
 
             // save last login ip and timestamp
             user.LastLoginFromIp = clientIpAddress;
@@ -177,7 +178,7 @@ namespace Voat.Controllers
             try
             {
                 // get user IP address
-                string clientIpAddress = UserHelper.UserIpAddress(Request);
+                string clientIpAddress = UserGateway.UserIpAddress(Request);
 
                 // check the number of accounts already in database with this IP address, if number is higher than max conf, refuse registration request
                 var accountsWithSameIp = UserManager.Users.Count(x => x.LastLoginFromIp == clientIpAddress);

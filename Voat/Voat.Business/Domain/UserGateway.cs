@@ -3,6 +3,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -1019,6 +1020,33 @@ namespace Voat.Domain
             {
                 clientIpAddress = request.UserHostAddress;
             }
+            return clientIpAddress;
+        }
+        //this is for the API
+        public static string UserIpAddress(HttpRequestMessage request)
+        {
+            const string HTTP_CONTEXT_KEY = "MS_HttpContext";
+            const string REMOTE_ENDPOINT_KEY = "System.ServiceModel.Channels.RemoteEndpointMessageProperty";
+
+            string clientIpAddress = String.Empty;
+            if (request.Properties.ContainsKey(HTTP_CONTEXT_KEY))
+            {
+                dynamic ctx = request.Properties[HTTP_CONTEXT_KEY];
+                if (ctx != null)
+                {
+                    return ctx.Request.UserHostAddress;
+                }
+            }
+
+            if (request.Properties.ContainsKey(REMOTE_ENDPOINT_KEY))
+            {
+                dynamic remoteEndpoint = request.Properties[REMOTE_ENDPOINT_KEY];
+                if (remoteEndpoint != null)
+                {
+                    return remoteEndpoint.Address;
+                }
+            }
+
             return clientIpAddress;
         }
 

@@ -21,6 +21,7 @@ using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Models;
 using Voat.Utilities;
@@ -131,7 +132,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
         {
-            var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+            var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserGateway.UserIpAddress(this.Request)));
             var result = await cmd.Execute();
             return Json(result);
         }

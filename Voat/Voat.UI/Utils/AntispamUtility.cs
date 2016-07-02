@@ -34,6 +34,7 @@ using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Configuration;
 using Voat.Data;
+using Voat.Domain;
 
 namespace Voat.UI.Utilities
 {
@@ -133,7 +134,7 @@ namespace Voat.UI.Utilities
             var cache = filterContext.HttpContext.Cache;
 
             // Grab the IP Address from the originating Request (very simple implementation for example purposes)
-            var originationInfo = request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? request.UserHostAddress;
+            var originationInfo = UserGateway.UserIpAddress(request);
 
             // Append the User Agent
             originationInfo += request.UserAgent;

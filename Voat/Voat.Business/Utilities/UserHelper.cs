@@ -1017,47 +1017,7 @@ namespace Voat.Utilities
             }
         }
 
-        // get user IP address from httprequestbase
-        public static string UserIpAddress(HttpRequestBase request)
-        {
-            string clientIpAddress = String.Empty;
-            if (request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
-            {
-                clientIpAddress = request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            }
-            else if (request.UserHostAddress.Length != 0)
-            {
-                clientIpAddress = request.UserHostAddress;
-            }
-            return clientIpAddress;
-        }
-        //this is for the API
-        public static string UserIpAddress(HttpRequestMessage request)
-        {
-            const string HTTP_CONTEXT_KEY = "MS_HttpContext";
-            const string REMOTE_ENDPOINT_KEY = "System.ServiceModel.Channels.RemoteEndpointMessageProperty";
-
-            string clientIpAddress = String.Empty;
-            if (request.Properties.ContainsKey(HTTP_CONTEXT_KEY))
-            {
-                dynamic ctx = request.Properties[HTTP_CONTEXT_KEY];
-                if (ctx != null)
-                {
-                    return ctx.Request.UserHostAddress;
-                }
-            }
-
-            if (request.Properties.ContainsKey(REMOTE_ENDPOINT_KEY))
-            {
-                dynamic remoteEndpoint = request.Properties[REMOTE_ENDPOINT_KEY];
-                if (remoteEndpoint != null)
-                {
-                    return remoteEndpoint.Address;
-                }
-            }
-
-            return clientIpAddress;
-        }
+        
         // block a subverse
         public static void BlockSubverse(string userName, string subverse)
         {

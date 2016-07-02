@@ -33,6 +33,7 @@ using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Query;
 using Voat.Domain.Command;
+using Voat.Domain;
 
 namespace Voat.Controllers
 {
@@ -479,15 +480,7 @@ namespace Voat.Controllers
                 var currentSubverse = (string)RouteData.Values["subversetoshow"];
 
                 // register a new session for this subverse
-                string clientIpAddress = String.Empty;
-                if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
-                {
-                    clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-                }
-                else if (Request.UserHostAddress.Length != 0)
-                {
-                    clientIpAddress = Request.UserHostAddress;
-                }
+                string clientIpAddress = UserGateway.UserIpAddress(Request);
                 string ipHash = IpHash.CreateHash(clientIpAddress);
                 SessionHelper.Add(currentSubverse, ipHash);
 
@@ -653,15 +646,7 @@ namespace Voat.Controllers
                 var currentSubverse = (string)RouteData.Values["subversetoshow"];
 
                 // register a new session for this subverse
-                string clientIpAddress = String.Empty;
-                if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
-                {
-                    clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-                }
-                else if (Request.UserHostAddress.Length != 0)
-                {
-                    clientIpAddress = Request.UserHostAddress;
-                }
+                string clientIpAddress = UserGateway.UserIpAddress(Request);
                 string ipHash = IpHash.CreateHash(clientIpAddress);
                 SessionHelper.Add(currentSubverse, ipHash);
 

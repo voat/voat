@@ -25,6 +25,7 @@ using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Models;
@@ -42,7 +43,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> VoteComment(int commentId, int typeOfVote)
         {
-            var cmd = new CommentVoteCommand(commentId, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+            var cmd = new CommentVoteCommand(commentId, typeOfVote, IpHash.CreateHash(UserGateway.UserIpAddress(this.Request)));
             var result = await cmd.Execute();
             return Json(result);
         }
@@ -147,19 +148,8 @@ namespace Voat.Controllers
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
 
-
-
             // experimental: register a new session for this subverse
-            string clientIpAddress = String.Empty;
-
-            if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
-            {
-                clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            }
-            else if (Request.UserHostAddress.Length != 0)
-            {
-                clientIpAddress = Request.UserHostAddress;
-            }
+            string clientIpAddress = UserGateway.UserIpAddress(Request);
 
             if (clientIpAddress != String.Empty)
             {
