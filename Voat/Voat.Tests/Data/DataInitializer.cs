@@ -34,6 +34,7 @@ namespace Voat.Tests.Repository
 {
     public class VoatDataInitializer : DropCreateDatabaseAlways<voatEntities>
     {
+
         public override void InitializeDatabase(voatEntities context)
         {
             base.InitializeDatabase(context);
@@ -378,7 +379,15 @@ namespace Voat.Tests.Repository
 
             context.BannedUsers.Add(new BannedUser() { CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-30), Reason = "Unit Testing Global Ban", UserName = "BannedGlobally" });
             context.SubverseBans.Add(new SubverseBan() { Subverse = "unit", CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-30), Reason = "Unit Testing v/Unit Ban", UserName = "BannedFromVUnit" });
-            context.BannedDomains.Add(new BannedDomain() { CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-15), Domain = "reddit.com", Reason = "Turned Digg migrants into jelly fish" });
+            context.BannedDomains.Add(new BannedDomain() { CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-15), Domain = "fleddit.com", Reason = "Turned Digg migrants into jelly fish" });
+
+            context.SaveChanges();
+
+            #endregion BannedUsers Test Data
+
+            #region Disabled Test Data
+
+            context.Subverses.Add(new Subverse() { Name = "Disabled", Title = "Disabled", IsAdminDisabled = true, CreatedBy = "unit", CreationDate = DateTime.Now.AddDays(-100), SideBar = "We will never be disabled", Type = "link" });
 
             context.SaveChanges();
 
@@ -395,7 +404,6 @@ namespace Voat.Tests.Repository
 
             #region AddSubmissionsForSortTesting
 
-            //ID:1 (Standard Subverse)
             var sortSubverse = context.Subverses.Add(new Subverse()
             {
                 Name = "sort",
@@ -435,7 +443,64 @@ namespace Voat.Tests.Repository
             // ADD YOUR STUFF BELOW - DO NOT EDIT THE ABOVE CODE - NOT EVEN ONCE - I'LL SO FIGHT YOU IF YOU DO AND I FIGHT DIRTY
             //******************************************************************************************************************
         }
+        public static int BuildCommentTree(string subverse, string commentContent, int rootDepth, int nestedDepth, int recurseCount)
+        {
+            using (var db = new voatEntities())
+            {
+                //create submission
+                var submission = new Submission()
+                {
+                    CreationDate = DateTime.UtcNow,
+                    Content = $"Comment Tree for v/{subverse}",
+                    Subverse = subverse,
+                    Title = $"Comment Tree for v/{subverse}",
+                    Type = 1,
+                    UserName = "TestUser1",
+                    IsAnonymized = false
+                };
+                db.Submissions.Add(submission);
+                db.SaveChanges();
 
+                Func<voatEntities, int?, string, string, int> createComment = (context, parentCommentID, content, userName) => {
+
+                    var comment = new Comment() {
+                        SubmissionID = submission.ID,
+                        UserName = userName,
+                        Content = content,
+                        ParentID = parentCommentID,
+                        IsAnonymized = submission.IsAnonymized,
+                        CreationDate = DateTime.UtcNow
+                    };
+                    context.Comments.Add(comment);
+                    context.SaveChanges();
+                    System.Threading.Thread.Sleep(2);
+                    return comment.ID;
+                };
+                Action<voatEntities, int?, int, int, string, int> createNestedComments = null;
+                createNestedComments = (context, parentCommentID, depth, currentDepth, path, recurseDepth) => {
+                    if (currentDepth <= depth)
+                    {
+                        var newParentCommentID = parentCommentID;
+                        currentDepth += 1;
+                        for (int i = 0; i < depth; i++)
+                        {
+                            var newPath = String.Format("{0}:{1}", path, i + 1);
+                            newParentCommentID = createComment(context, parentCommentID, $"{commentContent} - Path {newPath}", String.Format("CommentTreeUser{0}", i + 1));
+                            if (currentDepth < recurseDepth)
+                            {
+                                createNestedComments(db, newParentCommentID, (depth), 0, newPath, recurseDepth - 1);
+                            }
+                        }
+                    }
+                };
+                for (int i = 0; i < rootDepth; i++)
+                {
+                    int parentCommentID = createComment(db, null, $"{commentContent} - Path {i + 1}", String.Format("CommentTreeUser{0}", i + 1));
+                    createNestedComments(db, parentCommentID, nestedDepth, 0, $"{i + 1}", recurseCount);
+                }
+                return submission.ID;
+            }
+        }
         public static void CreateUser(string userName)
         {
             //SchemaInitializerApplicationDbContext.ReferenceEquals(null, new object());

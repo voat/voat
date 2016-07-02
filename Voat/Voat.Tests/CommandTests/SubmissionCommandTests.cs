@@ -280,6 +280,17 @@ namespace Voat.Tests.CommandTests
             Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "Submission title can not contain Unicode or unprintable characters");
         }
-        
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        public void PreventPostingToDisabledSub()
+        {
+            TestHelper.SetPrincipal("TestUser6");
+            var userSubmission = new Domain.Models.UserSubmission() { Subverse = "disabled", Title = "I am not paying attention", Content = "Why was this sub disabled?" };
+            var cmd = new CreateSubmissionCommand(userSubmission);
+            var r = cmd.Execute().Result;
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsFalse(r.Success, r.Message);
+            Assert.AreEqual(r.Message, "Subverse is disabled");
+        }
     }
 }

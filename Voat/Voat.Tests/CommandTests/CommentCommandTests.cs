@@ -21,7 +21,8 @@
 #endregion LICENSE
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using System;
+using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Tests.Repository;
 
@@ -168,6 +169,36 @@ namespace Voat.Tests.CommandTests
                 Assert.IsNotNull(comment.LastEditDate);
                 Assert.AreEqual(cmd.Content, comment.Content);
             }
+        }
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        public void CreateComment_DisabledSubverse()
+        {
+            //insert post via db into disabled sub
+            Submission submission = null;
+            using (var db = new voatEntities())
+            {
+                submission = new Submission() {
+                    Subverse = "Disabled",
+                    Title = "Super Sneaky",
+                    Content = "How can I post to disabled subs?",
+                    UserName = "unit",
+                    CreationDate = DateTime.UtcNow
+                };
+                db.Submissions.Add(submission);
+                db.SaveChanges();
+            }
+
+            TestHelper.SetPrincipal("TestUser5");
+            var cmd = new CreateCommentCommand(submission.ID, null, "Are you @FuzzyWords?");
+            var c = cmd.Execute().Result;
+
+            Assert.IsFalse(c.Success, "Disabled subs should not allow comments");
+            Assert.AreEqual(Status.Denied, c.Status);
+            Assert.AreEqual(c.Message, "Subverse is disabled");
+
         }
     }
 }

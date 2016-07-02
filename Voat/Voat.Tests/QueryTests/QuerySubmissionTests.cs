@@ -163,7 +163,7 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Cache")]
         public void Query_v_All_Guest_Cached_Expired_Correctly()
         {
-            TimeSpan cacheTime = TimeSpan.FromSeconds(5);
+            TimeSpan cacheTime = TimeSpan.FromSeconds(2);
 
             var q = new QuerySubmissions("_all", new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
             //q.CachePolicy.Duration = cacheTime; //Cache this request
@@ -181,7 +181,7 @@ namespace Voat.Tests.QueryTests
             }
             else if (this is BaseQueryMemoryCache)
             {
-                waitTime = 20;
+                waitTime = 30;
             }
 
             //wait for cache to expire - Runtime caches aren't precise so wait long enough to ensure cached item is removed.

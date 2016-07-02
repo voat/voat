@@ -25,15 +25,14 @@ namespace Voat.Domain.Models
         public DateTime CreationDate { get; set; }
         public string Description { get; set; }
         public string Name { get; set; }
-
         public Nullable<bool> RatedAdult { get; set; }
         public string Sidebar { get; set; }
         public string FormattedSidebar { get; set; }
-
         public int SubscriberCount { get; set; }
         public string Title { get; set; }
         public string Type { get; set; }
-
+        public bool? IsAnonymized { get; set; }
+        public bool IsAdult { get; set; }
         //[JsonIgnore]
         //public bool IsAdminDisabled { get; set; }
         public IEnumerable<string> Moderators { get; set; }

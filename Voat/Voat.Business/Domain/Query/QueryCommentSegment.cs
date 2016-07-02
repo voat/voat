@@ -25,7 +25,7 @@ namespace Voat.Domain.Query
             _submissionID = submissionID;
             _parentID = parentID;
             _index = index;
-            _options = options;
+            _options = options ?? SearchOptions.Default;
         }
 
         public override CommentSegment Execute()
@@ -40,24 +40,41 @@ namespace Voat.Domain.Query
             //This is for testing
             //options.Count = 3;
 
-            var fullTree = (q.Execute()).Values;
-            var queryTree = fullTree.AsQueryable();
-            queryTree = queryTree.Where(x => x.ParentID == _parentID);
-
+            IEnumerable<usp_CommentTree_Result> fullTree = (q.Execute()).Values;
             switch (_options.Sort)
             {
                 case SortAlgorithm.New:
-                    queryTree = queryTree.OrderByDescending(x => x.CreationDate);
+                    fullTree = fullTree.OrderByDescending(x => x.CreationDate);
                     break;
-
-                case SortAlgorithm.Top:
-                    queryTree = queryTree.OrderByDescending(x => x.UpCount - x.DownCount);
-                    break;
-
                 case SortAlgorithm.Bottom:
-                    queryTree = queryTree.OrderByDescending(x => x.DownCount);
+                    fullTree = fullTree.OrderByDescending(x => x.DownCount);
+                    break;
+                default:
+                    fullTree = fullTree.OrderByDescending(x => x.UpCount - x.DownCount);
                     break;
             }
+
+            var queryTree = fullTree.AsQueryable();
+            queryTree = queryTree.Where(x => x.ParentID == _parentID);
+
+            //Func<IQueryable<usp_CommentTree_Result>, SortAlgorithm, IQueryable<usp_CommentTree_Result>> sort = 
+            //    new Func<IQueryable<usp_CommentTree_Result>, SortAlgorithm, IQueryable<usp_CommentTree_Result>>((tree, sortAlg) => {
+            //        switch (sortAlg)
+            //        {
+            //            case SortAlgorithm.New:
+            //                return tree.OrderByDescending(x => x.CreationDate);
+            //                break;
+            //            case SortAlgorithm.Bottom:
+            //                return tree.OrderByDescending(x => x.DownCount);
+            //                break;
+            //            default:
+            //                return tree.OrderByDescending(x => x.UpCount - x.DownCount);
+            //                break;
+            //        }
+
+            //    });
+
+
             var queryableTree = queryTree.Skip(startingIndex).Take(_options.Count);
 
             var commentVotes = new QueryUserCommentVotesForSubmission(_submissionID).Execute();

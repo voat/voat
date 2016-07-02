@@ -296,7 +296,7 @@ namespace Voat.Tests.Repository
             {
                 TestHelper.SetPrincipal("TestUser10");
 
-                var result = await db.PostSubmission(new UserSubmission() { Subverse = "unit", Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
+                var result = await db.PostSubmission(new UserSubmission() { Subverse = "unit", Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting content with banned domain did not get rejected");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
@@ -311,7 +311,7 @@ namespace Voat.Tests.Repository
             {
                 TestHelper.SetPrincipal("TestUser10");
 
-                var result = db.PostComment(1, null, "Check out my new post: http://www.reddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics");
+                var result = db.PostComment(1, null, "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics");
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting content with banned domain did not get rejected");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");

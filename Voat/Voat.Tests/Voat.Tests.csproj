@@ -135,6 +135,8 @@
     <Compile Include="Data\SearchOptions_Tests.cs" />
     <Compile Include="Helpers\TestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryTests\QueryCommentTests.cs" />
+    <Compile Include="QueryTests\QuerySubverseTests.cs" />
     <Compile Include="QueryTests\QuerySubmissionSortTests.cs" />
     <Compile Include="QueryTests\QuerySubmissionTests.cs" />
     <Compile Include="QueryTests\QueryUserTests.cs" />
