@@ -26,17 +26,12 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, CommandResponse<Comment>>> CacheExecute()
         {
-            var data = await Task.Factory.StartNew(() =>
+            using (var db = new Repository())
             {
-                using (var db = new Repository())
-                {
-                    return db.PostComment(this.SubmissionID, this.ParentCommentID, this.Content);
-                }
-            });
-
-            var mapped = CommandResponse.Map(data, data.Response.Map());
-
-            return Tuple.Create(mapped, data);
+                var data = await db.PostComment(this.SubmissionID, this.ParentCommentID, this.Content);
+                var mapped = CommandResponse.Map(data, data.Response.Map());
+                return Tuple.Create(mapped, data);
+            }
         }
 
         protected override void UpdateCache(CommandResponse<Comment> result)

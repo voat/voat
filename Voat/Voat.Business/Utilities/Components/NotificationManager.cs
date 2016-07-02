@@ -141,7 +141,7 @@ namespace Voat.Utilities.Components
                             if (UserHelper.UserExists(parentComment.UserName))
                             {
                                 // do not send notification if author is the same as comment author
-                                if (parentComment.UserName != HttpContext.Current.User.Identity.Name)
+                                if (parentComment.UserName != comment.UserName)
                                 {
                                     // send the message
 
@@ -160,7 +160,7 @@ namespace Voat.Utilities.Components
                                         }
                                         else
                                         {
-                                            commentReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
+                                            commentReplyNotification.Sender = comment.UserName;
                                         }
                                         commentReplyNotification.Body = comment.Content;
                                         commentReplyNotification.Subverse = subverse.Name;
@@ -191,7 +191,7 @@ namespace Voat.Utilities.Components
                             if (UserHelper.UserExists(submission.UserName))
                             {
                                 // do not send notification if author is the same as comment author
-                                if (submission.UserName != HttpContext.Current.User.Identity.Name)
+                                if (submission.UserName != comment.UserName)
                                 {
                                     // send the message
                                     var postReplyNotification = new SubmissionReplyNotification();
@@ -206,7 +206,7 @@ namespace Voat.Utilities.Components
                                     }
                                     else
                                     {
-                                        postReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
+                                        postReplyNotification.Sender = comment.UserName;
                                     }
 
                                     postReplyNotification.Body = comment.Content;

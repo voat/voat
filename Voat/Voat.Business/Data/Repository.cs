@@ -1302,7 +1302,7 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public CommandResponse<Models.Comment> PostCommentReply(int parentCommentID, string comment)
+        public async Task<CommandResponse<Models.Comment>> PostCommentReply(int parentCommentID, string comment)
         {
             var c = _db.Comments.Find(parentCommentID);
             if (c == null)
@@ -1310,11 +1310,11 @@ namespace Voat.Data
                 throw new VoatNotFoundException("Can not find parent comment with id {0}", parentCommentID.ToString());
             }
             var submissionid = c.SubmissionID;
-            return PostComment(submissionid.Value, parentCommentID, comment);
+            return await PostComment(submissionid.Value, parentCommentID, comment);
         }
 
         [Authorize]
-        public CommandResponse<Models.Comment> PostComment(int submissionID, int? parentCommentID, string commentContent)
+        public async Task<CommandResponse<Models.Comment>> PostComment(int submissionID, int? parentCommentID, string commentContent)
         {
 
             DemandAuthentication();
@@ -1353,12 +1353,14 @@ namespace Voat.Data
                 c.FormattedContent = formattedComment;
 
                 _db.Comments.Add(c);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
                 if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
                 {
                     ContentProcessor.Instance.Process(c.Content, ProcessingStage.InboundPostSave, c);
                 }
+
+                await NotificationManager.SendCommentNotification(c);
 
                 return MapRuleOutCome(outcome, Selectors.SecureComment(c));
             }

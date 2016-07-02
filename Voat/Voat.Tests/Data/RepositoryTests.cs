@@ -305,13 +305,13 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Comment")]
-        public void PostComment_BannedDomain()
+        public async Task PostComment_BannedDomain()
         {
             using (var db = new Voat.Data.Repository())
             {
                 TestHelper.SetPrincipal("TestUser10");
 
-                var result = db.PostComment(1, null, "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics");
+                var result = await db.PostComment(1, null, "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics");
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting content with banned domain did not get rejected");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");

@@ -8,14 +8,22 @@ using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
+using Voat.Tests.Repository;
 
 namespace Voat.Tests.QueryTests
 {
     [TestClass]
     public class QuerySubmissionSortTests
     {
-        private string subverse = "sort";
+        private static string subverse = "sort";
 
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            VoatDataInitializer.CreateSorted(subverse);
+        }
+
+        
         [TestMethod]
         [TestCategory("Query")]
         [TestCategory("Submission")]

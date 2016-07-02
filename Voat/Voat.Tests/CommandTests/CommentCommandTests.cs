@@ -22,6 +22,8 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Tests.Repository;
@@ -199,6 +201,67 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(Status.Denied, c.Status);
             Assert.AreEqual(c.Message, "Subverse is disabled");
 
+        }
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Comment"), TestCategory("Comment.Post"), TestCategory("Notifications")]
+        public async Task CreateComment_TestCommentReplyNotification()
+        {
+
+            var userName = "UnitTestUser18";
+            TestHelper.SetPrincipal(userName);
+            var body = Guid.NewGuid().ToString();
+            var cmd = new CreateCommentCommand(1, 2, body);
+            var c = await cmd.Execute();
+            Assert.IsNotNull(c, "response null");
+            if (!c.Success)
+            {
+                if (c.Exception != null)
+                {
+                    Assert.Fail(c.Exception.ToString());
+                }
+                else
+                {
+                    Assert.Fail(c.Message);
+                }
+            }
+            Assert.AreEqual(Status.Success, c.Status);
+
+            //check for comment reply entry
+            using (var db = new voatEntities())
+            {
+                var notice = db.CommentReplyNotifications.FirstOrDefault(x => x.Sender == userName && x.Recipient == "unit" && x.SubmissionID == 1 && x.CommentID == c.Response.ID && x.Body == body);
+                Assert.IsNotNull(notice, "Did not find a reply notification");
+            }
+        }
+        [TestMethod]
+        [TestCategory("Command"),TestCategory("Comment"),TestCategory("Comment.Post"), TestCategory("Notifications")]
+        public async Task CreateComment_TestSubmissionCommentNotification()
+        {
+            var userName = "UnitTestUser19";
+            TestHelper.SetPrincipal(userName);
+            var body = Guid.NewGuid().ToString();
+            var cmd = new CreateCommentCommand(1, null, body);
+            var c = await cmd.Execute();
+            Assert.IsNotNull(c, "response null");
+            if (!c.Success)
+            {
+                if (c.Exception != null)
+                {
+                    Assert.Fail(c.Exception.ToString());
+                }
+                else
+                {
+                    Assert.Fail(c.Message);
+                }
+            }
+            Assert.AreEqual(Status.Success, c.Status);
+
+            //check for comment reply entry
+            using (var db = new voatEntities())
+            {
+                var notice = db.SubmissionReplyNotifications.FirstOrDefault(x => x.Sender == userName && x.Recipient == "anon" && x.SubmissionID == 1 && x.Body == body);
+                Assert.IsNotNull(notice, "Did not find a reply notification");
+            }
         }
     }
 }
