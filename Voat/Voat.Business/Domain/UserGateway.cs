@@ -1011,10 +1011,12 @@ namespace Voat.Domain
         // get user IP address from httprequestbase
         public static string UserIpAddress(HttpRequestBase request)
         {
+            const string HTTP_CONTEXT_KEY = "HTTP_X_FORWARDED_FOR";
+
             string clientIpAddress = String.Empty;
-            if (request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
+            if (request.ServerVariables[HTTP_CONTEXT_KEY] != null)
             {
-                clientIpAddress = request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                clientIpAddress = request.ServerVariables[HTTP_CONTEXT_KEY];
             }
             else if (request.UserHostAddress.Length != 0)
             {
