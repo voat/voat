@@ -247,7 +247,7 @@ namespace Voat.Controllers
                         Sender = $"v/{submissionToDelete.Subverse}",
                         Recipient = submissionToDelete.UserName,
                         Subject = "Your submission has been deleted by a moderator",
-                        Message =   "Your [submission](v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
+                        Message =   "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
                                     "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
                                     "Original submission content was: " + Environment.NewLine +
                                     "---" + Environment.NewLine +
