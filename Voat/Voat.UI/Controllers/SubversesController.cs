@@ -1159,7 +1159,7 @@ namespace Voat.Controllers
                 Sender = $"v/{subverseToAddModTo}",
                 Subject = $"Moderator invitation for v/{userInvitation.Subverse} accepted",
                 Recipient = userInvitation.CreatedBy,
-                Message = $"User {User.Identity.Name} has accepted your invitation to moderate subverse /v/{userInvitation.Subverse}."
+                Message = $"User {User.Identity.Name} has accepted your invitation to moderate subverse v/{userInvitation.Subverse}."
             };
             var cmd = new SendMessageCommand(message);
             await cmd.Execute();

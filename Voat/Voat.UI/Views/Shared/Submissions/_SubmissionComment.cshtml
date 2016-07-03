@@ -12,7 +12,7 @@
     All Rights Reserved.
 *@
 
-@model CommentBucketViewModel
+@model Voat.Domain.Models.CommentSegment
 
 @using Voat.Data.Models
 @using Voat.Models.ViewModels
@@ -23,17 +23,17 @@
 
     bool singleTree = ViewBag.SingleTree ?? false;
 
-    bool? subverseAnonymized = Model.Subverse.IsAnonymized;
+    //bool? subverseAnonymized = Model.Subverse.IsAnonymized;
 
     //nesting params
     int nestingCount = ViewBag.NestingCount ?? 0;
-    int nestingLimit = Model.NestingThreshold;
+    //int nestingLimit = Model.NestingThreshold;
 
     //find the comment based on the received comment id via ViewData
     int commentId = ViewBag.CommentId;
-    var comment = Model.CommentTree.FirstOrDefault(x => x.ID == commentId);
+    var comment = Model.Comments.FirstOrDefault(x => x.ID == commentId);
     int commentScore = (int)(comment.UpCount - comment.DownCount);
-    var commentSingleVM = new CommentSingleViewModel() { CommentModel = comment, SubmissionModel = Model.Submission, SubverseModel = Model.Subverse };
+    //var commentSingleVM = new CommentSingleViewModel() { CommentModel = comment, SubmissionModel = Model.Submission, SubverseModel = Model.Subverse };
 
     //check if thread should be hidden
     bool parentIsHidden = ViewBag.ParentIsHidden ?? false;
@@ -41,7 +41,7 @@
 
     DateTime submissionDate = comment.CreationDate;
     string postAge = Age.ToRelative(submissionDate);
-    string opName = Model.Submission.UserName;
+    //string opName = Model.Submission.UserName;
     string commentAuthor = comment.UserName;
 
     DateTime? lastEditDate = comment.LastEditDate;
@@ -52,7 +52,7 @@
     }
 
     // apply class style if OP is the Comment Author
-    opName = opName.Trim();
+    //opName = opName.Trim();
     commentAuthor = commentAuthor.Trim();
 
     string collapsedComment = "";
@@ -60,7 +60,7 @@
     string showIfParent = "";
 
     //collapse comments with score of -4 or less
-    if (parentIsHidden || commentScore <= Model.NegativeScoreThreshold)
+    if (parentIsHidden || comment.IsCollapsed)
     {
         collapsedComment = ""; //show collapsed comment
         uncollapsedComment = "display:none"; //hide uncollapsed comment
@@ -105,7 +105,7 @@
             <a href="#" class="expand" onclick="return showcomment(@commentId)">[+]</a>
             @if (!comment.IsDeleted)
             {
-                if (Model.Submission.IsAnonymized || subverseAnonymized == true)
+                if (comment.IsAnonymized)
                 {
                     <a href="#" class="author gray may-blank">@comment.ID</a>
                 }
@@ -138,7 +138,7 @@
                 {
                     //int commentScore = commentModel.Likes - commentModel.Dislikes;
                     string view = "~/Views/Shared/UserDistinctions/_UserDistinction.cshtml";
-                    if (opName == commentAuthor)
+                    if (comment.IsSubmitter)
                     {
                         view = (comment.IsDistinguished ? "~/Views/Shared/UserDistinctions/_SubmitterModeratorDistinction.cshtml" : "~/Views/Shared/UserDistinctions/_SubmitterDistinction.cshtml");
                     }
@@ -147,7 +147,7 @@
                         view = "~/Views/Shared/UserDistinctions/_ModeratorDistinction.cshtml";
                     }
 
-                    @Html.Partial(view, commentSingleVM, new ViewDataDictionary { { "SubverseAnonymized", subverseAnonymized } })
+                    @Html.Partial(view, comment, new ViewDataDictionary{ { "Subverse", ViewBag.Subverse }, { "Submission", ViewBag.Submission } })
                     <span class="score dislikes">
                         <span class="number">@comment.DownCount</span> points
                     </span>
@@ -226,48 +226,49 @@
 
             </form>
             <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@comment.Content</textarea>
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", commentSingleVM,
+            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", comment,
                 new ViewDataDictionary { { "SavedCommentCache", ViewBag.SavedCommentCache } })
 
-            @if (comment.ChildCount > 0 && nestingCount >= Model.NestingThreshold)
+            @*@if (comment.ChildCount > 0 && nestingCount >= Model.NestingThreshold)*@
+            @if (comment.ChildCount > 0 && comment.ChildCount > (comment.Children == null ? 0 : comment.Children.TotalCount))
             {
                 <div>
                     <br />
-                    <a style="cursor:pointer;" id="loadmore-@comment.ID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@comment.ID'),$('.id-@comment.ID'),@Model.Submission.ID,@comment.ID,'children',0,'@Model.Sort.ToString()')">@comment.ChildCount @(comment.ChildCount == 1 ? "reply" : "replies")</a>
+                    <a style="cursor:pointer;" id="loadmore-@comment.ID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@comment.ID'),$('.id-@comment.ID'),@comment.SubmissionID,@comment.ID,'children',0,'@Model.Sort.ToString()')">@comment.ChildCount @(comment.ChildCount == 1 ? "reply" : "replies")</a>
                 </div>
             }
         </div>
     </div>
 
     @{
-        parentIsHidden = (comment.UpCount - comment.DownCount <= Model.NegativeScoreThreshold);
-        if (comment.ChildCount > 0 && nestingCount < Model.NestingThreshold)
+        parentIsHidden = (comment.IsCollapsed);
+        //if (comment.ChildCount > 0 && nestingCount < Model.NestingThreshold)
+        if (comment.ChildCount > 0)
         {
             //look for children comments to this root comment and display them
-            IEnumerable<Voat.Data.Models.usp_CommentTree_Result> childComments = null;
             int parentID = commentId;
 
-            //TODO: Should sort in controller
-            if (Model.Sort == Voat.Domain.Models.CommentSort.New)
-            {
-                childComments = Model.CommentTree.Where(x => x.ParentID == commentId).OrderByDescending(x => x.CreationDate).ToList();
-            }
-            else
-            {
-                childComments = Model.CommentTree.Where(x => x.ParentID == commentId).OrderByDescending(x => x.UpCount - x.DownCount).ToList();
-            }
+            ////TODO: Should sort in controller
+            //if (Model.Sort == Voat.Domain.Models.SortAlgorithm.New)
+            //{
+            //    childComments = Model.CommentTree.Where(x => x.ParentID == commentId).OrderByDescending(x => x.CreationDate).ToList();
+            //}
+            //else
+            //{
+            //    childComments = Model.CommentTree.Where(x => x.ParentID == commentId).OrderByDescending(x => x.UpCount - x.DownCount).ToList();
+            //}
 
-            bool showMoreSiblings = false;
-            int remaining = 0;
-            if (childComments.Count() > Model.CollapseSiblingThreshold && !singleTree)
-            {
-                showMoreSiblings = true;
-                remaining = childComments.Count() - Model.CollapseSiblingThreshold;
-                childComments = childComments.Take(Model.CollapseSiblingThreshold);
-            }
+            bool showMoreSiblings = comment.ChildCount > (comment.Children == null ? 0 : comment.Children.Comments.Count);
+            int remaining = comment.ChildCount - (comment.Children == null ? 0 : comment.Children.TotalCount);
+            //if (childComments.Count() > Model.CollapseSiblingThreshold && !singleTree)
+            //{
+            //    showMoreSiblings = true;
+            //    remaining = childComments.Count() - Model.CollapseSiblingThreshold;
+            //    childComments = childComments.Take(Model.CollapseSiblingThreshold);
+            //}
 
             int sameParentCounter = 0;
-            foreach (var childComment in childComments)
+            foreach (var childComment in comment.Children.Comments)
             {
                 //recalculate parent id score and hide here instead of passing values around?
                 if (sameParentCounter < 1)
@@ -276,7 +277,7 @@
                 }
                 parentID = childComment.ID;
 
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", Model, new ViewDataDictionary {
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", comment.Children, new ViewDataDictionary {
                     { "SavedCommentCache", ViewBag.SavedCommentCache },
                     { "VoteCache", ViewBag.VoteCache },
                     { "CommentId", childComment.ID },
@@ -284,6 +285,8 @@
                     { "ParentIsHidden", parentIsHidden },
                     { "ChildToHiddenParent", parentIsHidden },
                     { "NestingCount", nestingCount },
+                    { "Subverse", ViewBag.Subverse },
+                    { "Submission", ViewBag.Submission },
                     { "CommentToHighlight", ViewBag.CommentToHighLight } })
 
                 sameParentCounter++;
@@ -291,7 +294,7 @@
             if (showMoreSiblings)
             {
                 <div class="child comment" style="@uncollapsedComment">
-                    <a style="cursor:pointer;" id="loadmore-@commentId" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@commentId'),$('.id-@commentId'),@Model.Submission.ID,@commentId,'siblings',@childComments.Count(),'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
+                    <a style="cursor:pointer;" id="loadmore-@commentId" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@commentId'),$('.id-@commentId'),@comment.SubmissionID,@commentId,'siblings',@comment.ChildCount,'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
                 </div>
             }
         }

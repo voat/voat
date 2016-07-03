@@ -37,8 +37,11 @@ namespace Voat.Domain.Query
             var p = new QueryUserData(UserName).Execute();
 
             var preference = p.Preferences;
-            //This is for testing
-            //options.Count = 3;
+            //TODO: Set with preferences
+            _options.Count = 4;
+            int nestLevel = 3;
+            //TODO: set IsCollapsed flag in output on every comment below this threshold
+            int collapseThreshold = -4;
 
             IEnumerable<usp_CommentTree_Result> fullTree = (q.Execute()).Values;
             switch (_options.Sort)
@@ -47,10 +50,10 @@ namespace Voat.Domain.Query
                     fullTree = fullTree.OrderByDescending(x => x.CreationDate);
                     break;
                 case SortAlgorithm.Bottom:
-                    fullTree = fullTree.OrderByDescending(x => x.DownCount);
+                    fullTree = fullTree.OrderByDescending(x => x.DownCount).ThenByDescending(x => x.CreationDate);
                     break;
                 default:
-                    fullTree = fullTree.OrderByDescending(x => x.UpCount - x.DownCount);
+                    fullTree = fullTree.OrderByDescending(x => x.UpCount - x.DownCount).ThenByDescending(x => x.CreationDate);
                     break;
             }
 
@@ -80,9 +83,6 @@ namespace Voat.Domain.Query
             var commentVotes = new QueryUserCommentVotesForSubmission(_submissionID).Execute();
 
             List<NestedComment> comments = new List<NestedComment>();
-
-            int nestLevel = 4;
-            int collapseThreshold = -4;
 
             var processor = new Action<NestedComment>(n => {
                 if (!String.IsNullOrEmpty(UserName))
@@ -125,7 +125,7 @@ namespace Voat.Domain.Query
         //recursive addition of child comments
         private void AddComments(IEnumerable<usp_CommentTree_Result> queryTree, NestedComment parent, int count, int nestLevel, int currentNestLevel, int collapseThreshold, Action<NestedComment> processor)
         {
-            if (currentNestLevel <= nestLevel)
+            if (currentNestLevel < nestLevel)
             {
                 var children = queryTree.Where(x => x.ParentID == parent.ID).ToList();
                 if (children.Any())
@@ -138,10 +138,10 @@ namespace Voat.Domain.Query
 
                             c.IsCollapsed = (c.Total <= collapseThreshold);
                             processor(c);
-
-                            AddComments(queryTree, c, count, nestLevel, currentNestLevel++, collapseThreshold, processor);
+                            var nextNestLevel = currentNestLevel + 1;
+                            AddComments(queryTree, c, count, nestLevel, nextNestLevel, collapseThreshold, processor);
                             parent.AddChildComment(c);
-                            parent.Children.TotalCount = parent.ChildCount.Value;
+                            parent.Children.TotalCount = parent.ChildCount;
                         }
                     }
                 }

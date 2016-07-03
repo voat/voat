@@ -19,7 +19,7 @@ namespace Voat.Data
 
             nc.ID = treeComment.ID;
             nc.ParentID = treeComment.ParentID;
-            nc.ChildCount = treeComment.ChildCount;
+            nc.ChildCount = treeComment.ChildCount.Value;
             nc.Content = treeComment.Content;
             nc.FormattedContent = treeComment.FormattedContent;
             nc.UserName = treeComment.UserName;

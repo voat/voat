@@ -10,24 +10,24 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Models.ViewModels.CommentSingleViewModel
+@model Voat.Domain.Models.NestedComment
 
 @using Voat.Models;
 
 @{
-    bool? subverseAnonymized = Model.SubverseModel.IsAnonymized; // Convert.ToBoolean(ViewData["SubverseAnonymized"]);
+    Voat.Data.Models.Subverse subverse = ViewBag.Subverse;
 }
 
-@if (Model.CommentModel.IsAnonymized || subverseAnonymized == true)
+@if (Model.IsAnonymized || subverse.IsAnonymized == true)
 {
-    <a href="#" class="author moderator may-blank">@Model.CommentModel.ID</a>
+    <a href="#" class="author moderator may-blank">@Model.ID</a>
 }
 else
 {
-    <a href="/user/@Model.CommentModel.UserName" class="author moderator may-blank userinfo" data-username="@Model.CommentModel.UserName">@Model.CommentModel.UserName</a>
+    <a href="/user/@Model.UserName" class="author moderator may-blank userinfo" data-username="@Model.UserName">@Model.UserName</a>
 }
 <span class="userattrs">
-    [<a class="submitter" title="submitter" href="/v/@Model.SubverseModel.Name/comments/@Model.SubmissionModel.ID">S</a>,
-    <a class="moderator" title="moderator" href="/v/@Model.SubverseModel.Name/comments/@Model.SubmissionModel.ID">M</a>]
+    [<a class="submitter" title="submitter" href="/v/@Model.Subverse/comments/@Model.SubmissionID">S</a>,
+    <a class="moderator" title="moderator" href="/v/@Model.Subverse/comments/@Model.SubmissionID">M</a>]
 </span>
 

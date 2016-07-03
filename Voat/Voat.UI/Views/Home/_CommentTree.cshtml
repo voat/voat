@@ -12,7 +12,7 @@
 
 @using Voat.Models
 
-@model CommentBucketViewModel
+@model Voat.Domain.Models.CommentSegment
 
 @if (!User.Identity.IsAuthenticated)
 {
@@ -23,13 +23,15 @@
     </div>
 }
 <div class="menuarea">
-    <h2><span class="label label-default">@(Model.Sort == Voat.Domain.Models.CommentSort.New ? "newest" : "top") comments</span></h2>
+    <h2><span class="label label-default">@(Model.Sort == Voat.Domain.Models.SortAlgorithm.New ? "newest" : "top") comments</span></h2>
 </div>
 <div class='commentarea'>
     <div id="siteTable" class="sitetable nestedlisting">
         @Html.Partial("~/Views/Shared/Comments/_CommentBucket.cshtml", Model, new ViewDataDictionary {
             { "VoteCache", ViewBag.VoteCache },
             { "SavedCommentCache", ViewBag.SavedCommentCache },
+            { "Subverse", ViewBag.Subverse },
+            { "Submission", ViewBag.Submission },
             { "CCP", ViewBag.CCP }})
     </div>
 </div>

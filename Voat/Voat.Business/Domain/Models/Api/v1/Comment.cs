@@ -27,7 +27,7 @@ namespace Voat.Domain.Models
         /// <summary>
         /// Child comment count. This is a count of direct decedents only.
         /// </summary>
-        public int? ChildCount { get; set; }
+        public int ChildCount { get; set; }
 
         /// <summary>
         /// The raw content of this item.
@@ -72,6 +72,11 @@ namespace Voat.Domain.Models
         /// Marker for moderator distinguished comment.
         /// </summary>
         public bool IsDistinguished { get; set; }
+
+        /// <summary>
+        /// Marker for submitter distinguished comment.
+        /// </summary>
+        public bool IsSubmitter { get; set; }
 
         /// <summary>
         /// Date comment was edited.
@@ -161,6 +166,12 @@ namespace Voat.Domain.Models
         /// The starting index of this comment segment (zero is lowest bound of index)
         /// </summary>
         public int StartingIndex { get; set; }
+
+        /// <summary>
+        /// The sort order of the comment segment
+        /// </summary>
+        public SortAlgorithm Sort { get; set; }
+
 
         /// <summary>
         /// Represents the total count of comments at this level (root or children of a parent comment).

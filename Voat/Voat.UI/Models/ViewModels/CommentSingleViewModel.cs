@@ -22,6 +22,5 @@ namespace Voat.Models.ViewModels
         public Submission SubmissionModel { get; set; }
         public Subverse SubverseModel { get; set; }
         public usp_CommentTree_Result CommentModel { get; set; }
-
     }
 }
