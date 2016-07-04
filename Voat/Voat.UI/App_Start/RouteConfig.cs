@@ -178,26 +178,42 @@ namespace Voat
                 url: "comments/{id}",
                 defaults: new { controller = "Comment", action = "Comments" }
             );
-            
+            string commentSortContraint = "(?i)new|top|bottom|intensity";
             // /comments/submission/startingpos
             //"/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + startIndex + "/" + sort + "/",
             routes.MapRoute(
-                name: "BucketOfComments",
+                name: "CommentSegment",
                 url: "comments/{submissionId}/{parentId}/{command}/{startingIndex}/{sort}",
-                defaults: new { controller = "Comment", action = "BucketOfComments" }
+                constraints: new
+                {
+                    sort = commentSortContraint
+                },
+                defaults: new { controller = "Comment", action = "CommentSegment", sort = "top" }
             );
+
+            routes.MapRoute(
+                name: "CommentTree",
+                url: "comments/{submissionId}/tree/{sort}",
+                constraints: new
+                {
+                    sort = commentSortContraint
+                },
+                defaults: new { controller = "Comment", action = "CommentTree", sort = "top" }
+            );
+
             // v/subversetoshow/comments/123456/new
             routes.MapRoute(
                 name: "SubverseCommentsWithSort",
                 url: "v/{subversetoshow}/comments/{id}/{sort}",
                 constraints: new
                 {
-                    sort = "new|top"
+                    sort = commentSortContraint
                 },
                 defaults: new
                 {
                     controller = "Comment",
                     action = "Comments",
+                    sort = "top",
                     startingcommentid = UrlParameter.Optional,
                     commentToHighLight = UrlParameter.Optional
                 }

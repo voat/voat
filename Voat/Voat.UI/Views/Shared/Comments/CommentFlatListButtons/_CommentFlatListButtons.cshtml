@@ -21,14 +21,14 @@
     @if (!Model.IsDeleted)
     {
         <li class="first">
-            <a href="/v/@ViewBag.SubverseName/comments/@Model.SubmissionID/@Model.ID" class="bylink" rel="nofollow">permalink</a>
+            <a href="/v/@ViewBag.Subverse.Name/comments/@Model.SubmissionID/@Model.ID" class="bylink" rel="nofollow">permalink</a>
         </li>
     }
 
     @if (Model.ParentID != null)
     {
         <li>
-            <a onclick="goToParent(event, @Model.ParentID)" href="/v/@ViewBag.SubverseName/comments/@Model.SubmissionID/@Model.ParentID" rel="nofollow">parent</a>
+            <a onclick="goToParent(event, @Model.ParentID)" href="/v/@ViewBag.Subverse.Name/comments/@Model.SubmissionID/@Model.ParentID" rel="nofollow">parent</a>
         </li>
     }
 

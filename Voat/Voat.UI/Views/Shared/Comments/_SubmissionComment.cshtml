@@ -227,7 +227,11 @@
             </form>
             <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@comment.Content</textarea>
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", comment,
-                new ViewDataDictionary { { "SavedCommentCache", ViewBag.SavedCommentCache } })
+                new ViewDataDictionary {
+                    { "SavedCommentCache", ViewBag.SavedCommentCache }, 
+                    { "Subverse", ViewBag.Subverse },
+                    { "Submission", ViewBag.Submission },
+                })
 
             @*@if (comment.ChildCount > 0 && nestingCount >= Model.NestingThreshold)*@
             @if (comment.ChildCount > 0 && comment.ChildCount > (comment.Children == null ? 0 : comment.Children.TotalCount))
@@ -242,61 +246,46 @@
 
     @{
         parentIsHidden = (comment.IsCollapsed);
-        //if (comment.ChildCount > 0 && nestingCount < Model.NestingThreshold)
         if (comment.ChildCount > 0)
         {
-            //look for children comments to this root comment and display them
             int parentID = commentId;
 
-            ////TODO: Should sort in controller
-            //if (Model.Sort == Voat.Domain.Models.SortAlgorithm.New)
-            //{
-            //    childComments = Model.CommentTree.Where(x => x.ParentID == commentId).OrderByDescending(x => x.CreationDate).ToList();
-            //}
-            //else
-            //{
-            //    childComments = Model.CommentTree.Where(x => x.ParentID == commentId).OrderByDescending(x => x.UpCount - x.DownCount).ToList();
-            //}
-
-            bool showMoreSiblings = comment.ChildCount > (comment.Children == null ? 0 : comment.Children.Comments.Count);
-            int remaining = comment.ChildCount - (comment.Children == null ? 0 : comment.Children.TotalCount);
-            //if (childComments.Count() > Model.CollapseSiblingThreshold && !singleTree)
-            //{
-            //    showMoreSiblings = true;
-            //    remaining = childComments.Count() - Model.CollapseSiblingThreshold;
-            //    childComments = childComments.Take(Model.CollapseSiblingThreshold);
-            //}
-
+            int remaining = Model.TotalCount - Model.SegmentCount;
             int sameParentCounter = 0;
-            foreach (var childComment in comment.Children.Comments)
+            if (comment.Children != null)
             {
-                //recalculate parent id score and hide here instead of passing values around?
-                if (sameParentCounter < 1)
+                foreach (var childComment in comment.Children.Comments)
                 {
-                    nestingCount++;
+                    //recalculate parent id score and hide here instead of passing values around?
+                    if (sameParentCounter < 1)
+                    {
+                        nestingCount++;
+                    }
+                    parentID = childComment.ID;
+
+                @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment.Children,
+                    new ViewDataDictionary {
+                        { "SavedCommentCache", ViewBag.SavedCommentCache },
+                        { "VoteCache", ViewBag.VoteCache },
+                        { "CommentId", childComment.ID },
+                        { "CCP", ViewBag.CCP },
+                        { "ParentIsHidden", parentIsHidden },
+                        { "ChildToHiddenParent", parentIsHidden },
+                        { "NestingCount", nestingCount },
+                        { "Subverse", ViewBag.Subverse },
+                        { "Submission", ViewBag.Submission },
+                        { "CommentToHighlight", ViewBag.CommentToHighLight }
+                    })
+
+                    sameParentCounter++;
                 }
-                parentID = childComment.ID;
-
-                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", comment.Children, new ViewDataDictionary {
-                    { "SavedCommentCache", ViewBag.SavedCommentCache },
-                    { "VoteCache", ViewBag.VoteCache },
-                    { "CommentId", childComment.ID },
-                    { "CCP", ViewBag.CCP },
-                    { "ParentIsHidden", parentIsHidden },
-                    { "ChildToHiddenParent", parentIsHidden },
-                    { "NestingCount", nestingCount },
-                    { "Subverse", ViewBag.Subverse },
-                    { "Submission", ViewBag.Submission },
-                    { "CommentToHighlight", ViewBag.CommentToHighLight } })
-
-                sameParentCounter++;
             }
-            if (showMoreSiblings)
+            @*if (remaining > 0)
             {
                 <div class="child comment" style="@uncollapsedComment">
                     <a style="cursor:pointer;" id="loadmore-@commentId" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@commentId'),$('.id-@commentId'),@comment.SubmissionID,@commentId,'siblings',@comment.ChildCount,'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
                 </div>
-            }
+            }*@
         }
     }
 </div>

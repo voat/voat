@@ -175,6 +175,8 @@
     <Compile Include="Domain\Models\API\v1\ApiPermissionSet.cs" />
     <Compile Include="Domain\DomainMaps.cs" />
     <Compile Include="Domain\Models\API\v1\UserMessage.cs" />
+    <Compile Include="Domain\Models\Comment\CommentSegment.cs" />
+    <Compile Include="Domain\Models\Comment\NestedComment.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\UserSet.cs" />
     <Compile Include="Domain\Query\Base\CachedQuery.cs" />
@@ -217,7 +219,7 @@
     <Compile Include="Domain\Models\API\Legacy\ApiUserInfo.cs" />
     <Compile Include="Domain\Models\API\v1\Badge.cs" />
     <Compile Include="Domain\Models\API\v1\BannedDomain.cs" />
-    <Compile Include="Domain\Models\API\v1\Comment.cs" />
+    <Compile Include="Domain\Models\Comment\Comment.cs" />
     <Compile Include="Domain\Models\API\v1\SendMessage.cs" />
     <Compile Include="Domain\Models\API\v1\SetInformation.cs" />
     <Compile Include="Domain\Models\API\v1\Submission.cs" />

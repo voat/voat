@@ -89,7 +89,7 @@ namespace Voat.Controllers
             return vCache;
         }
 
-        // GET: comments for a given submission
+        // GET: Renders Primary Submission Comments Page
         public async Task<ActionResult> Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
         {
             #region Validation
@@ -184,48 +184,29 @@ namespace Voat.Controllers
             }
             #endregion
 
-            var model = await GetCommentSegment(submission.ID, null, "", 0, sort);
+            var model = await GetCommentSegment(submission.ID, null, 0, sort);
 
             return View("~/Views/Home/Comments.cshtml", model);
 
-            //var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.ID, null, null);
-
-            //var model = new CommentBucketViewModel()
-            //{
-            //    StartingIndex = 0,
-            //    EndingIndex = 5,
-            //    Subverse = subverse,
-            //    Submission = submission,
-            //    CommentTree = commentTree,
-            //    //DisplayTree = displayTree,
-            //    ParentID = null,
-            //    Sort = (CommentSort)Enum.Parse(typeof(CommentSort), SortingMode, true)
-            //};
-
-            //IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable().Where(x => x.ParentID == null);
-            //model.TotalInDisplayBranch = displayTree.Count();
-
-            //if (model.Sort == CommentSort.Top)
-            //{
-            //    displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount).Take(model.EndingIndex);
-            //}
-            //else
-            //{
-            //    displayTree = displayTree.OrderByDescending(x => x.CreationDate).Take(model.EndingIndex);
-            //}
-            //model.DisplayTree = displayTree;
-
         }
 
-        private async Task<CommentSegment> GetCommentSegment(int submissionId, int? parentId, string command, int startingIndex, string sort)
+        private async Task<CommentSegment> GetCommentSegment(int submissionId, int? parentId, int startingIndex, string sort)
         {
-            var q = new QueryCommentSegment(submissionId, parentId, startingIndex, new SearchOptions() { Sort = SortAlgorithm.Top });
+            //attempt to parse sort
+            var sortAlg = SortAlgorithm.Top;
+            if (!Enum.TryParse(sort, true, out sortAlg))
+            {
+                sortAlg = SortAlgorithm.Top;
+            }
+
+            var q = new QueryCommentSegment(submissionId, parentId, startingIndex, new SearchOptions() { Sort = sortAlg });
             var results = await q.ExecuteAsync();
             return results;
         }
 
         // url: "/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + count + "/" + nestingLevel + "/" + sort + "/",
-        // GET: comments for a given submission
+        // GET: Renders a Section of Comments within the already existing tree
+        //Leaving (string command) in for backwards compat with mobile html clients. this is no longer used
         public async Task<ActionResult> BucketOfComments(int submissionId, int? parentId, string command, int startingIndex, string sort)
         {
             #region Validation
@@ -272,46 +253,59 @@ namespace Voat.Controllers
 
             #endregion
 
-            var q = new QueryCommentSegment(submission.ID, parentId, startingIndex, new SearchOptions() { Sort = SortAlgorithm.Top });
-            var results = await q.ExecuteAsync();
+            var results = await GetCommentSegment(submissionId, parentId, startingIndex, sort);
+            return PartialView("~/Views/Shared/Comments/_CommentSegment.cshtml", results);
+        }
 
-            return PartialView("~/Views/Shared/Comments/_CommentBucket.cshtml", results);
+        // GET: Renders a New Comment Tree
+        public async Task<ActionResult> CommentTree(int submissionId, string sort)
+        {
+            #region Validation
 
-            //var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.ID, null, null);
-            //var model = new CommentBucketViewModel()
-            //{
-            //    StartingIndex = startingIndex,
-            //    //NestingThreshold = nestingLevel,
-            //    Subverse = subverse,
-            //    Submission = submission,
-            //    CommentTree = commentTree,
-            //    ParentID = parentId,
-            //    Sort = (CommentSort)Enum.Parse(typeof(CommentSort), SortingMode, true)
-            //};
-            //model.CollapseSiblingThreshold = 5;
+            if (submissionId <= 0)
+            {
+                return View("~/Views/Errors/Error.cshtml");
+            }
 
-            //IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable();
-            //displayTree = displayTree.Where(x => x.ParentID == parentId);
-            //model.TotalInDisplayBranch = displayTree.Count();
+            var submission = DataCache.Submission.Retrieve(submissionId);
 
-            ////calculate offsets
-            //model.EndingIndex = Math.Min(model.StartingIndex + model.CollapseSiblingThreshold, model.TotalInDisplayBranch);
+            if (submission == null)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
+            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+            //var subverse = _db.Subverse.Find(subversetoshow);
 
-            //if (model.Sort == CommentSort.Top)
-            //{
-            //    displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount);
-            //}
-            //else
-            //{
-            //    displayTree = displayTree.OrderByDescending(x => x.CreationDate);
-            //}
+            if (subverse == null)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
-            //displayTree = displayTree.Skip(model.StartingIndex).Take(model.Count);
+            if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
+            {
+                ViewBag.Subverse = subverse.Name;
+                return View("~/Views/Errors/SubverseDisabled.cshtml");
+            }
 
-            //model.DisplayTree = displayTree;
+            #endregion
 
+            #region Set ViewBag
+            ViewBag.Subverse = subverse;
+            ViewBag.Submission = submission;
 
+            //Temp cache user votes for this thread
+            ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
+            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
+            ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
+
+            var SortingMode = (sort == null ? "top" : sort).ToLower();
+            ViewBag.SortingMode = SortingMode;
+
+            #endregion
+
+            var results = await GetCommentSegment(submissionId, null, 0, sort);
+            return PartialView("~/Views/Shared/Comments/_CommentTree.cshtml", results);
         }
 
         // GET: submitcomment
@@ -344,7 +338,7 @@ namespace Voat.Controllers
                         var model = new CommentBucketViewModel(comment);
                         ViewBag.CommentId = comment.ID; //why?
                         ViewBag.rootComment = comment.ParentID == null; //why?
-                        return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", model);
+                        return PartialView("~/Views/Shared/Comments/_SubmissionComment.cshtml", model);
                         //return new HttpStatusCodeResult(HttpStatusCode.OK);
                     }
                     if (Request.UrlReferrer != null)

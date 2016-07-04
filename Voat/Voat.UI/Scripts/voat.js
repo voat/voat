@@ -1418,11 +1418,8 @@ function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, co
         currentPage++;
     }
 
-    var cachePrevention = 'xxxx'.replace(/[xy]/g, function (c) {
-        var rand = Math.random() * 16 | 0
-        return rand.toString(16);
-    });;
-    var bucketUrl = "/comments/" + submissionId + "/" + (parentId == null ? 'null' : parentId) + "/" + command + "/" + startingIndex + "/" + sort + "?nocache=" + cachePrevention;
+    
+    var bucketUrl = "/comments/" + submissionId + "/" + (parentId == null ? 'null' : parentId) + "/" + command + "/" + startingIndex + "/" + sort + "?nocache=" + cachePrevention();
     loadCommentsRequest2 = $.ajax({
         url: bucketUrl,
         success: function (data) {
@@ -1442,7 +1439,13 @@ function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, co
         }
     });
 }
-
+function cachePrevention() {
+    var v = 'xxxx'.replace(/[xy]/g, function (c) {
+        var rand = Math.random() * 16 | 0
+        return rand.toString(16);
+    });
+    return v;
+}
 // a function to fetch 1 comment bucket for a submission and append to the bottom of the page
 var loadCommentsRequest;
 function loadMoreComments(obj, submissionId) {
@@ -1679,6 +1682,20 @@ function previewStylesheet(obj, subverseName) {
             var sheetToAdd = document.createElement('style');
             sheetToAdd.innerHTML = $("#Stylesheet").val();
             document.body.appendChild(sheetToAdd);
+        }
+    });
+}
+// a function to preview stylesheet called from subverse stylesheet editor
+function getCommentTree(submissionID, sort) {
+    $.ajax({
+        type: 'GET',
+        url: '/comments/' + submissionID + '/tree/' + sort + "?nocache=" + cachePrevention(),
+        dataType: 'html',
+        error: function () {
+
+        },
+        success: function (data) {
+            $(".commentarea").html(data);
         }
     });
 }

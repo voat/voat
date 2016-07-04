@@ -11,8 +11,9 @@
     All Rights Reserved.*@
 
 @using Voat.Models;
+@using Voat.Domain.Models;
 
-@model Voat.Domain.Models.CommentSegment
+@model CommentSegment
 
 @{
     string highLight = "";
@@ -118,28 +119,7 @@ else if (!User.Identity.IsAuthenticated)
 
         <div class="horizontal-line"></div>
 
-        @* Show sort only if viewing all comments *@
-        @if (ViewBag.StartingCommentId == null)
-        {
-            var sort = (Model.Sort == Voat.Domain.Models.SortAlgorithm.Top ? "new" : "top");
-            <div class="menuarea">
-                <div class="spacer">
-                    <span class="dropdown-title lightdrop">sort by: </span>
-                    <div class="dropdown lightdrop">
-                        <span class="selected">
-                            <a href="/v/@ViewBag.SubverseName/comments/@Model/@sort" class="bylink" rel="nofollow">@sort</a>
-                        </span>
-                    </div>
-                </div>
-                <div class="spacer"></div>
-            </div>
-        }
-
-        @{
-            string view = (ViewBag.StartingCommentId != null ? "~/Views/Home/_SingleCommentTree.cshtml" : "~/Views/Home/_CommentTree.cshtml");
-        }
-
-        @Html.Partial(view, Model, new ViewDataDictionary {
+        @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, new ViewDataDictionary {
                     { "SavedCommentCache", ViewBag.SavedCommentCache },
                     { "VoteCache", ViewBag.VoteCache },
                     { "CCP", ViewBag.CCP },

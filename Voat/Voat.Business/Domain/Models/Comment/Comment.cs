@@ -39,10 +39,6 @@ namespace Voat.Domain.Models
         /// </summary>
         public DateTime CreationDate { get; set; }
 
-        ///// <summary>
-        ///// Level of the comment. 0 is root. This value is relative to the parent comment. If you are loading mid-branch 0 will be returned for the starting position comment.
-        ///// </summary>
-        //public int? Depth { get; set; }
         /// <summary>
         /// The formatted (MarkDown, Voat Content Processor) content of this item. This content is typically formatted into HTML output.
         /// </summary>
@@ -102,105 +98,5 @@ namespace Voat.Domain.Models
         /// The user name who submitted the comment.
         /// </summary>
         public string UserName { get; set; }
-    }
-
-    /// <summary>
-    /// Represents a chunk of comments
-    /// </summary>
-    public class CommentSegment
-    {
-        private IList<NestedComment> _comments;
-
-        public CommentSegment()
-        {
-        }
-
-        public CommentSegment(IList<NestedComment> comments)
-        {
-            Comments = comments;
-        }
-
-        /// <summary>
-        /// The list of comments this segment contains
-        /// </summary>
-        [JsonProperty(Order = 2)]//put on bottom of output
-        public IList<NestedComment> Comments
-        {
-            get
-            {
-                if (_comments == null)
-                {
-                    _comments = new List<NestedComment>();
-                }
-                return _comments;
-            }
-            set
-            {
-                _comments = value;
-            }
-        }
-
-        /// <summary>
-        /// The ending index of this comment segment (zero is lowest bound of index)
-        /// </summary>
-        public int EndingIndex
-        {
-            get
-            {
-                return StartingIndex + (SegmentCount == 0 ? 0 : SegmentCount - 1);
-            }
-        }
-
-        /// <summary>
-        /// The count of comments this segment contains
-        /// </summary>
-        public int SegmentCount
-        {
-            get
-            {
-                return (Comments == null ? 0 : Comments.Count());
-            }
-        }
-
-        /// <summary>
-        /// The starting index of this comment segment (zero is lowest bound of index)
-        /// </summary>
-        public int StartingIndex { get; set; }
-
-        /// <summary>
-        /// The sort order of the comment segment
-        /// </summary>
-        public SortAlgorithm Sort { get; set; }
-
-
-        /// <summary>
-        /// Represents the total count of comments at this level (root or children of a parent comment).
-        /// </summary>
-        [JsonProperty(Order = 1)]
-        public int TotalCount { get; set; }
-    }
-
-    /// <summary>
-    /// Represents a hierarchical comment tree. This is an experimental class for testing nested comment output via the API.
-    /// </summary>
-    public class NestedComment : Comment
-    {
-        /// <summary>
-        /// Contains the child comments for this comment.
-        /// </summary>
-        [JsonProperty(Order = 500)]//put on bottom of output
-        public CommentSegment Children { get; set; }
-
-        public void AddChildComment(NestedComment comment)
-        {
-            if (comment != null)
-            {
-                if (Children == null)
-                {
-                    Children = new CommentSegment();
-                }
-                Children.Comments.Add(comment);
-            }
-        }
     }
 }

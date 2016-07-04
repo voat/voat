@@ -34,9 +34,11 @@ namespace Voat.Domain.Query
 
             QueryCommentTree q = new QueryCommentTree(_submissionID);
 
-            var p = new QueryUserData(UserName).Execute();
-
-            var preference = p.Preferences;
+            if (!String.IsNullOrEmpty(UserName))
+            {
+                var p = new QueryUserData(UserName).Execute();
+                var preference = p.Preferences;
+            }
             //TODO: Set with preferences
             _options.Count = 4;
             int nestLevel = 3;
@@ -46,6 +48,10 @@ namespace Voat.Domain.Query
             IEnumerable<usp_CommentTree_Result> fullTree = (q.Execute()).Values;
             switch (_options.Sort)
             {
+                case SortAlgorithm.Intensity:
+                    //really rough alg for intensity
+                    fullTree = fullTree.OrderByDescending(x => (x.UpCount * x.DownCount) / Math.Max(1, Math.Abs((x.UpCount - x.DownCount))));
+                    break;
                 case SortAlgorithm.New:
                     fullTree = fullTree.OrderByDescending(x => x.CreationDate);
                     break;
@@ -53,6 +59,7 @@ namespace Voat.Domain.Query
                     fullTree = fullTree.OrderByDescending(x => x.DownCount).ThenByDescending(x => x.CreationDate);
                     break;
                 default:
+                    //top
                     fullTree = fullTree.OrderByDescending(x => x.UpCount - x.DownCount).ThenByDescending(x => x.CreationDate);
                     break;
             }
@@ -74,9 +81,7 @@ namespace Voat.Domain.Query
             //                return tree.OrderByDescending(x => x.UpCount - x.DownCount);
             //                break;
             //        }
-
             //    });
-
 
             var queryableTree = queryTree.Skip(startingIndex).Take(_options.Count);
 
@@ -104,13 +109,14 @@ namespace Voat.Domain.Query
                 var n = c.Map();
 
                 processor(n);
-                n.IsCollapsed = (n.Total <= collapseThreshold);
+                n.IsCollapsed = (n.Sum <= collapseThreshold);
 
-                AddComments(fullTree, n, _options.Count, nestLevel, 0, collapseThreshold, processor);
+                AddComments(fullTree, n, _options.Count, nestLevel, 1, collapseThreshold, processor, _options.Sort);
                 comments.Add(n);
             }
 
             var segment = new Domain.Models.CommentSegment();
+            segment.Sort = _options.Sort;
             segment.StartingIndex = _index ?? 0;
             segment.TotalCount = queryTree.Count();
             if (comments.Any())
@@ -123,7 +129,7 @@ namespace Voat.Domain.Query
         }
 
         //recursive addition of child comments
-        private void AddComments(IEnumerable<usp_CommentTree_Result> queryTree, NestedComment parent, int count, int nestLevel, int currentNestLevel, int collapseThreshold, Action<NestedComment> processor)
+        private void AddComments(IEnumerable<usp_CommentTree_Result> queryTree, NestedComment parent, int count, int nestLevel, int currentNestLevel, int collapseThreshold, Action<NestedComment> processor, SortAlgorithm sort)
         {
             if (currentNestLevel < nestLevel)
             {
@@ -136,12 +142,14 @@ namespace Voat.Domain.Query
                         {
                             var c = children[i].Map();
 
-                            c.IsCollapsed = (c.Total <= collapseThreshold);
+                            c.IsCollapsed = (c.Sum <= collapseThreshold);
                             processor(c);
                             var nextNestLevel = currentNestLevel + 1;
-                            AddComments(queryTree, c, count, nestLevel, nextNestLevel, collapseThreshold, processor);
+                            AddComments(queryTree, c, count, nestLevel, nextNestLevel, collapseThreshold, processor, sort);
                             parent.AddChildComment(c);
                             parent.Children.TotalCount = parent.ChildCount;
+                            parent.Children.Sort = sort;
+
                         }
                     }
                 }
