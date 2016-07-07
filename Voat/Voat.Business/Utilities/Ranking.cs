@@ -16,6 +16,7 @@ using System;
 using Voat.Data.Models;
 using System.Linq;
 using Voat.Caching;
+using Voat.Data;
 
 namespace Voat.Utilities
 {
@@ -81,7 +82,7 @@ namespace Voat.Utilities
         public static void RerankSubmission(Submission submission)
         {
             double currentScore = submission.UpCount - submission.DownCount;
-            double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
+            double submissionAge = (Repository.CurrentDate - submission.CreationDate).TotalHours;
             double newRank = CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
             submission.Rank = newRank;

@@ -379,6 +379,7 @@ namespace Voat.Caching
         }
         public T Retrieve<T>(string cacheKey)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
             var val = Retrieve(cacheKey);
             //if (val is IConvertible) {
             //    return (T)((IConvertible)val).ToType(typeof(T), FormatProvider );
@@ -387,6 +388,7 @@ namespace Voat.Caching
         }
         public bool Exists(string cacheKey)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
             return ItemExists(cacheKey);
         }
         public void Remove(string cacheKey, object dictionaryKey)

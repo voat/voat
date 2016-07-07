@@ -25,6 +25,11 @@ namespace Voat.Domain.Models
     public class NestedComment : Comment
     {
         /// <summary>
+        /// Child comment count. This is a count of direct decedents only.
+        /// </summary>
+        public int ChildCount { get; set; }
+
+        /// <summary>
         /// Contains the child comments for this comment.
         /// </summary>
         [JsonProperty(Order = 500)]//put on bottom of output

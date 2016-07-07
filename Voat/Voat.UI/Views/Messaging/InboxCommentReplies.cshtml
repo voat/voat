@@ -73,10 +73,8 @@
                                 }
                             </div>
                             <div class="panel-message-body">
-                                
-                                @*@Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })*@
                                 @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
-                                new Voat.Models.CommentBucketViewModel(comment),
+                                Voat.Domain.DomainMaps.Map(comment, comment.Submission.Subverse, true),
                                     new ViewDataDictionary {
                                         { "CommentId", comment.ID },
                                         { "CCP", Karma.CommentKarma(User.Identity.Name) },

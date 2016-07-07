@@ -248,15 +248,5 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(String.Format("{0} hours", 1.5), result, "Submission age was not calculated.");
         }
 
-        [TestMethod]
-        [TestCategory("Age")]
-        [TestCategory("Calculation")]
-        [TestCategory("Utility")]
-        public void AgeDouble()
-        {
-            DateTime testDate = DateTime.UtcNow.AddDays(-143);
-            double result = Submissions.CalcSubmissionAgeDouble(testDate);
-            Assert.AreEqual(3432, result, 0.1, "Submission double age was not calculated.");
-        }
     }
 }

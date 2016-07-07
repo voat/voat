@@ -26,7 +26,7 @@ namespace Voat.Domain.Query
             using (var db = new Repository())
             {
                 var result = db.GetComments(null, this._options);
-                return result.Map();
+                return result.Map(null);
             }
         }
     }

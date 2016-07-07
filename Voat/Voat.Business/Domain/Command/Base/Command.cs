@@ -35,7 +35,7 @@ namespace Voat.Domain.Command
             var result = await CacheExecute();
             if (result.Success)
             {
-                UpdateCache();
+                UpdateCache(result);
             }
             //Task t = Task.Run(() => UpdateCache()); //don't wait this
             return result;
@@ -43,7 +43,7 @@ namespace Voat.Domain.Command
 
         protected abstract Task<T> CacheExecute();
 
-        protected abstract void UpdateCache();
+        protected abstract void UpdateCache(T result);
     }
 
     /// <summary>

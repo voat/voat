@@ -19,6 +19,7 @@ using Voat.Utilities.Components;
 using Voat.Domain.Command;
 using System.Text.RegularExpressions;
 using Voat.Rules.Voting;
+using Voat.Domain;
 
 namespace Voat.Data
 {
@@ -991,7 +992,7 @@ namespace Voat.Data
                         Sender = $"v/{submission.Subverse}",
                         Recipient = submission.UserName,
                         Subject = "Your submission has been deleted by a moderator",
-                        Message = "Your [submission](v/" + submission.Subverse + "/comments/" + submission.ID + ") has been deleted by: " +
+                        Message = "Your [submission](/v/" + submission.Subverse + "/comments/" + submission.ID + ") has been deleted by: " +
                                     "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
                                     "Original submission content was: " + Environment.NewLine +
                                     "---" + Environment.NewLine +
@@ -1023,86 +1024,6 @@ namespace Voat.Data
             }
 
             return Selectors.SecureSubmission(submission);
-
-            //var submissionToDelete = _db.Submissions.Find(submissionID);
-
-            //if (submissionToDelete != null)
-            //{
-            //    // delete submission if delete request is issued by submission author
-            //    if (submissionToDelete.UserName == User.Identity.Name)
-            //    {
-            //        submissionToDelete.IsDeleted = true;
-
-            //        if (submissionToDelete.Type == 1)
-            //        {
-            //            submissionToDelete.Content = "deleted by author at " + Repository.CurrentDate;
-            //        }
-            //        else {
-            //            submissionToDelete.Content = "http://voat.co";
-            //        }
-
-            //        // remove sticky if submission was stickied
-            //        var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionID);
-            //        if (existingSticky != null)
-            //        {
-            //            _db.StickiedSubmissions.Remove(existingSticky);
-            //        }
-
-            //        _db.SaveChanges();
-            //    }
-
-            //    // delete submission if delete request is issued by subverse moderator
-            //    else if (IsUserModerator(submissionToDelete.Subverse))
-            //    {
-            //        // mark submission as deleted
-            //        submissionToDelete.IsDeleted = true;
-
-            //        // move the submission to removal log
-            //        var removalLog = new SubmissionRemovalLog
-            //        {
-            //            SubmissionID = submissionToDelete.ID,
-            //            Moderator = User.Identity.Name,
-            //            Reason = "This feature is not yet implemented",
-            //            CreationDate = Repository.CurrentDate
-            //        };
-
-            //        _db.SubmissionRemovalLogs.Add(removalLog);
-
-            //        // notify submission author that his submission has been deleted by a moderator
-            //        var message =
-            //            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
-            //            "[" + User.Identity.Name + "](/u/" + User.Identity.Name + ")" + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
-            //            "Original submission content was: " + Environment.NewLine + "---" + Environment.NewLine +
-            //            (submissionToDelete.Type == 1 ?
-            //                "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
-            //                "Submission content: " + submissionToDelete.Content
-            //            :
-            //                "Link description: " + submissionToDelete.LinkDescription + ", " + Environment.NewLine +
-            //                "Link URL: " + submissionToDelete.Content
-            //            );
-
-            //        MesssagingUtility.SendPrivateMessage(
-            //               "Voat",
-            //               submissionToDelete.UserName,
-            //               "Your submission has been deleted by a moderator",
-            //               message
-            //        );
-
-
-            //        // remove sticky if submission was stickied
-            //        var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionID);
-            //        if (existingSticky != null)
-            //        {
-            //            _db.StickiedSubmissions.Remove(existingSticky);
-            //        }
-
-            //        _db.SaveChanges();
-            //    }
-            //    else {
-            //        throw new VoatSecurityException("User doesn't have permission to delete submission.");
-            //    }
-            //}
-            //return Selectors.SecureSubmission(submissionToDelete);
         }
 
         #endregion
@@ -1153,29 +1074,20 @@ namespace Voat.Data
         //This is the new process to retrieve comments.
         public IEnumerable<usp_CommentTree_Result> GetCommentTree(int submissionID, int? depth, int? parentID)
         {
-
             if (depth.HasValue && depth < 0)
             {
                 depth = null;
             }
-
             var commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
-
-            //execute query
             var results = commentTree.Select(Selectors.SecureCommentTree).ToList();
-
             return results;
         }
 
         public Models.Comment GetComment(int commentID)
         {
-
             var direct = _db.Comments.Where(x => x.ID == commentID);
-
             var record = direct.Select(Selectors.SecureComment).FirstOrDefault();
-
             return record;
-
         }
         
         [Authorize]
@@ -1301,8 +1213,7 @@ namespace Voat.Data
 
         }
 
-        [Authorize]
-        public async Task<CommandResponse<Models.Comment>> PostCommentReply(int parentCommentID, string comment)
+        public async Task<CommandResponse<Domain.Models.Comment>> PostCommentReply(int parentCommentID, string comment)
         {
             var c = _db.Comments.Find(parentCommentID);
             if (c == null)
@@ -1313,8 +1224,7 @@ namespace Voat.Data
             return await PostComment(submissionid.Value, parentCommentID, comment);
         }
 
-        [Authorize]
-        public async Task<CommandResponse<Models.Comment>> PostComment(int submissionID, int? parentCommentID, string commentContent)
+        public async Task<CommandResponse<Domain.Models.Comment>> PostComment(int submissionID, int? parentCommentID, string commentContent)
         {
 
             DemandAuthentication();
@@ -1362,10 +1272,10 @@ namespace Voat.Data
 
                 await NotificationManager.SendCommentNotification(c);
 
-                return MapRuleOutCome(outcome, Selectors.SecureComment(c));
+                return MapRuleOutCome(outcome, DomainMaps.Map(Selectors.SecureComment(c), submission.Subverse));
             }
 
-            return MapRuleOutCome(outcome, (Models.Comment)null);
+            return MapRuleOutCome(outcome, (Domain.Models.Comment)null);
         }
 
         #endregion
@@ -2028,6 +1938,20 @@ namespace Voat.Data
             }
             return vCache;
         }
+        public IEnumerable<CommentSaveTracker> UserCommentSavedBySubmission(int submissionID, string userName)
+        {
+            List<CommentSaveTracker> vCache = new List<CommentSaveTracker>();
+
+            if (!String.IsNullOrEmpty(userName))
+            {
+                vCache = (from cv in _db.CommentSaveTrackers.AsNoTracking()
+                          join c in _db.Comments on cv.CommentID equals c.ID
+                          where c.SubmissionID == submissionID && cv.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                          select cv).ToList();
+            }
+            return vCache;
+        }
+
         public IEnumerable<DomainReference> GetSubscriptions(string userName)
         {
 

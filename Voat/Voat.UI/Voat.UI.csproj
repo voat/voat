@@ -682,7 +682,7 @@
     <Content Include="Views\Management\Dashboard.cshtml" />
     <Content Include="Views\Subverses\Admin\_ModeratorInvitations.cshtml" />
     <Content Include="Views\Subverses\Admin\RecallModeratorInvitation.cshtml" />
-    <None Include="Views\Shared\Comments\_CommentSegment.cshtml" />
+    <Content Include="Views\Shared\Comments\_CommentSegment.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
     <Content Include="Views\Messaging\InboxPostReplies.cshtml" />

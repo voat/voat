@@ -18,15 +18,22 @@
     string subverseAge = Age.ToRelative(Model.CreationDate);
     string subverseOwner = "youcanclaimthissub";
 
-    var subOwner = Model.SubverseModerators.FirstOrDefault(n => n.Subverse == Model.Name && n.Power == 1);
-    if (subOwner != null)
+    if (String.IsNullOrEmpty(Model.CreatedBy))
     {
-        subverseOwner = subOwner.UserName;
+        var subOwner = Model.SubverseModerators.FirstOrDefault(n => n.Subverse == Model.Name && n.Power == 1);
+        if (subOwner != null)
+        {
+            subverseOwner = subOwner.UserName;
+        }
+    }
+    else
+    {
+        subverseOwner = Model.CreatedBy;
     }
 }
 
 <div class="side">
-    @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel(), new ViewDataDictionary { { "SelectedSubverse", ViewBag.SelectedSubverse } })
+    @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel(), new ViewDataDictionary { { "SelectedSubverse", Model.Name } })
     @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml")
     <div class="spacer">
         <a href="/v/@Model.Name/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">
@@ -46,7 +53,7 @@
             </h1>
             @if (User.Identity.IsAuthenticated)
             {
-                if (UserHelper.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
+                if (UserHelper.IsUserSubverseSubscriber(User.Identity.Name, Model.Name))
                 {
                     <button type="button" onclick="return unsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
                 }
@@ -54,7 +61,7 @@
                 {
                     <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="return subscribe(this, '@Model.Name')">subscribe</button>
                 }
-                if (UserHelper.IsUserBlockingSubverse(User.Identity.Name, ViewBag.SelectedSubverse))
+                if (UserHelper.IsUserBlockingSubverse(User.Identity.Name, Model.Name))
                 {
                     <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse" onclick="return toggleBlockSubverse(this, '@Model.Name')">unblock</button>
                 }
@@ -68,7 +75,7 @@
                 <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
             }
             <span class="subscribers">
-                <span id="subscriberCount" class="number">@ViewBag.SubscriberCount</span>
+                <span id="subscriberCount" class="number">@Model.SubscriberCount</span>
                 <span class="word">subscribers</span>
             </span>
             <p class="users-online fuzzed" title="number of users viewing this subverse in the past 15 minutes">

@@ -8,15 +8,13 @@
     the specific language governing rights and limitations under the License.
 
     All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
+*@
 
-@model Voat.Domain.Models.NestedComment
+@using Voat.Domain.Models
+@model Comment
 
-@{
-    Voat.Data.Models.Subverse subverse = ViewBag.Subverse;
-}
-
-@if (Model.IsAnonymized || subverse.IsAnonymized == true)
+@if (Model.IsAnonymized)
 {
     <a href="#" class="author may-blank">@Model.ID</a>
 }

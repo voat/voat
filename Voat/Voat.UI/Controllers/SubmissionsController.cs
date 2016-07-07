@@ -271,7 +271,7 @@ namespace Voat.Controllers
 
                     await _db.SaveChangesAsync();
                     DataCache.Submission.Remove(submissionId);
-
+                    
                 }
             }
 

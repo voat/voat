@@ -59,7 +59,7 @@ namespace Voat.Tests.CommandTests
                 Assert.IsNotNull(comment, "Couldn't find comment in db", c.Response.ID);
 
                 Assert.AreEqual(c.Response.ID, comment.ID);
-                Assert.AreEqual(comment.ID.ToString(), c.Response.UserName);
+                Assert.AreEqual(comment.ID.ToString(), comment.UserName);
                 Assert.AreEqual(c.Response.Content, comment.Content);
                 Assert.IsTrue(comment.IsAnonymized);
                 Assert.AreEqual(c.Response.IsAnonymized, comment.IsAnonymized);

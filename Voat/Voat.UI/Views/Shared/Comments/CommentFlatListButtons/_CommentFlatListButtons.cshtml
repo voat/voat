@@ -12,92 +12,62 @@
 
 @model Voat.Domain.Models.NestedComment
 
-@*@{
-    string commentAuthor = Model.CommentModel.UserName;
-    int commentId = Model.CommentModel.ID;
-}*@
-
 <ul class="flat-list buttons">
     @if (!Model.IsDeleted)
     {
         <li class="first">
-            <a href="/v/@ViewBag.Subverse.Name/comments/@Model.SubmissionID/@Model.ID" class="bylink" rel="nofollow">permalink</a>
+            <a href="/v/@Model.Subverse/comments/@Model.SubmissionID/@Model.ID" class="bylink" rel="nofollow">permalink</a>
         </li>
     }
 
     @if (Model.ParentID != null)
     {
         <li>
-            <a onclick="goToParent(event, @Model.ParentID)" href="/v/@ViewBag.Subverse.Name/comments/@Model.SubmissionID/@Model.ParentID" rel="nofollow">parent</a>
+            <a onclick="goToParent(event, @Model.ParentID)" href="/v/@Model.Subverse/comments/@Model.SubmissionID/@Model.ParentID" rel="nofollow">parent</a>
         </li>
     }
 
     @if (User.Identity.IsAuthenticated)
     {
         string loggedInUserName = User.Identity.Name;
-
-        //returns true if user has saved this post
-        bool? savedOrNot = null;
-        if (ViewBag.SavedCommentCache != null)
-        {
-            foreach (var cv in ViewBag.SavedCommentCache)
-            {
-                if (cv.CommentID == Model.ID)
-                {
-                    savedOrNot = true;
-                    break;
-                }
-            }
-        }
-        else
-        {
-            //backwards compat if ViewBad.VoteCache isn't populated as many code paths funnel here
-            savedOrNot = SavingComments.CheckIfSavedComment(loggedInUserName, Model.ID);
-        }
-        var saveString = savedOrNot == true ? "unsave" : "save";
-
+        var isModerator = UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Subverse);
         if (!Model.IsDeleted)
         {
-            <li>
-                <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@Model.ID);">@saveString</a>
-            </li>
-        }
-
-        if (!Model.IsDeleted && Model.IsSubmitter)
-        {
-            <li>
-                <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
-            </li>
-        }
-
-        // if user is sub admin or sub mod but not comment author, show delete button
-        if (!Model.IsSubmitter && !Model.IsDeleted)
-        {
-            if (UserHelper.IsUserSubverseModerator(User.Identity.Name, ViewBag.SubverseName))
+            if (Model.IsSaved.HasValue)
             {
-                @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
-            }
-        }
-
-        // if user is comment author, show edit and delete buttons
-        if (Model.IsSubmitter && !Model.IsDeleted)
-        {
-            <li>
-                <a class="" href="javascript:void(0)" onclick="return edit(@Model.ID, @Model.SubmissionID)">edit</a>
-            </li>
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
-
-            // if user is comment author but also sub mod or sub admin show distinguish button
-            if (UserHelper.IsUserSubverseModerator(User.Identity.Name, ViewBag.SubverseName))
-            {
+                var saveString = Model.IsSaved.Value ? "unsave" : "save";
                 <li>
-                    <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.ID, this)">distinguish</a>
+                    <a class="savelink" href="javascript:void(0)" onclick="return toggleSaveComment(@Model.ID);">@saveString</a>
                 </li>
             }
-        }
 
-        if (!Model.IsDeleted)
-        {
+            if (!Model.IsSubmitter)
+            {
+                <li>
+                    <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
+                </li>
+                if (isModerator)
+                {
+                    @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
+                }
+            }
+
+            // if user is comment author, show edit and delete buttons
+            if (Model.IsSubmitter)
+            {
+                <li>
+                    <a class="" href="javascript:void(0)" onclick="return edit(@Model.ID, @Model.SubmissionID)">edit</a>
+                </li>
+                @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
+
+                // if user is comment author but also sub mod or sub admin show distinguish button
+                if (isModerator)
+                {
+                    <li>
+                        <a class="" href="javascript:void(0)" onclick="return distinguish(@Model.ID, this)">distinguish</a>
+                    </li>
+                }
+            }
             <li>
                 <a class="" href="javascript:void(0)" onclick="return reply(@Model.ID, @Model.SubmissionID)">reply</a>
             </li>

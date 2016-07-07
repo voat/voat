@@ -7,7 +7,7 @@ using Voat.Data.Models;
 namespace Voat.Domain.Command
 {
     [Serializable]
-    public class CreateCommentCommand : CacheCommand<CommandResponse<Domain.Models.Comment>, CommandResponse<Comment>>
+    public class CreateCommentCommand : CacheCommand<CommandResponse<Domain.Models.Comment>>
     {
         public CreateCommentCommand(int submissionID, int? parentCommentID, string content)
         {
@@ -24,17 +24,17 @@ namespace Voat.Domain.Command
         public int? ParentCommentID { get; set; }
         public int SubmissionID { get; set; }
 
-        protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, CommandResponse<Comment>>> CacheExecute()
+        protected override async Task<CommandResponse<Domain.Models.Comment>> CacheExecute()
         {
             using (var db = new Repository())
             {
                 var data = await db.PostComment(this.SubmissionID, this.ParentCommentID, this.Content);
                 var mapped = CommandResponse.Map(data, data.Response.Map());
-                return Tuple.Create(mapped, data);
+                return data;
             }
         }
 
-        protected override void UpdateCache(CommandResponse<Comment> result)
+        protected override void UpdateCache(CommandResponse<Domain.Models.Comment> result)
         {
             if (result.Success)
             {
@@ -46,8 +46,15 @@ namespace Voat.Domain.Command
                 //Prevent key-ed entries if parent isn't in cache with expiration date
                 if (CacheHandler.Instance.Exists(key))
                 {
+                    //Add new comment
                     var treeItem = c.MapToTree();
                     CacheHandler.Instance.Replace(key, c.ID, treeItem);
+
+                    if (c.ParentID.HasValue)
+                    {
+                        //Update parent's ChildCount in cache
+                        CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, c.ParentID, x => { x.ChildCount += 1; return x; });
+                    }
                 }
             }
         }
@@ -128,7 +135,7 @@ namespace Voat.Domain.Command
                     return db.EditComment(this.CommentID, this.Content);
                 }
             });
-            return Tuple.Create(CommandResponse.Successful(result.Map()), result);
+            return Tuple.Create(CommandResponse.Successful(result.Map(null)), result);
         }
 
         protected override void UpdateCache(Comment result)

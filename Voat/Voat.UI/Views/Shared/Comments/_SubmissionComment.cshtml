@@ -12,55 +12,19 @@
     All Rights Reserved.
 *@
 
-@model Voat.Domain.Models.CommentSegment
+@using Voat.Domain.Models
 
-@using Voat.Data.Models
-@using Voat.Models.ViewModels
-@using Voat.Models;
+@model NestedComment
 
 @{
-    int commentContributionPoints = ViewBag.CCP ?? 0;
-
-    bool singleTree = ViewBag.SingleTree ?? false;
-
-    //bool? subverseAnonymized = Model.Subverse.IsAnonymized;
-
-    //nesting params
-    int nestingCount = ViewBag.NestingCount ?? 0;
-    //int nestingLimit = Model.NestingThreshold;
-
-    //find the comment based on the received comment id via ViewData
-    int commentId = ViewBag.CommentId;
-    var comment = Model.Comments.FirstOrDefault(x => x.ID == commentId);
-    int commentScore = (int)(comment.UpCount - comment.DownCount);
-    //var commentSingleVM = new CommentSingleViewModel() { CommentModel = comment, SubmissionModel = Model.Submission, SubverseModel = Model.Subverse };
-
-    //check if thread should be hidden
+    SortAlgorithm sortOrder = ViewBag.SortOrder ?? SortAlgorithm.Top;
     bool parentIsHidden = ViewBag.ParentIsHidden ?? false;
     bool childTohiddenParent = ViewBag.ChildToHiddenParent ?? false;
-
-    DateTime submissionDate = comment.CreationDate;
-    string postAge = Age.ToRelative(submissionDate);
-    //string opName = Model.Submission.UserName;
-    string commentAuthor = comment.UserName;
-
-    DateTime? lastEditDate = comment.LastEditDate;
-    string editedPostAge = "at some point in time";
-    if (lastEditDate != null)
-    {
-        editedPostAge = Age.ToRelative((DateTime)lastEditDate);
-    }
-
-    // apply class style if OP is the Comment Author
-    //opName = opName.Trim();
-    commentAuthor = commentAuthor.Trim();
-
     string collapsedComment = "";
     string uncollapsedComment = "";
     string showIfParent = "";
 
-    //collapse comments with score of -4 or less
-    if (parentIsHidden || comment.IsCollapsed)
+    if (parentIsHidden || Model.IsCollapsed)
     {
         collapsedComment = ""; //show collapsed comment
         uncollapsedComment = "display:none"; //hide uncollapsed comment
@@ -78,114 +42,125 @@
     }
 
     string highlightClass = "";
-    if (ViewBag.CommentToHighLight == comment.ID)
+    if (ViewBag.CommentToHighLight == Model.ID)
     {
         highlightClass = "highlightedComment";
     }
 }
 
-<div class="child id-@commentId comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="@(parentIsHidden ? "display:none" : "")">
+<div class="child id-@Model.ID comment @highlightClass" data-fullname="" data-ups="" data-downs="" style="@(parentIsHidden ? "display:none" : "")">
 
     @* 1 submission comment *@
     <p class="parent">
         <a></a>
     </p>
 
-    @if (!comment.IsDeleted)
+    @if (!Model.IsDeleted)
     {
         @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary {
-            { "VoteCache", ViewBag.VoteCache },
-            { "CommentId", commentId },
-            { "CCP", ViewBag.CCP },
             { "collapsedStyle", uncollapsedComment } })
     }
 
     <div class="entry unvoted">
         <div class="collapsed" style='@collapsedComment'>
-            <a href="#" class="expand" onclick="return showcomment(@commentId)">[+]</a>
-            @if (!comment.IsDeleted)
+            <a href="#" class="expand" onclick="return showcomment(@Model.ID)">[+]</a>
+            @if (!Model.IsDeleted)
             {
-                if (comment.IsAnonymized)
+                if (Model.IsAnonymized)
                 {
-                    <a href="#" class="author gray may-blank">@comment.ID</a>
+                    <a href="#" class="author gray may-blank">@Model.ID</a>
                 }
                 else
                 {
-                    <a href="/user/@comment.UserName" class="author gray may-blank">@comment.UserName</a>
+                    <a href="/user/@Model.UserName" class="author gray may-blank">@Model.UserName</a>
                 }
                 <span class="userattrs"></span>
-                <span class="score dislikes">@comment.DownCount points</span>
-                <span class="score onlycollapsed">@commentScore points</span>
-                <span class="score likes">@comment.UpCount points</span>
+                <span class="score dislikes">@Model.DownCount points</span>
+                <span class="score onlycollapsed">@Model.Sum points</span>
+                <span class="score likes">@Model.UpCount points</span>
             }
             else
             {
                 <span class="userattrs">[deleted]</span>
             }
-            <time title="@comment.CreationDate" datetime="@comment.CreationDate">@postAge</time>&#32;ago&nbsp;
-            @if (lastEditDate != null)
+            <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time>&#32;ago&nbsp;
+            @if (Model.LastEditDate.HasValue)
             {
-                <span>(last edited <time title="@comment.LastEditDate" datetime="@comment.LastEditDate">@editedPostAge</time>&#32;ago)</span>
+                <span>(last edited <time title="@Model.LastEditDate" datetime="@Model.LastEditDate">@Age.ToRelative(Model.LastEditDate.Value)</time>&#32;ago)</span>
             }
-            &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return showcomment(@commentId)">(show children)</a>
+            &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return showcomment(@Model.ID)">(show children)</a>
         </div>
-
-        <div class="noncollapsed" id="@commentId" style="@uncollapsedComment">
+        <div class="noncollapsed" id="@Model.ID" style="@uncollapsedComment">
             <p class="tagline">
-                <a href="#" class="expand" onclick="return hidecomment(@commentId)">[&ndash;]</a>
+                <a href="#" class="expand" onclick="return hidecomment(@Model.ID)">[&ndash;]</a>
 
-                @if (!comment.IsDeleted)
+                @if (!Model.IsDeleted)
                 {
-                    //int commentScore = commentModel.Likes - commentModel.Dislikes;
-                    string view = "~/Views/Shared/UserDistinctions/_UserDistinction.cshtml";
-                    if (comment.IsSubmitter)
+                    if (Model.IsAnonymized)
                     {
-                        view = (comment.IsDistinguished ? "~/Views/Shared/UserDistinctions/_SubmitterModeratorDistinction.cshtml" : "~/Views/Shared/UserDistinctions/_SubmitterDistinction.cshtml");
+                        <a href="#" class="author gray may-blank">@Model.ID</a>
                     }
-                    else if (comment.IsDistinguished)
+                    else
                     {
-                        view = "~/Views/Shared/UserDistinctions/_ModeratorDistinction.cshtml";
+                        <a href="/user/@Model.UserName" class="author gray may-blank">@Model.UserName</a>
+                    }
+                    string view = "_UserDistinction";
+                    if (Model.IsSubmitter && Model.IsDistinguished)
+                    {
+                        //sub | mod
+                        view = "_SubmitterModeratorDistinction";
+                    }
+                    else if (Model.IsSubmitter)
+                    {
+                        //sub
+                        view = "_SubmitterDistinction";
+                    }
+                    else if (Model.IsDistinguished)
+                    {
+                        //mod
+                        view = "_ModeratorDistinction";
                     }
 
-                    @Html.Partial(view, comment, new ViewDataDictionary{ { "Subverse", ViewBag.Subverse }, { "Submission", ViewBag.Submission } })
+                    Html.Partial(String.Format("~/Views/Shared/UserDistinctions/{0}.cshtml", view), Model);
+
                     <span class="score dislikes">
-                        <span class="number">@comment.DownCount</span> points
+                        <span class="number">@Model.DownCount</span> points
                     </span>
                     <span class="score unvoted">
-                        <span class="number">@commentScore</span> points
+                        <span class="number">@Model.Sum</span> points
                     </span>
                     <span class="score likes">
-                        <span class="number">@comment.UpCount</span> points
+                        <span class="number">@Model.UpCount</span> points
                     </span>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@comment.UpCount</span>|<span class="post_downvotes">-@comment.DownCount</span>)</span>
+                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
                 }
                 else
                 {
                     <span class="userattrs">[deleted]</span>
                 }
 
-                <time title="@comment.CreationDate" datetime="@comment.CreationDate">@postAge</time>&#32;ago&nbsp;
-                @if (lastEditDate != null)
+                <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time>&#32;ago&nbsp;
+                @if (Model.LastEditDate.HasValue)
                 {
-                    <span>(edited <time title="@comment.LastEditDate" datetime="@comment.LastEditDate">@editedPostAge</time>&#32;ago)</span>
+                    <span>(edited <time title="@Model.LastEditDate" datetime="@Model.LastEditDate">@Age.ToRelative(Model.LastEditDate.Value)</time>&#32;ago)</span>
                 }
             </p>
 
-            <form class="usertext" onsubmit="return editcommentsubmit(@commentId)" id="commenteditform-@commentId" action="#">
+            <form class="usertext" onsubmit="return editcommentsubmit(@Model.ID)" id="commenteditform-@Model.ID" action="#">
                 @Html.AntiForgeryToken()
-                <input id="CommentId" name="CommentId" value="@commentId" type="hidden">
-                @if (!comment.IsDeleted)
+                <input id="CommentId" name="CommentId" value="@Model.ID" type="hidden">
+                @if (!Model.IsDeleted)
                 {
-                    <div class="usertext-body may-blank-within" id="commentContent-@commentId">
+                    <div class="usertext-body may-blank-within" id="commentContent-@Model.ID">
                         <div class="md">
                             @* Skip Regex intense processing if we've pre-processed *@
-                            @if (!String.IsNullOrEmpty(comment.FormattedContent))
+                            @if (!String.IsNullOrEmpty(Model.FormattedContent))
                             {
-                                @Html.Raw(comment.FormattedContent)
+                                @Html.Raw(Model.FormattedContent)
                             }
                             else
                             {
-                                @Html.Raw(@Formatting.FormatMessage(comment.Content))
+                                @Html.Raw(@Formatting.FormatMessage(Model.Content))
                             }
                         </div>
                     </div>
@@ -194,7 +169,7 @@
                 {
                     <div class="usertext gray">
                         <div class="md">
-                            [@comment.Content]
+                            [@Model.Content]
                         </div>
                     </div>
                 }
@@ -202,12 +177,12 @@
                 <div class="usertext-edit" style="width: 775px; display: none;">
                     <div>
                         @Html.Partial("_MarkdownEditor")
-                        <textarea aria-invalid="false" class="form-control valid" cols="20" id="Content" name="Content" rows="2" data-rule-required="true" data-msg-required="The comment can not be empty.">@WebUtility.HtmlDecode(comment.Content)</textarea>
+                        <textarea aria-invalid="false" class="form-control valid" cols="20" id="Content" name="Content" rows="2" data-rule-required="true" data-msg-required="The comment can not be empty.">@WebUtility.HtmlDecode(Model.Content)</textarea>
                         <span data-valmsg-replace="false" data-valmsg-for="Content" class="field-validation-error"></span>
                         <div class="usertext-buttons">
                             <input value="Save" class="btn-whoaverse-paging" type="submit">
                             <input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
-                            <button class="btn-whoaverse-paging" onclick="removeeditform(@commentId)" type="button">Cancel</button>
+                            <button class="btn-whoaverse-paging" onclick="removeeditform(@Model.ID)" type="button">Cancel</button>
                         </div>
                         <div class="panel panel-default" id="submission-preview-area" style="display: none">
                             <div class="panel-heading">
@@ -225,67 +200,45 @@
                 </div>
 
             </form>
-            <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@comment.Content</textarea>
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", comment,
-                new ViewDataDictionary {
-                    { "SavedCommentCache", ViewBag.SavedCommentCache }, 
-                    { "Subverse", ViewBag.Subverse },
-                    { "Submission", ViewBag.Submission },
-                })
-
-            @*@if (comment.ChildCount > 0 && nestingCount >= Model.NestingThreshold)*@
-            @if (comment.ChildCount > 0 && comment.ChildCount > (comment.Children == null ? 0 : comment.Children.TotalCount))
-            {
-                <div>
-                    <br />
-                    <a style="cursor:pointer;" id="loadmore-@comment.ID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@comment.ID'),$('.id-@comment.ID'),@comment.SubmissionID,@comment.ID,'children',0,'@Model.Sort.ToString()')">@comment.ChildCount @(comment.ChildCount == 1 ? "reply" : "replies")</a>
-                </div>
-            }
+            <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
+            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", Model)
         </div>
     </div>
-
-    @{
-        parentIsHidden = (comment.IsCollapsed);
-        if (comment.ChildCount > 0)
-        {
-            int parentID = commentId;
-
-            int remaining = Model.TotalCount - Model.SegmentCount;
-            int sameParentCounter = 0;
-            if (comment.Children != null)
+            @if (Model.ChildCount > 0)
             {
-                foreach (var childComment in comment.Children.Comments)
-                {
-                    //recalculate parent id score and hide here instead of passing values around?
-                    if (sameParentCounter < 1)
-                    {
-                        nestingCount++;
-                    }
-                    parentID = childComment.ID;
+                parentIsHidden = (Model.IsCollapsed);
+                var remaining = 0;
+                var startingIndex = 0;
 
-                @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment.Children,
-                    new ViewDataDictionary {
-                        { "SavedCommentCache", ViewBag.SavedCommentCache },
-                        { "VoteCache", ViewBag.VoteCache },
-                        { "CommentId", childComment.ID },
-                        { "CCP", ViewBag.CCP },
+                if (Model.Children != null)
+                {
+                    foreach (var childComment in Model.Children.Comments)
+                    {
+                        @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", childComment,
+                        new ViewDataDictionary {
+                        { "SortOrder", ViewBag.SortOrder },
                         { "ParentIsHidden", parentIsHidden },
                         { "ChildToHiddenParent", parentIsHidden },
-                        { "NestingCount", nestingCount },
                         { "Subverse", ViewBag.Subverse },
                         { "Submission", ViewBag.Submission },
                         { "CommentToHighlight", ViewBag.CommentToHighLight }
                     })
+                    }
+                    remaining = Model.Children.TotalCount - Model.Children.LoadedCount;
+                    startingIndex = Model.Children.EndingIndex + 1;
+                }
+                else
+                {
+                    remaining = Model.ChildCount;
+                }
 
-                    sameParentCounter++;
+                if (remaining > 0)
+                {
+                    <div style="padding-left:20px;">
+                        <br />
+                        <a style="cursor:pointer;" id="loadmore-@Model.ID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@Model.ID'),$('.id-@Model.ID'),@Model.SubmissionID,@Model.ID,'children',@startingIndex,'@sortOrder')">@remaining @(remaining == 1 ? "reply" : "replies")</a>
+                    </div>
                 }
             }
-            @*if (remaining > 0)
-            {
-                <div class="child comment" style="@uncollapsedComment">
-                    <a style="cursor:pointer;" id="loadmore-@commentId" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@commentId'),$('.id-@commentId'),@comment.SubmissionID,@commentId,'siblings',@comment.ChildCount,'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
-                </div>
-            }*@
-        }
-    }
-</div>
+
+    </div>

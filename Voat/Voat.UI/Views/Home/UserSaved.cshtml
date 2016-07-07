@@ -54,7 +54,7 @@
                 //Is a comment
                 //TODO: Port This
                 @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
-                        new Voat.Models.CommentBucketViewModel(comment),
+                        Voat.Domain.DomainMaps.Map(comment, comment.Submission.Subverse),
                         new ViewDataDictionary {
                             { "CommentId", comment.ID },
                             { "CCP", Karma.CommentKarma(User.Identity.Name) },

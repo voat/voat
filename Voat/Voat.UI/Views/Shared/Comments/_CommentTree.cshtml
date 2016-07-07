@@ -59,6 +59,9 @@
             </div>
             <div class="spacer"></div>
         </div>
+        <div class="menuarea">
+            <h2><span id="comment-sort-label" class="label label-default">Sort: @Model.Sort.ToString()</span></h2>
+        </div>
     }
    
     @if (ViewBag.StartingCommentId != null)
@@ -77,6 +80,7 @@
             { "SavedCommentCache", ViewBag.SavedCommentCache },
             { "Subverse", ViewBag.Subverse },
             { "Submission", ViewBag.Submission },
+            { "CommentToHighlight", ViewBag.CommentToHighLight },
             { "CCP", ViewBag.CCP }})
     </div>
 </div>

@@ -24,11 +24,7 @@ namespace Voat.Domain.Models
     /// </summary>
     public class Comment : VoteableObject
     {
-        /// <summary>
-        /// Child comment count. This is a count of direct decedents only.
-        /// </summary>
-        public int ChildCount { get; set; }
-
+      
         /// <summary>
         /// The raw content of this item.
         /// </summary>
@@ -63,6 +59,11 @@ namespace Voat.Domain.Models
         /// Marker for deleted comment.
         /// </summary>
         public bool IsDeleted { get; set; }
+
+        /// <summary>
+        /// Marker for saved comment.
+        /// </summary>
+        public bool? IsSaved { get; set; }
 
         /// <summary>
         /// Marker for moderator distinguished comment.

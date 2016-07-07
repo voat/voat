@@ -187,6 +187,7 @@
     <Compile Include="Domain\Query\QueryApiStreamLastCalledDate.cs" />
     <Compile Include="Domain\Query\QueryApiThrottlePolicy.cs" />
     <Compile Include="Domain\Query\QueryBannedDomains.cs" />
+    <Compile Include="Domain\Query\QueryCommentContext.cs" />
     <Compile Include="Domain\Query\QueryDefaultSubverses.cs" />
     <Compile Include="Domain\Query\QueryNewestSubverses.cs" />
     <Compile Include="Domain\Query\QueryComments.cs" />
@@ -210,7 +211,6 @@
     <Compile Include="Domain\Query\QueryUserSubscriptions.cs" />
     <Compile Include="Domain\Query\Selectors.cs" />
     <Compile Include="Data\Repository.cs" />
-    <Compile Include="Data\ModelMaps.cs" />
     <Compile Include="Domain\Models\API\Legacy\ApiBadge.cs" />
     <Compile Include="Domain\Models\API\Legacy\ApiComment.cs" />
     <Compile Include="Domain\Models\API\Legacy\ApiMessage.cs" />
@@ -298,14 +298,12 @@
     <Compile Include="Utilities\Ranking.cs" />
     <Compile Include="Utilities\Saving.cs" />
     <Compile Include="Utilities\SavingComments.cs" />
-    <Compile Include="Utilities\Submissions.cs" />
     <Compile Include="Utilities\ThumbGenerator.cs" />
     <Compile Include="Utilities\UrlUtility.cs" />
     <Compile Include="Utilities\UserHelper.cs" />
     <Compile Include="Utilities\VoatPathHelper.cs" />
     <Compile Include="Utilities\Voting.cs" />
     <Compile Include="Utilities\VotingComments.cs" />
-    <Compile Include="Domain\Models\CommentBucketViewModel.cs" />
     <Compile Include="Domain\Models\UserStatsModel.cs" />
   </ItemGroup>
   <ItemGroup>

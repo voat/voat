@@ -21,7 +21,13 @@ namespace Voat.Domain.Query
                 return _subverse;
             }
         }
-
+        protected override string FullCacheKey
+        {
+            get
+            {
+                return CachingKey.Subverse(_subverse);
+            }
+        }
         protected override Subverse GetData()
         {
             using (var db = new Repository())

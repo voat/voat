@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Voat.Data.Models;
 using Voat.Domain.Models;
@@ -11,19 +12,13 @@ namespace Voat.Domain
     {
         public static IEnumerable<Domain.Models.Submission> Map(this IEnumerable<Data.Models.Submission> list)
         {
-            //Have to materialize this list
             var mapped = list.Select(x => x.Map()).ToList();
             return mapped;
-            //return mapped.Count > 0 ? mapped : null;
         }
-
-        public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Data.Models.Comment> list)
+        public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Data.Models.Comment> list, string subverse)
         {
-            //Have to materialize this list
-            //Have to materialize this list
-            var mapped = list.Select(x => x.Map()).ToList();
+            var mapped = list.Select(x => x.Map(subverse)).ToList();
             return mapped;
-            //return mapped.Count > 0 ? mapped : null;
         }
         public static IEnumerable<UserMessage> Map(this IEnumerable<UserMessage> list)
         {
@@ -73,30 +68,12 @@ namespace Voat.Domain
             return result;
         }
 
-        public static Domain.Models.Comment Map(this Data.Models.Comment comment)
+        public static Domain.Models.Comment Map(this Data.Models.Comment comment, string subverse, bool populateUserState = false)
         {
             Domain.Models.Comment result = null;
             if (comment != null)
             {
-                result = new Domain.Models.Comment()
-                {
-                    ID = comment.ID,
-                    UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName),
-                    LastEditDate = comment.LastEditDate,
-                    CreationDate = comment.CreationDate,
-                    UpCount = (int)comment.UpCount,
-                    DownCount = (int)comment.DownCount,
-                    IsDeleted = comment.IsDeleted,
-                    IsAnonymized = comment.IsAnonymized,
-                    IsDistinguished = comment.IsDistinguished,
-                    //TODO: Throws object disposed exception
-                    //Subverse = comment.Submission.Subverse,
-                    Subverse = "TODO",
-                    Content = comment.Content,
-                    FormattedContent = comment.FormattedContent,
-                    ParentID = comment.ParentID,
-                    SubmissionID = comment.SubmissionID
-                };
+                result = MapToNestedComment(comment, subverse, populateUserState);
             }
             return result;
         }
@@ -178,11 +155,115 @@ namespace Voat.Domain
                     UserName = comment.UserName,
                     ParentID = comment.ParentID,
                     Path = "",
-                    Subverse = "",
+                    Subverse = comment.Subverse,
                     Votes = 0 //don't think we use this.
                 };
             }
             return result;
+        }
+        public static NestedComment Map(this usp_CommentTree_Result treeComment)
+        {
+            NestedComment result = null;
+            if (treeComment != null)
+            {
+                result = new NestedComment();
+                result.ID = treeComment.ID;
+                result.ParentID = treeComment.ParentID;
+                result.ChildCount = treeComment.ChildCount.Value;
+                result.Content = treeComment.Content;
+                result.FormattedContent = treeComment.FormattedContent;
+                result.UserName = treeComment.UserName;
+                result.UpCount = (int)treeComment.UpCount;
+                result.DownCount = (int)treeComment.DownCount;
+                result.CreationDate = treeComment.CreationDate;
+                result.IsAnonymized = treeComment.IsAnonymized;
+                result.IsDeleted = treeComment.IsDeleted;
+                result.IsDistinguished = treeComment.IsDistinguished;
+                result.LastEditDate = treeComment.LastEditDate;
+                result.SubmissionID = treeComment.SubmissionID;
+                result.Subverse = treeComment.Subverse;
+            }
+            return result;
+        }
+        public static NestedComment MapToNestedComment(this Data.Models.Comment comment, string subverse, bool populateUserState = false)
+        {
+            NestedComment result = null;
+            if (comment != null)
+            {
+                result = new NestedComment();
+                result.ID = comment.ID;
+                result.ParentID = comment.ParentID;
+                result.ChildCount = 0;
+                result.Content = comment.Content;
+                result.FormattedContent = comment.FormattedContent;
+                result.UserName = comment.UserName;
+                result.UpCount = (int)comment.UpCount;
+                result.DownCount = (int)comment.DownCount;
+                result.CreationDate = comment.CreationDate;
+                result.IsAnonymized = comment.IsAnonymized;
+                result.IsDeleted = comment.IsDeleted;
+                result.IsDistinguished = comment.IsDistinguished;
+                result.LastEditDate = comment.LastEditDate;
+                result.SubmissionID = comment.SubmissionID;
+                if (String.IsNullOrEmpty(subverse))
+                {
+                    //TODO: need to convert pipeline to support this or pull this data out of the db
+                    result.Subverse = "TODO";
+                }
+                else
+                {
+                    result.Subverse = subverse;
+                }
+                SetUserRelatedProperties(result, populateUserState);
+            }
+            return result;
+        }
+        public static NestedComment Map(this Domain.Models.Comment comment)
+        {
+            NestedComment result = null;
+            if (comment != null)
+            {
+                result = new NestedComment();
+                result.ID = comment.ID;
+                result.ParentID = comment.ParentID;
+                result.ChildCount = 0;
+                result.Content = comment.Content;
+                result.FormattedContent = comment.FormattedContent;
+                result.UserName = comment.UserName;
+                result.UpCount = (int)comment.UpCount;
+                result.DownCount = (int)comment.DownCount;
+                result.CreationDate = comment.CreationDate;
+                result.IsAnonymized = comment.IsAnonymized;
+                result.IsDeleted = comment.IsDeleted;
+                result.IsDistinguished = comment.IsDistinguished;
+                result.LastEditDate = comment.LastEditDate;
+                result.SubmissionID = comment.SubmissionID;
+                result.Subverse = comment.Subverse;
+                SetUserRelatedProperties(result);
+            }
+            return result;
+        }
+
+        private static void SetUserRelatedProperties(NestedComment comment, bool populateUserState = false)
+        {
+            if (System.Threading.Thread.CurrentPrincipal.Identity.IsAuthenticated)
+            {
+                string userName = System.Threading.Thread.CurrentPrincipal.Identity.Name;
+
+                comment.IsSubmitter = comment.UserName == userName;
+
+                if (populateUserState)
+                {
+                    if (!comment.IsSaved.HasValue)
+                    {
+                        comment.IsSaved = SavingComments.CheckIfSavedComment(userName, comment.ID);
+                    }
+                    if (!comment.Vote.HasValue)
+                    {
+                        comment.Vote = VotingComments.CheckIfVotedComment(userName, comment.ID);
+                    }
+                }
+            }
         }
     }
 }

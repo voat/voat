@@ -28,11 +28,7 @@
 </style>
 
 <style type="text/css" id="custom_css">
-@if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
-{
-    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = submission.Subverse });
-}
-else if (!User.Identity.IsAuthenticated)
+@if ((User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name)) || !User.Identity.IsAuthenticated)
 {
     Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = submission.Subverse });
 }
@@ -45,29 +41,8 @@ else if (!User.Identity.IsAuthenticated)
     @if (!submission.Subverse.Equals("user"))
     {
         
-        @Html.Action("SidebarForSelectedSubverseComments", "Subverses", new
-       {
-           selectedSubverse = submission.Subverse,
-           showingComments = true,
-           name = submission.UserName,
-           date = submission.CreationDate,
-           lastEditDate = submission.LastEditDate,
-           submissionId = submission.ID,
-           likes = submission.UpCount,
-           dislikes = submission.DownCount,
-           anonymized = submission.IsAnonymized,
-           views = submission.Views,
-           isDeleted = submission.IsDeleted
-       })
+        @Html.Action("SidebarForSelectedSubverseComments", "Subverses", submission)
     }
-
-    <style type="text/css" id="custom_css">
-    @if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
-    {
-        Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = submission.Subverse });
-    }
-    </style>
-
     <div class="content" role="main">
         <br /><br />
         @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
@@ -128,7 +103,7 @@ else if (!User.Identity.IsAuthenticated)
                     { "StartingCommentId", ViewBag.StartingCommentId },
                     { "Subverse", ViewBag.Subverse },
                     { "Submission", ViewBag.Submission },
-                    { "CommentToHighlight", ViewBag.CommentToHighLight } }
+                    { "CommentToHighLight", ViewBag.CommentToHighLight } }
             )
     </div>
 </div>

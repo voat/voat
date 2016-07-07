@@ -175,7 +175,7 @@ namespace Voat
             // comments/4
             routes.MapRoute(
                 name: "comments",
-                url: "comments/{id}",
+                url: "comments/{submissionID}",
                 defaults: new { controller = "Comment", action = "Comments" }
             );
             string commentSortContraint = "(?i)new|top|bottom|intensity";
@@ -183,7 +183,7 @@ namespace Voat
             //"/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + startIndex + "/" + sort + "/",
             routes.MapRoute(
                 name: "CommentSegment",
-                url: "comments/{submissionId}/{parentId}/{command}/{startingIndex}/{sort}",
+                url: "comments/{submissionID}/{parentID}/{command}/{startingIndex}/{sort}",
                 constraints: new
                 {
                     sort = commentSortContraint
@@ -193,7 +193,7 @@ namespace Voat
 
             routes.MapRoute(
                 name: "CommentTree",
-                url: "comments/{submissionId}/tree/{sort}",
+                url: "comments/{submissionID}/tree/{sort}",
                 constraints: new
                 {
                     sort = commentSortContraint
@@ -204,7 +204,7 @@ namespace Voat
             // v/subversetoshow/comments/123456/new
             routes.MapRoute(
                 name: "SubverseCommentsWithSort",
-                url: "v/{subversetoshow}/comments/{id}/{sort}",
+                url: "v/{subverseName}/comments/{submissionID}/{sort}",
                 constraints: new
                 {
                     sort = commentSortContraint
@@ -214,20 +214,20 @@ namespace Voat
                     controller = "Comment",
                     action = "Comments",
                     sort = "top",
-                    startingcommentid = UrlParameter.Optional,
-                    commentToHighLight = UrlParameter.Optional
+                    commentID = UrlParameter.Optional,
+                    contextCount = UrlParameter.Optional
                 }
             );        
             // v/subversetoshow/comments/123456
             routes.MapRoute(
                 name: "SubverseComments",
-                url: "v/{subversetoshow}/comments/{id}/{startingcommentid}/{commentToHighLight}",
+                url: "v/{subverseName}/comments/{submissionID}/{commentID}/{contextCount}",
                 defaults: new
                 {
                     controller = "Comment",
                     action = "Comments",
-                    startingcommentid = UrlParameter.Optional,
-                    commentToHighLight = UrlParameter.Optional,
+                    commentID = UrlParameter.Optional,
+                    contextCount = UrlParameter.Optional,
                     sort = "top"
                 }
             );
