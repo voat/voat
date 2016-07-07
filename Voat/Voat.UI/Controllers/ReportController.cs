@@ -36,6 +36,7 @@ namespace Voat.Controllers
         // POST: reportcomment
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> ReportComment(int id)
         {

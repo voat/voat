@@ -476,6 +476,7 @@ namespace Voat.Controllers
         // POST: editcomment
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> EditComment([Bind(Include = "ID, Content")] Data.Models.Comment commentModel)
         {
@@ -531,6 +532,7 @@ namespace Voat.Controllers
         // POST: deletecomment
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteComment(int commentId)
         {
             var commentToDelete = _db.Comments.Find(commentId);

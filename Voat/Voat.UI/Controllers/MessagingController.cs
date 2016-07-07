@@ -365,6 +365,7 @@ namespace Voat.Controllers
 
         [System.Web.Mvc.Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessage(int privateMessageId)
         {
@@ -388,6 +389,7 @@ namespace Voat.Controllers
 
         [System.Web.Mvc.Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessageFromSent(int privateMessageId)
         {
