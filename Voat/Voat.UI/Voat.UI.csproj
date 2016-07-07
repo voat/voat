@@ -14,7 +14,7 @@
     <RootNamespace>Voat</RootNamespace>
     <AssemblyName>Voat.UI</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <MvcBuildViews>false</MvcBuildViews>
+    <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -560,7 +560,7 @@
     <Content Include="Views\Shared\Submissions\_Submission.cshtml" />
     <Content Include="Views\Shared\Submissions\_MessageSubmissionDetails.cshtml" />
     <Content Include="Views\Shared\Submissions\_LinkSubmissionDetails.cshtml" />
-    <Content Include="Views\Shared\Submissions\_SubmissionComment.cshtml" />
+    <Content Include="Views\Shared\Comments\_SubmissionComment.cshtml" />
     <Content Include="Views\Home\UserProfile.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
     <Content Include="Views\Help\Privacy.cshtml" />
@@ -585,7 +585,7 @@
     <Content Include="Views\Errors\SubverseExists.cshtml" />
     <Content Include="Views\Help\UserAgreement.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseSettings.cshtml" />
-    <Content Include="Views\Home\_CommentTree.cshtml" />
+    <Content Include="Views\Shared\Comments\_CommentTree.cshtml" />
     <Content Include="Views\About\Intro.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarSubmissionInfo.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarUserInfo.cshtml" />
@@ -620,7 +620,6 @@
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
     <Content Include="Views\Home\UserSubmitted.cshtml" />
-    <Content Include="Views\Home\_SingleCommentTree.cshtml" />
     <Content Include="Views\Account\_UserPreferences.cshtml" />
     <Content Include="Views\Subverses\Admin\Flair\FlairSettings.cshtml" />
     <Content Include="Views\Subverses\Admin\Flair\AddLinkFlair.cshtml" />
@@ -683,7 +682,7 @@
     <Content Include="Views\Management\Dashboard.cshtml" />
     <Content Include="Views\Subverses\Admin\_ModeratorInvitations.cshtml" />
     <Content Include="Views\Subverses\Admin\RecallModeratorInvitation.cshtml" />
-    <Content Include="Views\Shared\Comments\_CommentBucket.cshtml" />
+    <Content Include="Views\Shared\Comments\_CommentSegment.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
     <Content Include="Views\Messaging\InboxPostReplies.cshtml" />

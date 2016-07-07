@@ -70,6 +70,11 @@ namespace Voat.Caching
         {
             return String.Format("User:Votes:{0}:{1}", submissionID, userName);
         }
+        public static string UserSavedComments(string userName, int submissionID)
+        {
+            return String.Format("User:SavedComments:{0}:{1}", submissionID, userName);
+        }
+        
         public static string UserSubmissionVotes(string userName)
         {
             return String.Format("User:Votes:Submissions:{0}", userName);

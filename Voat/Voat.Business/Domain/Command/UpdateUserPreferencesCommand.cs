@@ -30,7 +30,7 @@ namespace Voat.Domain.Command
             return CommandResponse.Successful();
         }
 
-        protected override void UpdateCache()
+        protected override void UpdateCache(CommandResponse result)
         {
             CacheHandler.Instance.Remove(CachingKey.UserPreferences(this.UserName));
         }

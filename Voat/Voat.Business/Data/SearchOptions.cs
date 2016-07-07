@@ -53,7 +53,6 @@ namespace Voat.Data {
         private int _currentIndex = 0;
         private int _page = 0;
         private string _phrase = null;
-        private int _depth = -1;
         private IEnumerable<KeyValuePair<string, string>> _queryStrings = null;
         private List<KeyValuePair<string, string>> _unknownPairs = new List<KeyValuePair<string, string>>();
 
@@ -274,7 +273,7 @@ namespace Voat.Data {
         }
 
         /// <summary>
-        /// The end date for limiting search results. This value is overridden if <paramref name="Span">span</paramref> is provided.
+        /// The end date for limiting search results.
         /// </summary>
         [JsonIgnore()] //currently we are going to force StartDate and Span in order to set this value rather than allow a range like this from the API. Too much room for abuse and causes caching issues.
         public DateTime? EndDate {

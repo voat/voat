@@ -1,88 +1,39 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Text;
-using System.Threading.Tasks;
-using Voat.Domain.Models;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Voat.Domain.Command;
+using Voat.Utilities;
 using Voat.Domain.Query;
-using Voat.Tests.Repository;
 
 namespace Voat.Tests.QueryTests
 {
+    /// <summary>
+    /// Summary description for QueryCommentTests
+    /// </summary>
     [TestClass]
     public class QueryCommentTests
     {
-        private static int _unitSubmissionID;
-        private static int _rootCount = 1;
-        private static int _nestedCount = 4;
-        private static int _recurseCount = 4;
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            _unitSubmissionID = VoatDataInitializer.BuildCommentTree("unit", "Build Comment Tree", _rootCount, _nestedCount, _recurseCount);
-        }
-        public void CompareSegments(CommentSegment expected, CommentSegment actual)
-        {
-            //compare segments
-            Assert.AreEqual(expected.TotalCount, actual.TotalCount, "Segments don't match on child query");
-            Assert.AreEqual(expected.SegmentCount, actual.SegmentCount, "Segments don't match on child query");
-            Assert.AreEqual(expected.TotalCount, actual.TotalCount, "Segments don't match on child query");
-            Assert.AreEqual(expected.Comments.Count, actual.Comments.Count, "Segments don't match on child query");
-
-            for (int i = 0; i < expected.TotalCount; i++)
-            {
-                var eComment = expected.Comments[i];
-                var aComment = actual.Comments[i];
-                Assert.AreEqual(eComment.ID, aComment.ID);
-                Assert.AreEqual(eComment.UserName, aComment.UserName);
-                Assert.AreEqual(eComment.Content, aComment.Content);
-            }
-        }
         [TestMethod]
-        public async Task Test_CommentTreeLoading()
+        public void EnsureVoteSavedIsPopulated()
         {
-            TestHelper.SetPrincipal("TestUser1");
-            var q = new QueryCommentSegment(_unitSubmissionID, null, null, new Voat.Data.SearchOptions() { Sort = SortAlgorithm.New });
-            var r = q.Execute();
+            TestHelper.SetPrincipal("UnitTestUser18");
 
-            Assert.IsNotNull(r, "Segment returned null");
-            Assert.AreEqual(_rootCount, r.Comments.Count, "expected root count off");
-            foreach (var c in r.Comments)
-            {
-                Assert.IsNull(c.ParentID, "expecting only root comments");
-                Assert.AreEqual(_nestedCount, c.ChildCount, "Child Count on Root is off");
-                Assert.AreEqual(_unitSubmissionID, c.SubmissionID);
+            var q = new QueryComment(1);
+            var comment = q.Execute();
+            Assert.IsNotNull(comment, "Comment is null 1");
+            Assert.AreEqual(0, comment.Vote, "vote value not set for logged in user 1");
 
-                //Test for embedded objects
-                Assert.IsNotNull(c.Children, "Children object is null");
-                Assert.IsNotNull(c.Children.Comments, "Children Comments object is null");
-                Assert.AreEqual(_nestedCount, c.Children.TotalCount, "Child comment count off in embedded object");
+            var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash(Guid.NewGuid().ToString()));
+            var result = cmd.Execute().Result;
+            Assert.IsNotNull(result, "Result is null");
+            Assert.AreEqual(Status.Success, result.Status);
 
-                Action<CommentSegment, int> testSegment = null;
-                testSegment = new Action<CommentSegment,int>((segment, expectedCount) => {
+            q = new QueryComment(1);
+            comment = q.Execute();
+            Assert.IsNotNull(comment, "Comment is null 2");
+            Assert.AreEqual(1, comment.Vote, "vote value not set for logged in user 2");
 
-                    Assert.IsNotNull(segment);
-                    Assert.AreEqual(expectedCount, segment.TotalCount); 
-                    foreach (var child in segment.Comments)
-                    {
-                        Assert.IsNotNull(child, "Comment Null");
-                        Assert.AreEqual(_unitSubmissionID, c.SubmissionID, "Submission of Comment doesn't match tree");
-                        if (child.Children != null)
-                        {
-                            testSegment(child.Children, expectedCount);
-                        }
-                    }
-
-                    //Test individual segment and ensure it matches current segment
-                    var q2 = new QueryCommentSegment(_unitSubmissionID, segment.Comments.First().ParentID, null, new Voat.Data.SearchOptions() { Sort = SortAlgorithm.New }); //all children should have same parent
-                    var segment2 = q2.Execute();
-                    CompareSegments(segment, segment2);
-
-
-                });
-                testSegment(c.Children, _nestedCount);
-            }
         }
     }
 }

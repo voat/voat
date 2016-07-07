@@ -31,7 +31,7 @@ namespace Voat.Domain.Command
             return CommandResponse.Successful();
         }
 
-        protected override void UpdateCache()
+        protected override void UpdateCache(CommandResponse result)
         {
             //purge subscriptions from cache because they just changed
             CacheHandler.Instance.Remove(CachingKey.UserSubscriptions(UserName));

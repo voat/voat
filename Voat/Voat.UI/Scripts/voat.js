@@ -562,7 +562,7 @@ function replyToCommentNotification(commentId, submissionId) {
 }
 
 // post comment reply form through ajax
-function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid) {
+function postCommentAjax(senderButton, parentCommentID) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
 
@@ -575,19 +575,29 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
             url: $form.attr('action'),
             data: $form.serialize(),
             error: function (xhr, status, error) {
-                // submission failed, likely cause: user triggered anti-spam throttle
-                $form.find("#submitbutton").val("Submit reply");
+                // comment failed, likely cause: user triggered anti-spam throttle
+                $form.find("#submitbutton").val("Submit comment");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html("You are doing that too fast. Please wait 30 seconds before trying again.");
+                $form.find("#errorMessage").html(error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.");
                 $form.find("#errorMessage").toggle(true);
             },
             success: function (response) {
 
-                removereplyform(parentcommentid);
-                $(".id-" + parentcommentid).append(response);
-
-                //notify UI framework of DOM insertion async
-                window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentcommentid).last('div')); });
+                if (parentCommentID) {
+                    removereplyform(parentCommentID);
+                    $(".id-" + parentCommentID).append(response);
+                    //notify UI framework of DOM insertion async
+                    window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentCommentID).last('div')); });
+                } else {
+                    $(".sitetable.nestedlisting").prepend(response);
+                    // reset submit button
+                    $form.find("#submitbutton").val("Submit comment");
+                    $form.find("#submitbutton").prop('disabled', false);
+                    // reset textbox
+                    $form.find("#Content").val("");
+                    //notify UI framework of DOM insertion async
+                    window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
+                }
             }
         });
 
@@ -598,7 +608,7 @@ function postCommentReplyAjax(senderButton, messageId, userName, parentcommentid
 }
 
 // post comment reply form through ajax
-function postCommentAjax(senderButton, messageId, userName) {
+function OLD_postCommentAjax(senderButton, messageId, userName) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
 
@@ -1418,11 +1428,8 @@ function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, co
         currentPage++;
     }
 
-    var cachePrevention = 'xxxx'.replace(/[xy]/g, function (c) {
-        var rand = Math.random() * 16 | 0
-        return rand.toString(16);
-    });;
-    var bucketUrl = "/comments/" + submissionId + "/" + (parentId == null ? 'null' : parentId) + "/" + command + "/" + startingIndex + "/" + sort + "?nocache=" + cachePrevention;
+    
+    var bucketUrl = "/comments/" + submissionId + "/" + (parentId == null ? 'null' : parentId) + "/" + command + "/" + startingIndex + "/" + sort + "?nocache=" + cachePrevention();
     loadCommentsRequest2 = $.ajax({
         url: bucketUrl,
         success: function (data) {
@@ -1442,7 +1449,13 @@ function loadMoreComments2(eventSource, appendTarget, submissionId, parentId, co
         }
     });
 }
-
+function cachePrevention() {
+    var v = 'xxxx'.replace(/[xy]/g, function (c) {
+        var rand = Math.random() * 16 | 0
+        return rand.toString(16);
+    });
+    return v;
+}
 // a function to fetch 1 comment bucket for a submission and append to the bottom of the page
 var loadCommentsRequest;
 function loadMoreComments(obj, submissionId) {
@@ -1679,6 +1692,23 @@ function previewStylesheet(obj, subverseName) {
             var sheetToAdd = document.createElement('style');
             sheetToAdd.innerHTML = $("#Stylesheet").val();
             document.body.appendChild(sheetToAdd);
+        }
+    });
+}
+// a function to preview stylesheet called from subverse stylesheet editor
+function getCommentTree(submissionID, sort) {
+
+    $("#comment-sort-label").text("Loading...");
+
+    $.ajax({
+        type: 'GET',
+        url: '/comments/' + submissionID + '/tree/' + sort + "?nocache=" + cachePrevention(),
+        dataType: 'html',
+        error: function () {
+
+        },
+        success: function (data) {
+            $(".commentarea").html(data);
         }
     });
 }

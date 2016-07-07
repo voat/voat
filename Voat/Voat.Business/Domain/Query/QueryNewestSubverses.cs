@@ -8,8 +8,6 @@ namespace Voat.Domain.Query
 {
     public class QueryNewestSubverses : CachedQuery<IEnumerable<SubverseInformation>>
     {
-        private string _phrase;
-
         public QueryNewestSubverses() : this(new CachePolicy(TimeSpan.FromHours(1)))
         {
         }

@@ -28,6 +28,7 @@ using Voat.Data.Models;
 using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Domain.Query;
 using Voat.Models;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -88,17 +89,17 @@ namespace Voat.Controllers
             return vCache;
         }
 
-        // GET: comments for a given submission
-        public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
+        // GET: Renders Primary Submission Comments Page
+        public async Task<ActionResult> Comments(int? submissionID, string subverseName, int? commentID, string sort, int? contextCount)
         {
             #region Validation
 
-            if (id == null)
+            if (submissionID == null)
             {
                 return View("~/Views/Errors/Error.cshtml");
             }
 
-            var submission = _db.Submissions.Find(id.Value);
+            var submission = _db.Submissions.Find(submissionID.Value);
 
             if (submission == null)
             {
@@ -106,12 +107,12 @@ namespace Voat.Controllers
             }
 
             // make sure that the combination of selected subverse and submission subverse are linked
-            if (!submission.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase))
+            if (!submission.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            var subverse = DataCache.Subverse.Retrieve(subversetoshow);
+            var subverse = DataCache.Subverse.Retrieve(subverseName);
             //var subverse = _db.Subverse.Find(subversetoshow);
 
             if (subverse == null)
@@ -127,39 +128,42 @@ namespace Voat.Controllers
 
             #endregion
 
-            ViewBag.SelectedSubverse = subverse.Name;
-            ViewBag.SubverseAnonymized = subverse.IsAnonymized;
-
-            //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserCommentVotesBySubmission(id.Value);
-            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(id.Value);
-            ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
-
-            if (startingcommentid != null)
+            if (commentID != null)
             {
-                ViewBag.StartingCommentId = startingcommentid;
+                ViewBag.StartingCommentId = commentID;
+                ViewBag.CommentToHighLight = commentID;
             }
 
-            if (commentToHighLight != null)
-            {
-                ViewBag.CommentToHighLight = commentToHighLight;
-            }
+            //if (commentToHighLight != null)
+            //{
+            //    ViewBag.CommentToHighLight = commentToHighLight;
+            //}
+
+            #region Set ViewBag
+            ViewBag.Subverse = subverse;
+            ViewBag.Submission = submission;
+
+            ////Temp cache user votes for this thread
+            //ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
+            //ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
+            //ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
 
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
 
+            #endregion
+
+            #region Track Views 
+
             // experimental: register a new session for this subverse
             string clientIpAddress = UserGateway.UserIpAddress(Request);
-
             if (clientIpAddress != String.Empty)
             {
                 // generate salted hash of client IP address
                 string ipHash = IpHash.CreateHash(clientIpAddress);
 
-                var currentSubverse = (string)RouteData.Values["subversetoshow"];
-
                 // register a new session for this subverse
-                SessionHelper.Add(currentSubverse, ipHash);
+                SessionHelper.Add(subverse.Name, ipHash);
 
                 // register a new view for this thread
                 // check if this hash is present for this submission id in viewstatistics table
@@ -171,56 +175,65 @@ namespace Voat.Controllers
                     // this is a new view, register it for this submission
                     var view = new ViewStatistic { SubmissionID = submission.ID, ViewerID = ipHash };
                     _db.ViewStatistics.Add(view);
-
                     submission.Views++;
-
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                 }
             }
-
-            var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.ID, null, null);
-
-            var model = new CommentBucketViewModel()
+            
+            #endregion
+            CommentSegment model = null;
+            if (commentID != null)
             {
-                StartingIndex = 0,
-                EndingIndex = 5,
-                Subverse = subverse,
-                Submission = submission,
-                CommentTree = commentTree,
-                //DisplayTree = displayTree,
-                ParentID = null,
-                Sort = (CommentSort)Enum.Parse(typeof(CommentSort), SortingMode, true)
-            };
-
-            IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable().Where(x => x.ParentID == null);
-            model.TotalInDisplayBranch = displayTree.Count();
-
-            if (model.Sort == CommentSort.Top)
-            {
-                displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount).Take(model.EndingIndex);
+                ViewBag.CommentToHighLight = commentID.Value;
+                model = await GetCommentContext(submission.ID, commentID.Value, contextCount, sort);
             }
             else
             {
-                displayTree = displayTree.OrderByDescending(x => x.CreationDate).Take(model.EndingIndex);
+                model = await GetCommentSegment(submission.ID, null, 0, sort);
             }
-            model.DisplayTree = displayTree;
-
 
             return View("~/Views/Home/Comments.cshtml", model);
+
         }
 
+        private async Task<CommentSegment> GetCommentSegment(int submissionID, int? parentID, int startingIndex, string sort)
+        {
+            //attempt to parse sort
+            var sortAlg = SortAlgorithm.Top;
+            if (!Enum.TryParse(sort, true, out sortAlg))
+            {
+                sortAlg = SortAlgorithm.Top;
+            }
+
+            var q = new QueryCommentSegment(submissionID, parentID, startingIndex, new SearchOptions() { Sort = sortAlg });
+            var results = await q.ExecuteAsync();
+            return results;
+        }
+        private async Task<CommentSegment> GetCommentContext(int submissionID, int commentID, int? contextCount, string sort)
+        {
+            //attempt to parse sort
+            var sortAlg = SortAlgorithm.Top;
+            if (!Enum.TryParse(sort, true, out sortAlg))
+            {
+                sortAlg = SortAlgorithm.Top;
+            }
+            var q = new QueryCommentContext(submissionID, commentID, contextCount, new SearchOptions() { Sort = sortAlg });
+            var results = await q.ExecuteAsync();
+            return results;
+        }
         // url: "/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + count + "/" + nestingLevel + "/" + sort + "/",
-        // GET: comments for a given submission
-        public ActionResult BucketOfComments(int submissionId, int? parentId, string command, int startingIndex, string sort)
+        // GET: Renders a Section of Comments within the already existing tree
+        //Leaving (string command) in for backwards compat with mobile html clients. this is no longer used
+        public async Task<ActionResult> CommentSegment(int submissionID, int? parentID, string command, int startingIndex, string sort)
         {
             #region Validation
 
-            if (submissionId <= 0)
+            if (submissionID <= 0)
             {
                 return View("~/Views/Errors/Error.cshtml");
             }
 
-            var submission = DataCache.Submission.Retrieve(submissionId);
+            var submission = DataCache.Submission.Retrieve(submissionID);
 
             if (submission == null)
             {
@@ -243,55 +256,73 @@ namespace Voat.Controllers
 
             #endregion
 
-            ViewBag.SelectedSubverse = subverse.Name;
-            ViewBag.SubverseAnonymized = subverse.IsAnonymized;
+            #region Set ViewBag
+            ViewBag.Subverse = subverse;
+            ViewBag.Submission = submission;
 
             //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserCommentVotesBySubmission(submissionId);
-            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submissionId);
+            ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
+            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
             ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
-
 
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
 
+            #endregion
 
+            var results = await GetCommentSegment(submissionID, parentID, startingIndex, sort);
+            return PartialView("~/Views/Shared/Comments/_CommentSegment.cshtml", results);
+        }
 
-            var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.ID, null, null);
-            var model = new CommentBucketViewModel()
+        // GET: Renders a New Comment Tree
+        public async Task<ActionResult> CommentTree(int submissionID, string sort)
+        {
+            #region Validation
+
+            if (submissionID <= 0)
             {
-                StartingIndex = startingIndex,
-                //NestingThreshold = nestingLevel,
-                Subverse = subverse,
-                Submission = submission,
-                CommentTree = commentTree,
-                ParentID = parentId,
-                Sort = (CommentSort)Enum.Parse(typeof(CommentSort), SortingMode, true)
-            };
-            model.CollapseSiblingThreshold = 5;
-
-            IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable();
-            displayTree = displayTree.Where(x => x.ParentID == parentId);
-            model.TotalInDisplayBranch = displayTree.Count();
-
-            //calculate offsets
-            model.EndingIndex = Math.Min(model.StartingIndex + model.CollapseSiblingThreshold, model.TotalInDisplayBranch);
-
-
-            if (model.Sort == CommentSort.Top)
-            {
-                displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount);
-            }
-            else
-            {
-                displayTree = displayTree.OrderByDescending(x => x.CreationDate);
+                return View("~/Views/Errors/Error.cshtml");
             }
 
-            displayTree = displayTree.Skip(model.StartingIndex).Take(model.Count);
+            var submission = DataCache.Submission.Retrieve(submissionID);
 
-            model.DisplayTree = displayTree;
+            if (submission == null)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
-            return PartialView("~/Views/Shared/Comments/_CommentBucket.cshtml", model);
+            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+            //var subverse = _db.Subverse.Find(subversetoshow);
+
+            if (subverse == null)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
+            {
+                ViewBag.Subverse = subverse.Name;
+                return View("~/Views/Errors/SubverseDisabled.cshtml");
+            }
+
+            #endregion
+
+            #region Set ViewBag
+            ViewBag.Subverse = subverse;
+            ViewBag.Submission = submission;
+
+            //Temp cache user votes for this thread
+            ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
+            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
+            ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
+
+            var SortingMode = (sort == null ? "top" : sort).ToLower();
+            ViewBag.SortingMode = SortingMode;
+
+            #endregion
+
+            var results = await GetCommentSegment(submissionID, null, 0, sort);
+            return PartialView("~/Views/Shared/Comments/_CommentTree.cshtml", results);
         }
 
         // GET: submitcomment
@@ -303,7 +334,7 @@ namespace Voat.Controllers
         // POST: submitcomment, adds a new root comment
         [HttpPost]
         [Authorize]
-        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
@@ -318,14 +349,9 @@ namespace Voat.Controllers
                     if (Request.IsAjaxRequest())
                     {
                         var comment = result.Response;
-                        //Short term hack as commands use different comment tree cache current in UI
-                        DataCache.CommentTree.AddCommentToTree(comment);
-
-                        var model = new CommentBucketViewModel(comment);
                         ViewBag.CommentId = comment.ID; //why?
                         ViewBag.rootComment = comment.ParentID == null; //why?
-                        return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", model);
-                        //return new HttpStatusCodeResult(HttpStatusCode.OK);
+                        return PartialView("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment);
                     }
                     if (Request.UrlReferrer != null)
                     {

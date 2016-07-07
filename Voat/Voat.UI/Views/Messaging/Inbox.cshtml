@@ -48,7 +48,16 @@
                         <div id="messageContainer-@message.ID" class="entry comment">
                             <div class="panel panel-default">
                                 <div class="panel panel-heading">
-                                    Sender: <a href="/u/@message.Sender">@message.Sender</a> | Sent: @Age.ToRelative(message.CreationDate) ago on @message.CreationDate
+
+                                    @{
+                                        var sender =  message.Sender;
+                                        var senderHref = "/u/" + message.Sender;
+                                        if (message.Sender.ToLower().StartsWith("v/"))
+                                        {
+                                            senderHref = "#";
+                                        }
+                                    }
+                                    Sender: <a href="@senderHref">@sender</a> | Sent: @Age.ToRelative(message.CreationDate) ago on @message.CreationDate
                                 </div>
                                 <div class="panel panel-heading-messagetitle">
                                     <b>@message.Subject</b>

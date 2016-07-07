@@ -44,52 +44,49 @@ namespace Voat.Controllers
         private int subverseCacheTimeInSeconds = 240;
 
         // GET: sidebar for selected subverse
-        public ActionResult SidebarForSelectedSubverseComments(string selectedSubverse, bool showingComments,
-            string name, DateTime? date, DateTime? lastEditDate, int? submissionId, int? likes, int? dislikes,
-            bool anonymized, int? views, bool isDeleted)
+        public ActionResult SidebarForSelectedSubverseComments(Submission submission)
         {
-
             //Can't cache as view is using model to query
-            var subverse = _db.Subverses.Find(selectedSubverse);
+            var subverse = _db.Subverses.Find(submission.Subverse);
 
             //don't return a sidebar since subverse doesn't exist or is a system subverse
             if (subverse == null) return new EmptyResult();
 
             // get subscriber count for selected subverse
-            var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
+            var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
             ViewBag.SubscriberCount = subscriberCount;
-            ViewBag.SelectedSubverse = selectedSubverse;
+            ViewBag.SelectedSubverse = submission.Subverse;
 
-            if (!showingComments) return new EmptyResult();
+            //if (!showingComments) return new EmptyResult();
 
-            if (anonymized || subverse.IsAnonymized)
+            if (submission.IsAnonymized || subverse.IsAnonymized)
             {
-                ViewBag.name = submissionId.ToString();
+                ViewBag.name = submission.ID.ToString();
                 ViewBag.anonymized = true;
             }
             else
             {
-                if (isDeleted)
+                if (submission.IsDeleted)
                 {
                     ViewBag.name = "deleted";
                 }
                 else
                 {
-                    ViewBag.name = name;
+                    ViewBag.name = submission.UserName;
                 }
             }
 
-            ViewBag.date = date;
-            ViewBag.lastEditDate = lastEditDate;
-            ViewBag.likes = likes;
-            ViewBag.dislikes = dislikes;
+            ViewBag.date = submission.CreationDate;
+            ViewBag.lastEditDate = submission.LastEditDate;
+            ViewBag.likes = submission.UpCount;
+            ViewBag.dislikes = submission.DownCount;
             ViewBag.anonymized_mode = subverse.IsAnonymized;
-            ViewBag.views = views;
+            ViewBag.views = submission.Views;
 
             try
             {
-                ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(selectedSubverse);
+                ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(submission.Subverse);
             }
             catch (Exception)
             {
@@ -350,10 +347,11 @@ namespace Voat.Controllers
                     }
 
                     await _db.SaveChangesAsync();
-                    DataCache.Subverse.Remove(existingSubverse.Name);
 
                     //purge new minified CSS
                     CacheHandler.Instance.Remove(CachingKey.SubverseStylesheet(existingSubverse.Name));
+                    //purge subvere
+                    CacheHandler.Instance.Remove(CachingKey.Subverse(existingSubverse.Name));
 
                     // go back to this subverse
                     return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.Name });
@@ -437,9 +435,9 @@ namespace Voat.Controllers
                     }
 
                     await _db.SaveChangesAsync();
-                    DataCache.Subverse.Remove(existingSubverse.Name);
                     //purge new minified CSS
                     CacheHandler.Instance.Remove(CachingKey.SubverseStylesheet(existingSubverse.Name));
+                    CacheHandler.Instance.Remove(CachingKey.Subverse(existingSubverse.Name));
 
                     // go back to this subverse
                     return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.Name });
@@ -1159,7 +1157,7 @@ namespace Voat.Controllers
                 Sender = $"v/{subverseToAddModTo}",
                 Subject = $"Moderator invitation for v/{userInvitation.Subverse} accepted",
                 Recipient = userInvitation.CreatedBy,
-                Message = $"User {User.Identity.Name} has accepted your invitation to moderate subverse /v/{userInvitation.Subverse}."
+                Message = $"User {User.Identity.Name} has accepted your invitation to moderate subverse v/{userInvitation.Subverse}."
             };
             var cmd = new SendMessageCommand(message);
             await cmd.Execute();

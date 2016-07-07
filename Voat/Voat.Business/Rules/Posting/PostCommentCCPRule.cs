@@ -62,10 +62,6 @@ namespace Voat.Rules.Posting
                         return CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", Settings.DailyCommentPostingQuota.ToString()));
                     }
                 }
-
-
-
-
                 //if (userCcp <= 0)
                 //{
                 //    var userMembershipTimeSpam = Repository.CurrentDate - context.UserData.Information.RegistrationDate;
