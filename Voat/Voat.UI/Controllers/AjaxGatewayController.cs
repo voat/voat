@@ -116,6 +116,7 @@ namespace Voat.Controllers
 
             if (title != null)
             {
+                title = Formatting.StripUnicode(title);
                 var resultList = new List<string>
                 {
                     title
