@@ -71,7 +71,12 @@ namespace Voat.Domain.Models
         public bool IsDistinguished { get; set; }
 
         /// <summary>
-        /// Marker for submitter distinguished comment.
+        /// Marker for if current account owns this comment.
+        /// </summary>
+        public bool IsOwner { get; set; }
+
+        /// <summary>
+        /// Marker for if comment belongs to OP.
         /// </summary>
         public bool IsSubmitter { get; set; }
 

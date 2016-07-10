@@ -90,7 +90,7 @@ namespace Voat.Controllers
         }
 
         // GET: Renders Primary Submission Comments Page
-        public async Task<ActionResult> Comments(int? submissionID, string subverseName, int? commentID, string sort, int? contextCount)
+        public async Task<ActionResult> Comments(int? submissionID, string subverseName, int? commentID, string sort, int? context)
         {
             #region Validation
 
@@ -134,19 +134,11 @@ namespace Voat.Controllers
                 ViewBag.CommentToHighLight = commentID;
             }
 
-            //if (commentToHighLight != null)
-            //{
-            //    ViewBag.CommentToHighLight = commentToHighLight;
-            //}
-
             #region Set ViewBag
             ViewBag.Subverse = subverse;
             ViewBag.Submission = submission;
-
-            ////Temp cache user votes for this thread
-            //ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
-            //ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
-            //ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
+            //This is a required view bag property in _Layout.cshtml
+            ViewBag.SelectedSubverse = subverse.Name;
 
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
@@ -185,7 +177,7 @@ namespace Voat.Controllers
             if (commentID != null)
             {
                 ViewBag.CommentToHighLight = commentID.Value;
-                model = await GetCommentContext(submission.ID, commentID.Value, contextCount, sort);
+                model = await GetCommentContext(submission.ID, commentID.Value, context, sort);
             }
             else
             {
@@ -199,25 +191,25 @@ namespace Voat.Controllers
         private async Task<CommentSegment> GetCommentSegment(int submissionID, int? parentID, int startingIndex, string sort)
         {
             //attempt to parse sort
-            var sortAlg = SortAlgorithm.Top;
+            var sortAlg = CommentSortAlgorithm.Top;
             if (!Enum.TryParse(sort, true, out sortAlg))
             {
-                sortAlg = SortAlgorithm.Top;
+                sortAlg = CommentSortAlgorithm.Top;
             }
 
-            var q = new QueryCommentSegment(submissionID, parentID, startingIndex, new SearchOptions() { Sort = sortAlg });
+            var q = new QueryCommentSegment(submissionID, parentID, startingIndex, sortAlg);
             var results = await q.ExecuteAsync();
             return results;
         }
         private async Task<CommentSegment> GetCommentContext(int submissionID, int commentID, int? contextCount, string sort)
         {
             //attempt to parse sort
-            var sortAlg = SortAlgorithm.Top;
+            var sortAlg = CommentSortAlgorithm.Top;
             if (!Enum.TryParse(sort, true, out sortAlg))
             {
-                sortAlg = SortAlgorithm.Top;
+                sortAlg = CommentSortAlgorithm.Top;
             }
-            var q = new QueryCommentContext(submissionID, commentID, contextCount, new SearchOptions() { Sort = sortAlg });
+            var q = new QueryCommentContext(submissionID, commentID, contextCount, sortAlg);
             var results = await q.ExecuteAsync();
             return results;
         }
@@ -335,7 +327,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
 
@@ -349,6 +341,7 @@ namespace Voat.Controllers
                     if (Request.IsAjaxRequest())
                     {
                         var comment = result.Response;
+                        comment.IsOwner = true;
                         ViewBag.CommentId = comment.ID; //why?
                         ViewBag.rootComment = comment.ParentID == null; //why?
                         return PartialView("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment);
@@ -502,121 +495,175 @@ namespace Voat.Controllers
         // POST: editcomment
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> EditComment([Bind(Include = "ID, Content")] Data.Models.Comment commentModel)
         {
             if (ModelState.IsValid)
             {
-                var existingComment = _db.Comments.Find(commentModel.ID);
+                var cmd = new EditCommentCommand(commentModel.ID, commentModel.Content);
+                var result = await cmd.Execute();
 
-                if (existingComment != null)
+                if (result.Success)
                 {
-                    if (existingComment.UserName.Trim() == User.Identity.Name && !existingComment.IsDeleted)
-                    {
-
-                        bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(existingComment.Submission.Subverse, commentModel.Content);
-                        if (containsBannedDomain)
-                        {
-                            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
-                        }
-
-                        existingComment.LastEditDate = Repository.CurrentDate;
-                        existingComment.Content = commentModel.Content;
-
-                        if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
-                        {
-                            existingComment.Content = ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPreSave, existingComment);
-                        }
-
-                        //save fully formatted content 
-                        var formattedComment = Voat.Utilities.Formatting.FormatMessage(existingComment.Content);
-                        existingComment.FormattedContent = formattedComment;
-
-                        await _db.SaveChangesAsync();
-
-                        if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-                        {
-                            ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPostSave, existingComment);
-                        }
-
-                        //return the formatted comment so that it can replace the existing html comment which just got modified
-                        return Json(new { response = formattedComment });
-                    }
-                    return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+                    return Json(new { response = result.Response.FormattedContent });
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
                 }
             }
-
-            if (Request.IsAjaxRequest())
+            else
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return Json("Unauthorized edit or comment not found - comment ID was.", JsonRequestBehavior.AllowGet);
-        }
+                //    var existingComment = _db.Comments.Find(commentModel.ID);
 
+                //    if (existingComment != null)
+                //    {
+                //        if (existingComment.UserName.Trim() == User.Identity.Name && !existingComment.IsDeleted)
+                //        {
+
+                //            bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(existingComment.Submission.Subverse, commentModel.Content);
+                //            if (containsBannedDomain)
+                //            {
+                //                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
+                //            }
+
+                //            existingComment.LastEditDate = Repository.CurrentDate;
+                //            existingComment.Content = commentModel.Content;
+
+                //            if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                //            {
+                //                existingComment.Content = ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPreSave, existingComment);
+                //            }
+
+                //            //save fully formatted content 
+                //            var formattedComment = Voat.Utilities.Formatting.FormatMessage(existingComment.Content);
+                //            existingComment.FormattedContent = formattedComment;
+
+                //            await _db.SaveChangesAsync();
+
+                //            //HACK: Update comment in cache - to be replaced with EditCommentCommand in future
+                //            string key = CachingKey.CommentTree(existingComment.SubmissionID.Value);
+                //            if (CacheHandler.Instance.Exists(key))
+                //            {
+                //                CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, existingComment.ID, x => {
+                //                    x.Content = existingComment.Content;
+                //                    x.FormattedContent = existingComment.FormattedContent;
+                //                    return x;
+                //                });
+                //            }
+
+                //            if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+                //            {
+                //                ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPostSave, existingComment);
+                //            }
+
+                //            //return the formatted comment so that it can replace the existing html comment which just got modified
+                //            return Json(new { response = formattedComment });
+                //        }
+                //        return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+                //    }
+                //}
+
+                //if (Request.IsAjaxRequest())
+                //{
+                //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //}
+
+                //return Json("Unauthorized edit or comment not found - comment ID was.", JsonRequestBehavior.AllowGet);
+            
+        }
         // POST: deletecomment
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteComment(int commentId)
         {
-            var commentToDelete = _db.Comments.Find(commentId);
-
-            if (commentToDelete != null && !commentToDelete.IsDeleted)
+            if (ModelState.IsValid)
             {
-                var commentSubverse = commentToDelete.Submission.Subverse;
+                var cmd = new DeleteCommentCommand(commentId, "This feature is not yet implemented");
+                var result = await cmd.Execute();
 
-                // delete comment if the comment author is currently logged in user
-                if (commentToDelete.UserName == User.Identity.Name)
+                if (result.Success)
                 {
-                    commentToDelete.IsDeleted = true;
-                    commentToDelete.Content = "deleted by author at " + Repository.CurrentDate;
-                    await _db.SaveChangesAsync();
+                    if (Request.IsAjaxRequest())
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.OK);
+                    }
+                    var url = Request.UrlReferrer.AbsolutePath;
+                    return Redirect(url);
                 }
-
-                // delete comment if delete request is issued by subverse moderator
-                else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
+                else
                 {
-
-                    // notify comment author that his comment has been deleted by a moderator
-                    var message = new Domain.Models.SendMessage()
-                    {
-                        Sender = $"v/{commentSubverse}",
-                        Recipient = commentToDelete.UserName,
-                        Subject = "Your comment has been deleted by a moderator",
-                        Message =  "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
-                                    "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
-                                    "Original comment content was: " + Environment.NewLine +
-                                    "---" + Environment.NewLine +
-                                    commentToDelete.Content
-                    };
-                    var cmd = new SendMessageCommand(message);
-                    await cmd.Execute();
-
-                    commentToDelete.IsDeleted = true;
-
-                    // move the comment to removal log
-                    var removalLog = new CommentRemovalLog
-                    {
-                        CommentID = commentToDelete.ID,
-                        Moderator = User.Identity.Name,
-                        Reason = "This feature is not yet implemented",
-                        CreationDate = Repository.CurrentDate
-                    };
-
-                    _db.CommentRemovalLogs.Add(removalLog);
-
-                    commentToDelete.Content = "deleted by a moderator at " + Repository.CurrentDate;
-                    await _db.SaveChangesAsync();
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
                 }
             }
-            if (Request.IsAjaxRequest())
+            else
             {
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var url = Request.UrlReferrer.AbsolutePath;
-            return Redirect(url);
+
+
+            //var commentToDelete = _db.Comments.Find(commentId);
+
+            //if (commentToDelete != null && !commentToDelete.IsDeleted)
+            //{
+            //    var commentSubverse = commentToDelete.Submission.Subverse;
+
+            //    // delete comment if the comment author is currently logged in user
+            //    if (commentToDelete.UserName == User.Identity.Name)
+            //    {
+            //        commentToDelete.IsDeleted = true;
+            //        commentToDelete.Content = "deleted by author at " + Repository.CurrentDate;
+            //        await _db.SaveChangesAsync();
+            //    }
+
+            //    // delete comment if delete request is issued by subverse moderator
+            //    else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
+            //    {
+
+            //        // notify comment author that his comment has been deleted by a moderator
+            //        var message = new Domain.Models.SendMessage()
+            //        {
+            //            Sender = $"v/{commentSubverse}",
+            //            Recipient = commentToDelete.UserName,
+            //            Subject = "Your comment has been deleted by a moderator",
+            //            Message =  "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
+            //                        "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
+            //                        "Original comment content was: " + Environment.NewLine +
+            //                        "---" + Environment.NewLine +
+            //                        commentToDelete.Content
+            //        };
+            //        var cmd = new SendMessageCommand(message);
+            //        await cmd.Execute();
+
+            //        commentToDelete.IsDeleted = true;
+
+            //        // move the comment to removal log
+            //        var removalLog = new CommentRemovalLog
+            //        {
+            //            CommentID = commentToDelete.ID,
+            //            Moderator = User.Identity.Name,
+            //            Reason = "This feature is not yet implemented",
+            //            CreationDate = Repository.CurrentDate
+            //        };
+
+            //        _db.CommentRemovalLogs.Add(removalLog);
+
+            //        commentToDelete.Content = "deleted by a moderator at " + Repository.CurrentDate;
+            //        await _db.SaveChangesAsync();
+            //    }
+
+            //}
+            //if (Request.IsAjaxRequest())
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.OK);
+            //}
+            //var url = Request.UrlReferrer.AbsolutePath;
+            //return Redirect(url);
         }
 
         // POST: comments/distinguish/{commentId}

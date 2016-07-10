@@ -14,8 +14,9 @@
 
 @* 1 user self submission with details without comments *@
 @{
-    var commentCount = Model.Comments.Count(c => !c.IsDeleted);
-    
+    //var commentCount = Model.Comments.Count(c => !c.IsDeleted);
+    var commentCount = CommentCounter.CommentCount(Model.ID);
+
     string postAge = Age.ToRelative(Model.CreationDate);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
     int submissionScore = (int)(Model.UpCount - Model.DownCount);

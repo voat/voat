@@ -24,10 +24,11 @@
         {
             ahrefTarget = "_blank";
         }
-    }  
-    
-    var commentCount = Model.Comments.Count(c => !c.IsDeleted);
-        
+    }
+
+    //var commentCount = Model.Comments.Count(c => !c.IsDeleted);
+    var commentCount = CommentCounter.CommentCount(Model.ID);
+
     string postAge = Age.ToRelative(Model.CreationDate);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
 

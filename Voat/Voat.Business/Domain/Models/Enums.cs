@@ -106,7 +106,33 @@ namespace Voat.Domain.Models
         /// </summary>
         AJAX = 2
     }
+    public enum CommentSortAlgorithm
+    {
+        /// <summary>
+        /// Orders results by creation date
+        /// </summary>
+        New, //order by date
 
+        /// <summary>
+        /// Orders results by creation date ascending
+        /// </summary>
+        Old, //order by date
+
+        /// <summary>
+        /// Orders results by sum of vote count
+        /// </summary>
+        Top, //order by total upvotes
+
+        /// <summary>
+        /// Orders results by sum of vote count reversed
+        /// </summary>
+        Bottom, //order by most downvotes
+
+        /// <summary>
+        /// Orders results by intensity of up/down votes
+        /// </summary>
+        Intensity
+    }
     /// <summary>
     /// Specifies the sort algorithm to apply to result set.
     /// </summary>

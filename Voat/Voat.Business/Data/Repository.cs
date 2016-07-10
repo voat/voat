@@ -619,10 +619,17 @@ namespace Voat.Data
 
         public Models.Submission GetSubmission(int submissionID)
         {
-
             var record = Selectors.SecureSubmission(GetSubmissionUnprotected(submissionID));
             return record;
         }
+        public string GetSubmissionOwnerName(int submissionID)
+        {
+            var result = (from x in _db.Submissions
+                          where x.ID == submissionID
+                          select x.UserName).FirstOrDefault();
+            return result;
+        }
+
         public Models.Submission FindSubverseLinkSubmission(string subverse, string url, TimeSpan cutOffTimeSpan)
         {
             var cutOffDate = CurrentDate.Subtract(cutOffTimeSpan);
@@ -642,14 +649,12 @@ namespace Voat.Data
         private Models.Submission GetSubmissionUnprotected(int submissionID)
         {
 
-            var query = (from x in _db.Submissions
+            var query = (from x in _db.Submissions.AsNoTracking()
                          where x.ID == submissionID
                          select x);
 
             var record = query.FirstOrDefault();
-
             return record;
-
         }
         public IEnumerable<Models.Submission> GetUserSubmissions(string subverse, string userName, SearchOptions options)
         {
@@ -878,7 +883,7 @@ namespace Voat.Data
             //    throw new VoatValidationException("Either a Url or Content must be provided.");
             //}
 
-            var submission = GetSubmissionUnprotected(submissionID);
+            var submission = _db.Submissions.Where(x => x.ID == submissionID).FirstOrDefault();
 
             if (submission == null)
             {
@@ -1079,7 +1084,7 @@ namespace Voat.Data
                 depth = null;
             }
             var commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
-            var results = commentTree.Select(Selectors.SecureCommentTree).ToList();
+            var results = commentTree.ToList();
             return results;
         }
 
@@ -1090,9 +1095,10 @@ namespace Voat.Data
             return record;
         }
         
-        [Authorize]
-        public Models.Comment DeleteComment(int commentID, string reason = null)
+        public async Task<CommandResponse<Data.Models.Comment>> DeleteComment(int commentID, string reason = null)
         {
+
+            DemandAuthentication();
 
             var comment = _db.Comments.Find(commentID);
 
@@ -1107,7 +1113,7 @@ namespace Voat.Data
                     {
                         comment.IsDeleted = true;
                         comment.Content = "Deleted by author at " + Repository.CurrentDate;
-                        _db.SaveChanges();
+                        await _db.SaveChangesAsync();
                     }
 
                     // delete comment if delete request is issued by subverse moderator
@@ -1135,7 +1141,7 @@ namespace Voat.Data
                                             comment.Content
                             };
                             var cmd = new SendMessageCommand(message);
-                            cmd.Execute();
+                            await cmd.Execute();
 
                             comment.IsDeleted = true;
 
@@ -1151,7 +1157,7 @@ namespace Voat.Data
                             _db.CommentRemovalLogs.Add(removalLog);
 
                             comment.Content = "Deleted by a moderator at " + Repository.CurrentDate;
-                            _db.SaveChanges();
+                            await _db.SaveChangesAsync();
                         }
                         else
                         {
@@ -1162,55 +1168,62 @@ namespace Voat.Data
                     }
                 }
             }
-            return Selectors.SecureComment(comment);
+            return CommandResponse.Successful(Selectors.SecureComment(comment));
         }
 
         [Authorize]
-        public Models.Comment EditComment(int commentID, string comment)
+        public async Task<CommandResponse<Data.Models.Comment>> EditComment(int commentID, string content)
         {
-            var current = _db.Comments.Find(commentID);
+            DemandAuthentication();
 
-            if (current != null)
+            var comment = _db.Comments.Find(commentID);
+
+            if (comment != null)
             {
-                if (current.IsDeleted)
+                if (comment.UserName != User.Identity.Name)
                 {
-                    throw new VoatValidationException("Deleted comments cannot be edited");
+                    return CommandResponse.Denied<Data.Models.Comment>(null, "User doesn't have permissions to perform requested action");
                 }
 
-                if (current.UserName.Trim() == User.Identity.Name)
+                //evaluate rule
+                VoatRuleContext context = new VoatRuleContext();
+                //set any state we have so context doesn't have to retrieve
+                context.SubmissionID = comment.SubmissionID;
+                context.PropertyBag.CommentContent = content;
+                context.PropertyBag.Comment = comment;
+
+                var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.EditComment);
+
+                if (outcome.IsAllowed)
                 {
-
-                    current.LastEditDate = CurrentDate;
-
-                    var escapedCommentContent = WebUtility.HtmlEncode(comment);
-                    current.Content = escapedCommentContent;
+                    comment.LastEditDate = CurrentDate;
+                    comment.Content = content;
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                     {
-                        current.Content = ContentProcessor.Instance.Process(current.Content, ProcessingStage.InboundPreSave, current);
+                        comment.Content = ContentProcessor.Instance.Process(comment.Content, ProcessingStage.InboundPreSave, comment);
                     }
 
-                    _db.SaveChanges();
+                    var formattedComment = Voat.Utilities.Formatting.FormatMessage(comment.Content);
+                    comment.FormattedContent = formattedComment;
+
+                    await _db.SaveChangesAsync();
 
                     if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
                     {
-                        ContentProcessor.Instance.Process(current.Content, ProcessingStage.InboundPostSave, current);
+                        ContentProcessor.Instance.Process(comment.Content, ProcessingStage.InboundPostSave, comment);
                     }
-
                 }
-                else {
-                    var ex = new VoatSecurityException("User doesn't have permissions to perform requested action");
-                    ex.Data["UserName"] = User.Identity.Name;
-                    ex.Data["CommentID"] = commentID;
-                    throw ex;
+                else
+                {
+                    return MapRuleOutCome<Data.Models.Comment>(outcome, null);
                 }
             }
             else {
                 throw new VoatNotFoundException("Can not find comment with ID {0}", commentID);
             }
 
-            return Selectors.SecureComment(current);
-
+            return CommandResponse.Successful(Selectors.SecureComment(comment));
         }
 
         public async Task<CommandResponse<Domain.Models.Comment>> PostCommentReply(int parentCommentID, string comment)

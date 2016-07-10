@@ -296,7 +296,7 @@ namespace Voat.Controllers
         [System.Web.Mvc.Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Compose([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
         {
             if (!ModelState.IsValid)
@@ -335,7 +335,7 @@ namespace Voat.Controllers
         [System.Web.Mvc.Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SendPrivateMessage([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
         {
             if (!ModelState.IsValid)
@@ -365,7 +365,7 @@ namespace Voat.Controllers
 
         [System.Web.Mvc.Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessage(int privateMessageId)
         {
@@ -389,7 +389,7 @@ namespace Voat.Controllers
 
         [System.Web.Mvc.Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessageFromSent(int privateMessageId)
         {

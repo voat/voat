@@ -18,7 +18,7 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query")]
         [TestCategory("Submission")]
         [TestCategory("Query.Subverse")]
-        public void Disabled_Sub_Test()
+        public void QueryDisabledSubverse()
         {
             var q = new QuerySubverseInformation("Disabled");
             var r = q.ExecuteAsync().Result;
@@ -28,7 +28,8 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query")]
         [TestCategory("Submission")]
         [TestCategory("Query.Subverse")]
-        public void Anon_Sub_Test()
+        [TestCategory("Anon")]
+        public void QuerySubverse_Anon()
         {
             var q = new QuerySubverseInformation("anon");
             var r = q.ExecuteAsync().Result;

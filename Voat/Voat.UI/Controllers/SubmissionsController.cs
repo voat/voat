@@ -36,7 +36,7 @@ namespace Voat.Controllers
         // POST: apply a link flair to given submission
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult ApplyLinkFlair(int? submissionID, int? flairId)
         {
             if (submissionID == null || flairId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -65,7 +65,7 @@ namespace Voat.Controllers
         // POST: clear link flair from a given submission
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult ClearLinkFlair(int? submissionID)
         {
             if (submissionID == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -86,7 +86,7 @@ namespace Voat.Controllers
         // POST: toggle sticky status of a submission
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult ToggleSticky(int submissionID)
         {
             // get model for selected submission
@@ -154,7 +154,7 @@ namespace Voat.Controllers
         // POST: editsubmission
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult EditSubmission(EditSubmission model)
         {
             var existingSubmission = _db.Submissions.Find(model.SubmissionId);
@@ -196,7 +196,7 @@ namespace Voat.Controllers
         // POST: deletesubmission
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteSubmission(int submissionId)
         {
             var submissionToDelete = _db.Submissions.Find(submissionId);

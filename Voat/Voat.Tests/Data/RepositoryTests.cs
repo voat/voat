@@ -163,13 +163,17 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository")]
+        [TestCategory("Anon")]
         public void GetSubmissionsFilterAnonymous()
         {
             using (var db = new Voat.Data.Repository())
             {
                 var anon_sub = db.GetSubmissions("anon", SearchOptions.Default);
-                Assert.AreEqual(1, anon_sub.Count());
-                Assert.AreEqual("First Anon Post", anon_sub.First().Title);
+                var first = anon_sub.OrderBy(x => x.CreationDate).First();
+                Assert.IsNotNull(first, "no anon submissions found");
+                Assert.AreEqual("First Anon Post", first.Title);
+                Assert.AreEqual(first.UserName, first.ID.ToString());
+
             }
         }
 

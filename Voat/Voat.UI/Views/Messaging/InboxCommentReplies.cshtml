@@ -76,10 +76,8 @@
                                 @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
                                 Voat.Domain.DomainMaps.Map(comment, comment.Submission.Subverse, true),
                                     new ViewDataDictionary {
-                                        { "CommentId", comment.ID },
-                                        { "CCP", Karma.CommentKarma(User.Identity.Name) },
                                         { "parentIsHidden", false },
-                                        { "SortingMode", "new" },
+                                        { "SortOrder", Voat.Domain.Models.CommentSortAlgorithm.New },
                                         { "ShowContextLink", true } }
                                     )
                             </div>

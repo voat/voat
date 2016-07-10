@@ -24,13 +24,14 @@ namespace Voat.Tests.QueryTests
             _unitSubmissionID = VoatDataInitializer.BuildCommentTree("unit", "Build Comment Tree", _rootCount, _nestedCount, _recurseCount);
         }
         [TestMethod]
+        [TestCategory("Query"), TestCategory("Query.Comment")]
         public void GetCommentSegmentWithContext()
         {
 
             var commentID = 22;
             using (var db = new voatEntities())
             {
-                var nestedcomment = db.Comments.Where(x => x.Content.Contains("Path 1:1:1:1:1")).FirstOrDefault();
+                var nestedcomment = db.Comments.Where(x => x.SubmissionID == _unitSubmissionID && x.Content.Contains("Path 1:1:1:1:1")).FirstOrDefault();
                 if (nestedcomment == null)
                 {
                     Assert.Fail("Can not find expected comment in database");
@@ -39,7 +40,7 @@ namespace Voat.Tests.QueryTests
             }
 
             TestHelper.SetPrincipal("TestUser1");
-            var q = new QueryCommentContext(_unitSubmissionID, commentID, 0, new Voat.Data.SearchOptions() { Sort = SortAlgorithm.New });
+            var q = new QueryCommentContext(_unitSubmissionID, commentID, 0, CommentSortAlgorithm.New);
             var r = q.Execute();
             Assert.IsNotNull(r, "Query returned null");
 
@@ -57,10 +58,11 @@ namespace Voat.Tests.QueryTests
         }
 
         [TestMethod]
+        [TestCategory("Query"), TestCategory("Query.Comment")]
         public async Task Test_CommentTreeLoading()
         {
             TestHelper.SetPrincipal("TestUser1");
-            var q = new QueryCommentSegment(_unitSubmissionID, null, null, new Voat.Data.SearchOptions() { Sort = SortAlgorithm.New });
+            var q = new QueryCommentSegment(_unitSubmissionID, null, null, CommentSortAlgorithm.New);
             var r = q.Execute();
 
             Assert.IsNotNull(r, "Segment returned null");
@@ -92,7 +94,7 @@ namespace Voat.Tests.QueryTests
                     }
 
                     //Test individual segment and ensure it matches current segment
-                    var q2 = new QueryCommentSegment(_unitSubmissionID, segment.Comments.First().ParentID, null, new Voat.Data.SearchOptions() { Sort = SortAlgorithm.New }); //all children should have same parent
+                    var q2 = new QueryCommentSegment(_unitSubmissionID, segment.Comments.First().ParentID, null, CommentSortAlgorithm.New); //all children should have same parent
                     var segment2 = q2.Execute();
                     CompareSegments(segment, segment2);
 

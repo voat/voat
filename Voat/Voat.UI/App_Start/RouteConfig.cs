@@ -12,9 +12,11 @@ All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
+using System;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Voat.Configuration;
+using Voat.Domain.Models;
 
 namespace Voat
 {
@@ -178,7 +180,7 @@ namespace Voat
                 url: "comments/{submissionID}",
                 defaults: new { controller = "Comment", action = "Comments" }
             );
-            string commentSortContraint = "(?i)new|top|bottom|intensity";
+            string commentSortContraint = "(?i)" + String.Join("|", Enum.GetNames(typeof(CommentSortAlgorithm)));
             // /comments/submission/startingpos
             //"/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + startIndex + "/" + sort + "/",
             routes.MapRoute(
@@ -221,13 +223,13 @@ namespace Voat
             // v/subversetoshow/comments/123456
             routes.MapRoute(
                 name: "SubverseComments",
-                url: "v/{subverseName}/comments/{submissionID}/{commentID}/{contextCount}",
+                url: "v/{subverseName}/comments/{submissionID}/{commentID}/{context}",
                 defaults: new
                 {
                     controller = "Comment",
                     action = "Comments",
                     commentID = UrlParameter.Optional,
-                    contextCount = UrlParameter.Optional,
+                    context = UrlParameter.Optional,
                     sort = "top"
                 }
             );

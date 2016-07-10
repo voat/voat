@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Data.Models;
 using Voat.RulesEngine;
 using Voat.Utilities;
 
-namespace Voat.Rules.Posting
+namespace Voat.Rules
 {
-    [RuleDiscovery("Approves a comment if it hasn't been submitted before.", "approved = (comment.Exists(content) == false)")]
-    public class PostCommentUniquenessRule : BaseSubverseRule
+    public class BaseCommentRule : VoatRule
     {
-
-        public PostCommentUniquenessRule()
-            : base("Comment Uniqueness Rule", "7.1", RuleScope.PostComment)
+        public BaseCommentRule(string name, string number, RuleScope scope, int order = 100) : base(name, number, scope, order)
         {
-
+            /*no-op*/
         }
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
-
             string content = context.PropertyBag.CommentContent;
+            if (String.IsNullOrWhiteSpace(content))
+            {
+                return base.CreateOutcome(RuleResult.Denied, "Empty comments not allowed");
+            }
 
             // check for copypasta
             // TODO: use Levenshtein distance algo or similar for better results
@@ -31,8 +32,7 @@ namespace Voat.Rules.Posting
                 return base.CreateOutcome(RuleResult.Denied, "You have recently submitted a similar comment. Please try to not use copy/paste so often.");
             }
 
-            return base.Allowed;
-
+            return Allowed;
         }
     }
 }

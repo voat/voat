@@ -138,7 +138,7 @@ namespace Voat.Controllers
         // POST: Create a new Subverse
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> CreateSubverse([Bind(Include = "Name, Title, Description, Type, Sidebar, CreationDate, Owner")] AddSubverse subverseTmpModel)
         {
@@ -280,7 +280,7 @@ namespace Voat.Controllers
         // POST: Eddit a Subverse
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseSettings(Subverse updatedModel)
         {
             try
@@ -399,7 +399,7 @@ namespace Voat.Controllers
 
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseStylesheetEditor(Subverse updatedModel)
         {
             try
@@ -999,7 +999,7 @@ namespace Voat.Controllers
         // POST: add a moderator to given subverse
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> AddModerator([Bind(Include = "ID,Subverse,Username,Power")] SubverseModerator subverseAdmin)
         {
             if (!ModelState.IsValid) return View(subverseAdmin);
@@ -1176,7 +1176,7 @@ namespace Voat.Controllers
         // POST: add a user ban to given subverse
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult AddBan([Bind(Include = "Id,Subverse,UserName,Reason")] SubverseBan subverseBan)
         {
             if (!ModelState.IsValid) return View(subverseBan);
@@ -1262,7 +1262,7 @@ namespace Voat.Controllers
         // POST: remove a moderator invitation from given subverse
         [Authorize]
         [HttpPost, ActionName("RecallModeratorInvitation")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> RecallModeratorInvitation(int invitationId)
         {
             // get invitation to remove
@@ -1332,7 +1332,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [ActionName("ResignAsModerator")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> ResignAsModeratorPost(string subversetoresignfrom)
         {
             // get moderator name for selected subverse
@@ -1350,7 +1350,7 @@ namespace Voat.Controllers
         // POST: remove a moderator from given subverse
         [Authorize]
         [HttpPost, ActionName("RemoveModerator")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> RemoveModerator(int id)
         {
             // get moderator name for selected subverse
@@ -1375,7 +1375,7 @@ namespace Voat.Controllers
         // POST: remove a ban from given subverse
         [Authorize]
         [HttpPost, ActionName("RemoveBan")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> RemoveBan(int id)
         {
             // get ban name for selected subverse
@@ -1438,7 +1438,7 @@ namespace Voat.Controllers
         // POST: add a link flair to given subverse
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult AddLinkFlair([Bind(Include = "Id,Subverse,Label,CssClass")] SubverseFlair subverseFlairSetting)
         {
             if (!ModelState.IsValid) return View(subverseFlairSetting);
@@ -1478,7 +1478,7 @@ namespace Voat.Controllers
         // POST: remove a link flair from given subverse
         [Authorize]
         [HttpPost, ActionName("RemoveLinkFlair")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> RemoveLinkFlair(int id)
         {
             // get link flair for selected subverse

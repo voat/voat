@@ -54,6 +54,10 @@ namespace Voat.RulesEngine
         Global = 0,
 
         #region C-C-C-COMBOs
+        /// <summary>
+        /// Applies to editing of comment content
+        /// </summary>
+        EditComment = RuleAction.Edit | RuleArea.Comment,
 
         /// <summary>
         /// Applies to any posting of new content

@@ -51,10 +51,11 @@
             }
             if (comment != null)
             {
-                //Is a comment
-                //TODO: Port This
-                @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
-                        Voat.Domain.DomainMaps.Map(comment, comment.Submission.Subverse),
+                var m = Voat.Domain.DomainMaps.Map(comment, comment.Submission.Subverse);
+                //Hard setting this value instead of querying it
+                m.IsSaved = true;
+                    @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
+                        m,
                         new ViewDataDictionary {
                             { "CommentId", comment.ID },
                             { "CCP", Karma.CommentKarma(User.Identity.Name) },

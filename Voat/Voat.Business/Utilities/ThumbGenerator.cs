@@ -51,13 +51,13 @@ namespace Voat.Utilities
         private const int MaxWidth = 70;
 
         // generate a thumbnail while removing transparency and preserving aspect ratio
-        public static async Task<string> GenerateThumbFromImageUrl(string imageUrl)
+        public static async Task<string> GenerateThumbFromImageUrl(string imageUrl, int timeoutInMilliseconds = 3000)
         {
             var randomFileName = GenerateRandomFilename();
             var tempPath = Path.Combine(DestinationPathThumbs, $"{randomFileName}.jpg");
 
             var request = WebRequest.Create(imageUrl);
-            request.Timeout = 3000; //Putts: extended this from 300 mills
+            request.Timeout = timeoutInMilliseconds; //Putts: extended this from 300 mills
             using (var response = request.GetResponse())
             {
                 var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };

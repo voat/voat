@@ -20,12 +20,18 @@ $(document).ready(function () {
 
     // prepare auth tokens
     securityToken = $('[name=__RequestVerificationToken]').val();
-    $('body').bind('ajaxSend', function (elm, xhr, s) {
+    $(document).ajaxSend(function (elm, xhr, s) {
         if (s.type == 'POST' && typeof securityToken != 'undefined') {
-            if (s.data.length > 0) {
-                s.data += "&__RequestVerificationToken=" + encodeURIComponent(securityToken);
+            if (s.contentType.toLowerCase().lastIndexOf('application/json', 0) === 0) {
+                //json request
+                xhr.setRequestHeader('__RequestVerificationToken', securityToken);
             } else {
-                s.data = "__RequestVerificationToken=" + encodeURIComponent(securityToken);
+                //form request
+                if (!s.data || s.data.indexOf('__RequestVerificationToken') == -1) {
+                    s.data = (s.data && s.data.length > 0 ? s.data + '&' : '') + '__RequestVerificationToken=' + encodeURIComponent(securityToken);
+                    //this will force the data to be re-evaled if none is provided on initiation call
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                }
             }
         }
     });
@@ -589,6 +595,7 @@ function postCommentAjax(senderButton, parentCommentID) {
                     //notify UI framework of DOM insertion async
                     window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentCommentID).last('div')); });
                 } else {
+                    $(".sitetable.nestedlisting > #no-comments").remove();
                     $(".sitetable.nestedlisting").prepend(response);
                     // reset submit button
                     $form.find("#submitbutton").val("Submit comment");
@@ -756,6 +763,28 @@ function removeeditform(parentcommentid) {
     $("#" + parentcommentid).find(".usertext-edit").hide();
 }
 
+function toggleComment(commentID) {
+
+    var element = $("#" + commentID);
+    //var t = element.closest('.noncollapsed').css('display');
+    var display = element.closest('.noncollapsed').css('display') != 'none';
+
+    //show actual comment
+    element.closest('.noncollapsed').toggle(!display);
+    //hide show hidden children button
+    element.prev().toggle(display);
+    //show voting icons
+    element.parent().parent().find('.midcol').filter(":first").toggle(!display);
+    //show all children
+    element.parent().parent().find('> .child').toggle(!display);
+
+    //show all inline loading divs
+    element.parent().parent().find('.loadMoreComments').toggle(!display);
+
+
+    return (false);
+}
+//obsolete, will be removed soon. use toggleComment instead
 function showcomment(commentid) {
     //show actual comment
     $("#" + commentid).closest('.noncollapsed').toggle(1);
@@ -768,7 +797,7 @@ function showcomment(commentid) {
 
     return (false);
 }
-
+//obsolete, will be removed soon. use toggleComment instead
 function hidecomment(commentid) {
     //hide actual comment
     $("#" + commentid).closest('.noncollapsed').toggle(1);
@@ -791,8 +820,8 @@ function editcommentsubmit(commentid) {
         type: "POST",
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify(commentobject),
-        url: "/editcomment",
         datatype: "json",
+        url: "/editcomment",
         error: function (xhr, status, error) {
             var msg = error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.";
             $('#commenteditform-' + commentid + " span.field-validation-error").html(msg);
@@ -1709,6 +1738,10 @@ function getCommentTree(submissionID, sort) {
         },
         success: function (data) {
             $(".commentarea").html(data);
+            window.setTimeout(function () {
+                UI.Notifications.raise('DOM', $(".commentarea"));
+                wireTooltips();
+            });
         }
     });
 }

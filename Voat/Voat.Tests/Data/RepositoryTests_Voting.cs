@@ -188,10 +188,19 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Success, "Vote was not successfull");
-                Assert.IsTrue(response.RecordedValue == -1, "Vote was not successfull");
-                Assert.IsTrue(x.UpCount == ups);
-                Assert.IsTrue(x.DownCount == (downs + 1));
+                Assert.AreEqual(Status.Success, response.Status, "Vote was not successfull");
+                Assert.AreEqual(-1, response.RecordedValue, "Recorded value off");
+
+
+                var expectedUpCount = ups;
+                var expectedDownCount = downs + 1;
+                Assert.AreEqual(expectedUpCount, response.Response.UpCount, "Response UpCount is off");
+                Assert.AreEqual(expectedDownCount, response.Response.DownCount, "Response DownCount is off");
+                //pull fresh data and compare
+                x = db.GetSubmission(context.SubmissionID);
+                Assert.AreEqual(expectedUpCount, x.UpCount, "Database UpCount is off");
+                Assert.AreEqual(expectedDownCount, x.DownCount, "Database DownCount is off");
+
             }
         }
 
@@ -223,9 +232,17 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Success, response.ToString());
-                Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
-                Assert.IsTrue(x.UpCount == (ups + 1));
+                Assert.AreEqual(Status.Success, response.Status, "Vote was not successfull");
+                Assert.AreEqual(1, response.RecordedValue, "Recorded value off");
+                
+                var expectedUpCount = ups + 1;
+                var expectedDownCount = downs;
+                Assert.AreEqual(expectedUpCount, response.Response.UpCount, "Response UpCount is off");
+                Assert.AreEqual(expectedDownCount, response.Response.DownCount, "Response DownCount is off");
+                //pull fresh data and compare
+                x = db.GetSubmission(context.SubmissionID);
+                Assert.AreEqual(expectedUpCount, x.UpCount, "Database UpCount is off");
+                Assert.AreEqual(expectedDownCount, x.DownCount, "Database DownCount is off");
 
                 //try to re-up vote
                 response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
@@ -248,9 +265,17 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Success, response.ToString());
-                Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
-                Assert.IsTrue(x.UpCount == (ups + 1));
+                Assert.AreEqual(Status.Success, response.Status, "Vote was not successfull");
+                Assert.AreEqual(1, response.RecordedValue, "Recorded value off");
+
+                var expectedUpCount = ups + 1;
+                var expectedDownCount = downs;
+                Assert.AreEqual(expectedUpCount, response.Response.UpCount, "Response UpCount is off");
+                Assert.AreEqual(expectedDownCount, response.Response.DownCount, "Response DownCount is off");
+                //pull fresh data and compare
+                x = db.GetSubmission(context.SubmissionID);
+                Assert.AreEqual(expectedUpCount, x.UpCount, "Database UpCount is off");
+                Assert.AreEqual(expectedDownCount, x.DownCount, "Database DownCount is off");
 
                 //try to re-up vote
                 response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"), false);
@@ -273,10 +298,14 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.IsTrue(response.Success, response.Message);
-                Assert.IsTrue(response.RecordedValue == 1, response.Message);
-                Assert.IsTrue(x.UpCount == (ups + 1));
-                Assert.IsTrue(x.DownCount == downs);
+                var expectedUpCount = ups + 1;
+                var expectedDownCount = downs;
+                Assert.AreEqual(expectedUpCount, response.Response.UpCount, "Response UpCount is off");
+                Assert.AreEqual(expectedDownCount, response.Response.DownCount, "Response DownCount is off");
+                //pull fresh data and compare
+                x = db.GetSubmission(context.SubmissionID);
+                Assert.AreEqual(expectedUpCount, x.UpCount, "Database UpCount is off");
+                Assert.AreEqual(expectedDownCount, x.DownCount, "Database DownCount is off");
             }
         }
 

@@ -179,6 +179,7 @@
     <Compile Include="Domain\Models\Comment\NestedComment.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\UserSet.cs" />
+    <Compile Include="Domain\Query\Base\BaseQueryCommentSegment.cs" />
     <Compile Include="Domain\Query\Base\CachedQuery.cs" />
     <Compile Include="Domain\Query\Queries.cs" />
     <Compile Include="Domain\Query\QueryApiCorsPolicies.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="Domain\UserGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Domain\Query\Base\Query.cs" />
+    <Compile Include="Rules\Base\BaseCommentRule.cs" />
     <Compile Include="Rules\Base\BaseSubverseRule.cs" />
     <Compile Include="Rules\Base\BaseCCPRule.cs" />
     <Compile Include="Rules\Base\BaseSubverseMinCCPRule.cs" />
@@ -248,9 +250,11 @@
     <Compile Include="Rules\Global\DerpyGuyRule.cs" />
     <Compile Include="Rules\Global\GlobalBanRule.cs" />
     <Compile Include="Rules\Global\RuntimeStateReadOnlyRule.cs" />
+    <Compile Include="Rules\Posting\EditCommentRule.cs" />
+    <Compile Include="Rules\Posting\EditCommentBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\PostCommentBannedRule.cs" />
     <Compile Include="Rules\Posting\PostCommentCCPRule.cs" />
-    <Compile Include="Rules\Posting\PostCommentUniquenessRule.cs" />
+    <Compile Include="Rules\Posting\PostCommentRule.cs" />
     <Compile Include="Rules\Posting\PostCommentBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionBannedRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionBannedDomainRule.cs" />

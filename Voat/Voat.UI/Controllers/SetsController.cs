@@ -189,7 +189,7 @@ namespace Voat.Controllers
         // POST: /s/reorder/setname
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult ReorderSet(string setName, int direction)
         {
             // check if user is subscribed to given set
@@ -270,7 +270,7 @@ namespace Voat.Controllers
         // POST: /sets/create
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> CreateSet([Bind(Include = "Name, Description")] AddSet setTmpModel)
         {
             if (!User.Identity.IsAuthenticated) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -375,7 +375,7 @@ namespace Voat.Controllers
         // POST: subscribe to a set
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public JsonResult Subscribe(int setId)
         {
             var loggedInUser = User.Identity.Name;
@@ -387,7 +387,7 @@ namespace Voat.Controllers
         // POST: unsubscribe from a set
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public JsonResult UnSubscribe(int setId)
         {
             var loggedInUser = User.Identity.Name;
@@ -399,7 +399,7 @@ namespace Voat.Controllers
         // POST: add a subverse to set
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public JsonResult AddSubverseToSet(string subverseName, int setId)
         {
             // check if set exists
@@ -448,7 +448,7 @@ namespace Voat.Controllers
         // POST: remove a subverse from set
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public JsonResult RemoveSubverseFromSet(string subverseName, int setId)
         {
             // check if user is set owner
@@ -475,7 +475,7 @@ namespace Voat.Controllers
         // POST: change set name and description
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public JsonResult ChangeSetInfo(int setId, string newSetName)
         {
             // check if user is set owner
@@ -512,7 +512,7 @@ namespace Voat.Controllers
         // POST: delete a set
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public JsonResult DeleteSet(int setId)
         {
             // check if user is set owner

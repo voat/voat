@@ -7,7 +7,8 @@ using Voat.Data.Models;
 
 namespace Voat.Domain.Query
 {
-    public class QueryCommentTree : CachedQuery<IDictionary<string, usp_CommentTree_Result>>
+    //This class exposes anon user names as it needs to determine submitter state
+    internal class QueryCommentTree : CachedQuery<IDictionary<string, usp_CommentTree_Result>>
     {
         protected int _submissionID;
 

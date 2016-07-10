@@ -68,25 +68,6 @@ namespace Voat.Domain.Models
             }
         }
         /// <summary>
-        /// The count of loaded comments in this segment
-        /// </summary>
-        public int LoadedCount
-        {
-            get
-            {
-                if (_comments == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return _comments.Count;
-                }
-            }
-
-        }
-
-        /// <summary>
         /// The ending index of this comment segment (zero is lowest bound of index)
         /// </summary>
         public int EndingIndex
@@ -116,7 +97,7 @@ namespace Voat.Domain.Models
         /// <summary>
         /// The sort order of the comment segment
         /// </summary>
-        public SortAlgorithm Sort { get; set; }
+        public CommentSortAlgorithm Sort { get; set; }
 
 
         /// <summary>

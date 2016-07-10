@@ -31,27 +31,32 @@
                 <div class="dropdown lightdrop">
                     <span class="selected">
                         @{
-                            var sort = SortAlgorithm.New;
+                            var sort = CommentSortAlgorithm.New;
                             if (Model.Sort != sort)
                             {
                                 <a href="javascript:getCommentTree(@ViewBag.Submission.ID, '@sort.ToString()');" class="bylink" rel="nofollow">@sort.ToString()</a>
                             }
-                            sort = SortAlgorithm.Top;
+                            sort = CommentSortAlgorithm.Top;
                             if (Model.Sort != sort)
                             {
                                 <a href="javascript:getCommentTree(@ViewBag.Submission.ID, '@sort.ToString()');" class="bylink" rel="nofollow">@sort.ToString()</a>
                             }
-                            sort = SortAlgorithm.Intensity;
+                           
+                            sort = CommentSortAlgorithm.Bottom;
                             if (Model.Sort != sort)
                             {
                                 <a href="javascript:getCommentTree(@ViewBag.Submission.ID, '@sort.ToString()');" class="bylink" rel="nofollow">@sort.ToString()</a>
                             }
-                            sort = SortAlgorithm.Bottom;
+                            sort = CommentSortAlgorithm.Intensity;
                             if (Model.Sort != sort)
                             {
                                 <a href="javascript:getCommentTree(@ViewBag.Submission.ID, '@sort.ToString()');" class="bylink" rel="nofollow">@sort.ToString()</a>
                             }
-
+                            sort = CommentSortAlgorithm.Old;
+                            if (Model.Sort != sort)
+                            {
+                                <a href="javascript:getCommentTree(@ViewBag.Submission.ID, '@sort.ToString()');" class="bylink" rel="nofollow">@sort.ToString()</a>
+                            }
                         }
                        
                     </span>

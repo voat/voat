@@ -48,6 +48,7 @@ namespace Voat.Domain.Command
                 {
                     //Add new comment
                     var treeItem = c.MapToTree();
+                    treeItem.UserName = UserName;
                     CacheHandler.Instance.Replace(key, c.ID, treeItem);
 
                     if (c.ParentID.HasValue)
@@ -61,7 +62,7 @@ namespace Voat.Domain.Command
     }
 
     [Serializable]
-    public class DeleteCommentCommand : CacheCommand<CommandResponse, Comment>
+    public class DeleteCommentCommand : CacheCommand<CommandResponse<Comment>>
     {
         public DeleteCommentCommand(int commentID, string reason = null)
         {
@@ -76,40 +77,33 @@ namespace Voat.Domain.Command
         public int CommentID { get; set; }
         public string Reason { get; set; }
 
-        protected override async Task<Tuple<CommandResponse, Comment>> CacheExecute()
+        protected override async Task<CommandResponse<Comment>> CacheExecute()
         {
-            var result = await Task.Factory.StartNew(() =>
+            using (var db = new Repository())
             {
-                using (var db = new Repository())
-                {
-                    return db.DeleteComment(this.CommentID, this.Reason);
-                }
-            });
-            return Tuple.Create(CommandResponse.Successful(), result);
+                var result = await db.DeleteComment(this.CommentID, this.Reason);
+                return result;
+            }
         }
 
-        protected override void UpdateCache(Comment result)
+        protected override void UpdateCache(CommandResponse<Comment> result)
         {
-            if (result != null)
+            if (result != null && result.Success)
             {
-                var key = CachingKey.CommentTree(result.SubmissionID.Value);
+                var key = CachingKey.CommentTree(result.Response.SubmissionID.Value);
                 //Prevent key-ed entries if parent isn't in cache with expiration date
                 if (CacheHandler.Instance.Exists(key))
                 {
-                    var treeItem = result.MapToTree();
-                    CacheHandler.Instance.Replace(key, result.ID, treeItem);
+                    var treeItem = result.Response.MapToTree();
+                    //CacheHandler.Instance.Replace(key, result.Response.ID, treeItem);
+                    CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, result.Response.ID, x =>
+                    {
+                        x.IsDeleted = result.Response.IsDeleted;
+                        x.Content = result.Response.Content;
+                        x.FormattedContent = result.Response.FormattedContent;
+                        return x;
+                    });
                 }
-
-
-                // CacheHandler.Instance.Replace(key, CommentID,
-                //     new Func<usp_CommentTree_Result, usp_CommentTree_Result>(x =>
-                //     {
-                //         x.Content = result.Content;
-                //         x.FormattedContent = result.FormattedContent;
-                //         x.IsDeleted = result.IsDeleted;
-                //         return x;
-                //     })
-                //);
             }
         }
     }
@@ -128,14 +122,11 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, Comment>> CacheExecute()
         {
-            var result = await Task.Factory.StartNew(() =>
+            using (var db = new Repository())
             {
-                using (var db = new Repository())
-                {
-                    return db.EditComment(this.CommentID, this.Content);
-                }
-            });
-            return Tuple.Create(CommandResponse.Successful(result.Map(null)), result);
+                var result = await db.EditComment(this.CommentID, this.Content);
+                return Tuple.Create(new CommandResponse<Domain.Models.Comment>(result.Response.Map(null), result.Status, result.Message), result.Response);
+            }
         }
 
         protected override void UpdateCache(Comment result)
@@ -147,21 +138,15 @@ namespace Voat.Domain.Command
                 if (CacheHandler.Instance.Exists(key))
                 {
                     var treeItem = result.MapToTree();
-                    CacheHandler.Instance.Replace(key, result.ID, treeItem);
+                    //CacheHandler.Instance.Replace(key, result.ID, treeItem);
+                    CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, result.ID, x =>
+                    {
+                        x.Content = result.Content;
+                        x.FormattedContent = result.FormattedContent;
+                        x.LastEditDate = result.LastEditDate;
+                        return x;
+                    });
                 }
-                // CacheHandler.Instance.Replace(key, CommentID,
-                //     new Func<usp_CommentTree_Result, usp_CommentTree_Result>(x =>
-                //     {
-                //         //update cache content only
-                //         x.Content = result.Content;
-                //         x.FormattedContent = result.FormattedContent;
-                //         x.UpCount = result.UpCount;
-                //         x.DownCount = result.DownCount;
-                //         x.LastEditDate = result.LastEditDate;
-                //         x.IsDistinguished = result.IsDistinguished;
-                //         return x;
-                //     })
-                //);
             }
         }
     }

@@ -184,16 +184,12 @@ namespace Voat.Controllers
             var scp = info.SubmissionPoints.Sum;
             var ccp = info.CommentPoints.Sum;
 
-            //var userRegistrationDateTime = UserHelper.GetUserRegistrationDateTime(userName);
-            //var memberFor = Age.ToRelative(userRegistrationDateTime);
-            //var scp = Karma.LinkKarma(userName);
-            //var ccp = Karma.CommentKarma(userName);
-
             var userInfoModel = new BasicUserInfo()
             {
                 MemberSince = memberFor,
                 Ccp = ccp,
-                Scp = scp
+                Scp = scp,
+                Bio = info.Bio
             };
 
             return PartialView("~/Views/AjaxViews/_BasicUserInfo.cshtml", userInfoModel);

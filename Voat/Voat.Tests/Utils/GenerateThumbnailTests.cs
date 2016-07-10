@@ -23,7 +23,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Utility"), TestCategory("Thumbnail")]
         public async Task GenerateThumbFromImageUrl()
         {
-            var result = await ThumbGenerator.GenerateThumbFromImageUrl("https://i.sli.mg/W2fsxZ.jpg");
+            var result = await ThumbGenerator.GenerateThumbFromImageUrl("https://i.sli.mg/W2fsxZ.jpg", 5000);
             string path = Path.Combine(ThumbGenerator.DestinationPathThumbs, result);
             Assert.IsTrue(File.Exists(path), "Thumb did not get generated from image url");
             File.Delete(path);

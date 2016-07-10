@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Utilities;
@@ -112,22 +113,23 @@ namespace Voat.Domain
             {
                 result = new usp_CommentTree_Result()
                 {
-                    ID = comment.ID,
-                    Content = comment.Content,
-                    IsAnonymized = comment.IsAnonymized,
                     ChildCount = 0,
-                    CreationDate = comment.CreationDate,
-                    DownCount = comment.DownCount,
                     Depth = 0,
-                    FormattedContent = comment.FormattedContent,
-                    IsDistinguished = comment.IsDistinguished,
-                    LastEditDate = comment.LastEditDate,
-                    UpCount = comment.UpCount,
-                    SubmissionID = comment.SubmissionID,
-                    UserName = comment.UserName,
-                    ParentID = comment.ParentID,
                     Path = "",
                     Subverse = "",
+                    ID = comment.ID,
+                    ParentID = comment.ParentID,
+                    Content = comment.Content,
+                    FormattedContent = comment.FormattedContent,
+                    CreationDate = comment.CreationDate,
+                    LastEditDate = comment.LastEditDate,
+                    SubmissionID = comment.SubmissionID,
+                    UpCount = comment.UpCount,
+                    DownCount = comment.DownCount,
+                    IsDistinguished = comment.IsDistinguished,
+                    IsDeleted = comment.IsDeleted,
+                    IsAnonymized = comment.IsAnonymized,
+                    UserName = comment.UserName,
                     Votes = comment.Votes
                 };
             }
@@ -140,28 +142,29 @@ namespace Voat.Domain
             {
                 result = new usp_CommentTree_Result()
                 {
-                    ID = comment.ID,
-                    Content = comment.Content,
-                    IsAnonymized = comment.IsAnonymized,
                     ChildCount = 0,
-                    CreationDate = comment.CreationDate,
-                    DownCount = comment.DownCount,
                     Depth = 0,
-                    FormattedContent = comment.FormattedContent,
-                    IsDistinguished = comment.IsDistinguished,
-                    LastEditDate = comment.LastEditDate,
-                    UpCount = comment.UpCount,
-                    SubmissionID = comment.SubmissionID,
-                    UserName = comment.UserName,
-                    ParentID = comment.ParentID,
                     Path = "",
                     Subverse = comment.Subverse,
-                    Votes = 0 //don't think we use this.
+                    ID = comment.ID,
+                    ParentID = comment.ParentID,
+                    Content = comment.Content,
+                    FormattedContent = comment.FormattedContent,
+                    CreationDate = comment.CreationDate,
+                    LastEditDate = comment.LastEditDate,
+                    SubmissionID = comment.SubmissionID,
+                    UpCount = comment.UpCount,
+                    DownCount = comment.DownCount,
+                    IsDistinguished = comment.IsDistinguished,
+                    IsDeleted = comment.IsDeleted,
+                    IsAnonymized = comment.IsAnonymized,
+                    UserName = comment.UserName,
+                    Votes = 0 //don't think we use this
                 };
             }
             return result;
         }
-        public static NestedComment Map(this usp_CommentTree_Result treeComment)
+        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<CommentVoteTracker> commentVotes = null, IEnumerable<CommentSaveTracker> commentSaves = null)
         {
             NestedComment result = null;
             if (treeComment != null)
@@ -182,6 +185,9 @@ namespace Voat.Domain
                 result.LastEditDate = treeComment.LastEditDate;
                 result.SubmissionID = treeComment.SubmissionID;
                 result.Subverse = treeComment.Subverse;
+                result.IsSubmitter = (treeComment.UserName == submissionOwnerName);
+                //Set User State and secure comment
+                ProcessComment(result, false, commentVotes, commentSaves);
             }
             return result;
         }
@@ -214,7 +220,8 @@ namespace Voat.Domain
                 {
                     result.Subverse = subverse;
                 }
-                SetUserRelatedProperties(result, populateUserState);
+                //Set User State and secure comment
+                ProcessComment(result, populateUserState);
             }
             return result;
         }
@@ -239,31 +246,43 @@ namespace Voat.Domain
                 result.LastEditDate = comment.LastEditDate;
                 result.SubmissionID = comment.SubmissionID;
                 result.Subverse = comment.Subverse;
-                SetUserRelatedProperties(result);
+                //Set User State and secure comment
+                ProcessComment(result);
             }
             return result;
         }
-
-        private static void SetUserRelatedProperties(NestedComment comment, bool populateUserState = false)
+        private static void ProcessComment(NestedComment comment, bool populateMissingUserState = false, IEnumerable<CommentVoteTracker> commentVotes = null, IEnumerable<CommentSaveTracker> commentSaves = null)
         {
-            if (System.Threading.Thread.CurrentPrincipal.Identity.IsAuthenticated)
+            string userName = Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : null;
+            if (!String.IsNullOrEmpty(userName))
             {
-                string userName = System.Threading.Thread.CurrentPrincipal.Identity.Name;
-
-                comment.IsSubmitter = comment.UserName == userName;
-
-                if (populateUserState)
+                comment.IsOwner = comment.UserName == userName;
+                comment.Vote = 0;
+                if (commentVotes != null)
                 {
-                    if (!comment.IsSaved.HasValue)
+                    var vote = commentVotes.FirstOrDefault(x => x.CommentID == comment.ID);
+                    if (vote != null)
                     {
-                        comment.IsSaved = SavingComments.CheckIfSavedComment(userName, comment.ID);
-                    }
-                    if (!comment.Vote.HasValue)
-                    {
-                        comment.Vote = VotingComments.CheckIfVotedComment(userName, comment.ID);
+                        comment.Vote = vote.VoteStatus;
                     }
                 }
+                else if (populateMissingUserState)
+                {
+                    comment.Vote = VotingComments.CheckIfVotedComment(userName, comment.ID);
+                }
+
+                comment.IsSaved = false;
+                if (commentSaves != null)
+                {
+                    comment.IsSaved = commentSaves.Any(x => x.CommentID == comment.ID);
+                }
+                else if (populateMissingUserState)
+                {
+                    comment.IsSaved = SavingComments.CheckIfSavedComment(userName, comment.ID);
+                }
+
             }
+            comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
         }
     }
 }

@@ -73,7 +73,7 @@
                             </div>
                             <div class="panel-message-body">
                                 @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
-                                        Voat.Domain.DomainMaps.Map(comment, comment.Submission.Subverse),
+                                        Voat.Domain.DomainMaps.Map(comment, comment.Submission.Subverse, true),
                                         new ViewDataDictionary {
                                             { "CommentId", comment.ID },
                                             { "CCP", Karma.CommentKarma(User.Identity.Name) },

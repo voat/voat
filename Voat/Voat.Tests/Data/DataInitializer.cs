@@ -26,6 +26,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.Linq;
 using Voat.Data.Models;
 using Voat.Tests.Data;
 using Voat.Utilities;
@@ -445,6 +446,9 @@ namespace Voat.Tests.Repository
         {
             using (var db = new voatEntities())
             {
+                var s = db.Subverses.Where(x => x.Name == subverse).FirstOrDefault();
+
+
                 //create submission
                 var submission = new Submission()
                 {
@@ -454,7 +458,7 @@ namespace Voat.Tests.Repository
                     Title = $"Comment Tree for v/{subverse}",
                     Type = 1,
                     UserName = "TestUser1",
-                    IsAnonymized = false
+                    IsAnonymized = s.IsAnonymized,
                 };
                 db.Submissions.Add(submission);
                 db.SaveChanges();
@@ -465,6 +469,7 @@ namespace Voat.Tests.Repository
                         SubmissionID = submission.ID,
                         UserName = userName,
                         Content = content,
+                        FormattedContent = Formatting.FormatMessage(content),
                         ParentID = parentCommentID,
                         IsAnonymized = submission.IsAnonymized,
                         CreationDate = DateTime.UtcNow

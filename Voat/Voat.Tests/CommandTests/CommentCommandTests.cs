@@ -26,12 +26,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Domain.Command;
+using Voat.Domain.Query;
 using Voat.Tests.Repository;
+using Voat.Utilities;
 
 namespace Voat.Tests.CommandTests
 {
+   
+
+
     [TestClass]
-    public class CommentCommandTests 
+    public class CommentCommandTests : BaseCommandTest
     {
         #region Anon Comment Tests
 
@@ -39,9 +44,11 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
+        [TestCategory("Anon")]
         public void CreateComment_Anon()
         {
-            TestHelper.SetPrincipal("TestUser1");
+            string userName = "TestUser1";
+            TestHelper.SetPrincipal(userName);
 
             var cmd = new CreateCommentCommand(2, null, "This is my data");
             var c = cmd.Execute().Result;
@@ -64,7 +71,12 @@ namespace Voat.Tests.CommandTests
                 Assert.IsTrue(comment.IsAnonymized);
                 Assert.AreEqual(c.Response.IsAnonymized, comment.IsAnonymized);
             }
+
+            base.VerifyCommentContextIsProtected(c.Response.SubmissionID.Value, c.Response.ID, userName);
+
         }
+
+
 
         #endregion Anon Comment Tests
 
@@ -93,6 +105,104 @@ namespace Voat.Tests.CommandTests
                 Assert.AreEqual(c.Response.Content, comment.Content);
             }
         }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        public void CreateComment_Empty()
+        {
+            TestHelper.SetPrincipal("TestUser12");
+
+            var cmd = new CreateCommentCommand(1, null, "          ");
+            var c = cmd.Execute().Result;
+
+            Assert.IsFalse(c.Success, c.Message);
+            Assert.AreEqual("Empty comments not allowed", c.Message);
+        }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        public void EditComment_Empty()
+        {
+            TestHelper.SetPrincipal("TestUser11");
+
+            var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
+            var c = cmd.Execute().Result;
+
+            Assert.IsTrue(c.Success);
+
+            var editCmd = new EditCommentCommand(c.Response.ID, "            ");
+            var editResult = editCmd.Execute().Result;
+
+            Assert.IsFalse(editResult.Success, editResult.Message);
+            Assert.AreEqual("Empty comments not allowed", editResult.Message);
+        }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        public void EditComment_WrongOwner()
+        {
+            TestHelper.SetPrincipal("TestUser15");
+
+            var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
+            var c = cmd.Execute().Result;
+
+            Assert.IsTrue(c.Success, c.Message);
+
+            TestHelper.SetPrincipal("TestUser12");
+            var editCmd = new EditCommentCommand(c.Response.ID, "All your comment are belong to us!");
+            var editResult = editCmd.Execute().Result;
+
+            Assert.IsFalse(editResult.Success, editResult.Message);
+            Assert.AreEqual("User doesn't have permissions to perform requested action", editResult.Message);
+        }
+
+
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        public void CreateComment_BannedDomain()
+        {
+            TestHelper.SetPrincipal("TestUser2");
+
+            var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
+            var c = cmd.Execute().Result;
+
+            Assert.IsFalse(c.Success);
+            Assert.AreEqual("Comment contains banned domains", c.Message);
+
+        }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        public void EditComment_BannedDomain()
+        {
+            TestHelper.SetPrincipal("TestUser2");
+
+            var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
+            var c = cmd.Execute().Result;
+
+            Assert.IsTrue(c.Success);
+
+            var editCmd = new EditCommentCommand(c.Response.ID, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
+            var editResult = editCmd.Execute().Result;
+
+            Assert.IsFalse(editResult.Success, "Edit command with banned domain returned true");
+            Assert.AreEqual(Status.Denied, editResult.Status, "expecting denied status");
+
+            Assert.AreEqual("Comment contains banned domains", editResult.Message);
+        }
+
+
 
         [TestMethod]
         [TestCategory("Command")]
@@ -159,10 +269,13 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment.Post")]
         public void EditComment()
         {
+            string content = "This is data [howdy](http://www.howdy.com)";
             TestHelper.SetPrincipal("unit");
-            var cmd = new EditCommentCommand(1, "This is data [howdy](http://www.howdy.com)");
+            var cmd = new EditCommentCommand(1, content);
             var r = cmd.Execute().Result;
             Assert.IsTrue(r.Success);
+            Assert.AreEqual(content, r.Response.Content);
+            Assert.AreEqual(Formatting.FormatMessage(content), r.Response.FormattedContent);
 
             //verify
             using (var db = new Voat.Data.Repository())
@@ -172,6 +285,10 @@ namespace Voat.Tests.CommandTests
                 Assert.AreEqual(cmd.Content, comment.Content);
             }
         }
+
+       
+
+
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]

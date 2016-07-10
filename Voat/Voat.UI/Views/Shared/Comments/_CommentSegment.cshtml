@@ -16,43 +16,52 @@
 @model Voat.Domain.Models.CommentSegment
 
 @{
-    //this comment tree should only contain the filtered parents
-    foreach (var comment in Model.Comments)
+    if (Model.TotalCount == 0)
     {
-        //do not show deleted comments unless they have replies
-        if (comment.IsDeleted && comment.ChildCount <= 0)
-        {
-            continue;
-        }
-        @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment,
-        new ViewDataDictionary {
-            { "SortOrder", Model.Sort },
-            { "CommentToHighlight", ViewBag.CommentToHighLight },
-            { "ParentIsHidden", false }
-        })
+        <div id="no-comments" class="alert-notice">No comments O_O</div>
     }
-    if (Model.TotalCount > Model.EndingIndex + 1)
+    else
     {
-        int remaining = Model.TotalCount - (Model.EndingIndex + 1);
-        if (remaining > 0)
-        { 
-            var lastRendered = Model.Comments.Last();
-            <div>
-            <br />
-            @if (remaining > 0)
+        //this comment tree should only contain the filtered parents
+        foreach (var comment in Model.Comments)
+        {
+            //do not show deleted comments unless they have replies
+            if (comment.IsDeleted && comment.ChildCount <= 0)
             {
-                //this is root comments
-                <div class="spacer"></div>
-                <a href="javascript:void(0)" id="loadmorebutton" class="btn-whoaverse btn-block" onclick="javascript:loadMoreComments2($('#loadmorebutton'), $('.commentarea > #siteTable'),@lastRendered.SubmissionID,null,'siblings',@Model.EndingIndex + 1,'@Model.Sort.ToString()')">
-                    load more comments &#9660; (@remaining remaining)
-                </a>
+                continue;
             }
-            else
+            @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment,
+                new ViewDataDictionary {
+                { "SortOrder", Model.Sort },
+                { "CommentToHighlight", ViewBag.CommentToHighLight }
+            })
+        }
+        if (Model.TotalCount > Model.EndingIndex + 1)
+        {
+            int remaining = Model.TotalCount - (Model.EndingIndex + 1);
+            if (remaining > 0)
             {
-                //this is non-root comments
-                <a style="cursor:pointer;" id="loadmore-@lastRendered.ParentID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@lastRendered.ParentID'),$('.id-@lastRendered.ParentID'),@lastRendered.SubmissionID,@lastRendered.ParentID,'siblings',@Model.EndingIndex,'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
+                <div>
+                @{
+                    var lastRendered = Model.Comments.Last();
+                    var root = lastRendered.ParentID == null;
+                    if (root)
+                    {
+                        //this is root comments
+                    <div class="spacer"></div>
+                    <a href="javascript:void(0)" id="loadmorebutton" class="btn-whoaverse btn-block" onclick="javascript:loadMoreComments2($('#loadmorebutton'), $('.commentarea > #siteTable'),@lastRendered.SubmissionID,null,'siblings',@Model.EndingIndex + 1,'@Model.Sort.ToString()')">
+                        load more comments &#9660; (@remaining remaining)
+                    </a>
+                    }
+                    else
+                    {
+                    <div class="loadMoreComments">
+                        <a style="cursor:pointer;" id="loadmore-@lastRendered.ParentID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@lastRendered.ParentID'),$('.id-@lastRendered.ParentID'),@lastRendered.SubmissionID,@lastRendered.ParentID,'siblings',@Model.EndingIndex + 1,'@Model.Sort.ToString()')">Load more replies (@remaining remaining)</a>
+                    </div>
+                    }
+                }
+                </div>
             }
-        </div>
         }
     }
 }

@@ -121,6 +121,7 @@
     <Compile Include="Cache\CacheConfigurationTests.cs" />
     <Compile Include="Cache\MiscTests.cs" />
     <Compile Include="Cache\CacheTests.cs" />
+    <Compile Include="CommandTests\BaseCommandTest.cs" />
     <Compile Include="CommandTests\CommentCommandTests.cs" />
     <Compile Include="CommandTests\SendMessageCommandTests.cs" />
     <Compile Include="CommandTests\SubmissionCommandTests.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Helpers\TestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryTests\QueryCommentTests.cs" />
+    <Compile Include="QueryTests\QueryCommentTreeAnonTests.cs" />
     <Compile Include="QueryTests\QueryCommentTreeTests.cs" />
     <Compile Include="QueryTests\QuerySubverseTests.cs" />
     <Compile Include="QueryTests\QuerySubmissionSortTests.cs" />

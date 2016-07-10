@@ -81,7 +81,7 @@ namespace Voat.Controllers
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid) return View(model);
@@ -157,7 +157,7 @@ namespace Voat.Controllers
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [ValidateCaptcha]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
@@ -239,7 +239,7 @@ namespace Voat.Controllers
 
         // POST: /Account/Manage
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
             var hasPassword = HasPassword();
@@ -281,7 +281,7 @@ namespace Voat.Controllers
 
         // POST: /Account/LogOff
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
@@ -302,7 +302,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult DeleteAccount(DeleteAccountViewModel model)
         {
             // require users to enter their password in order to execute account delete action
@@ -373,7 +373,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Bio, Avatarfile")] UserAboutViewModel model)
         {
             // save changes
@@ -510,7 +510,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
             if (!ModelState.IsValid) return View("Manage", model);
@@ -628,7 +628,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserAccountEmail([Bind(Include = "EmailAddress")] UserEmailViewModel model)
         {
             ViewBag.userid = User.Identity.Name;
@@ -708,7 +708,7 @@ namespace Voat.Controllers
         // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [ValidateCaptcha]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
@@ -755,7 +755,7 @@ namespace Voat.Controllers
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)

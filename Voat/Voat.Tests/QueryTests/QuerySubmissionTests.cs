@@ -73,37 +73,37 @@ namespace Voat.Tests.QueryTests
             Assert.AreEqual(result.ID.ToString(), result.UserName);
         }
 
-        [TestMethod]
-        [TestCategory("Query")]
-        [TestCategory("Comment")]
-        public void Query_CommentTree()
-        {
-            var q = new QueryCommentTree(1, null);
-            var result = q.ExecuteAsync().Result.Values;
-            Assert.IsNotNull(result);
-            Assert.AreNotEqual(0, result.Count);
+        //[TestMethod]
+        //[TestCategory("Query")]
+        //[TestCategory("Comment")]
+        //public void Query_CommentTree()
+        //{
+        //    var q = new QueryCommentTree(1, null);
+        //    var result = q.ExecuteAsync().Result.Values;
+        //    Assert.IsNotNull(result);
+        //    Assert.AreNotEqual(0, result.Count);
 
-            foreach (var t in result)
-            {
-                Assert.AreEqual(t.IsAnonymized, t.UserName == t.ID.ToString());
-            }
-        }
+        //    foreach (var t in result)
+        //    {
+        //        Assert.AreEqual(t.IsAnonymized, t.UserName == t.ID.ToString());
+        //    }
+        //}
 
-        [TestMethod]
-        [TestCategory("Query")]
-        [TestCategory("Comment")]
-        [TestCategory("Comment.Anon")]
-        public void Query_CommentTree_Anon()
-        {
-            var q = new QueryCommentTree(2, null);
-            var result = q.ExecuteAsync().Result.Values;
-            Assert.IsNotNull(result);
-            Assert.AreNotEqual(0, result.Count);
-            foreach (var t in result)
-            {
-                Assert.AreEqual(t.IsAnonymized, t.UserName == t.ID.ToString());
-            }
-        }
+        //[TestMethod]
+        //[TestCategory("Query")]
+        //[TestCategory("Comment")]
+        //[TestCategory("Comment.Anon")]
+        //public void Query_CommentTree_Anon()
+        //{
+        //    var q = new QueryCommentTree(2, null);
+        //    var result = q.ExecuteAsync().Result.Values;
+        //    Assert.IsNotNull(result);
+        //    Assert.AreNotEqual(0, result.Count);
+        //    foreach (var t in result)
+        //    {
+        //        Assert.AreEqual(t.IsAnonymized, t.UserName == t.ID.ToString());
+        //    }
+        //}
 
         /// <summary>
         /// This test ensures that if no user is currently logged in, we still return a default preference set.

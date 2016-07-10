@@ -42,7 +42,7 @@ namespace Voat.Controllers
         [Authorize]
         [RequireHttps]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateCaptcha]
         public ActionResult PartnerIntentRegistration(PartnerIntent partnerModel)

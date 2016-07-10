@@ -364,6 +364,7 @@
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />
     <Compile Include="Utils\PagerOptions.cs" />
+    <Compile Include="Utils\VoatValidateAntiForgeryTokenAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\VoatLegacyDocumentation.xml" />
@@ -639,7 +640,6 @@
     <Content Include="Views\Shared\_DefaultMessage.cshtml" />
     <Content Include="Views\Subverses\SearchForSubverse.cshtml" />
     <Content Include="Views\Search\FindSubverseSearchResult.cshtml" />
-    <Content Include="Views\AjaxViews\_SingleSubmissionComment.cshtml" />
     <Content Include="Views\Partner\PartnerProgramInformation.cshtml" />
     <Content Include="Views\Partner\PartnerIntentRegistration.cshtml" />
     <Content Include="Views\Partner\PartnerProgramIntentSent.cshtml" />
@@ -668,10 +668,6 @@
     <Content Include="Views\Shared\_MostViewedSubmissions.cshtml" />
     <Content Include="Views\Sets\_SingleSetPage.cshtml" />
     <Content Include="Views\Welcome\_FirstTimeVisitorWelcome.cshtml" />
-    <Content Include="Views\Shared\UserDistinctions\_SubmitterModeratorDistinction.cshtml" />
-    <Content Include="Views\Shared\UserDistinctions\_SubmitterDistinction.cshtml" />
-    <Content Include="Views\Shared\UserDistinctions\_ModeratorDistinction.cshtml" />
-    <Content Include="Views\Shared\UserDistinctions\_UserDistinction.cshtml" />
     <Content Include="Views\Sets\CreateSet.cshtml" />
     <Content Include="Views\Sets\ManageMySets.cshtml" />
     <Content Include="Views\Errors\UnAuthorized.cshtml" />

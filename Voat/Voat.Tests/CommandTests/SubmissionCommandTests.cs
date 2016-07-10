@@ -78,10 +78,11 @@ namespace Voat.Tests.CommandTests
 
         }
         [TestMethod]
-        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
-        public void CreateAnonSubmission()
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post"), TestCategory("Anon")]
+        public void CreateSubmission_Anon()
         {
-            TestHelper.SetPrincipal("TestUser4");
+            string userName = "TestUser4";
+            TestHelper.SetPrincipal(userName);
 
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is a title", Url = "http://www.yahoo.com" });
 
@@ -93,6 +94,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreNotEqual(0, r.Response.ID, "Expected a valid ID");
             Assert.AreNotEqual("TestUser2", r.Response.UserName);
             Assert.AreEqual(true, r.Response.IsAnonymized);
+            Assert.AreNotEqual(userName, r.Response.UserName);
 
         }
         [TestMethod]
@@ -259,7 +261,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventUserFromPostingToAuthorizedOnlySubverses()
         {
-            TestHelper.SetPrincipal("TestUser1");
+            TestHelper.SetPrincipal("TestUser9");
             var userSubmission = new Domain.Models.UserSubmission() { Subverse = "AuthorizedOnly", Title = Guid.NewGuid().ToString(), Url = "http://www.digit.com/images/feelsgoodman.jpg" };
             var cmd = new CreateSubmissionCommand(userSubmission);
             var r = cmd.Execute().Result;

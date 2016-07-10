@@ -143,7 +143,7 @@ namespace Voat.Domain
                     var q = new QueryUserPreferences(username);
                     var result = q.Execute();
                     return result;
-                });
+                }, false);
             }
             set
             {
