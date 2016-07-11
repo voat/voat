@@ -23,7 +23,7 @@
 
     string routeController = (string)ViewContext.RouteData.Values["controller"];
     string routeAction = (string)ViewContext.RouteData.Values["action"];
-    string routeId = (string)ViewContext.RouteData.Values["id"];
+    string submissionID = (string)ViewContext.RouteData.Values["submissionID"];
 
     string sortingMode = ViewBag.SortingMode;
     string selectedUser = ViewBag.userid;
@@ -203,9 +203,9 @@
                         You can login if you already have an account or register by clicking the button below.
                         Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
                         <div>
-                            @if (routeController == "Comment" && routeAction == "Comments" && routeId != null)
+                            @if (routeController == "Comment" && routeAction == "Comments" && submissionID != null)
                             {
-                                @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId } }) } })
+                                @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "submissionID", submissionID } }) } })
                             }
                             else
                             {

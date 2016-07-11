@@ -84,8 +84,11 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            if (!ModelState.IsValid) return View(model);
-
+            ViewBag.ReturnUrl = returnUrl;
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             var user = await UserManager.FindAsync(model.UserName, model.Password);
             var tmpuser = await UserManager.FindByNameAsync(model.UserName);
 
@@ -841,6 +844,10 @@ namespace Voat.Controllers
 
         private ActionResult RedirectToLocal(string returnUrl)
         {
+            if (String.IsNullOrEmpty(returnUrl) && !String.IsNullOrEmpty(Request.QueryString["ReturnUrl"]))
+            {
+                returnUrl = Request.QueryString["ReturnUrl"];
+            }
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
