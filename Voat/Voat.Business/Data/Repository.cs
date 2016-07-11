@@ -1208,11 +1208,6 @@ namespace Voat.Data
                     comment.FormattedContent = formattedComment;
 
                     await _db.SaveChangesAsync();
-
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-                    {
-                        ContentProcessor.Instance.Process(comment.Content, ProcessingStage.InboundPostSave, comment);
-                    }
                 }
                 else
                 {
