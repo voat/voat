@@ -68,7 +68,7 @@ namespace Voat.Utilities.Components
         protected MatchProcessingReplacer _replacer;
         public UserMentionFilter(int matchThreshold, bool ignoreDuplicatMatches)
         {
-            _replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + String.Format(@"((?'notify'-)?(?'prefix'@|/u/)(?'user'{0}))", CONSTANTS.USER_NAME_REGEX), MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches };
+            _replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.USER_HOT_LINK_REGEX, MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches };
         }
 
         protected override string ProcessContent(string content, object context)
@@ -125,15 +125,7 @@ namespace Voat.Utilities.Components
         public override string MatchFound(Match match, string matchSource, object context)
         {
             string replace = String.Format("{0}{1}", match.Groups["prefix"].Value, match.Groups["user"].Value);
-            try
-            {
-                var u = new UrlHelper(HttpContext.Current.Request.RequestContext, RouteTable.Routes);
-                return String.Format("[{0}]({1})", replace, u.Action("UserProfile", "Home", new { id = match.Groups["user"] }));
-            }
-            catch (Exception)
-            {
-                return String.Format("[{0}](https://voat.co/u/{1})", replace, match.Groups["user"].Value);
-            }
+            return String.Format("[{0}]({1})", replace, VoatUrlFormatter.UserProfile(match.Groups["user"].Value));
         }
     }
 
@@ -147,22 +139,12 @@ namespace Voat.Utilities.Components
 
             ProcessLogic = delegate(Match m, string matchSource, object state)
             {
-                try
-                {
-                    var u = new UrlHelper(HttpContext.Current.Request.RequestContext, RouteTable.Routes);
-                    return String.Format("[{0}]({1})", m.Value, u.Action("SubverseIndex", "Subverses", new { subversetoshow = m.Groups["sub"] }) + (m.Groups["anchor"].Success ? m.Groups["anchor"].Value : ""));
-                }
-                catch (Exception ex)
-                {
-                    return String.Format("[{0}](https://voat.co/v/{1})", m.Value, m.Groups["sub"].Value + (m.Groups["anchor"].Success ? m.Groups["anchor"].Value : ""));
-                }
+                return String.Format("[{0}]({1})", m.Value, VoatUrlFormatter.Subverse(m.Groups["sub"].Value + (m.Groups["anchor"].Success ? m.Groups["anchor"].Value : "")));
             };
-
-
         }
         protected override string ProcessContent(string content, object context)
         {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + @"((/?v/)(?'sub'[a-zA-Z0-9]+((/(new|top(\?time=(day|week|month|year|all))?|comments/\d+(/\d+(?:/\d+(?:\d+)?)?)?)))?)(?'anchor'#(?:\d+|submissionTop))?)",
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.SUBVERSE_HOT_LINK_REGEX,
                ProcessLogic
             );
             return replacer.Replace(content, context);

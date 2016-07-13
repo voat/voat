@@ -306,6 +306,7 @@
     <Compile Include="Utilities\UrlUtility.cs" />
     <Compile Include="Utilities\UserHelper.cs" />
     <Compile Include="Utilities\VoatPathHelper.cs" />
+    <Compile Include="Utilities\VoatUrlFormatter.cs" />
     <Compile Include="Utilities\Voting.cs" />
     <Compile Include="Utilities\VotingComments.cs" />
     <Compile Include="Domain\Models\UserStatsModel.cs" />

@@ -245,6 +245,13 @@ namespace Voat.Configuration
                 return (bool)configValues[CONFIGURATION.AdsEnabled];
             }
         }
+        public static string SiteDomain
+        {
+            get
+            {
+                return (string)configValues[CONFIGURATION.SiteDomain];
+            }
+        }
         #endregion 
     }
 }

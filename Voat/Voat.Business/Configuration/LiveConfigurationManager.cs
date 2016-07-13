@@ -43,6 +43,7 @@ namespace Voat.Configuration
         public const string DestinationPathThumbs = "destinationPathThumbs";
         public const string DestinationPathAvatars = "destinationPathAvatars";
         public const string AdsEnabled = "adsEnabled";
+        public const string SiteDomain = "siteDomain";
 
     }
 
@@ -151,6 +152,8 @@ namespace Voat.Configuration
                 SetValueIfPresent<bool>(CONFIGURATION.UseContentDeliveryNetwork, section[CONFIGURATION.UseContentDeliveryNetwork]);
 
                 SetValueIfPresent<bool>(CONFIGURATION.AdsEnabled, section[CONFIGURATION.AdsEnabled]);
+                SetValueIfPresent<string>(CONFIGURATION.SiteDomain, section[CONFIGURATION.SiteDomain]);
+
                 //HACK ATTACK
                 CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;
             }

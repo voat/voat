@@ -59,8 +59,7 @@ namespace Voat.Domain.Query.Base
             switch (_sort)
             {
                 case CommentSortAlgorithm.Intensity:
-                    //really rough alg for intensity
-                    fullTree = fullTree.OrderByDescending(x => (x.UpCount * x.DownCount) / Math.Max(1, Math.Abs((x.UpCount - x.DownCount))));
+                    fullTree = fullTree.OrderByDescending(x => Math.Max(1, (x.UpCount + x.DownCount)) ^ (Math.Min(x.UpCount, x.DownCount) / Math.Max(1, Math.Max(x.UpCount, x.DownCount))));
                     break;
                 case CommentSortAlgorithm.New:
                     fullTree = fullTree.OrderByDescending(x => x.CreationDate);
