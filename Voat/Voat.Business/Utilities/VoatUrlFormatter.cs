@@ -31,7 +31,7 @@ namespace Voat.Utilities
         {
             if (!String.IsNullOrEmpty(userName))
             {
-                return $"{GetProtocol(protocol)}//{_domain}/u/{userName}";
+                return $"{GetProtocol(protocol)}//{_domain}/user/{userName}";
             }
             return "#";
         }
