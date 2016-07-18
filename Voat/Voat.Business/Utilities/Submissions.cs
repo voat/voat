@@ -94,7 +94,7 @@ namespace Voat.Utilities
         // remove illegal unicode characters from a string
         public static string StripIllegalUnicode(string stringToClean)
         {
-            return Regex.Replace(stringToClean, @"[^\p{L}\p{N}\p{M}\p{P}\p{Zs}\u0020-\u007F]", string.Empty).Normalize(NormalizationForm.FormKC);
+            return Regex.Replace(stringToClean, @"[^\p{L}\p{N}\p{M}\p{P}\u0020-\u007F\u200B\u200C\u200D\u200E\u200F\u202A\u202B\u202C\u202D\u202E]", string.Empty).Normalize(NormalizationForm.FormKC);
         }
 
         // add new submission
