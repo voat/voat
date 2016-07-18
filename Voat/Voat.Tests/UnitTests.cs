@@ -135,7 +135,7 @@ namespace UnitTests
             string result = Submissions.StripIllegalUnicode(testString1);
             Assert.IsTrue(result.Equals(testStringAllowedUnicode));
             
-            const string testString2 = "\x0008NSA holds info over US citizens \x200Flike\n loaded gun, but \x2029says ‘trust me’ – Snowden";
+            const string testString2 = "\x0008NSA holds info over US citizens \x200Alike\n loaded gun, but \x2029says ‘trust me’ – Snowden";
             const string testStringNotAllowedUnicode = "NSA holds info over US citizens like loaded gun, but says ‘trust me’ – Snowden";
 
             result = Submissions.StripIllegalUnicode(testString2);
