@@ -54,8 +54,8 @@ namespace Voat
                     return;
                 }
 
-                // discard message if it contains unicode
-                if (Submissions.ContainsUnicode(message))
+                // discard message if it contains illegal unicode
+                if (!message.Equals(Submissions.StripIllegalUnicode(message)))
                 {
                     return;
                 }

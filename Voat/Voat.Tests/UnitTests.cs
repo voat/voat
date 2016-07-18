@@ -127,26 +127,19 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestUnicodeDetection()
-        {
-            const string testString = "🆆🅰🆂 🅶🅴🆃🆃🅸🅽🅶 🅲🅰🆄🅶🅷🆃 🅿🅰🆁🆃 🅾🅵 🆈🅾🆄🆁 🅿🅻🅰🅽🅴";
-            const string testStringWithoutUnicode = "was getting caught part of your plane";
-
-            bool result = Submissions.ContainsUnicode(testString);
-            Assert.IsTrue(result, "Unicode was not detected.");
-
-            bool resultWithoutUnicode = Submissions.ContainsUnicode(testStringWithoutUnicode);
-            Assert.IsFalse(resultWithoutUnicode, "Unicode was not detected.");
-        }
-
-        [TestMethod]
         public void TestUnicodeStripping()
         {
-            const string testString = "NSA holds info over US citizens like loaded gun, but says ‘trust me’ – Snowden";
-            const string testStringWithoutUnicode = "NSA holds info over US citizens like loaded gun, but says trust me  Snowden";
+            const string testString1 = "NSA holds info over US citizens like loaded gun, but says ‘trust me’ – Snowden";
+            const string testStringAllowedUnicode = "NSA holds info over US citizens like loaded gun, but says ‘trust me’ – Snowden";
 
-            string result = Submissions.StripUnicode(testString);
-            Assert.IsTrue(result.Equals(testStringWithoutUnicode));
+            string result = Submissions.StripIllegalUnicode(testString1);
+            Assert.IsTrue(result.Equals(testStringAllowedUnicode));
+            
+            const string testString2 = "\x0008NSA holds info over US citizens \x200Alike\n loaded gun, but \x2029says ‘trust me’ – Snowden";
+            const string testStringNotAllowedUnicode = "NSA holds info over US citizens like loaded gun, but says ‘trust me’ – Snowden";
+
+            result = Submissions.StripIllegalUnicode(testString2);
+            Assert.IsTrue(result.Equals(testStringNotAllowedUnicode));
         }
 
     }
