@@ -10,6 +10,8 @@ namespace Voat.Configuration
 
     public static class CONFIGURATION {
         public const string DailyCommentPostingQuotaForNegativeScore = "dailyCommentPostingQuotaForNegativeScore";
+        public const string DailyCommentPostingQuota = "dailyCommentPostingQuota";
+        public const string HourlyCommentPostingQuota = "hourlyCommentPostingQuota";
         public const string DailyCrossPostingQuota = "dailyCrossPostingQuota";
         public const string DailyPostingQuotaForNegativeScore = "dailyPostingQuotaForNegativeScore";
         public const string DailyPostingQuotaPerSub = "dailyPostingQuotaPerSub";
@@ -123,6 +125,8 @@ namespace Voat.Configuration
                 SetValueIfPresent<int>(CONFIGURATION.DailyPostingQuotaForNegativeScore, section[CONFIGURATION.DailyPostingQuotaForNegativeScore]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyGlobalPostingQuota, section[CONFIGURATION.DailyGlobalPostingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyCommentPostingQuotaForNegativeScore, section[CONFIGURATION.DailyCommentPostingQuotaForNegativeScore]);
+                SetValueIfPresent<int>(CONFIGURATION.DailyCommentPostingQuota, section[CONFIGURATION.DailyCommentPostingQuota]);
+                SetValueIfPresent<int>(CONFIGURATION.HourlyCommentPostingQuota, section[CONFIGURATION.HourlyCommentPostingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.MaxAllowedAccountsFromSingleIP, section[CONFIGURATION.MaxAllowedAccountsFromSingleIP]);
 
                 SetValueIfPresent<bool>(CONFIGURATION.ForceHTTPS, section[CONFIGURATION.ForceHTTPS]);

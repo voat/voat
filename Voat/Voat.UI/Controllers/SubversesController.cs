@@ -792,7 +792,6 @@ namespace Voat.Controllers
             return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
         }
 
-        [OutputCache(Duration = 3600, VaryByParam = "none")]
         public ActionResult Subversenotfound()
         {
             ViewBag.SelectedSubverse = "404";
@@ -1565,6 +1564,7 @@ namespace Voat.Controllers
                 var subverse = DataCache.Subverse.Retrieve(subversetoshow);
                 if (subverse != null)
                 {
+                    ViewBag.SubverseAnonymized = subverse.IsAnonymized;
                     //HACK: Disable subverse
                     if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
                     {

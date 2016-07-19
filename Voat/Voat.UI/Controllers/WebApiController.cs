@@ -70,6 +70,21 @@ namespace Voat.Controllers
             return bannedSubs;
         }
 
+        [HttpGet]
+        public IEnumerable<string> BannedUsers()
+        {
+            IEnumerable<string> bannedUsers = CacheHandler.Register<IEnumerable<string>>("LegacyApi.BannedUsers",
+              new Func<IList<string>>(() =>
+              {
+                  using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+                  {
+                      var bannedUserAccounts = db.BannedUsers.OrderBy(s => s.CreationDate).ToList();
+                      return bannedUserAccounts.Select(item => "Username: " + item.UserName + ", reason: " + item.Reason + ", added on: " + item.CreationDate + ", added by: " + item.CreatedBy).ToList();
+                  }
+              }), TimeSpan.FromHours(12));
+            return bannedUsers;
+        }
+
         // GET api/ishostnamegloballybanned
         /// <summary>
         ///  This API checks if a hostname is globally banned for link type submissions.

@@ -18,7 +18,6 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Voat.Data.Models;
-using Voat.Models;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 
@@ -31,7 +30,6 @@ namespace Voat.Controllers
         private readonly voatEntities _db = new voatEntities(CONSTANTS.CONNECTION_READONLY);
 
         [PreventSpam]
-        //[OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
             
@@ -85,14 +83,6 @@ namespace Voat.Controllers
 
                 }
 
-
-                //var resultsx = _db.Messages
-                //    .Where(x => x.Name != "deleted" && x.Subverse == sub &&
-                //        (x.Linkdescription.ToLower().Contains(q) || x.MessageContent.ToLower().Contains(q) || x.Title.ToLower().Contains(q))
-                //    ).OrderByDescending(s => s.Rank)
-                //    .ThenByDescending(s => s.Date).Take(25);
-
-
                 ViewBag.Title = "search results";
 
                 var paginatedResults = new PaginatedList<Submission>(cacheData, 0, pageSize, 24); //HACK: To turn off paging 
@@ -142,7 +132,6 @@ namespace Voat.Controllers
         }
 
         [PreventSpam]
-        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult FindSubverse(int? page, string d, string q)
         {
             if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

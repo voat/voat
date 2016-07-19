@@ -123,6 +123,18 @@
             </div>
             <div class="spacer">
                 <div class="sidecontentbox ">
+                    <div class="title">
+                        <h1 class="alert-h1">Advertize on Voat</h1>
+                    </div>
+                    <div class="sidecontentbox content">
+                        <p>
+                            Your Ad here? E-mail hello@voat.co.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="spacer">
+                <div class="sidecontentbox ">
                     <a class="helplink message-moderators-temporary-class" title="Message the Moderators" href="/messaging/compose?recipient=v/@Model.Name">message the moderators</a>
                     <div class="title">
                         <h1 class="alert-h1">MODERATORS</h1>
@@ -134,11 +146,24 @@
                     </ul>
                 </div>
             </div>
+            <div class="spacer">
+                <div class="sidecontentbox ">
+                    <div class="title">
+                        <h1 class="alert-h1">MODERATION LOGS</h1>
+                    </div>
+                    <ul class="content">
+                        <li><a rel="nofollow" href="/v/@Model.Name/modlog/deleted">Removed submissions</a></li>
+                        <li><a rel="nofollow" href="/v/@Model.Name/modlog/deletedcomments">Removed comments</a></li>
+                        <li><a rel="nofollow" href="/v/@Model.Name/modlog/bannedusers">Banned users</a></li>
+                    </ul>
+                </div>
+            </div>
+
             @if (!Settings.SignalRDisabled)
             {
                 @Html.Partial("Sidebars/_SidebarChat", Model)
             }
-            <div class="spacer spacersection">
+            <div class="spacer">
                 <div class="sidecontentbox ">
                     <div class="title">
                         <h1 class="alert-h1">ANNOUNCEMENTS</h1>
@@ -148,7 +173,7 @@
                     </div>
                 </div>
             </div>
-            @if(User.Identity.IsAuthenticated && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Name))
+            @if (User.Identity.IsAuthenticated && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Name))
             {
                 @Html.Partial("Sidebars/_SidebarModToolbox")
             }

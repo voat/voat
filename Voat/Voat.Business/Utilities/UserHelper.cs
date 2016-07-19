@@ -146,7 +146,7 @@ namespace Voat.Utilities
                                 }
                             }
                         }
-                        
+
                         // TODO:
                         // keep this updated as new features are added (delete sets etc)
 
@@ -423,15 +423,15 @@ namespace Voat.Utilities
             UserPreference result = GetUserPreferences(userName);
             return result != null && result.DisableCSS;
         }
-        
+
         // check which theme style user selected
         public static void SetUserStylePreferenceCookie(string theme)
         {
             var cookie = new HttpCookie("theme", theme);
             cookie.Expires = DateTime.Now.AddDays(14);
             System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
-        }        
-        
+        }
+
         // check which theme style user selected
         public static string UserStylePreference(string userName)
         {
@@ -444,7 +444,8 @@ namespace Voat.Utilities
             }
             else
             {
-                if (!String.IsNullOrEmpty(userName)) {
+                if (!String.IsNullOrEmpty(userName))
+                {
                     UserPreference result = GetUserPreferences(userName);
                     if (result != null)
                     {
@@ -629,7 +630,7 @@ namespace Voat.Utilities
         {
             UserPreference result = GetUserPreferences(userName);
             return result != null && result.UseSubscriptionsMenu;
-            
+
         }
 
         // get short bio for a given user
@@ -760,6 +761,56 @@ namespace Voat.Utilities
             }
         }
 
+        // check if a given user has used his daily comment posting quota
+        public static bool UserDailyCommentPostingQuotaUsed(string userName)
+        {
+            // set starting date to 24 hours ago from now
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = DateTime.Now;
+
+            // read daily posting quota per sub configuration parameter from web.config
+            int dpqps = Settings.DailyCommentPostingQuota;
+
+            using (var db = new voatEntities())
+            {
+                // check how many submission user made today
+                var userCommentSubmissionsInPast24Hours = db.Comments.Count(
+                    m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+
+                if (dpqps <= userCommentSubmissionsInPast24Hours)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // check if a given user has used his hourly comment posting quota
+        public static bool UserHourlyCommentPostingQuotaUsed(string userName)
+        {
+            // set starting date to 59 minutes ago from now
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, 0, -59, 0, 0));
+            var toDate = DateTime.Now;
+
+            // read hourly posting quota configuration parameter from web.config
+            int hpqp = Settings.HourlyCommentPostingQuota;
+
+            using (var db = new voatEntities())
+            {
+                // check how many comments user made in the last 59 minutes
+                var userCommentSubmissionsInPastHour = db.Comments.Count(
+                    m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+
+                if (hpqp <= userCommentSubmissionsInPastHour)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         // check if a given user has used his hourly posting quota for a given subverse
         public static bool UserHourlyPostingQuotaForSubUsed(string userName, string subverse)
         {
@@ -863,7 +914,7 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 var numberOfTimesSubmitted = db.Submissions
-                    .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase) 
+                    .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase)
                     && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
                     && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
@@ -985,6 +1036,22 @@ namespace Voat.Utilities
                 var blockedSubverse = new UserBlockedSubverse { UserName = userName, Subverse = subverse };
                 db.UserBlockedSubverses.Add(blockedSubverse);
                 db.SaveChanges();
+            }
+        }
+
+        public static bool SimilarCommentSubmittedRecently(string userName, string commentContent)
+        {
+            // set starting date to 59 minutes ago from now
+            var fromDate = DateTime.Now.Add(new TimeSpan(0, 0, -59, 0, 0));
+            var toDate = DateTime.Now;
+
+            using (var db = new voatEntities())
+            {
+                var previousComment = db.Comments.FirstOrDefault(m => m.Content.Equals(commentContent, StringComparison.OrdinalIgnoreCase)
+                    && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                    && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+
+                return previousComment != null;
             }
         }
     }
