@@ -44,6 +44,7 @@ namespace Voat.Configuration
         public const string DestinationPathAvatars = "destinationPathAvatars";
         public const string AdsEnabled = "adsEnabled";
         public const string SiteDomain = "siteDomain";
+        public const string LegacyApiEnabled = "legacyApiEnabled";
 
     }
 
@@ -153,6 +154,7 @@ namespace Voat.Configuration
 
                 SetValueIfPresent<bool>(CONFIGURATION.AdsEnabled, section[CONFIGURATION.AdsEnabled]);
                 SetValueIfPresent<string>(CONFIGURATION.SiteDomain, section[CONFIGURATION.SiteDomain]);
+                SetValueIfPresent<bool>(CONFIGURATION.LegacyApiEnabled, section[CONFIGURATION.LegacyApiEnabled]);
 
                 //HACK ATTACK
                 CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;

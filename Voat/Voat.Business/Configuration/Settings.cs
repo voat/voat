@@ -8,6 +8,14 @@ namespace Voat.Configuration
 
         internal static Dictionary<string, object> configValues = new Dictionary<string, object>();
 
+        private static T GetValue<T>(string key, T defaultIfMissing)
+        {
+            if (configValues.ContainsKey(key))
+            {
+                return (T)configValues[key];
+            }
+            return defaultIfMissing;    
+        }
 
         public static int DailyCommentPostingQuotaForNegativeScore
         {
@@ -250,6 +258,13 @@ namespace Voat.Configuration
             get
             {
                 return (string)configValues[CONFIGURATION.SiteDomain];
+            }
+        }
+        public static bool LegacyApiEnabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.LegacyApiEnabled];
             }
         }
         #endregion 
