@@ -495,6 +495,15 @@ namespace Voat
                }
             );
 
+            if (!Settings.SignalRDisabled)
+            {
+                routes.MapRoute(
+                    name: "JoinChat",
+                    url: "chat/{subverseName}",
+                    defaults: new { controller = "Chat", action = "Index", subverseName = UrlParameter.Optional }
+                );
+            }
+
             // /new
             routes.MapRoute(
                 name: "New",
@@ -829,13 +838,6 @@ namespace Voat
 
             }
 
-            // p/partnerintent
-            //routes.MapRoute(
-            //    name: "PartnerProgramIntent",
-            //    url: "p/apply",
-            //    defaults: new { controller = "Partner", action = "PartnerIntentRegistration" }
-            //);
-            
             // default route
             routes.MapRoute(
                 name: "Default",

@@ -23,7 +23,7 @@ namespace Voat.Utilities
     public static class Formatting
     {
         
-        public static string FormatMessage(String originalMessage, bool processContent = true){
+        public static string FormatMessage(String originalMessage, bool processContent = true, bool? forceLinksNewWindow = null){
             //Test changes to this code against this markdown thread content:
             //https://voat.co/v/test/comments/53891
             
@@ -34,10 +34,18 @@ namespace Voat.Utilities
 
             var newWindow = false;
 
-            if (System.Web.HttpContext.Current != null && System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            if (forceLinksNewWindow.HasValue)
             {
-                newWindow = UserHelper.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name);
+                newWindow = forceLinksNewWindow.Value;
             }
+            else
+            {
+                if (System.Web.HttpContext.Current != null && System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+                {
+                    newWindow = UserHelper.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name);
+                }
+            }
+
 
             var m = new Markdown
             {

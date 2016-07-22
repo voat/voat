@@ -11,11 +11,12 @@
 }
 
 .subverseChatRoomContent {
+    max-height: 400px;
     min-height: 200px;
-    max-height: 300px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
 }
+
 
 .user-avatar {
     margin: 0;
@@ -9528,4 +9529,9 @@ body.with-listing-chooser {
 
 .progress {
     margin-bottom: 5px;
+}
+
+.chatContent {
+    z-index: 1;
+    margin: 7px 10px 0px 10px;
 }

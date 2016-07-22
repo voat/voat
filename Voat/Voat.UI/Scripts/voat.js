@@ -132,7 +132,7 @@ $(document).ready(function () {
 
                 // Hub accessed function to append incoming chat message
                 proxy.client.appendChatMessage = function (sender, chatMessage) {
-                    $("#subverseChatRoom").append('<p><b>' + sender + '</b>: ' + chatMessage + '</p>');
+                    $("#subverseChatRoom").append('<p><b><a href="/user/' + sender + '">' + sender + '</a></b>:</p>' + chatMessage );
                     scrollChatToBottom();
                 };
             }
@@ -1533,11 +1533,11 @@ function scrollChatToBottom() {
 }
 
 // a function to submit chat message to subverse chat room
-function sendChatMessage(userName, subverse) {
+function sendChatMessage(subverseName) {
     if ($.connection != null) {
         var messageToSend = $("#chatInputBox").val();
         var chatProxy = $.connection.messagingHub;
-        chatProxy.server.sendChatMessage(userName, messageToSend, subverse);
+        chatProxy.server.sendChatMessage(subverseName, messageToSend);
         scrollChatToBottom();
         // clear input
         $("#chatInputBox").val('');
@@ -1545,13 +1545,20 @@ function sendChatMessage(userName, subverse) {
 }
 
 // a function to add a client to a subverse chat room
-function joinSubverseChatRoom(subverseName) {
+function joinChat(subverseName) {
     if ($.connection != null) {
         // Start the connection.
         $.connection.hub.start().done(function () {
             var chatProxy = $.connection.messagingHub;
-            chatProxy.server.joinSubverseChatRoom(subverseName);
+            chatProxy.server.joinChat(subverseName);
         });
+    }
+}
+
+function leaveChat(subverseName) {
+    if ($.connection != null) {
+        var chatProxy = $.connection.messagingHub;
+        chatProxy.server.leaveChat(subverseName);
     }
 }
 
