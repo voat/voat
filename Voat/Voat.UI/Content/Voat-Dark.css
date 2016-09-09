@@ -3284,3 +3284,8 @@ textarea.form-control {
 .bylink {
     padding-left: 5px;
 }
+
+.sorting-thingy {
+    border-bottom: 1px solid;
+    border-color: #222;
+}
