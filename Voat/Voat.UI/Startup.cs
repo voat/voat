@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin;
+﻿using Microsoft.AspNet.SignalR;
+using Microsoft.Owin;
 using Owin;
 using Voat;
 using Voat.Configuration;
@@ -15,7 +16,13 @@ namespace Voat
             if (!Settings.SignalRDisabled)
             {
                 // wire up SignalR
-                app.MapSignalR();
+                var config = new HubConfiguration()
+                {
+                    EnableDetailedErrors = false,
+                    EnableJSONP = false,
+                    EnableJavaScriptProxies = true
+                };
+                app.MapSignalR(config);
             }
         }
     }

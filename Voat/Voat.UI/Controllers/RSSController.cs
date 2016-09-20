@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;

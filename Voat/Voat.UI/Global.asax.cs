@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,6 +10,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Voat.Configuration;
+using Voat.Rules;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 using Voat.Utilities.Components;
@@ -25,6 +27,11 @@ namespace Voat
             LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
             LiveConfigurationManager.Start();
 
+            //forces Rules Engine to load
+            var x = VoatRulesEngine.Instance;
+            //forces thumbgenerator to initialize
+            var p = ThumbGenerator.DestinationPathThumbs;
+
             if (!Settings.SignalRDisabled)
             {
                 Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver.Register(typeof(Microsoft.AspNet.SignalR.Hubs.IJavaScriptMinifier), () => new HubMinifier());
@@ -40,13 +47,47 @@ namespace Voat
 
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
 
-            ContentProcessor.UserNotificationChanged = new Action<string>(recipient => {
-                //get count of unread notifications
-                int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(recipient);
-                // send SignalR realtime notification to recipient
-                var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                hubContext.Clients.User(recipient).setNotificationsPending(unreadNotifications);
-            });
+            JsonConvert.DefaultSettings = () => { return JsonSettings.GetSerializationSettings(); };
+
+            #region Hook Events
+
+            EventHandler<MessageReceivedEventArgs> updateNotificationCount = delegate (object s, MessageReceivedEventArgs e)
+            {
+                if (!Settings.SignalRDisabled)
+                {
+                    //get count of unread notifications
+                    int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(e.UserName);
+                    // send SignalR realtime notification to recipient
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    hubContext.Clients.User(e.UserName).setNotificationsPending(unreadNotifications);
+                }
+            };
+            EventNotification.Instance.OnMessageReceived += updateNotificationCount;
+            EventNotification.Instance.OnMentionReceived += updateNotificationCount;
+            EventNotification.Instance.OnCommentReplyReceived += updateNotificationCount;
+
+            EventNotification.Instance.OnVoteReceived += (s, e) =>
+            {
+                if (!Settings.SignalRDisabled)
+                {
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    switch (e.ReferenceType)
+                    {
+                        case Domain.Models.ContentType.Submission:
+                            hubContext.Clients.User(e.UserName).voteChange(1, e.ChangeValue);
+                            break;
+                        case Domain.Models.ContentType.Comment:
+                            hubContext.Clients.User(e.UserName).voteChange(2, e.ChangeValue);
+                            break;
+                    }
+                }
+            };
+
+            //TODO:
+            EventNotification.Instance.OnHeadButtReceived += (s, e) => { };
+            EventNotification.Instance.OnChatMessageReceived += (s, e) => { };
+
+            #endregion 
 
             // USE ONLY FOR DEBUG: clear all sessions used for online users count
             // SessionTracker.RemoveAllSessions();

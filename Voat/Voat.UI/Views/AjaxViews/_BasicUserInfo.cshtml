@@ -16,4 +16,9 @@
     <span>Member for @Model.MemberSince</span>
     <span>SCP: @Model.Scp</span>
     <span>CCP: @Model.Ccp</span>
+    @if (!String.IsNullOrEmpty(Model.Bio))
+    {
+        <hr/>
+        <span class="user-quote">"@Model.Bio"</span>
+    }    
 </div>

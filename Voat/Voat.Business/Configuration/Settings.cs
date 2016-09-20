@@ -8,12 +8,36 @@ namespace Voat.Configuration
 
         internal static Dictionary<string, object> configValues = new Dictionary<string, object>();
 
+        private static T GetValue<T>(string key, T defaultIfMissing)
+        {
+            if (configValues.ContainsKey(key))
+            {
+                return (T)configValues[key];
+            }
+            return defaultIfMissing;    
+        }
 
         public static int DailyCommentPostingQuotaForNegativeScore
         {
             get
             {
                 return (int)configValues[CONFIGURATION.DailyCommentPostingQuotaForNegativeScore];
+            }
+        }
+
+        public static int DailyCommentPostingQuota
+        {
+            get
+            {
+                return (int)configValues[CONFIGURATION.DailyCommentPostingQuota];
+            }
+        }
+
+        public static int HourlyCommentPostingQuota
+        {
+            get
+            {
+                return (int)configValues[CONFIGURATION.HourlyCommentPostingQuota];
             }
         }
 
@@ -219,6 +243,28 @@ namespace Voat.Configuration
             get
             {
                 return (string)configValues[CONFIGURATION.DestinationPathAvatars];
+            }
+        }
+
+        public static bool AdsEnabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.AdsEnabled];
+            }
+        }
+        public static string SiteDomain
+        {
+            get
+            {
+                return (string)configValues[CONFIGURATION.SiteDomain];
+            }
+        }
+        public static bool LegacyApiEnabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.LegacyApiEnabled];
             }
         }
         #endregion 

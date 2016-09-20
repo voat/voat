@@ -20,10 +20,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
-using Voat.Business.Utilities;
+using Voat.Utilities;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;
+using Voat.Data;
+using Voat.Domain.Query;
+using System.Net.Http;
 
 namespace Voat.Utilities
 {
@@ -81,7 +84,6 @@ namespace Voat.Utilities
                         {
                             c.IsDeleted = true;
                             c.Content = "deleted by user";
-                            c.UserName = "deleted";
                         }
                         db.SaveChanges();
 
@@ -94,11 +96,9 @@ namespace Voat.Utilities
                                 s.IsDeleted = true;
                                 s.Content = "deleted by user";
                                 s.Title = "deleted by user";
-                                s.UserName = "deleted";
                             }
                             else
                             {
-                                s.UserName = "deleted";
                                 s.IsDeleted = true;
                                 s.LinkDescription = "deleted by user";
                                 s.Content = "http://voat.co";
@@ -146,10 +146,8 @@ namespace Voat.Utilities
                                 }
                             }
                         }
-                        
-                        // TODO:
-                        // keep this updated as new features are added (delete sets etc)
 
+                        // UNDONE: keep this updated as new features are added (delete sets etc)
                         // username will stay permanently reserved to prevent someone else from registering it and impersonating
 
                         db.SaveChanges();
@@ -278,20 +276,25 @@ namespace Voat.Utilities
         }
 
         // return a list of subverses user is subscribed to
-        public static List<string> UserSubscriptions(string userName)
+        public static IEnumerable<string> UserSubscriptions(string userName)
         {
-            // get a list of subcribed subverses with details and order by subverse names, ascending
-            using (var db = new voatEntities())
-            {
-                var subscribedSubverses = from c in db.Subverses
-                                          join a in db.SubverseSubscriptions
-                                          on c.Name equals a.Subverse
-                                          where a.UserName.Equals(userName)
-                                          orderby a.Subverse ascending
-                                          select c.Name;
 
-                return subscribedSubverses.ToList();
-            }
+            var q = new QueryUserData(userName);
+            var r = q.Execute();
+            return r.Subscriptions;
+
+            //// get a list of subcribed subverses with details and order by subverse names, ascending
+            //using (var db = new voatEntities())
+            //{
+            //    var subscribedSubverses = from c in db.Subverses
+            //                              join a in db.SubverseSubscriptions
+            //                              on c.Name equals a.Subverse
+            //                              where a.UserName.Equals(userName)
+            //                              orderby a.Subverse ascending
+            //                              select c.Name;
+
+            //    return subscribedSubverses.ToList();
+            //}
         }
 
         // return a list of user badges
@@ -423,15 +426,15 @@ namespace Voat.Utilities
             UserPreference result = GetUserPreferences(userName);
             return result != null && result.DisableCSS;
         }
-        
+
         // check which theme style user selected
         public static void SetUserStylePreferenceCookie(string theme)
         {
             var cookie = new HttpCookie("theme", theme);
-            cookie.Expires = DateTime.Now.AddDays(14);
+            cookie.Expires = Repository.CurrentDate.AddDays(14);
             System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
-        }        
-        
+        }
+
         // check which theme style user selected
         public static string UserStylePreference(string userName)
         {
@@ -444,7 +447,8 @@ namespace Voat.Utilities
             }
             else
             {
-                if (!String.IsNullOrEmpty(userName)) {
+                if (!String.IsNullOrEmpty(userName))
+                {
                     UserPreference result = GetUserPreferences(userName);
                     if (result != null)
                     {
@@ -473,14 +477,17 @@ namespace Voat.Utilities
         //preferences get called from views, so this method caches prefs in the context so each call only queries once
         private static UserPreference GetUserPreferences(string userName)
         {
-            UserPreference pref = (UserPreference)System.Web.HttpContext.Current.Items["UserPreferences"];
+            UserPreference pref = (UserPreference)(System.Web.HttpContext.Current != null ? System.Web.HttpContext.Current.Items["UserPreferences"] : null);
             if (pref == null)
             {
                 using (var db = new voatEntities())
                 {
                     Debug.Print(String.Format("Loading preferences for {0}", userName));
                     pref = db.UserPreferences.Find(userName);
-                    System.Web.HttpContext.Current.Items["UserPreferences"] = pref;
+                    if (System.Web.HttpContext.Current != null)
+                    {
+                        System.Web.HttpContext.Current.Items["UserPreferences"] = pref;
+                    }
                 }
             }
             return pref;
@@ -495,19 +502,19 @@ namespace Voat.Utilities
             int commentVotesUsedInPast24Hrs = 0;
             int submissionVotesUsedInPast24Hrs = 0;
 
-            var startDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
 
             using (var db = new voatEntities())
             {
                 // calculate how many comment votes user made in the past 24 hours
                 var commentVotesUsedToday = db.CommentVoteTrackers
-                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= DateTime.Now && c.UserName == userName);
+                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= Repository.CurrentDate && c.UserName == userName);
 
                 commentVotesUsedInPast24Hrs = commentVotesUsedToday.Count();
 
                 // calculate how many submission votes user made in the past 24 hours
                 var submissionVotesUsedToday = db.SubmissionVoteTrackers
-                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= DateTime.Now && c.UserName == userName);
+                    .Where(c => c.CreationDate >= startDate && c.CreationDate <= Repository.CurrentDate && c.UserName == userName);
 
                 submissionVotesUsedInPast24Hrs = submissionVotesUsedToday.Count();
             }
@@ -534,10 +541,17 @@ namespace Voat.Utilities
                 var comments = db.Comments.Count(a => a.UserName == userName && !a.IsDeleted);
 
                 // voting habits
-                var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
-                var submissionUpvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var submissionDownvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                var q = new QueryUserData(userName);
+                var r = q.Execute();
+                var commentUpvotes = r.Information.CommentVoting.UpCount;
+                var commentDownvotes = r.Information.CommentVoting.DownCount;
+                var submissionUpvotes = r.Information.SubmissionVoting.UpCount;
+                var submissionDownvotes = r.Information.SubmissionVoting.DownCount;
+
+                //var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                //var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                //var submissionUpvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                //var submissionDownvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
                 // get 3 highest rated comments
                 var highestRatedComments = db.Comments
@@ -578,6 +592,7 @@ namespace Voat.Utilities
                 userStatsModel.TotalCommentsSubmitted = comments;
                 userStatsModel.HighestRatedComments = highestRatedComments;
                 userStatsModel.LowestRatedComments = lowestRatedComments;
+
                 userStatsModel.TotalCommentsUpvoted = commentUpvotes;
                 userStatsModel.TotalCommentsDownvoted = commentDownvotes;
                 userStatsModel.TotalSubmissionsUpvoted = submissionUpvotes;
@@ -629,7 +644,7 @@ namespace Voat.Utilities
         {
             UserPreference result = GetUserPreferences(userName);
             return result != null && result.UseSubscriptionsMenu;
-            
+
         }
 
         // get short bio for a given user
@@ -688,8 +703,8 @@ namespace Voat.Utilities
         public static bool UserDailyPostingQuotaForSubUsed(string userName, string subverse)
         {
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.DailyPostingQuotaPerSub;
@@ -714,8 +729,8 @@ namespace Voat.Utilities
         public static bool UserDailyPostingQuotaForNegativeScoreUsed(string userName)
         {
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.DailyPostingQuotaForNegativeScore;
@@ -739,8 +754,8 @@ namespace Voat.Utilities
         public static bool UserDailyCommentPostingQuotaForNegativeScoreUsed(string userName)
         {
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.DailyCommentPostingQuotaForNegativeScore;
@@ -760,12 +775,62 @@ namespace Voat.Utilities
             }
         }
 
+        // check if a given user has used his daily comment posting quota
+        public static bool UserDailyCommentPostingQuotaUsed(string userName)
+        {
+            // set starting date to 24 hours ago from now
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
+
+            // read daily posting quota per sub configuration parameter from web.config
+            int dpqps = Settings.DailyCommentPostingQuota;
+
+            using (var db = new voatEntities())
+            {
+                // check how many submission user made today
+                var userCommentSubmissionsInPast24Hours = db.Comments.Count(
+                    m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+
+                if (dpqps <= userCommentSubmissionsInPast24Hours)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // check if a given user has used his hourly comment posting quota
+        public static bool UserHourlyCommentPostingQuotaUsed(string userName)
+        {
+            // set starting date to 59 minutes ago from now
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, 0, -59, 0, 0));
+            var toDate = Repository.CurrentDate;
+
+            // read hourly posting quota configuration parameter from web.config
+            int hpqp = Settings.HourlyCommentPostingQuota;
+
+            using (var db = new voatEntities())
+            {
+                // check how many comments user made in the last 59 minutes
+                var userCommentSubmissionsInPastHour = db.Comments.Count(
+                    m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+
+                if (hpqp <= userCommentSubmissionsInPastHour)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         // check if a given user has used his hourly posting quota for a given subverse
         public static bool UserHourlyPostingQuotaForSubUsed(string userName, string subverse)
         {
             // set starting date to 1 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -1, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.HourlyPostingQuotaPerSub;
@@ -791,7 +856,7 @@ namespace Voat.Utilities
         {
             // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
-            int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
+            int memberInDays = (Repository.CurrentDate - userRegistrationDateTime).Days;
             int userScp = Karma.LinkKarma(userName);
             if (memberInDays > 30 || userScp >= 50)
             {
@@ -799,8 +864,8 @@ namespace Voat.Utilities
             }
 
             // set starting date to 1 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -1, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -1, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = Settings.HourlyGlobalPostingQuota;
@@ -823,7 +888,7 @@ namespace Voat.Utilities
         {
             // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
-            int memberInDays = (DateTime.Now - userRegistrationDateTime).Days;
+            int memberInDays = (Repository.CurrentDate - userRegistrationDateTime).Days;
             int userScp = Karma.LinkKarma(userName);
             if (memberInDays > 30 || userScp >= 50)
             {
@@ -831,8 +896,8 @@ namespace Voat.Utilities
             }
 
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             // read daily global posting quota configuration parameter from web.config
             int dpqps = Settings.DailyGlobalPostingQuota;
@@ -857,13 +922,13 @@ namespace Voat.Utilities
             int dailyCrossPostQuota = Settings.DailyCrossPostingQuota;
 
             // set starting date to 24 hours ago from now
-            var fromDate = DateTime.Now.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = DateTime.Now;
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            var toDate = Repository.CurrentDate;
 
             using (var db = new voatEntities())
             {
                 var numberOfTimesSubmitted = db.Submissions
-                    .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase) 
+                    .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase)
                     && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
                     && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
@@ -952,21 +1017,7 @@ namespace Voat.Utilities
             }
         }
 
-        // get user IP address from httprequestbase
-        public static string UserIpAddress(HttpRequestBase request)
-        {
-            string clientIpAddress = String.Empty;
-            if (request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
-            {
-                clientIpAddress = request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            }
-            else if (request.UserHostAddress.Length != 0)
-            {
-                clientIpAddress = request.UserHostAddress;
-            }
-            return clientIpAddress;
-        }
-
+        
         // block a subverse
         public static void BlockSubverse(string userName, string subverse)
         {
@@ -982,9 +1033,30 @@ namespace Voat.Utilities
                 }
 
                 // add a new block
-                var blockedSubverse = new UserBlockedSubverse { UserName = userName, Subverse = subverse };
+                var blockedSubverse = new UserBlockedSubverse
+                {
+                    UserName = userName,
+                    Subverse = subverse,
+                    CreationDate = Repository.CurrentDate
+                };
                 db.UserBlockedSubverses.Add(blockedSubverse);
                 db.SaveChanges();
+            }
+        }
+
+        public static bool SimilarCommentSubmittedRecently(string userName, string commentContent)
+        {
+            // set starting date to 59 minutes ago from now
+            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, 0, -59, 0, 0));
+            var toDate = Repository.CurrentDate;
+
+            using (var db = new voatEntities())
+            {
+                var previousComment = db.Comments.FirstOrDefault(m => m.Content.Equals(commentContent, StringComparison.OrdinalIgnoreCase)
+                    && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                    && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+
+                return previousComment != null;
             }
         }
     }

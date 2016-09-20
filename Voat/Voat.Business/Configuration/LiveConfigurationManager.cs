@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.IO;
+using System.Reflection;
 using System.Web;
 using System.Xml;
+using Voat.Caching;
 using Voat.Utilities;
 
 namespace Voat.Configuration
@@ -10,6 +12,8 @@ namespace Voat.Configuration
 
     public static class CONFIGURATION {
         public const string DailyCommentPostingQuotaForNegativeScore = "dailyCommentPostingQuotaForNegativeScore";
+        public const string DailyCommentPostingQuota = "dailyCommentPostingQuota";
+        public const string HourlyCommentPostingQuota = "hourlyCommentPostingQuota";
         public const string DailyCrossPostingQuota = "dailyCrossPostingQuota";
         public const string DailyPostingQuotaForNegativeScore = "dailyPostingQuotaForNegativeScore";
         public const string DailyPostingQuotaPerSub = "dailyPostingQuotaPerSub";
@@ -38,6 +42,10 @@ namespace Voat.Configuration
         public const string EmailServiceKey = "emailServiceKey";
         public const string DestinationPathThumbs = "destinationPathThumbs";
         public const string DestinationPathAvatars = "destinationPathAvatars";
+        public const string AdsEnabled = "adsEnabled";
+        public const string SiteDomain = "siteDomain";
+        public const string LegacyApiEnabled = "legacyApiEnabled";
+
     }
 
     public class LiveConfigurationManager
@@ -62,9 +70,17 @@ namespace Voat.Configuration
                     {
                         if (_thewatchmen == null)
                         {
-                            _thewatchmen = new FileSystemWatcher(HttpContext.Current.Server.MapPath("~/"), "Web.config.live");
+                            if (HttpContext.Current != null)
+                            {
+                                _thewatchmen = new FileSystemWatcher(HttpContext.Current.Server.MapPath("~/"), "Web.config.live");
+                            }
+                            else 
+                            {
+                                _thewatchmen = new FileSystemWatcher(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Web.config.live");
+                            }
+
                             _thewatchmen.NotifyFilter = NotifyFilters.LastWrite;
-                            
+
                             _thewatchmen.Changed += (object sender, FileSystemEventArgs e) =>
                             {
                                 Reload(e.FullPath);
@@ -93,6 +109,7 @@ namespace Voat.Configuration
                 }
                 catch (Exception ex) { 
                     /*no-op*/
+                    
                 }
             }
         }
@@ -123,6 +140,8 @@ namespace Voat.Configuration
                 SetValueIfPresent<int>(CONFIGURATION.DailyPostingQuotaForNegativeScore, section[CONFIGURATION.DailyPostingQuotaForNegativeScore]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyGlobalPostingQuota, section[CONFIGURATION.DailyGlobalPostingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyCommentPostingQuotaForNegativeScore, section[CONFIGURATION.DailyCommentPostingQuotaForNegativeScore]);
+                SetValueIfPresent<int>(CONFIGURATION.DailyCommentPostingQuota, section[CONFIGURATION.DailyCommentPostingQuota]);
+                SetValueIfPresent<int>(CONFIGURATION.HourlyCommentPostingQuota, section[CONFIGURATION.HourlyCommentPostingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.MaxAllowedAccountsFromSingleIP, section[CONFIGURATION.MaxAllowedAccountsFromSingleIP]);
 
                 SetValueIfPresent<bool>(CONFIGURATION.ForceHTTPS, section[CONFIGURATION.ForceHTTPS]);
@@ -133,8 +152,12 @@ namespace Voat.Configuration
                 SetValueIfPresent<bool>(CONFIGURATION.RegistrationDisabled, section[CONFIGURATION.RegistrationDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.UseContentDeliveryNetwork, section[CONFIGURATION.UseContentDeliveryNetwork]);
 
+                SetValueIfPresent<bool>(CONFIGURATION.AdsEnabled, section[CONFIGURATION.AdsEnabled]);
+                SetValueIfPresent<string>(CONFIGURATION.SiteDomain, section[CONFIGURATION.SiteDomain]);
+                SetValueIfPresent<bool>(CONFIGURATION.LegacyApiEnabled, section[CONFIGURATION.LegacyApiEnabled]);
+
                 //HACK ATTACK
-                CacheHandler.CacheEnabled = !Settings.CacheDisabled;
+                CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;
             }
         }
 
@@ -168,7 +191,9 @@ namespace Voat.Configuration
                         Settings.configValues[key] = saveValue;
                     }
                 }
-                catch { }
+                catch (Exception ex) {
+                    
+                }
             }
         }
 

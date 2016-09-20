@@ -24,11 +24,12 @@
         {
             ahrefTarget = "_blank";
         }
-    }  
-    
-    var commentCount = Model.Comments.Count(c => !c.IsDeleted);
-        
-    string postAge = Submissions.CalcSubmissionAge(Model.CreationDate);
+    }
+
+    //var commentCount = Model.Comments.Count(c => !c.IsDeleted);
+    var commentCount = CommentCounter.CommentCount(Model.ID);
+
+    string postAge = Age.ToRelative(Model.CreationDate);
     string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
 
     bool ratedAdult = false;

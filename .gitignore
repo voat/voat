@@ -177,6 +177,8 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
+#Legacy Ignores
 Whoaverse/Whoaverse/Web.Debug.config
 Whoaverse/Whoaverse/Web.Release.config
 Whoaverse/Whoaverse/Web.config
@@ -184,11 +186,18 @@ Whoaverse/Whoaverse/sitemap.xml
 Whoaverse/packages/
 Whoaverse/Whoaverse/Whoaverse.csproj
 
-#new path ignore list
+#Modern Ignores
 Voat/Voat.UI/Web.Debug.config
 Voat/Voat.UI/Web.Release.config
 Voat/Voat.UI/Web.config
 Voat/Voat.UI/sitemap.xml
 Voat/packages/
 Voat/Whoaverse/Whoaverse.csproj
-Voat/Voat.Data/App.config
+Voat/Voat.Data/[Aa]pp.Config
+
+#Private Repo Ignores
+Voat/Voat.API/
+Voat/Voat.API.Tests/
+Voat/Voat-All.sln
+
+Voat/.vs/

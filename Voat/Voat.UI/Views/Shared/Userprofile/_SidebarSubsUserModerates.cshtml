@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model IEnumerable<SelectListItem>
+@model IEnumerable<string>
 
 @{
     if (Model.Any())
@@ -24,7 +24,7 @@
                     @foreach (var item in Model)
                     {
                         <p>
-                            <a href="/v/@item.Value">@item.Value</a>
+                            <a href="/v/@item">@item</a>
                         </p>
                     }
                 </div>

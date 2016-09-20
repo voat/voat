@@ -22,6 +22,9 @@ using Voat.Models.ViewModels;
 
 using Voat.Data.Models;
 using Voat.Utilities;
+using Voat.Caching;
+using Voat.Common;
+using Voat.Domain.Query;
 
 namespace Voat.Controllers
 {
@@ -113,6 +116,7 @@ namespace Voat.Controllers
 
             if (title != null)
             {
+                title = Formatting.StripUnicode(title);
                 var resultList = new List<string>
                 {
                     title
@@ -172,16 +176,21 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserBasicInfo(string userName)
         {
-            var userRegistrationDateTime = UserHelper.GetUserRegistrationDateTime(userName);
-            var memberFor = Submissions.CalcSubmissionAge(userRegistrationDateTime);
-            var scp = Karma.LinkKarma(userName);
-            var ccp = Karma.CommentKarma(userName);
+            var q = new QueryUserData(userName);
+            var userData = q.Execute();
+            //var userData = new UserData(User.Identity.Name);
+            var info = userData.Information;
+
+            var memberFor = Age.ToRelative(info.RegistrationDate);
+            var scp = info.SubmissionPoints.Sum;
+            var ccp = info.CommentPoints.Sum;
 
             var userInfoModel = new BasicUserInfo()
             {
                 MemberSince = memberFor,
                 Ccp = ccp,
-                Scp = scp
+                Scp = scp,
+                Bio = info.Bio
             };
 
             return PartialView("~/Views/AjaxViews/_BasicUserInfo.cshtml", userInfoModel);

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Voat.Business.Utilities
+namespace Voat.Utilities
 {
     public static class FileSystemUtility
     {

@@ -16,6 +16,8 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Web;
+using Voat.Caching;
+using Voat.Data;
 //using Microsoft.AspNet.SignalR;
 //using Voat.Data.Models;
 using Voat.Data.Models;
@@ -24,7 +26,7 @@ namespace Voat.Utilities.Components
 {
     public static class NotificationManager
     {
-        public static async Task SendUserMentionNotification(string user, Comment comment, Action<string> onSuccess)
+        public static async Task SendUserMentionNotification(string user, Comment comment)
         {
             if (comment != null)
             {
@@ -56,7 +58,7 @@ namespace Voat.Utilities.Components
                         commentReplyNotification.Body = comment.Content;
                         commentReplyNotification.Subverse = subverse.Name;
                         commentReplyNotification.IsUnread = true;
-                        commentReplyNotification.CreationDate = DateTime.Now;
+                        commentReplyNotification.CreationDate = Repository.CurrentDate;
 
                         commentReplyNotification.Subject = String.Format("@{0} mentioned you in a comment", comment.UserName, submission.Title);
 
@@ -65,10 +67,7 @@ namespace Voat.Utilities.Components
                         await _db.SaveChangesAsync();
                     }
 
-                    if (onSuccess != null)
-                    {
-                        onSuccess(recipient);
-                    }
+                    EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
                 }
                 catch (Exception ex) {
                     throw ex;
@@ -76,7 +75,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendUserMentionNotification(string user, Submission submission, Action<string> onSuccess)
+        public static async Task SendUserMentionNotification(string user, Submission submission)
         {
             if (submission != null)
             {
@@ -106,7 +105,7 @@ namespace Voat.Utilities.Components
                         commentReplyNotification.Body = submission.Content;
                         commentReplyNotification.Subverse = subverse.Name;
                         commentReplyNotification.IsUnread = true;
-                        commentReplyNotification.CreationDate = DateTime.Now;
+                        commentReplyNotification.CreationDate = Repository.CurrentDate;
 
                         commentReplyNotification.Subject = String.Format("@{0} mentioned you in post '{1}'", submission.UserName, submission.Title);
 
@@ -114,10 +113,8 @@ namespace Voat.Utilities.Components
                         await _db.SaveChangesAsync();
                     }
 
-                    if (onSuccess != null)
-                    {
-                        onSuccess(recipient);
-                    }
+                    EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
+
                 }
                 catch (Exception ex)
                 {
@@ -126,7 +123,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendCommentNotification(Comment comment, Action<string> onSuccess)
+        public static async Task SendCommentNotification(Comment comment)
         {
             try 
             { 
@@ -144,7 +141,7 @@ namespace Voat.Utilities.Components
                             if (UserHelper.UserExists(parentComment.UserName))
                             {
                                 // do not send notification if author is the same as comment author
-                                if (parentComment.UserName != HttpContext.Current.User.Identity.Name)
+                                if (parentComment.UserName != comment.UserName)
                                 {
                                     // send the message
 
@@ -163,12 +160,12 @@ namespace Voat.Utilities.Components
                                         }
                                         else
                                         {
-                                            commentReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
+                                            commentReplyNotification.Sender = comment.UserName;
                                         }
                                         commentReplyNotification.Body = comment.Content;
                                         commentReplyNotification.Subverse = subverse.Name;
                                         commentReplyNotification.IsUnread = true;
-                                        commentReplyNotification.CreationDate = DateTime.Now;
+                                        commentReplyNotification.CreationDate = Repository.CurrentDate;
 
                                         // self = type 1, url = type 2
                                         commentReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.LinkDescription;
@@ -177,10 +174,8 @@ namespace Voat.Utilities.Components
 
                                         await _db.SaveChangesAsync();
 
-                                        if (onSuccess != null)
-                                        {
-                                            onSuccess(commentReplyNotification.Recipient);
-                                        }
+                                        EventNotification.Instance.SendMessageNotice(commentReplyNotification.Recipient, commentReplyNotification.Sender, Domain.Models.MessageType.Comment, Domain.Models.ContentType.Comment, comment.ID);
+
                                     }
                                 }
                             }
@@ -196,7 +191,7 @@ namespace Voat.Utilities.Components
                             if (UserHelper.UserExists(submission.UserName))
                             {
                                 // do not send notification if author is the same as comment author
-                                if (submission.UserName != HttpContext.Current.User.Identity.Name)
+                                if (submission.UserName != comment.UserName)
                                 {
                                     // send the message
                                     var postReplyNotification = new SubmissionReplyNotification();
@@ -211,13 +206,13 @@ namespace Voat.Utilities.Components
                                     }
                                     else
                                     {
-                                        postReplyNotification.Sender = HttpContext.Current.User.Identity.Name;
+                                        postReplyNotification.Sender = comment.UserName;
                                     }
 
                                     postReplyNotification.Body = comment.Content;
                                     postReplyNotification.Subverse = submission.Subverse;
                                     postReplyNotification.IsUnread = true;
-                                    postReplyNotification.CreationDate = DateTime.Now;
+                                    postReplyNotification.CreationDate = Repository.CurrentDate;
 
                                     // self = type 1, url = type 2
                                     postReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.LinkDescription;
@@ -226,10 +221,8 @@ namespace Voat.Utilities.Components
 
                                     await _db.SaveChangesAsync();
 
-                                    if (onSuccess != null)
-                                    {
-                                        onSuccess(postReplyNotification.Recipient);
-                                    }
+                                    EventNotification.Instance.SendMessageNotice(postReplyNotification.Recipient, postReplyNotification.Sender, Domain.Models.MessageType.Comment, Domain.Models.ContentType.Comment, comment.ID);
+
                                 }
                             }
                         }

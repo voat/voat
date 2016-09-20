@@ -25,6 +25,8 @@ using Voat.Models;
 using Voat.Utilities;
 using Voat.Data.Models;
 using Voat.UI.Utilities;
+using Voat.Data;
+using Voat.Domain.Command;
 
 namespace Voat.Controllers
 {
@@ -172,8 +174,9 @@ namespace Voat.Controllers
                             singleCommentReply.IsUnread = false;
                         }
                         _db.SaveChanges();
+                        EventNotification.Instance.SendMessageNotice(User.Identity.Name, null, Domain.Models.MessageType.All, null, null);
                         // update notification icon
-                        UpdateNotificationCounts();
+                        //UpdateNotificationCounts();
                     }
                 }
 
@@ -222,8 +225,8 @@ namespace Voat.Controllers
                             singlePostReply.IsUnread = false;
                         }
                         _db.SaveChanges();
-                        // update notification icon
-                        UpdateNotificationCounts();
+
+                        EventNotification.Instance.SendMessageNotice(User.Identity.Name, null, Domain.Models.MessageType.All, null, null);
                     }
                 }
 
@@ -293,7 +296,7 @@ namespace Voat.Controllers
         [System.Web.Mvc.Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Compose([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
         {
             if (!ModelState.IsValid)
@@ -313,7 +316,17 @@ namespace Voat.Controllers
                 }
             }
 
-            var response = MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
+            var message = new Domain.Models.SendMessage()
+            {
+                //Sender = User.Identity.Name,
+                Recipient = privateMessage.Recipient,
+                Subject = privateMessage.Subject,
+                Message = privateMessage.Body
+            };
+            var cmd = new SendMessageCommand(message);
+            var response = await cmd.Execute();
+
+            //var response = MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
 
             return RedirectToAction("Sent", "Messaging");
         }
@@ -322,48 +335,37 @@ namespace Voat.Controllers
         [System.Web.Mvc.Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SendPrivateMessage([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
         {
-            if (!ModelState.IsValid) return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-            if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
-            // check if recipient exists
-            if (UserHelper.UserExists(privateMessage.Recipient))
-            {
-                // send the submission
-                privateMessage.CreationDate = DateTime.Now;
-                privateMessage.Sender = User.Identity.Name;
-                privateMessage.IsUnread = true;
-                if (Voat.Utilities.UserHelper.IsUserGloballyBanned(User.Identity.Name)) return new HttpStatusCodeResult(HttpStatusCode.OK);
-                _db.PrivateMessages.Add(privateMessage);
-
-                try
-                {
-                    await _db.SaveChangesAsync();
-
-                    // get count of unread notifications
-                    int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(privateMessage.Recipient);
-
-                    // send SignalR realtime notification to recipient
-                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                    hubContext.Clients.User(privateMessage.Recipient).setNotificationsPending(unreadNotifications);
-                }
-                catch (Exception)
-                {
-                    return View("~/Views/Errors/DbNotResponding.cshtml");
-                }
-            }
-            else
+            if (!ModelState.IsValid)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
+            if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+
+            var message = new Domain.Models.SendMessage()
+            {
+                //Sender = User.Identity.Name,
+                Recipient = privateMessage.Recipient,
+                Subject = privateMessage.Subject,
+                Message = privateMessage.Body
+            };
+            var cmd = new SendMessageCommand(message);
+            var response = await cmd.Execute();
+            //MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
+
+            //EventNotification.Instance.SendMessageNotice(privateMessage.Recipient, null, Domain.Models.MessageType.Inbox, null, null);
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         [System.Web.Mvc.Authorize]
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessage(int privateMessageId)
         {
@@ -387,6 +389,7 @@ namespace Voat.Controllers
 
         [System.Web.Mvc.Authorize]
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 3, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult DeletePrivateMessageFromSent(int privateMessageId)
         {
@@ -408,15 +411,15 @@ namespace Voat.Controllers
             return Json("Bad request.", JsonRequestBehavior.AllowGet);
         }
 
-        // a method which triggers SignalR notification count update on client side for logged-in user
-        private void UpdateNotificationCounts()
-        {
-            // get count of unread notifications
-            int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(User.Identity.Name);
+        //// a method which triggers SignalR notification count update on client side for logged-in user
+        //private void UpdateNotificationCounts()
+        //{
+        //    // get count of unread notifications
+        //    int unreadNotifications = Voat.Utilities.UserHelper.UnreadTotalNotificationsCount(User.Identity.Name);
 
-            var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-            hubContext.Clients.User(User.Identity.Name).setNotificationsPending(unreadNotifications);
-        }
+        //    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+        //    hubContext.Clients.User(User.Identity.Name).setNotificationsPending(unreadNotifications);
+        //}
 
         [System.Web.Mvc.Authorize]
         [HttpGet]
@@ -434,7 +437,8 @@ namespace Voat.Controllers
                 case "privateMessage":
                     if (await MesssagingUtility.MarkPrivateMessagesAsRead((bool)markAll, User.Identity.Name, itemId))
                     {
-                        UpdateNotificationCounts(); // update notification icon
+                        EventNotification.Instance.SendMessageNotice(User.Identity.Name, null, Domain.Models.MessageType.All, null, null);
+                        //UpdateNotificationCounts(); // update notification icon
                         Response.StatusCode = 200;
                         return Json("Item marked as read.", JsonRequestBehavior.AllowGet);
                     }

@@ -14,7 +14,7 @@ All Rights Reserved.
 
 using System.Text.RegularExpressions;
 
-namespace Voat.Business.Utilities
+namespace Voat.Utilities
 {
     public static class AccountSecurity
     {
@@ -28,10 +28,10 @@ namespace Voat.Business.Utilities
 
             // setup parameters
             const int minLength = 6;
-            const int numUpper = 1;
-            const int numLower = 1;
-            const int numNumbers = 1;
-            const int numSpecial = 1;
+            const int numUpper = 0;
+            const int numLower = 0;
+            const int numNumbers = 0;
+            const int numSpecial = 0;
 
             // setup checks
             Regex upper = new Regex("[A-Z]");
