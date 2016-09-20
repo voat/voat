@@ -248,7 +248,6 @@
       <LastGenOutput>VoatEntityDataModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
     <None Include="~App.Config" />
-    <None Include="App.Config" />
     <None Include="Models\VoatEntityDataModel.edmx.diagram">
       <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
     </None>
