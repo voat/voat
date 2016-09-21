@@ -52,7 +52,7 @@ namespace Voat.Tests.Utils
             string content = "@user ~~~ @user ~~~ @user ~~~ @user ~~~";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[@user](https://voat.co/u/user) ~~~ @user ~~~ [@user](https://voat.co/u/user) ~~~ @user ~~~");
+            Assert.IsTrue(processed == "[@user](https://voat.co/user/user) ~~~ @user ~~~ [@user](https://voat.co/user/user) ~~~ @user ~~~");
         }
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace Voat.Tests.Utils
             string content = "@user ~~~ @user ~~~ @user ~~~ @user ~~~ @user ~~~";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[@user](https://voat.co/u/user) ~~~ @user ~~~ [@user](https://voat.co/u/user) ~~~ @user ~~~ [@user](https://voat.co/u/user) ~~~");
+            Assert.IsTrue(processed == "[@user](https://voat.co/user/user) ~~~ @user ~~~ [@user](https://voat.co/user/user) ~~~ @user ~~~ [@user](https://voat.co/user/user) ~~~");
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace Voat.Tests.Utils
             string content = "@user ~~~ @user";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[@user](https://voat.co/u/user) ~~~ [@user](https://voat.co/u/user)");
+            Assert.IsTrue(processed == "[@user](https://voat.co/user/user) ~~~ [@user](https://voat.co/user/user)");
         }
 
         [TestMethod]
@@ -85,7 +85,7 @@ namespace Voat.Tests.Utils
             string content = "~~~ @user ~~~ @user";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "~~~ @user ~~~ [@user](https://voat.co/u/user)");
+            Assert.IsTrue(processed == "~~~ @user ~~~ [@user](https://voat.co/user/user)");
         }
 
         [TestMethod]
@@ -121,7 +121,7 @@ namespace Voat.Tests.Utils
             string content = "@userName";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co/u/userName"));
+            Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co/user/userName"));
         }
 
         [TestMethod]
@@ -214,12 +214,12 @@ namespace Voat.Tests.Utils
             string content = "-@User";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[@User](https://voat.co/u/User)");
+            Assert.IsTrue(processed == "[@User](https://voat.co/user/User)");
 
             content = "-/u/User";
 
             processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[/u/User](https://voat.co/u/User)");
+            Assert.IsTrue(processed == "[/u/User](https://voat.co/user/User)");
         }
 
         [TestMethod]
@@ -230,7 +230,7 @@ namespace Voat.Tests.Utils
             string content = "-@user";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.InboundPostSave, null);
-            //Assert.IsTrue(processed == "[@user](https://voat.co/u/user)");
+            //Assert.IsTrue(processed == "[@user](https://voat.co/user/user)");
 
             content = "@user";
             processed = ContentProcessor.Instance.Process(content, ProcessingStage.InboundPostSave, null);
