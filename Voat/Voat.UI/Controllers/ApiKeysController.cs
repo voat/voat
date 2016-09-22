@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
@@ -39,7 +40,11 @@ namespace Voat.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(ApiKeyCreateRequest model)
         {
-            if (ModelState.IsValid)
+            if (!Settings.ApiKeyCreationEnabled)
+            {
+                return RedirectToAction("Index");
+            }
+            else if (ModelState.IsValid)
             {
                 var cmd = new CreateApiKeyCommand(model.Name, model.Description, model.AboutUrl, model.RedirectUrl);
                 await cmd.Execute();

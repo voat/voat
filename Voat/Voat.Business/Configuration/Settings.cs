@@ -267,6 +267,13 @@ namespace Voat.Configuration
                 return (bool)configValues[CONFIGURATION.LegacyApiEnabled];
             }
         }
+        public static bool ApiKeyCreationEnabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.ApiKeyCreationEnabled];
+            }
+        }
         #endregion 
     }
 }

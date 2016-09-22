@@ -27,10 +27,12 @@
 
 <div id="container" class="md">
     <h1>Your Api Keys</h1>
-
-    <p>
-        @Html.ActionLink("Create New", "Create")
-    </p>
+    @if (Settings.ApiKeyCreationEnabled)
+    {
+        <p>
+            @Html.ActionLink("Create New", "Create")
+        </p>
+    }
 
     @if (Model.Count() <= 0)
     {
