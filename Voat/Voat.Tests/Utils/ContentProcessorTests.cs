@@ -292,51 +292,60 @@ namespace Voat.Tests.Utils
     }
 
     [TestClass]
-    public class MardownFormattingTests
+    public class MarkdownFormattingTests
     {
         [TestMethod]
         [TestCategory("Utility")]
         [TestCategory("Formatting")]
-        public void HrefIntactExcaping()
+        public void HrefIntactEscaping()
         {
-            string content = "[Title Here](http://voat.co)";
+            string input = "[Title Here](http://voat.co)";
+            string expected = "<p><a href=\"http://voat.co\">Title Here</a></p>";
 
-            string processed = Formatting.FormatMessage(content);
-            Assert.IsTrue(processed == "<p><a href=\"http://voat.co\">Title Here</a></p>");
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
         [TestCategory("Utility")]
         [TestCategory("Formatting")]
-        public void HrefIntactExcaping2()
+        public void HrefIntactEscaping2()
         {
-            string content = "[Title Here](ftp://voat.co)";
+            string input = "[Title Here](ftp://voat.co)";
+            string expected = "<p><a href=\"ftp://voat.co\">Title Here</a></p>";
 
-            string processed = Formatting.FormatMessage(content);
-            Assert.IsTrue(processed == "<p><a href=\"ftp://voat.co\">Title Here</a></p>");
-        }
+            string actual = Formatting.FormatMessage(input);
 
-        [TestMethod]
-        [TestCategory("Utility")]
-        [TestCategory("Security")]
-        [TestCategory("Formatting")]
-        public void ScriptExcaping()
-        {
-            string content = "[Title Here](javascript:alert('test'))";
-
-            string processed = Formatting.FormatMessage(content);
-            Assert.IsTrue(processed == "<p><a href=\"#\" data-ScriptStrip=\"/* script detected: javascript:alert('test') */\">Title Here</a></p>");
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
         [TestCategory("Utility")]
         [TestCategory("Security")]
         [TestCategory("Formatting")]
-        public void ScriptExcaping2()
+        public void ScriptEscaping()
         {
-            string content = "[Title Here]( javascript  : alert('test'))";
-            string processed = Formatting.FormatMessage(content);
-            Assert.IsTrue(processed == String.Format("<p>{0}</p>", content));
+            string input = "[Title Here](javascript:alert('test'))";
+            string expected = "<p><a href=\"#\" data-ScriptStrip=\"/* script detected: javascript:alert('test') */\">Title Here</a></p>";
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Security")]
+        [TestCategory("Formatting")]
+        public void ScriptEscaping2()
+        {
+            string input = "[Title Here]( javascript  : alert('test'))";
+            string expected = String.Format("<p>{0}</p>", input);
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
         }
     }
 }
