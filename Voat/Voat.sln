@@ -13,6 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Voat.Data", "Voat.Data\Voat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Voat.Business", "Voat.Business\Voat.Business.csproj", "{A0DA6D93-B070-485F-8E46-2F3E30982898}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalSource", "ExternalSource", "{B90DD7D6-EE88-4EE8-8320-66E997D19ACE}"
+	ProjectSection(SolutionItems) = preProject
+		ExternalSource\README.txt = ExternalSource\README.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownDeep", "ExternalSource\toptensoftware\MarkdownDeep\MarkdownDeep.csproj", "{1569ED47-C7C9-4261-B6F4-7445BD0F2C95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,8 +46,15 @@ Global
 		{A0DA6D93-B070-485F-8E46-2F3E30982898}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0DA6D93-B070-485F-8E46-2F3E30982898}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0DA6D93-B070-485F-8E46-2F3E30982898}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1569ED47-C7C9-4261-B6F4-7445BD0F2C95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1569ED47-C7C9-4261-B6F4-7445BD0F2C95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1569ED47-C7C9-4261-B6F4-7445BD0F2C95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1569ED47-C7C9-4261-B6F4-7445BD0F2C95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1569ED47-C7C9-4261-B6F4-7445BD0F2C95} = {B90DD7D6-EE88-4EE8-8320-66E997D19ACE}
 	EndGlobalSection
 EndGlobal

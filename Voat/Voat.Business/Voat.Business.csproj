@@ -50,10 +50,6 @@
       <HintPath>..\packages\ImageLibrary.2.0.5\lib\net45\Kaliko.ImageLibrary.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\MarkdownDeep.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -314,6 +310,10 @@
     <Compile Include="Domain\Models\UserStatsModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ExternalSource\toptensoftware\MarkdownDeep\MarkdownDeep.csproj">
+      <Project>{1569ed47-c7c9-4261-b6f4-7445bd0f2c95}</Project>
+      <Name>MarkdownDeep</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj">
       <Project>{1e367cda-5508-47e1-9e95-ed100aee42d0}</Project>
       <Name>Voat.Data</Name>

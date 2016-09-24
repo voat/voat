@@ -1,0 +1,29 @@
+{
+    "version": "1.0.0-*",
+    "compilationOptions": {
+        "emitEntryPoint": false
+    },
+    
+    "configurations": {
+        "Debug": {
+            "compilationOptions": {
+                "define": ["DEBUG", "TRACE", "DOTNET_CORE"]
+            }
+        },
+        "Release": {
+            "compilationOptions": {
+                "define": ["RELEASE", "TRACE", "DOTNET_CORE"],
+                "optimize": true
+            }
+        }
+    },
+	
+	"runtimes": { 
+		"win": { } 
+	},
+
+    "frameworks": {
+        "dnxcore50": { },
+		".NETFramework,Version=v4.6.1": { }
+    }
+}
