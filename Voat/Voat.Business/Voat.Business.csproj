@@ -310,7 +310,7 @@
     <Compile Include="Domain\Models\UserStatsModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ExternalSource\toptensoftware\MarkdownDeep\MarkdownDeep.csproj">
+    <ProjectReference Include="..\External\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj">
       <Project>{1569ed47-c7c9-4261-b6f4-7445bd0f2c95}</Project>
       <Name>MarkdownDeep</Name>
     </ProjectReference>
