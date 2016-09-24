@@ -1,14 +1,14 @@
-﻿// 
+﻿//
 //   MarkdownDeep - http://www.toptensoftware.com/markdowndeep
 //	 Copyright (C) 2010-2011 Topten Software
-// 
-//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this product except in 
+//
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this product except in
 //   compliance with the License. You may obtain a copy of the License at
 //
 //   http://www.apache.org/licenses/LICENSE-2.0
 //
-//   Unless required by applicable law or agreed to in writing, software distributed under the License is 
-//   distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is
+//   distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 //
 
@@ -19,201 +19,203 @@ using System.Text;
 
 namespace MarkdownDeep
 {
-	internal enum ColumnAlignment
-	{
-		NA,
-		Left,
-		Right,
-		Center,
-	}
-	internal class TableSpec
-	{
-		public TableSpec()
-		{
-		}
+    internal enum ColumnAlignment
+    {
+        NA,
+        Left,
+        Right,
+        Center,
+    }
 
-		public bool LeadingBar;
-		public bool TrailingBar;
+    internal class TableSpec
+    {
+        public TableSpec()
+        {
+        }
 
-		public List<ColumnAlignment> Columns=new List<ColumnAlignment>();
+        public bool LeadingBar;
+        public bool TrailingBar;
 
-		public List<string> Headers;
-		public List<List<string>> Rows=new List<List<string>>();
+        public List<ColumnAlignment> Columns = new List<ColumnAlignment>();
 
-		public List<string> ParseRow(StringScanner p)
-		{
-			p.SkipLinespace();
+        public List<string> Headers;
+        public List<List<string>> Rows = new List<List<string>>();
 
-			if (p.eol)
-				return null;		// Blank line ends the table
+        public List<string> ParseRow(StringScanner p)
+        {
+            p.SkipLinespace();
 
-			bool bAnyBars=LeadingBar;
-			if (LeadingBar && !p.SkipChar('|'))
-			{
-				return null;
-			}
+            if (p.eol)
+                return null;        // Blank line ends the table
 
-			// Create the row
-			List<string> row = new List<string>();
+            bool bAnyBars = LeadingBar;
+            if (LeadingBar && !p.SkipChar('|'))
+            {
+                return null;
+            }
 
-			// Parse all columns except the last
+            // Create the row
+            List<string> row = new List<string>();
 
-			while (!p.eol)
-			{
-				// Find the next vertical bar
-				p.Mark();
-				while (!p.eol && p.current != '|')
-					p.SkipEscapableChar(true);
+            // Parse all columns except the last
 
-				row.Add(p.Extract().Trim());
+            while (!p.eol)
+            {
+                // Find the next vertical bar
+                p.Mark();
+                while (!p.eol && p.current != '|')
+                    p.SkipEscapableChar(true);
 
-				bAnyBars|=p.SkipChar('|');
-			}
+                row.Add(p.Extract().Trim());
 
-			// Require at least one bar to continue the table
-			if (!bAnyBars)
-				return null;
+                bAnyBars |= p.SkipChar('|');
+            }
 
-			// Add missing columns
-			while (row.Count < Columns.Count)
-			{
-				row.Add("&nbsp;");
-			}
+            // Require at least one bar to continue the table
+            if (!bAnyBars)
+                return null;
 
-			p.SkipEol();
-			return row;
-		}
+            // Add missing columns
+            while (row.Count < Columns.Count)
+            {
+                row.Add("&nbsp;");
+            }
 
-		internal void RenderRow(Markdown m, StringBuilder b, List<string> row, string type)
-		{
-			for (int i=0; i<row.Count; i++)
-			{
-				b.Append("\t<");
-				b.Append(type);
+            p.SkipEol();
+            return row;
+        }
 
-				if (i < Columns.Count)
-				{
-					switch (Columns[i])
-					{
-						case ColumnAlignment.Left:
-							b.Append(" align=\"left\"");
-							break;
-						case ColumnAlignment.Right:
-							b.Append(" align=\"right\"");
-							break;
-						case ColumnAlignment.Center:
-							b.Append(" align=\"center\"");
-							break;
-					}
-				}
+        internal void RenderRow(Markdown m, StringBuilder b, List<string> row, string type)
+        {
+            for (int i = 0; i < row.Count; i++)
+            {
+                b.Append("\t<");
+                b.Append(type);
 
-				b.Append(">");
-				m.SpanFormatter.Format(b, row[i]);
-				b.Append("</");
-				b.Append(type);
-				b.Append(">\n");
-			}
-		}
-	
-		public void Render(Markdown m, StringBuilder b)
-		{
-			b.Append("<table>\n");
-			if (Headers != null)
-			{
-				b.Append("<thead>\n<tr>\n");
-				RenderRow(m, b, Headers, "th");
-				b.Append("</tr>\n</thead>\n");
-			}
+                if (i < Columns.Count)
+                {
+                    switch (Columns[i])
+                    {
+                        case ColumnAlignment.Left:
+                            b.Append(" align=\"left\"");
+                            break;
 
-			b.Append("<tbody>\n");
-			foreach (var row in Rows)
-			{
-				b.Append("<tr>\n");
-				RenderRow(m, b, row, "td");
-				b.Append("</tr>\n");
-			}
-			b.Append("</tbody>\n");
+                        case ColumnAlignment.Right:
+                            b.Append(" align=\"right\"");
+                            break;
 
-			b.Append("</table>\n");
-		}
+                        case ColumnAlignment.Center:
+                            b.Append(" align=\"center\"");
+                            break;
+                    }
+                }
 
-		public static TableSpec Parse(StringScanner p)
-		{
-			// Leading line space allowed
-			p.SkipLinespace();
+                b.Append(">");
+                m.SpanFormatter.Format(b, row[i]);
+                b.Append("</");
+                b.Append(type);
+                b.Append(">\n");
+            }
+        }
 
-			// Quick check for typical case
-			if (p.current != '|' && p.current != ':' && p.current != '-')
-				return null;
+        public void Render(Markdown m, StringBuilder b)
+        {
+            b.Append("<table>\n");
+            if (Headers != null)
+            {
+                b.Append("<thead>\n<tr>\n");
+                RenderRow(m, b, Headers, "th");
+                b.Append("</tr>\n</thead>\n");
+            }
 
-			// Don't create the spec until it at least looks like one
-			TableSpec spec = null;
+            b.Append("<tbody>\n");
+            foreach (var row in Rows)
+            {
+                b.Append("<tr>\n");
+                RenderRow(m, b, row, "td");
+                b.Append("</tr>\n");
+            }
+            b.Append("</tbody>\n");
 
-			// Leading bar, looks like a table spec
-			if (p.SkipChar('|'))
-			{
-				spec=new TableSpec();
-				spec.LeadingBar=true;
-			}
+            b.Append("</table>\n");
+        }
 
+        public static TableSpec Parse(StringScanner p)
+        {
+            // Leading line space allowed
+            p.SkipLinespace();
 
-			// Process all columns
-			while (true)
-			{
-				// Parse column spec
-				p.SkipLinespace();
+            // Quick check for typical case
+            if (p.current != '|' && p.current != ':' && p.current != '-')
+                return null;
 
-				// Must have something in the spec
-				if (p.current == '|')
-					return null;
+            // Don't create the spec until it at least looks like one
+            TableSpec spec = null;
 
-				bool AlignLeft = p.SkipChar(':');
-				while (p.current == '-')
-					p.SkipForward(1);
-				bool AlignRight = p.SkipChar(':');
-				p.SkipLinespace();
+            // Leading bar, looks like a table spec
+            if (p.SkipChar('|'))
+            {
+                spec = new TableSpec();
+                spec.LeadingBar = true;
+            }
 
-				// Work out column alignment
-				ColumnAlignment col = ColumnAlignment.NA;
-				if (AlignLeft && AlignRight)
-					col = ColumnAlignment.Center;
-				else if (AlignLeft)
-					col = ColumnAlignment.Left;
-				else if (AlignRight)
-					col = ColumnAlignment.Right;
+            // Process all columns
+            while (true)
+            {
+                // Parse column spec
+                p.SkipLinespace();
 
-				if (p.eol)
-				{
-					// Not a spec?
-					if (spec == null)
-						return null;
+                // Must have something in the spec
+                if (p.current == '|')
+                    return null;
 
-					// Add the final spec?
-					spec.Columns.Add(col);
-					return spec;
-				}
+                bool AlignLeft = p.SkipChar(':');
+                while (p.current == '-')
+                    p.SkipForward(1);
+                bool AlignRight = p.SkipChar(':');
+                p.SkipLinespace();
 
-				// We expect a vertical bar
-				if (!p.SkipChar('|'))
-					return null;
+                // Work out column alignment
+                ColumnAlignment col = ColumnAlignment.NA;
+                if (AlignLeft && AlignRight)
+                    col = ColumnAlignment.Center;
+                else if (AlignLeft)
+                    col = ColumnAlignment.Left;
+                else if (AlignRight)
+                    col = ColumnAlignment.Right;
 
-				// Create the table spec
-				if (spec==null)
-					spec=new TableSpec();
+                if (p.eol)
+                {
+                    // Not a spec?
+                    if (spec == null)
+                        return null;
 
-				// Add the column
-				spec.Columns.Add(col);
+                    // Add the final spec?
+                    spec.Columns.Add(col);
+                    return spec;
+                }
 
-				// Check for trailing vertical bar
-				p.SkipLinespace();
-				if (p.eol)
-				{
-					spec.TrailingBar = true;
-					return spec;
-				}
+                // We expect a vertical bar
+                if (!p.SkipChar('|'))
+                    return null;
 
-				// Next column
-			}
-		}
-	}
+                // Create the table spec
+                if (spec == null)
+                    spec = new TableSpec();
+
+                // Add the column
+                spec.Columns.Add(col);
+
+                // Check for trailing vertical bar
+                p.SkipLinespace();
+                if (p.eol)
+                {
+                    spec.TrailingBar = true;
+                    return spec;
+                }
+
+                // Next column
+            }
+        }
+    }
 }
