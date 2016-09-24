@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MarkdownDeep
 {
@@ -168,6 +169,8 @@ namespace MarkdownDeep
         // Render a list of tokens to a destinatino string builder.
         private void Render(StringBuilder sb, string str)
         {
+            var reg = new Regex("<([^ >]+)");
+            var tags = new Stack<String>();
             foreach (Token t in m_Tokens)
             {
                 switch (t.type)
@@ -179,7 +182,30 @@ namespace MarkdownDeep
 
                     case TokenType.HtmlTag:
                         // Append html as is
-                        Utils.SmartHtmlEncodeAmps(sb, str, t.startOffset, t.length);
+                        var tag = str.Substring(t.startOffset, t.length);
+                        var mtag = reg.Match(tag).Groups[1].Value;
+                        var mtag_l = mtag.ToLower();
+                        if (mtag.StartsWith("/"))
+                        {
+                            while (tags.Count() > 0)
+                            {
+                                var ptag = tags.Pop();
+                                if (ptag.ToLower() == mtag_l)
+                                {
+                                    Utils.SmartHtmlEncodeAmps(sb, str, t.startOffset, t.length);
+                                    break;
+                                }
+                                else
+                                {
+                                    sb.Append("<" + ptag + ">");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            tags.Push("/" + mtag);
+                            Utils.SmartHtmlEncodeAmps(sb, str, t.startOffset, t.length);
+                        }
                         break;
 
                     case TokenType.Html:
@@ -264,6 +290,11 @@ namespace MarkdownDeep
                 }
 
                 FreeToken(t);
+            }
+
+            while (tags.Count() > 0)
+            {
+                sb.Append("<" + tags.Pop() + ">");
             }
         }
 

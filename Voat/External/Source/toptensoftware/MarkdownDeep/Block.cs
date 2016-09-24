@@ -16,6 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Drawing;
+using System.Reflection;
 
 namespace MarkdownDeep
 {
@@ -238,7 +241,22 @@ namespace MarkdownDeep
                     return;
 
                 case BlockType.html:
-                    b.Append(buf, contentStart, contentLen);
+                    var shtml = new StringBuilder();
+                    var openingTag = new Regex(".*?>").Match(Content).Groups[0].Value;
+                    shtml.Append(openingTag);
+                    var endIndex = contentStart + contentLen - 1;
+                    while (buf[endIndex] != '<')
+                        endIndex--;
+                    var endLen = endIndex - contentStart - openingTag.Length;
+                    if (endLen < 0)
+                        endLen = 0;
+                    var blocks = new BlockProcessor(m, true).Process(Content.Substring(openingTag.Length, endLen));
+                    foreach (var block in blocks)
+                    {
+                        block.Render(m, shtml);
+                    }
+                    shtml.Append("</" + new Regex("<([^ >]+)").Match(openingTag).Groups[1].Value + ">");
+                    b.Append(shtml);
                     return;
 
                 case BlockType.unsafe_html:
