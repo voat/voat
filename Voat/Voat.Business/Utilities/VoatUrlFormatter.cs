@@ -16,14 +16,17 @@ namespace Voat.Utilities
 
         static VoatUrlFormatter()
         {
-            //set domain if in .config file
-            if (!String.IsNullOrEmpty(Settings.SiteDomain))
+            _domain = _defaultDomain;
+            try
             {
-                _domain = Settings.SiteDomain;
+                //set domain if in .config file
+                if (!String.IsNullOrEmpty(Settings.SiteDomain))
+                {
+                    _domain = Settings.SiteDomain;
+                }
             }
-            else
-            {
-                _domain = _defaultDomain;
+            catch {
+                /*no-op*/
             }
         }
 
