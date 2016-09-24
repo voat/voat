@@ -402,5 +402,18 @@ namespace Voat.Tests.Utils
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        public void EmbeddedTagSpanClosing()
+        {
+            string input = "This is great\n\n<s>This is <sup>horrible\n\nEdit: I'm sure now";
+            string expected = "<p>This is great</p>\n<p><s>This is <sup>horrible</sup></s></p>\n<p>Edit: I'm sure now</p>";
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
