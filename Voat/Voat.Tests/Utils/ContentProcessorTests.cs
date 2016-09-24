@@ -373,18 +373,34 @@ namespace Voat.Tests.Utils
 
             Assert.AreEqual(expected, actual);
         }
+
         [TestMethod]
         [TestCategory("Utility")]
         [TestCategory("Formatting")]
         public void EmbeddedClosingTag()
         {
             string input = "<blockquote>\n<p>\nParagraphs</blockquote>";
-            string expected = "<blockquote><p><p>\nParagraphs</p></p>\n</blockquote>";
+            //if blockquote is allowed
+            //string expected = "<blockquote><p><p>\nParagraphs</p></p>\n</blockquote>";
+            //if blockquote is turned off
+            string expected = "&lt;blockquote&gt;\n&lt;p&gt;\nParagraphs&lt;/blockquote&gt;";
 
             string actual = Formatting.FormatMessage(input);
 
             Assert.AreEqual(expected, actual);
         }
 
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        public void EmbeddedCodeTag()
+        {
+            string input = "~~~\nThis is code:\n\n<s> \n~~~";
+            string expected = "<pre><code>This is code:\n\n&lt;s&gt; \n</code></pre>";
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

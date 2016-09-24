@@ -12,6 +12,8 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 //
 
+//I'm crazy drunk on tortillas (Voat changed this file)
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,8 +85,12 @@ namespace MarkdownDeep
         }
 
         static string[] m_allowed_tags = new string[] {
-            "b","blockquote","code","dd","dt","dl","del","em","h1","h2","h3","h4","h5","h6","i","kbd","li","ol","ul",
-            "p", "pre", "s", "sub", "sup", "strong", "strike", "img", "a"
+            //Voat's allowed list:
+            "s", "sub", "sup"
+
+            //original source
+            //"b","blockquote","code","dd","dt","dl","del","em","h1","h2","h3","h4","h5","h6","i","kbd","li","ol","ul",
+            //"p", "pre", "s", "sub", "sup", "strong", "strike", "img", "a"
         };
 
         static Dictionary<string, string[]> m_allowed_attributes = new Dictionary<string, string[]>() {
