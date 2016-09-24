@@ -347,5 +347,44 @@ namespace Voat.Tests.Utils
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        public void ClosingTag()
+        {
+            string input = "Ha! Everything below me will be crossed out<s>";
+            string expected = "<p>Ha! Everything below me will be crossed out<s></s></p>";
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        public void BlockClosingTag()
+        {
+            string input = "><s>";
+            string expected = "<blockquote>\n<p><s></s></p>\n</blockquote>";
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        public void EmbeddedClosingTag()
+        {
+            string input = "<blockquote>\n<p>\nParagraphs</blockquote>";
+            string expected = "<blockquote><p><p>\nParagraphs</p></p>\n</blockquote>";
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
+
     }
 }
