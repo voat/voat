@@ -7,10 +7,12 @@ namespace Voat.Domain.Query
     public class QueryComments : CachedQuery<IEnumerable<Domain.Models.Comment>>
     {
         protected SearchOptions _options;
+        protected string _subverse;
 
-        public QueryComments(SearchOptions options, CachePolicy policy = null) : base(policy)
+        public QueryComments(string subverse, SearchOptions options, CachePolicy policy = null) : base(policy)
         {
             this._options = options;
+            this._subverse = subverse;
         }
 
         public override string CacheKey
@@ -25,8 +27,8 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var result = db.GetComments(null, this._options);
-                return result.Map(null);
+                var result = db.GetComments(_subverse, this._options);
+                return Domain.DomainMaps.Map(result);
             }
         }
     }

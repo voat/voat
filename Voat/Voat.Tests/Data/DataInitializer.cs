@@ -261,14 +261,14 @@ namespace Voat.Tests.Repository
                 Title = "First MinCCP Post",
                 Type = 1,
                 UserName = "anon",
-                IsAnonymized = true
+                IsAnonymized = false
             });
             context.SaveChanges();
             //ID: 5
             c = context.Comments.Add(new Comment()
             {
                 UserName = "anon",
-                Content = "You can't see my name with the data repository",
+                Content = "This is a comment in v/MinCCP Sub from user anon",
                 CreationDate = DateTime.UtcNow,
                 SubmissionID = minCCPSubmission.ID,
                 ParentID = null
@@ -280,7 +280,7 @@ namespace Voat.Tests.Repository
             c = context.Comments.Add(new Comment()
             {
                 UserName = "unit",
-                Content = "You can't see my name with the data repository, right?",
+                Content = "This is a comment in v/MinCCP Sub from user unit",
                 CreationDate = DateTime.UtcNow.AddHours(-4),
                 SubmissionID = minCCPSubmission.ID,
                 ParentID = null

@@ -100,9 +100,9 @@ namespace Voat.Caching
         {
             return "Api:Cors";
         }
-        public static string ApiStreamLastCallDate(ContentType contentType, string userName)
+        public static string ApiStreamLastCallDate(ContentType contentType, string userName, string subverse)
         {
-            return String.Format("Api:Stream:{0}:{1}", String.IsNullOrEmpty(userName) ? "unknown" : userName, contentType.ToString());
+            return String.Format("Api:Stream:{0}:{1}:{2}", String.IsNullOrEmpty(userName) ? "unknown" : userName, contentType.ToString(), (String.IsNullOrEmpty(subverse) ? "All" : subverse));
         }
         public static string SiteSearch(string subverse, string phrase)
         {

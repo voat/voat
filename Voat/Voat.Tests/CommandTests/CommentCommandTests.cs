@@ -72,7 +72,7 @@ namespace Voat.Tests.CommandTests
                 Assert.AreEqual(c.Response.IsAnonymized, comment.IsAnonymized);
             }
 
-            base.VerifyCommentContextIsProtected(c.Response.SubmissionID.Value, c.Response.ID, userName);
+            base.VerifyCommentIsProtected(c.Response.SubmissionID.Value, c.Response.ID, userName);
 
         }
 

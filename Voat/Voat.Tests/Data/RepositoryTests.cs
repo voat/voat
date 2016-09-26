@@ -131,10 +131,10 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var comments = db.GetComments(3, new SearchOptions());
+                var comments = db.GetCommentTree(2, null, null);
                 foreach (var c in comments)
                 {
-                    Assert.IsTrue(c.UserName == c.ID.ToString());
+                    Assert.IsTrue(c.IsAnonymized);
                 }
             }
         }

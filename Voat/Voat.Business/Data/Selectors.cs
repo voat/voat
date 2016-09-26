@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Voat.Data
 {
+
+    //This class should be phased out and the DomainMapping should replace this logic. Leaving in until refactoring time (soon (tm))
     public static class Selectors
     {
         public static Func<Models.Submission, Models.Submission> SecureSubmission = new Func<Models.Submission, Models.Submission>(x => {

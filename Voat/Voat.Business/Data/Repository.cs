@@ -1035,7 +1035,7 @@ namespace Voat.Data
 
         #region Comments 
 
-        public IEnumerable<Models.Comment> GetUserComments(string userName, SearchOptions options)
+        public IEnumerable<Domain.Models.Comment> GetUserComments(string userName, SearchOptions options)
         {
             if (String.IsNullOrEmpty(userName))
             {
@@ -1046,36 +1046,66 @@ namespace Voat.Data
                 throw new VoatValidationException("User '{0}' does not exist.", userName);
             }
 
-            var query = (from x in _db.Comments
+            var query = (from comment in _db.Comments
+                         join submission in _db.Submissions on comment.SubmissionID equals submission.ID
                          where
-                            (x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                            && !x.IsAnonymized && !x.IsDeleted
-                         select x);
+                            !comment.IsAnonymized 
+                            && !comment.IsDeleted
+                            && (comment.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                         select new Domain.Models.Comment()
+                         {
+                             ID = comment.ID,
+                             ParentID = comment.ParentID,
+                             Content = comment.Content,
+                             FormattedContent = comment.FormattedContent,
+                             UserName = comment.UserName,
+                             UpCount = (int)comment.UpCount,
+                             DownCount = (int)comment.DownCount,
+                             CreationDate = comment.CreationDate,
+                             IsAnonymized = comment.IsAnonymized,
+                             IsDeleted = comment.IsDeleted,
+                             IsDistinguished = comment.IsDistinguished,
+                             LastEditDate = comment.LastEditDate,
+                             SubmissionID = comment.SubmissionID,
+                             Subverse = submission.Subverse
+                         });
+
 
             query = ApplyCommentSearch(options, query);
-
-            //execute query
-            var results = query.Select(Selectors.SecureComment).ToList();
+            var results = query.ToList();
 
             return results;
         }
-
-        public IEnumerable<Models.Comment> GetComments(int? submissionID, SearchOptions options)
+        public IEnumerable<Domain.Models.Comment> GetComments(string subverse, SearchOptions options)
         {
-            var query = (from x in _db.Comments
-                         where
-                            (!x.Submission.Subverse1.IsPrivate && submissionID == null) && //got to filter out comments from private subs if calling from the streaming endpoint
-                            (x.SubmissionID == submissionID || submissionID == null)
-                         select x);
+            var query = (from comment in _db.Comments
+                         join submission in _db.Submissions on comment.SubmissionID equals submission.ID
+                         where 
+                         !comment.IsDeleted
+                         && (submission.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || String.IsNullOrEmpty(subverse))
+                         select new Domain.Models.Comment()
+                         {
+                             ID = comment.ID,
+                             ParentID = comment.ParentID,
+                             Content = comment.Content,
+                             FormattedContent = comment.FormattedContent,
+                             UserName = comment.UserName,
+                             UpCount = (int)comment.UpCount,
+                             DownCount = (int)comment.DownCount,
+                             CreationDate = comment.CreationDate,
+                             IsAnonymized = comment.IsAnonymized,
+                             IsDeleted = comment.IsDeleted,
+                             IsDistinguished = comment.IsDistinguished,
+                             LastEditDate = comment.LastEditDate,
+                             SubmissionID = comment.SubmissionID,
+                             Subverse = submission.Subverse
+                         });
 
             query = ApplyCommentSearch(options, query);
-
-            //execute query
-            var results = query.Select(Selectors.SecureComment).ToList();
+            var results = query.ToList();
 
             return results;
         }
-
         //This is the new process to retrieve comments.
         public IEnumerable<usp_CommentTree_Result> GetCommentTree(int submissionID, int? depth, int? parentID)
         {
@@ -1088,10 +1118,34 @@ namespace Voat.Data
             return results;
         }
 
-        public Models.Comment GetComment(int commentID)
+        public Domain.Models.Comment GetComment(int commentID)
         {
-            var direct = _db.Comments.Where(x => x.ID == commentID);
-            var record = direct.Select(Selectors.SecureComment).FirstOrDefault();
+            var query = (from comment in _db.Comments
+                         join submission in _db.Submissions on comment.SubmissionID equals submission.ID
+                         where
+                         comment.ID == commentID
+                         select new Domain.Models.Comment()
+                         {
+                             ID = comment.ID,
+                             ParentID = comment.ParentID,
+                             Content = comment.Content,
+                             FormattedContent = comment.FormattedContent,
+                             UserName = comment.UserName,
+                             UpCount = (int)comment.UpCount,
+                             DownCount = (int)comment.DownCount,
+                             CreationDate = comment.CreationDate,
+                             IsAnonymized = comment.IsAnonymized,
+                             IsDeleted = comment.IsDeleted,
+                             IsDistinguished = comment.IsDistinguished,
+                             LastEditDate = comment.LastEditDate,
+                             SubmissionID = comment.SubmissionID,
+                             Subverse = submission.Subverse
+                         });
+
+            var record = query.FirstOrDefault();
+           
+            DomainMaps.ProcessComment(record, true);
+
             return record;
         }
         
@@ -2732,8 +2786,7 @@ namespace Voat.Data
             query = query.Skip(options.Index).Take(options.Count);
             return query;
         }
-
-        private static IQueryable<Models.Comment> ApplyCommentSearch(SearchOptions options, IQueryable<Models.Comment> query)
+        private static IQueryable<Domain.Models.Comment> ApplyCommentSearch(SearchOptions options, IQueryable<Domain.Models.Comment> query)
         {
 
             if (!String.IsNullOrEmpty(options.Phrase))
@@ -2816,6 +2869,7 @@ namespace Voat.Data
 
             return query;
         }
+        
 
         public IEnumerable<BannedDomain> GetBannedDomains()
         {

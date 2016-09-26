@@ -21,6 +21,11 @@ namespace Voat.Domain
             var mapped = list.Select(x => x.Map(subverse)).ToList();
             return mapped;
         }
+        public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Domain.Models.Comment> list, bool populateUserState = false)
+        {
+            var mapped = list.Select(x => { ProcessComment(x); return x; }).ToList();
+            return mapped;
+        }
         public static IEnumerable<UserMessage> Map(this IEnumerable<UserMessage> list)
         {
             var mapped = list.Select(x => x.Map()).ToList();
@@ -211,6 +216,7 @@ namespace Voat.Domain
                 result.IsDistinguished = comment.IsDistinguished;
                 result.LastEditDate = comment.LastEditDate;
                 result.SubmissionID = comment.SubmissionID;
+                //Just a note, the entire Subverse in Data models for comments is a bit hacky as this info is needed in the app but data models don't contain it.
                 if (String.IsNullOrEmpty(subverse))
                 {
                     //TODO: need to convert pipeline to support this or pull this data out of the db
@@ -251,7 +257,7 @@ namespace Voat.Domain
             }
             return result;
         }
-        private static void ProcessComment(NestedComment comment, bool populateMissingUserState = false, IEnumerable<CommentVoteTracker> commentVotes = null, IEnumerable<CommentSaveTracker> commentSaves = null)
+        public static void ProcessComment(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<CommentVoteTracker> commentVotes = null, IEnumerable<CommentSaveTracker> commentSaves = null)
         {
             string userName = Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : null;
             if (!String.IsNullOrEmpty(userName))

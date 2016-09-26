@@ -53,9 +53,12 @@ namespace Voat.Tests.Repository
                 TestHelper.SetPrincipal("User500CCP", null); //This user has one comment with 101 likes
 
                 var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
-
                 Assert.IsTrue(response.Success, "Vote was not successfull");
                 Assert.AreEqual(-1, response.RecordedValue, "Vote was not successfull");
+
+                //refresh comment 
+                x = db.GetComment(context.CommentID);
+
                 Assert.AreEqual(ups, x.UpCount);
                 Assert.AreEqual((downs + 1), x.DownCount);
             }
@@ -88,22 +91,28 @@ namespace Voat.Tests.Repository
                 TestHelper.SetPrincipal("User100CCP", null);
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
+                
+                //refresh comment 
+                x = db.GetComment(context.CommentID);
 
                 Assert.IsTrue(response.Success, response.ToString());
-                Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
-                Assert.IsTrue(x.UpCount == (ups + 1));
+                Assert.AreEqual(1, response.RecordedValue, "Vote value incorrect");
+                Assert.AreEqual((ups + 1), x.UpCount, "UpCount Off");
 
                 //try to re-up vote, by default should revoke vote
                 response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
-                Assert.IsTrue(response.Status == Status.Success);
-                Assert.IsTrue(response.RecordedValue == 0, "Vote value incorrect");
+                Assert.AreEqual(Status.Success, response.Status);
+                Assert.AreEqual(0, response.RecordedValue, "Vote value incorrect");
 
                 ////try to reset vote
                 //response = repository.VoteComment(context.CommentID, 0);
                 //Assert.IsTrue(response.Successfull);
+                
+                //refresh comment 
+                x = db.GetComment(context.CommentID);
 
-                Assert.IsTrue(x.UpCount == ups);
-                Assert.IsTrue(x.DownCount == downs);
+                Assert.AreEqual(ups, x.UpCount, "Final Up Count off");
+                Assert.AreEqual(downs, x.DownCount, "Final Down Count off");
             }
         }
 
@@ -121,14 +130,18 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
 
+                //refresh comment 
+                x = db.GetComment(context.CommentID);
+
                 Assert.IsTrue(response.Success, response.ToString());
-                Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
-                Assert.IsTrue(x.UpCount == (ups + 1));
+                Assert.AreEqual(1, response.RecordedValue, "Vote value incorrect");
+                Assert.AreEqual((ups + 1), x.UpCount, "UpCount Off");
+
 
                 //try to re-up vote, by default should revoke vote
                 response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"), false);
-                Assert.IsTrue(response.Status == Status.Ignored);
-                Assert.IsTrue(response.RecordedValue == 1, "Vote value incorrect");
+                Assert.AreEqual(Status.Ignored, response.Status);
+                Assert.AreEqual(1, response.RecordedValue, "Vote value incorrect");
             }
         }
 
@@ -145,10 +158,14 @@ namespace Voat.Tests.Repository
                 TestHelper.SetPrincipal("User50CCP", null);
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
+                
+                //refresh comment 
+                x = db.GetComment(context.CommentID);
 
-                Assert.IsTrue(response.Success, response.Message);
-                Assert.IsTrue(x.UpCount == (ups + 1));
-                Assert.IsTrue(x.DownCount == downs);
+                Assert.IsTrue(response.Success, response.ToString());
+                Assert.AreEqual(1, response.RecordedValue, "Vote value incorrect");
+                Assert.AreEqual((ups + 1), x.UpCount, "UpCount Off");
+                Assert.AreEqual(downs, x.DownCount, "DownCount Off");
             }
         }
 

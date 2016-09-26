@@ -9,10 +9,12 @@ namespace Voat.Domain.Query
     public class QueryApiStreamLastCalledDate : CachedQuery<DateTime>
     {
         private ContentType _contentType = ContentType.Submission;
+        private string _subverse = null;
 
-        public QueryApiStreamLastCalledDate(ContentType contentType) : base(new CachePolicy(TimeSpan.FromMinutes(30)))
+        public QueryApiStreamLastCalledDate(ContentType contentType, string subverse) : base(new CachePolicy(TimeSpan.FromMinutes(30)))
         {
             _contentType = contentType;
+            _subverse = subverse;
         }
 
         public override string CacheKey
@@ -27,7 +29,7 @@ namespace Voat.Domain.Query
         {
             get
             {
-                return CachingKey.ApiStreamLastCallDate(_contentType, UserName);
+                return CachingKey.ApiStreamLastCallDate(_contentType, UserName, _subverse);
             }
         }
 
