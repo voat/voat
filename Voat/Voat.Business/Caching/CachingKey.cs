@@ -112,6 +112,9 @@ namespace Voat.Caching
         {
             return SiteSearch("", phrase);
         }
-
+        public static string AdCache()
+        {
+            return String.Format("System:AdCache");
+        }
     }
 }
