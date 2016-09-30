@@ -105,6 +105,7 @@ namespace Voat
                         action = "NotFound"
                     });
             }
+            EventLogger.Log(ex);
         }
 
         // force SSL for every request if enabled in Web.config

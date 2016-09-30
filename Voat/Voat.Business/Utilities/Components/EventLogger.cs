@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Web;
 using Voat.Data;
-using Voat.Models;
+using System.Threading;
 
 namespace Voat.Utilities.Components
 {
-
     //TODO: This code needs to not block on exception logging
 
     /// <summary>
@@ -32,11 +25,12 @@ namespace Voat.Utilities.Components
 
         private static void Log(int? parentID, Exception exception)
         {
+            string userName = null;
 
             //log user info if possible
-            if (System.Threading.Thread.CurrentPrincipal != null && System.Threading.Thread.CurrentPrincipal.Identity != null && System.Threading.Thread.CurrentPrincipal.Identity.IsAuthenticated && !exception.Data.Contains("USER"))
+            if (Thread.CurrentPrincipal != null && Thread.CurrentPrincipal.Identity != null && Thread.CurrentPrincipal.Identity.IsAuthenticated)
             {
-                exception.Data.Add("USER", System.Threading.Thread.CurrentPrincipal.Identity.Name);
+                userName = Thread.CurrentPrincipal.Identity.Name;
             }
 
             string sDetails = null;
@@ -47,11 +41,11 @@ namespace Voat.Utilities.Components
 
             try
             {
-
                 var result = _db.Log(new Data.Models.EventLog
                 {
                     ParentID = parentID,
                     Type = exception.GetType().Name,
+                    UserName = userName,
                     Message = exception.Message,
                     Source = (!String.IsNullOrEmpty(exception.Source) ? exception.Source : "N/A"),
                     CallStack = (!String.IsNullOrEmpty(exception.StackTrace) ? exception.StackTrace : "N/A"),
@@ -64,7 +58,6 @@ namespace Voat.Utilities.Components
                 {
                     Log((result != null ? result.ID : (int?)null), exception.InnerException);
                 }
-
             }
             catch (Exception ex)
             {
@@ -75,22 +68,6 @@ namespace Voat.Utilities.Components
                 throw ex;
 #endif
             }
-
         }
-
-        //private static string IDictionaryToString(IDictionary o)
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    string seperator = "";
-        //    foreach (var property in o.Keys)
-        //    {
-        //        sb.Append(seperator);
-        //        sb.AppendFormat("\"{0}\":\"{1}\"", property, o[property]);
-        //        seperator = ", ";
-        //    }
-        //    return "{" + sb.ToString() + "}";
-
-        //}
-
     }
 }
