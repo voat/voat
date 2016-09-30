@@ -27,6 +27,7 @@ using Voat.Models;
 using Voat.Data;
 using Voat.Domain.Query;
 using System.Net.Http;
+using Voat.Caching;
 
 namespace Voat.Utilities
 {
@@ -524,81 +525,97 @@ namespace Voat.Utilities
         // return user statistics for user profile overview
         public static UserStatsModel UserStatsModel(string userName)
         {
-            var userStatsModel = new UserStatsModel();
 
-            using (var db = new voatEntities())
-            {
-                // 5 subverses user submitted to most
-                var subverses = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
-                         .GroupBy(a => new { a.UserName, a.Subverse })
-                         .Select(g => new SubverseStats { SubverseName = g.Key.Subverse, Count = g.Count() })
-                         .OrderByDescending(s => s.Count)
-                         .Take(5)
-                         .ToList();
+            var loadFunc = new Func<UserStatsModel>(() => {
+                var userStatsModel = new UserStatsModel();
 
-                // total comment count
-                var comments = db.Comments.Count(a => a.UserName == userName && !a.IsDeleted);
+                using (var db = new voatEntities())
+                {
+                    db.Configuration.ProxyCreationEnabled = false;
+                    db.Configuration.LazyLoadingEnabled = false;
+                    
+                    // 5 subverses user submitted to most
+                    var subverses = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                             .GroupBy(a => new { a.UserName, a.Subverse })
+                             .Select(g => new SubverseStats { SubverseName = g.Key.Subverse, Count = g.Count() })
+                             .OrderByDescending(s => s.Count)
+                             .Take(5)
+                             .ToList();
 
-                // voting habits
-                var q = new QueryUserData(userName);
-                var r = q.Execute();
-                var commentUpvotes = r.Information.CommentVoting.UpCount;
-                var commentDownvotes = r.Information.CommentVoting.DownCount;
-                var submissionUpvotes = r.Information.SubmissionVoting.UpCount;
-                var submissionDownvotes = r.Information.SubmissionVoting.DownCount;
+                    // total comment count
+                    var comments = db.Comments.Count(a => a.UserName == userName && !a.IsDeleted);
 
-                //var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                //var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
-                //var submissionUpvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                //var submissionDownvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                    // voting habits
+                    var q = new QueryUserData(userName);
+                    var r = q.Execute();
+                    var commentUpvotes = r.Information.CommentVoting.UpCount;
+                    var commentDownvotes = r.Information.CommentVoting.DownCount;
+                    var submissionUpvotes = r.Information.SubmissionVoting.UpCount;
+                    var submissionDownvotes = r.Information.SubmissionVoting.DownCount;
 
-                // get 3 highest rated comments
-                var highestRatedComments = db.Comments
-                    .Include("Submission")
-                    .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
-                    .OrderByDescending(s => s.UpCount - s.DownCount)
-                    .Take(3)
-                    .ToList();
+                    //var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                    //var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                    //var submissionUpvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                    //var submissionDownvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
-                // get 3 lowest rated comments
-                var lowestRatedComments = db.Comments
-                    .Include("Submission")
-                    .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
-                    .OrderBy(s => s.UpCount - s.DownCount)
-                    .Take(3)
-                    .ToList();
+                    // get 3 highest rated comments
+                    var highestRatedComments = db.Comments
+                        .Include("Submission").AsNoTracking()
+                        .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                        .OrderByDescending(s => s.UpCount - s.DownCount)
+                        .Take(3)
+                        .ToList();
 
-                var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted);
-                var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted);
+                    // get 3 lowest rated comments
+                    var lowestRatedComments = db.Comments
+                        .Include("Submission").AsNoTracking()
+                        .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                        .OrderBy(s => s.UpCount - s.DownCount)
+                        .Take(3)
+                        .ToList();
 
-                // get 5 highest rated submissions
-                var highestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
-                    .OrderByDescending(s => s.UpCount - s.DownCount)
-                    .Take(5)
-                    .ToList();
+                    var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted);
+                    var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted);
 
-                // get 5 lowest rated submissions
-                var lowestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
-                    .OrderBy(s => s.UpCount - s.DownCount)
-                    .Take(5)
-                    .ToList();
+                    // get 5 highest rated submissions
+                    var highestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                        .OrderByDescending(s => s.UpCount - s.DownCount)
+                        .Take(5)
+                        .ToList();
 
-                userStatsModel.TopSubversesUserContributedTo = subverses;
-                userStatsModel.LinkSubmissionsSubmitted = linkSubmissionsCount;
-                userStatsModel.MessageSubmissionsSubmitted = messageSubmissionsCount;
-                userStatsModel.LowestRatedSubmissions = lowestRatedSubmissions;
-                userStatsModel.HighestRatedSubmissions = highestRatedSubmissions;
-                userStatsModel.TotalCommentsSubmitted = comments;
-                userStatsModel.HighestRatedComments = highestRatedComments;
-                userStatsModel.LowestRatedComments = lowestRatedComments;
+                    // get 5 lowest rated submissions
+                    var lowestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                        .OrderBy(s => s.UpCount - s.DownCount)
+                        .Take(5)
+                        .ToList();
 
-                userStatsModel.TotalCommentsUpvoted = commentUpvotes;
-                userStatsModel.TotalCommentsDownvoted = commentDownvotes;
-                userStatsModel.TotalSubmissionsUpvoted = submissionUpvotes;
-                userStatsModel.TotalSubmissionsDownvoted = submissionDownvotes;
-            }
+                    userStatsModel.TopSubversesUserContributedTo = subverses;
+                    userStatsModel.LinkSubmissionsSubmitted = linkSubmissionsCount;
+                    userStatsModel.MessageSubmissionsSubmitted = messageSubmissionsCount;
+                    userStatsModel.LowestRatedSubmissions = lowestRatedSubmissions;
+                    userStatsModel.HighestRatedSubmissions = highestRatedSubmissions;
+                    userStatsModel.TotalCommentsSubmitted = comments;
+                    userStatsModel.HighestRatedComments = highestRatedComments;
+                    userStatsModel.LowestRatedComments = lowestRatedComments;
 
-            return userStatsModel;
+                    userStatsModel.TotalCommentsUpvoted = commentUpvotes;
+                    userStatsModel.TotalCommentsDownvoted = commentDownvotes;
+                    userStatsModel.TotalSubmissionsUpvoted = submissionUpvotes;
+                    userStatsModel.TotalSubmissionsDownvoted = submissionDownvotes;
+
+
+                    //HACK: EF causes JSON to StackOverflow on the highest/lowest comments because of the nested loading EF does with the include option, therefore null the refs here.
+                    highestRatedComments.ForEach(x => x.Submission.Comments = null);
+                    lowestRatedComments.ForEach(x => x.Submission.Comments = null);
+                }
+
+                return userStatsModel;
+
+            });
+
+            var cachedData = CacheHandler.Instance.Register(CachingKey.UserOverview(userName), loadFunc, TimeSpan.FromMinutes(30));
+            return cachedData;
+
         }
 
         // check if a given user is globally banned

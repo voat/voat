@@ -58,6 +58,10 @@ namespace Voat.Caching
         {
             return String.Format("User:Subscriptions:{0}", userName);
         }
+        public static string UserOverview(string userName)
+        {
+            return String.Format("User:Overview:{0}", userName);
+        }
         public static string UserInformation(string userName)
         {
             return String.Format("User:Information:{0}", userName);
