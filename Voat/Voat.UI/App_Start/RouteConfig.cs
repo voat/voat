@@ -235,36 +235,44 @@ namespace Voat
                 }
             );
            
-
-           
-
-
             // comments/distinguish/412
             routes.MapRoute(
                 name: "distinguishcomment",
                 url: "comments/distinguish/{commentId}",
                 defaults: new { controller = "Comment", action = "DistinguishComment" }
             );
-            // user/someuserhere/thingtoshow
+
+            #region User
+
             routes.MapRoute(
-                name: "UserProfile",
-                url: "user/{id}/{whattodisplay}",
-                defaults: new { controller = "Home", action = "UserProfile", whattodisplay = UrlParameter.Optional }
+                name: "UserComments",
+                url: "{pathPrefix}/{userName}/comments",
+                defaults: new { controller = "User", action = "Comments" },
+                constraints: new { pathPrefix = "user|u" }
             );
 
-            // user/someuserhere
             routes.MapRoute(
-                name: "user",
-                url: "user/{id}",
-                defaults: new { controller = "Home", action = "UserProfile" }
+               name: "UserSubmissions",
+               url: "{pathPrefix}/{userName}/submissions",
+               defaults: new { controller = "User", action = "Submissions" },
+                constraints: new { pathPrefix = "user|u" }
+           );
+
+            routes.MapRoute(
+              name: "UserSaved",
+              url: "{pathPrefix}/{userName}/saved",
+              defaults: new { controller = "User", action = "Saved" },
+              constraints: new { pathPrefix = "user|u" }
             );
 
-            // u/someuserhere
             routes.MapRoute(
-                name: "usershortroute",
-                url: "u/{id}",
-                defaults: new { controller = "Home", action = "UserProfile" }
+              name: "UserProfile",
+              url: "{pathPrefix}/{userName}",
+              defaults: new { controller = "User", action = "Overview" },
+              constraints: new { pathPrefix = "user|u" }
             );
+            #endregion
+
 
             // inbox
             routes.MapRoute(

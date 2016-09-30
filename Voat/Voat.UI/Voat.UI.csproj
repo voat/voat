@@ -572,7 +572,7 @@
     <Content Include="Views\Shared\Submissions\_MessageSubmissionDetails.cshtml" />
     <Content Include="Views\Shared\Submissions\_LinkSubmissionDetails.cshtml" />
     <Content Include="Views\Shared\Comments\_SubmissionComment.cshtml" />
-    <Content Include="Views\Home\UserProfile.cshtml" />
+    <Content Include="Views\User\Overview.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
     <Content Include="Views\Help\Privacy.cshtml" />
     <Content Include="Views\Shared\_AddSubmissionLinkpost.cshtml" />
@@ -583,7 +583,7 @@
     <Content Include="Views\Shared\_AddComment.cshtml" />
     <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
     <Content Include="Views\Errors\Error_404.cshtml" />
-    <Content Include="Views\Home\UserComments.cshtml" />
+    <Content Include="Views\User\Comments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
     <Content Include="Views\Subverses\SubverseIndex.cshtml" />
     <Content Include="Views\Help\SpeedyGonzales.cshtml" />
@@ -630,7 +630,7 @@
     <Content Include="Views\Account\_LoginModal.cshtml" />
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
-    <Content Include="Views\Home\UserSubmitted.cshtml" />
+    <Content Include="Views\User\Submissions.cshtml" />
     <Content Include="Views\Account\_UserPreferences.cshtml" />
     <Content Include="Views\Subverses\Admin\Flair\FlairSettings.cshtml" />
     <Content Include="Views\Subverses\Admin\Flair\AddLinkFlair.cshtml" />
@@ -696,7 +696,7 @@
     <Content Include="Views\Subverses\SubmissionRemovalLog.cshtml" />
     <Content Include="Views\Search\Jaje.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSave.cshtml" />
-    <Content Include="Views\Home\UserSaved.cshtml" />
+    <Content Include="Views\User\Saved.cshtml" />
     <Content Include="Views\AjaxViews\_BasicUserInfo.cshtml" />
     <Content Include="Views\Shared\_Captcha.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />

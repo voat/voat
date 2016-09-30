@@ -10,34 +10,54 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Data.Models.Comment>
+@model PaginatedList<Voat.Data.Models.Submission>
 
 @{
-    ViewBag.Title = "Comment history for " + @ViewBag.userid;
+    ViewBag.Title = "Submission history for " + @ViewBag.userid;
 }
 
 <div id="container">
     <div class="content-no-margin" role="main">
-        <div class="alert-title">Comment history for @ViewBag.userid.</div>
+
+        <div class="alert-title">Submission history for @ViewBag.userid.</div>
+
         @foreach (var submission in Model)
         {
-            @Html.Partial("Userprofile/_UserProfileComment", submission)
+            //type 2 = link
+            //type 1 = message
+            var submissionClass = "";
+            if (submission.Type == 1)
+            {
+                submissionClass = "self";
+            }
+            else
+            {
+                submissionClass = "";
+            }
+            <div class="submission id-@submission.ID even link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
+                @Html.Partial("Userprofile/_UserProfileSubmission", submission)
+                <div class="child"></div>
+                <div class="clearleft">@*IE6fix*@</div>
+            </div>
         }
+
         <div class="pagination-container">
             <ul>
                 @if (Model.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", "UserProfile", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                        @Html.RouteLink("‹ prev", "UserSubmissions", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
                     </li>
                 }
+
                 @if (Model.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", "UserProfile", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                        @Html.RouteLink("next ›", "UserSubmissions", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
                     </li>
                 }
             </ul>
         </div>
+
     </div>
 </div>
