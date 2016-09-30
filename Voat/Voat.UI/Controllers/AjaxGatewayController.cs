@@ -25,6 +25,7 @@ using Voat.Utilities;
 using Voat.Caching;
 using Voat.Common;
 using Voat.Domain.Query;
+using System.Threading.Tasks;
 
 namespace Voat.Controllers
 {
@@ -33,23 +34,28 @@ namespace Voat.Controllers
         private readonly voatEntities _db = new voatEntities();
 
         // GET: MessageContent
-        public ActionResult MessageContent(int? messageId)
+        public async Task<ActionResult> MessageContent(int? messageId)
         {
-
-            var message = DataCache.Submission.Retrieve(messageId);
-
-            if (message != null)
+            if (messageId.HasValue)
             {
-                var mpm = new MarkdownPreviewModel();
+                var q = new QuerySubmission(messageId.Value);
+                var result = await q.ExecuteAsync();
 
-                if (message.Content != null)
+                if (result != null)
                 {
-                    mpm.MessageContent = message.Content;
+                    var mpm = new MarkdownPreviewModel();
+
+                    if (!String.IsNullOrEmpty(result.Content))
+                    {
+                        mpm.MessageContent = (String.IsNullOrEmpty(result.FormattedContent) ? Formatting.FormatMessage(result.Content) : result.FormattedContent);
+                    }
+                    else
+                    {
+                        mpm.MessageContent = "<p>This submission only has a title.</p>"; //"format" this content
+                    }
+
                     return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
                 }
-
-                mpm.MessageContent = "This submission only has a title.";
-                return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }

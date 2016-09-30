@@ -180,6 +180,7 @@ namespace Voat
                 url: "comments/{submissionID}",
                 defaults: new { controller = "Comment", action = "Comments" }
             );
+
             string commentSortContraint = "(?i)" + String.Join("|", Enum.GetNames(typeof(CommentSortAlgorithm)));
             // /comments/submission/startingpos
             //"/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + startIndex + "/" + sort + "/",

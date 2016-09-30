@@ -166,8 +166,8 @@ namespace Voat.Controllers
                                 Id = item.ID,
                                 LastEditDate = item.LastEditDate,
                                 Likes = (int)item.UpCount,
-                                Linkdescription = item.LinkDescription,
-                                MessageContent = item.Content
+                                Linkdescription = item.Title,
+                                MessageContent = (item.Type == 2 ? item.Url : item.Content)
                             };
 
                             if (item.IsAnonymized || item.Subverse1.IsAnonymized)
@@ -241,8 +241,8 @@ namespace Voat.Controllers
                                 Id = item.ID,
                                 LastEditDate = item.LastEditDate,
                                 Likes = (int)item.UpCount,
-                                Linkdescription = item.LinkDescription,
-                                MessageContent = item.Content
+                                Linkdescription = item.Title,
+                                MessageContent = (item.Type == 2 ? item.Url : item.Content)
                             };
 
                             if (item.IsAnonymized || item.Subverse1.IsAnonymized)
@@ -317,8 +317,8 @@ namespace Voat.Controllers
                       resultModel.Subverse = submission.Subverse;
                       resultModel.Type = submission.Type;
                       resultModel.Title = submission.Title;
-                      resultModel.Linkdescription = submission.LinkDescription;
-                      resultModel.MessageContent = submission.Content;
+                      resultModel.Linkdescription = null;
+                      resultModel.MessageContent = (submission.Type == 2 ? submission.Content : submission.Content);
 
                       return resultModel;
                   }
@@ -587,8 +587,8 @@ namespace Voat.Controllers
                                     select new ResponseItem
                                     {
                                         SubmissionId = pro.ID,
-                                        Alt = pro.LinkDescription, 
-                                        Img = pro.Content,
+                                        Alt = pro.Title, 
+                                        Img = pro.Url,
                                         DownVotes = pro.DownCount,
                                         SubmittedBy = pro.UserName,
                                         SubmittedOn = pro.CreationDate,

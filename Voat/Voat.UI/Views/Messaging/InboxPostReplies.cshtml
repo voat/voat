@@ -62,14 +62,7 @@
                                 From: <a href="@commentAuthorUrl">@commentAuthorName</a> | Sent: @Age.ToRelative(comment.CreationDate) ago on @comment.CreationDate
                             </div>
                             <div class="panel panel-heading-messagetitle">
-                                @if (comment.Submission.Type == 1)
-                                {
-                                    <a href="/v/@comment.Submission.Subverse/comments/@comment.SubmissionID"><b>@comment.Submission.Title</b></a>
-                                }
-                                else
-                                {
-                                    <a href="/v/@comment.Submission.Subverse/comments/@comment.SubmissionID"><b>@comment.Submission.LinkDescription</b></a>
-                                }
+                                <a href="/v/@comment.Submission.Subverse/comments/@comment.SubmissionID"><b>@comment.Submission.Title</b></a>
                             </div>
                             <div class="panel-message-body">
                                 @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",

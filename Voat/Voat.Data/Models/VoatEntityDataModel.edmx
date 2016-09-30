@@ -99,52 +99,6 @@
           <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Policy" Type="nvarchar" MaxLength="2000" Nullable="false" />
         </EntityType>
-        <EntityType Name="AutoModComment">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CreationDate" Type="nchar" MaxLength="10" />
-          <Property Name="RuleAuthor" Type="nvarchar" MaxLength="50" />
-          <Property Name="ActionToTake" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CommentAuthor" Type="nvarchar" MaxLength="50" />
-          <Property Name="CommentBody" Type="nvarchar" MaxLength="200" />
-          <Property Name="MinBodyLength" Type="int" />
-          <Property Name="MaxBodyLength" Type="int" />
-          <Property Name="MinAuthorCCP" Type="int" />
-          <Property Name="MinAuthorSCP" Type="int" />
-          <Property Name="MinAuthorAccountAgeInDays" Type="int" />
-          <Property Name="AutoModPM" Type="nvarchar" MaxLength="200" />
-          <Property Name="AutoAuthorPM" Type="nvarchar" MaxLength="200" />
-          <Property Name="NotifyAuthor" Type="bit" />
-          <Property Name="NotifyMod" Type="bit" />
-          <Property Name="CheckEdited" Type="bit" />
-        </EntityType>
-        <EntityType Name="AutoModSubmission">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="RuleAuthor" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="ActionToTake" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="SubmissionTitle" Type="nvarchar" MaxLength="50" />
-          <Property Name="SubmissionDomain" Type="nvarchar" MaxLength="50" />
-          <Property Name="SubmissionAuthor" Type="nvarchar" MaxLength="50" />
-          <Property Name="SubmissionType" Type="int" />
-          <Property Name="SubmissionText" Type="nchar" MaxLength="10" />
-          <Property Name="MinAuthorAccountAgeInDays" Type="int" />
-          <Property Name="MinAuthorCCP" Type="int" />
-          <Property Name="MinAuthorSCP" Type="int" />
-          <Property Name="MinBodyLength" Type="int" />
-          <Property Name="MaxBodyLength" Type="int" />
-          <Property Name="AutoComment" Type="nvarchar" MaxLength="200" />
-          <Property Name="AutoModPM" Type="nvarchar" MaxLength="200" />
-          <Property Name="AutoAuthorPM" Type="nvarchar" MaxLength="200" />
-          <Property Name="NotifyAuthor" Type="bit" />
-          <Property Name="NotifyMod" Type="bit" />
-          <Property Name="CheckEdited" Type="bit" />
-        </EntityType>
         <EntityType Name="Badge">
           <Key>
             <PropertyRef Name="ID" />
@@ -352,7 +306,6 @@
           <Property Name="Content" Type="nvarchar(max)" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
           <Property Name="Type" Type="int" Nullable="false" />
-          <Property Name="LinkDescription" Type="nvarchar" MaxLength="200" />
           <Property Name="Title" Type="nvarchar" MaxLength="200" />
           <Property Name="Rank" Type="float" Nullable="false" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" />
@@ -366,6 +319,8 @@
           <Property Name="Views" Type="float" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="RelativeRank" Type="float" Nullable="false" />
+          <Property Name="Url" Type="nvarchar" MaxLength="3000" />
+          <Property Name="FormattedContent" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
           <Key>
@@ -694,20 +649,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Messages_Subverses">
-          <End Role="Subverse" Type="Self.Subverse" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Submission" Type="Self.Submission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverse">
-              <PropertyRef Name="Name" />
-            </Principal>
-            <Dependent Role="Submission">
-              <PropertyRef Name="Subverse" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Savingtracker_Messages">
           <End Role="Submission" Type="Self.Submission" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -927,8 +868,6 @@
           <EntitySet Name="ApiLog" EntityType="Self.ApiLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApiPermissionPolicy" EntityType="Self.ApiPermissionPolicy" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApiThrottlePolicy" EntityType="Self.ApiThrottlePolicy" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AutoModComment" EntityType="Self.AutoModComment" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AutoModSubmission" EntityType="Self.AutoModSubmission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Badge" EntityType="Self.Badge" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BannedDomain" EntityType="Self.BannedDomain" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BannedUser" EntityType="Self.BannedUser" Schema="dbo" store:Type="Tables" />
@@ -998,10 +937,6 @@
             <End Role="Subverse" EntitySet="Subverse" />
             <End Role="FeaturedSubverse" EntitySet="FeaturedSubverse" />
           </AssociationSet>
-          <AssociationSet Name="FK_Messages_Subverses" Association="Self.FK_Messages_Subverses">
-            <End Role="Subverse" EntitySet="Subverse" />
-            <End Role="Submission" EntitySet="Submission" />
-          </AssociationSet>
           <AssociationSet Name="FK_Savingtracker_Messages" Association="Self.FK_Savingtracker_Messages">
             <End Role="Submission" EntitySet="Submission" />
             <End Role="SubmissionSaveTracker" EntitySet="SubmissionSaveTracker" />
@@ -1067,52 +1002,6 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="Models" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="AutoModComment">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CreationDate" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="RuleAuthor" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ActionToTake" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CommentAuthor" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CommentBody" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="MinBodyLength" Type="Int32" />
-          <Property Name="MaxBodyLength" Type="Int32" />
-          <Property Name="MinAuthorCCP" Type="Int32" />
-          <Property Name="MinAuthorSCP" Type="Int32" />
-          <Property Name="MinAuthorAccountAgeInDays" Type="Int32" />
-          <Property Name="AutoModPM" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="AutoAuthorPM" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="NotifyAuthor" Type="Boolean" />
-          <Property Name="NotifyMod" Type="Boolean" />
-          <Property Name="CheckEdited" Type="Boolean" />
-        </EntityType>
-        <EntityType Name="AutoModSubmission">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="RuleAuthor" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ActionToTake" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="SubmissionTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SubmissionDomain" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SubmissionAuthor" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SubmissionType" Type="Int32" />
-          <Property Name="SubmissionText" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="MinAuthorAccountAgeInDays" Type="Int32" />
-          <Property Name="MinAuthorCCP" Type="Int32" />
-          <Property Name="MinAuthorSCP" Type="Int32" />
-          <Property Name="MinBodyLength" Type="Int32" />
-          <Property Name="MaxBodyLength" Type="Int32" />
-          <Property Name="AutoComment" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="AutoModPM" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="AutoAuthorPM" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="NotifyAuthor" Type="Boolean" />
-          <Property Name="NotifyMod" Type="Boolean" />
-          <Property Name="CheckEdited" Type="Boolean" />
-        </EntityType>
         <EntityType Name="Badge">
           <Key>
             <PropertyRef Name="ID" />
@@ -1316,7 +1205,6 @@
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Type" Type="Int32" Nullable="false" />
-          <Property Name="LinkDescription" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Title" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Rank" Type="Double" Nullable="false" />
           <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
@@ -1338,6 +1226,8 @@
           <NavigationProperty Name="SubmissionVoteTrackers" Relationship="Self.FK_Votingtracker_Messages" FromRole="Submission" ToRole="SubmissionVoteTracker" />
           <Property Name="Content" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="RelativeRank" Type="Double" Nullable="false" />
+          <Property Name="Url" Type="String" MaxLength="3000" FixedLength="false" Unicode="true" />
+          <Property Name="FormattedContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
           <Key>
@@ -1870,8 +1760,6 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="voatEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="AutoModComments" EntityType="Self.AutoModComment" />
-          <EntitySet Name="AutoModSubmissions" EntityType="Self.AutoModSubmission" />
           <EntitySet Name="Badges" EntityType="Self.Badge" />
           <EntitySet Name="BannedDomains" EntityType="Self.BannedDomain" />
           <EntitySet Name="BannedUsers" EntityType="Self.BannedUser" />
@@ -2199,54 +2087,6 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="ModelsStoreContainer" CdmEntityContainer="voatEntities">
-          <EntitySetMapping Name="AutoModComments">
-            <EntityTypeMapping TypeName="Models.AutoModComment">
-              <MappingFragment StoreEntitySet="AutoModComment">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-                <ScalarProperty Name="RuleAuthor" ColumnName="RuleAuthor" />
-                <ScalarProperty Name="ActionToTake" ColumnName="ActionToTake" />
-                <ScalarProperty Name="CommentAuthor" ColumnName="CommentAuthor" />
-                <ScalarProperty Name="CommentBody" ColumnName="CommentBody" />
-                <ScalarProperty Name="MinBodyLength" ColumnName="MinBodyLength" />
-                <ScalarProperty Name="MaxBodyLength" ColumnName="MaxBodyLength" />
-                <ScalarProperty Name="MinAuthorCCP" ColumnName="MinAuthorCCP" />
-                <ScalarProperty Name="MinAuthorSCP" ColumnName="MinAuthorSCP" />
-                <ScalarProperty Name="MinAuthorAccountAgeInDays" ColumnName="MinAuthorAccountAgeInDays" />
-                <ScalarProperty Name="AutoModPM" ColumnName="AutoModPM" />
-                <ScalarProperty Name="AutoAuthorPM" ColumnName="AutoAuthorPM" />
-                <ScalarProperty Name="NotifyAuthor" ColumnName="NotifyAuthor" />
-                <ScalarProperty Name="NotifyMod" ColumnName="NotifyMod" />
-                <ScalarProperty Name="CheckEdited" ColumnName="CheckEdited" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="AutoModSubmissions">
-            <EntityTypeMapping TypeName="Models.AutoModSubmission">
-              <MappingFragment StoreEntitySet="AutoModSubmission">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-                <ScalarProperty Name="RuleAuthor" ColumnName="RuleAuthor" />
-                <ScalarProperty Name="ActionToTake" ColumnName="ActionToTake" />
-                <ScalarProperty Name="SubmissionTitle" ColumnName="SubmissionTitle" />
-                <ScalarProperty Name="SubmissionDomain" ColumnName="SubmissionDomain" />
-                <ScalarProperty Name="SubmissionAuthor" ColumnName="SubmissionAuthor" />
-                <ScalarProperty Name="SubmissionType" ColumnName="SubmissionType" />
-                <ScalarProperty Name="SubmissionText" ColumnName="SubmissionText" />
-                <ScalarProperty Name="MinAuthorAccountAgeInDays" ColumnName="MinAuthorAccountAgeInDays" />
-                <ScalarProperty Name="MinAuthorCCP" ColumnName="MinAuthorCCP" />
-                <ScalarProperty Name="MinAuthorSCP" ColumnName="MinAuthorSCP" />
-                <ScalarProperty Name="MinBodyLength" ColumnName="MinBodyLength" />
-                <ScalarProperty Name="MaxBodyLength" ColumnName="MaxBodyLength" />
-                <ScalarProperty Name="AutoComment" ColumnName="AutoComment" />
-                <ScalarProperty Name="AutoModPM" ColumnName="AutoModPM" />
-                <ScalarProperty Name="AutoAuthorPM" ColumnName="AutoAuthorPM" />
-                <ScalarProperty Name="NotifyAuthor" ColumnName="NotifyAuthor" />
-                <ScalarProperty Name="NotifyMod" ColumnName="NotifyMod" />
-                <ScalarProperty Name="CheckEdited" ColumnName="CheckEdited" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Badges">
             <EntityTypeMapping TypeName="Models.Badge">
               <MappingFragment StoreEntitySet="Badge">
@@ -2446,6 +2286,8 @@
           <EntitySetMapping Name="Submissions">
             <EntityTypeMapping TypeName="Models.Submission">
               <MappingFragment StoreEntitySet="Submission">
+                <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
+                <ScalarProperty Name="Url" ColumnName="Url" />
                 <ScalarProperty Name="RelativeRank" ColumnName="RelativeRank" />
                 <ScalarProperty Name="Content" ColumnName="Content" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
@@ -2454,7 +2296,6 @@
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="LinkDescription" ColumnName="LinkDescription" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="Rank" ColumnName="Rank" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />

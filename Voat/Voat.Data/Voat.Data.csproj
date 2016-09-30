@@ -101,12 +101,6 @@
     <Compile Include="Models\ApiThrottlePolicy.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\AutoModComment.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\AutoModSubmission.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Badge.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -247,6 +241,7 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>VoatEntityDataModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <None Include="App.Config" />
     <None Include="~App.Config" />
     <None Include="Models\VoatEntityDataModel.edmx.diagram">
       <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>

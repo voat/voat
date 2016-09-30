@@ -61,7 +61,7 @@
             //type 2 = link submission
             if (ViewBag.Submission.Type == 2)
             {
-                ViewBag.Title = submission.LinkDescription + " | " + submission.Subverse;
+                ViewBag.Title = submission.Title + " | " + submission.Subverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
 

@@ -24,14 +24,15 @@
                 if (!Model.Submission.IsAnonymized)
                 {
                     <p class="parent">
-                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
-                        <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a> in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                        <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a> 
+                        in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
                     </p>
                 }
                 else
                 {
                     <p class="parent">
-                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
+                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
                         <a href="#" class="author may-blank">@Model.SubmissionID</a> in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
                     </p>
                 }
@@ -39,7 +40,7 @@
             else
             {
                 <p class="parent">
-                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
+                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
                     <span class="userattrs">[deleted]</span>in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
                 </p>
             }

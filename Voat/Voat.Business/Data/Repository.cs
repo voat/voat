@@ -843,13 +843,13 @@ namespace Voat.Data
 
                 m.Title = userSubmission.Title;
                 m.Content = userSubmission.Content;
-                m.LinkDescription = null;
+                m.FormattedContent = Formatting.FormatMessage(userSubmission.Content, true);
+
             }
             else
             {
-                m.Title = null;
-                m.Content = userSubmission.Url;
-                m.LinkDescription = userSubmission.Title;
+                m.Title = userSubmission.Title;
+                m.Url = userSubmission.Url;
 
                 if (subverseObject.IsThumbnailEnabled)
                 {
@@ -874,7 +874,7 @@ namespace Voat.Data
         [Authorize]
         public Models.Submission EditSubmission(int submissionID, UserSubmission userSubmission)
         {
-            if (userSubmission == null || !userSubmission.HasState)
+            if (userSubmission == null || (!userSubmission.HasState && String.IsNullOrEmpty(userSubmission.Content)))
             {
                 throw new VoatValidationException("The submission must not be null or have invalid state");
             }
@@ -905,6 +905,7 @@ namespace Voat.Data
             if (submission.Type == 1)
             {
                 submission.Content = userSubmission.Content ?? submission.Content;
+                submission.FormattedContent = Formatting.FormatMessage(submission.Content, true);
             }
 
             //allow edit of title if in 10 minute window
@@ -916,13 +917,7 @@ namespace Voat.Data
                     throw new VoatValidationException("Submission title can not contain Unicode characters");
                 }
 
-                if (submission.Type == 1)
-                {
-                    submission.Title = (String.IsNullOrEmpty(userSubmission.Title) ? submission.Title : userSubmission.Title);
-                }
-                else {
-                    submission.LinkDescription = (String.IsNullOrEmpty(userSubmission.Title) ? submission.LinkDescription : userSubmission.Title);
-                }
+                submission.Title = (String.IsNullOrEmpty(userSubmission.Title) ? submission.Title : userSubmission.Title);
             }
 
             submission.LastEditDate = CurrentDate;
@@ -1005,8 +1000,8 @@ namespace Voat.Data
                                     "Submission title: " + submission.Title + ", " + Environment.NewLine +
                                     "Submission content: " + submission.Content
                                     :
-                                    "Link description: " + submission.LinkDescription + ", " + Environment.NewLine +
-                                    "Link URL: " + submission.Content
+                                    "Link description: " + submission.Title + ", " + Environment.NewLine +
+                                    "Link URL: " + submission.Url
                                     )
                     };
                     var cmd = new SendMessageCommand(message);
@@ -1938,7 +1933,7 @@ namespace Voat.Data
                                 Subverse = x.Subverse,
                                 Recipient = x.Recipient,
                                 Sender = x.Sender,
-                                Subject = (s.Type == 1 ? s.LinkDescription : s.Title),
+                                Subject = s.Title,
                                 Content = c.Content,
                                 IsRead = !x.IsUnread,
                                 Type = MessageType.Submission,
@@ -2057,24 +2052,8 @@ namespace Voat.Data
             {
                 return null;
             }
-
             var userInfo = new UserInformation();
 
-
-            var userBadges = (from x in _db.UserBadges
-                              join b in _db.Badges on x.BadgeID equals b.ID
-                              where x.UserName == userName
-                              select new Voat.Domain.Models.UserBadge()
-                              {
-                                  CreationDate = x.CreationDate,
-                                  Name = b.Name,
-                                  Title = b.Title,
-                                  Graphic = b.Graphic,
-                              }
-                              ).ToList();
-
-
-            userInfo.Badges = userBadges;
 
             //Expensive
             userInfo.CommentPoints = UserContributionPoints(userName, ContentType.Comment);
@@ -2087,6 +2066,27 @@ namespace Voat.Data
             userInfo.RegistrationDate = UserHelper.GetUserRegistrationDateTime(userName);
             userInfo.Bio = UserHelper.UserShortbio(userName);
             userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, true, true);
+
+            //Badges
+            var userBadges = (from x in _db.UserBadges
+                              join b in _db.Badges on x.BadgeID equals b.ID
+                              where 
+                              x.UserName == userName
+                              //TODO: test this for appending alpha/beta badges to user list (aka virtual badges)
+                              //||
+                              //(b.ID == "alpha_user" && userInfo.RegistrationDate < (new DateTime(2015, 12, 31)))
+                              //||
+                              //(b.ID == "beta_user" && userInfo.RegistrationDate > (new DateTime(2015, 12, 31)))
+                              select new Voat.Domain.Models.UserBadge()
+                              {
+                                  CreationDate = x.CreationDate,
+                                  Name = b.Name,
+                                  Title = b.Title,
+                                  Graphic = b.Graphic,
+                              }
+                              ).ToList();
+
+            userInfo.Badges = userBadges;
 
             return userInfo;
         }
@@ -2672,7 +2672,7 @@ namespace Voat.Data
                 }
 
                 keywords.ForEach(x => {
-                    query = query.Where(m => m.Title.Contains(x) || m.Content.Contains(x) || m.LinkDescription.Contains(x));
+                    query = query.Where(m => m.Title.Contains(x) || m.Content.Contains(x) || m.Url.Contains(x));
                 });
 
             }

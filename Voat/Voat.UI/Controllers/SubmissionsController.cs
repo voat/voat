@@ -155,42 +155,24 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public ActionResult EditSubmission(EditSubmission model)
+        public async Task<ActionResult> EditSubmission(EditSubmission model)
         {
-            var existingSubmission = _db.Submissions.Find(model.SubmissionId);
 
-            if (existingSubmission == null)
+            var cmd = new EditSubmissionCommand(model.SubmissionId, new Domain.Models.UserSubmission() { Content = model.SubmissionContent });
+            var response = await cmd.Execute();
+
+            if (response.Success)
             {
-                return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+                DataCache.Submission.Remove(model.SubmissionId);
+                CacheHandler.Instance.Remove(CachingKey.Submission(model.SubmissionId));
+                return Json(new { response = response.Response.FormattedContent });
+
             }
-            if (existingSubmission.IsDeleted)
+            else
             {
-                return Json("This submission has been deleted.", JsonRequestBehavior.AllowGet);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
             }
-            if (existingSubmission.UserName.Trim() != User.Identity.Name)
-            {
-                return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
-            }
-
-            //Ensure URL is valid - Exploit trap for non-UI submitted submissions
-            if (existingSubmission.Type == 2)
-            {
-                return Json("Link posts can not be edited", JsonRequestBehavior.AllowGet);
-                //if (!UrlUtility.IsUriValid(model.SubmissionContent))
-                //{
-                //    return Json("Invalid Url", JsonRequestBehavior.AllowGet);
-                //}
-            }
-
-            existingSubmission.Content = model.SubmissionContent;
-            existingSubmission.LastEditDate = Repository.CurrentDate;
-            _db.SaveChanges();
-
-            DataCache.Submission.Remove(model.SubmissionId);
-
-            // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
-            var formattedSubmission = Formatting.FormatMessage(model.SubmissionContent);
-            return Json(new { response = formattedSubmission });
+            
         }
 
         // POST: deletesubmission
@@ -260,8 +242,8 @@ namespace Voat.Controllers
                                     "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
                                     "Submission content: " + submissionToDelete.Content
                                     :
-                                    "Link description: " + submissionToDelete.LinkDescription + ", " + Environment.NewLine +
-                                    "Link URL: " + submissionToDelete.Content
+                                    "Link description: " + submissionToDelete.Title + ", " + Environment.NewLine +
+                                    "Link URL: " + submissionToDelete.Url
                                     )
                     };
                     var cmd = new SendMessageCommand(message);

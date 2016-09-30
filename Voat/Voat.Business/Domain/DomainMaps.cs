@@ -52,6 +52,13 @@ namespace Voat.Domain
                 {
                     ID = submission.ID,
                     UserName = (submission.IsAnonymized ? submission.ID.ToString() : submission.UserName),
+
+                    Title = submission.Title,
+                    Url = submission.Url,
+                    Content = (submission.Type == 1 ? submission.Content : (string)null),
+                    //Support For Backwards compat, if FormattedContent is empty, do it here.
+                    FormattedContent = (submission.Type == 1 && String.IsNullOrEmpty(submission.FormattedContent) ? Formatting.FormatMessage(submission.Content, true) : submission.FormattedContent),
+
                     LastEditDate = submission.LastEditDate,
                     ThumbnailUrl = VoatPathHelper.ThumbnailPath(submission.Thumbnail, true, true),
                     CommentCount = CommentCounter.CommentCount(submission.ID),
@@ -59,10 +66,6 @@ namespace Voat.Domain
                     UpCount = (int)submission.UpCount,
                     Views = (int)submission.Views,
                     DownCount = (int)submission.DownCount,
-                    Content = (submission.Type == 1 ? submission.Content : (string)null),
-                    FormattedContent = (submission.Type == 1 ? Formatting.FormatMessage(submission.Content, true) : (string)null), //Need to override when formatting occurs on submission because data is mismatched in base table
-                    Title = (submission.Type == 1 ? submission.Title : submission.LinkDescription),
-                    Url = (submission.Type == 2 ? submission.Content : (string)null),
                     Type = submission.Type == 1 ? SubmissionType.Text : SubmissionType.Link,
                     Subverse = submission.Subverse,
                     IsAnonymized = submission.IsAnonymized,

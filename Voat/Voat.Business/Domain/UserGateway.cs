@@ -83,17 +83,16 @@ namespace Voat.Domain
                         var submissions = db.Submissions.Where(c => c.UserName == userName).ToList();
                         foreach (var s in submissions)
                         {
+                            s.Title = "deleted by user";
                             if (s.Type == 1)
                             {
                                 s.IsDeleted = true;
                                 s.Content = "deleted by user";
-                                s.Title = "deleted by user";
                             }
                             else
                             {
                                 s.IsDeleted = true;
-                                s.LinkDescription = "deleted by user";
-                                s.Content = "http://voat.co";
+                                s.Url = "http://voat.co";
                             }
                         }
 

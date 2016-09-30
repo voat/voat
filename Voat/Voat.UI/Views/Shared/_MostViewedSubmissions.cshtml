@@ -16,19 +16,8 @@
 {
     DateTime submissionDate = submission.CreationDate;
     string postAge = Age.ToRelative(submissionDate);
-    
-    // type 2 = link
-    // type 1 = message
-    if (submission.Type == 2)
-    {
-        string commentsUrl = "/v/" + submission.Subverse + "/comments/" + submission.ID;
-        <span><a href="@commentsUrl" tabindex="1" title="@submission.LinkDescription">@submission.LinkDescription</a></span>
-    }
-    else
-    {
-        string commentsUrl = "/v/" + submission.Subverse + "/comments/" + submission.ID;
-        <span><a href="@commentsUrl" tabindex="1" title="@submission.Title">@submission.Title</a></span>
-    }
+    string commentsUrl = "/v/" + submission.Subverse + "/comments/" + submission.ID;
 
+    <span><a href="@commentsUrl" tabindex="1" title="@submission.Title">@submission.Title</a></span>
     <div class="tagline">@submission.Subverse / @postAge ago</div>
 }

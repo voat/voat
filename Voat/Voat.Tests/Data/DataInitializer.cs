@@ -185,8 +185,8 @@ namespace Voat.Tests.Repository
             {
                 CreationDate = DateTime.UtcNow.AddHours(-12),
                 Subverse = "unit",
-                LinkDescription = "Favorite YouTube Video",
-                Content = "https://www.youtube.com/watch?v=pnbJEg9r1o8",
+                Title = "Favorite YouTube Video",
+                Url = "https://www.youtube.com/watch?v=pnbJEg9r1o8",
                 Type = 2,
                 UserName = "anon"
             });

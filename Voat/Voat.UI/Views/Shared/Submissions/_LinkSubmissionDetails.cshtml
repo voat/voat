@@ -40,7 +40,7 @@
             }
         }
 
-        string submissionDomain = UrlUtility.GetDomainFromUri(Model.Content);
+        string submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
 
         @* 1 link submission details without comments *@
         <div id="siteTable" class="sitetable linklisting">
@@ -52,14 +52,14 @@
 
                 @if (Model.Thumbnail != null)
                 {
-                    <a class="thumbnail may-blank" href="@Model.Content" target="@ahrefTarget">
+                    <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
                         @if (Settings.UseContentDeliveryNetwork)
                         {
-                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
+                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Title" />
                         }
                         else
                         {
-                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
+                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Title" />
                         }
                     </a>
                 }
@@ -67,7 +67,7 @@
                 <div class="entry unvoted">
                     <p class="title">
                         <span id="linkflair" class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
-                        <a class="title may-blank " href="@Model.Content" tabindex="1" title="@Model.LinkDescription" target="@ahrefTarget">@Model.LinkDescription</a>&#32;<span class="domain">(<a href="#">@submissionDomain</a>)</span>
+                        <a class="title may-blank " href="@Model.Url" tabindex="1" title="@Model.Title" target="@ahrefTarget">@Model.Title</a>&#32;<span class="domain">(<a href="#">@submissionDomain</a>)</span>
                     </p>
 
                     <p class="tagline">

@@ -60,15 +60,7 @@
                         foreach (Submission item in userStatsModel.HighestRatedSubmissions)
                         {
                             var score = item.UpCount - item.DownCount;
-
-                            if (item.Type == 1)
-                            {
-                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
-                            }
-                            else
-                            {
-                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.LinkDescription</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
-                            }
+                            <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
                         }
                     }
                     else
@@ -86,14 +78,7 @@
                         {
                             var score = item.UpCount - item.DownCount;
 
-                            if (item.Type == 1)
-                            {
-                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
-                            }
-                            else
-                            {
-                                <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.LinkDescription</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
-                            }
+                            <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
                         }
                     }
                     else
@@ -116,14 +101,8 @@
 
                             <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
                                 <p>
-                                    @if (item.Submission.Type == 1)
-                                    {
-                                        <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
-                                    }
-                                    else
-                                    {
-                                        <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.LinkDescription</a>
-                                    }
+                                    <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
+
                                     submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
                                 </p>
 
@@ -177,14 +156,7 @@
 
                             <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
 
-                                @if (item.Submission.Type == 1)
-                                {
-                                    <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
-                                }
-                                else
-                                {
-                                    <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.LinkDescription</a>
-                                }
+                                <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
                                 submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
 
                                 <div class="entry unvoted">

@@ -168,7 +168,7 @@ namespace Voat.Utilities.Components
                                         commentReplyNotification.CreationDate = Repository.CurrentDate;
 
                                         // self = type 1, url = type 2
-                                        commentReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.LinkDescription;
+                                        commentReplyNotification.Subject = submission.Title;
 
                                         _db.CommentReplyNotifications.Add(commentReplyNotification);
 
@@ -215,7 +215,7 @@ namespace Voat.Utilities.Components
                                     postReplyNotification.CreationDate = Repository.CurrentDate;
 
                                     // self = type 1, url = type 2
-                                    postReplyNotification.Subject = submission.Type == 1 ? submission.Title : submission.LinkDescription;
+                                    postReplyNotification.Subject = submission.Title;
 
                                     _db.SubmissionReplyNotifications.Add(postReplyNotification);
 

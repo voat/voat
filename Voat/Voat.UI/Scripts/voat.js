@@ -743,7 +743,9 @@ function editmessagesubmit(submissionid) {
         url: "/editsubmission",
         datatype: "json",
         success: function (data) {
-            $("#submissionid-" + submissionid).find('.md').html(data.response);
+            var textElement = $("#submissionid-" + submissionid + " .usertext-body");
+            textElement.children('div').first().html(data.response); //set new content
+            textElement.show();
             window.setTimeout(function () { UI.Notifications.raise('DOM', $("#submissionid-" + submissionid)); });
         }
     });
@@ -1259,18 +1261,18 @@ function suggestTitle() {
     $("#suggest-title").off('click', suggestTitle);
     $("#suggest-title").text('Please wait...');
 
-    var uri = $("#Content").val();
+    var uri = $("#Url").val();
 
     // request a url title from title service
     var title = $.get(
         "/ajaxhelpers/titlefromuri?uri=" + uri,
         null,
         function (data) {
-            $("#LinkDescription").val(data);
+            $("#Title").val(data);
             $("#suggest-title").text("Enter the URL above, then click here to suggest a title");
             $("#suggest-title").on('click', suggestTitle);
         }).fail(function () {
-            $("#LinkDescription").val("We were unable to suggest a title.");
+            $("#Title").val("We were unable to suggest a title.");
             $("#suggest-title").text("Enter the URL above, then click here to suggest a title");
             $("#suggest-title").on('click', suggestTitle);
         });

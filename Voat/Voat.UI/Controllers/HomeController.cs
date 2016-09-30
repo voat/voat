@@ -102,7 +102,7 @@ namespace Voat.Controllers
         [Authorize]
         [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
-        public async Task<ActionResult> Submit([Bind(Include = "ID,Votes,Name,CreationDate,Type,LinkDescription,Title,Rank,Content,Subverse")] Data.Models.Submission submission)
+        public async Task<ActionResult> Submit([Bind(Include = "ID,Votes,Name,CreationDate,Type,Title,Rank,Url,Content,Subverse")] Data.Models.Submission submission)
         {
 
             // abort if model state is invalid
@@ -128,18 +128,10 @@ namespace Voat.Controllers
             //new pipeline
             var userSubmission = new Domain.Models.UserSubmission();
             userSubmission.Subverse = submission.Subverse;
-            //1: text
-            //2: link
-            if (submission.Type == 1)
-            {
-                userSubmission.Title = submission.Title;
-                userSubmission.Content = submission.Content;
-            }
-            else
-            {
-                userSubmission.Title = submission.LinkDescription;
-                userSubmission.Url = submission.Content;
-            }
+            userSubmission.Title = submission.Title;
+            userSubmission.Content = submission.Content;
+            userSubmission.Url = submission.Url;
+
             var q = new CreateSubmissionCommand(userSubmission);
             var result = await q.Execute();
 
@@ -163,9 +155,9 @@ namespace Voat.Controllers
                 ViewBag.selectedSubverse = submission.Subverse;
                 ViewBag.message = submission.Content;
                 ViewBag.title = submission.Title;
-                ViewBag.linkDescription = submission.LinkDescription;
+                ViewBag.linkDescription = submission.Title; //line needs to be removed, but leaving in for now
                 ViewBag.content = submission.Content;
-                ViewBag.linkUrl = submission.Content;
+                ViewBag.linkUrl = submission.Url;
                 //show error
                 ModelState.AddModelError(string.Empty, result.Message);
                 return View("Submit");

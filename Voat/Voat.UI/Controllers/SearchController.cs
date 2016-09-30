@@ -78,7 +78,7 @@ namespace Voat.Controllers
                                             !s.IsAdminDisabled.Value &&
                                             !m.IsDeleted &&
                                             m.Subverse == sub &&
-                                            (m.LinkDescription.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                            (m.Url.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
                                            orderby m.Rank ascending, m.CreationDate descending
                                            select m).Take(25).ToList();
                             return results;
@@ -122,7 +122,7 @@ namespace Voat.Controllers
                                             !s.IsAdminDisabled.Value &&
                                             !m.IsDeleted &&
                                             //m.Subverse == sub &&
-                                            (m.LinkDescription.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                            (m.Url.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
                                            orderby m.Rank ascending, m.CreationDate descending
                                            select m
                                     ).Take(25).ToList();

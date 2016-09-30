@@ -27,8 +27,6 @@ namespace Voat.Data.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<AutoModComment> AutoModComments { get; set; }
-        public virtual DbSet<AutoModSubmission> AutoModSubmissions { get; set; }
         public virtual DbSet<Badge> Badges { get; set; }
         public virtual DbSet<BannedDomain> BannedDomains { get; set; }
         public virtual DbSet<BannedUser> BannedUsers { get; set; }

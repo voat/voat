@@ -39,16 +39,16 @@
         <div class="form-group">
             @Html.Label("URL:", new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.TextBoxFor(m => m.Content, new { @class = "form-control", Value = ViewBag.linkUrl })
-                @Html.ValidationMessageFor(model => model.Content)
+                @Html.TextBoxFor(m => m.Url, new { @class = "form-control", Value = ViewBag.linkUrl })
+                @Html.ValidationMessageFor(model => model.Url)
             </div>
         </div>
 
         <div class="form-group">
             @Html.Label("Title:", new { @class = "control-label col-md-2" })
             <div class="col-md-9">
-                @Html.TextBoxFor(m => m.LinkDescription, new { @class = "form-control", Value = ViewBag.linkDescription })
-                @Html.ValidationMessageFor(model => model.LinkDescription)
+                @Html.TextBoxFor(m => m.Title, new { @class = "form-control", Value = ViewBag.linkDescription })
+                @Html.ValidationMessageFor(model => model.Title)
                 <br />
                 <a href="javascript:void(0)" id="suggest-title" onclick="return suggestTitle()">Enter the URL above, then click here if you want to get a title suggestion</a>
                 <br/>Unicode will be stripped from the retrieved title
