@@ -37,8 +37,8 @@ namespace Voat.Domain.Query
             }
             //return default policy
             //TODO: Change these defaults when moving to production
-            //return new ApiPermissionSet() { AllowStream = false, AllowUnrestrictedLogin = false, RequireHmacOnLogin = false };
-            return new ApiPermissionSet() { AllowStream = true, AllowUnrestrictedLogin = false, RequireHmacOnLogin = false };
+            //return new ApiPermissionSet() { AllowLogin = false, AllowStream = false, AllowUnrestrictedLogin = false, RequireHmacOnLogin = false };
+            return new ApiPermissionSet() { AllowLogin = true, AllowStream = true, AllowUnrestrictedLogin = false, RequireHmacOnLogin = false };
         }
     }
 }

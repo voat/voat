@@ -12,5 +12,9 @@ namespace Voat.Domain.Models
 
         [JsonProperty("requireHmacOnLogin")]
         public bool RequireHmacOnLogin { get; set; }
+
+        //This property is being added to allow for read only keys
+        [JsonProperty("allowLogin")]
+        public bool AllowLogin { get; set; }
     }
 }
