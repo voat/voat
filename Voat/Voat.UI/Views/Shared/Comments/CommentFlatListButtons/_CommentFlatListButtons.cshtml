@@ -30,7 +30,7 @@
     else if (Model.ParentID != null)
     {
         <li>
-            <a onclick="goToParent(event, @Model.ParentID)" href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)" rel="nofollow">parent</a>
+            <a onclick="goToParent(event, @Model.ParentID)" href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value, Model.ParentID)" rel="nofollow">parent</a>
         </li>
     }
 
