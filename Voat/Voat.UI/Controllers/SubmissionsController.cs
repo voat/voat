@@ -17,8 +17,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Configuration;
+using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain;
+using Voat.Domain.Command;
 using Voat.Models;
 using Voat.Utilities;
 
@@ -28,11 +32,11 @@ namespace Voat.Controllers
     public class SubmissionsController : Controller
     {
         private readonly voatEntities _db = new voatEntities();
-        private static readonly object _locker = new object();
 
         // POST: apply a link flair to given submission
         [Authorize]
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         public ActionResult ApplyLinkFlair(int? submissionID, int? flairId)
         {
             if (submissionID == null || flairId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -61,6 +65,7 @@ namespace Voat.Controllers
         // POST: clear link flair from a given submission
         [Authorize]
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         public ActionResult ClearLinkFlair(int? submissionID)
         {
             if (submissionID == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -81,6 +86,7 @@ namespace Voat.Controllers
         // POST: toggle sticky status of a submission
         [Authorize]
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         public ActionResult ToggleSticky(int submissionID)
         {
             // get model for selected submission
@@ -108,7 +114,7 @@ namespace Voat.Controllers
                 {
                     SubmissionID = submissionID,
                     CreatedBy = User.Identity.Name,
-                    CreationDate = DateTime.Now,
+                    CreationDate = Repository.CurrentDate,
                     Subverse = submissionModel.Subverse
                 };
 
@@ -127,46 +133,11 @@ namespace Voat.Controllers
         // vote on a submission
         // POST: vote/{messageId}/{typeOfVote}
         [Authorize]
-        public JsonResult Vote(int messageId, int typeOfVote)
+        public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
         {
-            lock (_locker)
-            {
-                int dailyVotingQuota = Settings.DailyVotingQuota;
-                var loggedInUser = User.Identity.Name;
-                var userCcp = Karma.CommentKarma(loggedInUser);
-                var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
-                var totalVotesUsedInPast24Hours = UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name);
-
-                switch (typeOfVote)
-                {
-                    case 1:
-                        if (userCcp >= 20)
-                        {
-                            if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
-                            {
-                                // perform upvoting or resetting
-                                Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                            }
-                        }
-                        else if (totalVotesUsedInPast24Hours < 11)
-                        {
-                            // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
-                            Voting.UpvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                        }
-                        break;
-                    case -1:
-                        if (userCcp >= 100)
-                        {
-                            if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
-                            {
-                                // perform downvoting or resetting
-                                Voting.DownvoteSubmission(messageId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                            }
-                        }
-                        break;
-                }
-                return Json("Voting ok", JsonRequestBehavior.AllowGet);
-            }
+            var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserGateway.UserIpAddress(this.Request)));
+            var result = await cmd.Execute();
+            return Json(result);
         }
 
         // save a submission
@@ -183,29 +154,31 @@ namespace Voat.Controllers
         // POST: editsubmission
         [Authorize]
         [HttpPost]
-        public ActionResult EditSubmission(EditSubmission model)
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> EditSubmission(EditSubmission model)
         {
-            var existingSubmission = _db.Submissions.Find(model.SubmissionId);
 
-            if (existingSubmission == null) return Json("Unauthorized edit or submission not found.", JsonRequestBehavior.AllowGet);
+            var cmd = new EditSubmissionCommand(model.SubmissionId, new Domain.Models.UserSubmission() { Content = model.SubmissionContent });
+            var response = await cmd.Execute();
 
-            if (existingSubmission.IsDeleted) return Json("This submission has been deleted.", JsonRequestBehavior.AllowGet);
-            if (existingSubmission.UserName.Trim() != User.Identity.Name) return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+            if (response.Success)
+            {
+                DataCache.Submission.Remove(model.SubmissionId);
+                CacheHandler.Instance.Remove(CachingKey.Submission(model.SubmissionId));
+                return Json(new { response = response.Response.FormattedContent });
 
-            existingSubmission.Content = model.SubmissionContent;
-            existingSubmission.LastEditDate = DateTime.Now;
-
-            _db.SaveChanges();
-            DataCache.Submission.Remove(model.SubmissionId);
-
-            // parse the new submission through markdown formatter and then return the formatted submission so that it can replace the existing html submission which just got modified
-            var formattedSubmission = Formatting.FormatMessage(model.SubmissionContent);
-            return Json(new { response = formattedSubmission });
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+            }
+            
         }
 
         // POST: deletesubmission
         [HttpPost]
         [Authorize]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteSubmission(int submissionId)
         {
             var submissionToDelete = _db.Submissions.Find(submissionId);
@@ -219,7 +192,7 @@ namespace Voat.Controllers
 
                     if (submissionToDelete.Type == 1)
                     {
-                        submissionToDelete.Content = "deleted by author at " + DateTime.Now;
+                        submissionToDelete.Content = "deleted by author at " + Repository.CurrentDate;
                     }
                     else
                     {
@@ -250,41 +223,31 @@ namespace Voat.Controllers
                         SubmissionID = submissionToDelete.ID,
                         Moderator = User.Identity.Name,
                         Reason = "This feature is not yet implemented",
-                        CreationDate = DateTime.Now
+                        CreationDate = Repository.CurrentDate
                     };
 
                     _db.SubmissionRemovalLogs.Add(removalLog);
 
-                    if (submissionToDelete.Type == 1)
+                    // notify submission author that his submission has been deleted by a moderator
+                    var message = new Domain.Models.SendMessage()
                     {
-                        // notify submission author that his submission has been deleted by a moderator
-                        MesssagingUtility.SendPrivateMessage(
-                            "Voat",
-                            submissionToDelete.UserName,
-                            "Your submission has been deleted by a moderator",
-                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
-                            "/u/" + User.Identity.Name + " at " + DateTime.Now + "  " + Environment.NewLine +
-                            "Original submission content was: " + Environment.NewLine +
-                            "---" + Environment.NewLine +
-                            "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
-                            "Submission content: " + submissionToDelete.Content
-                            );
-                    }
-                    else
-                    {
-                        // notify submission author that his submission has been deleted by a moderator
-                        MesssagingUtility.SendPrivateMessage(
-                            "Voat",
-                            submissionToDelete.UserName,
-                            "Your submission has been deleted by a moderator",
-                            "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
-                            "/u/" + User.Identity.Name + " at " + DateTime.Now + "  " + Environment.NewLine +
-                            "Original submission content was: " + Environment.NewLine +
-                            "---" + Environment.NewLine +
-                            "Link description: " + submissionToDelete.LinkDescription + ", " + Environment.NewLine +
-                            "Link URL: " + submissionToDelete.Content
-                            );
-                    }
+                        Sender = $"v/{submissionToDelete.Subverse}",
+                        Recipient = submissionToDelete.UserName,
+                        Subject = "Your submission has been deleted by a moderator",
+                        Message =   "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
+                                    "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
+                                    "Original submission content was: " + Environment.NewLine +
+                                    "---" + Environment.NewLine +
+                                    (submissionToDelete.Type == 1 ? 
+                                    "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
+                                    "Submission content: " + submissionToDelete.Content
+                                    :
+                                    "Link description: " + submissionToDelete.Title + ", " + Environment.NewLine +
+                                    "Link URL: " + submissionToDelete.Url
+                                    )
+                    };
+                    var cmd = new SendMessageCommand(message);
+                    await cmd.Execute();
 
                     // remove sticky if submission was stickied
                     var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionId);
@@ -295,7 +258,7 @@ namespace Voat.Controllers
 
                     await _db.SaveChangesAsync();
                     DataCache.Submission.Remove(submissionId);
-
+                    
                 }
             }
 

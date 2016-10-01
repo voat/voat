@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Linq;
+using Voat.Data;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
@@ -77,7 +78,7 @@ namespace Voat.Utilities
                     {
                         SubmissionID = submissionId,
                         UserName = userWhichSaved,
-                        CreationDate = DateTime.Now
+                        CreationDate = Repository.CurrentDate
                     };
                     db.SubmissionSaveTrackers.Add(tmpSavingTracker);
                     db.SaveChanges();

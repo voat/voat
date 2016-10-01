@@ -17,8 +17,19 @@ namespace Voat.Models.ViewModels
     public class BasicUserInfo
         
     {
+        private string _bio = null;
+
         public string MemberSince { get; set; }
         public int Ccp { get; set; }
         public int Scp { get; set; }
+        public string Bio {
+            get { return _bio; }
+            set {
+                if (value != "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.")
+                {
+                    _bio = value;
+                }
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@
 
 <ul class="flat-list buttons">
     <li class="first">
-        <a href="/v/@Model.Subverse/comments/@Model.ID" class="comments may-blank">@commentCount comments</a>
+        <a href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID)" class="comments may-blank">@commentCount comments</a>
     </li>
 
     @if (User.Identity.IsAuthenticated)

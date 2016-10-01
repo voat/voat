@@ -14,10 +14,11 @@
 
 @* 1 user self submission with details without comments *@
 @{
-    var commentCount = Model.Comments.Count(c => !c.IsDeleted);
-    
-    string postAge = Submissions.CalcSubmissionAge(Model.CreationDate);
-    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
+    //var commentCount = Model.Comments.Count(c => !c.IsDeleted);
+    var commentCount = CommentCounter.CommentCount(Model.ID);
+
+    string postAge = Age.ToRelative(Model.CreationDate);
+    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
     int submissionScore = (int)(Model.UpCount - Model.DownCount);
 
     //type 1 = message
@@ -32,7 +33,7 @@
                 <div class="score likes">@Model.UpCount</div>
             </div>
 
-            <a class="thumbnail self may-blank" href="/v/@Model.Subverse/comments/@Model.ID" rel="nofollow"></a>
+            <a class="thumbnail self may-blank" href="@commentsUrl" rel="nofollow"></a>
             <div class="entry unvoted">
                 <p class="title">
                     <a class="title may-blank " href="@commentsUrl" tabindex="1" rel="nofollow">@Model.Title</a>

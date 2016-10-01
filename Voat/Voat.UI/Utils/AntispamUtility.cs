@@ -33,6 +33,8 @@ using Newtonsoft.Json;
 using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Configuration;
+using Voat.Data;
+using Voat.Domain;
 
 namespace Voat.UI.Utilities
 {
@@ -132,7 +134,7 @@ namespace Voat.UI.Utilities
             var cache = filterContext.HttpContext.Cache;
 
             // Grab the IP Address from the originating Request (very simple implementation for example purposes)
-            var originationInfo = request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? request.UserHostAddress;
+            var originationInfo = UserGateway.UserIpAddress(request);
 
             // Append the User Agent
             originationInfo += request.UserAgent;
@@ -157,7 +159,7 @@ namespace Voat.UI.Utilities
             {
                 // Adds an empty object to the cache using the hashValue to a key (This sets the expiration that will determine
                 // if the Request is valid or not
-                cache.Add(hashValue, "", null, DateTime.Now.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                cache.Add(hashValue, "", null, Repository.CurrentDate.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
 
             base.OnActionExecuting(filterContext);

@@ -24,7 +24,18 @@ namespace Voat.Utilities
 {
     public static class UrlUtility
     {
-
+        public static bool InjectableJavascriptDetected(string url)
+        {
+            if (!String.IsNullOrEmpty(url))
+            {
+                string htmlUrl = HttpUtility.HtmlDecode(url);
+                return Regex.IsMatch(htmlUrl, @"javascript\s{0,}:", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+            }
+            else
+            {
+                return false;
+            }
+        }
         // return domain from URI
         public static string GetDomainFromUri(string completeUri)
         {
@@ -40,10 +51,23 @@ namespace Voat.Utilities
         }
 
         // check if a URI is valid HTTP or HTTPS URI
-        public static bool IsUriValid(string completeUri)
+        public static bool IsUriValid(string completeUri, bool evaluateRegex = true)
         {
             Uri uriResult;
-            return Uri.TryCreate(completeUri, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            bool result = false;
+
+            if (Uri.TryCreate(completeUri, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+            {
+                if (evaluateRegex)
+                {
+                    result = Regex.IsMatch(completeUri, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
+                }
+                else
+                {
+                    result = true;
+                }
+            }
+            return result;
         }
 
         // return remote page title from URI

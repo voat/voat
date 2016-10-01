@@ -22,6 +22,10 @@ using Voat.Models.ViewModels;
 
 using Voat.Data.Models;
 using Voat.Utilities;
+using Voat.Caching;
+using Voat.Common;
+using Voat.Domain.Query;
+using System.Threading.Tasks;
 
 namespace Voat.Controllers
 {
@@ -30,23 +34,28 @@ namespace Voat.Controllers
         private readonly voatEntities _db = new voatEntities();
 
         // GET: MessageContent
-        public ActionResult MessageContent(int? messageId)
+        public async Task<ActionResult> MessageContent(int? messageId)
         {
-
-            var message = DataCache.Submission.Retrieve(messageId);
-
-            if (message != null)
+            if (messageId.HasValue)
             {
-                var mpm = new MarkdownPreviewModel();
+                var q = new QuerySubmission(messageId.Value);
+                var result = await q.ExecuteAsync();
 
-                if (message.Content != null)
+                if (result != null)
                 {
-                    mpm.MessageContent = message.Content;
+                    var mpm = new MarkdownPreviewModel();
+
+                    if (!String.IsNullOrEmpty(result.Content))
+                    {
+                        mpm.MessageContent = (String.IsNullOrEmpty(result.FormattedContent) ? Formatting.FormatMessage(result.Content) : result.FormattedContent);
+                    }
+                    else
+                    {
+                        mpm.MessageContent = "<p>This submission only has a title.</p>"; //"format" this content
+                    }
+
                     return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
                 }
-
-                mpm.MessageContent = "This submission only has a title.";
-                return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
@@ -113,6 +122,7 @@ namespace Voat.Controllers
 
             if (title != null)
             {
+                title = Formatting.StripUnicode(title);
                 var resultList = new List<string>
                 {
                     title
@@ -148,6 +158,7 @@ namespace Voat.Controllers
         {
             if (submissionModel != null)
             {
+                submissionModel.MessageContent = Formatting.FormatMessage(submissionModel.MessageContent, true);
                 return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", submissionModel);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -172,16 +183,21 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserBasicInfo(string userName)
         {
-            var userRegistrationDateTime = UserHelper.GetUserRegistrationDateTime(userName);
-            var memberFor = Submissions.CalcSubmissionAge(userRegistrationDateTime);
-            var scp = Karma.LinkKarma(userName);
-            var ccp = Karma.CommentKarma(userName);
+            var q = new QueryUserData(userName);
+            var userData = q.Execute();
+            //var userData = new UserData(User.Identity.Name);
+            var info = userData.Information;
+
+            var memberFor = Age.ToRelative(info.RegistrationDate);
+            var scp = info.SubmissionPoints.Sum;
+            var ccp = info.CommentPoints.Sum;
 
             var userInfoModel = new BasicUserInfo()
             {
                 MemberSince = memberFor,
                 Ccp = ccp,
-                Scp = scp
+                Scp = scp,
+                Bio = info.Bio
             };
 
             return PartialView("~/Views/AjaxViews/_BasicUserInfo.cshtml", userInfoModel);

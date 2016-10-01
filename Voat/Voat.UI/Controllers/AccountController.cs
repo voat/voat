@@ -34,6 +34,8 @@ using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Configuration;
 using Voat.UI.Utilities;
+using Voat.Data;
+using Voat.Domain;
 
 namespace Voat.Controllers
 {
@@ -79,11 +81,14 @@ namespace Voat.Controllers
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            if (!ModelState.IsValid) return View(model);
-
+            ViewBag.ReturnUrl = returnUrl;
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             var user = await UserManager.FindAsync(model.UserName, model.Password);
             var tmpuser = await UserManager.FindByNameAsync(model.UserName);
 
@@ -119,11 +124,11 @@ namespace Voat.Controllers
             await UserManager.ResetAccessFailedCountAsync(user.Id);
 
             // get user IP address
-            string clientIpAddress = UserHelper.UserIpAddress(Request);
+            string clientIpAddress = UserGateway.UserIpAddress(Request);
 
             // save last login ip and timestamp
             user.LastLoginFromIp = clientIpAddress;
-            user.LastLoginDateTime = DateTime.Now;
+            user.LastLoginDateTime = Repository.CurrentDate;
             await UserManager.UpdateAsync(user);
 
             // sign in and continue
@@ -155,7 +160,7 @@ namespace Voat.Controllers
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [ValidateCaptcha]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
@@ -167,7 +172,7 @@ namespace Voat.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            if (!Business.Utilities.AccountSecurity.IsPasswordComplex(model.Password, model.UserName))
+            if (!Utilities.AccountSecurity.IsPasswordComplex(model.Password, model.UserName, false))
             {
                 ModelState.AddModelError(string.Empty, "Your password is not secure. You must use at least one uppercase letter, one lowercase letter, one number and one special character such as ?, ! or .");
                 return View(model);
@@ -176,7 +181,7 @@ namespace Voat.Controllers
             try
             {
                 // get user IP address
-                string clientIpAddress = UserHelper.UserIpAddress(Request);
+                string clientIpAddress = UserGateway.UserIpAddress(Request);
 
                 // check the number of accounts already in database with this IP address, if number is higher than max conf, refuse registration request
                 var accountsWithSameIp = UserManager.Users.Count(x => x.LastLoginFromIp == clientIpAddress);
@@ -189,9 +194,9 @@ namespace Voat.Controllers
                 var user = new VoatUser
                 {
                     UserName = model.UserName,
-                    RegistrationDateTime = DateTime.Now,
+                    RegistrationDateTime = Repository.CurrentDate,
                     LastLoginFromIp = clientIpAddress,
-                    LastLoginDateTime = DateTime.Now
+                    LastLoginDateTime = Repository.CurrentDate
                 };
 
                 // try to create new user account
@@ -213,16 +218,6 @@ namespace Voat.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
-        }
-
-        // POST: /Account/Disassociate
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Disassociate(string loginProvider, string providerKey)
-        {
-            var result = await UserManager.RemoveLoginAsync(User.Identity.GetUserId(), new UserLoginInfo(loginProvider, providerKey));
-            ManageMessageId? message = result.Succeeded ? ManageMessageId.RemoveLoginSuccess : ManageMessageId.Error;
-            return RedirectToAction("Manage", new { Message = message });
         }
 
         // GET: /Account/Manage
@@ -247,7 +242,7 @@ namespace Voat.Controllers
 
         // POST: /Account/Manage
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
             var hasPassword = HasPassword();
@@ -287,131 +282,13 @@ namespace Voat.Controllers
             return RedirectToAction("Manage", new { Message = ManageMessageId.WrongPassword });
         }
 
-        // POST: /Account/ExternalLogin
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public ActionResult ExternalLogin(string provider, string returnUrl)
-        {
-            // Request a redirect to the external login provider
-            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
-        }
-
-        // GET: /Account/ExternalLoginCallback
-        [AllowAnonymous]
-        public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
-        {
-            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
-            if (loginInfo == null)
-            {
-                return RedirectToAction("Login");
-            }
-
-            // Sign in the user with this external login provider if the user already has a login
-            var user = await UserManager.FindAsync(loginInfo.Login);
-            if (user != null)
-            {
-                await SignInAsync(user, isPersistent: false);
-                return RedirectToLocal(returnUrl);
-            }
-            // If the user does not have an account, then prompt the user to create an account
-            ViewBag.ReturnUrl = returnUrl;
-            ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName });
-        }
-
-        // POST: /Account/LinkLogin
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult LinkLogin(string provider)
-        {
-            // Request a redirect to the external login provider to link a login for the current user
-            return new ChallengeResult(provider, Url.Action("LinkLoginCallback", "Account"), User.Identity.GetUserId());
-        }
-
-        // GET: /Account/LinkLoginCallback
-        public async Task<ActionResult> LinkLoginCallback()
-        {
-            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
-            if (loginInfo == null)
-            {
-                return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
-            }
-            var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("Manage");
-            }
-            return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
-        }
-
-        // POST: /Account/ExternalLoginConfirmation
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Manage");
-            }
-
-            if (ModelState.IsValid)
-            {
-                // Get the information about the user from the external login provider
-                var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-                if (info == null)
-                {
-                    return View("ExternalLoginFailure");
-                }
-                var user = new VoatUser { UserName = model.UserName };
-                var result = await UserManager.CreateAsync(user);
-                if (result.Succeeded)
-                {
-                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                    if (result.Succeeded)
-                    {
-                        await SignInAsync(user, isPersistent: false);
-                        return RedirectToLocal(returnUrl);
-                    }
-                }
-                AddErrors(result);
-            }
-
-            ViewBag.ReturnUrl = returnUrl;
-            return View(model);
-        }
-
         // POST: /Account/LogOff
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
-            //Session["UserTheme"] = "light";
             return RedirectToAction("Index", "Home");
-        }
-
-        // GET: /Account/ExternalLoginFailure
-        [AllowAnonymous]
-        public ActionResult ExternalLoginFailure()
-        {
-            return View();
-        }
-
-        [ChildActionOnly]
-        public ActionResult RemoveAccountList()
-        {
-            try
-            {
-                var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
-                ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
-                return PartialView("_RemoveAccountPartial", linkedAccounts);
-            }
-            catch (Exception)
-            {
-                return new EmptyResult();
-            }
         }
 
         protected override void Dispose(bool disposing)
@@ -428,7 +305,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult DeleteAccount(DeleteAccountViewModel model)
         {
             // require users to enter their password in order to execute account delete action
@@ -463,7 +340,7 @@ namespace Voat.Controllers
 
         // GET: /Account/UserPreferencesAbout
         [Authorize]
-        public ActionResult UserPreferencesAbout()
+        public ActionResult GetUserPreferencesAbout()
         {
             try
             {
@@ -499,7 +376,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Bio, Avatarfile")] UserAboutViewModel model)
         {
             // save changes
@@ -596,7 +473,7 @@ namespace Voat.Controllers
 
         // GET: /Account/UserPreferences
         [ChildActionOnly]
-        public ActionResult UserPreferences()
+        public ActionResult GetUserPreferences()
         {
             try
             {
@@ -636,7 +513,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
             if (!ModelState.IsValid) return View("Manage", model);
@@ -736,7 +613,7 @@ namespace Voat.Controllers
         // GET: /Account/UserAccountEmail
         [Authorize]
         [ChildActionOnly]
-        public ActionResult UserAccountEmail()
+        public ActionResult GetUserAccountEmail()
         {
             var existingEmail = UserManager.GetEmail(User.Identity.GetUserId());
 
@@ -754,10 +631,19 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserAccountEmail([Bind(Include = "EmailAddress")] UserEmailViewModel model)
         {
+            ViewBag.userid = User.Identity.Name;
             if (!ModelState.IsValid) return View("Manage", model);
+
+            // make sure no other accounts use this email address
+            var existingAccount = await UserManager.FindByEmailAsync(model.EmailAddress);
+            if (existingAccount != null)
+            {
+                ViewBag.StatusMessage = "This email address is already in use.";
+                return View("Manage", model);
+            }
 
             // save changes
             var result = await UserManager.SetEmailAsync(User.Identity.GetUserId(), model.EmailAddress);
@@ -825,7 +711,7 @@ namespace Voat.Controllers
         // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [ValidateCaptcha]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
@@ -872,7 +758,7 @@ namespace Voat.Controllers
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
@@ -958,6 +844,10 @@ namespace Voat.Controllers
 
         private ActionResult RedirectToLocal(string returnUrl)
         {
+            if (String.IsNullOrEmpty(returnUrl) && !String.IsNullOrEmpty(Request.QueryString["ReturnUrl"]))
+            {
+                returnUrl = Request.QueryString["ReturnUrl"];
+            }
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);

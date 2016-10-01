@@ -63,19 +63,16 @@
                                 From: <a href="@commentAuthorUrl">@commentAuthorName</a> | Sent: @Age.ToRelative(comment.CreationDate) ago on @comment.CreationDate
                             </div>
                             <div class="panel panel-heading-messagetitle">
-                                @if (comment.Submission.Type == 1)
-                                {
-                                    <a href="/v/@comment.Submission.Subverse/comments/@comment.SubmissionID"><b>@comment.Submission.Title</b></a>
-                                }
-                                else
-                                {
-                                    <a href="/v/@comment.Submission.Subverse/comments/@comment.SubmissionID"><b>@comment.Submission.LinkDescription</b></a>
-                                }
+                                <a href="@VoatPathHelper.CommentsPagePath(comment.Submission.Subverse, comment.SubmissionID.Value)"><b>@comment.Submission.Title</b></a>
                             </div>
                             <div class="panel-message-body">
-                                
-                                @*@Html.Partial("~/Views/AjaxViews/_SingleSubmissionComment.cshtml", comment, new ViewDataDictionary { { "CommentId", comment.Id }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })*@
-                                @Html.Partial("~/Views/Shared/Submissions/_SubmissionComment.cshtml", new Voat.Models.CommentBucketViewModel(comment), new ViewDataDictionary { { "CommentId", comment.ID }, { "CCP", Karma.CommentKarma(User.Identity.Name) }, { "parentIsHidden", false }, { "SortingMode", "new" }, { "ShowContextLink", true } })
+                                @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
+                                Voat.Domain.DomainMaps.Map(comment, comment.Submission.Subverse, true),
+                                    new ViewDataDictionary {
+                                        { "parentIsHidden", false },
+                                        { "SortOrder", Voat.Domain.Models.CommentSortAlgorithm.New },
+                                        { "ShowContextLink", true } }
+                                    )
                             </div>
                         </div>
                     </div>

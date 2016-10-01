@@ -5,7 +5,7 @@ using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
-namespace Voat.Business.Utilities
+namespace Voat.Utilities
 {
     public static class CloudStorageUtility
     {

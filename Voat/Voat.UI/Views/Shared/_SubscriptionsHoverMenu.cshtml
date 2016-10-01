@@ -13,7 +13,7 @@
 @using Voat.Models.ViewModels
 
 @{
-    List<string> subscriptionList = null;
+    IEnumerable<string> subscriptionList = null;
 
     // get user subscriptions
     if (User.Identity.IsAuthenticated)
@@ -27,6 +27,7 @@
     <span class="drop-arrow"></span>
     <ul>
         <li><a href="/subverses/subscribed"><b>Edit your subscriptions</b></a></li>
+        <li><a href="/subverses/blocked"><b>Edit your blocked subverses</b></a></li>
 
         @if (subscriptionList != null)
         {

@@ -29,11 +29,11 @@ namespace Voat.Models
 
         [Required(ErrorMessage = "Post title is required. Please fill this field.")]
         [StringLength(200, ErrorMessage = "The title must be at least 10 and no more than 200 characters long.", MinimumLength = 10)]
-        public string LinkDescription { get; set; }
+        public string Title { get; set; }
 
         [Required(ErrorMessage = "URL is required. Please fill this field.")]
         [Url(ErrorMessage="Please enter a valid http, https, or ftp URL.")]
-        public string Content { get; set; }
+        public string Url { get; set; }
 
         [Required(ErrorMessage = "You must enter a subverse to send the post to. Examples: programming, videos, pics, funny...")]
         public string Subverse { get; set; }

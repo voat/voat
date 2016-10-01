@@ -15,13 +15,15 @@ All Rights Reserved.
 using System;
 using MarkdownDeep;
 using Voat.Utilities.Components;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Voat.Utilities
 {
     public static class Formatting
     {
         
-        public static string FormatMessage(String originalMessage, bool processContent = true){
+        public static string FormatMessage(String originalMessage, bool processContent = true, bool? forceLinksNewWindow = null){
             //Test changes to this code against this markdown thread content:
             //https://voat.co/v/test/comments/53891
             
@@ -32,9 +34,16 @@ namespace Voat.Utilities
 
             var newWindow = false;
 
-            if (System.Web.HttpContext.Current != null && System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            if (forceLinksNewWindow.HasValue)
             {
-                newWindow = UserHelper.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name);
+                newWindow = forceLinksNewWindow.Value;
+            }
+            else
+            {
+                if (System.Web.HttpContext.Current != null && System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+                {
+                    newWindow = UserHelper.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name);
+                }
             }
 
 
@@ -46,8 +55,7 @@ namespace Voat.Utilities
                     string href = x.attributes["href"];
                     if (!String.IsNullOrEmpty(href))
                     {
-                        //I think it needs the javascript: prefix to work at all but there might be more holes as this is just a simple check.
-                        if (href.ToLower().Trim().Contains("javascript"))
+                        if (UrlUtility.InjectableJavascriptDetected(href))
                         {
                             x.attributes["href"] = "#";
                             //add it to the output for verification?
@@ -64,7 +72,7 @@ namespace Voat.Utilities
 
             try
             {
-                return m.Transform(originalMessage);
+                return m.Transform(originalMessage).Trim();
             }
             catch (Exception ex) 
             {
@@ -80,6 +88,37 @@ namespace Voat.Utilities
             var iNextSpace = input.LastIndexOf(" ", length, StringComparison.Ordinal);
             return string.Format("{0}...", input.Substring(0, (iNextSpace > 0) ? iNextSpace : length).Trim());
         }
-        
+        // check if a string contains unicode characters
+        public static bool ContainsUnicode(string stringToTest, bool includeUnprintableChars = true)
+        {
+            const int maxAnsiCode = 255;
+            //Adding constraint for unprintable characters
+            int minAnsiCode = (includeUnprintableChars ? 32 : 0);
+            return stringToTest.Any(c => (c > maxAnsiCode || c < minAnsiCode));
+        }
+        public static string StripWhiteSpace(string stringToClean)
+        {
+            var scrubbed = stringToClean;
+            if (!String.IsNullOrEmpty(scrubbed))
+            {
+                scrubbed = Regex.Replace(scrubbed, @"\s{2,}", " ").Trim();
+            }
+            return scrubbed;
+        }
+        // string unicode characters from a string
+        public static string StripUnicode(string stringToClean, bool includeUnprintableChars = true, bool includeWhitespace = true)
+        {
+            var scrubbed = stringToClean;
+            if (!String.IsNullOrEmpty(scrubbed))
+            {
+                scrubbed = Regex.Replace(scrubbed, String.Format(@"[^\u00{0}-\u00FF]", (includeUnprintableChars ? "20" : "00")), string.Empty).Trim();
+                //remove sequential whitespace
+                if (includeWhitespace)
+                {
+                    scrubbed = StripWhiteSpace(scrubbed);
+                }
+            }
+            return scrubbed;
+        }
     }
 }

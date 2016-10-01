@@ -1,0 +1,151 @@
+﻿@model IEnumerable<Tuple<Voat.Data.Models.ApiClient, Voat.Data.Models.ApiThrottlePolicy>>
+
+@{
+    ViewBag.Title = "Voat Api Keys";
+
+}
+<style type="text/css">
+    table td > p {
+        padding: 5px;
+    }
+
+    .breakword {
+        white-space: -moz-pre-wrap; /* Mozilla */
+        white-space: -hp-pre-wrap; /* HP printers */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        xwhite-space: pre-wrap; /* CSS 2.1 */
+        xwhite-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
+        word-wrap: break-word; /* IE */
+        word-break: break-all;
+    }
+
+    .indent {
+        padding-left: 5px;
+    }
+</style>
+
+<div id="container" class="md">
+    <h1>Your Api Keys</h1>
+    @if (Settings.ApiKeyCreationEnabled)
+    {
+        <p>
+            @Html.ActionLink("Create New", "Create")
+        </p>
+    }
+
+    @if (Model.Count() <= 0)
+    {
+        <p>You have no api keys</p>
+    }
+    else {
+
+
+        <table class="table">
+            <tr>
+                <th width="30%">
+                    Details
+                </th>
+                <th width="65%">
+                    Keys
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var tuple in Model)
+            {
+                var item = tuple.Item1;
+                var policy = tuple.Item2;
+                <tr>
+                    <td>
+
+                        <h3>@Html.DisplayFor(modelItem => item.AppName)</h3>
+                        @if (item.IsActive)
+                        {
+                            <span style="color:green;">Active</span>
+                        }
+                        else {
+                            <span style="color:red;">Inactive</span>
+                        }
+
+                        <p>
+                            @Html.DisplayFor(modelItem => item.AppDescription)
+                        <p />
+
+                        @if (!String.IsNullOrEmpty(item.AppAboutUrl))
+                        {
+                            <p class="breakword"><a href="@item.AppAboutUrl" target="_blank">@item.AppAboutUrl</a></p>
+                        }
+                        <p>
+                            Created - @Html.DisplayFor(modelItem => item.CreationDate)<br/>
+                            Last Used -
+                            @if (item.LastAccessDate.HasValue)
+                            {
+                                @Html.DisplayFor(modelItem => item.LastAccessDate)
+                            }
+                            else {
+                                @Html.Raw("Never");
+                            }
+                        </p>
+                        @if (policy != null)
+                        {
+                            <div class="breakword indent">
+                                <strong>Throttle Policy</strong>
+                                <h3>@policy.Name</h3>
+
+                                @{
+                                    var result = Newtonsoft.Json.JsonConvert.DeserializeObject<WebApiThrottle.RateLimits>(policy.Policy);
+                                    if (result != null)
+                                    {
+                                        <span>Per Second: </span><i>@result.PerSecond</i><br/>
+                                        <span>Per Minute: </span><i>@result.PerMinute</i><br />
+                                        <span>Per Hour: </span><i>@result.PerHour</i><br />
+                                        <span>Per Day: </span><i>@result.PerDay</i><br />
+                                        <span>Per Week: </span><i>@result.PerWeek</i><br />
+                                    }
+                                    else
+                                    {
+                                        <i>@policy.Policy</i>
+                                    }
+
+                                }
+
+                            </div>
+                        }
+                    </td>
+                    <td>
+                        <div>
+                            <h3>Public Key:</h3>
+                            <p class="breakword indent">
+                                @Html.DisplayFor(modelItem => item.PublicKey)
+                            </p>
+                            <h3>Private Key / Secret:</h3>
+                            <p class="breakword indent">
+                                @Html.DisplayFor(modelItem => item.PrivateKey)<br />
+                            </p>
+                            @if (!String.IsNullOrEmpty(item.RedirectUrl))
+                            {
+                                <h3>Redirect Url:</h3>
+                                <p class="breakword indent">
+                                    @Html.DisplayFor(modelItem => item.RedirectUrl)<br />
+                                </p>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        @* Basically, we don't want a user to delete if a key has been turned off by an admin. *@
+                        @if (item.IsActive)
+                        {
+                            using (Html.BeginForm("Delete", "ApiKeys", new { id = item.ID }, FormMethod.Post))
+                            {
+                                <input type="submit" value="Delete" class="form-control" />
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+    }
+</div>

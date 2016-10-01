@@ -25,5 +25,10 @@ namespace Voat.Data.Models
         public string Bio { get; set; }
         public string Avatar { get; set; }
         public string UserName { get; set; }
+        public bool DisplayAds { get; set; }
+        public Nullable<int> DisplayCommentCount { get; set; }
+        public Nullable<int> HighlightMinutes { get; set; }
+        public string VanityTitle { get; set; }
+        public Nullable<int> CollapseCommentLimit { get; set; }
     }
 }

@@ -15,6 +15,8 @@ All Rights Reserved.
 using System;
 using Voat.Data.Models;
 using System.Linq;
+using Voat.Caching;
+using Voat.Data;
 
 namespace Voat.Utilities
 {
@@ -22,11 +24,11 @@ namespace Voat.Utilities
     {
         private static string GetHighestRankingCacheKey(string subverse)
         {
-            return String.Format("subverse.{0}.highest-rank", subverse).ToLower();
+            return String.Format("legacy:subverse.{0}.highest-rank", subverse).ToLower();
         }
         public static double? GetSubverseHighestRanking(string subverse)
         {
-            var highestRank =  CacheHandler.Register(GetHighestRankingCacheKey(subverse), new Func<double?>(() => {
+            var highestRank =  CacheHandler.Instance.Register(GetHighestRankingCacheKey(subverse), new Func<double?>(() => {
                 using (var db = new voatEntities())
                 {
                     var submission = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == subverse).FirstOrDefault();
@@ -49,7 +51,7 @@ namespace Voat.Utilities
             {
                 if (highestRankCacheEntry < newRank)
                 {
-                    CacheHandler.Replace(GetHighestRankingCacheKey(subverse), new Func<double?, double?>(current => highestRankCacheEntry));
+                    CacheHandler.Instance.Replace<double?>(GetHighestRankingCacheKey(subverse),  highestRankCacheEntry, TimeSpan.FromMinutes(30));
                 }
             }
         }
@@ -80,7 +82,7 @@ namespace Voat.Utilities
         public static void RerankSubmission(Submission submission)
         {
             double currentScore = submission.UpCount - submission.DownCount;
-            double submissionAge = Submissions.CalcSubmissionAgeDouble(submission.CreationDate);
+            double submissionAge = (Repository.CurrentDate - submission.CreationDate).TotalHours;
             double newRank = CalculateNewRank(submission.Rank, submissionAge, currentScore);
 
             submission.Rank = newRank;

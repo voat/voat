@@ -14,7 +14,7 @@
 
 @{
     DateTime submissionDate = Model.CreationDate;
-    string postAge = Submissions.CalcSubmissionAge(submissionDate);
+    string postAge = Age.ToRelative(submissionDate);
     int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
     var commentCount = Model.Comments.Count(c => !c.IsDeleted);
@@ -35,7 +35,7 @@
         <div class="entry unvoted">
             <p class="title">
                 <span id="linkflair" class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
-                <a class="title may-blank " href="/v/@Model.Subverse/comments/@Model.ID" tabindex="1" title="@Model.Title">@Model.Title</a>&#32;
+                <a class="title may-blank " href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID)" tabindex="1" title="@Model.Title">@Model.Title</a>&#32;
                 <span class="domain">(<a href="/v/@Model.Subverse">v/@Model.Subverse</a>)</span>
             </p>
             <p class="tagline">
@@ -62,49 +62,45 @@
                     }
                 }
             </p>
-            @if (!Model.Content.IsEmpty())
-            {
-                <div class="expando">
+            <div class="expando">
 
-                    <form class="usertext" onsubmit="return editmessagesubmit(@Model.ID)" id="messageeditform-@Model.ID" action="#">
-                        @Html.AntiForgeryToken()
-                        <input id="SubmissionID" name="SubmissionID" value="@Model.ID" type="hidden">
-
-                        <div class="usertext-body original may-blank-within">
-                            <div class="md">
-                                @Html.Raw(@Formatting.FormatMessage(@Model.Content))
-                            </div>
+                <form class="usertext" onsubmit="return editmessagesubmit(@Model.ID)" id="messageeditform-@Model.ID" action="#">
+                    @Html.AntiForgeryToken()
+                    <input id="SubmissionID" name="SubmissionID" value="@Model.ID" type="hidden">
+                    <div class="usertext-body original may-blank-within" style="display:@(String.IsNullOrEmpty(Model.Content) ? "none" : "block")">
+                        <div class="md">
+                            @Html.Raw((String.IsNullOrEmpty(Model.FormattedContent) ? Formatting.FormatMessage(Model.Content) : Model.FormattedContent))
                         </div>
-
-                        <div class="usertext-edit" style="display: none;">
-                            <div>
-                                @Html.Partial("_MarkdownEditor")
-                                <textarea aria-invalid="false" class="form-control valid" cols="20" id="Content" name="Content" data-rule-required="true" data-msg-required="The text can not be empty.">@Model.Content</textarea>
-                                <span data-valmsg-replace="false" data-valmsg-for="Content" class="field-validation-error"></span>
-                                <div class="usertext-buttons">
-                                    <input value="Save" class="btn-whoaverse-paging" type="submit">
-									<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
-                                    <button class="btn-whoaverse-paging" onclick="removesubmissioneditform(@Model.ID)" type="button">Cancel</button>
+                    </div>
+                    <div class="usertext-edit" style="display: none;">
+                        <div>
+                            @Html.Partial("_MarkdownEditor")
+                            <textarea aria-invalid="false" class="form-control valid" cols="20" id="Content" name="Content" data-rule-required="true" data-msg-required="The text can not be empty.">@Model.Content</textarea>
+                            <span data-valmsg-replace="false" data-valmsg-for="Content" class="field-validation-error"></span>
+                            <div class="usertext-buttons">
+                                <input value="Save" class="btn-whoaverse-paging" type="submit">
+								<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
+                                <button class="btn-whoaverse-paging" onclick="removesubmissioneditform(@Model.ID)" type="button">Cancel</button>
+                            </div>
+                            <div class="panel panel-default" id="submission-preview-area" style="display: none">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Preview</h4>
                                 </div>
-                                <div class="panel panel-default" id="submission-preview-area" style="display: none">
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">Preview</h4>
-                                    </div>
-                                    <div class="panel-body">
-                                        <div class="usertext-body may-blank-within">
-                                            <div class="md" id="submission-preview-area-container">
-                                                Loading preview...
-                                            </div>
+                                <div class="panel-body">
+                                    <div class="usertext-body may-blank-within">
+                                        <div class="md" id="submission-preview-area-container">
+                                            Loading preview...
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
+                </form>
 
-                </div>
-				<textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
-            }
+            </div>
+			<textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
+            
 
             @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_MSFLButtons.cshtml", Model, new ViewDataDictionary { { "commentCount", commentCount } })
 

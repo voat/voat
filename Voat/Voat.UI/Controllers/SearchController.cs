@@ -17,8 +17,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Data.Models;
-using Voat.Models;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 
@@ -31,7 +31,6 @@ namespace Voat.Controllers
         private readonly voatEntities _db = new voatEntities(CONSTANTS.CONNECTION_READONLY);
 
         [PreventSpam]
-        //[OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
             
@@ -64,34 +63,29 @@ namespace Voat.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
                 
-                string cacheKey = CacheHandler.Keys.Search(sub, q);
-                IList<Submission> cacheData = (IList<Submission>)CacheHandler.Retrieve(cacheKey);
+                string cacheKey = DataCache.Keys.Search(sub, q);
+                IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
                 if (cacheData == null) {
-
-
-                    cacheData = (IList<Submission>)CacheHandler.Register(cacheKey, new Func<object>(() =>
+                    cacheData = (IList<Submission>)CacheHandler.Instance.Register(cacheKey, new Func<object>(() =>
                     {
-                        var results = (from m in _db.Submissions
-                                       join s in _db.Subverses on m.Subverse equals s.Name
-                                       where
-                                        !s.IsAdminDisabled.Value &&
-                                        !m.IsDeleted &&
-                                        m.Subverse == sub &&
-                                        (m.LinkDescription.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
-                                       orderby m.Rank ascending, m.CreationDate descending
-                                       select m).Take(25).ToList();
-                        return results;
+                        using (var db = new voatEntities())
+                        {
+                            db.Configuration.LazyLoadingEnabled = false;
+                            db.Configuration.ProxyCreationEnabled = false;
+                            var results = (from m in db.Submissions
+                                           join s in db.Subverses on m.Subverse equals s.Name
+                                           where
+                                            !s.IsAdminDisabled.Value &&
+                                            !m.IsDeleted &&
+                                            m.Subverse == sub &&
+                                            (m.Url.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                           orderby m.Rank ascending, m.CreationDate descending
+                                           select m).Take(25).ToList();
+                            return results;
+                        }
                     }), TimeSpan.FromMinutes(10));
 
                 }
-
-
-                //var resultsx = _db.Messages
-                //    .Where(x => x.Name != "deleted" && x.Subverse == sub &&
-                //        (x.Linkdescription.ToLower().Contains(q) || x.MessageContent.ToLower().Contains(q) || x.Title.ToLower().Contains(q))
-                //    ).OrderByDescending(s => s.Rank)
-                //    .ThenByDescending(s => s.Date).Take(25);
-
 
                 ViewBag.Title = "search results";
 
@@ -112,23 +106,29 @@ namespace Voat.Controllers
                     return View("~/Views/Errors/Error_404.cshtml");
                 }
 
-                string cacheKey = CacheHandler.Keys.Search(q);
-                IList<Submission> cacheData = (IList<Submission>)CacheHandler.Retrieve(cacheKey);
+                string cacheKey = DataCache.Keys.Search(q);
+                IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
                 if (cacheData == null)
                 {
-                    cacheData = (IList<Submission>)CacheHandler.Register(cacheKey, new Func<object>(() =>
+                    cacheData = (IList<Submission>)CacheHandler.Instance.Register(cacheKey, new Func<object>(() =>
                     {
-                        var results = (from m in _db.Submissions
-                                       join s in _db.Subverses on m.Subverse equals s.Name
-                                       where
-                                        !s.IsAdminDisabled.Value &&
-                                        !m.IsDeleted &&
-                                           //m.Subverse == sub &&
-                                        (m.LinkDescription.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
-                                       orderby m.Rank ascending, m.CreationDate descending
-                                       select m
-                                ).Take(25).ToList();
-                        return results;
+                        using (var db = new voatEntities())
+                        {
+                            db.Configuration.LazyLoadingEnabled = false;
+                            db.Configuration.ProxyCreationEnabled = false;
+                            var results = (from m in db.Submissions
+                                           join s in db.Subverses on m.Subverse equals s.Name
+                                           where
+                                            !s.IsAdminDisabled.Value &&
+                                            !m.IsDeleted &&
+                                            //m.Subverse == sub &&
+                                            (m.Url.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
+                                           orderby m.Rank ascending, m.CreationDate descending
+                                           select m
+                                    ).Take(25).ToList();
+                            return results;
+                        }
+                        
                     }), TimeSpan.FromMinutes(10));
 
                 }
@@ -142,7 +142,6 @@ namespace Voat.Controllers
         }
 
         [PreventSpam]
-        [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult FindSubverse(int? page, string d, string q)
         {
             if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -160,22 +159,16 @@ namespace Voat.Controllers
             }
 
             // find a subverse by name and/or description, sort search results by number of subscribers
-            var subversesByName = _db.Subverses
-                .Where(s => s.Name.ToLower().Contains(q))
-                .OrderByDescending(s => s.SubscriberCount);
-
+            results = _db.Subverses.Where(s => s.IsAdminDisabled != true);
             if (d != null)
             {
-                var subversesByDescription = _db.Subverses
-                    .Where(s => s.Description.ToLower().Contains(q))
-                    .OrderByDescending(s => s.SubscriberCount);
-
-                results = subversesByName.Concat(subversesByDescription).OrderByDescending(s=>s.SubscriberCount);
+                results = results.Where(x => x.Name.ToLower().Contains(q) || x.Description.ToLower().Contains(q));
             }
             else
             {
-                results = subversesByName.OrderByDescending(s => s.SubscriberCount);
+                results = results.Where(x => x.Name.ToLower().Contains(q));
             }
+            results = results.OrderByDescending(s => s.SubscriberCount);
 
             ViewBag.Title = "Search results";
 

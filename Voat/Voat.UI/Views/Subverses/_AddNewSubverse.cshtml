@@ -16,7 +16,7 @@
     ViewBag.Title = "subverse: create new subverse";
 
     string loggedinUser = User.Identity.Name;
-    DateTime currentdatetime = DateTime.Now;
+    DateTime currentdatetime = Repository.CurrentDate;
 
     using (Html.BeginForm())
     {

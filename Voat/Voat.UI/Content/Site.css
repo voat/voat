@@ -11,11 +11,12 @@
 }
 
 .subverseChatRoomContent {
+    max-height: 400px;
     min-height: 200px;
-    max-height: 300px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
 }
+
 
 .user-avatar {
     margin: 0;
@@ -1955,7 +1956,6 @@ body.with-listing-chooser.explore-page #header .pagename {
 
 .commentarea .menuarea {
     border: none;
-    margin: 0 310px 10px 10px;
     padding: 0;
     color: gray;
 }
@@ -9525,4 +9525,13 @@ body.with-listing-chooser {
     left: 50%;
     margin-right: -50%;
     transform: translate(-50%, -50%)
+}
+
+.progress {
+    margin-bottom: 5px;
+}
+
+.chatContent {
+    z-index: 1;
+    margin: 7px 10px 0px 10px;
 }
