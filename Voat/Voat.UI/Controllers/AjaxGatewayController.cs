@@ -158,6 +158,7 @@ namespace Voat.Controllers
         {
             if (submissionModel != null)
             {
+                submissionModel.MessageContent = Formatting.FormatMessage(submissionModel.MessageContent, true);
                 return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", submissionModel);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
