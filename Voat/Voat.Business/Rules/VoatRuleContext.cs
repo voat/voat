@@ -1,22 +1,74 @@
-﻿using Voat.RulesEngine;
+﻿using System;
+using System.Threading.Tasks;
+using Voat.Common;
+using Voat.Domain;
+using Voat.Domain.Models;
+using Voat.Domain.Query;
+using Voat.RulesEngine;
+using Voat.Utilities;
 
 namespace Voat.Rules
 {
-    public class VoatRuleContext : RuleContext
+    public class VoatRuleContext : RequestContext
     {
-
-
-        public VoatRuleContext(string userName)
-        {
-            base.PropertyBag.UserName = userName;
-        }
+        private Guid _id = Guid.NewGuid();
+        private UserData _userData;
 
         public VoatRuleContext()
         {
-            base.PropertyBag.UserName = System.Threading.Thread.CurrentPrincipal.Identity.Name;
+            PropertyBag.UserName = System.Threading.Thread.CurrentPrincipal.Identity.Name;
+        }
+
+        public UserData UserData
+        {
+            get
+            {
+                if (_userData == null)
+                {
+                    var cmd = new QueryUserData(PropertyBag.UserName);
+                    _userData = cmd.Execute();
+                }
+                return _userData;
+            }
         }
 
         #region Convience Accessors
+
+        public int? CommentID
+        {
+            get
+            {
+                return PropertyBag.CommentID;
+            }
+            set
+            {
+                PropertyBag.CommentID = value;
+            }
+        }
+
+        public int? SubmissionID
+        {
+            get
+            {
+                return PropertyBag.SubmissionID;
+            }
+            set
+            {
+                PropertyBag.SubmissionID = value;
+            }
+        }
+
+        public Data.Models.Subverse Subverse
+        {
+            get
+            {
+                return PropertyBag.Subverse;
+            }
+            set
+            {
+                PropertyBag.Subverse = value;
+            }
+        }
 
         public string UserName
         {
@@ -24,29 +76,43 @@ namespace Voat.Rules
             set { PropertyBag.UserName = value; }
         }
 
-        public int? CommentID
+        protected override object GetMissingValue(string name)
         {
-            get { return PropertyBag.CommentID; }
-            set { PropertyBag.CommentID = value; }
-        }
-        public int? SubmissionID
-        {
-            get { return PropertyBag.SubmissionID; }
-            set { PropertyBag.SubmissionID = value; }
-        }
-        public int? VoteValue
-        {
-            get { return PropertyBag.VoteValue; }
-            set { PropertyBag.VoteValue = value; }
+            switch (name)
+            {
+                case "Subverse":
+                    if (SubmissionID != null)
+                    {
+                        var cmd = new QuerySubmission(SubmissionID.Value);
+                        var submission = cmd.Execute();
+                        PropertyBag.Submission = submission;
+
+                        var cmdSubverse = new QuerySubverse(submission.Subverse);
+                        var subverse = cmdSubverse.Execute();
+
+                        return subverse;
+                    }
+                    if (CommentID != null)
+                    {
+                        var cmdComment = new QueryComment(CommentID.Value);
+                        var comment = cmdComment.Execute();
+                        PropertyBag.Comment = comment;
+
+                        var cmd = new QuerySubmission(comment.SubmissionID.Value);
+                        var submission = cmd.Execute();
+                        PropertyBag.Submission = submission;
+
+                        var cmdSubverse = new QuerySubverse(submission.Subverse);
+                        var subverse = cmdSubverse.Execute();
+
+                        return subverse;
+                    }
+                    break;
+            }
+
+            return base.GetMissingValue(name);
         }
 
-        public string SubverseName
-        {
-            get { return PropertyBag.SubverseName; }
-            set { PropertyBag.SubverseName = value; }
-        }
-
-        #endregion
-
+        #endregion Convience Accessors
     }
 }

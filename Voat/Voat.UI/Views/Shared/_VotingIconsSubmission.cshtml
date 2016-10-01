@@ -14,7 +14,7 @@
 
 @{
     int score = (int)(Model.UpCount - Model.DownCount);
-    
+
     //default voting icons style
     string votingStatusClassUpArrow = "arrow-upvote";
     string votingStatusClassDownArrow = "arrow-downvote";
@@ -47,36 +47,11 @@
         }
 
         <div class="midcol @likesOrDislikesClass">
-
-            @if (commentContributionPoints < 20)
-            {
-                if (UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name) < 11)
-                {
-                    <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.ID);" role="button" aria-label="upvote" tabindex="0"></div>
-                }
-                else
-                {
-                    <div class="@votingStatusClassUpArrow login-required" onclick="notEnoughCCPUpVote();" role="button" aria-label="upvote" tabindex="0"></div>
-                }
-            }
-            else
-            {
-                <div class="@votingStatusClassUpArrow login-required" onclick="voteUpSubmission(@Model.ID);" role="button" aria-label="upvote" tabindex="0"></div>
-            }
-
+            <div class="@votingStatusClassUpArrow login-required" onclick="voteSubmission(@Model.ID, 1);" role="button" aria-label="upvote" tabindex="0"></div>
             <div class="score dislikes">@Model.DownCount</div>
             <div class="score unvoted">@score</div>
             <div class="score likes">@Model.UpCount</div>
-
-            @if (commentContributionPoints < 100)
-            {
-                <div class="@votingStatusClassDownArrow login-required" onclick="notEnoughCCP();" role="button" aria-label="downvote" tabindex="0"></div>
-            }
-            else
-            {
-                <div class="@votingStatusClassDownArrow login-required" onclick="voteDownSubmission(@Model.ID);" role="button" aria-label="downvote" tabindex="0"></div>
-            }
-
+            <div class="@votingStatusClassDownArrow login-required" onclick="voteSubmission(@Model.ID, -1);" role="button" aria-label="downvote" tabindex="0"></div>
         </div>
 
         <div class="scorebar" title="Blue = upvotes, violet = downvotes">

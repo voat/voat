@@ -1,0 +1,156 @@
+﻿@*
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+
+    All Rights Reserved.
+
+*@
+
+@using Voat.Models.ViewModels
+
+@{ 
+    var theme = UserHelper.UserStylePreference(User.Identity.Name);
+    var themeClass = theme == null || theme == "light" ? "light" : "dark";
+}
+
+<!DOCTYPE html>
+<html>
+<head prefix="og: http://ogp.me/ns#">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta lang="en" />
+    <link rel="http://oexchange.org/spec/0.8/rel/related-target" type="application/xrd+xml" href="http://voat.co/oexchange.xrd" />
+
+    @if (ViewBag.Description != null)
+    {
+        <meta name="description" content="@ViewBag.Description" />
+    }
+    else
+    {
+        <meta name="description" content="@Settings.SiteSlogan" />
+    }
+    @if (ViewBag.Keywords != null)
+    {
+        <meta name="keywords" content="@ViewBag.Keywords" />
+    }
+    else
+    {
+        <meta name="keywords" content="@Settings.SiteKeywords" />
+    }
+
+    <title>@ViewBag.Title</title>
+    <meta property="og:title" content="@ViewBag.Title" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@Request.Url.ToString()" />
+    <meta property="og:image" content="@ViewBag.Image" />
+    <meta property="og:site_name" content="@Settings.SiteName" />
+    <meta property="og:description" content="@ViewBag.Description" />
+
+    @if (theme == null || theme == "light")
+    {
+        @Styles.Render("~/Content/Light")
+    }
+    else
+    {
+        <meta name="theme-color" content="#333" />
+        <meta name="msapplication-navbutton-color" content="#333" />
+        <meta name="apple-mobile-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        @Styles.Render("~/Content/Dark")
+    }
+
+    <link rel=StyleSheet href="~/Content/ui-themes/autocomplete/autocompletebundle.min.css" type="text/css">
+
+    @* For Chrome for Android: *@
+    <link rel="icon" sizes="192x192" href="~/Graphics/Icons/touch-icon-192x192.png">
+    @* For iPhone 6 Plus with 3× display: *@
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="~/Graphics/Icons/apple-touch-icon-180x180-precomposed.png">
+    @* For iPad with 2× display running iOS ≥ 7: *@
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="~/Graphics/Icons/apple-touch-icon-152x152-precomposed.png">
+    @* For iPad with 2× display running iOS ≤ 6: *@
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="~/Graphics/Icons/apple-touch-icon-144x144-precomposed.png">
+    @* For iPhone with 2× display running iOS ≥ 7: *@
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="~/Graphics/Icons/apple-touch-icon-120x120-precomposed.png">
+    @* For iPhone with 2× display running iOS ≤ 6: *@
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="~/Graphics/Icons/apple-touch-icon-114x114-precomposed.png">
+    @* For the iPad mini and the first- and second-generation iPad (1× display) on iOS ≥ 7: *@
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="~/Graphics/Icons/apple-touch-icon-76x76-precomposed.png">
+    @* For the iPad mini and the first- and second-generation iPad (1× display) on iOS ≤ 6: *@
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="~/Graphics/Icons/apple-touch-icon-72x72-precomposed.png">
+    @* For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: *@
+    <link rel="apple-touch-icon-precomposed" href="~/Graphics/Icons/apple-touch-icon-precomposed.png">
+    @* 57×57px *@
+    <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
+
+</head>
+<body class="@themeClass">
+
+    @* Must be logged in Modal *@
+    @if (!User.Identity.IsAuthenticated)
+    {
+        var loginViewModel = new LoginViewModel();
+        <div class="modal fade" id="mustbeloggedinModal" tabindex="-1" role="dialog" aria-labelledby="mustbeloggedinlabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="mustbeloggedinlabel">Login or register</h4>
+                    </div>
+                    <div class="modal-body">
+                        You can login if you already have an account or register by clicking the button below.
+                        Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
+                        <div>
+                            @Html.Partial("~/Views/Account/_LoginModal.cshtml", new LoginViewModel(), new ViewDataDictionary { { "ReturnUrl", Request.Url.PathAndQuery } })
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p>
+                            <b>@Html.ActionLink("Register", "Register", "Account")</b> if you don't have an account. You know you want to ;)
+                        </p>
+                        <p>
+                            <b>@Html.ActionLink("Forgot password?", "ForgotPassword", "Account")</b>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div>
+        @RenderBody()
+    </div>
+
+    @Html.Partial("_Footer")
+    @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/javascript")
+    @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/bootstrap")
+
+    @RenderSection("scripts", required: false)
+
+    @if (!Settings.SignalRDisabled)
+    {
+        @* SignalR library. *@
+        <script src="~/Scripts/libs/jquery.signalR-2.2.0.min.js" defer></script>
+        @* Autogenerated SignalR hub script. *@
+        <script src="~/signalr/hubs" defer></script>
+        if (User.Identity.IsAuthenticated)
+        {
+            <script language="javascript">
+                $(document)
+                    .ready(function () {
+                        initiateWSConnection();
+                    });
+            </script>
+        }
+    }
+    @* if any partial page runs custom javascript this section will render it after the main scripts load *@
+    @RenderSection("pageScript", required: false)
+</body>
+</html>

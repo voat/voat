@@ -24,12 +24,13 @@
         {
             ahrefTarget = "_blank";
         }
-    }  
-    
-    var commentCount = Model.Comments.Count(c => !c.IsDeleted);
-        
-    string postAge = Submissions.CalcSubmissionAge(Model.CreationDate);
-    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
+    }
+
+    //var commentCount = Model.Comments.Count(c => !c.IsDeleted);
+    var commentCount = CommentCounter.CommentCount(Model.ID);
+
+    string postAge = Age.ToRelative(Model.CreationDate);
+    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
 
     bool ratedAdult = false;
     if (Model.Subverse1 != null)
@@ -37,10 +38,10 @@
         ratedAdult = Model.Subverse1.IsAdult;
     }
 
-    //type 2 = urls, model.Content = url, model.linkdescription = link description
+    //type 2 = urls, model.Url = url, model.linkdescription = link description
     if (Model.Type == 2)
     {
-        string submissionDomain = UrlUtility.GetDomainFromUri(Model.Content);
+        string submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
         int submissionScore = (int)(Model.UpCount - Model.DownCount);
 
         <div class="submission odd link" data-fullname="" data-ups="" data-downs="">
@@ -54,20 +55,20 @@
 
             @if (Model.Thumbnail != null)
             {
-                if (Model.LinkDescription.ToLower().Contains("nsfw") || ratedAdult)
+                if (Model.Title.ToLower().Contains("nsfw") || ratedAdult)
                 {
-                    <a class="thumbnail nsfw may-blank " href="@Model.Content" rel="nofollow" target="@ahrefTarget"></a>
+                    <a class="thumbnail nsfw may-blank " href="@Model.Url" rel="nofollow" target="@ahrefTarget"></a>
                 }
                 else
                 {
-                    <a class="thumbnail may-blank" href="@Model.Content" target="@ahrefTarget">
+                    <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
                         @if (Settings.UseContentDeliveryNetwork)
                         {
-                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
+                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Title" />
                         }
                         else
                         {
-                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
+                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Title" />
                         }
                     </a>
                 }
@@ -75,7 +76,7 @@
 
             <div class="entry unvoted">
                 <p class="title">
-                    <a class="title may-blank " href="@Model.Content" tabindex="1" rel="nofollow" target="@ahrefTarget">@Model.LinkDescription</a>
+                    <a class="title may-blank " href="@Model.Url" tabindex="1" rel="nofollow" target="@ahrefTarget">@Model.Title</a>
                     <span class="domain">(<a href="/domains/@submissionDomain/">@submissionDomain</a>)</span>
                 </p>
                 <p class="tagline">

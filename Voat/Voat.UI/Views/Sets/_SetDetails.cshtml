@@ -13,7 +13,7 @@
 @model Voat.Models.ViewModels.SetDetailsViewModel
 
 @{
-    string subverseAge = Submissions.CalcSubmissionAge(Model.CreationDate);
+    string subverseAge = Age.ToRelative(Model.CreationDate);
 }
 
 <div id="set-@Model.Id">

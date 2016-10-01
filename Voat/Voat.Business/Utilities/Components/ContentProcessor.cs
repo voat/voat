@@ -9,8 +9,8 @@ namespace Voat.Utilities.Components
         private List<ContentFilter> _filters = new List<ContentFilter>();
         private static ContentProcessor _instance = null;
 
-        //HACK: Need to signal UI that a users notification count changes. This is a dirty way to accomplish this as a workaround. 
-        public static Action<string> UserNotificationChanged;
+        ////HACK: Need to signal UI that a users notification count changes. This is a dirty way to accomplish this as a workaround. 
+        //public static Action<string> UserNotificationChanged;
 
 
 

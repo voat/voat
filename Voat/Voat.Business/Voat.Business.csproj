@@ -7,9 +7,9 @@
     <ProjectGuid>{A0DA6D93-B070-485F-8E46-2F3E30982898}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Voat.Business</RootNamespace>
+    <RootNamespace>Voat</RootNamespace>
     <AssemblyName>Voat.Business</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Voat.Business.XML</DocumentationFile>
+    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Voat.Business.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -46,10 +49,6 @@
     <Reference Include="Kaliko.ImageLibrary, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ImageLibrary.2.0.5\lib\net45\Kaliko.ImageLibrary.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\MarkdownDeep.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -83,18 +82,29 @@
       <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\private\Voat\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="OpenGraph-Net, Version=1.2.0.1, Culture=neutral, PublicKeyToken=2f6a5503306c493e, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenGraph-Net.1.2.0.1\lib\net45\OpenGraph-Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="StackExchange.Redis.DataTypes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.DataTypes.1.0.0.1\lib\net45\StackExchange.Redis.DataTypes.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StackExchange.Redis.StrongName, Version=1.1.605.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <HintPath>..\..\..\private\Voat\packages\StackExchange.Redis.StrongName.1.1.605\lib\net46\StackExchange.Redis.StrongName.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
@@ -133,58 +143,149 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\CacheHandlerSection.cs" />
+    <Compile Include="Caching\CachingKey.cs" />
+    <Compile Include="Caching\ICacheHandler.cs" />
+    <Compile Include="Caching\Handlers\MemoryCacheHandler.cs" />
+    <Compile Include="Caching\Handlers\NullCacheHandler.cs" />
+    <Compile Include="Caching\Handlers\RedisCacheHandler.cs" />
+    <Compile Include="Caching\CachePolicy.cs" />
+    <Compile Include="Common\LockStore.cs" />
+    <Compile Include="Configuration\JsonSettings.cs" />
+    <Compile Include="Configuration\RuntimeState.cs" />
+    <Compile Include="Data\AGGREGATE_SUBVERSE.cs" />
+    <Compile Include="Data\Selectors.cs" />
+    <Compile Include="Domain\Command\Base\Command.cs" />
+    <Compile Include="Domain\Command\Base\CommandResponse.cs" />
+    <Compile Include="Domain\Command\BlockCommand.cs" />
+    <Compile Include="Domain\Command\CommentCommands.cs" />
+    <Compile Include="Domain\Command\ApiKeyCommands.cs" />
+    <Compile Include="Domain\Command\DeleteUserCommand.cs" />
+    <Compile Include="Domain\Command\SendMessageCommand.cs" />
+    <Compile Include="Domain\Command\SubmissionCommands.cs" />
+    <Compile Include="Domain\Command\SubscriptionCommand.cs" />
+    <Compile Include="Domain\Command\UpdateApiClientLastAccessDateCommand.cs" />
+    <Compile Include="Domain\Command\UpdateUserPreferencesCommand.cs" />
+    <Compile Include="Domain\Command\VoteCommands.cs" />
     <Compile Include="Common\Age.cs" />
     <Compile Include="Common\Score.cs" />
     <Compile Include="Common\Exceptions.cs" />
-    <Compile Include="Data\DataGateway.cs" />
-    <Compile Include="Models\Api\FormattedContentContainer.cs" />
-    <Compile Include="Models\Api\Legacy\ApiBadge.cs" />
-    <Compile Include="Models\Api\Legacy\ApiComment.cs" />
-    <Compile Include="Models\Api\Legacy\ApiMessage.cs" />
-    <Compile Include="Models\Api\Legacy\ApiSubverseInfo.cs" />
-    <Compile Include="Models\Api\Legacy\ApiUserBadge.cs" />
-    <Compile Include="Models\Api\Legacy\ApiUserInfo.cs" />
-    <Compile Include="Models\Api\v1\ApiBadge.cs" />
-    <Compile Include="Models\Api\v1\ApiComment.cs" />
-    <Compile Include="Models\Api\v1\ApiSendUserMessage.cs" />
-    <Compile Include="Models\Api\v1\ApiSetInfo.cs" />
-    <Compile Include="Models\Api\v1\ApiSubmission.cs" />
-    <Compile Include="Models\Api\v1\ApiSubscription.cs" />
-    <Compile Include="Models\Api\v1\ApiSubverseInfo.cs" />
-    <Compile Include="Models\Api\v1\ApiUserBadge.cs" />
-    <Compile Include="Models\Api\v1\ApiUserInfo.cs" />
-    <Compile Include="Models\Api\v1\ApiUserMessage.cs" />
-    <Compile Include="Models\Api\v1\ApiUserPreferences.cs" />
-    <Compile Include="Models\Api\v1\IVoteStatus.cs" />
-    <Compile Include="Models\Api\v1\UserSubmission.cs" />
-    <Compile Include="Models\Api\v1\UserValue.cs" />
-    <Compile Include="Models\UserMessage.cs" />
+    <Compile Include="Domain\Models\API\v1\ApiPermissionSet.cs" />
+    <Compile Include="Domain\DomainMaps.cs" />
+    <Compile Include="Domain\Models\API\v1\UserMessage.cs" />
+    <Compile Include="Domain\Models\Comment\CommentSegment.cs" />
+    <Compile Include="Domain\Models\Comment\NestedComment.cs" />
+    <Compile Include="Domain\Models\Stylesheet.cs" />
+    <Compile Include="Domain\Models\UserSet.cs" />
+    <Compile Include="Domain\Query\Base\BaseQueryCommentSegment.cs" />
+    <Compile Include="Domain\Query\Base\CachedQuery.cs" />
+    <Compile Include="Domain\Query\Queries.cs" />
+    <Compile Include="Domain\Query\QueryApiCorsPolicies.cs" />
+    <Compile Include="Domain\Query\QueryApiKey.cs" />
+    <Compile Include="Domain\Query\QueryApiPermissionSet.cs" />
+    <Compile Include="Domain\Query\QueryApiStreamLastCalledDate.cs" />
+    <Compile Include="Domain\Query\QueryApiThrottlePolicy.cs" />
+    <Compile Include="Domain\Query\QueryBannedDomains.cs" />
+    <Compile Include="Domain\Query\QueryCommentContext.cs" />
+    <Compile Include="Domain\Query\QueryDefaultSubverses.cs" />
+    <Compile Include="Domain\Query\QueryNewestSubverses.cs" />
+    <Compile Include="Domain\Query\QueryComments.cs" />
+    <Compile Include="Domain\Query\QuerySubmissions.cs" />
+    <Compile Include="Domain\Query\QuerySubverse.cs" />
+    <Compile Include="Domain\Query\QuerySubverseUserBans.cs" />
+    <Compile Include="Domain\Query\QuerySubverseModerators.cs" />
+    <Compile Include="Domain\Query\QuerySubverseSearch.cs" />
+    <Compile Include="Domain\Query\QuerySubverseStylesheet.cs" />
+    <Compile Include="Domain\Query\QueryTopSubscribedSubverses.cs" />
+    <Compile Include="Domain\Query\QueryTopViewedSubmissions.cs" />
+    <Compile Include="Domain\Query\QueryUserApiKeys.cs" />
+    <Compile Include="Domain\Query\QueryUserBlocks.cs" />
+    <Compile Include="Domain\Query\QueryCommentSegment.cs" />
+    <Compile Include="Domain\Query\QueryCommentTree.cs" />
+    <Compile Include="Domain\Query\QuerySubverseInformation.cs" />
+    <Compile Include="Domain\Query\QueryUserData.cs" />
+    <Compile Include="Domain\Query\QueryUserPreferences.cs" />
+    <Compile Include="Domain\Query\QueryUserInformation.cs" />
+    <Compile Include="Domain\Query\QueryUserSet.cs" />
+    <Compile Include="Domain\Query\QueryUserSubscriptions.cs" />
+    <Compile Include="Domain\Query\Selectors.cs" />
+    <Compile Include="Data\Repository.cs" />
+    <Compile Include="Domain\Models\API\Legacy\ApiBadge.cs" />
+    <Compile Include="Domain\Models\API\Legacy\ApiComment.cs" />
+    <Compile Include="Domain\Models\API\Legacy\ApiMessage.cs" />
+    <Compile Include="Domain\Models\API\Legacy\ApiSubverseInfo.cs" />
+    <Compile Include="Domain\Models\API\Legacy\ApiUserBadge.cs" />
+    <Compile Include="Domain\Models\API\Legacy\ApiUserInfo.cs" />
+    <Compile Include="Domain\Models\API\v1\Badge.cs" />
+    <Compile Include="Domain\Models\API\v1\BannedDomain.cs" />
+    <Compile Include="Domain\Models\Comment\Comment.cs" />
+    <Compile Include="Domain\Models\API\v1\SendMessage.cs" />
+    <Compile Include="Domain\Models\API\v1\SetInformation.cs" />
+    <Compile Include="Domain\Models\API\v1\Submission.cs" />
+    <Compile Include="Domain\Models\API\v1\DomainReference.cs" />
+    <Compile Include="Domain\Models\API\v1\SubverseInformation.cs" />
+    <Compile Include="Domain\Models\API\v1\UserBadge.cs" />
+    <Compile Include="Domain\Models\API\v1\UserInformation.cs" />
+    <Compile Include="Domain\Models\API\v1\UserPreference.cs" />
+    <Compile Include="Domain\Models\API\v1\UserSubmission.cs" />
+    <Compile Include="Domain\Models\API\v1\UserValue.cs" />
+    <Compile Include="Domain\Models\API\v1\VoteableObject.cs" />
+    <Compile Include="Domain\Models\UserMessage.cs" />
     <Compile Include="Data\SearchOptions.cs" />
     <Compile Include="Data\Models\IdentityModels.cs" />
-    <Compile Include="Models\Enums.cs" />
-    <Compile Include="Models\VoteResponse.cs" />
+    <Compile Include="Domain\Models\Enums.cs" />
+    <Compile Include="Domain\Models\VoteResponse.cs" />
+    <Compile Include="Domain\UserData.cs" />
+    <Compile Include="Domain\UserGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Domain\Query\Base\Query.cs" />
+    <Compile Include="Rules\Base\BaseCommentRule.cs" />
+    <Compile Include="Rules\Base\BaseSubverseRule.cs" />
     <Compile Include="Rules\Base\BaseCCPRule.cs" />
     <Compile Include="Rules\Base\BaseSubverseMinCCPRule.cs" />
-    <Compile Include="Rules\Base\BaseVoatRule.cs" />
-    <Compile Include="Rules\Base\MinCCPRule.cs" />
-    <Compile Include="Rules\RequestContextHandler.cs" />
-    <Compile Include="Rules\Rules.cs" />
+    <Compile Include="Rules\Base\VoatRule.cs" />
+    <Compile Include="Rules\Base\MinimumCCPRule.cs" />
+    <Compile Include="Rules\Global\DerpyGuyRule.cs" />
+    <Compile Include="Rules\Global\GlobalBanRule.cs" />
+    <Compile Include="Rules\Global\RuntimeStateReadOnlyRule.cs" />
+    <Compile Include="Rules\Posting\EditCommentRule.cs" />
+    <Compile Include="Rules\Posting\EditCommentBannedDomainRule.cs" />
+    <Compile Include="Rules\Posting\PostCommentBannedRule.cs" />
+    <Compile Include="Rules\Posting\PostCommentCCPRule.cs" />
+    <Compile Include="Rules\Posting\PostCommentRule.cs" />
+    <Compile Include="Rules\Posting\PostCommentBannedDomainRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionBannedRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionBannedDomainRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionCCPRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionRecentlySubmittedRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionValidityRule.cs" />
+    <Compile Include="Rules\RuleInformationWithOutcome.cs" />
     <Compile Include="Rules\VoatRuleContext.cs" />
-    <Compile Include="Rules\VoatRuleExeception.cs" />
+    <Compile Include="Rules\VoatRuleException.cs" />
     <Compile Include="Rules\VoatRulesEngine.cs" />
     <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Rules\Voting\DownVoteCommentAgeRule.cs" />
+    <Compile Include="Rules\Voting\DownVoteCommentMeanieRule.cs" />
+    <Compile Include="Rules\Voting\DownVoteRule.cs" />
+    <Compile Include="Rules\Voting\DownVoteSubmissionAgeRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionThrottleRule.cs" />
+    <Compile Include="Rules\Voting\DownVoteSubverseMinCCPRule.cs" />
+    <Compile Include="Rules\Voting\UpVoteRule.cs" />
+    <Compile Include="Rules\Voting\VoteCommentAddressCheckRule.cs" />
+    <Compile Include="Rules\Voting\VoteSubmissionAddressCheckRule.cs" />
+    <Compile Include="Rules\Voting\VoteThrottleRule.cs" />
     <Compile Include="Utilities\AccountSecurity.cs" />
     <Compile Include="Utilities\BanningUtility.cs" />
-    <Compile Include="Utilities\CacheHandler.cs" />
+    <Compile Include="Caching\CacheHandler.cs" />
     <Compile Include="Utilities\CloudStorageUtility.cs" />
     <Compile Include="Utilities\CommentCounter.cs" />
     <Compile Include="Utilities\Components\ContentFilters.cs" />
     <Compile Include="Utilities\Components\ContentProcessor.cs" />
+    <Compile Include="Utilities\Components\EventLogger.cs" />
     <Compile Include="Utilities\Components\NotificationManager.cs" />
     <Compile Include="Utilities\Components\RegExReplacer.cs" />
     <Compile Include="Utilities\CONSTANTS.cs" />
-    <Compile Include="Utilities\DataCache.cs" />
+    <Compile Include="Caching\DataCache.cs" />
     <Compile Include="Utilities\DateTimeUtility.cs" />
     <Compile Include="Utilities\FileSystemUtility.cs" />
     <Compile Include="Utilities\Formatting.cs" />
@@ -194,21 +295,25 @@
     <Compile Include="Utilities\Karma.cs" />
     <Compile Include="Configuration\LiveConfigurationManager.cs" />
     <Compile Include="Utilities\MesssagingUtility.cs" />
+    <Compile Include="Utilities\EventNotification.cs" />
     <Compile Include="Utilities\PaginatedList.cs" />
     <Compile Include="Utilities\Ranking.cs" />
     <Compile Include="Utilities\Saving.cs" />
     <Compile Include="Utilities\SavingComments.cs" />
-    <Compile Include="Utilities\Submissions.cs" />
     <Compile Include="Utilities\ThumbGenerator.cs" />
     <Compile Include="Utilities\UrlUtility.cs" />
     <Compile Include="Utilities\UserHelper.cs" />
     <Compile Include="Utilities\VoatPathHelper.cs" />
+    <Compile Include="Utilities\VoatUrlFormatter.cs" />
     <Compile Include="Utilities\Voting.cs" />
     <Compile Include="Utilities\VotingComments.cs" />
-    <Compile Include="Models\CommentBucketViewModel.cs" />
-    <Compile Include="Models\UserStatsModel.cs" />
+    <Compile Include="Domain\Models\UserStatsModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\External\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj">
+      <Project>{1569ed47-c7c9-4261-b6f4-7445bd0f2c95}</Project>
+      <Name>MarkdownDeep</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj">
       <Project>{1e367cda-5508-47e1-9e95-ed100aee42d0}</Project>
       <Name>Voat.Data</Name>
@@ -222,7 +327,17 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Caching\README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain\Command\Handlers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

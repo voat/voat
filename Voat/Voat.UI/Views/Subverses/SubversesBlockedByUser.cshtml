@@ -1,0 +1,77 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model PaginatedList<Voat.Models.ViewModels.SubverseDetailsViewModel>
+
+@{
+    ViewBag.Title = "subverses";
+    string urlaction = "";
+
+    if (ViewBag.SubversesView == "blocked")
+    {
+        urlaction = "BlockedSubverses";
+    }
+    else
+    {
+        urlaction = "new";
+    }
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div id="container">
+    <div role="main">
+
+        <div class="alert-notice">
+            <p>Showing all subverses that you have blocked.</p>
+        </div>
+
+        <div class="sitetable linklisting">
+            @using (var enumerator = Model.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    <div class="row">
+                        <div class="col-md-6">@Html.Partial("_BlockedSubverseDetails", enumerator.Current)</div>
+                        @if (enumerator.MoveNext())
+                        {
+                            <div class="col-md-6">@Html.Partial("_BlockedSubverseDetails", enumerator.Current)</div>
+                        }
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="pagination-container">
+            <ul>
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="btn-whoaverse-paging">
+                        @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                    </li>
+                }
+            </ul>
+        </div>
+
+    </div>
+</div>

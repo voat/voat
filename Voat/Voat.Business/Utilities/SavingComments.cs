@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Linq;
+using Voat.Data;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
@@ -80,13 +81,12 @@ namespace Voat.Utilities
                     {
                         CommentID = commentId,
                         UserName = userWhichSaved,
-                        CreationDate = DateTime.Now
+                        CreationDate = Repository.CurrentDate
                     };
                     db.CommentSaveTrackers.Add(tmpSavingTracker);
                     db.SaveChanges();
                 }
             }
-
         }
 
         // a user has saved this comment earlier and wishes to unsave it, delete the record

@@ -13,7 +13,7 @@
 @model Voat.Data.Models.Submission
 
 @{
-    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
+    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
 
     var commentCount = CommentCounter.CommentCount(Model.ID);
 
@@ -25,18 +25,18 @@
     //type 2 = urls
     if (Model.Type == 2)
     {
-        string submissionDomain = UrlUtility.GetDomainFromUri(Model.Content);
+        string submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
 
         if (Model.Thumbnail != null)
         {
-            <a class="thumbnail may-blank" href="@Model.Content">
+            <a class="thumbnail may-blank" href="@Model.Url">
                 @if (Settings.UseContentDeliveryNetwork)
                 {
-                    <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
+                    <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Title" />
                 }
                 else
                 {
-                    <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.LinkDescription" />
+                    <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Title" />
                 }
             </a>
         }
@@ -44,7 +44,7 @@
         <div class="entry unvoted">
             <p class="title">
                 <span class="promoted">sticky</span>
-                <a class="title may-blank " href="@Model.Content" tabindex="1" title="@Model.LinkDescription">@Model.LinkDescription</a>
+                    <a class="title may-blank " href="@Model.Url" tabindex="1" title="@Model.Title">@Model.Title</a>
                 <span class="domain">(<a href="#">@submissionDomain</a>)</span>
             </p>
             @if (Model.IsAnonymized || subverseAnonymized == true)

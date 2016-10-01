@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 //using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -20,8 +21,14 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Configuration;
+using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain;
+using Voat.Domain.Command;
+using Voat.Domain.Models;
+using Voat.Domain.Query;
 using Voat.Models;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -32,52 +39,14 @@ namespace Voat.Controllers
     public class CommentController : Controller
     {
         private readonly voatEntities _db = new voatEntities();
-        private static readonly object _locker = new object();
 
         // POST: votecomment/{commentId}/{typeOfVote}
         [Authorize]
-        public JsonResult VoteComment(int commentId, int typeOfVote)
+        public async Task<JsonResult> VoteComment(int commentId, int typeOfVote)
         {
-            lock (_locker)
-            {
-                int dailyVotingQuota = Settings.DailyVotingQuota;
-                var loggedInUser = User.Identity.Name;
-                var userCcp = Karma.CommentKarma(loggedInUser);
-                var scaledDailyVotingQuota = Math.Max(dailyVotingQuota, userCcp / 2);
-                var totalVotesUsedInPast24Hours = UserHelper.TotalVotesUsedInPast24Hours(User.Identity.Name);
-
-                switch (typeOfVote)
-                {
-                    case 1:
-                        if (userCcp >= 20)
-                        {
-                            if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
-                            {
-                                // perform upvoting or resetting
-                                VotingComments.UpvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                            }
-                        }
-                        else if (totalVotesUsedInPast24Hours < 11)
-                        {
-                            // perform upvoting or resetting even if user has no CCP but only allow 10 votes per 24 hours
-                            VotingComments.UpvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                        }
-                        break;
-                    case -1:
-                        if (userCcp >= 100)
-                        {
-                            if (totalVotesUsedInPast24Hours < scaledDailyVotingQuota)
-                            {
-                                // perform downvoting or resetting
-                                VotingComments.DownvoteComment(commentId, loggedInUser, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
-                            }
-                        }
-                        break;
-                }
-
-                Response.StatusCode = 200;
-                return Json("Voting ok", JsonRequestBehavior.AllowGet);
-            }
+            var cmd = new CommentVoteCommand(commentId, typeOfVote, IpHash.CreateHash(UserGateway.UserIpAddress(this.Request)));
+            var result = await cmd.Execute();
+            return Json(result);
         }
 
         // POST: savecomment/{commentId}
@@ -91,19 +60,21 @@ namespace Voat.Controllers
             Response.StatusCode = 200;
             return Json("Saving ok", JsonRequestBehavior.AllowGet);
         }
-        
-        private List<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID) {
+
+        private List<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID)
+        {
             List<CommentVoteTracker> vCache = new List<CommentVoteTracker>();
 
-            if (User.Identity.IsAuthenticated){
+            if (User.Identity.IsAuthenticated)
+            {
                 vCache = (from cv in _db.CommentVoteTrackers.AsNoTracking()
-                            join c in _db.Comments on cv.CommentID equals c.ID
-                            where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                            select cv).ToList();    
+                          join c in _db.Comments on cv.CommentID equals c.ID
+                          where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                          select cv).ToList();
             }
             return vCache;
         }
-        
+
         private List<CommentSaveTracker> UserSavedCommentsBySubmission(int submissionID)
         {
             List<CommentSaveTracker> vCache = new List<CommentSaveTracker>();
@@ -117,18 +88,18 @@ namespace Voat.Controllers
             }
             return vCache;
         }
-        
-        // GET: comments for a given submission
-        public ActionResult Comments(int? id, string subversetoshow, int? startingcommentid, string sort, int? commentToHighLight)
+
+        // GET: Renders Primary Submission Comments Page
+        public async Task<ActionResult> Comments(int? submissionID, string subverseName, int? commentID, string sort, int? context)
         {
-            #region Validation 
-            
-            if (id == null)
+            #region Validation
+
+            if (submissionID == null)
             {
                 return View("~/Views/Errors/Error.cshtml");
             }
 
-            var submission = _db.Submissions.Find(id.Value);
+            var submission = _db.Submissions.Find(submissionID.Value);
 
             if (submission == null)
             {
@@ -136,12 +107,12 @@ namespace Voat.Controllers
             }
 
             // make sure that the combination of selected subverse and submission subverse are linked
-            if (!submission.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase))
+            if (!submission.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
             {
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            var subverse = DataCache.Subverse.Retrieve(subversetoshow);
+            var subverse = DataCache.Subverse.Retrieve(subverseName);
             //var subverse = _db.Subverse.Find(subversetoshow);
 
             if (subverse == null)
@@ -149,59 +120,42 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            //HACK: Disable subverse
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
                 return View("~/Views/Errors/SubverseDisabled.cshtml");
             }
 
-            #endregion 
+            #endregion
 
+            if (commentID != null)
+            {
+                ViewBag.StartingCommentId = commentID;
+                ViewBag.CommentToHighLight = commentID;
+            }
+
+            #region Set ViewBag
+            ViewBag.Subverse = subverse;
+            ViewBag.Submission = submission;
+            //This is a required view bag property in _Layout.cshtml
             ViewBag.SelectedSubverse = subverse.Name;
-            ViewBag.SubverseAnonymized = subverse.IsAnonymized;
-
-            //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserCommentVotesBySubmission(id.Value);
-            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(id.Value);
-            ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
-
-            if (startingcommentid != null)
-            {
-                ViewBag.StartingCommentId = startingcommentid;
-            }
-
-            if (commentToHighLight != null)
-            {
-                ViewBag.CommentToHighLight = commentToHighLight;
-            }
 
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
 
-          
+            #endregion
+
+            #region Track Views 
 
             // experimental: register a new session for this subverse
-            string clientIpAddress = String.Empty;
-
-            if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
-            {
-                clientIpAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            }
-            else if (Request.UserHostAddress.Length != 0)
-            {
-                clientIpAddress = Request.UserHostAddress;
-            }
-
+            string clientIpAddress = UserGateway.UserIpAddress(Request);
             if (clientIpAddress != String.Empty)
             {
                 // generate salted hash of client IP address
                 string ipHash = IpHash.CreateHash(clientIpAddress);
 
-                var currentSubverse = (string)RouteData.Values["subversetoshow"];
-
                 // register a new session for this subverse
-                SessionHelper.Add(currentSubverse, ipHash);
+                SessionHelper.Add(subverse.Name, ipHash);
 
                 // register a new view for this thread
                 // check if this hash is present for this submission id in viewstatistics table
@@ -213,53 +167,65 @@ namespace Voat.Controllers
                     // this is a new view, register it for this submission
                     var view = new ViewStatistic { SubmissionID = submission.ID, ViewerID = ipHash };
                     _db.ViewStatistics.Add(view);
-
                     submission.Views++;
-
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                 }
             }
-
-            var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.ID, null, null);
-
-            var model = new CommentBucketViewModel()
+            
+            #endregion
+            CommentSegment model = null;
+            if (commentID != null)
             {
-                StartingIndex = 0,
-                EndingIndex = 5,
-                Subverse = subverse,
-                Submission = submission,
-                CommentTree = commentTree,
-                //DisplayTree = displayTree,
-                ParentID = null,
-                Sort = (CommentSort)Enum.Parse(typeof(CommentSort), SortingMode, true)
-            };
-
-            IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable().Where(x => x.ParentID == null);
-            model.TotalInDisplayBranch = displayTree.Count();
-
-            if (model.Sort == CommentSort.Top) {
-                displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount).Take(model.EndingIndex);
-            } else {
-                displayTree = displayTree.OrderByDescending(x => x.CreationDate).Take(model.EndingIndex);
+                ViewBag.CommentToHighLight = commentID.Value;
+                model = await GetCommentContext(submission.ID, commentID.Value, context, sort);
             }
-            model.DisplayTree = displayTree;
-           
+            else
+            {
+                model = await GetCommentSegment(submission.ID, null, 0, sort);
+            }
 
             return View("~/Views/Home/Comments.cshtml", model);
+
         }
-        
+
+        private async Task<CommentSegment> GetCommentSegment(int submissionID, int? parentID, int startingIndex, string sort)
+        {
+            //attempt to parse sort
+            var sortAlg = CommentSortAlgorithm.Top;
+            if (!Enum.TryParse(sort, true, out sortAlg))
+            {
+                sortAlg = CommentSortAlgorithm.Top;
+            }
+
+            var q = new QueryCommentSegment(submissionID, parentID, startingIndex, sortAlg);
+            var results = await q.ExecuteAsync();
+            return results;
+        }
+        private async Task<CommentSegment> GetCommentContext(int submissionID, int commentID, int? contextCount, string sort)
+        {
+            //attempt to parse sort
+            var sortAlg = CommentSortAlgorithm.Top;
+            if (!Enum.TryParse(sort, true, out sortAlg))
+            {
+                sortAlg = CommentSortAlgorithm.Top;
+            }
+            var q = new QueryCommentContext(submissionID, commentID, contextCount, sortAlg);
+            var results = await q.ExecuteAsync();
+            return results;
+        }
         // url: "/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + count + "/" + nestingLevel + "/" + sort + "/",
-        // GET: comments for a given submission
-        public ActionResult BucketOfComments(int submissionId, int? parentId, string command, int startingIndex, string sort)
+        // GET: Renders a Section of Comments within the already existing tree
+        //Leaving (string command) in for backwards compat with mobile html clients. this is no longer used
+        public async Task<ActionResult> CommentSegment(int submissionID, int? parentID, string command, int startingIndex, string sort)
         {
             #region Validation
 
-            if (submissionId <= 0)
+            if (submissionID <= 0)
             {
                 return View("~/Views/Errors/Error.cshtml");
             }
 
-            var submission = DataCache.Submission.Retrieve(submissionId);
+            var submission = DataCache.Submission.Retrieve(submissionID);
 
             if (submission == null)
             {
@@ -274,7 +240,6 @@ namespace Voat.Controllers
                 return View("~/Views/Errors/Error_404.cshtml");
             }
 
-            //HACK: Disable subverse
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
@@ -282,53 +247,74 @@ namespace Voat.Controllers
             }
 
             #endregion
-            
-            ViewBag.SelectedSubverse = subverse.Name;
-            ViewBag.SubverseAnonymized = subverse.IsAnonymized;
+
+            #region Set ViewBag
+            ViewBag.Subverse = subverse;
+            ViewBag.Submission = submission;
 
             //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserCommentVotesBySubmission(submissionId);
-            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submissionId);
+            ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
+            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
             ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
-
 
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
 
+            #endregion
 
+            var results = await GetCommentSegment(submissionID, parentID, startingIndex, sort);
+            return PartialView("~/Views/Shared/Comments/_CommentSegment.cshtml", results);
+        }
 
-            var commentTree = DataCache.CommentTree.Retrieve<usp_CommentTree_Result>(submission.ID, null, null);
-            var model = new CommentBucketViewModel()
+        // GET: Renders a New Comment Tree
+        public async Task<ActionResult> CommentTree(int submissionID, string sort)
+        {
+            #region Validation
+
+            if (submissionID <= 0)
             {
-                StartingIndex = startingIndex,
-                //NestingThreshold = nestingLevel,
-                Subverse = subverse,
-                Submission = submission,
-                CommentTree = commentTree,
-                ParentID = parentId,
-                Sort = (CommentSort)Enum.Parse(typeof(CommentSort), SortingMode, true)
-            };
-            model.CollapseSiblingThreshold = 5;
-           
-            IQueryable<usp_CommentTree_Result> displayTree = commentTree.AsQueryable();
-            displayTree = displayTree.Where(x => x.ParentID == parentId);
-            model.TotalInDisplayBranch = displayTree.Count();
-
-            //calculate offsets
-            model.EndingIndex = Math.Min(model.StartingIndex + model.CollapseSiblingThreshold, model.TotalInDisplayBranch);
-
-
-            if (model.Sort == CommentSort.Top){
-                displayTree = displayTree.OrderByDescending(x => x.UpCount - x.DownCount);
-            } else {
-                displayTree = displayTree.OrderByDescending(x => x.CreationDate);
+                return View("~/Views/Errors/Error.cshtml");
             }
 
-            displayTree = displayTree.Skip(model.StartingIndex).Take(model.Count); 
+            var submission = DataCache.Submission.Retrieve(submissionID);
 
-            model.DisplayTree = displayTree;
+            if (submission == null)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
 
-            return PartialView("~/Views/Shared/Comments/_CommentBucket.cshtml", model);
+            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+            //var subverse = _db.Subverse.Find(subversetoshow);
+
+            if (subverse == null)
+            {
+                return View("~/Views/Errors/Error_404.cshtml");
+            }
+
+            if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
+            {
+                ViewBag.Subverse = subverse.Name;
+                return View("~/Views/Errors/SubverseDisabled.cshtml");
+            }
+
+            #endregion
+
+            #region Set ViewBag
+            ViewBag.Subverse = subverse;
+            ViewBag.Submission = submission;
+
+            //Temp cache user votes for this thread
+            ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
+            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
+            ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
+
+            var SortingMode = (sort == null ? "top" : sort).ToLower();
+            ViewBag.SortingMode = SortingMode;
+
+            #endregion
+
+            var results = await GetCommentSegment(submissionID, null, 0, sort);
+            return PartialView("~/Views/Shared/Comments/_CommentTree.cshtml", results);
         }
 
         // GET: submitcomment
@@ -338,236 +324,346 @@ namespace Voat.Controllers
         }
 
         // POST: submitcomment, adds a new root comment
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [Authorize]
-        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Comment commentModel)
-        {
-            commentModel.CreationDate = DateTime.Now;
-            commentModel.UserName = User.Identity.Name;
-            commentModel.Votes = 0;
-            commentModel.UpCount = 0;
-
-            if (ModelState.IsValid)
-            {
-                // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
-                var submission = DataCache.Submission.Retrieve(commentModel.SubmissionID.Value);
-                var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-                var userCcp = Karma.CommentKarma(User.Identity.Name);
-                commentModel.IsAnonymized = submission.IsAnonymized || subverse.IsAnonymized;
-   
-                // if user CCP is negative and account less than 6 months old, allow only x comment submissions per 24 hours
-                var userRegistrationDate = UserHelper.GetUserRegistrationDateTime(User.Identity.Name);
-                TimeSpan userMembershipTimeSpam = DateTime.Now - userRegistrationDate;
-                if (userMembershipTimeSpam.TotalDays < 180 && userCcp < 1)
-                {
-                    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
-                    if (quotaUsed)
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
-                    }
-                }
-
-                // if user CCP is < 50, allow only X comment submissions per 24 hours
-                if (userCcp <= -50)
-                {
-                    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
-                    if (quotaUsed)
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
-                    }
-                }
-
-                // check if author is banned, don't save the comment or send notifications if true
-                if (!UserHelper.IsUserGloballyBanned(User.Identity.Name) && !UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
-                {
-                    bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(subverse.Name, commentModel.Content);
-                    if (containsBannedDomain)
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
-                    }
-
-
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
-                    {
-                        commentModel.Content = ContentProcessor.Instance.Process(commentModel.Content, ProcessingStage.InboundPreSave, commentModel);
-                    }
-
-                    //save fully formatted content 
-                    var formattedComment = Formatting.FormatMessage(commentModel.Content);
-                    commentModel.FormattedContent = formattedComment;
-                    
-                    _db.Comments.Add(commentModel);
-
-                    await _db.SaveChangesAsync();
-
-                    DataCache.CommentTree.AddCommentToTree(commentModel);
-
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-                    {
-                        ContentProcessor.Instance.Process(commentModel.Content, ProcessingStage.InboundPostSave, commentModel);
-                    }
-
-                    // send comment reply notification to parent comment author if the comment is not a new root comment
-                    await NotificationManager.SendCommentNotification(commentModel, 
-                        new Action<string>(recipient => {
-                            //get count of unread notifications
-                            int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(recipient);
-                            // send SignalR realtime notification to recipient
-                            var hubContext = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                            hubContext.Clients.User(recipient).setNotificationsPending(unreadNotifications);
-                        })
-                    );
-                }
-                if (Request.IsAjaxRequest()) 
-                {
-                    var comment = commentModel;
-
-                    ViewBag.CommentId = comment.ID; //why?
-                    ViewBag.rootComment = comment.ParentID == null; //why?
-
-                    if (submission.IsAnonymized || subverse.IsAnonymized)
-                    {
-                        comment.UserName = comment.ID.ToString(CultureInfo.InvariantCulture);
-                    }
-
-                    var model = new CommentBucketViewModel(comment);
-
-                    return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", model);
-                    //return new HttpStatusCodeResult(HttpStatusCode.OK);
-                }
-                if (Request.UrlReferrer != null)
-                {
-                    var url = Request.UrlReferrer.AbsolutePath;
-                    return Redirect(url);
-                }
-            }
-            if (Request.IsAjaxRequest())
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            ModelState.AddModelError(String.Empty, "Sorry, you are either banned from this sub or doing that too fast. Please try again in 2 minutes.");
-            return View("~/Views/Help/SpeedyGonzales.cshtml");
-        }
-
-        // POST: editcomment
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> EditComment([Bind(Include = "ID, Content")] Comment commentModel)
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
+
             if (ModelState.IsValid)
             {
-                var existingComment = _db.Comments.Find(commentModel.ID);
+                var cmd = new CreateCommentCommand(commentModel.SubmissionID.Value, commentModel.ParentID, commentModel.Content);
+                var result = await cmd.Execute();
 
-                if (existingComment != null)
+                if (result.Success)
                 {
-                    if (existingComment.UserName.Trim() == User.Identity.Name && !existingComment.IsDeleted)
+                    if (Request.IsAjaxRequest())
                     {
-
-                        bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(existingComment.Submission.Subverse, commentModel.Content);
-                        if (containsBannedDomain)
-                        {
-                            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
-                        }
-
-                        existingComment.LastEditDate = DateTime.Now;
-                        existingComment.Content = commentModel.Content;
-
-                        if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
-                        {
-                            existingComment.Content = ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPreSave, existingComment);
-                        }
-
-                        //save fully formatted content 
-                        var formattedComment = Formatting.FormatMessage(existingComment.Content);
-                        existingComment.FormattedContent = formattedComment;
-
-                        await _db.SaveChangesAsync();
-
-                        if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-                        {
-                            ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPostSave, existingComment);
-                        }
-
-                        //return the formatted comment so that it can replace the existing html comment which just got modified
-                        return Json(new { response = formattedComment });
+                        var comment = result.Response;
+                        comment.IsOwner = true;
+                        ViewBag.CommentId = comment.ID; //why?
+                        ViewBag.rootComment = comment.ParentID == null; //why?
+                        return PartialView("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment);
                     }
-                    return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+                    if (Request.UrlReferrer != null)
+                    {
+                        var url = Request.UrlReferrer.AbsolutePath;
+                        return Redirect(url);
+                    }
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
                 }
             }
-
+            //Model isn't valid, can include throttling
             if (Request.IsAjaxRequest())
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            else
+            {
+                ModelState.AddModelError(String.Empty, "Sorry, you are either banned from this sub or doing that too fast. Please try again in 2 minutes.");
+                return View("~/Views/Help/SpeedyGonzales.cshtml");
+            }
+           
 
-            return Json("Unauthorized edit or comment not found - comment ID was.", JsonRequestBehavior.AllowGet);
+
+
+            ////OLD CODE
+            //commentModel.CreationDate = Repository.CurrentDate;
+            //commentModel.UserName = User.Identity.Name;
+            //commentModel.Votes = 0;
+            //commentModel.UpCount = 0;
+
+            //if (ModelState.IsValid)
+            //{
+            //    // flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
+            //    var submission = DataCache.Submission.Retrieve(commentModel.SubmissionID.Value);
+            //    var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+            //    var userCcp = Karma.CommentKarma(User.Identity.Name);
+            //    commentModel.IsAnonymized = submission.IsAnonymized || subverse.IsAnonymized;
+
+            //    // if user CCP is negative or account less than 6 months old, allow only x comment submissions per 24 hours
+            //    var userRegistrationDate = UserHelper.GetUserRegistrationDateTime(User.Identity.Name);
+            //    TimeSpan userMembershipTimeSpan = Repository.CurrentDate - userRegistrationDate;
+
+            //    // throttle comment posting if CCP is low, regardless of account age
+            //    if (userCcp < 1)
+            //    {
+            //        var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
+            //        if (quotaUsed)
+            //        {
+            //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
+            //        }
+            //    }
+
+            //    // if user account is new, allow max X comments per hour
+            //    if (userMembershipTimeSpan.TotalDays < 7 && userCcp < 50)
+            //    {
+            //        var quotaUsed = UserHelper.UserHourlyCommentPostingQuotaUsed(User.Identity.Name);
+            //        if (quotaUsed)
+            //        {
+            //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your hourly comment quota. Your current quota is " + Settings.HourlyCommentPostingQuota.ToString() + " comment(s) per hour.");
+            //        }
+            //    }
+
+            //    // if user CCP is < 10, allow only X comment submissions per 24 hours
+            //    if (userMembershipTimeSpan.TotalDays < 7 && userCcp <= 10)
+            //    {
+            //        var quotaUsed = UserHelper.UserDailyCommentPostingQuotaUsed(User.Identity.Name);
+            //        if (quotaUsed)
+            //        {
+            //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuota.ToString() + " comment(s) per 24 hours.");
+            //        }
+            //    }
+
+            //    // check for copypasta
+            //    // TODO: use Levenshtein distance algo or similar for better results
+            //    var copyPasta = UserHelper.SimilarCommentSubmittedRecently(User.Identity.Name, commentModel.Content);
+            //    if (copyPasta)
+            //    {
+            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have recently submitted a similar comment. Please try to not use copy/paste so often.");
+            //    }
+
+            //    // check if author is banned, don't save the comment or send notifications if true
+            //    if (!UserHelper.IsUserGloballyBanned(User.Identity.Name) && !UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
+            //    {
+            //        bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(subverse.Name, commentModel.Content);
+            //        if (containsBannedDomain)
+            //        {
+            //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
+            //        }
+
+
+            //        if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+            //        {
+            //            commentModel.Content = ContentProcessor.Instance.Process(commentModel.Content, ProcessingStage.InboundPreSave, commentModel);
+            //        }
+
+            //        //save fully formatted content 
+            //        var formattedComment = Voat.Utilities.Formatting.FormatMessage(commentModel.Content);
+            //        commentModel.FormattedContent = formattedComment;
+
+            //        _db.Comments.Add(commentModel);
+
+            //        await _db.SaveChangesAsync();
+
+            //        DataCache.CommentTree.AddCommentToTree(commentModel);
+
+            //        if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+            //        {
+            //            ContentProcessor.Instance.Process(commentModel.Content, ProcessingStage.InboundPostSave, commentModel);
+            //        }
+
+            //        // send comment reply notification to parent comment author if the comment is not a new root comment
+            //        await NotificationManager.SendCommentNotification(commentModel);
+            //    }
+            //    if (Request.IsAjaxRequest())
+            //    {
+            //        var comment = commentModel;
+
+            //        ViewBag.CommentId = comment.ID; //why?
+            //        ViewBag.rootComment = comment.ParentID == null; //why?
+
+            //        if (submission.IsAnonymized || subverse.IsAnonymized)
+            //        {
+            //            comment.UserName = comment.ID.ToString(CultureInfo.InvariantCulture);
+            //        }
+
+            //        var model = new CommentBucketViewModel(comment);
+
+            //        return PartialView("~/Views/Shared/Submissions/_SubmissionComment.cshtml", model);
+            //        //return new HttpStatusCodeResult(HttpStatusCode.OK);
+            //    }
+            //    if (Request.UrlReferrer != null)
+            //    {
+            //        var url = Request.UrlReferrer.AbsolutePath;
+            //        return Redirect(url);
+            //    }
+            //}
+            //if (Request.IsAjaxRequest())
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
+
+            //ModelState.AddModelError(String.Empty, "Sorry, you are either banned from this sub or doing that too fast. Please try again in 2 minutes.");
+            //return View("~/Views/Help/SpeedyGonzales.cshtml");
         }
 
+        // POST: editcomment
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        public async Task<ActionResult> EditComment([Bind(Include = "ID, Content")] Data.Models.Comment commentModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var cmd = new EditCommentCommand(commentModel.ID, commentModel.Content);
+                var result = await cmd.Execute();
+
+                if (result.Success)
+                {
+                    return Json(new { response = result.Response.FormattedContent });
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+                //    var existingComment = _db.Comments.Find(commentModel.ID);
+
+                //    if (existingComment != null)
+                //    {
+                //        if (existingComment.UserName.Trim() == User.Identity.Name && !existingComment.IsDeleted)
+                //        {
+
+                //            bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(existingComment.Submission.Subverse, commentModel.Content);
+                //            if (containsBannedDomain)
+                //            {
+                //                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
+                //            }
+
+                //            existingComment.LastEditDate = Repository.CurrentDate;
+                //            existingComment.Content = commentModel.Content;
+
+                //            if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                //            {
+                //                existingComment.Content = ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPreSave, existingComment);
+                //            }
+
+                //            //save fully formatted content 
+                //            var formattedComment = Voat.Utilities.Formatting.FormatMessage(existingComment.Content);
+                //            existingComment.FormattedContent = formattedComment;
+
+                //            await _db.SaveChangesAsync();
+
+                //            //HACK: Update comment in cache - to be replaced with EditCommentCommand in future
+                //            string key = CachingKey.CommentTree(existingComment.SubmissionID.Value);
+                //            if (CacheHandler.Instance.Exists(key))
+                //            {
+                //                CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, existingComment.ID, x => {
+                //                    x.Content = existingComment.Content;
+                //                    x.FormattedContent = existingComment.FormattedContent;
+                //                    return x;
+                //                });
+                //            }
+
+                //            if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+                //            {
+                //                ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPostSave, existingComment);
+                //            }
+
+                //            //return the formatted comment so that it can replace the existing html comment which just got modified
+                //            return Json(new { response = formattedComment });
+                //        }
+                //        return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
+                //    }
+                //}
+
+                //if (Request.IsAjaxRequest())
+                //{
+                //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //}
+
+                //return Json("Unauthorized edit or comment not found - comment ID was.", JsonRequestBehavior.AllowGet);
+            
+        }
         // POST: deletecomment
         [HttpPost]
         [Authorize]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteComment(int commentId)
         {
-            var commentToDelete = _db.Comments.Find(commentId);
-
-            if (commentToDelete != null && !commentToDelete.IsDeleted)
+            if (ModelState.IsValid)
             {
-                var commentSubverse = commentToDelete.Submission.Subverse;
+                var cmd = new DeleteCommentCommand(commentId, "This feature is not yet implemented");
+                var result = await cmd.Execute();
 
-                // delete comment if the comment author is currently logged in user
-                if (commentToDelete.UserName == User.Identity.Name)
+                if (result.Success)
                 {
-                    commentToDelete.IsDeleted = true;
-                    commentToDelete.Content = "deleted by author at " + DateTime.Now;
-                    await _db.SaveChangesAsync();
-                }
-
-                // delete comment if delete request is issued by subverse moderator
-                else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
-                {
-                    // notify comment author that his comment has been deleted by a moderator
-                    MesssagingUtility.SendPrivateMessage(
-                        "Voat",
-                        commentToDelete.UserName,
-                        "Your comment has been deleted by a moderator",
-                        "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
-                        "/u/" + User.Identity.Name + " on: " + DateTime.Now + "  " + Environment.NewLine +
-                        "Original comment content was: " + Environment.NewLine +
-                        "---" + Environment.NewLine +
-                        commentToDelete.Content
-                        );
-
-                    commentToDelete.IsDeleted = true;
-
-                    // move the comment to removal log
-                    var removalLog = new CommentRemovalLog
+                    if (Request.IsAjaxRequest())
                     {
-                        CommentID = commentToDelete.ID,
-                        Moderator = User.Identity.Name,
-                        Reason = "This feature is not yet implemented",
-                        CreationDate = DateTime.Now
-                    };
-
-                    _db.CommentRemovalLogs.Add(removalLog);
-
-                    commentToDelete.Content = "deleted by a moderator at " + DateTime.Now;
-                    await _db.SaveChangesAsync();
+                        return new HttpStatusCodeResult(HttpStatusCode.OK);
+                    }
+                    var url = Request.UrlReferrer.AbsolutePath;
+                    return Redirect(url);
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
                 }
             }
-            if (Request.IsAjaxRequest()) 
+            else
             {
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var url = Request.UrlReferrer.AbsolutePath;
-            return Redirect(url);
+
+
+            //var commentToDelete = _db.Comments.Find(commentId);
+
+            //if (commentToDelete != null && !commentToDelete.IsDeleted)
+            //{
+            //    var commentSubverse = commentToDelete.Submission.Subverse;
+
+            //    // delete comment if the comment author is currently logged in user
+            //    if (commentToDelete.UserName == User.Identity.Name)
+            //    {
+            //        commentToDelete.IsDeleted = true;
+            //        commentToDelete.Content = "deleted by author at " + Repository.CurrentDate;
+            //        await _db.SaveChangesAsync();
+            //    }
+
+            //    // delete comment if delete request is issued by subverse moderator
+            //    else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
+            //    {
+
+            //        // notify comment author that his comment has been deleted by a moderator
+            //        var message = new Domain.Models.SendMessage()
+            //        {
+            //            Sender = $"v/{commentSubverse}",
+            //            Recipient = commentToDelete.UserName,
+            //            Subject = "Your comment has been deleted by a moderator",
+            //            Message =  "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
+            //                        "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
+            //                        "Original comment content was: " + Environment.NewLine +
+            //                        "---" + Environment.NewLine +
+            //                        commentToDelete.Content
+            //        };
+            //        var cmd = new SendMessageCommand(message);
+            //        await cmd.Execute();
+
+            //        commentToDelete.IsDeleted = true;
+
+            //        // move the comment to removal log
+            //        var removalLog = new CommentRemovalLog
+            //        {
+            //            CommentID = commentToDelete.ID,
+            //            Moderator = User.Identity.Name,
+            //            Reason = "This feature is not yet implemented",
+            //            CreationDate = Repository.CurrentDate
+            //        };
+
+            //        _db.CommentRemovalLogs.Add(removalLog);
+
+            //        commentToDelete.Content = "deleted by a moderator at " + Repository.CurrentDate;
+            //        await _db.SaveChangesAsync();
+            //    }
+
+            //}
+            //if (Request.IsAjaxRequest())
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.OK);
+            //}
+            //var url = Request.UrlReferrer.AbsolutePath;
+            //return Redirect(url);
         }
 
         // POST: comments/distinguish/{commentId}

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;
@@ -123,8 +124,8 @@ namespace Voat.Controllers
                         }
                         
                         var item = new SyndicationItem(
-                                                submission.LinkDescription,
-                                                "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='" + submission.LinkDescription + "' alt='" + submission.LinkDescription + "' src='" + thumbnailUrl + "' /></a>" +
+                                                submission.Title,
+                                                "<a xmlns='http://www.w3.org/1999/xhtml' href='" + commentsUrl + "'><img title='" + submission.Title + "' alt='" + submission.Title + "' src='" + thumbnailUrl + "' /></a>" +
                                                 "</br>" +
                                                 "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments</a>" +
                                                 " | <a href='" + linkUrl + "'>link</a>",
@@ -137,7 +138,7 @@ namespace Voat.Controllers
                     else
                     {
                         var item = new SyndicationItem(
-                                                submission.LinkDescription,
+                                                submission.Title,
                                                 "Submitted by " + "<a href='u/" + authorName + "'>" + authorName + "</a> to <a href='" + subverseUrl + "'>" + submission.Subverse + "</a> | <a href='" + commentsUrl + "'>" + submission.Comments.Count() + " comments",
                                                 commentsUrl,
                                                 submission.ID.ToString(CultureInfo.InvariantCulture),

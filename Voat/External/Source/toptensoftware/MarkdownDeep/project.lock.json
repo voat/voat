@@ -1,0 +1,16 @@
+{
+  "locked": false,
+  "version": 2,
+  "targets": {
+    ".NETFramework,Version=v4.6.1": {},
+    ".NETFramework,Version=v4.6.1/win": {},
+    "DNXCore,Version=v5.0": {},
+    "DNXCore,Version=v5.0/win": {}
+  },
+  "libraries": {},
+  "projectFileDependencyGroups": {
+    "": [],
+    ".NETFramework,Version=v4.6.1": [],
+    "DNXCore,Version=v5.0": []
+  }
+}

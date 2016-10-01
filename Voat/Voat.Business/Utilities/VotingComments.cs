@@ -14,196 +14,217 @@ All Rights Reserved.
 
 using System;
 using System.Linq;
+using Voat.Common;
+using Voat.Data;
 //using Microsoft.AspNet.SignalR;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
 {
+
     public class VotingComments
     {
+        private static LockStore _lockStore = new LockStore();
+
         // submit comment upvote
-        public static void UpvoteComment(int commentId, string userWhichUpvoted, string clientIpHash)
+        public static void UpvoteComment(int commentId, string userName, string clientIpHash)
         {
-            int result = CheckIfVotedComment(userWhichUpvoted, commentId);
-
-            using (voatEntities db = new voatEntities())
+            object lockthis = _lockStore.GetLockObject(userName);
+            lock (lockthis)
             {
-                Comment comment = db.Comments.Find(commentId);
+                int result = CheckIfVotedComment(userName, commentId);
 
-                if (comment.Submission.IsAnonymized)
+                using (voatEntities db = new voatEntities())
                 {
-                    // do not execute voting, subverse is in anonymized mode
-                    return;
-                }                
+                    Comment comment = db.Comments.Find(commentId);
 
-                switch (result)
-                {
-                    // never voted before
-                    case 0:
+                    if (comment.Submission.IsAnonymized)
+                    {
+                        // do not execute voting, subverse is in anonymized mode
+                        return;
+                    }
 
-                        if (comment.UserName != userWhichUpvoted)
-                        {
-                            // check if this IP already voted on the same comment, abort voting if true
-                            var ipVotedAlready = db.CommentVoteTrackers.Where(x => x.CommentID == commentId && x.IPAddress == clientIpHash);
-                            if (ipVotedAlready.Any()) return;
+                    switch (result)
+                    {
+                        // never voted before
+                        case 0:
 
-                            comment.UpCount++;
-
-                            // register upvote
-                            var tmpVotingTracker = new CommentVoteTracker
+                            if (comment.UserName != userName)
                             {
-                                CommentID = commentId,
-                                UserName = userWhichUpvoted,
-                                VoteStatus = 1,
-                                CreationDate = DateTime.Now,
-                                IPAddress = clientIpHash
-                            };
-                            db.CommentVoteTrackers.Add(tmpVotingTracker);
-                            db.SaveChanges();
+                                //PORT: TODO
+                                // check if this IP already voted on the same comment, abort voting if true
+                                var ipVotedAlready = db.CommentVoteTrackers.Where(x => x.CommentID == commentId && x.IPAddress == clientIpHash);
+                                if (ipVotedAlready.Any())
+                                    return;
 
-                            Voting.SendVoteNotification(comment.UserName, "upvote");
-                        }
+                                comment.UpCount++;
 
-                        break;
+                                // register upvote
+                                var tmpVotingTracker = new CommentVoteTracker
+                                {
+                                    CommentID = commentId,
+                                    UserName = userName,
+                                    VoteStatus = 1,
+                                    CreationDate = Repository.CurrentDate,
+                                    IPAddress = clientIpHash
+                                };
+                                db.CommentVoteTrackers.Add(tmpVotingTracker);
+                                db.SaveChanges();
 
-                    // downvoted before, turn downvote to upvote
-                    case -1:
-
-                        if (comment.UserName != userWhichUpvoted)
-                        {
-                            comment.UpCount++;
-                            comment.DownCount--;
-
-                            // register Turn DownVote To UpVote
-                            var votingTracker = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichUpvoted);
-
-                            if (votingTracker != null)
-                            {
-                                votingTracker.VoteStatus = 1;
-                                votingTracker.CreationDate = DateTime.Now;
+                                //Voting.SendVoteNotification(comment.UserName, "upvote");
+                                EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, 1);
                             }
+
+                            break;
+
+                        // downvoted before, turn downvote to upvote
+                        case -1:
+
+                            if (comment.UserName != userName)
+                            {
+                                comment.UpCount++;
+                                comment.DownCount--;
+
+                                // register Turn DownVote To UpVote
+                                var votingTracker = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userName);
+
+                                if (votingTracker != null)
+                                {
+                                    votingTracker.VoteStatus = 1;
+                                    votingTracker.CreationDate = Repository.CurrentDate;
+                                }
+                                db.SaveChanges();
+
+                                //Voting.SendVoteNotification(comment.UserName, "downtoupvote");
+                                EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, 2);
+                            }
+
+                            break;
+
+                        // upvoted before, reset
+                        case 1:
+
+                            comment.UpCount--;
                             db.SaveChanges();
 
-                            Voting.SendVoteNotification(comment.UserName, "downtoupvote");
-                        }
+                            ResetCommentVote(userName, commentId);
 
-                        break;
-
-                    // upvoted before, reset
-                    case 1:
-
-                        comment.UpCount--;
-                        db.SaveChanges();
-
-                        Voting.SendVoteNotification(comment.UserName, "downvote");
-
-                        ResetCommentVote(userWhichUpvoted, commentId);
-
-                        break;
+                            //Voting.SendVoteNotification(comment.UserName, "downvote");
+                            EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, -1);
+                            break;
+                    }
                 }
             }
-
         }
 
         // submit submission downvote
-        public static void DownvoteComment(int commentId, string userWhichDownvoted, string clientIpHash)
+        public static void DownvoteComment(int commentId, string userName, string clientIpHash)
         {
-            int result = CheckIfVotedComment(userWhichDownvoted, commentId);
-
-            using (voatEntities db = new voatEntities())
+            object lockthis = _lockStore.GetLockObject(userName);
+            lock (lockthis)
             {
-                Comment comment = db.Comments.Find(commentId);
+                int result = CheckIfVotedComment(userName, commentId);
 
-                // do not execute downvoting, subverse is in anonymized mode
-                if (comment.Submission.IsAnonymized)
+                using (voatEntities db = new voatEntities())
                 {
-                    return;
-                }
+                    Comment comment = db.Comments.Find(commentId);
 
-                // do not execute downvoting if user has insufficient CCP for target subverse
-                if (Karma.CommentKarmaForSubverse(userWhichDownvoted, comment.Submission.Subverse) < comment.Submission.Subverse1.MinCCPForDownvote)
-                {
-                    return;
-                }
-
-                // do not execute downvoting if comment is older than 7 days
-                var commentPostingDate = comment.CreationDate;
-                TimeSpan timeElapsed = DateTime.Now - commentPostingDate;
-                if (timeElapsed.TotalDays > 7)
-                {
-                    return;
-                }
-
-                switch (result)
-                {
-                    // never voted before
-                    case 0:
-
+                    // do not execute downvoting, subverse is in anonymized mode
+                    if (comment.Submission.IsAnonymized)
                     {
-                        // this user is downvoting more than upvoting, don't register the downvote
-                        if (UserHelper.IsUserCommentVotingMeanie(userWhichDownvoted))
-                        {
-                            return;
-                        }
-
-                        // check if this IP already voted on the same comment, abort voting if true
-                        var ipVotedAlready = db.CommentVoteTrackers.Where(x => x.CommentID == commentId && x.IPAddress == clientIpHash);
-                        if (ipVotedAlready.Any()) return;
-
-                        comment.DownCount++;
-
-                        // register downvote
-                        var tmpVotingTracker = new CommentVoteTracker
-                        {
-                            CommentID = commentId,
-                            UserName = userWhichDownvoted,
-                            VoteStatus = -1,
-                            CreationDate = DateTime.Now,
-                            IPAddress = clientIpHash
-                        };
-                        db.CommentVoteTrackers.Add(tmpVotingTracker);
-                        db.SaveChanges();
-
-                            Voting.SendVoteNotification(comment.UserName, "downvote");
+                        return;
+                    }
+                    //PORT: Min CCP Rule
+                    // do not execute downvoting if user has insufficient CCP for target subverse
+                    if (Karma.CommentKarmaForSubverse(userName, comment.Submission.Subverse) < comment.Submission.Subverse1.MinCCPForDownvote)
+                    {
+                        return;
+                    }
+                    //PORT: Age Rule
+                    // do not execute downvoting if comment is older than 7 days
+                    var commentPostingDate = comment.CreationDate;
+                    TimeSpan timeElapsed = Repository.CurrentDate - commentPostingDate;
+                    if (timeElapsed.TotalDays > 7)
+                    {
+                        return;
                     }
 
-                        break;
-
-                    // upvoted before, turn upvote to downvote
-                    case 1:
-
+                    switch (result)
                     {
-                        comment.UpCount--;
-                        comment.DownCount++;                            
+                        // never voted before
+                        case 0:
 
-                        //register Turn DownVote To UpVote
-                        var votingTracker = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichDownvoted);
+                            {
+                                //PORT: Down Voat Meanie Rule
+                                // this user is downvoting more than upvoting, don't register the downvote
+                                if (UserHelper.IsUserCommentVotingMeanie(userName))
+                                {
+                                    return;
+                                }
 
-                        if (votingTracker != null)
-                        {
-                            votingTracker.VoteStatus = -1;
-                            votingTracker.CreationDate = DateTime.Now;
-                        }
-                        db.SaveChanges();
+                                //PORT: TODO
+                                // check if this IP already voted on the same comment, abort voting if true
+                                var ipVotedAlready = db.CommentVoteTrackers.Where(x => x.CommentID == commentId && x.IPAddress == clientIpHash);
+                                if (ipVotedAlready.Any())
+                                    return;
 
-                            Voting.SendVoteNotification(comment.UserName, "uptodownvote");
+                                comment.DownCount++;
+
+                                // register downvote
+                                var tmpVotingTracker = new CommentVoteTracker
+                                {
+                                    CommentID = commentId,
+                                    UserName = userName,
+                                    VoteStatus = -1,
+                                    CreationDate = Repository.CurrentDate,
+                                    IPAddress = clientIpHash
+                                };
+                                db.CommentVoteTrackers.Add(tmpVotingTracker);
+                                db.SaveChanges();
+
+                                //Voting.SendVoteNotification(comment.UserName, "downvote");
+                                EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, -1);
+                            }
+
+                            break;
+
+                        // upvoted before, turn upvote to downvote
+                        case 1:
+
+                            {
+                                comment.UpCount--;
+                                comment.DownCount++;
+
+                                //register Turn DownVote To UpVote
+                                var votingTracker = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userName);
+
+                                if (votingTracker != null)
+                                {
+                                    votingTracker.VoteStatus = -1;
+                                    votingTracker.CreationDate = Repository.CurrentDate;
+                                }
+                                db.SaveChanges();
+
+                                //Voting.SendVoteNotification(comment.UserName, "uptodownvote");
+                                EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, -2);
+                            }
+
+                            break;
+
+                        // downvoted before, reset
+                        case -1:
+
+                            comment.DownCount--;
+                            db.SaveChanges();
+                            ResetCommentVote(userName, commentId);
+
+                            //Voting.SendVoteNotification(comment.UserName, "upvote");
+                            EventNotification.Instance.SendVoteNotice(comment.UserName, userName, Domain.Models.ContentType.Comment, comment.ID, 1);
+
+                            break;
                     }
-
-                        break;
-
-                    // downvoted before, reset
-                    case -1:
-
-                        comment.DownCount--;
-                        db.SaveChanges();
-                        ResetCommentVote(userWhichDownvoted, commentId);
-
-                        Voting.SendVoteNotification(comment.UserName, "upvote");
-
-                        break;
                 }
             }
-
         }
 
         // returns -1:downvoted, 1:upvoted, or 0:not voted

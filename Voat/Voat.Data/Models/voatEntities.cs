@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Voat.Data.Models
 {
@@ -17,7 +13,6 @@ namespace Voat.Data.Models
             /*no-op*/
         }
         
-
         //IAmAGate: Move queries to read-only mirror
         public voatEntities(bool useReadOnlyOnUnAthenticated) :
             this(useReadOnlyOnUnAthenticated && (System.Web.HttpContext.Current != null && !System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
@@ -26,11 +21,5 @@ namespace Voat.Data.Models
             /*no-op*/
         }
 
-        //public voatEntities(bool useReadOnlyOnUnAthenticated) :
-        //    this(useReadOnlyOnUnAthenticated && (System.Web.HttpContext.Current != null && !System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-        //    ? CONSTANTS.CONNECTION_READONLY : CONSTANTS.CONNECTION_LIVE)
-        //{
-        //    /*no-op*/
-        //}
     }
 }
