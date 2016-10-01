@@ -60,7 +60,7 @@
                         foreach (Submission item in userStatsModel.HighestRatedSubmissions)
                         {
                             var score = item.UpCount - item.DownCount;
-                            <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
+                            <p><a class="userstats-submission-title" href="@VoatPathHelper.CommentsPagePath(item.Subverse, item.ID)">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
                         }
                     }
                     else
@@ -78,7 +78,7 @@
                         {
                             var score = item.UpCount - item.DownCount;
 
-                            <p><a class="userstats-submission-title" href="/v/@item.Subverse/comments/@item.ID">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
+                            <p><a class="userstats-submission-title" href="@VoatPathHelper.CommentsPagePath(item.Subverse, item.ID)">@item.Title</a>, submitted: @item.CreationDate, <span class="userstats-submission-score">@score points</span> (<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</p>
                         }
                     }
                     else
@@ -101,7 +101,7 @@
 
                             <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
                                 <p>
-                                    <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
+                                    <a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value)" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
 
                                     submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
                                 </p>
@@ -131,7 +131,7 @@
                                     </div>
                                     <ul class="flat-list buttons">
                                         <li class="first">
-                                            <a href="/v/@item.Submission.Subverse/comments/@item.Submission.ID/@item.ID" class="bylink" rel="nofollow">permalink</a>
+                                            <a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.Submission.ID)" class="bylink" rel="nofollow">permalink</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -156,7 +156,7 @@
 
                             <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
 
-                                <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
+                                <a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value)" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
                                 submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
 
                                 <div class="entry unvoted">
@@ -184,7 +184,7 @@
                                     </div>
                                     <ul class="flat-list buttons">
                                         <li class="first">
-                                            <a href="/v/@item.Submission.Subverse/comments/@item.SubmissionID/@item.ID" class="bylink" rel="nofollow">permalink</a>
+                                            <a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value, item.ID)" class="bylink" rel="nofollow">permalink</a>
                                         </li>
                                     </ul>
                                 </div>

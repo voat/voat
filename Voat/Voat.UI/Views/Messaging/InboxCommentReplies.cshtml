@@ -63,7 +63,7 @@
                                 From: <a href="@commentAuthorUrl">@commentAuthorName</a> | Sent: @Age.ToRelative(comment.CreationDate) ago on @comment.CreationDate
                             </div>
                             <div class="panel panel-heading-messagetitle">
-                                <a href="/v/@comment.Submission.Subverse/comments/@comment.SubmissionID"><b>@comment.Submission.Title</b></a>
+                                <a href="@VoatPathHelper.CommentsPagePath(comment.Submission.Subverse, comment.SubmissionID.Value)"><b>@comment.Submission.Title</b></a>
                             </div>
                             <div class="panel-message-body">
                                 @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",

@@ -74,7 +74,7 @@
         <div class="alert-singlethread">
             You are viewing a single comment's thread.
             <p>
-                <a href="/v/@ViewBag.Subverse.Name/comments/@ViewBag.Submission.ID">view the rest of the comments</a>&nbsp;→
+                <a href="@VoatPathHelper.CommentsPagePath(ViewBag.Subverse.Name, ViewBag.Submission.ID);">view the rest of the comments</a>&nbsp;→
             </p>
         </div>
     }

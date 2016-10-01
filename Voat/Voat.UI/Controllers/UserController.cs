@@ -13,6 +13,12 @@ namespace Voat.Controllers
     public class UserController : Controller
     {
 
+        public UserController()
+        {
+            //HACK: required to get _Layout to render the user sub menu
+            ViewBag.SelectedSubverse = "user";
+        }
+
         private const int PAGE_SIZE = 20;
         //Ported code requires this because views use EF Context.
         private voatEntities _db = new voatEntities();

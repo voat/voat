@@ -13,7 +13,7 @@
 @model Voat.Data.Models.Submission
 
 @{
-    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
+    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
 
     var commentCount = CommentCounter.CommentCount(Model.ID);
 

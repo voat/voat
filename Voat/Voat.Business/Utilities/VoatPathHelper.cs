@@ -99,5 +99,13 @@ namespace Voat.Utilities
                 return String.Format("{0}/Graphics/thumb-placeholder.png", (fullyQualified ? SiteRoot(provideProtocol, false) : "~"));
             }
         }
+        public static string CommentsPagePath(string subverse, int submissionID, int? commentID = null)
+        {
+            var commentPath = commentID.HasValue ? $"/{commentID.Value.ToString()}" : "";
+            //long
+            //return $"/v/{subverse}/comments/{submissionID.ToString()}{commentPath}";
+            //short
+            return $"/v/{subverse}/{submissionID.ToString()}{commentPath}";
+        }
     }
 }

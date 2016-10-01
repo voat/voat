@@ -204,6 +204,8 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "CommentTree", sort = "top" }
             );
 
+            #region Comment Pages
+
             // v/subversetoshow/comments/123456/new
             routes.MapRoute(
                 name: "SubverseCommentsWithSort",
@@ -220,7 +222,7 @@ namespace Voat
                     commentID = UrlParameter.Optional,
                     contextCount = UrlParameter.Optional
                 }
-            );        
+            );
             // v/subversetoshow/comments/123456
             routes.MapRoute(
                 name: "SubverseComments",
@@ -234,7 +236,46 @@ namespace Voat
                     sort = "top"
                 }
             );
-           
+
+            // v/subversetoshow/comments/123456/new
+            routes.MapRoute(
+                name: "SubverseCommentsWithSort_Short",
+                url: "v/{subverseName}/{submissionID}/{sort}",
+                constraints: new
+                {
+                    sort = commentSortContraint,
+                    submissionID = @"\d+"
+                },
+                defaults: new
+                {
+                    controller = "Comment",
+                    action = "Comments",
+                    sort = "top",
+                    commentID = UrlParameter.Optional,
+                    contextCount = UrlParameter.Optional
+                }
+            );
+            // v/subversetoshow/comments/123456
+            routes.MapRoute(
+                name: "SubverseComments_Short",
+                url: "v/{subverseName}/{submissionID}/{commentID}/{context}",
+                constraints: 
+                new {
+                    submissionID = @"\d+",
+                    commentID = @"\d+"
+                },
+                defaults: new
+                {
+                    controller = "Comment",
+                    action = "Comments",
+                    commentID = UrlParameter.Optional,
+                    context = UrlParameter.Optional,
+                    sort = "top"
+                }
+            );
+
+            #endregion
+
             // comments/distinguish/412
             routes.MapRoute(
                 name: "distinguishcomment",
@@ -273,6 +314,7 @@ namespace Voat
             );
             #endregion
 
+            #region Messaging
 
             // inbox
             routes.MapRoute(
@@ -342,8 +384,9 @@ namespace Voat
                 name: "MarkInboxItemAsRead",
                 url: "messaging/markasread",
                 defaults: new { controller = "Messaging", action = "MarkAsRead" }
-            ); 
+            );
 
+            #endregion
             // help/pagetoshow
             routes.MapRoute(
                 name: "Help",

@@ -30,14 +30,14 @@
 
     //if (Model.Subverses != null)
     //{
-        var sub = Voat.Caching.DataCache.Subverse.Retrieve(Model.Subverse);
-        ratedAdult = sub.IsAdult;
-        anonymizedSubverse = sub.IsAnonymized;
+    var sub = Voat.Caching.DataCache.Subverse.Retrieve(Model.Subverse);
+    ratedAdult = sub.IsAdult;
+    anonymizedSubverse = sub.IsAnonymized;
     //}
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
 
-    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
+    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
 
     DateTime submissionDate = Model.CreationDate;
     string postAge = Age.ToRelative(submissionDate);

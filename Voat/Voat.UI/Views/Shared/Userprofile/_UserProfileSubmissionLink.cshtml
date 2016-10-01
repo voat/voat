@@ -30,7 +30,7 @@
     var commentCount = CommentCounter.CommentCount(Model.ID);
 
     string postAge = Age.ToRelative(Model.CreationDate);
-    string commentsUrl = "/v/" + Model.Subverse + "/comments/" + Model.ID;
+    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
 
     bool ratedAdult = false;
     if (Model.Subverse1 != null)
