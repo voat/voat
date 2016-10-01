@@ -139,11 +139,9 @@ namespace Voat.Controllers
             {
                 // redirect to comments section of newly posted submission
                 return RedirectToRoute(
-                    "SubverseComments",
+                    "SubverseCommentsWithSort_Short",
                     new
                     {
-                        controller = "Comment",
-                        action = "Comments",
                         submissionID = result.Response.ID,
                         subverseName = result.Response.Subverse
                     }
