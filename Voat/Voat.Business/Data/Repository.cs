@@ -962,7 +962,7 @@ namespace Voat.Data
                 }
 
                 // delete submission if delete request is issued by subverse moderator
-                else if (IsUserModerator(submission.Subverse))
+                else if (ModeratorPermission.HasPermission(User.Identity.Name, submission.Subverse, ModeratorAction.DeletePosts))
                 {
 
                     if (String.IsNullOrEmpty(reason))
@@ -1143,7 +1143,7 @@ namespace Voat.Data
 
             return record;
         }
-        
+
         public async Task<CommandResponse<Data.Models.Comment>> DeleteComment(int commentID, string reason = null)
         {
 
@@ -1164,57 +1164,54 @@ namespace Voat.Data
                         comment.Content = "Deleted by author at " + Repository.CurrentDate;
                         await _db.SaveChangesAsync();
                     }
-
                     // delete comment if delete request is issued by subverse moderator
-                    else
+                    else if (ModeratorPermission.HasPermission(User.Identity.Name, submission.Subverse, ModeratorAction.DeleteComments))
                     {
-                        if (IsUserModerator(subverseName))
+                        if (String.IsNullOrEmpty(reason))
                         {
-                            if (String.IsNullOrEmpty(reason))
-                            {
-                                var ex = new VoatValidationException("A reason for deletion is required");
-                                ex.Data["CommentID"] = commentID;
-                                throw ex;
-                            }
-
-                            // notify comment author that his comment has been deleted by a moderator
-                            var message = new Domain.Models.SendMessage()
-                            {
-                                Sender = $"v/{subverseName}",
-                                Recipient = comment.UserName,
-                                Subject = "Your comment has been deleted by a moderator",
-                                Message = "Your [comment](/v/" + subverseName + "/comments/" + comment.SubmissionID + "/" + comment.ID + ") has been deleted by: " +
-                                            "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
-                                            "Original comment content was: " + Environment.NewLine +
-                                            "---" + Environment.NewLine +
-                                            comment.Content
-                            };
-                            var cmd = new SendMessageCommand(message);
-                            await cmd.Execute();
-
-                            comment.IsDeleted = true;
-
-                            // move the comment to removal log
-                            var removalLog = new CommentRemovalLog
-                            {
-                                CommentID = comment.ID,
-                                Moderator = User.Identity.Name,
-                                Reason = reason,
-                                CreationDate = Repository.CurrentDate
-                            };
-
-                            _db.CommentRemovalLogs.Add(removalLog);
-
-                            comment.Content = "Deleted by a moderator at " + Repository.CurrentDate;
-                            await _db.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            var ex = new VoatSecurityException("User doesn't have permissions to perform requested action");
+                            var ex = new VoatValidationException("A reason for deletion is required");
                             ex.Data["CommentID"] = commentID;
                             throw ex;
                         }
+
+                        // notify comment author that his comment has been deleted by a moderator
+                        var message = new Domain.Models.SendMessage()
+                        {
+                            Sender = $"v/{subverseName}",
+                            Recipient = comment.UserName,
+                            Subject = "Your comment has been deleted by a moderator",
+                            Message = "Your [comment](/v/" + subverseName + "/comments/" + comment.SubmissionID + "/" + comment.ID + ") has been deleted by: " +
+                                        "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
+                                        "Original comment content was: " + Environment.NewLine +
+                                        "---" + Environment.NewLine +
+                                        comment.Content
+                        };
+                        var cmd = new SendMessageCommand(message);
+                        await cmd.Execute();
+
+                        comment.IsDeleted = true;
+
+                        // move the comment to removal log
+                        var removalLog = new CommentRemovalLog
+                        {
+                            CommentID = comment.ID,
+                            Moderator = User.Identity.Name,
+                            Reason = reason,
+                            CreationDate = Repository.CurrentDate
+                        };
+
+                        _db.CommentRemovalLogs.Add(removalLog);
+
+                        comment.Content = "Deleted by a moderator at " + Repository.CurrentDate;
+                        await _db.SaveChangesAsync();
                     }
+                    else
+                    {
+                        var ex = new VoatSecurityException("User doesn't have permissions to perform requested action");
+                        ex.Data["CommentID"] = commentID;
+                        throw ex;
+                    }
+
                 }
             }
             return CommandResponse.Successful(Selectors.SecureComment(comment));

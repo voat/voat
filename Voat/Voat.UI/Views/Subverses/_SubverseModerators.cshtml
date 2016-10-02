@@ -17,14 +17,15 @@
 @foreach (var moderator in Model)
 {
     string descriptor = "";
+    string name = "";
     try
     {
-        string name = Enum.GetName(typeof(ModeratorLevel), moderator.Power);
+        name = Enum.GetName(typeof(ModeratorLevel), moderator.Power);
         descriptor = String.Format(" [{0}]", name.First().ToString());
     }
     catch { }
 
     <li>
-        <a href="/user/@moderator.UserName" class="author may-blank">@moderator.UserName@descriptor</a><span class="userattrs"></span>
+        <a href="/user/@moderator.UserName" class="author may-blank" title="@name">@moderator.UserName</a><span class="userattrs" title="@name">@descriptor</span>
     </li>
 }
