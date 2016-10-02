@@ -296,6 +296,7 @@
     <Compile Include="Configuration\LiveConfigurationManager.cs" />
     <Compile Include="Utilities\MesssagingUtility.cs" />
     <Compile Include="Utilities\EventNotification.cs" />
+    <Compile Include="Utilities\ModeratorPermission.cs" />
     <Compile Include="Utilities\PaginatedList.cs" />
     <Compile Include="Utilities\Ranking.cs" />
     <Compile Include="Utilities\Saving.cs" />

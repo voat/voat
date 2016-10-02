@@ -181,86 +181,17 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteSubmission(int submissionId)
         {
-            var submissionToDelete = _db.Submissions.Find(submissionId);
-
-            if (submissionToDelete != null)
+            var cmd = new DeleteSubmissionCommand(submissionId);
+            var result = await cmd.Execute();
+            if (result.Success)
             {
-                // delete submission if delete request is issued by submission author
-                if (submissionToDelete.UserName == User.Identity.Name)
-                {
-                    submissionToDelete.IsDeleted = true;
 
-                    if (submissionToDelete.Type == 1)
-                    {
-                        submissionToDelete.Content = "deleted by author at " + Repository.CurrentDate;
-                    }
-                    else
-                    {
-                        submissionToDelete.Content = "http://voat.co";
-                    }
-
-                    // remove sticky if submission was stickied
-                    var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionId);
-                    if (existingSticky != null)
-                    {
-                        _db.StickiedSubmissions.Remove(existingSticky);
-                    }
-
-                    await _db.SaveChangesAsync();
-                    DataCache.Submission.Remove(submissionId);
-
-                }
-
-                // delete submission if delete request is issued by subverse moderator
-                else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionToDelete.Subverse))
-                {
-                    // mark submission as deleted
-                    submissionToDelete.IsDeleted = true;
-
-                    // move the submission to removal log
-                    var removalLog = new SubmissionRemovalLog
-                    {
-                        SubmissionID = submissionToDelete.ID,
-                        Moderator = User.Identity.Name,
-                        Reason = "This feature is not yet implemented",
-                        CreationDate = Repository.CurrentDate
-                    };
-
-                    _db.SubmissionRemovalLogs.Add(removalLog);
-
-                    // notify submission author that his submission has been deleted by a moderator
-                    var message = new Domain.Models.SendMessage()
-                    {
-                        Sender = $"v/{submissionToDelete.Subverse}",
-                        Recipient = submissionToDelete.UserName,
-                        Subject = "Your submission has been deleted by a moderator",
-                        Message =   "Your [submission](/v/" + submissionToDelete.Subverse + "/comments/" + submissionToDelete.ID + ") has been deleted by: " +
-                                    "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
-                                    "Original submission content was: " + Environment.NewLine +
-                                    "---" + Environment.NewLine +
-                                    (submissionToDelete.Type == 1 ? 
-                                    "Submission title: " + submissionToDelete.Title + ", " + Environment.NewLine +
-                                    "Submission content: " + submissionToDelete.Content
-                                    :
-                                    "Link description: " + submissionToDelete.Title + ", " + Environment.NewLine +
-                                    "Link URL: " + submissionToDelete.Url
-                                    )
-                    };
-                    var cmd = new SendMessageCommand(message);
-                    await cmd.Execute();
-
-                    // remove sticky if submission was stickied
-                    var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionId);
-                    if (existingSticky != null)
-                    {
-                        _db.StickiedSubmissions.Remove(existingSticky);
-                    }
-
-                    await _db.SaveChangesAsync();
-                    DataCache.Submission.Remove(submissionId);
-                    
-                }
             }
+            else
+            {
+                //Failure
+            }
+
 
             string url = Request.UrlReferrer.AbsolutePath;
             return Redirect(url);

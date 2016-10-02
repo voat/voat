@@ -262,4 +262,26 @@ namespace Voat.Domain.Models
         Admin = 2147483646,
         DelegateAdmin = 10000
     }
+
+    public enum ModeratorLevel
+    {
+        Primary = 1,
+        Moderator = 2,
+        Janitor = 3,
+        Designer = 4
+    }
+    public enum ModeratorAction
+    {
+        DeletePosts,
+        DeleteComments,
+        Banning,
+        UseFlair,
+        CreateFlair,
+        ChangeCSS,
+        ChangeSettings,
+        InviteMods,
+        RemoveMods,
+        Stickies,
+        Distinguish 
+    }
 }

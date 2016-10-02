@@ -292,7 +292,7 @@ namespace Voat.Controllers
                 if (existingSubverse != null)
                 {
                     // check if user requesting edit is authorized to do so for current subverse
-                    if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, updatedModel.Name))
+                    if (!ModeratorPermission.HasPermission(User.Identity.Name, updatedModel.Name, Domain.Models.ModeratorAction.ChangeSettings))
                     {
                         return new EmptyResult();
                     }
@@ -1004,6 +1004,12 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid) return View(subverseAdmin);
 
+            // check if caller can add mods, if not, deny posting
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverseAdmin.Subverse, Domain.Models.ModeratorAction.InviteMods))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             // get model for selected subverse
             var subverseModel = DataCache.Subverse.Retrieve(subverseAdmin.Subverse);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -1016,8 +1022,6 @@ namespace Voat.Controllers
             SubverseModeratorViewModel tmpModel;
             if (currentlyModerating.Count <= maximumOwnedSubs)
             {
-                // check if caller is subverse owner, if not, deny posting
-                if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subverseAdmin.Subverse)) return RedirectToAction("Index", "Home");
 
                 // check that user is not already moderating given subverse
                 var isAlreadyModerator = _db.SubverseModerators.FirstOrDefault(a => a.UserName == subverseAdmin.UserName && a.Subverse == subverseAdmin.Subverse);
@@ -1179,16 +1183,23 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public ActionResult AddBan([Bind(Include = "Id,Subverse,UserName,Reason")] SubverseBan subverseBan)
         {
-            if (!ModelState.IsValid) return View(subverseBan);
+            if (!ModelState.IsValid)
+            {
+                return View(subverseBan);
+            }
+            //check perms
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverseBan.Subverse, Domain.Models.ModeratorAction.Banning))
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             // get model for selected subverse
             var subverseModel = DataCache.Subverse.Retrieve(subverseBan.Subverse);
 
-            if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            // check if caller is subverse owner, if not, deny posting
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subverseBan.Subverse)) return RedirectToAction("Index", "Home");
-
+            if (subverseModel == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             // check that user is not already banned in given subverse
             var isAlreadyBanned = _db.SubverseBans.FirstOrDefault(a => a.UserName == subverseBan.UserName && a.Subverse == subverseBan.Subverse);
 
@@ -1425,10 +1436,15 @@ namespace Voat.Controllers
             // get model for selected subverse
             var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
 
-            if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            // check if caller is authorized for this sub, if not, deny listing
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subversetoshow)) return RedirectToAction("Index", "Home");
+            if (subverseModel == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            //check perms
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.CreateFlair))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             ViewBag.SubverseModel = subverseModel;
             ViewBag.SubverseName = subversetoshow;
             ViewBag.SelectedSubverse = string.Empty;
@@ -1441,13 +1457,21 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public ActionResult AddLinkFlair([Bind(Include = "Id,Subverse,Label,CssClass")] SubverseFlair subverseFlairSetting)
         {
-            if (!ModelState.IsValid) return View(subverseFlairSetting);
+            if (!ModelState.IsValid)
+            {
+                return View(subverseFlairSetting);
+            }
+
+            //check perms
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverseFlairSetting.Subverse, Domain.Models.ModeratorAction.CreateFlair))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             // get model for selected subverse
             var subverseModel = DataCache.Subverse.Retrieve(subverseFlairSetting.Subverse);
             if (subverseModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            // check if caller is subverse owner, if not, deny posting
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, subverseFlairSetting.Subverse)) return RedirectToAction("Index", "Home");
+            
             subverseFlairSetting.Subverse = subverseModel.Name;
             _db.SubverseFlairs.Add(subverseFlairSetting);
             _db.SaveChanges();

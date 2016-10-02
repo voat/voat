@@ -10,11 +10,21 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
+@using Voat.Domain.Models
+
 @model IEnumerable<Voat.Data.Models.SubverseModerator>
 
 @foreach (var moderator in Model)
 {
+    string descriptor = "";
+    try
+    {
+        string name = Enum.GetName(typeof(ModeratorLevel), moderator.Power);
+        descriptor = String.Format(" [{0}]", name.First().ToString());
+    }
+    catch { }
+
     <li>
-        <a href="/user/@moderator.UserName" class="author may-blank">@moderator.UserName</a><span class="userattrs"></span>
+        <a href="/user/@moderator.UserName" class="author may-blank">@moderator.UserName@descriptor</a><span class="userattrs"></span>
     </li>
 }
