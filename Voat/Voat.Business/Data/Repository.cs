@@ -2065,18 +2065,23 @@ namespace Voat.Data
             userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, true, true);
 
             //Badges
-            var userBadges = (from x in _db.UserBadges
-                              join b in _db.Badges on x.BadgeID equals b.ID
-                              where 
-                              x.UserName == userName
-                              //TODO: test this for appending alpha/beta badges to user list (aka virtual badges)
-                              //||
-                              //(b.ID == "alpha_user" && userInfo.RegistrationDate < (new DateTime(2015, 12, 31)))
-                              //||
-                              //(b.ID == "beta_user" && userInfo.RegistrationDate > (new DateTime(2015, 12, 31)))
+            var userBadges = (from b in _db.Badges
+                              join ub in _db.UserBadges on b.ID equals ub.BadgeID into ubn
+                              from uball in ubn.DefaultIfEmpty()
+                              where
+                              uball.UserName == userName
+                              //(virtual badges)
+                              ||
+                              (b.ID == "whoaverse" && (userInfo.RegistrationDate < new DateTime(2015, 1, 2)))
+                              ||
+                              (b.ID == "alphauser" && (userInfo.RegistrationDate > new DateTime(2015, 1, 2) && userInfo.RegistrationDate < new DateTime(2016, 10, 10)))
+                              ||
+                              (b.ID == "betauser" && userInfo.RegistrationDate > (new DateTime(2016, 10, 10)))
+                              ||
+                              (b.ID == "cakeday" && userInfo.RegistrationDate.Year < CurrentDate.Year && userInfo.RegistrationDate.Month == CurrentDate.Month && userInfo.RegistrationDate.Day == CurrentDate.Day)
                               select new Voat.Domain.Models.UserBadge()
                               {
-                                  CreationDate = x.CreationDate,
+                                  CreationDate = (uball == null ? userInfo.RegistrationDate : uball.CreationDate),
                                   Name = b.Name,
                                   Title = b.Title,
                                   Graphic = b.Graphic,
