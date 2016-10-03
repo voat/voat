@@ -92,7 +92,7 @@ namespace Voat.UI.Utilities
                         // lower DelayRequest time
                         DelayRequest = 10;
                     }
-                    else if (UserHelper.IsUserSubverseModerator(loggedInUser, targetSubverse))
+                    else if (ModeratorPermission.IsModerator(loggedInUser, targetSubverse))
                     {
                         // lower DelayRequest time
                         DelayRequest = 10;
@@ -118,7 +118,7 @@ namespace Voat.UI.Utilities
                             // lower DelayRequest time
                             DelayRequest = 10;
                         }
-                        else if (UserHelper.IsUserSubverseModerator(loggedInUser, targetSubverseName))
+                        else if (ModeratorPermission.IsModerator(loggedInUser, targetSubverseName))
                         {
                             // lower DelayRequest time
                             DelayRequest = 10;

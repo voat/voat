@@ -573,7 +573,7 @@ namespace Voat.Data
 
             return data.AsEnumerable();
         }
-        public IEnumerable<SubverseModerator> GetSubverseModerators(string subverse)
+        public IEnumerable<Data.Models.SubverseModerator> GetSubverseModerators(string subverse)
         {
             var data = (from x in _db.SubverseModerators
                         where x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
@@ -582,7 +582,7 @@ namespace Voat.Data
 
             return data.AsEnumerable();
         }
-        public IEnumerable<SubverseModerator> GetSubversesUserModerates(string userName)
+        public IEnumerable<Data.Models.SubverseModerator> GetSubversesUserModerates(string userName)
         {
             var data = (from x in _db.SubverseModerators
                         where x.UserName == userName
@@ -1770,9 +1770,13 @@ namespace Voat.Data
                         {
                             //designed to limit abuse by taking the level 1 mod and the next four oldest
                             var mods = (from mod in db.SubverseModerators
-                                        where mod.Subverse.Equals(recipient, StringComparison.OrdinalIgnoreCase) && mod.UserName != "system" && mod.UserName != "youcanclaimthissub"
+                                        where 
+                                            mod.Subverse.Equals(recipient, StringComparison.OrdinalIgnoreCase) 
+                                            && mod.UserName != "system" 
+                                            && mod.UserName != "youcanclaimthissub"
+                                            && mod.Power <= 3 //Don't send PM's to designers (Power 4)
                                         orderby mod.Power ascending, mod.CreationDate descending
-                                        select mod).Take(5);
+                                        select mod);
 
                             foreach (var moderator in mods)
                             {

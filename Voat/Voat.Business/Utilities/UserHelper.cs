@@ -161,7 +161,7 @@ namespace Voat.Utilities
             }
         }
 
-        [Obsolete("Use ModeratorPermission.HasPermission instead", false)]
+        [Obsolete("Use ModeratorPermission.HasPermission instead", true)]
         // check if given user is the owner for a given subverse
         public static bool IsUserSubverseAdmin(string userName, string subverse)
         {
@@ -172,7 +172,7 @@ namespace Voat.Utilities
             }
         }
 
-        [Obsolete("Use ModeratorPermission.HasPermission instead", false)]
+        [Obsolete("Use ModeratorPermission.HasPermission instead", true)]
         //Check if given user is moderator for a given subverse
         //This method gets called numerous times from views. Refactoring.
         public static bool IsUserSubverseModerator(string userName, string subverse)

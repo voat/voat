@@ -678,7 +678,7 @@ namespace Voat.Controllers
                 if (User.Identity.Name == commentToDistinguish.UserName)
                 {
                     // check to see if comment author is also sub mod or sub admin for comment sub
-                    if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentToDistinguish.Submission.Subverse))
+                    if (ModeratorPermission.HasPermission(User.Identity.Name, commentToDistinguish.Submission.Subverse, ModeratorAction.DistinguishContent))
                     {
                         // mark the comment as distinguished and save to db
                         if (commentToDistinguish.IsDistinguished)

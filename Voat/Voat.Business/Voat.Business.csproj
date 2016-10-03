@@ -176,6 +176,7 @@
     <Compile Include="Domain\Models\Comment\CommentSegment.cs" />
     <Compile Include="Domain\Models\Comment\NestedComment.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
+    <Compile Include="Domain\Models\SubverseModerator.cs" />
     <Compile Include="Domain\Models\UserSet.cs" />
     <Compile Include="Domain\Query\Base\BaseQueryCommentSegment.cs" />
     <Compile Include="Domain\Query\Base\CachedQuery.cs" />

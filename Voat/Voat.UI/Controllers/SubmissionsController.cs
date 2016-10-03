@@ -39,15 +39,20 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public ActionResult ApplyLinkFlair(int? submissionID, int? flairId)
         {
-            if (submissionID == null || flairId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
+            if (submissionID == null || flairId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             var submission = _db.Submissions.Find(submissionID);
             if (submission == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            } 
-            // check if caller is subverse moderator, if not, deny posting
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submission.Subverse)) return new HttpUnauthorizedResult();
+            }
+
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, submission.Subverse, Domain.Models.ModeratorAction.AssignFlair))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             // find flair by id, apply it to submission
             var flairModel = _db.SubverseFlairs.Find(flairId);
@@ -68,13 +73,20 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public ActionResult ClearLinkFlair(int? submissionID)
         {
-            if (submissionID == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (submissionID == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             // get model for selected submission
             var submissionModel = _db.Submissions.Find(submissionID);
 
             if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             // check if caller is subverse moderator, if not, deny posting
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse)) return new HttpUnauthorizedResult();
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, submissionModel.Subverse, Domain.Models.ModeratorAction.AssignFlair))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
             // clear flair and save submission
             submissionModel.FlairCss = null;
             submissionModel.FlairLabel = null;
@@ -92,9 +104,15 @@ namespace Voat.Controllers
             // get model for selected submission
             var submissionModel = _db.Submissions.Find(submissionID);
 
-            if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (submissionModel == null || submissionModel.IsDeleted)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             // check if caller is subverse moderator, if not, deny change
-            if (!UserHelper.IsUserSubverseModerator(User.Identity.Name, submissionModel.Subverse)) return new HttpUnauthorizedResult();
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, submissionModel.Subverse, Domain.Models.ModeratorAction.AssignStickies))
+            {
+                return new HttpUnauthorizedResult();
+            }
             try
             {
                 // find and clear current sticky if toggling
@@ -181,20 +199,30 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteSubmission(int submissionId)
         {
-            var cmd = new DeleteSubmissionCommand(submissionId);
+            var cmd = new DeleteSubmissionCommand(submissionId, "This feature is not yet implemented");
             var result = await cmd.Execute();
             if (result.Success)
             {
-
+                if (Request.IsAjaxRequest())
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.OK, result.Message);
+                }
+                else
+                {
+                    return Redirect(Request.Url.AbsolutePath);
+                }
             }
             else
             {
-                //Failure
+                if (Request.IsAjaxRequest())
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, result.Message);
+                }
+                else
+                {
+                    return Redirect(Request.Url.AbsolutePath);
+                }
             }
-
-
-            string url = Request.UrlReferrer.AbsolutePath;
-            return Redirect(url);
         }
     }
 

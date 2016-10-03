@@ -30,14 +30,13 @@
     else if (Model.ParentID != null)
     {
         <li>
-            <a onclick="goToParent(event, @Model.ParentID)" href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value, Model.ParentID)" rel="nofollow">parent</a>
+            <a onclick="goToParent(event, @Model.ParentID)" href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)" rel="nofollow">parent</a>
         </li>
     }
 
     @if (User.Identity.IsAuthenticated)
     {
         string loggedInUserName = User.Identity.Name;
-        var isModerator = UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Subverse);
         if (!Model.IsDeleted)
         {
             if (Model.IsSaved.HasValue)
@@ -53,7 +52,7 @@
                 <li>
                     <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
                 </li>
-                if (isModerator)
+                if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeleteComments))
                 {
                     @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
                 }
@@ -68,7 +67,7 @@
                 @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
 
                 // if user is comment author but also sub mod or sub admin show distinguish button
-                if (isModerator)
+                if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DistinguishContent))
                 {
                     var distinquishText = (@Model.IsDistinguished ? "undistinguish" : "distinguish");
                     <li>

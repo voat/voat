@@ -896,11 +896,15 @@ function deletesubmission(senderButton, submissionid) {
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify(submissionobject),
         url: "/deletesubmission",
-        datatype: "json"
+        datatype: "json",
+        success: function () {
+            // reload body content with background page refresh
+            window.location = $(location).attr('href');
+        },
+        error: function () {
+            window.location = $(location).attr('href');
+        }
     });
-
-    // reload body content with background page refresh
-    $('body').load($(location).attr('href'));
 }
 
 // toggle are you sure question for comment deletion

@@ -82,7 +82,7 @@
                 <span class="number">~@ViewBag.OnlineUsers</span>
                 <span class="word">users here now</span>
             </p>
-            @if (User.Identity.IsAuthenticated && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Name))
+            @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name))
             {
                 <div class="leavemoderator">
                     you are a moderator of this subverse. (<a href="/v/@Model.Name/about/moderators/resign">change</a>)
@@ -153,7 +153,7 @@
             </div>
         </div>
     </div>
-    @if (User.Identity.IsAuthenticated && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Name))
+    @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name))
     {
         @Html.Partial("Sidebars/_SidebarModToolbox")
     }

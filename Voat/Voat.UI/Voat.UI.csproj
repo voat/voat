@@ -408,9 +408,13 @@
     <Content Include="gizmo\src\js\jquery.swipebox.js" />
     <Content Include="gizmo\src\js\jquery.swipebox.min.js" />
     <Content Include="gizmo\src\js\voatgallery.js" />
+    <Content Include="Graphics\Badges\badmofo.png" />
+    <Content Include="Graphics\Badges\beta_user.png" />
+    <Content Include="Graphics\Badges\brain.png" />
     <Content Include="Graphics\Badges\bug_punisher.png" />
     <Content Include="Graphics\Badges\mb.png" />
     <Content Include="Graphics\Badges\putts_fav.png" />
+    <Content Include="Graphics\Badges\whoaverse.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-144x144-precomposed.png" />

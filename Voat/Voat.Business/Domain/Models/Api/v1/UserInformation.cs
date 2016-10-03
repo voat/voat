@@ -68,6 +68,6 @@ namespace Voat.Domain.Models
         /// <summary>
         /// The subverses the user moderates
         /// </summary>
-        public IEnumerable<string> Moderates { get; set; }
+        public IEnumerable<SubverseModerator> Moderates { get; set; }
     }
 }

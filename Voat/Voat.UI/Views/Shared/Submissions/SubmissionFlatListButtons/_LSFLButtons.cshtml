@@ -34,19 +34,31 @@
             <li>
                 @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
 
-                @if (!Model.IsDeleted && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair))
                 {
-                    @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID }, { "submissionSubverse", Model.Subverse } })
-                    @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
+                    Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID }, { "submissionSubverse", Model.Subverse } });
+                }
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies))
+                {
+                    Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } });
                 }
             </li>
         }
-        else if (!Model.IsDeleted && UserHelper.IsUserSubverseModerator(User.Identity.Name, Model.Subverse))
+        else if (!Model.IsDeleted)
         {
             <li>
-                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
-                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID }, { "submissionSubverse", Model.Subverse } })
-                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeletePosts))
+                {
+                    Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } });
+                }
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair))
+                {
+                    Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID }, { "submissionSubverse", Model.Subverse } });
+                }
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies))
+                {
+                    Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } });
+                }
             </li>
         }
     }

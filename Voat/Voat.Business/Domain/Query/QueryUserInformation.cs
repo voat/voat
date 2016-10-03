@@ -51,7 +51,7 @@ namespace Voat.Domain.Query
                     var moderates = db.GetSubversesUserModerates(_userToRetrieve);
                     if (moderates != null)
                     {
-                        data.Moderates = moderates.Select(x => x.Subverse).ToList();
+                        data.Moderates = moderates.Select(x => new SubverseModerator() { Subverse = x.Subverse, Level = (ModeratorLevel)Enum.Parse(typeof(ModeratorLevel), x.Power.ToString())}).ToList();
                     }
                 }
                 //TODO: Need to ensure this condition doesn't happen often, throwing exception to test.

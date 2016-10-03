@@ -265,7 +265,7 @@ namespace Voat.Domain.Models
 
     public enum ModeratorLevel
     {
-        Primary = 1,
+        Owner = 1,
         Moderator = 2,
         Janitor = 3,
         Designer = 4
@@ -275,13 +275,13 @@ namespace Voat.Domain.Models
         DeletePosts,
         DeleteComments,
         Banning,
-        UseFlair,
-        CreateFlair,
-        ChangeCSS,
-        ChangeSettings,
+        AssignFlair,
+        ModifyFlair,
+        ModifyCSS,
+        ModifySettings,
         InviteMods,
         RemoveMods,
-        Stickies,
-        Distinguish 
+        AssignStickies,
+        DistinguishContent
     }
 }
