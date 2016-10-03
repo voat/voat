@@ -44,7 +44,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var submission = _db.Submissions.Find(submissionID);
-            if (submission == null)
+            if (submission == null || submission.IsDeleted)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
@@ -80,7 +80,10 @@ namespace Voat.Controllers
             // get model for selected submission
             var submissionModel = _db.Submissions.Find(submissionID);
 
-            if (submissionModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (submissionModel == null || submissionModel.IsDeleted)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             // check if caller is subverse moderator, if not, deny posting
             if (!ModeratorPermission.HasPermission(User.Identity.Name, submissionModel.Subverse, Domain.Models.ModeratorAction.AssignFlair))
             {

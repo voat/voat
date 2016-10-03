@@ -149,6 +149,7 @@ namespace Voat.Utilities
         }
 
         // get comment contribution points for a user
+        [Obsolete("This method contains logical bugs in the implementation, use UserData instead", false)]
         public static int CommentKarma(string userName)
         {
 
