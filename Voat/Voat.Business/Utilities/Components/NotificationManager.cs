@@ -41,6 +41,8 @@ namespace Voat.Utilities.Components
                     var commentReplyNotification = new CommentReplyNotification();
                     using (var _db = new voatEntities())
                     {
+                        //TODO: Implement User Block Checking
+
                         var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
                         var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
@@ -89,7 +91,9 @@ namespace Voat.Utilities.Components
                     var commentReplyNotification = new CommentReplyNotification();
                     using (var _db = new voatEntities())
                     {
-                    
+
+                        //TODO: Implement User Block Checking
+
                         var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
                         commentReplyNotification.SubmissionID = submission.ID;
@@ -144,6 +148,9 @@ namespace Voat.Utilities.Components
                                 if (parentComment.UserName != comment.UserName)
                                 {
                                     // send the message
+
+                                    //TODO: Implement User Block Checking
+
 
                                     var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
                                     if (submission != null)

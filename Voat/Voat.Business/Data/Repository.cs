@@ -633,8 +633,8 @@ namespace Voat.Data
         public Models.Submission FindSubverseLinkSubmission(string subverse, string url, TimeSpan cutOffTimeSpan)
         {
             var cutOffDate = CurrentDate.Subtract(cutOffTimeSpan);
-            return _db.Submissions.AsNoTracking().FirstOrDefault(s => 
-                s.Content.Equals(url, StringComparison.OrdinalIgnoreCase) 
+            return _db.Submissions.AsNoTracking().FirstOrDefault(s =>
+                s.Url.Equals(url, StringComparison.OrdinalIgnoreCase)
                 && s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                 && s.CreationDate > cutOffDate);
         }
@@ -642,7 +642,7 @@ namespace Voat.Data
         {
             var cutOffDate = CurrentDate.Subtract(cutOffTimeSpan);
             return _db.Submissions.Count(s =>
-                s.Content.Equals(url, StringComparison.OrdinalIgnoreCase)
+                s.Url.Equals(url, StringComparison.OrdinalIgnoreCase)
                 && s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
                 && s.CreationDate > cutOffDate);
         }
@@ -1780,6 +1780,7 @@ namespace Voat.Data
 
                             foreach (var moderator in mods)
                             {
+                                //TODO: Implement User Block Checking
                                 messages.Add(new PrivateMessage
                                 {
                                     Sender = message.Sender,
@@ -1801,6 +1802,7 @@ namespace Voat.Data
 
                     if (!String.IsNullOrEmpty(recipient) && Voat.Utilities.UserHelper.UserExists(recipient))
                     {
+                        //TODO: Implement User Block Checking
                         messages.Add(new PrivateMessage
                         {
                             Sender = message.Sender,

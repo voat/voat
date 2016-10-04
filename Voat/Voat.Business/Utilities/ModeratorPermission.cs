@@ -19,17 +19,17 @@ namespace Voat.Utilities
         public static bool IsModerator(string userName, string subverse)
         {
             var mods = GetModerators(subverse);
-            return mods.Any(x => x.UserName == userName);
+            return mods.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
         }
         public static bool IsLevel(string userName, string subverse, ModeratorLevel level)
         {
             var mods = GetModerators(subverse);
-            return mods.Any(x => x.UserName == userName && x.Power == (int)level);
+            return mods.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.Power == (int)level);
         }
         public static ModeratorLevel? Level(string userName, string subverse)
         {
             var mods = GetModerators(subverse);
-            var o = mods.FirstOrDefault(x => x.UserName == userName);
+            var o = mods.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
             if (o != null)
             {
                 return (ModeratorLevel)Enum.Parse(typeof(ModeratorLevel), o.Power.ToString());

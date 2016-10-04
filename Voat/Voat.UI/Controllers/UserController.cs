@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Voat.Data.Models;
+using Voat.Domain.Command;
+using Voat.Domain.Query;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utilities;
@@ -130,5 +133,106 @@ namespace Voat.Controllers
             var paginatedUserSubmissionsAndComments = new PaginatedList<SavedItem>(mergedSubmissionsAndComments, page ?? 0, PAGE_SIZE);
             return View(paginatedUserSubmissionsAndComments);
         }
+        #region ACCOUNT BASED
+        //This code really belongs in an Account controller but didn't want to add it to the existing Account controller
+        
+
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> Block(Domain.Models.DomainType blockType, string blockName)
+        {
+            //Used by voat.js
+            var cmd = new BlockCommand(blockType, blockName, true);
+            var result = await cmd.Execute();
+
+            if (Request.IsAjaxRequest())
+            {
+                return Json(result);
+            }
+            else
+            {
+                return await Blocked(blockType, null);
+            }
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> BlockUser(string name)
+        {
+            var cmd = new BlockCommand(Domain.Models.DomainType.User, name, false);
+            var result = await cmd.Execute();
+
+            if (Request.IsAjaxRequest())
+            {
+                return Json(result);
+            }
+            else
+            {
+                if (!result.Success)
+                {
+                    ModelState.AddModelError("", result.Message);
+                    return await Blocked(Domain.Models.DomainType.User, null);
+                }
+                else
+                {
+                    return Redirect("/user/blocked/user");
+                }
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ViewResult> Blocked(Domain.Models.DomainType blockType, int? page)
+        {
+
+            switch (blockType) {
+                case Domain.Models.DomainType.User:
+                    var q = new QueryUserBlocks();
+                    var blocks = await q.ExecuteAsync();
+
+                    var userBlocks = blocks.Where(x => x.Type == Domain.Models.DomainType.User).OrderBy(x => x.Name);
+
+                    return View("BlockedUsers", userBlocks);
+
+                    break;
+
+                case Domain.Models.DomainType.Subverse:
+                default:
+
+                    //Original Code below, leaving as is bc it works
+                    ViewBag.SelectedSubverse = "subverses";
+                    ViewBag.SubversesView = "blocked";
+                    const int pageSize = 25;
+                    int pageNumber = (page ?? 0);
+
+                    if (pageNumber < 0)
+                    {
+                        return View("~/Views/Errors/Error_404.cshtml");
+                    }
+
+                    // get a list of user blocked subverses with details and order by subverse name, ascending
+                    IQueryable<SubverseDetailsViewModel> blockedSubverses = from c in _db.Subverses
+                                                                            join a in _db.UserBlockedSubverses
+                                                                            on c.Name equals a.Subverse
+                                                                            where a.UserName.Equals(User.Identity.Name)
+                                                                            orderby a.Subverse ascending
+                                                                            select new SubverseDetailsViewModel
+                                                                            {
+                                                                                Name = c.Name,
+                                                                                Title = c.Title,
+                                                                                Description = c.Description,
+                                                                                Creation_date = c.CreationDate,
+                                                                                Subscribers = c.SubscriberCount
+                                                                            };
+
+                    var paginatedBlockedSubverses = new PaginatedList<SubverseDetailsViewModel>(blockedSubverses, page ?? 0, pageSize);
+
+                    return View("BlockedSubverses", paginatedBlockedSubverses);
+
+                    break;
+
+            }
+            
+        }
+        #endregion
     }
 }

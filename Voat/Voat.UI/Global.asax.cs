@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Globalization;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -14,6 +15,7 @@ using Voat.Rules;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 using Voat.Utilities.Components;
+using Voat.Utils;
 
 namespace Voat
 {
@@ -41,6 +43,9 @@ namespace Voat
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            //register global error handler
+            GlobalConfiguration.Configuration.Services.Add(typeof(IExceptionLogger), new VoatExceptionLogger());
 
             ViewEngines.Engines.Clear();
             ViewEngines.Engines.Add(new RazorViewEngine());

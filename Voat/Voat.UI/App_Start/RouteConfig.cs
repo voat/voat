@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using System.Net.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Voat.Configuration;
@@ -137,13 +138,6 @@ namespace Voat
                 name: "SubscribedSubverses",
                 url: "subverses/subscribed",
                 defaults: new { controller = "Subverses", action = "SubversesSubscribed" }
-            );
-
-            // /subverses/blocked
-            routes.MapRoute(
-                name: "BlockedSubverses",
-                url: "subverses/blocked",
-                defaults: new { controller = "Subverses", action = "SubversesBlockedByUser" }
             );
 
             // /subverses/active
@@ -286,6 +280,25 @@ namespace Voat
             #region User
 
             routes.MapRoute(
+               name: "UserBlocks",
+               url: "{pathPrefix}/blocked/{blockType}",
+               defaults: new { controller = "User", action = "Blocked" },
+               constraints: new { httpMethod = new HttpMethodConstraint("GET"), pathPrefix = "user|u", blockType = "user|subverse" }
+            );
+            routes.MapRoute(
+              name: "BlockUserPost",
+              url: "{pathPrefix}/blocked/{blockType}",
+              defaults: new { controller = "User", action = "BlockUser" },
+              constraints: new { httpMethod = new HttpMethodConstraint("POST"), pathPrefix = "user|u", blockType = "user|subverse" }
+           );
+            //routes.MapRoute(
+            //   name: "BlockUserPost",
+            //   url: "user/blockuser",
+            //   defaults: new { controller = "User", action = "BlockUser" },
+            //   constraints: new {  }
+            //);
+
+            routes.MapRoute(
                 name: "UserComments",
                 url: "{pathPrefix}/{userName}/comments",
                 defaults: new { controller = "User", action = "Comments" },
@@ -312,6 +325,16 @@ namespace Voat
               defaults: new { controller = "User", action = "Overview" },
               constraints: new { pathPrefix = "user|u" }
             );
+            
+           
+
+            routes.MapRoute(
+               name: "Block",
+               url: "block/{blockType}/{blockName}",
+               defaults: new { controller = "User", action = "Block" },
+               constraints: new { blockType = "user|subverse" }
+           );
+
             #endregion
 
             #region Messaging

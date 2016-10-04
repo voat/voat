@@ -14,18 +14,25 @@
 
 @model IEnumerable<Voat.Data.Models.SubverseModerator>
 
-@foreach (var moderator in Model)
+@if (Model == null || !Model.Any())
 {
-    string descriptor = "";
-    string name = "";
-    try
+    <a href="#" class="author may-blank">YouCanClaimThisSub</a><span class="userattrs"></span>
+}
+else
+{
+    foreach (var moderator in Model)
     {
-        name = Enum.GetName(typeof(ModeratorLevel), moderator.Power);
-        descriptor = String.Format(" [{0}]", name.First().ToString());
-    }
-    catch { }
+        string descriptor = "";
+        string name = "";
+        try
+        {
+            name = Enum.GetName(typeof(ModeratorLevel), moderator.Power);
+            descriptor = String.Format(" [{0}]", name.First().ToString());
+        }
+        catch { }
 
-    <li>
-        <a href="/user/@moderator.UserName" class="author may-blank" title="@name">@moderator.UserName</a><span class="userattrs" title="@name">@descriptor</span>
-    </li>
+        <li>
+            <a href="/user/@moderator.UserName" class="author may-blank" title="@name">@moderator.UserName</a><span class="userattrs" title="@name">@descriptor</span>
+        </li>
+    }
 }

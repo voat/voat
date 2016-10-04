@@ -14,7 +14,7 @@
     <RootNamespace>Voat</RootNamespace>
     <AssemblyName>Voat.UI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <MvcBuildViews>true</MvcBuildViews>
+    <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -374,6 +374,7 @@
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />
     <Compile Include="Utils\PagerOptions.cs" />
+    <Compile Include="Utils\VoatExceptionLogger.cs" />
     <Compile Include="Utils\VoatValidateAntiForgeryTokenAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -724,9 +725,11 @@
     <Content Include="Views\ApiKeys\Index.cshtml" />
     <Content Include="Views\Home\Rules.cshtml" />
     <Content Include="Views\Subverses\SubversesBlockedByUser.cshtml" />
-    <Content Include="Views\Subverses\_BlockedSubverseDetails.cshtml" />
     <Content Include="Views\Chat\Index.cshtml" />
     <Content Include="Views\Chat\_Layout.cshtml" />
+    <Content Include="Views\User\BlockedSubverses.cshtml" />
+    <Content Include="Views\User\BlockedUsers.cshtml" />
+    <Content Include="Views\User\_BlockedSubverseDetails.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

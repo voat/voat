@@ -1621,10 +1621,23 @@ function toggleBlockSubverse(obj, subverseName) {
         }
 
         // submit block request
-        postBlockSubverse(subverseName);
+        postBlock('subverse', subverseName);
     }
 }
+function toggleBlockUser(obj, name) {
+    $(obj).toggleClass("btn-blocksubverse btn-unblocksubverse");
+    var blockButton = $(obj);
+    if (blockButton.exists()) {
+        if (blockButton.text() === "block") {
+            blockButton.text("unblock");
+        } else {
+            blockButton.text("block");
+        }
 
+        // submit block request
+        postBlock('user', name);
+    }
+}
 // a function to submit subverse block/unblock request via SFLButtonBlockSubverse
 function toggleBlockSubverseFLButton(obj, subverseName) {
     var blockButton = $(obj);
@@ -1636,18 +1649,17 @@ function toggleBlockSubverseFLButton(obj, subverseName) {
         }
 
         // submit block request
-        postBlockSubverse(subverseName);
+        postBlock('subverse', subverseName);
     }
 }
 
 // a function to post subverse block request
-function postBlockSubverse(subverseName) {
+function postBlock(type, name) {
     $.ajax({
         type: "POST",
-        url: "/subverses/block/" + subverseName
+        url: "/block/" + type + "/" + name
     });
 }
-
 // a function to check username availability
 function checkUsernameAvailability(obj) {
     if ($(obj).val().length > 1) {

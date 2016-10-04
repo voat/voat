@@ -32,7 +32,7 @@ namespace Voat.Controllers
     public class AjaxGatewayController : Controller
     {
         private readonly voatEntities _db = new voatEntities();
-
+        
         // GET: MessageContent
         public async Task<ActionResult> MessageContent(int? messageId)
         {
@@ -87,16 +87,21 @@ namespace Voat.Controllers
             var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
             //var subverseModel = _db.Subverse.Find(subversetoshow);
 
-            if (subverseModel == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (subverseModel == null || messageId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
 
             var submission = DataCache.Submission.Retrieve(messageId);
 
             if (submission == null || submission.Subverse != subversetoshow)
+            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             // check if caller is subverse owner or moderator, if not, deny listing
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.ModifyFlair))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.AssignFlair))
             {
                 return new HttpUnauthorizedResult();
             }

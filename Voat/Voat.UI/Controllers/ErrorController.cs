@@ -18,6 +18,8 @@ namespace Voat.Controllers
 {
     public class ErrorController : Controller
     {
+
+
         public ViewResult NotFound()
         {
             ViewBag.SelectedSubverse = string.Empty;

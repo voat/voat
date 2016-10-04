@@ -268,7 +268,8 @@ namespace Voat.Domain.Models
         Owner = 1,
         Moderator = 2,
         Janitor = 3,
-        Designer = 4
+        Designer = 4,
+        Submitter = 99
     }
     public enum ModeratorAction
     {

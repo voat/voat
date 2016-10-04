@@ -735,38 +735,6 @@ namespace Voat.Controllers
             return View("SubscribedSubverses", paginatedSubscribedSubverses);
         }
 
-        [Authorize]
-        public ViewResult SubversesBlockedByUser(int? page)
-        {
-            ViewBag.SelectedSubverse = "subverses";
-            ViewBag.SubversesView = "blocked";
-            const int pageSize = 25;
-            int pageNumber = (page ?? 0);
-
-            if (pageNumber < 0)
-            {
-                return View("~/Views/Errors/Error_404.cshtml");
-            }
-
-            // get a list of user blocked subverses with details and order by subverse name, ascending
-            IQueryable<SubverseDetailsViewModel> blockedSubverses = from c in _db.Subverses
-                                                                       join a in _db.UserBlockedSubverses
-                                                                       on c.Name equals a.Subverse
-                                                                       where a.UserName.Equals(User.Identity.Name)
-                                                                       orderby a.Subverse ascending
-                                                                       select new SubverseDetailsViewModel
-                                                                       {
-                                                                           Name = c.Name,
-                                                                           Title = c.Title,
-                                                                           Description = c.Description,
-                                                                           Creation_date = c.CreationDate,
-                                                                           Subscribers = c.SubscriberCount
-                                                                       };
-
-            var paginatedBlockedSubverses = new PaginatedList<SubverseDetailsViewModel>(blockedSubverses, page ?? 0, pageSize);
-
-            return View(paginatedBlockedSubverses);
-        }
 
         // GET: sidebar for selected subverse
         public ActionResult DetailsForSelectedSubverse(string selectedSubverse)
@@ -1242,31 +1210,7 @@ namespace Voat.Controllers
             return View("~/Views/Subverses/Admin/AddBan.cshtml", tmpModel);
         }
 
-        // GET: show remove moderators view for selected subverse
-        [Authorize]
-        public ActionResult RemoveModerator(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            var subverseAdmin = _db.SubverseModerators.Find(id);
-
-            if (subverseAdmin == null)
-            {
-                return HttpNotFound();
-            }
-
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverseAdmin.Subverse, Domain.Models.ModeratorAction.RemoveMods))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            ViewBag.SelectedSubverse = string.Empty;
-            ViewBag.SubverseName = subverseAdmin.Subverse;
-            return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subverseAdmin);
-        }
+       
 
         // GET: show remove moderator invitation view for selected subverse
         [Authorize]
@@ -1350,17 +1294,17 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var subverseAdmin = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subversetoresignfrom && s.UserName == User.Identity.Name && s.Power > 1);
+            var subModerator = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subversetoresignfrom && s.UserName == User.Identity.Name && s.Power > 1);
 
-            if (subverseAdmin == null)
+            if (subModerator == null)
             {
                 return RedirectToAction("Index", "Home");
             }
 
             ViewBag.SelectedSubverse = string.Empty;
-            ViewBag.SubverseName = subverseAdmin.Subverse;
+            ViewBag.SubverseName = subModerator.Subverse;
 
-            return View("~/Views/Subverses/Admin/ResignAsModerator.cshtml", subverseAdmin);
+            return View("~/Views/Subverses/Admin/ResignAsModerator.cshtml", subModerator);
         }
 
         // POST: resign as moderator from given subverse
@@ -1371,13 +1315,20 @@ namespace Voat.Controllers
         public async Task<ActionResult> ResignAsModeratorPost(string subversetoresignfrom)
         {
             // get moderator name for selected subverse
-            var moderatorToBeRemoved = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subversetoresignfrom && s.UserName == User.Identity.Name && s.Power != 1);
+            var subModerator = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subversetoresignfrom && s.UserName == User.Identity.Name && s.Power != 1);
 
-            if (moderatorToBeRemoved == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var subverse = DataCache.Subverse.Retrieve(moderatorToBeRemoved.Subverse);
-            if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (subModerator == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var subverse = DataCache.Subverse.Retrieve(subModerator.Subverse);
+            if (subverse == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             // execute removal                    
-            _db.SubverseModerators.Remove(moderatorToBeRemoved);
+            _db.SubverseModerators.Remove(subModerator);
             await _db.SaveChangesAsync();
             return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subversetoresignfrom });
         }
@@ -1389,30 +1340,33 @@ namespace Voat.Controllers
         public async Task<ActionResult> RemoveModerator(int id)
         {
             // get moderator name for selected subverse
-            var moderatorToBeRemoved = await _db.SubverseModerators.FindAsync(id);
-            if (moderatorToBeRemoved == null)
+            var subModerator = await _db.SubverseModerators.FindAsync(id);
+            if (subModerator == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var subverse = DataCache.Subverse.Retrieve(moderatorToBeRemoved.Subverse);
-            if (subverse == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            var subverse = DataCache.Subverse.Retrieve(subModerator.Subverse);
+            if (subverse == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             // check if caller has clearance to remove a moderator
             //if (!UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverse.Name) || moderatorToBeRemoved.UserName == User.Identity.Name) return RedirectToAction("Index", "Home");
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse.Name, Domain.Models.ModeratorAction.RemoveMods) || moderatorToBeRemoved.UserName == User.Identity.Name)
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse.Name, Domain.Models.ModeratorAction.RemoveMods) || subModerator.UserName == User.Identity.Name)
             {
                 return RedirectToAction("Index", "Home");
             }
             //ensure mods can only remove mods that are a lower level than themselves
             var currentModLevel = ModeratorPermission.Level(User.Identity.Name, subverse.Name);
-            if (currentModLevel == null || moderatorToBeRemoved.Power <= (int)currentModLevel)
+            if (currentModLevel == null || subModerator.Power <= (int)currentModLevel)
             {
                 return RedirectToAction("Index", "Home");
             }
 
             // execute removal
-            _db.SubverseModerators.Remove(moderatorToBeRemoved);
+            _db.SubverseModerators.Remove(subModerator);
             await _db.SaveChangesAsync();
 
             //clear mod cache
@@ -1420,7 +1374,31 @@ namespace Voat.Controllers
 
             return RedirectToAction("SubverseModerators");
         }
+        // GET: show remove moderators view for selected subverse
+        [Authorize]
+        public ActionResult RemoveModerator(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
+            var subModerator = _db.SubverseModerators.Find(id);
+
+            if (subModerator == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subModerator.Subverse, Domain.Models.ModeratorAction.RemoveMods))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.SelectedSubverse = string.Empty;
+            ViewBag.SubverseName = subModerator.Subverse;
+            return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subModerator);
+        }
         // POST: remove a ban from given subverse
         [Authorize]
         [HttpPost, ActionName("RemoveBan")]

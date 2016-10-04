@@ -10,8 +10,9 @@ namespace Voat.Domain.Query
     public class QueryUserBlocks : CachedQuery<IList<BlockedItem>>
     {
 
-        public QueryUserBlocks() : base(new Caching.CachePolicy(TimeSpan.FromMinutes(30)))
+        public QueryUserBlocks(string userName = null) : base(new Caching.CachePolicy(TimeSpan.FromMinutes(30)))
         {
+            userName = (String.IsNullOrEmpty(userName) ? UserName : userName);
         }
 
         public override string CacheKey

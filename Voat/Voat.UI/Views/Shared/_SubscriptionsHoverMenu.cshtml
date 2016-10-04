@@ -27,7 +27,12 @@
     <span class="drop-arrow"></span>
     <ul>
         <li><a href="/subverses/subscribed"><b>Edit your subscriptions</b></a></li>
-        <li><a href="/subverses/blocked"><b>Edit your blocked subverses</b></a></li>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <li><a href="/user/blocked/subverse"><b>Edit your blocked subverses</b></a></li>
+            <li><a href="/user/blocked/user"><b>Edit your blocked users</b></a></li>
+
+        }
 
         @if (subscriptionList != null)
         {

@@ -46,11 +46,15 @@ namespace Voat.Utilities
         // return original username
         public static string OriginalUsername(string userName)
         {
-            using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+            if (!String.IsNullOrEmpty(userName))
             {
-                var tmpuser = tmpUserManager.FindByName(userName);
-                return tmpuser != null ? tmpuser.UserName : null;
+                using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+                {
+                    var tmpuser = tmpUserManager.FindByName(userName);
+                    return tmpuser != null ? tmpuser.UserName : null;
+                }
             }
+            return null;
         }
 
         // return user registration date
