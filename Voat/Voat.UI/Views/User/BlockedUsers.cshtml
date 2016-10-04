@@ -14,16 +14,8 @@
 
 @{
     ViewBag.Title = "Blocked Users";
-    string urlaction = "";
-
-    if (ViewBag.SubversesView == "blocked")
-    {
-        urlaction = "BlockedSubverses";
-    }
-    else
-    {
-        urlaction = "new";
-    }
+    ViewBag.userid = User.Identity.Name;
+   
 }
 
 <style type="text/css">
@@ -37,7 +29,8 @@
 
         <div class="alert-notice">
             <p>Showing all users that you have blocked.</p>
-            <p>This feature is not implmented yet. You can block users but it will have no effect until fully implemented.</p>
+            <p>This is an alpha feature - Please report any issues to <a href="https://voat.co/v/voatdev/">v/voatdev</a>.</p>
+            <p>Blocking a user will only prevent notifications and messages from being received.</p>
         </div>
         @using (Html.BeginForm("BlockUser", "User", FormMethod.Post, new { @class = "form-horizontal", role = "form", autocomplete = "off" }))
         {

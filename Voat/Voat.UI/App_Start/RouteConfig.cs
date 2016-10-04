@@ -330,7 +330,7 @@ namespace Voat
 
             routes.MapRoute(
                name: "Block",
-               url: "block/{blockType}/{blockName}",
+               url: "block/{blockType}",
                defaults: new { controller = "User", action = "Block" },
                constraints: new { blockType = "user|subverse" }
            );

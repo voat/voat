@@ -19,11 +19,26 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Models;
+using Voat.Domain.Query;
 
 namespace Voat.Utilities
 {
     public static class MesssagingUtility
     {
+
+        public static bool IsSenderBlocked(string sender, string recipient)
+        {
+            var q = new QueryUserBlocks(recipient);
+            var blocks = q.Execute();
+
+            if (blocks != null)
+            {
+                return blocks.Any(x => x.Type == DomainType.User && x.Name.Equals(sender, StringComparison.OrdinalIgnoreCase));
+            }
+            return false;
+        }
+
         // a method to mark single or all private messages as read for a given user
         public static async Task<bool> MarkPrivateMessagesAsRead(bool? markAll, string userName, int? itemId)
         {

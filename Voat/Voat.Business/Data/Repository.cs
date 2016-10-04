@@ -1780,7 +1780,6 @@ namespace Voat.Data
 
                             foreach (var moderator in mods)
                             {
-                                //TODO: Implement User Block Checking
                                 messages.Add(new PrivateMessage
                                 {
                                     Sender = message.Sender,
@@ -1802,7 +1801,6 @@ namespace Voat.Data
 
                     if (!String.IsNullOrEmpty(recipient) && Voat.Utilities.UserHelper.UserExists(recipient))
                     {
-                        //TODO: Implement User Block Checking
                         messages.Add(new PrivateMessage
                         {
                             Sender = message.Sender,
@@ -1823,9 +1821,18 @@ namespace Voat.Data
                 {
                     try
                     {
+
+                        //BlockedUser Implementation
+                        //messages = messages.Where(x => !MesssagingUtility.IsSenderBlocked(x.Sender, x.Recipient)).ToList();
+
                         //substring - db column is nvarchar(50) and any longer breaks EF
                         messages.ForEach(x =>
                         {
+                            if (MesssagingUtility.IsSenderBlocked(x.Sender, x.Recipient))
+                            {
+                                x.Recipient = '\u200B' + x.Recipient;
+                            }
+
                             if (x.Subject.Length > 50)
                             {
                                 x.Subject = x.Subject.Substring(0, 50);

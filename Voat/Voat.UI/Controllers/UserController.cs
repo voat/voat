@@ -139,10 +139,10 @@ namespace Voat.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> Block(Domain.Models.DomainType blockType, string blockName)
+        public async Task<ActionResult> Block(Domain.Models.DomainType blockType, string name)
         {
             //Used by voat.js
-            var cmd = new BlockCommand(blockType, blockName, true);
+            var cmd = new BlockCommand(blockType, name, true);
             var result = await cmd.Execute();
 
             if (Request.IsAjaxRequest())

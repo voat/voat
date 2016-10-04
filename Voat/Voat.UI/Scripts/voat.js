@@ -1657,7 +1657,8 @@ function toggleBlockSubverseFLButton(obj, subverseName) {
 function postBlock(type, name) {
     $.ajax({
         type: "POST",
-        url: "/block/" + type + "/" + name
+        url: "/block/" + type,
+        data: {name: name}
     });
 }
 // a function to check username availability

@@ -21,6 +21,7 @@ using Voat.Data;
 //using Microsoft.AspNet.SignalR;
 //using Voat.Data.Models;
 using Voat.Data.Models;
+using Voat.Utilities;
 
 namespace Voat.Utilities.Components
 {
@@ -38,38 +39,42 @@ namespace Voat.Utilities.Components
                 {
                     string recipient = UserHelper.OriginalUsername(user);
 
-                    var commentReplyNotification = new CommentReplyNotification();
-                    using (var _db = new voatEntities())
+                    //BlockedUser Implementation
+                    if (!MesssagingUtility.IsSenderBlocked(comment.UserName, recipient))
                     {
-                        //TODO: Implement User Block Checking
 
-                        var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
-                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-
-                        commentReplyNotification.CommentID = comment.ID;
-                        commentReplyNotification.SubmissionID = comment.SubmissionID.Value;
-                        commentReplyNotification.Recipient = recipient;
-                        if (submission.IsAnonymized || subverse.IsAnonymized)
+                        var commentReplyNotification = new CommentReplyNotification();
+                        using (var _db = new voatEntities())
                         {
-                            commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                        }
-                        else
-                        {
-                            commentReplyNotification.Sender = comment.UserName;
-                        }
-                        commentReplyNotification.Body = comment.Content;
-                        commentReplyNotification.Subverse = subverse.Name;
-                        commentReplyNotification.IsUnread = true;
-                        commentReplyNotification.CreationDate = Repository.CurrentDate;
+                            var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+                            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
-                        commentReplyNotification.Subject = String.Format("@{0} mentioned you in a comment", comment.UserName, submission.Title);
+                            commentReplyNotification.CommentID = comment.ID;
+                            commentReplyNotification.SubmissionID = comment.SubmissionID.Value;
+                            commentReplyNotification.Recipient = recipient;
 
-                        _db.CommentReplyNotifications.Add(commentReplyNotification);
-                       
-                        await _db.SaveChangesAsync();
+                            if (submission.IsAnonymized || subverse.IsAnonymized)
+                            {
+                                commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                            }
+                            else
+                            {
+                                commentReplyNotification.Sender = comment.UserName;
+                            }
+                            commentReplyNotification.Body = comment.Content;
+                            commentReplyNotification.Subverse = subverse.Name;
+                            commentReplyNotification.IsUnread = true;
+                            commentReplyNotification.CreationDate = Repository.CurrentDate;
+
+                            commentReplyNotification.Subject = String.Format("@{0} mentioned you in a comment", comment.UserName, submission.Title);
+
+                            _db.CommentReplyNotifications.Add(commentReplyNotification);
+
+                            await _db.SaveChangesAsync();
+                        }
+
+                        EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
                     }
-
-                    EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
                 }
                 catch (Exception ex) {
                     throw ex;
@@ -88,37 +93,40 @@ namespace Voat.Utilities.Components
                 try { 
                     string recipient = UserHelper.OriginalUsername(user);
 
-                    var commentReplyNotification = new CommentReplyNotification();
-                    using (var _db = new voatEntities())
+                    //BlockedUser Implementation
+                    if (!MesssagingUtility.IsSenderBlocked(submission.UserName, recipient))
                     {
-
-                        //TODO: Implement User Block Checking
-
-                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-
-                        commentReplyNotification.SubmissionID = submission.ID;
-                        commentReplyNotification.Recipient = recipient;
-                        if (submission.IsAnonymized || subverse.IsAnonymized)
+                        var commentReplyNotification = new CommentReplyNotification();
+                        using (var _db = new voatEntities())
                         {
-                            commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                        }
-                        else
-                        {
-                            commentReplyNotification.Sender = submission.UserName;
-                        }
-                        commentReplyNotification.Body = submission.Content;
-                        commentReplyNotification.Subverse = subverse.Name;
-                        commentReplyNotification.IsUnread = true;
-                        commentReplyNotification.CreationDate = Repository.CurrentDate;
 
-                        commentReplyNotification.Subject = String.Format("@{0} mentioned you in post '{1}'", submission.UserName, submission.Title);
+                            //TODO: Implement User Block Checking
 
-                        _db.CommentReplyNotifications.Add(commentReplyNotification);
-                        await _db.SaveChangesAsync();
+                            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+
+                            commentReplyNotification.SubmissionID = submission.ID;
+                            commentReplyNotification.Recipient = recipient;
+                            if (submission.IsAnonymized || subverse.IsAnonymized)
+                            {
+                                commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                            }
+                            else
+                            {
+                                commentReplyNotification.Sender = submission.UserName;
+                            }
+                            commentReplyNotification.Body = submission.Content;
+                            commentReplyNotification.Subverse = subverse.Name;
+                            commentReplyNotification.IsUnread = true;
+                            commentReplyNotification.CreationDate = Repository.CurrentDate;
+
+                            commentReplyNotification.Subject = String.Format("@{0} mentioned you in post '{1}'", submission.UserName, submission.Title);
+
+                            _db.CommentReplyNotifications.Add(commentReplyNotification);
+                            await _db.SaveChangesAsync();
+                        }
+
+                        EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
                     }
-
-                    EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
-
                 }
                 catch (Exception ex)
                 {
@@ -148,41 +156,41 @@ namespace Voat.Utilities.Components
                                 if (parentComment.UserName != comment.UserName)
                                 {
                                     // send the message
-
-                                    //TODO: Implement User Block Checking
-
-
-                                    var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
-                                    if (submission != null)
+                                    //BlockedUser Implementation
+                                    if (!MesssagingUtility.IsSenderBlocked(comment.UserName, parentComment.UserName))
                                     {
-                                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-
-                                        var commentReplyNotification = new CommentReplyNotification();
-                                        commentReplyNotification.CommentID = comment.ID;
-                                        commentReplyNotification.SubmissionID = submission.ID;
-                                        commentReplyNotification.Recipient = parentComment.UserName;
-                                        if (submission.IsAnonymized || subverse.IsAnonymized)
+                                        var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+                                        if (submission != null)
                                         {
-                                            commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                                            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+
+                                            var commentReplyNotification = new CommentReplyNotification();
+                                            commentReplyNotification.CommentID = comment.ID;
+                                            commentReplyNotification.SubmissionID = submission.ID;
+                                            commentReplyNotification.Recipient = parentComment.UserName;
+                                            if (submission.IsAnonymized || subverse.IsAnonymized)
+                                            {
+                                                commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                                            }
+                                            else
+                                            {
+                                                commentReplyNotification.Sender = comment.UserName;
+                                            }
+                                            commentReplyNotification.Body = comment.Content;
+                                            commentReplyNotification.Subverse = subverse.Name;
+                                            commentReplyNotification.IsUnread = true;
+                                            commentReplyNotification.CreationDate = Repository.CurrentDate;
+
+                                            // self = type 1, url = type 2
+                                            commentReplyNotification.Subject = submission.Title;
+
+                                            _db.CommentReplyNotifications.Add(commentReplyNotification);
+
+                                            await _db.SaveChangesAsync();
+
+                                            EventNotification.Instance.SendMessageNotice(commentReplyNotification.Recipient, commentReplyNotification.Sender, Domain.Models.MessageType.Comment, Domain.Models.ContentType.Comment, comment.ID);
+
                                         }
-                                        else
-                                        {
-                                            commentReplyNotification.Sender = comment.UserName;
-                                        }
-                                        commentReplyNotification.Body = comment.Content;
-                                        commentReplyNotification.Subverse = subverse.Name;
-                                        commentReplyNotification.IsUnread = true;
-                                        commentReplyNotification.CreationDate = Repository.CurrentDate;
-
-                                        // self = type 1, url = type 2
-                                        commentReplyNotification.Subject = submission.Title;
-
-                                        _db.CommentReplyNotifications.Add(commentReplyNotification);
-
-                                        await _db.SaveChangesAsync();
-
-                                        EventNotification.Instance.SendMessageNotice(commentReplyNotification.Recipient, commentReplyNotification.Sender, Domain.Models.MessageType.Comment, Domain.Models.ContentType.Comment, comment.ID);
-
                                     }
                                 }
                             }
