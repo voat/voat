@@ -37,34 +37,36 @@
             @Html.ValidationSummary()
             @Html.AntiForgeryToken()
             <div class="form-group">
-                <label class="col-md-2 control-label" for="name">Block New User</label>
+                <label class="col-md-2 control-label" for="name">Block User</label>
                 <div class="col-md-3">
                     @Html.TextBox("name", null, new { @class = "form-control" })
                 </div>
                 <input type="submit" value="Submit" class="btn-whoaverse" />
             </div>
         }
-
-        <table class="table table-striped table-condensed">
-            <thead>
-                <tr>
-                    <th><b>Username</b></th>
-                    <th><b>Blocked Date</b></th>
-                    <th><b>Remove</b></th>
-                </tr>
-            </thead>
-            <tbody>
-
-                @foreach (var item in Model)
-                {
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-striped table-condensed">
+                <thead>
                     <tr>
-                        <td>@item.Name</td>
-                        <td>@item.CreationDate</td>
-                        <td><button type="button" onclick="return toggleBlockUser(this, '@item.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unblock</button></td>
+                        <th><b>Username</b></th>
+                        <th><b>Blocked Date</b></th>
+                        <th><b>Remove</b></th>
                     </tr>
-                }
+                </thead>
+                <tbody>
 
-            </tbody>
-        </table>
+                    @foreach (var item in Model)
+                {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.CreationDate</td>
+                            <td><button type="button" onclick="return toggleBlockUser(this, '@item.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unblock</button></td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        }
     </div>
 </div>

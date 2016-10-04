@@ -208,12 +208,12 @@ namespace Voat.Controllers
                     {
                         return View("~/Views/Errors/Error_404.cshtml");
                     }
-
+                    string userName = User.Identity.Name;
                     // get a list of user blocked subverses with details and order by subverse name, ascending
                     IQueryable<SubverseDetailsViewModel> blockedSubverses = from c in _db.Subverses
                                                                             join a in _db.UserBlockedSubverses
                                                                             on c.Name equals a.Subverse
-                                                                            where a.UserName.Equals(User.Identity.Name)
+                                                                            where a.UserName.Equals(userName)
                                                                             orderby a.Subverse ascending
                                                                             select new SubverseDetailsViewModel
                                                                             {

@@ -39,7 +39,7 @@ namespace Voat.Utilities.Components
                 {
                     string recipient = UserHelper.OriginalUsername(user);
 
-                    //BlockedUser Implementation
+                    //BlockedUser Implementation - Comment User Mention
                     if (!MesssagingUtility.IsSenderBlocked(comment.UserName, recipient))
                     {
 
@@ -93,7 +93,7 @@ namespace Voat.Utilities.Components
                 try { 
                     string recipient = UserHelper.OriginalUsername(user);
 
-                    //BlockedUser Implementation
+                    //BlockedUser Implementation - Submission User Mention
                     if (!MesssagingUtility.IsSenderBlocked(submission.UserName, recipient))
                     {
                         var commentReplyNotification = new CommentReplyNotification();
@@ -156,7 +156,7 @@ namespace Voat.Utilities.Components
                                 if (parentComment.UserName != comment.UserName)
                                 {
                                     // send the message
-                                    //BlockedUser Implementation
+                                    //BlockedUser Implementation - Comment Reply
                                     if (!MesssagingUtility.IsSenderBlocked(comment.UserName, parentComment.UserName))
                                     {
                                         var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
@@ -208,36 +208,39 @@ namespace Voat.Utilities.Components
                                 // do not send notification if author is the same as comment author
                                 if (submission.UserName != comment.UserName)
                                 {
-                                    // send the message
-                                    var postReplyNotification = new SubmissionReplyNotification();
-
-                                    postReplyNotification.CommentID = comment.ID;
-                                    postReplyNotification.SubmissionID = submission.ID;
-                                    postReplyNotification.Recipient = submission.UserName;
-                                    var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-                                    if (submission.IsAnonymized || subverse.IsAnonymized)
+                                    //BlockedUser Implementation - Submission Reply
+                                    if (!MesssagingUtility.IsSenderBlocked(comment.UserName, submission.UserName))
                                     {
-                                        postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                                        // send the message
+                                        var postReplyNotification = new SubmissionReplyNotification();
+
+                                        postReplyNotification.CommentID = comment.ID;
+                                        postReplyNotification.SubmissionID = submission.ID;
+                                        postReplyNotification.Recipient = submission.UserName;
+                                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                                        if (submission.IsAnonymized || subverse.IsAnonymized)
+                                        {
+                                            postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
+                                        }
+                                        else
+                                        {
+                                            postReplyNotification.Sender = comment.UserName;
+                                        }
+
+                                        postReplyNotification.Body = comment.Content;
+                                        postReplyNotification.Subverse = submission.Subverse;
+                                        postReplyNotification.IsUnread = true;
+                                        postReplyNotification.CreationDate = Repository.CurrentDate;
+
+                                        // self = type 1, url = type 2
+                                        postReplyNotification.Subject = submission.Title;
+
+                                        _db.SubmissionReplyNotifications.Add(postReplyNotification);
+
+                                        await _db.SaveChangesAsync();
+
+                                        EventNotification.Instance.SendMessageNotice(postReplyNotification.Recipient, postReplyNotification.Sender, Domain.Models.MessageType.Comment, Domain.Models.ContentType.Comment, comment.ID);
                                     }
-                                    else
-                                    {
-                                        postReplyNotification.Sender = comment.UserName;
-                                    }
-
-                                    postReplyNotification.Body = comment.Content;
-                                    postReplyNotification.Subverse = submission.Subverse;
-                                    postReplyNotification.IsUnread = true;
-                                    postReplyNotification.CreationDate = Repository.CurrentDate;
-
-                                    // self = type 1, url = type 2
-                                    postReplyNotification.Subject = submission.Title;
-
-                                    _db.SubmissionReplyNotifications.Add(postReplyNotification);
-
-                                    await _db.SaveChangesAsync();
-
-                                    EventNotification.Instance.SendMessageNotice(postReplyNotification.Recipient, postReplyNotification.Sender, Domain.Models.MessageType.Comment, Domain.Models.ContentType.Comment, comment.ID);
-
                                 }
                             }
                         }
