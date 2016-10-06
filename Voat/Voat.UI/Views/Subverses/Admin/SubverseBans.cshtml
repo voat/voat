@@ -42,8 +42,8 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.UserName</td>
-                            <td>@item.CreatedBy</td>
+                            <td><a href="/user/@item.UserName">@item.UserName</a></td>
+                            <td><a href="/user/@item.CreatedBy">@item.CreatedBy</a></td>
                             <td>@item.Reason</td>
                             <td>@item.CreationDate</td>
                             <td>@Html.ActionLink("Remove", "RemoveBan", new { id = item.ID })</td>

@@ -41,18 +41,24 @@
                 Member for: <b>@Age.ToRelative(userRegistrationDateTime)</b><br />
                 <span class="bottommenu">(joined on: @userRegistrationDateTime.ToShortDateString())</span>
             </p>
-            <a href="#" class="btn-whoaverse-paging disabled">
-                Follow
-            </a>
-            <a href="#" class="btn-whoaverse-paging disabled">
-                Block
-            </a>
-            <a href="#" class="btn-whoaverse-paging disabled">
-                Report
-            </a>
-            <a href="/messaging/compose?recipient=@userName" class="btn-whoaverse-paging">
-                Send a message
-            </a>
+            @if (User.Identity.IsAuthenticated && !User.Identity.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
+            {
+                <a href="#" class="btn-whoaverse-paging disabled">
+                    Follow
+                </a>
+                string blockText = "block";
+                if (Voat.Utilities.MesssagingUtility.IsSenderBlocked(userName, User.Identity.Name))
+                {
+                    blockText = "unblock";
+                }
+                <button type="button" onclick="return toggleBlockUser(this, '@userName')" class="btn-whoaverse-paging">@blockText</button>
+                <a href="#" class="btn-whoaverse-paging disabled">
+                    Report
+                </a>
+                <a href="/messaging/compose?recipient=@userName" class="btn-whoaverse-paging">
+                    Send a message
+                </a>
+            }
         </div>
         <div class="titlebox footer rounded">
             <h2 class="hover whoaversename">

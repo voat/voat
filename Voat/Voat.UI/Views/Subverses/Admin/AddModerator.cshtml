@@ -11,6 +11,8 @@
     All Rights Reserved.*@
 
 @model Voat.Models.ViewModels.SubverseModeratorViewModel
+@using System.Linq
+@using Voat.Domain.Models
 
 @{
     string subverseName = ViewBag.SubverseName;
@@ -42,7 +44,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Power, htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-4">
-                        @Html.EditorFor(model => model.Power, new {htmlAttributes = new {@class = "form-control", Value = "2"}})
+                        @Html.DropDownListFor(model => model.Power, Enum.GetValues(typeof(ModeratorLevel)).OfType<ModeratorLevel>().Where(x => x != ModeratorLevel.Owner).Select(x => new SelectListItem() { Text = x.ToString(), Value = ((int)x).ToString() }), new { @class = "form-control"} )
                         @Html.ValidationMessageFor(model => model.Power, "", new {@class = "text-danger"})
                     </div>
                 </div>

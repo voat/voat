@@ -950,7 +950,9 @@ a.btn-whoaverse {
     .form-control::-webkit-input-placeholder {
         color: #AAA;
     }
-
+    select.form-control { 
+        padding: 0 12px; 
+    }
 /* ! Body : WVSprites
 ------------------------------------------------------------------------------------ */
 

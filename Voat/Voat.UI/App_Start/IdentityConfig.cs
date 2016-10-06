@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using SendGrid;
 using Voat.Configuration;
+using Voat.Utilities;
 
 namespace Voat.App_Start
 {
@@ -16,7 +17,7 @@ namespace Voat.App_Start
         {
             public Task SendAsync(IdentityMessage message)
             {
-                var sgMessage = new SendGridMessage { From = new MailAddress("noreply@voat.co", "Voat") };
+                var sgMessage = new SendGridMessage { From = new MailAddress("noreply@voat.co", CONSTANTS.SYSTEM_USER_NAME) };
                 
                 sgMessage.AddTo(message.Destination);
                 sgMessage.Subject = message.Subject;

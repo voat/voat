@@ -954,6 +954,9 @@ a.btn-whoaverse {
     .form-control::-webkit-input-placeholder {
         color: #777;
     }
+    select.form-control { 
+        padding: 0 12px; 
+    }
 
 /* ! Body : WVSprites
 ------------------------------------------------------------------------------------ */

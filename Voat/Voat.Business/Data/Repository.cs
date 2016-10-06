@@ -992,7 +992,7 @@ namespace Voat.Data
                         Sender = $"v/{submission.Subverse}",
                         Recipient = submission.UserName,
                         Subject = "Your submission has been deleted by a moderator",
-                        Message = "Your [submission](/v/" + submission.Subverse + "/comments/" + submission.ID + ") has been deleted by: " +
+                        Message = "Your [submission](/v/" + submission.Subverse + "/" + submission.ID + ") has been deleted by: " +
                                     "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
                                     "Original submission content was: " + Environment.NewLine +
                                     "---" + Environment.NewLine +
@@ -1180,7 +1180,7 @@ namespace Voat.Data
                             Sender = $"v/{subverseName}",
                             Recipient = comment.UserName,
                             Subject = "Your comment has been deleted by a moderator",
-                            Message = "Your [comment](/v/" + subverseName + "/comments/" + comment.SubmissionID + "/" + comment.ID + ") has been deleted by: " +
+                            Message = "Your [comment](/v/" + subverseName + "/" + comment.SubmissionID + "/" + comment.ID + ") has been deleted by: " +
                                         "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
                                         "Original comment content was: " + Environment.NewLine +
                                         "---" + Environment.NewLine +
@@ -1732,7 +1732,8 @@ namespace Voat.Data
                 {
                     return CommandResponse.Ignored("User is banned");
                 }
-                if (Voat.Utilities.Karma.CommentKarma(message.Sender) < 10)
+                //add exception for system messages from sender
+                if (!CONSTANTS.SYSTEM_USER_NAME.Equals(message.Sender, StringComparison.OrdinalIgnoreCase) && Karma.CommentKarma(message.Sender) < 10)
                 {
                     return CommandResponse.Ignored("Comment points too low to send messages", "CCP < 10");
                 }

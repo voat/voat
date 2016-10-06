@@ -92,7 +92,7 @@
             @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name))
             {
                 <div class="leavemoderator">
-                    you are a moderator of this subverse. (<a href="/v/@Model.Name/about/moderators/resign">change</a>)
+                    you are a moderator of this subverse. (<a href="/v/@Model.Name/about/moderators/resign">resign</a>)
                 </div>
             }
             <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxx">
@@ -170,8 +170,5 @@
                     </div>
                 </div>
             </div>
-            @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name))
-            {
-                @Html.Partial("Sidebars/_SidebarModToolbox")
-            }
+            @Html.Partial("Sidebars/_SidebarModToolbox")
         </div>

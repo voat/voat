@@ -20,8 +20,8 @@ namespace Voat.Rules.Posting
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
-            bool isModerator = context.UserData.Information.Moderates.Any(x => x.Subverse.Equals(context.Subverse.Name, StringComparison.OrdinalIgnoreCase));
-
+            //bool isModerator = context.UserData.Information.Moderates.Any(x => x.Subverse.Equals(context.Subverse.Name, StringComparison.OrdinalIgnoreCase));
+            bool isModerator = ModeratorPermission.IsModerator(context.UserName, context.Subverse.Name, null);
             // check posting quotas if user is posting to subs they do not moderate
             if (!isModerator)
             {

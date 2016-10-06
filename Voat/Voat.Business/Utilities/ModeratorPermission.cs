@@ -16,15 +16,17 @@ namespace Voat.Utilities
             var q = new QuerySubverseModerators(subverse);
             return q.Execute();
         }
-        public static bool IsModerator(string userName, string subverse)
+        public static bool IsModerator(string userName, string subverse, ModeratorLevel[] levels = null)
         {
             var mods = GetModerators(subverse);
-            return mods.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
+            return mods.Any(x => 
+                x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) 
+                && (levels == null || (levels != null && levels.Any(l => x.Power == (int)l)))
+            );
         }
         public static bool IsLevel(string userName, string subverse, ModeratorLevel level)
         {
-            var mods = GetModerators(subverse);
-            return mods.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.Power == (int)level);
+            return IsModerator(userName, subverse, new ModeratorLevel[] { level });
         }
         public static ModeratorLevel? Level(string userName, string subverse)
         {

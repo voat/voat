@@ -11,44 +11,54 @@
     All Rights Reserved.*@
 
 @model Voat.Data.Models.Subverse
-
-<div class="spacer">
-    <div class="sidecontentbox collapsible" id="moderation_tools">
-        <div class="title">
-            <h1 class="alert-h1">MODERATOR TOOLBOX</h1>
+@if (   User.Identity.IsAuthenticated
+        && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name,
+            new Voat.Domain.Models.ModeratorLevel[] {
+                Voat.Domain.Models.ModeratorLevel.Owner,
+                Voat.Domain.Models.ModeratorLevel.Moderator,
+                Voat.Domain.Models.ModeratorLevel.Janitor,
+                Voat.Domain.Models.ModeratorLevel.Designer
+            })
+    )
+{
+    <div class="spacer">
+        <div class="sidecontentbox collapsible" id="moderation_tools">
+            <div class="title">
+                <h1 class="alert-h1">MODERATOR TOOLBOX</h1>
+            </div>
+            <ul style="display: block;" class="content">
+                <li>
+                    <ul class="flat-vert icon-menu hover">
+                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.ModifySettings))
+                        {
+                            <li>
+                                <a href="/v/@Model.Name/about/edit/">subverse settings</a>
+                            </li>
+                        }
+                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.ModifyCSS))
+                        {
+                            <li>
+                                <a href="/v/@Model.Name/about/edit/stylesheet">edit stylesheet</a>
+                            </li>
+                            <li>
+                                <a href="/v/@Model.Name/about/flair/">flair settings</a>
+                            </li>
+                        }
+                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.InviteMods))
+                        {
+                            <li>
+                                <a href="/v/@Model.Name/about/moderators/">subverse moderators</a>
+                            </li>
+                        }
+                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.Banning))
+                        {
+                            <li>
+                                <a href="/v/@Model.Name/about/bans/">subverse bans</a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            </ul>
         </div>
-        <ul style="display: block;" class="content">
-            <li>
-                <ul class="flat-vert icon-menu hover">
-                    @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.ModifySettings))
-                    {
-                        <li>
-                            <a href="/v/@Model.Name/about/edit/">subverse settings</a>
-                        </li>
-                    }
-                    @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.ModifyCSS))
-                    {
-                        <li>
-                            <a href="/v/@Model.Name/about/edit/stylesheet">edit stylesheet</a>
-                        </li>
-                        <li>
-                            <a href="/v/@Model.Name/about/flair/">flair settings</a>
-                        </li>
-                    }
-                    @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.InviteMods))
-                    {
-                        <li>
-                            <a href="/v/@Model.Name/about/moderators/">subverse moderators</a>
-                        </li>
-                    }
-                    @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.Banning))
-                    {
-                        <li>
-                            <a href="/v/@Model.Name/about/bans/">subverse bans</a>
-                        </li>
-                    }
-                </ul>
-            </li>
-        </ul>
     </div>
-</div>
+}

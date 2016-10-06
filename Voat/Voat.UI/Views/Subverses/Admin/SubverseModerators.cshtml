@@ -32,6 +32,8 @@
                 <tr>
                     <th><b>Username</b></th>
                     <th><b>Clearance</b></th>
+                    <th><b>Invited By</b></th>
+                    <th><b>Date</b></th>
                     <th><b>Remove</b></th>
                 </tr>
                 </thead>
@@ -40,8 +42,10 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.UserName</td>
-                        <td>@item.Power</td>
+                        <td><a href="/user/@item.UserName">@item.UserName</a></td>
+                        <td>@item.Power - @Enum.GetName(typeof(Voat.Domain.Models.ModeratorLevel), item.Power)</td>
+                        <td>@item.CreatedBy</td>
+                        <th>@item.CreationDate</th>
                         <td>@Html.ActionLink("Remove", "RemoveModerator", new {id = item.ID})</td>
                     </tr>
                 }
