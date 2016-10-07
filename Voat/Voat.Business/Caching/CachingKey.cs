@@ -116,9 +116,14 @@ namespace Voat.Caching
         {
             return SiteSearch("", phrase);
         }
+        
         public static string AdCache()
         {
             return String.Format("System:AdCache");
+        }
+        public static string RssFeed(string subverse)
+        {
+            return String.Format("Subverse:Rss:{0}", String.IsNullOrWhiteSpace(subverse) ? "all" : subverse);
         }
     }
 }

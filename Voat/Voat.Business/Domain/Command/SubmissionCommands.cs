@@ -81,7 +81,18 @@ namespace Voat.Domain.Command
 
         protected override void UpdateCache(Data.Models.Submission result)
         {
-            CacheHandler.Instance.Replace(CachingKey.Submission(result.ID), result);
+            var key = CachingKey.Submission(result.ID);
+            if (CacheHandler.Instance.Exists(key))
+            {
+                CacheHandler.Instance.Replace<Submission>(key, x =>
+                {
+                    x.Title = result.Title;
+                    x.Content = result.Content;
+                    x.Url = result.Url;
+                    x.LastEditDate = result.LastEditDate;
+                    return x;
+                });
+            }
             //Legacy item removal
             CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));
         }

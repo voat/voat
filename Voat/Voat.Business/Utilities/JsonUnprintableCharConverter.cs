@@ -8,7 +8,7 @@ namespace Voat.Utilities
     {
         public override bool CanConvert(Type objectType)
         {
-            return true;
+            return objectType == typeof(string);
         }
         public static string ProcessChars(string source)
         {
@@ -55,10 +55,10 @@ namespace Voat.Utilities
                     case '\v':
                         /*ignore these*/
                         break;
-                    case '\n': //add another so it breaks in Markdown.
-                        chars.Add('\n');
-                        chars.Add('\n');
-                        break;
+                    //case '\n': //add another so it breaks in Markdown.
+                    //    chars.Add('\n');
+                    //    chars.Add('\n');
+                    //    break;
 
                     default:
                         chars.Add(c);
@@ -73,14 +73,15 @@ namespace Voat.Utilities
         {
             if (reader.Value != null)
             {
-                return ProcessChars(reader.Value.ToString());
+                var processed = ProcessChars(reader.Value.ToString());
+                return processed;
             }
             return null;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            serializer.Serialize(writer, value);
+            writer.WriteValue(value);
         }
     }
 }

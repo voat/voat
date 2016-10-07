@@ -16,13 +16,5 @@ namespace Voat
             }
             return null;
         }
-        public static bool IsTrimmedNullOrEmpty(this string text)
-        {
-            if (!String.IsNullOrEmpty(text))
-            {
-                text = text.Trim(); 
-            }
-            return String.IsNullOrEmpty(text);
-        }
     }
 }

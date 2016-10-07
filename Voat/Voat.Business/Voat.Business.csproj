@@ -164,6 +164,7 @@
     <Compile Include="Domain\Command\SendMessageCommand.cs" />
     <Compile Include="Domain\Command\SubmissionCommands.cs" />
     <Compile Include="Domain\Command\SubscriptionCommand.cs" />
+    <Compile Include="Domain\Command\SubverseBanCommand.cs" />
     <Compile Include="Domain\Command\UpdateApiClientLastAccessDateCommand.cs" />
     <Compile Include="Domain\Command\UpdateUserPreferencesCommand.cs" />
     <Compile Include="Domain\Command\VoteCommands.cs" />
