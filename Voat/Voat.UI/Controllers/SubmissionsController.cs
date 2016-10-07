@@ -23,7 +23,9 @@ using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain;
 using Voat.Domain.Command;
+using Voat.Domain.Query;
 using Voat.Models;
+using Voat.Models.ViewModels;
 using Voat.Utilities;
 
 
@@ -227,6 +229,81 @@ namespace Voat.Controllers
                 }
             }
         }
-    }
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> ModeratorDelete(string subverse, int submissionID)
+        {
 
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.DeletePosts))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            //New Domain Submission
+            //var q = new QuerySubmission(submissionID);
+            //var s = await q.ExecuteAsync();
+            
+            //Legacy Data Submission (Since views expect this type, we use it for now)
+            var s = DataCache.Submission.Retrieve(submissionID);
+            ViewBag.Submission = s;
+
+            if (s == null)
+            {
+                ModelState.AddModelError("", "Can not find submission. Is it hiding?");
+                return View(new ModeratorDeleteContentViewModel());
+            }
+            if (s.IsDeleted)
+            {
+                ModelState.AddModelError("", "Can not delete a deleted post. Do you have no standards?");
+            }
+
+            return View(new ModeratorDeleteContentViewModel() { ID = s.ID });
+        }
+
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> ModeratorDelete(string subverse, int submissionID, ModeratorDeleteContentViewModel model)
+        {
+            //New Domain Submission
+            //var q = new QuerySubmission(submissionID);
+            //var s = await q.ExecuteAsync();
+
+            //Legacy Data Submission (Since views expect this type, we use it for now)
+            var s = DataCache.Submission.Retrieve(submissionID);
+            ViewBag.Submission = s;
+            if (s == null || s.ID != model.ID)
+            {
+                ModelState.AddModelError("", "Can not find submission. Is it hiding?");
+                return View(model);
+            }
+            if (s.IsDeleted)
+            {
+                ModelState.AddModelError("", "Can not delete a deleted post. Do you have no standards?");
+                return View(model);
+            }
+
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, s.Subverse, Domain.Models.ModeratorAction.DeletePosts))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var cmd = new DeleteSubmissionCommand(model.ID, model.Reason);
+            var r = await cmd.Execute();
+            if (r.Success)
+            {
+                return RedirectToRoute("SubverseIndex", new { subversetoshow = s.Subverse });
+            }
+            else
+            {
+                ModelState.AddModelError("", r.Message);
+                return View(model);
+            }
+        }
+    }
 }

@@ -321,6 +321,7 @@
     <Compile Include="Models\ViewModels\ApiKeyCreateRequest.cs" />
     <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
     <Compile Include="Models\ViewModels\ChatViewModel.cs" />
+    <Compile Include="Models\ViewModels\ModeratorDeleteViewModels.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
@@ -730,6 +731,10 @@
     <Content Include="Views\User\BlockedSubverses.cshtml" />
     <Content Include="Views\User\BlockedUsers.cshtml" />
     <Content Include="Views\User\_BlockedSubverseDetails.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonModeratorDelete.cshtml" />
+    <Content Include="Views\Submissions\ModeratorDelete.cshtml" />
+    <Content Include="Views\Comment\ModeratorDelete.cshtml" />
+    <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonModeratorDelete.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

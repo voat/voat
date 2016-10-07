@@ -54,7 +54,7 @@
                 </li>
                 if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeleteComments))
                 {
-                    @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
+                    @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonModeratorDelete.cshtml", Model, new ViewDataDictionary { { "CommentId", Model.ID } })
                 }
             }
 

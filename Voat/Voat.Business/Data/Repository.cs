@@ -980,28 +980,28 @@ namespace Voat.Data
                     {
                         SubmissionID = submission.ID,
                         Moderator = User.Identity.Name,
-                        Reason = "This feature is not yet implemented",
+                        Reason = reason,
                         CreationDate = Repository.CurrentDate
                     };
 
                     _db.SubmissionRemovalLogs.Add(removalLog);
-
+                    var contentPath = VoatPathHelper.CommentsPagePath(submission.Subverse, submission.ID);
                     // notify submission author that his submission has been deleted by a moderator
                     var message = new Domain.Models.SendMessage()
                     {
+
                         Sender = $"v/{submission.Subverse}",
                         Recipient = submission.UserName,
-                        Subject = "Your submission has been deleted by a moderator",
-                        Message = "Your [submission](/v/" + submission.Subverse + "/" + submission.ID + ") has been deleted by: " +
-                                    "/u/" + User.Identity.Name + " at " + Repository.CurrentDate + "  " + Environment.NewLine +
-                                    "Original submission content was: " + Environment.NewLine +
-                                    "---" + Environment.NewLine +
+                        Subject = $"Submission {contentPath} deleted",
+                        Message = "Your submission [" + contentPath + "](" + contentPath + ") has been deleted by: " +
+                                    "@" + User.Identity.Name + " on " + Repository.CurrentDate + Environment.NewLine + Environment.NewLine +
+                                    "Reason given: " + reason + Environment.NewLine +
+                                    "#Original Submission" + Environment.NewLine +
+                                    "##" + submission.Title  + Environment.NewLine +
                                     (submission.Type == 1 ?
-                                    "Submission title: " + submission.Title + ", " + Environment.NewLine +
-                                    "Submission content: " + submission.Content
+                                        submission.Content
                                     :
-                                    "Link description: " + submission.Title + ", " + Environment.NewLine +
-                                    "Link URL: " + submission.Url
+                                    "[" + submission.Url + "](" + submission.Url + ")"
                                     )
                     };
                     var cmd = new SendMessageCommand(message);
@@ -1173,17 +1173,17 @@ namespace Voat.Data
                             ex.Data["CommentID"] = commentID;
                             throw ex;
                         }
-
+                        var contentPath = VoatPathHelper.CommentsPagePath(submission.Subverse, comment.SubmissionID.Value, comment.ID);
                         // notify comment author that his comment has been deleted by a moderator
                         var message = new Domain.Models.SendMessage()
                         {
                             Sender = $"v/{subverseName}",
                             Recipient = comment.UserName,
-                            Subject = "Your comment has been deleted by a moderator",
-                            Message = "Your [comment](/v/" + subverseName + "/" + comment.SubmissionID + "/" + comment.ID + ") has been deleted by: " +
-                                        "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
-                                        "Original comment content was: " + Environment.NewLine +
-                                        "---" + Environment.NewLine +
+                            Subject = $"Comment {contentPath} deleted",
+                            Message = "Your comment [" + contentPath + "](" + contentPath + ") has been deleted by: " +
+                                        "@" + User.Identity.Name + " on: " + Repository.CurrentDate + Environment.NewLine + Environment.NewLine +
+                                        "Reason given: " + reason + Environment.NewLine +
+                                        "#Original Comment" + Environment.NewLine +
                                         comment.Content
                         };
                         var cmd = new SendMessageCommand(message);
@@ -1781,26 +1781,30 @@ namespace Voat.Data
 
                             foreach (var moderator in mods)
                             {
-                                messages.Add(new PrivateMessage
+                                //skip mods sending to sub they mod
+                                if (!moderator.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
                                 {
-                                    Sender = message.Sender,
-                                    Recipient = moderator.UserName,
-                                    CreationDate = Repository.CurrentDate,
-                                    Subject = String.Format("[v/{0}] {1}", recipient, message.Subject),
-                                    Body = message.Message,
-                                    IsUnread = true,
-                                    MarkedAsUnread = false
-                                });
+                                    messages.Add(new PrivateMessage
+                                    {
+                                        Sender = message.Sender,
+                                        Recipient = moderator.UserName,
+                                        CreationDate = Repository.CurrentDate,
+                                        Subject = String.Format("[v/{0}] {1}", recipient, message.Subject),
+                                        Body = message.Message,
+                                        IsUnread = true,
+                                        MarkedAsUnread = false
+                                    });
+                                }
                             }
                         }
                     }
                 }
                 else
                 {
-                    //ensure proper cased
+                    //ensure proper cased, will return null if doesn't exist
                     recipient = UserHelper.OriginalUsername(recipient);
 
-                    if (!String.IsNullOrEmpty(recipient) && Voat.Utilities.UserHelper.UserExists(recipient))
+                    if (!String.IsNullOrEmpty(recipient))
                     {
                         messages.Add(new PrivateMessage
                         {
@@ -1822,10 +1826,6 @@ namespace Voat.Data
                 {
                     try
                     {
-
-                        //BlockedUser Implementation
-                        //messages = messages.Where(x => !MesssagingUtility.IsSenderBlocked(x.Sender, x.Recipient)).ToList();
-
                         //substring - db column is nvarchar(50) and any longer breaks EF
                         messages.ForEach(x =>
                         {
@@ -1833,10 +1833,11 @@ namespace Voat.Data
                             {
                                 x.Recipient = '\u200B' + x.Recipient;
                             }
-
-                            if (x.Subject.Length > 50)
+                            //increased subject line
+                            int max = 500;
+                            if (x.Subject.Length > max)
                             {
-                                x.Subject = x.Subject.Substring(0, 50);
+                                x.Subject = x.Subject.Substring(0, max);
                             }
                         });
 

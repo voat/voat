@@ -1454,7 +1454,7 @@ pre, code {
             margin: 0;
             padding: 0;
             position: absolute;
-            visibility: hidden;
+            display: none;
             z-index: 99;
         }
 

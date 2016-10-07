@@ -18,6 +18,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Voat.Configuration;
 using Voat.Domain.Models;
+using Voat.Utilities;
 
 namespace Voat
 {
@@ -27,7 +28,7 @@ namespace Voat
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.LowercaseUrls = true;
-
+            
             // /dashboard
             routes.MapRoute(
                 name: "dashboard",
@@ -198,7 +199,37 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "CommentTree", sort = "top" }
             );
 
+            // v/subversetoshow/123456/123456/delete
+            routes.MapRoute(
+                name: "ModeratorDeleteSubmission",
+                url: "v/{subverse}/{submissionID}/delete",
+                constraints: new
+                {
+                    submissionID = CONSTANTS.SUBMISSION_ID_REGEX
+                },
+                defaults: new
+                {
+                    controller = "Submissions",
+                    action = "ModeratorDelete",
+                }
+            );
+
             #region Comment Pages
+
+            // v/subversetoshow/123456/123456/delete
+            routes.MapRoute(
+                name: "ModeratorDeleteComment",
+                url: "v/{subverse}/{submissionID}/{commentID}/delete",
+                constraints: new {
+                    submissionID = CONSTANTS.SUBMISSION_ID_REGEX,
+                    commentID = CONSTANTS.COMMENT_ID_REGEX
+                },
+                defaults: new
+                {
+                    controller = "Comment",
+                    action = "ModeratorDelete",
+                }
+            );
 
             // v/subversetoshow/comments/123456/new
             routes.MapRoute(
@@ -593,6 +624,8 @@ namespace Voat
                 defaults: new { controller = "Home", action = "Index" }
             );
 
+            #region Mod Logs
+
             // v/subverse/modlog/deleted
             routes.MapRoute(
                 name: "subverseSubmissionRemovalLog",
@@ -613,6 +646,9 @@ namespace Voat
                 url: "v/{subversetoshow}/modlog/bannedusers",
                 defaults: new { controller = "Subverses", action = "BannedUsersLog" }
             );
+            #endregion
+
+            #region Sub Moderation
 
             // v/subversetoedit/about/edit
             routes.MapRoute(
@@ -705,27 +741,15 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "ResignAsModerator" }
             );
 
+
+            #endregion
+            
             // v/subversetoshow
             routes.MapRoute(
                 name: "SubverseIndex",
                 url: "v/{subversetoshow}",
                 defaults: new { controller = "Subverses", action = "SubverseIndex" }
             );
-
-            // domains/domainname.com
-            routes.MapRoute(
-                name: "DomainIndex",
-                url: "domains/{domainname}.{ext}",
-                defaults: new { controller = "Domains", action = "Index" }
-            );
-
-            // domains/domainname.com/new
-            routes.MapRoute(
-                name: "DomainIndexSorted",
-                url: "domains/{domainname}.{ext}/{sortingmode}",
-                defaults: new { controller = "Domains", action = "New", sortingmode = UrlParameter.Optional }
-            );
-    
 
             // v/subversetoshow/sortingmode
             routes.MapRoute(
@@ -740,6 +764,22 @@ namespace Voat
                 url: "ajaxhelpers/commentreplyform/{parentCommentId}/{messageId}",
                 defaults: new { controller = "HtmlElements", action = "CommentReplyForm" }
             );
+
+            #region Domains
+            // domains/domainname.com
+            routes.MapRoute(
+                name: "DomainIndex",
+                url: "domains/{domainname}.{ext}",
+                defaults: new { controller = "Domains", action = "Index" }
+            );
+
+            // domains/domainname.com/new
+            routes.MapRoute(
+                name: "DomainIndexSorted",
+                url: "domains/{domainname}.{ext}/{sortingmode}",
+                defaults: new { controller = "Domains", action = "New", sortingmode = UrlParameter.Optional }
+            );
+            #endregion
 
             //// ajaxhelpers/singlesubmissioncomment
             //routes.MapRoute(

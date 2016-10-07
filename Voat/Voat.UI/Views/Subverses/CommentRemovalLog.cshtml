@@ -43,7 +43,8 @@
                     @foreach (var logItem in Model)
                     {
                         <div id="logItem" class="logItem alert-singlethread">
-                            <p>Removed by @logItem.Moderator at: @logItem.CreationDate. Reason given: @logItem.Reason</p>
+                            <p>@logItem.Moderator removed @Age.ToRelative(logItem.CreationDate) ago on @logItem.CreationDate</p>
+                            <p>"@logItem.Reason"</p>
                         </div>
                         <div class="removedCommentContainer">
                             @Html.Partial("Userprofile/_UserProfileComment", logItem.Comment)

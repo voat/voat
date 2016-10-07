@@ -49,7 +49,7 @@
             <li>
                 @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeletePosts))
                 {
-                    Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } });
+                    Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonModeratorDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } });
                 }
                 @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair))
                 {

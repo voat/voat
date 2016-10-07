@@ -30,6 +30,7 @@ using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Models;
+using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 using Voat.Utilities.Components;
@@ -701,5 +702,70 @@ namespace Voat.Controllers
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Json("Unauthorized distinguish attempt.", JsonRequestBehavior.AllowGet);
         }
+
+
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> ModeratorDelete(string subverse, int submissionID, int commentID)
+        {
+
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.DeleteComments))
+            {
+                return new HttpUnauthorizedResult();
+            }
+            var q = new QueryComment(commentID);
+            var comment = await q.ExecuteAsync();
+
+            if (comment == null || comment.SubmissionID != submissionID)
+            {
+                ModelState.AddModelError("", "Can not find comment. Who did this?");
+                return View(new ModeratorDeleteContentViewModel());
+            }
+            ViewBag.Comment = comment;
+            return View(new ModeratorDeleteContentViewModel() { ID = commentID });
+        }
+
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> ModeratorDelete(string subverse, int submissionID, ModeratorDeleteContentViewModel model)
+        {
+            var q = new QueryComment(model.ID);
+            var comment = await q.ExecuteAsync();
+
+            if (comment == null || comment.SubmissionID != submissionID)
+            {
+                ModelState.AddModelError("", "Can not find comment. Who did this?");
+                return View(new ModeratorDeleteContentViewModel());
+            }
+
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, comment.Subverse, Domain.Models.ModeratorAction.DeleteComments))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var cmd = new DeleteCommentCommand(model.ID, model.Reason);
+            var r = await cmd.Execute();
+            if (r.Success)
+            {
+                     return RedirectToRoute("SubverseCommentsWithSort_Short", new { subverseName = subverse, submissionID = submissionID });
+            }
+            else
+            {
+                ModelState.AddModelError("", r.Message);
+                return View(model);
+            }
+
+
+
+
+        }
+
     }
 }

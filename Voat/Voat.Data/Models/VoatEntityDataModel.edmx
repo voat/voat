@@ -265,8 +265,8 @@
           <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Body" Type="nvarchar(max)" Nullable="false" />
           <Property Name="IsUnread" Type="bit" Nullable="false" />
           <Property Name="MarkedAsUnread" Type="bit" Nullable="false" />
         </EntityType>
@@ -1163,8 +1163,8 @@
           <Property Name="Sender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Recipient" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Subject" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Body" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Subject" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="IsUnread" Type="Boolean" Nullable="false" />
           <Property Name="MarkedAsUnread" Type="Boolean" Nullable="false" />
         </EntityType>

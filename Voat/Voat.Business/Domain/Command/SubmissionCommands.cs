@@ -50,8 +50,9 @@ namespace Voat.Domain.Command
 
         protected override void UpdateCache(Data.Models.Submission result)
         {
-            //throw new NotImplementedException();
             CacheHandler.Instance.Remove(CachingKey.Submission(result.ID));
+            //Legacy item removal
+            CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));
         }
     }
 
@@ -81,6 +82,8 @@ namespace Voat.Domain.Command
         protected override void UpdateCache(Data.Models.Submission result)
         {
             CacheHandler.Instance.Replace(CachingKey.Submission(result.ID), result);
+            //Legacy item removal
+            CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));
         }
     }
 }
