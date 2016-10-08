@@ -303,6 +303,7 @@
     <Compile Include="Utilities\Ranking.cs" />
     <Compile Include="Utilities\Saving.cs" />
     <Compile Include="Utilities\SavingComments.cs" />
+    <Compile Include="Utilities\StickyHelper.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
     <Compile Include="Utilities\ThumbGenerator.cs" />
     <Compile Include="Utilities\UrlUtility.cs" />

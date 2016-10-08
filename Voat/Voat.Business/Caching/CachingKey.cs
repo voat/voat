@@ -125,5 +125,10 @@ namespace Voat.Caching
         {
             return String.Format("Subverse:Rss:{0}", String.IsNullOrWhiteSpace(subverse) ? "all" : subverse);
         }
+        public static string StickySubmission(string subverse)
+        {
+            return String.Format("Subverse:Sticky:{0}", String.IsNullOrWhiteSpace(subverse) ? "all" : subverse);
+        }
+        
     }
 }

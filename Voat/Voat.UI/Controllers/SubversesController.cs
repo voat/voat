@@ -1321,23 +1321,16 @@ namespace Voat.Controllers
         [ChildActionOnly]
         public ActionResult StickiedSubmission(string subverseName)
         {
-            var stickiedSubmissions = _db.StickiedSubmissions.FirstOrDefault(s => s.Subverse == subverseName);
-
-            if (stickiedSubmissions == null)
-                return new EmptyResult();
-
-            var stickiedSubmission = DataCache.Submission.Retrieve(stickiedSubmissions.SubmissionID);
+            var stickiedSubmission = StickyHelper.GetSticky(subverseName);
 
             if (stickiedSubmission != null)
             {
-                var subverse = DataCache.Subverse.Retrieve(subverseName);
-                if (subverse.IsAnonymized)
-                {
-                    ViewBag.SubverseAnonymized = true;
-                }
                 return PartialView("_Stickied", stickiedSubmission);
             }
-            return new EmptyResult();
+            else
+            {
+                return new EmptyResult();
+            }
         }
 
         // GET: list of default subverses

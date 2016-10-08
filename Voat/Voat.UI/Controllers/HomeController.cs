@@ -530,20 +530,19 @@ namespace Voat.Controllers
 
         // GET: stickied submission from /v/announcements for the frontpage
         [ChildActionOnly]
-        [OutputCache(Duration = 600)]
+        //[OutputCache(Duration = 600)]
         public ActionResult StickiedSubmission()
         {
-            var stickiedSubmissions = _db.StickiedSubmissions.FirstOrDefault(s => s.Subverse == "announcements");
+            Submission sticky = StickyHelper.GetSticky("announcements");
 
-            if (stickiedSubmissions == null) return new EmptyResult();
-
-            var stickiedSubmission = DataCache.Submission.Retrieve(stickiedSubmissions.SubmissionID);
-
-            if (stickiedSubmission != null)
+            if (sticky != null)
             {
-                return PartialView("~/Views/Subverses/_Stickied.cshtml", stickiedSubmission);
+                return PartialView("~/Views/Subverses/_Stickied.cshtml", sticky);
             }
-            return new EmptyResult();
+            else
+            {
+                return new EmptyResult();
+            }
         }
 
         // GET: list of subverses user moderates

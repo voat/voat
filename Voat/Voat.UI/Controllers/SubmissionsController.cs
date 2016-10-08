@@ -125,26 +125,28 @@ namespace Voat.Controllers
                 if (existingSticky != null)
                 {
                     _db.StickiedSubmissions.Remove(existingSticky);
-                    _db.SaveChanges();
-                    return new HttpStatusCodeResult(HttpStatusCode.OK);
+                }
+                else
+                {
+                    // remove all stickies for subverse matching submission subverse
+                    _db.StickiedSubmissions.RemoveRange(_db.StickiedSubmissions.Where(s => s.Subverse == submissionModel.Subverse));
+
+                    // set new submission as sticky
+                    var stickyModel = new StickiedSubmission
+                    {
+                        SubmissionID = submissionID,
+                        CreatedBy = User.Identity.Name,
+                        CreationDate = Repository.CurrentDate,
+                        Subverse = submissionModel.Subverse
+                    };
+
+                    _db.StickiedSubmissions.Add(stickyModel);
                 }
 
-                // remove all stickies for subverse matching submission subverse
-                _db.StickiedSubmissions.RemoveRange(_db.StickiedSubmissions.Where(s => s.Subverse == submissionModel.Subverse));
-
-                // set new submission as sticky
-                var stickyModel = new StickiedSubmission
-                {
-                    SubmissionID = submissionID,
-                    CreatedBy = User.Identity.Name,
-                    CreationDate = Repository.CurrentDate,
-                    Subverse = submissionModel.Subverse
-                };
-
-                _db.StickiedSubmissions.Add(stickyModel);
                 _db.SaveChanges();
 
-                DataCache.Submission.Remove(submissionID);
+                StickyHelper.ClearStickyCache(submissionModel.Subverse);
+
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }
             catch (Exception)
