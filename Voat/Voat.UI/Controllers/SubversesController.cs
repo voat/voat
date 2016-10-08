@@ -37,7 +37,7 @@ using Voat.Domain;
 
 namespace Voat.Controllers
 {
-    public class SubversesController : Controller
+    public class SubversesController : BaseController
     {
         //IAmAGate: Move queries to read-only mirror
         private readonly voatEntities _db = new voatEntities(true);
@@ -287,7 +287,7 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> SubverseSettings(Subverse updatedModel)
+        public async Task<ActionResult> SubverseSettings(SubverseSettingsViewModel updatedModel)
         {
             try
             {
@@ -489,7 +489,7 @@ namespace Voat.Controllers
                 var currentSubverse = (string)RouteData.Values["subversetoshow"];
 
                 // register a new session for this subverse
-                string clientIpAddress = UserGateway.UserIpAddress(Request);
+                string clientIpAddress = UserHelper.UserIpAddress(Request);
                 string ipHash = IpHash.CreateHash(clientIpAddress);
                 SessionHelper.Add(currentSubverse, ipHash);
 
@@ -657,7 +657,7 @@ namespace Voat.Controllers
                 var currentSubverse = (string)RouteData.Values["subversetoshow"];
 
                 // register a new session for this subverse
-                string clientIpAddress = UserGateway.UserIpAddress(Request);
+                string clientIpAddress = UserHelper.UserIpAddress(Request);
                 string ipHash = IpHash.CreateHash(clientIpAddress);
                 SessionHelper.Add(currentSubverse, ipHash);
 
@@ -2123,7 +2123,7 @@ namespace Voat.Controllers
                         Recipient = originalRecipientUserName,
                         Subject = $"v/{subverseAdmin.Subverse} moderator invitation",
                         Message = invitationBody.ToString()
-                    });
+                    }, true);
                     await cmd.Execute();
 
                     //MesssagingUtility.SendPrivateMessage(User.Identity.Name, subverseAdmin.UserName, "/v/" + subverseAdmin.Subverse + " moderator invitation", invitationBody.ToString());

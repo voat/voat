@@ -9,7 +9,7 @@ using Voat.Models.ViewModels;
 namespace Voat.Controllers
 {
    
-    public class ChatController : Controller
+    public class ChatController : BaseController
     {
         private ChatRoom[] _availableRooms = new ChatRoom[] {
             new ChatRoom() { ID = "whatever", Name = "Whatever", Description = "Whatever - You know the deal" },

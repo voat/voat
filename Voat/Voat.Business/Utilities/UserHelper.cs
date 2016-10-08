@@ -36,11 +36,15 @@ namespace Voat.Utilities
         // check if user exists in database
         public static bool UserExists(string userName)
         {
-            using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-            {
-                var tmpuser = tmpUserManager.FindByName(userName);
-                return tmpuser != null;
-            }
+            var q = new QueryUserRecord(userName);
+            var d = q.Execute();
+            return d != null;
+
+            //using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+            //{
+            //    var tmpuser = tmpUserManager.FindByName(userName);
+            //    return tmpuser != null;
+            //}
         }
 
         // return original username
@@ -48,11 +52,15 @@ namespace Voat.Utilities
         {
             if (!String.IsNullOrEmpty(userName))
             {
-                using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-                {
-                    var tmpuser = tmpUserManager.FindByName(userName);
-                    return tmpuser != null ? tmpuser.UserName : null;
-                }
+                var q = new QueryUserRecord(userName);
+                var d = q.Execute();
+                return d != null ? d.UserName : null;
+
+                //using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+                //{
+                //    var tmpuser = tmpUserManager.FindByName(userName);
+                //    return tmpuser != null ? tmpuser.UserName : null;
+                //}
             }
             return null;
         }
@@ -60,11 +68,15 @@ namespace Voat.Utilities
         // return user registration date
         public static DateTime GetUserRegistrationDateTime(string userName)
         {
-            using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-            {
-                var tmpuser = tmpUserManager.FindByName(userName);
-                return tmpuser != null ? tmpuser.RegistrationDateTime : DateTime.MinValue;
-            }
+            var q = new QueryUserRecord(userName);
+            var d = q.Execute();
+            return d != null ? d.RegistrationDateTime : DateTime.MinValue;
+
+            //using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+            //{
+            //    var tmpuser = tmpUserManager.FindByName(userName);
+            //    return tmpuser != null ? tmpuser.RegistrationDateTime : DateTime.MinValue;
+            //}
         }
 
         // delete a user account and all history: comments, posts and votes
@@ -483,20 +495,24 @@ namespace Voat.Utilities
         //preferences get called from views, so this method caches prefs in the context so each call only queries once
         private static UserPreference GetUserPreferences(string userName)
         {
-            UserPreference pref = (UserPreference)(System.Web.HttpContext.Current != null ? System.Web.HttpContext.Current.Items["UserPreferences"] : null);
-            if (pref == null)
-            {
-                using (var db = new voatEntities())
-                {
-                    Debug.Print(String.Format("Loading preferences for {0}", userName));
-                    pref = db.UserPreferences.Find(userName);
-                    if (System.Web.HttpContext.Current != null)
-                    {
-                        System.Web.HttpContext.Current.Items["UserPreferences"] = pref;
-                    }
-                }
-            }
-            return pref;
+            var q = new QueryUserPreferences(userName);
+            var d = q.Execute();
+            return d;
+
+            //UserPreference pref = (UserPreference)(System.Web.HttpContext.Current != null ? System.Web.HttpContext.Current.Items["UserPreferences"] : null);
+            //if (pref == null)
+            //{
+            //    using (var db = new voatEntities())
+            //    {
+            //        Debug.Print(String.Format("Loading preferences for {0}", userName));
+            //        pref = db.UserPreferences.Find(userName);
+            //        if (System.Web.HttpContext.Current != null)
+            //        {
+            //            System.Web.HttpContext.Current.Items["UserPreferences"] = pref;
+            //        }
+            //    }
+            //}
+            //return pref;
         }
         // check how many votes a user has used in the past 24 hours
         // TODO: this is executed 25 times for frontpage, needs to be redesigned as follows:
@@ -1080,6 +1096,49 @@ namespace Voat.Utilities
 
                 return previousComment != null;
             }
+        }
+        // get user IP address from httprequestbase
+        public static string UserIpAddress(HttpRequestBase request)
+        {
+            const string HTTP_CONTEXT_KEY = "CF-Connecting-IP"; // USE REMOTE_ADDR
+
+            string clientIpAddress = String.Empty;
+            if (request.Headers[HTTP_CONTEXT_KEY] != null)
+            {
+                clientIpAddress = request.Headers[HTTP_CONTEXT_KEY];
+            }
+            else if (request.UserHostAddress.Length != 0)
+            {
+                clientIpAddress = request.UserHostAddress;
+            }
+            return clientIpAddress;
+        }
+        //this is for the API
+        public static string UserIpAddress(HttpRequestMessage request)
+        {
+            const string HTTP_CONTEXT_KEY = "MS_HttpContext";
+            const string REMOTE_ENDPOINT_KEY = "System.ServiceModel.Channels.RemoteEndpointMessageProperty";
+
+            string clientIpAddress = String.Empty;
+            if (request.Properties.ContainsKey(HTTP_CONTEXT_KEY))
+            {
+                dynamic ctx = request.Properties[HTTP_CONTEXT_KEY];
+                if (ctx != null)
+                {
+                    return ctx.Request.UserHostAddress;
+                }
+            }
+
+            if (request.Properties.ContainsKey(REMOTE_ENDPOINT_KEY))
+            {
+                dynamic remoteEndpoint = request.Properties[REMOTE_ENDPOINT_KEY];
+                if (remoteEndpoint != null)
+                {
+                    return remoteEndpoint.Address;
+                }
+            }
+
+            return clientIpAddress;
         }
     }
 }

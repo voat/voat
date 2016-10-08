@@ -35,7 +35,7 @@ using Voat.Utilities;
 
 namespace Voat.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         //IAmAGate: Move queries to read-only mirror
         private readonly voatEntities _db = new voatEntities(true);

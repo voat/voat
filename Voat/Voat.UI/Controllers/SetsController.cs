@@ -31,7 +31,7 @@ using Voat.Data;
 
 namespace Voat.Controllers
 {
-    public class SetsController : Controller
+    public class SetsController : BaseController
     {
         private readonly voatEntities _db = new voatEntities();
 
@@ -103,7 +103,7 @@ namespace Voat.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Error");
+                throw;
             }
         }
 
@@ -152,7 +152,7 @@ namespace Voat.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Error");
+                throw;
             }
         }
 
@@ -227,7 +227,7 @@ namespace Voat.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Error");
+                throw;
             }
         }
 
@@ -256,7 +256,7 @@ namespace Voat.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("HeavyLoad", "Error");
+                throw;
             }
         }
 

@@ -16,7 +16,7 @@ using System.Web.Mvc;
 
 namespace Voat.Controllers
 {
-    public class ErrorController : Controller
+    public class ErrorController : BaseController
     {
 
 

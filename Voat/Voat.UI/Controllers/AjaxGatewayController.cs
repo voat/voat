@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace Voat.Controllers
 {
-    public class AjaxGatewayController : Controller
+    public class AjaxGatewayController : BaseController
     {
         private readonly voatEntities _db = new voatEntities();
         

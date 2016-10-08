@@ -540,11 +540,19 @@ namespace Voat
                   new { controller = "Comment", action = "DeleteComment", id = UrlParameter.Optional }
              );
 
-            // reportcomment
+            // reportContent
             routes.MapRoute(
-                  "reportcomment",
-                  "reportcomment/{id}",
-                  new { controller = "Report", action = "ReportComment", id = UrlParameter.Optional }
+                  "reportContent",
+                  "report/{type}/{id}",
+                  constraints: new {
+                      type = "comment|submission",
+                      id = @"\d+"
+                  },
+                  defaults: new {
+                      controller = "Report",
+                      action = "ReportContent",
+                      id = UrlParameter.Optional
+                  }
              );
 
             // editsubmission

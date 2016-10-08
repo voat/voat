@@ -27,10 +27,11 @@ using Voat.Data.Models;
 using Voat.UI.Utilities;
 using Voat.Data;
 using Voat.Domain.Command;
+using Voat.Models.ViewModels;
 
 namespace Voat.Controllers
 {
-    public class MessagingController : Controller
+    public class MessagingController : BaseController
     {
         private readonly voatEntities _db = new voatEntities();
 
@@ -297,7 +298,7 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> Compose([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
+        public async Task<ActionResult> Compose([Bind(Include = "Recipient,Subject,Body")] PrivateMessageComposeViewModel privateMessage)
         {
             if (!ModelState.IsValid)
             {
@@ -326,9 +327,16 @@ namespace Voat.Controllers
             var cmd = new SendMessageCommand(message);
             var response = await cmd.Execute();
 
-            //var response = MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
+            if (response.Success)
+            {
+                return RedirectToAction("Sent", "Messaging");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, response.Message);
+                return View();
+            }
 
-            return RedirectToAction("Sent", "Messaging");
         }
 
         // POST: Send new private submission or reply
@@ -336,11 +344,11 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> SendPrivateMessage([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessage privateMessage)
+        public async Task<ActionResult> SendPrivateMessage([Bind(Include = "ID,Recipient,Subject,Body")] PrivateMessageComposeViewModel privateMessage)
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ModelState.GetFirstErrorMessage());
             }
             if (privateMessage.Recipient == null || privateMessage.Subject == null || privateMessage.Body == null)
             {
@@ -354,13 +362,16 @@ namespace Voat.Controllers
                 Subject = privateMessage.Subject,
                 Message = privateMessage.Body
             };
-            var cmd = new SendMessageCommand(message);
+            var cmd = new SendMessageCommand(message, true); //allow replies with limited ccp
             var response = await cmd.Execute();
-            //MesssagingUtility.SendPrivateMessage(User.Identity.Name, privateMessage.Recipient, privateMessage.Subject, privateMessage.Body);
-
-            //EventNotification.Instance.SendMessageNotice(privateMessage.Recipient, null, Domain.Models.MessageType.Inbox, null, null);
-
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+            if (response.Success)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+            }
         }
 
         [System.Web.Mvc.Authorize]

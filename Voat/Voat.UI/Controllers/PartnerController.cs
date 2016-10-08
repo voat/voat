@@ -22,7 +22,7 @@ using Voat.Utilities;
 
 namespace Voat.Controllers
 {
-    public class PartnerController : Controller
+    public class PartnerController : BaseController
     {
         // GET: PartnerIntentRegistration
         public ActionResult PartnerProgramInformation()

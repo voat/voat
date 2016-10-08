@@ -12,7 +12,7 @@ using Voat.Models.ViewModels;
 
 namespace Voat.Controllers
 {
-    public class AdController : Controller
+    public class AdController : BaseController
     {
         // GET: Ad
         public async Task<ActionResult> RenderAd(string subverse)

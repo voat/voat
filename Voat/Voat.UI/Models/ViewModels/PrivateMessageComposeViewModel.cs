@@ -13,22 +13,26 @@ All Rights Reserved.
 */
 
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace Voat.Models.ViewModels
 {
     public class PrivateMessageComposeViewModel
     {
+        public int ID { get; set; }
+
         //[RegularExpression("^[a-zA-Z0-9-_]+$", ErrorMessage="Please use only alphanumeric characters.")]
-        [Required(ErrorMessage = "Please enter a username to send this submission to.")]
+        [Required(ErrorMessage = "Please enter a username")]
         //[StringLength(23, ErrorMessage = "Username is limited to 23 characters.")]
         public string Recipient { get; set; }
         
-        [Required(ErrorMessage = "Please enter a subject for this submission.")]
-        [StringLength(50, ErrorMessage = "The subject is limited to 50 characters.")]
+        [Required(ErrorMessage = "Please enter a subject")]
+        [StringLength(200, ErrorMessage = "The subject is limited to 200 characters")]
         public string Subject { get; set; }
 
-        [Required(ErrorMessage = "Please enter the body text for this submission.")]
-        [StringLength(4000, ErrorMessage = "Body text is limited to 4000 characters.")]
+        [Required(ErrorMessage = "Please enter some text")]
+        [StringLength(4000, ErrorMessage = "Body is limited to 4000 characters")]
+        [AllowHtml]
         public string Body { get; set; }
     }
 }

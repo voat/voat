@@ -23,24 +23,26 @@
         <div class="alert-title">Profile overview for @ViewBag.userid.</div>
         <div class="userstats">
             <div class="userstats-heading-1">Submission statistics</div>
-            <div class="userstats-body">
-                @{
-                    var userStatsModel = UserHelper.UserStatsModel(@ViewBag.userid);
+            <div>
+                <div class="userstats-body">
+                    @{
+                        var userStatsModel = UserHelper.UserStatsModel(@ViewBag.userid);
 
-                    if (userStatsModel.TopSubversesUserContributedTo.Count > 0)
-                    {
-                        <p>This user has mostly submitted to the following subverses (showing top 5):</p>
-                        foreach (var item in userStatsModel.TopSubversesUserContributedTo)
+                        if (userStatsModel.TopSubversesUserContributedTo.Count > 0)
                         {
-                            <p><strong>@item.Count</strong> submissions to <a href="/v/@item.SubverseName">@item.SubverseName</a></p>
+                            <p>This user has mostly submitted to the following subverses (showing top 5):</p>
+                            foreach (var item in userStatsModel.TopSubversesUserContributedTo)
+                            {
+                                <p><strong>@item.Count</strong> submissions to <a href="/v/@item.SubverseName">@item.SubverseName</a></p>
+                            }
+                        }
+                        else
+                        {
+                            <p>This user made no submissions.</p>
                         }
                     }
-                    else
-                    {
-                        <p>This user made no submissions.</p>
-                    }
-                }
-                <p>This user has so far shared a total of <strong>@userStatsModel.LinkSubmissionsSubmitted</strong> links, started a total of <strong>@userStatsModel.MessageSubmissionsSubmitted</strong> discussions and submitted a total of <strong>@userStatsModel.TotalCommentsSubmitted</strong> comments.</p>
+                    <p>This user has so far shared a total of <strong>@userStatsModel.LinkSubmissionsSubmitted</strong> links, started a total of <strong>@userStatsModel.MessageSubmissionsSubmitted</strong> discussions and submitted a total of <strong>@userStatsModel.TotalCommentsSubmitted</strong> comments.</p>
+                </div>
             </div>
         </div>
         <div class="userstats">

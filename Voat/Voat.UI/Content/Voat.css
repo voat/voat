@@ -1415,6 +1415,10 @@ pre, code {
             z-index: 99;
         }
 
+        .whoaSubscriptionMenu:hover li ul { 
+            display: block; 
+        }
+
             .whoaSubscriptionMenu li ul li {
                 display: inline;
                 float: none;

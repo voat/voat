@@ -29,14 +29,15 @@ namespace Voat.Rules.Posting
 
             int postThreshold = Settings.DailyPostingQuotaForNegativeScore;
             //var isModerator = context.UserData.Information.Moderates.Any(x => x == context.Subverse.Name);
-
-            if (context.UserData.Information.CommentPoints.Sum <= base.MinimumCommentPoints && context.UserData.TotalSubmissionsPostedIn24Hours >= postThreshold)
+            var userData = context.UserData;
+            var userInfo = userData.Information;
+            if (userInfo.CommentPoints.Sum <= base.MinimumCommentPoints && userData.TotalSubmissionsPostedIn24Hours >= postThreshold)
             {
-                return CreateOutcome(RuleResult.Denied, "An Account with a CCP value of {0} is limited to {1} posts(s) in 24 hours", context.UserData.Information.CommentPoints.Sum, postThreshold);
+                return CreateOutcome(RuleResult.Denied, "An Account with a CCP value of {0} is limited to {1} posts(s) in 24 hours", userInfo.CommentPoints.Sum, postThreshold);
             }
-            if (context.UserData.Information.SubmissionPoints.Sum <= base.MinimumCommentPoints && context.UserData.TotalSubmissionsPostedIn24Hours >= postThreshold)
+            if (userInfo.SubmissionPoints.Sum <= base.MinimumCommentPoints && userData.TotalSubmissionsPostedIn24Hours >= postThreshold)
             {
-                return CreateOutcome(RuleResult.Denied, "An Account with a SCP value of {0} is limited to {1} posts(s) in 24 hours", context.UserData.Information.SubmissionPoints.Sum, postThreshold);
+                return CreateOutcome(RuleResult.Denied, "An Account with a SCP value of {0} is limited to {1} posts(s) in 24 hours", userInfo.SubmissionPoints.Sum, postThreshold);
             }
 
             return base.EvaluateRule(context);

@@ -36,10 +36,20 @@ $(document).ready(function () {
         }
     });
 
-    $('.whoaSubscriptionMenu > li').bind('mouseover', openSubMenu);
-    $('.whoaSubscriptionMenu > li').bind('mouseout', closeSubMenu);
-    function openSubMenu() { $(this).find('ul').css('display', 'block'); }
-    function closeSubMenu() { $(this).find('ul').css('display', 'none'); }
+    //$('.whoaSubscriptionMenu > li').bind('mouseover', openSubMenu);
+    //$('.whoaSubscriptionMenu > li').bind('mouseout', closeSubMenu);
+    function openSubMenu() {
+        if ($(this).find("ul").css("display") != "block") {
+            $(this).find("ul").css("display", "block");
+        }
+        //$(this).find('ul').css('display', 'block');
+    }
+    function closeSubMenu() {
+        if ($(this).find("ul").css("display") != "none") {
+            $(this).find("ul").css("display", "none");
+        }
+        //$(this).find('ul').css('display', 'none');
+    }
 
     $('#Subverse').autocomplete(
         {
@@ -567,6 +577,22 @@ function replyToCommentNotification(commentId, submissionId) {
     $.validator.unobtrusive.parse(form);
 }
 
+//attempting to clean up client side error handling
+function getErrorMessage(error)
+{
+    //default message
+    var msg = "You are doing that too fast. Please wait 30 seconds before trying again.";
+
+    if (error.length > 0 && (
+        error != 'Bad Request' 
+        &&
+        error != 'Internal Server Error'
+    ))
+    {
+        msg = error;
+    }
+    return msg;
+}
 // post comment reply form through ajax
 function postCommentAjax(senderButton, parentCommentID) {
     var $form = $(senderButton).parents('form');
@@ -581,10 +607,11 @@ function postCommentAjax(senderButton, parentCommentID) {
             url: $form.attr('action'),
             data: $form.serialize(),
             error: function (xhr, status, error) {
+                var msg = getErrorMessage(error);
                 // comment failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit comment");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html(error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.");
+                $form.find("#errorMessage").html(msg);
                 $form.find("#errorMessage").toggle(true);
             },
             success: function (response) {
@@ -614,46 +641,6 @@ function postCommentAjax(senderButton, parentCommentID) {
     }
 }
 
-// post comment reply form through ajax
-function OLD_postCommentAjax(senderButton, messageId, userName) {
-    var $form = $(senderButton).parents('form');
-    $form.find("#errorMessage").toggle(false);
-
-    if ($form.find("#Content").val().length > 0) {
-        $form.find("#submitbutton").val("Doing the magic...");
-        $form.find("#submitbutton").prop('disabled', true);
-
-        $.ajax({
-            type: "POST",
-            url: $form.attr('action'),
-            data: $form.serialize(),
-            error: function (xhr, status, error) {
-                // submission failed, likely cause: user triggered anti-spam throttle
-                $form.find("#submitbutton").val("Submit comment");
-                $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html(error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.");
-                $form.find("#errorMessage").toggle(true);
-            },
-            //response now contains the comment html
-            success: function (response) {
-
-                $(".sitetable.nestedlisting").prepend(response);
-                // reset submit button
-                $form.find("#submitbutton").val("Submit comment");
-                $form.find("#submitbutton").prop('disabled', false);
-                // reset textbox
-                $form.find("#Content").val("");
-                //notify UI framework of DOM insertion async
-                window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
-            }
-        });
-
-        return false;
-    } else {
-        $form.find("#errorMessage").toggle(true);
-    }
-}
-
 // post private message reply form through ajax
 function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
     var $form = $(senderButton).parents('form');
@@ -668,10 +655,12 @@ function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
             url: $form.attr('action'),
             data: $form.serialize(),
             error: function (xhr, status, error) {
+                var msg = getErrorMessage(error);
+
                 //submission failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit reply");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html("You are doing that too fast. Please wait 30 seconds before trying again.");
+                $form.find("#errorMessage").html(msg);
                 $form.find("#errorMessage").toggle(true);
             },
             success: function (response) {
@@ -926,7 +915,7 @@ function togglereport(commentid) {
 }
 
 // submit report and replace report button with a "thank you" to the user
-function reportcomment(obj, commentid) {
+function reportContent(obj, type, id) {
     $(obj).parent().parent().find('.togglebutton').attr("onclick", "javascript:void(0)");
     $(obj).parent().parent().find('.option, .main').toggleClass("active");
     $(obj).parent().parent().find('.togglebutton').html("please wait...");
@@ -934,7 +923,7 @@ function reportcomment(obj, commentid) {
     // submit report
     $.ajax({
         type: "POST",
-        url: "/reportcomment/" + commentid,
+        url: "/report/" + type + "/" + id,
         success: function () {
             $(obj).parent().parent().find('.togglebutton').html("thank you!");
         },
@@ -945,6 +934,7 @@ function reportcomment(obj, commentid) {
 
     return false;
 }
+
 
 // togle back are you sure question
 function toggleback(obj) {

@@ -510,8 +510,8 @@ namespace Voat.Tests.Repository
 
             var manager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext()));
 
-            if (!UserHelper.UserExists(userName))
-            {
+            //if (!UserHelper.UserExists(userName))
+            //{
                 var user = new Voat.Data.Models.VoatUser() { UserName = userName, RegistrationDateTime = DateTime.UtcNow, LastLoginDateTime = new DateTime(1900, 1, 1, 0, 0, 0, 0), LastLoginFromIp = "0.0.0.0" };
 
                 string pwd = userName;
@@ -526,7 +526,7 @@ namespace Voat.Tests.Repository
                 {
                     throw new Exception("Error creating test user " + userName);
                 }
-            }
+           // }
         }
         public static void CreateUserBatch(string userNameTemplate, int start, int end)
         {

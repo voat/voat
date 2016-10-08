@@ -13,7 +13,7 @@ using Voat.Models.ViewModels;
 namespace Voat.Controllers
 {
     [Authorize]
-    public class ApiKeysController : Controller
+    public class ApiKeysController : BaseController
     {
         // GET: ApiKey
         public async Task<ActionResult> Index()

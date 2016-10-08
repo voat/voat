@@ -208,6 +208,7 @@
     <Compile Include="Domain\Query\QueryUserData.cs" />
     <Compile Include="Domain\Query\QueryUserPreferences.cs" />
     <Compile Include="Domain\Query\QueryUserInformation.cs" />
+    <Compile Include="Domain\Query\QueryUserRecord.cs" />
     <Compile Include="Domain\Query\QueryUserSet.cs" />
     <Compile Include="Domain\Query\QueryUserSubscriptions.cs" />
     <Compile Include="Domain\Query\Selectors.cs" />
@@ -238,7 +239,6 @@
     <Compile Include="Domain\Models\Enums.cs" />
     <Compile Include="Domain\Models\VoteResponse.cs" />
     <Compile Include="Domain\UserData.cs" />
-    <Compile Include="Domain\UserGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Domain\Query\Base\Query.cs" />
     <Compile Include="Rules\Base\BaseCommentRule.cs" />
@@ -273,6 +273,7 @@
     <Compile Include="Rules\Posting\PostSubmissionThrottleRule.cs" />
     <Compile Include="Rules\Voting\DownVoteSubverseMinCCPRule.cs" />
     <Compile Include="Rules\Voting\UpVoteRule.cs" />
+    <Compile Include="Rules\Voting\DownVoteCommentBrigadingRule.cs" />
     <Compile Include="Rules\Voting\VoteCommentAddressCheckRule.cs" />
     <Compile Include="Rules\Voting\VoteSubmissionAddressCheckRule.cs" />
     <Compile Include="Rules\Voting\VoteThrottleRule.cs" />
@@ -304,7 +305,7 @@
     <Compile Include="Utilities\Saving.cs" />
     <Compile Include="Utilities\SavingComments.cs" />
     <Compile Include="Utilities\StickyHelper.cs" />
-    <Compile Include="Utilities\StringExtensions.cs" />
+    <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\ThumbGenerator.cs" />
     <Compile Include="Utilities\UrlUtility.cs" />
     <Compile Include="Utilities\UserHelper.cs" />

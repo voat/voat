@@ -31,7 +31,7 @@ using Voat.Utilities;
 
 namespace Voat.Controllers
 {
-    public class SubmissionsController : Controller
+    public class SubmissionsController : BaseController
     {
         private readonly voatEntities _db = new voatEntities();
 
@@ -160,7 +160,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
         {
-            var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserGateway.UserIpAddress(this.Request)));
+            var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
             var result = await cmd.Execute();
             return Json(result);
         }

@@ -89,7 +89,7 @@ namespace Voat.Utilities
                 return username;
             }
 
-            if (UserHelper.HasAvatar(username) != null || forceResolve)
+            if (forceResolve || UserHelper.HasAvatar(username) != null)
             {
                 //different paths depending on cdn or not
                 return String.Format("{0}/{2}/{1}.jpg", (fullyQualified ? SiteRoot(provideProtocol, true) : "~"), username, (Settings.UseContentDeliveryNetwork ? "avatars" : "Storage/Avatars"));

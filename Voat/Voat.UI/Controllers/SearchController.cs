@@ -25,7 +25,7 @@ using Voat.Utilities;
 
 namespace Voat.Controllers
 {
-    public class SearchController : Controller
+    public class SearchController : BaseController
     {
         //IAmAGate: Move queries to read-only mirror
         private readonly voatEntities _db = new voatEntities(CONSTANTS.CONNECTION_READONLY);

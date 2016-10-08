@@ -12,11 +12,13 @@ namespace Voat.Domain.Query
     {
         private string _userToRetrieve;
 
-        public QueryUserInformation(string userToRetrieve) : this(userToRetrieve, new CachePolicy(TimeSpan.FromMinutes(5)))
+        public QueryUserInformation(string userToRetrieve) 
+            : this(userToRetrieve, new CachePolicy(TimeSpan.FromMinutes(10)))
         {
         }
 
-        public QueryUserInformation(string userToRetrieve, CachePolicy policy) : base(policy)
+        public QueryUserInformation(string userToRetrieve, CachePolicy policy) 
+            : base(policy)
         {
             this._userToRetrieve = userToRetrieve;
         }

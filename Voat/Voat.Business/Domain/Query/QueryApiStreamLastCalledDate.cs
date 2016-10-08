@@ -10,8 +10,8 @@ namespace Voat.Domain.Query
     {
         private ContentType _contentType = ContentType.Submission;
         private string _subverse = null;
-
-        public QueryApiStreamLastCalledDate(ContentType contentType, string subverse) : base(new CachePolicy(TimeSpan.FromMinutes(30)))
+        private TimeSpan _timeSpan = TimeSpan.FromMinutes(60);
+        public QueryApiStreamLastCalledDate(ContentType contentType, string subverse) : base(new CachePolicy(_timeSpan))
         {
             _contentType = contentType;
             _subverse = subverse;

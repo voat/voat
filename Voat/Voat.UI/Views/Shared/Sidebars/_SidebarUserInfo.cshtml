@@ -17,6 +17,10 @@
 
     var q = new Voat.Domain.Query.QueryUserData(userName);
     var userData = q.Execute();
+
+    System.Diagnostics.Debug.Assert(userData.UserName.IsEqual(userName), "Possible mismatched Profile 1");
+    System.Diagnostics.Debug.Assert(userData.Information.UserName.IsEqual(userName), "Possible mismatched Profile 2");
+
     DateTime userRegistrationDateTime = userData.Information.RegistrationDate;
 
     <style>

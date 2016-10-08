@@ -21,7 +21,7 @@ using Voat.Utilities;
 
 namespace Voat.Controllers
 {
-    public class DomainsController : Controller
+    public class DomainsController : BaseController
     {
         private readonly voatEntities _db = new voatEntities();
 

@@ -13,7 +13,7 @@ using Voat.Utilities;
 
 namespace Voat.Controllers
 {
-    public class RssController : Controller
+    public class RssController : BaseController
     {
 
         // GET: rss/{subverseName}

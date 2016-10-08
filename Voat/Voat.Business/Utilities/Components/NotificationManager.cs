@@ -176,7 +176,7 @@ namespace Voat.Utilities.Components
                                             {
                                                 commentReplyNotification.Sender = comment.UserName;
                                             }
-                                            commentReplyNotification.Body = comment.Content;
+                                            commentReplyNotification.Body = comment.Content.SubstringMax(400);
                                             commentReplyNotification.Subverse = subverse.Name;
                                             commentReplyNotification.IsUnread = true;
                                             commentReplyNotification.CreationDate = Repository.CurrentDate;
@@ -227,7 +227,7 @@ namespace Voat.Utilities.Components
                                             postReplyNotification.Sender = comment.UserName;
                                         }
 
-                                        postReplyNotification.Body = comment.Content;
+                                        postReplyNotification.Body = comment.Content.SubstringMax(400);
                                         postReplyNotification.Subverse = submission.Subverse;
                                         postReplyNotification.IsUnread = true;
                                         postReplyNotification.CreationDate = Repository.CurrentDate;

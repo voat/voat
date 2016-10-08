@@ -36,6 +36,14 @@ namespace Voat.Domain
         protected int? _votesInLast24Hours;
         protected int? _submissionsInLast24Hours;
 
+        public string UserName
+        {
+            get
+            {
+                return _userName;
+            }
+        }
+
         public UserData(string userName, bool validateUserExists = false)
         {
             if (validateUserExists)

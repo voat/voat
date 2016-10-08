@@ -12,13 +12,16 @@ namespace Voat.Domain.Query
     {
         private string _userToRetrieve;
 
-        public QueryUserPreferences(string userName) : this()
+        public QueryUserPreferences(string userName) 
+            : this()
         {
-            _userToRetrieve = UserName;
+            _userToRetrieve = userName;
         }
 
-        public QueryUserPreferences() : this(new CachePolicy(TimeSpan.FromMinutes(10)))
+        public QueryUserPreferences() 
+            : this(new CachePolicy(TimeSpan.FromMinutes(10)))
         {
+           
         }
 
         public QueryUserPreferences(CachePolicy policy) : base(policy)
@@ -30,7 +33,7 @@ namespace Voat.Domain.Query
         {
             get
             {
-                return (String.IsNullOrEmpty(UserName) ? "_default" : UserName);
+                return (String.IsNullOrEmpty(_userToRetrieve) ? "_default" : _userToRetrieve);
             }
         }
 

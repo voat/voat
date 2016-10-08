@@ -23,47 +23,69 @@ using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
+using Voat.Domain.Models;
 using Voat.Models;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 
 namespace Voat.Controllers
 {
-    public class ReportController : Controller
+    public class ReportController : BaseController
     {
         private readonly voatEntities _db = new voatEntities();
 
-        // POST: reportcomment
+        private TimeSpan contentReportTimeOut = TimeSpan.FromHours(6);
+        private TimeSpan contentUserCountTimeOut = TimeSpan.FromHours(2);
+
+        // POST: ReportContent
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> ReportComment(int id)
+        public async Task<ActionResult> ReportContent(ContentType type, int id)
         {
-            var commentToReport = _db.Comments.Find(id);
+            ActionResult result = null;
+            switch (type)
+            {
+                case ContentType.Comment:
+                    result = await ReportComment(id);
+                    break;
+                case ContentType.Submission:
+                    result = await ReportSubmission(id);
+                    break;
+                default:
+                    result = new EmptyResult();
+                    break;
+            }
+            return result;
+        }
 
-            if (commentToReport != null)
+        public async Task<ActionResult> ReportSubmission(int id)
+        {
+            var s = _db.Submissions.Find(id);
+
+            if (s != null)
             {
                 // prepare report headers
-                var commentSubverse = commentToReport.Submission.Subverse;
+                var subverse = s.Subverse;
 
                 //don't allow banned users to send reports
-                if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, commentSubverse) && !UserHelper.IsUserGloballyBanned(User.Identity.Name))
+                if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, subverse) && !UserHelper.IsUserGloballyBanned(User.Identity.Name))
                 {
                     var reportTimeStamp = Repository.CurrentDate.ToString(CultureInfo.InvariantCulture);
                     try
                     {
-                        string cacheKeyCommentReport = String.Format("legacy:report.comment.{0}", id.ToString());
+                        string cacheKeyReport = CachingKey.ReportKey(ContentType.Submission, id);
 
                         //see if comment has been reported before
-                        if (CacheHandler.Instance.Retrieve<object>(cacheKeyCommentReport) == null)
+                        if (CacheHandler.Instance.Retrieve<object>(cacheKeyReport) == null)
                         {
                             //mark comment in cache as having been reported
-                            CacheHandler.Instance.Register(cacheKeyCommentReport, new Func<object>(() => { return new object(); }), TimeSpan.FromHours(6), -1);
+                            CacheHandler.Instance.Register(cacheKeyReport, new Func<object>(() => { return new object(); }), contentReportTimeOut, -1);
 
-                                
+
                             string userName = User.Identity.Name;
-                            string cacheKeyUserReportCount = String.Format("legacy:report.comment.{0}.count", userName);
+                            string cacheKeyUserReportCount = CachingKey.ReportCountUserKey(ContentType.Submission, userName);
                             int reportsPerUserThreshold = 5;
 
                             var reportCountViaUser = CacheHandler.Instance.Retrieve<int?>(cacheKeyUserReportCount);
@@ -73,32 +95,100 @@ namespace Voat.Controllers
                                 //add or update cache with current user reports
                                 if (reportCountViaUser.HasValue)
                                 {
-                                    CacheHandler.Instance.Replace<int?>(cacheKeyUserReportCount, new Func<int?, int?>((x) => { return (int?)(x.Value + 1); }));
+                                    CacheHandler.Instance.Replace<int?>(cacheKeyUserReportCount, new Func<int?, int?>((x) => { return (int?)(x.Value + 1); }), contentUserCountTimeOut);
                                 }
                                 else
                                 {
-                                    CacheHandler.Instance.Register<int?>(cacheKeyUserReportCount, new Func<int?>(() => { return (int?)1; }), TimeSpan.FromMinutes(120), -1);
+                                    CacheHandler.Instance.Register<int?>(cacheKeyUserReportCount, new Func<int?>(() => { return (int?)1; }), contentUserCountTimeOut, -1);
                                 }
 
-                                string body = String.Format("This comment has been reported as spam:\r\n\r\nhttps://voat.co/v/{0}/comments/{1}/{2}/{2}#{2}\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", commentSubverse, commentToReport.SubmissionID, id);
+                                string body = String.Format("This submission has been reported:\r\n\r\nhttps://voat.co/v/{0}/{1}\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", s.Subverse, s.ID);
 
                                 var message = new Domain.Models.SendMessage()
                                 {
-                                    Sender = commentToReport.IsAnonymized ? "Anon" : userName,
-                                    Recipient = $"v/{commentSubverse}",
-                                    Subject = "Comment Spam Report",
+                                    Sender = s.IsAnonymized ? "Anon" : userName,
+                                    Recipient = $"v/{subverse}",
+                                    Subject = "Submission Spam Report",
                                     Message = body
                                 };
-                                var cmd = new SendMessageCommand(message);
+                                var cmd = new SendMessageCommand(message, true);
                                 await cmd.Execute();
 
                                 //MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : userName, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
-
-
                             }
-
                         }
+                    }
+                    catch (Exception)
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.ServiceUnavailable, "Service Unavailable");
+                    }
+                }
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Bad Request");
+            }
 
+            return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
+        }
+    
+        public async Task<ActionResult> ReportComment(int id)
+        {
+            var comment = _db.Comments.Find(id);
+
+            if (comment != null)
+            {
+                // prepare report headers
+                var subverse = comment.Submission.Subverse;
+
+                //don't allow banned users to send reports
+                if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, subverse) && !UserHelper.IsUserGloballyBanned(User.Identity.Name))
+                {
+                    var reportTimeStamp = Repository.CurrentDate.ToString(CultureInfo.InvariantCulture);
+                    try
+                    {
+                        string cacheKeyReport = CachingKey.ReportKey(ContentType.Comment, id);
+
+                        //see if comment has been reported before
+                        if (CacheHandler.Instance.Retrieve<object>(cacheKeyReport) == null)
+                        {
+                            //mark comment in cache as having been reported
+                            CacheHandler.Instance.Register(cacheKeyReport, new Func<object>(() => { return new object(); }), contentReportTimeOut, -1);
+
+                                
+                            string userName = User.Identity.Name;
+                            string cacheKeyUserReportCount = CachingKey.ReportCountUserKey(ContentType.Comment, userName);
+                            int reportsPerUserThreshold = 5;
+
+                            var reportCountViaUser = CacheHandler.Instance.Retrieve<int?>(cacheKeyUserReportCount);
+                            //ensure user is below reporting threshold
+                            if (reportCountViaUser == null || reportCountViaUser.Value <= reportsPerUserThreshold)
+                            {
+                                //add or update cache with current user reports
+                                if (reportCountViaUser.HasValue)
+                                {
+                                    CacheHandler.Instance.Replace<int?>(cacheKeyUserReportCount, new Func<int?, int?>((x) => { return (int?)(x.Value + 1); }), contentUserCountTimeOut);
+                                }
+                                else
+                                {
+                                    CacheHandler.Instance.Register<int?>(cacheKeyUserReportCount, new Func<int?>(() => { return (int?)1; }), contentUserCountTimeOut, -1);
+                                }
+
+                                string body = String.Format("This comment has been reported:\r\n\r\nhttps://voat.co/v/{0}/{1}/{2}?context=10\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", subverse, comment.SubmissionID, id);
+
+                                var message = new Domain.Models.SendMessage()
+                                {
+                                    Sender = comment.IsAnonymized ? "Anon" : userName,
+                                    Recipient = $"v/{subverse}",
+                                    Subject = "Comment Spam Report",
+                                    Message = body
+                                };
+                                var cmd = new SendMessageCommand(message, true);
+                                await cmd.Execute();
+
+                                //MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : userName, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
+                            }
+                        }
                     }
                     catch (Exception)
                     {

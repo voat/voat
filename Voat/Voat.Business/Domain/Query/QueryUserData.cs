@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Voat.Data.Models;
+using Voat.Common;
 
 namespace Voat.Domain.Query
 {
@@ -48,7 +49,7 @@ namespace Voat.Domain.Query
             }
             catch (Exception ex)
             {
-                //TODO: Log exception
+                //throw new VoatNotFoundException($"Can not find user record for {_userToRetrieve}");
                 return null;
             }
         }

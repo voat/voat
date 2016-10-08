@@ -134,7 +134,7 @@ namespace Voat.UI.Utilities
             var cache = filterContext.HttpContext.Cache;
 
             // Grab the IP Address from the originating Request (very simple implementation for example purposes)
-            var originationInfo = UserGateway.UserIpAddress(request);
+            var originationInfo = UserHelper.UserIpAddress(request);
 
             // Append the User Agent
             originationInfo += request.UserAgent;

@@ -88,6 +88,10 @@ namespace Voat.Caching
         {
             return String.Format("User:Blocks:{0}", userName);
         }
+        public static string UserRecord(string userName)
+        {
+            return String.Format("User:Record:{0}", userName);
+        }
         public static string ApiPermissionPolicy(int? apiPermissionPolicyID)
         {
             return String.Format("Api:Policy:{0}", apiPermissionPolicyID.HasValue ? apiPermissionPolicyID.Value.ToString() : "default");
@@ -129,6 +133,13 @@ namespace Voat.Caching
         {
             return String.Format("Subverse:Sticky:{0}", String.IsNullOrWhiteSpace(subverse) ? "all" : subverse);
         }
-        
+        public static string ReportKey(ContentType type, int ID)
+        {
+            return $"Reports:{type.ToString()}:{ID.ToString()}";
+        }
+        public static string ReportCountUserKey(ContentType type, string userName)
+        {
+            return $"Reports:{type.ToString()}:{userName}";
+        }
     }
 }

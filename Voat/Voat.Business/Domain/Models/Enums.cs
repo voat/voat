@@ -2,6 +2,12 @@
 
 namespace Voat.Domain.Models
 {
+    public enum Vote
+    {
+        None = 0,
+        Up = 1,
+        Down = -1
+    }
     public enum CommentSort
     {
         New,

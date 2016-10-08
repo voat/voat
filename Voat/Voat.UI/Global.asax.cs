@@ -101,6 +101,7 @@ namespace Voat
         protected void Application_Error(object sender, EventArgs e)
         {
             var ex = Server.GetLastError();
+            EventLogger.Log(ex);
             if (ex is HttpException && ((HttpException)ex).GetHttpCode() == 404)
             {
                 Response.RedirectToRoute(
@@ -110,7 +111,6 @@ namespace Voat
                         action = "NotFound"
                     });
             }
-            EventLogger.Log(ex);
         }
 
         // force SSL for every request if enabled in Web.config

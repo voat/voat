@@ -18,7 +18,7 @@ using Voat.Data.Models;
 
 namespace Voat.Controllers
 {
-    public class HtmlElementsController : Controller
+    public class HtmlElementsController : BaseController
     {
         private readonly voatEntities _db = new voatEntities();
 
