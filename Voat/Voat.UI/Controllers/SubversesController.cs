@@ -33,7 +33,6 @@ using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Query;
 using Voat.Domain.Command;
-using Voat.Domain;
 
 namespace Voat.Controllers
 {
@@ -2006,41 +2005,61 @@ namespace Voat.Controllers
                 return View(subverseAdmin);
             }
 
-            subverseAdmin.UserName = subverseAdmin.UserName.TrimSafe();
-
-            // prevent invites to the current moderator
-            if (User.Identity.Name.Equals(subverseAdmin.UserName, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(string.Empty, "Can not add yourself as a moderator");
-                return View("~/Views/Subverses/Admin/AddModerator.cshtml",
-                new SubverseModeratorViewModel
-                {
-                    UserName = subverseAdmin.UserName,
-                    Power = subverseAdmin.Power
-                });
-            }
-
-            string originalRecipientUserName = UserHelper.OriginalUsername(subverseAdmin.UserName);
-            // prevent invites to the current moderator
-            if (String.IsNullOrEmpty(originalRecipientUserName))
-            {
-                ModelState.AddModelError(string.Empty, "User can not be found");
-                return View("~/Views/Subverses/Admin/AddModerator.cshtml",
-                new SubverseModeratorViewModel
-                {
-                    UserName = subverseAdmin.UserName,
-                    Power = subverseAdmin.Power
-                });
-            }
-
             // check if caller can add mods, if not, deny posting
             if (!ModeratorPermission.HasPermission(User.Identity.Name, subverseAdmin.Subverse, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("Index", "Home");
             }
 
+            subverseAdmin.UserName = subverseAdmin.UserName.TrimSafe();
+            Subverse subverseModel = null;
+
+            //lots of premature retuns so wrap the common code
+            var sendFailureResult = new Func<string, ActionResult>(errorMessage =>
+            {
+                ViewBag.SubverseModel = subverseModel;
+                ViewBag.SubverseName = subverseAdmin.Subverse;
+                ViewBag.SelectedSubverse = string.Empty;
+                ModelState.AddModelError(string.Empty, errorMessage);
+                return View("~/Views/Subverses/Admin/AddModerator.cshtml",
+                new SubverseModeratorViewModel
+                {
+                    UserName = subverseAdmin.UserName,
+                    Power = subverseAdmin.Power
+                });
+            });
+
+            // prevent invites to the current moderator
+            if (User.Identity.Name.Equals(subverseAdmin.UserName, StringComparison.OrdinalIgnoreCase))
+            {
+                return sendFailureResult("Can not add yourself as a moderator");
+
+                //ModelState.AddModelError(string.Empty, "Can not add yourself as a moderator");
+                // return View("~/Views/Subverses/Admin/AddModerator.cshtml",
+                // new SubverseModeratorViewModel
+                // {
+                //     UserName = subverseAdmin.UserName,
+                //     Power = subverseAdmin.Power
+                // });
+            }
+
+            string originalRecipientUserName = UserHelper.OriginalUsername(subverseAdmin.UserName);
+            // prevent invites to the current moderator
+            if (String.IsNullOrEmpty(originalRecipientUserName))
+            {
+                return sendFailureResult("User can not be found");
+
+                //ModelState.AddModelError(string.Empty, "User can not be found");
+                //return View("~/Views/Subverses/Admin/AddModerator.cshtml",
+                //new SubverseModeratorViewModel
+                //{
+                //    UserName = subverseAdmin.UserName,
+                //    Power = subverseAdmin.Power
+                //});
+            }
+
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subverseAdmin.Subverse);
+            subverseModel = DataCache.Subverse.Retrieve(subverseAdmin.Subverse);
             if (subverseModel == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -2048,26 +2067,14 @@ namespace Voat.Controllers
 
             if ((subverseAdmin.Power < 1 || subverseAdmin.Power > 4) && subverseAdmin.Power != 99)
             {
-                ModelState.AddModelError(string.Empty, "Only powers levels 1 - 4 and 99 are supported currently");
-                return View("~/Views/Subverses/Admin/AddModerator.cshtml",
-                new SubverseModeratorViewModel
-                {
-                    UserName = subverseAdmin.UserName,
-                    Power = subverseAdmin.Power
-                });
+                return sendFailureResult("Only powers levels 1 - 4 and 99 are supported currently");
             }
 
             //check current mod level and invite level and ensure they are a lower level
             var currentModLevel = ModeratorPermission.Level(User.Identity.Name, subverseModel.Name);
-            if (subverseAdmin.Power <= (int)currentModLevel)
+            if (subverseAdmin.Power <= (int)currentModLevel && currentModLevel != Domain.Models.ModeratorLevel.Owner)
             {
-                ModelState.AddModelError(string.Empty, "Sorry, but you can only add moderators that are a lower level than yourself");
-                return View("~/Views/Subverses/Admin/AddModerator.cshtml", 
-                new SubverseModeratorViewModel
-                {
-                    UserName = subverseAdmin.UserName,
-                    Power = subverseAdmin.Power
-                });
+                return sendFailureResult("Sorry, but you can only add moderators that are a lower level than yourself");
             }
 
             int maximumOwnedSubs = Settings.MaximumOwnedSubs;
@@ -2087,9 +2094,7 @@ namespace Voat.Controllers
                     var userModeratorInvitations = _db.ModeratorInvitations.Where(i => i.Recipient.Equals(originalRecipientUserName, StringComparison.OrdinalIgnoreCase) && i.Subverse.Equals(subverseModel.Name, StringComparison.OrdinalIgnoreCase));
                     if (userModeratorInvitations.Any())
                     {
-                        ModelState.AddModelError(string.Empty, "Sorry, the user is already invited to moderate this subverse");
-                        ViewBag.subversetoshow = subverseAdmin.Subverse;
-                        return View("Admin/AddModerator");
+                        return sendFailureResult("Sorry, the user is already invited to moderate this subverse");
                     }
 
                     // send a new moderator invitation
@@ -2126,86 +2131,42 @@ namespace Voat.Controllers
                     }, true);
                     await cmd.Execute();
 
-                    //MesssagingUtility.SendPrivateMessage(User.Identity.Name, subverseAdmin.UserName, "/v/" + subverseAdmin.Subverse + " moderator invitation", invitationBody.ToString());
-
                     return RedirectToAction("SubverseModerators");
                 }
-
-                ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating this subverse");
-                tmpModel = new SubverseModeratorViewModel
+                else
                 {
-                    UserName = subverseAdmin.UserName,
-                    Power = subverseAdmin.Power
-                };
+                    return sendFailureResult("Sorry, the user is already moderating this subverse");
 
-                ViewBag.SubverseModel = subverseModel;
-                ViewBag.SubverseName = subverseAdmin.Subverse;
-                ViewBag.SelectedSubverse = string.Empty;
-                return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
-            }
+                    //ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating this subverse");
+                    //tmpModel = new SubverseModeratorViewModel
+                    //{
+                    //    UserName = subverseAdmin.UserName,
+                    //    Power = subverseAdmin.Power
+                    //};
 
-            ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating a maximum of " + maximumOwnedSubs + " subverses");
-            tmpModel = new SubverseModeratorViewModel
-            {
-                UserName = subverseAdmin.UserName,
-                Power = subverseAdmin.Power
-            };
-
-            ViewBag.SubverseModel = subverseModel;
-            ViewBag.SubverseName = subverseAdmin.Subverse;
-            ViewBag.SelectedSubverse = string.Empty;
-            return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
-        }
-
-        // POST: remove a moderator from given subverse
-        [Authorize]
-        [HttpPost, ActionName("RemoveModerator")]
-        [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> RemoveModerator(int id)
-        {
-            // get moderator name for selected subverse
-            var subModerator = await _db.SubverseModerators.FindAsync(id);
-            if (subModerator == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            var subverse = DataCache.Subverse.Retrieve(subModerator.Subverse);
-            if (subverse == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            // check if caller has clearance to remove a moderator
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse.Name, Domain.Models.ModeratorAction.RemoveMods))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            //ensure mods can only remove mods that are a lower level than themselves
-            var currentModLevel = ModeratorPermission.Level(User.Identity.Name, subverse.Name);
-            if (currentModLevel == null || (subModerator.Power <= (int)currentModLevel && !subModerator.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            // execute removal
-            _db.SubverseModerators.Remove(subModerator);
-            await _db.SaveChangesAsync();
-
-            //clear mod cache
-            CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverse.Name));
-
-            if (subModerator.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
-            {
-                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverse.Name });
+                    //ViewBag.SubverseModel = subverseModel;
+                    //ViewBag.SubverseName = subverseAdmin.Subverse;
+                    //ViewBag.SelectedSubverse = string.Empty;
+                    //return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
+                }
             }
             else
             {
-                return RedirectToAction("SubverseModerators");
+                return sendFailureResult("Sorry, the user is already moderating a maximum of " + maximumOwnedSubs + " subverses");
+
+                //ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating a maximum of " + maximumOwnedSubs + " subverses");
+                //tmpModel = new SubverseModeratorViewModel
+                //{
+                //    UserName = subverseAdmin.UserName,
+                //    Power = subverseAdmin.Power
+                //};
+
+                //ViewBag.SubverseModel = subverseModel;
+                //ViewBag.SubverseName = subverseAdmin.Subverse;
+                //ViewBag.SelectedSubverse = string.Empty;
+                //return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);            }
             }
         }
-
         // GET: show remove moderators view for selected subverse
         [Authorize]
         public ActionResult RemoveModerator(int? id)
@@ -2232,6 +2193,114 @@ namespace Voat.Controllers
             return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subModerator);
         }
 
+        // POST: remove a moderator from given subverse
+        [Authorize]
+        [HttpPost, ActionName("RemoveModerator")]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> RemoveModerator(int id)
+        {
+
+            var cmd = new RemoveModeratorCommand(id, true);
+            var response = await cmd.Execute();
+
+            if (response.Success)
+            {
+                return RedirectToAction("SubverseModerators");
+            }
+            else
+            {
+                ModelState.AddModelError("", response.Message);
+                if (response.Response.SubverseModerator != null)
+                {
+                    var model = new SubverseModerator()
+                    {
+                        ID = response.Response.SubverseModerator.ID,
+                        Subverse = response.Response.SubverseModerator.Subverse,
+                        UserName = response.Response.SubverseModerator.UserName,
+                        Power = response.Response.SubverseModerator.Power
+                    };
+                    return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", model);
+                }
+                else
+                {
+                    //bail
+                    return RedirectToAction("SubverseModerators");
+                }
+            }
+
+            //// get moderator name for selected subverse
+            //var subModerator = await _db.SubverseModerators.FindAsync(id);
+            //if (subModerator == null)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
+
+            //var subverse = DataCache.Subverse.Retrieve(subModerator.Subverse);
+            //if (subverse == null)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
+
+            //// check if caller has clearance to remove a moderator
+            //if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse.Name, Domain.Models.ModeratorAction.RemoveMods))
+            //{
+            //    return RedirectToAction("Index", "Home");
+            //}
+
+
+            ////Determine if removal is allowed:
+            ////Logic:
+            ////L1: Can remove L1's but only if they invited them / or they were added after them
+            //var currentModLevel = ModeratorPermission.Level(User.Identity.Name, subverse.Name).Value; //safe to get value as previous check ensures is mod
+            //var targetModLevel = (ModeratorLevel)subModerator.Power;
+            //var allowRemoval = false;
+
+            //switch (currentModLevel)
+            //{
+            //    case ModeratorLevel.Owner:
+            //        if (targetModLevel == ModeratorLevel.Owner)
+            //        {
+            //            var isTargetOriginalMod = (String.IsNullOrEmpty(subModerator.CreatedBy) && !subModerator.CreationDate.HasValue);
+            //            if (!isTargetOriginalMod)
+            //            {
+
+            //            }
+            //        }
+            //        else
+            //        {
+            //            allowRemoval = true;
+            //        }
+            //        break;
+            //    default:
+            //        allowRemoval = (targetModLevel < currentModLevel);
+            //        break;
+            //}
+
+            ////ensure mods can only remove mods that are a lower level than themselves
+            //if (allowRemoval)
+            //{
+            //    // execute removal
+            //    _db.SubverseModerators.Remove(subModerator);
+            //    await _db.SaveChangesAsync();
+
+            //    //clear mod cache
+            //    CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverse.Name));
+
+            //    if (subModerator.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverse.Name });
+            //    }
+            //    else
+            //    {
+            //        return RedirectToAction("SubverseModerators");
+            //    }
+            //}
+            //else
+            //{
+            //    return RedirectToAction("Index", "Home");
+
+            //}
+        }
         #endregion ADD/REMOVE MODERATORS LOGIC
 
         #region sfw submissions from all subverses

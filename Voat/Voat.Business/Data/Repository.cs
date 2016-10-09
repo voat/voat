@@ -2465,12 +2465,6 @@ namespace Voat.Data
                 return new CommandResponse<bool?>(status, Status.Denied, "Subverse can not be found");
             }
 
-            //check if user is mod
-            if (ModeratorPermission.IsModerator(originalUserName, subverseModel.Name))
-            {
-                return new CommandResponse<bool?>(status, Status.Denied, "Moderators of subverse can not be banned. Is this a coup attempt?");
-            }
-
             // check that user is not already banned in given subverse
             var existingBan = _db.SubverseBans.FirstOrDefault(a => a.UserName == originalUserName && a.Subverse == subverseModel.Name);
 
@@ -2493,9 +2487,15 @@ namespace Voat.Data
             {
                 if (addBan.Value)
                 {
+
                     if (String.IsNullOrWhiteSpace(reason))
                     {
                         return new CommandResponse<bool?>(status, Status.Denied, "Banning a user requires a reason to be given");
+                    }
+                    //check if user is mod for "The benning"
+                    if (ModeratorPermission.IsModerator(originalUserName, subverseModel.Name))
+                    {
+                        return new CommandResponse<bool?>(status, Status.Denied, "Moderators of subverse can not be banned. Is this a coup attempt?");
                     }
                     status = true; //added ban
                     var subverseBan = new SubverseBan();
@@ -2539,6 +2539,125 @@ namespace Voat.Data
             return new CommandResponse<bool?>(status, Status.Success, "");
         }
         #endregion User Related Functions
+
+        #region Moderator Functions
+        public async Task<CommandResponse<RemoveModeratorResponse>> RemoveModerator(int subverseModeratorRecordID, bool allowSelfRemovals)
+        {
+            DemandAuthentication();
+
+            var response = new RemoveModeratorResponse();
+            var originUserName = User.Identity.Name;
+            
+
+            // get moderator name for selected subverse
+            var subModerator = await _db.SubverseModerators.FindAsync(subverseModeratorRecordID);
+            if (subModerator == null)
+            {
+                return new CommandResponse<RemoveModeratorResponse>(response, Status.Invalid, "Can not find record");
+            }
+            //Set response data
+            response.SubverseModerator = subModerator;
+            response.OriginUserName = originUserName;
+            response.TargetUserName = subModerator.UserName;
+            response.Subverse = subModerator.Subverse;
+
+            var subverse = GetSubverseInfo(subModerator.Subverse);
+            if (subverse == null)
+            {
+                return new CommandResponse<RemoveModeratorResponse>(response, Status.Invalid, "Can not find subverse");
+            }
+
+            // check if caller has clearance to remove a moderator
+            if (!ModeratorPermission.HasPermission(originUserName, subverse.Name, Domain.Models.ModeratorAction.RemoveMods))
+            {
+                return new CommandResponse<RemoveModeratorResponse>(response, Status.Denied, "User doesn't have permissions to execute action");
+            }
+
+            var allowRemoval = false;
+            var errorMessage = "Rules do not allow removal";
+
+            if (allowSelfRemovals && originUserName.Equals(subModerator.UserName, StringComparison.OrdinalIgnoreCase))
+            {
+                allowRemoval = true;
+            }
+            else if (subModerator.UserName.Equals("system", StringComparison.OrdinalIgnoreCase))
+            {
+                allowRemoval = false;
+                errorMessage = "System moderators can not be removed or they get sad";
+            }
+            else
+            {
+                //Determine if removal is allowed:
+                //Logic:
+                //L1: Can remove L1's but only if they invited them / or they were added after them
+                var currentModLevel = ModeratorPermission.Level(originUserName, subverse.Name).Value; //safe to get value as previous check ensures is mod
+                var targetModLevel = (ModeratorLevel)subModerator.Power;
+
+                switch (currentModLevel)
+                {
+                    case ModeratorLevel.Owner:
+                        if (targetModLevel == ModeratorLevel.Owner)
+                        {
+
+                            var isTargetOriginalMod = (String.IsNullOrEmpty(subModerator.CreatedBy) && !subModerator.CreationDate.HasValue); //Currently original mods have these fields nulled
+                            if (isTargetOriginalMod)
+                            {
+                                allowRemoval = false;
+                                errorMessage = "The creator can not be destroyed";
+                            }
+                            else
+                            {
+                                //find current mods record
+                                var originModeratorRecord = _db.SubverseModerators.FirstOrDefault(x =>
+                                    x.Subverse.Equals(subModerator.Subverse, StringComparison.OrdinalIgnoreCase)
+                                    && x.UserName.Equals(originUserName, StringComparison.OrdinalIgnoreCase));
+
+                                //Creators of subs have no creation date so set it low
+                                var originModCreationDate = (originModeratorRecord.CreationDate.HasValue ? originModeratorRecord.CreationDate.Value : new DateTime(2000, 1, 1));
+
+                                if (originModeratorRecord == null)
+                                {
+                                    allowRemoval = false;
+                                    errorMessage = "Can not find current mod record";
+                                }
+                                else
+                                {
+                                    allowRemoval = (originModCreationDate < subModerator.CreationDate);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            allowRemoval = true;
+                        }
+                        break;
+                    default:
+                        allowRemoval = (targetModLevel > currentModLevel);
+                        errorMessage = "Only moderators at a lower level can be removed";
+                        break;
+                }
+            }
+            
+
+            //ensure mods can only remove mods that are a lower level than themselves
+            if (allowRemoval)
+            {
+                // execute removal
+                _db.SubverseModerators.Remove(subModerator);
+                await _db.SaveChangesAsync();
+
+                ////clear mod cache
+                //CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverse.Name));
+
+                return new CommandResponse<RemoveModeratorResponse>(response, Status.Success, String.Empty);
+            }
+            else
+            {
+                return new CommandResponse<RemoveModeratorResponse>(response, Status.Denied, errorMessage);
+            }
+        }
+
+        #endregion
 
         #region Admin Functions
 

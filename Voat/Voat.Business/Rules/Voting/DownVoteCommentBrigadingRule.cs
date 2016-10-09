@@ -9,7 +9,7 @@ using Voat.RulesEngine;
 
 namespace Voat.Rules.Voting
 {
-    [RuleDiscovery("Approved if user isn't brigading another users comments", "approved = (!isUserBrigading())")]
+    [RuleDiscovery(false, "Approved if user isn't brigading another users comments", "approved = (!isUserBrigading())")]
     public class DownVoteCommentBrigadeRule : VoatRule
     {
         private TimeSpan _timeSpan = TimeSpan.FromMinutes(30);

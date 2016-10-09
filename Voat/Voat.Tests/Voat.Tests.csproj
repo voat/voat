@@ -123,6 +123,7 @@
     <Compile Include="Cache\CacheTests.cs" />
     <Compile Include="CommandTests\BaseCommandTest.cs" />
     <Compile Include="CommandTests\CommentCommandTests.cs" />
+    <Compile Include="CommandTests\ModeratorCommandTests.cs" />
     <Compile Include="CommandTests\SendMessageCommandTests.cs" />
     <Compile Include="CommandTests\SubmissionCommandTests.cs" />
     <Compile Include="CommandTests\UserCommandTests.cs" />

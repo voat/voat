@@ -158,9 +158,13 @@
     <Compile Include="Domain\Command\Base\Command.cs" />
     <Compile Include="Domain\Command\Base\CommandResponse.cs" />
     <Compile Include="Domain\Command\BlockCommand.cs" />
+    <Compile Include="Domain\Command\CommandResponses\RemoveModeratorResponse.cs" />
+    <Compile Include="Domain\Command\CommandResponses\SubverseUserActionResponse.cs" />
+    <Compile Include="Domain\Command\CommandResponses\UserActionResponse.cs" />
     <Compile Include="Domain\Command\CommentCommands.cs" />
     <Compile Include="Domain\Command\ApiKeyCommands.cs" />
     <Compile Include="Domain\Command\DeleteUserCommand.cs" />
+    <Compile Include="Domain\Command\RemoveModeratorCommand.cs" />
     <Compile Include="Domain\Command\SendMessageCommand.cs" />
     <Compile Include="Domain\Command\SubmissionCommands.cs" />
     <Compile Include="Domain\Command\SubscriptionCommand.cs" />
@@ -336,9 +340,7 @@
   <ItemGroup>
     <Content Include="Caching\README.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Domain\Command\Handlers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

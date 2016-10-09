@@ -25,7 +25,7 @@ namespace Voat.Models.ViewModels
 
         public string Subverse { get; set; }
 
-        [RegularExpression(@"^[2-4]|99$", ErrorMessage = "Please enter a clearance level of 2 - 4 or 99.")]
+        [RegularExpression(@"^[1-4]|99$", ErrorMessage = "Please enter a clearance level of 1 - 4 or 99.")]
         [Required(ErrorMessage = "Please enter a clearance level.")]
         public int Power { get; set; }
     }
