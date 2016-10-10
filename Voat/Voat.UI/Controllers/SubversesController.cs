@@ -1086,6 +1086,16 @@ namespace Voat.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, moderatorInvitation.Subverse, Domain.Models.ModeratorAction.InviteMods))
+            {
+                return RedirectToAction("SubverseModerators");
+            }
+            //make sure mods can't remove invites 
+            var currentModLevel = ModeratorPermission.Level(User.Identity.Name, moderatorInvitation.Subverse);
+            if (moderatorInvitation.Power <= (int)currentModLevel && currentModLevel != Domain.Models.ModeratorLevel.Owner)
+            {
+                return RedirectToAction("SubverseModerators");
+            }
 
             ViewBag.SubverseName = moderatorInvitation.Subverse;
             return View("~/Views/Subverses/Admin/RecallModeratorInvitation.cshtml", moderatorInvitation);
@@ -1100,18 +1110,29 @@ namespace Voat.Controllers
             // get invitation to remove
             var invitationToBeRemoved = await _db.ModeratorInvitations.FindAsync(invitationId);
             if (invitationToBeRemoved == null)
+            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             // check if subverse exists
             var subverse = DataCache.Subverse.Retrieve(invitationToBeRemoved.Subverse);
             if (subverse == null)
+            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            }
 
             // check if caller has clearance to remove a moderator invitation
             //if (!UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverse.Name) || invitationToBeRemoved.Recipient == User.Identity.Name) return RedirectToAction("Index", "Home");
             if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse.Name, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("Index", "Home");
+            }
+            //make sure mods can't remove invites 
+            var currentModLevel = ModeratorPermission.Level(User.Identity.Name, subverse.Name);
+            if (invitationToBeRemoved.Power <= (int)currentModLevel && currentModLevel != Domain.Models.ModeratorLevel.Owner)
+            {
+                return RedirectToAction("SubverseModerators");
             }
 
             // execute invitation removal

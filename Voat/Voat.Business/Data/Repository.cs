@@ -2623,6 +2623,7 @@ namespace Voat.Data
                                 else
                                 {
                                     allowRemoval = (originModCreationDate < subModerator.CreationDate);
+                                    errorMessage = "Moderator has seniority. Oldtimers can't be removed by a young'un";
                                 }
                             }
                         }
