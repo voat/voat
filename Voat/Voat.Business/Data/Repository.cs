@@ -2380,7 +2380,7 @@ namespace Voat.Data
             return s;
         }
 
-        public CommandResponse SubscribeUser(DomainType domainType, SubscriptionAction action, string subscriptionName)
+        public async Task<CommandResponse> SubscribeUser(DomainType domainType, SubscriptionAction action, string subscriptionName)
         {
             switch (domainType)
             {
@@ -2412,16 +2412,10 @@ namespace Voat.Data
                             _db.SubverseSubscriptions.Remove(sub);
                         }
                     }
-                    _db.SaveChanges();
+                   
+                    await _db.SaveChangesAsync();
 
-                    //TODO: Update Subscriber Count
-                    //// record new subscription in subverse table subscribers field
-                    //Subverse tmpSubverse = db.Subverses.Find(subverse);
-                    //if (tmpSubverse != null)
-                    //{
-                    //    tmpSubverse.SubscriberCount++;
-                    //}
-                    //db.SaveChanges();
+                    await UpdateSubverseSubscriberCount(subscriptionName, action);
 
                     break;
 
@@ -2431,7 +2425,23 @@ namespace Voat.Data
             }
             return CommandResponse.Successful();
         }
-
+        private async Task UpdateSubverseSubscriberCount(string subverse, SubscriptionAction action)
+        {
+            // record new subscription in subverse table subscribers field
+            Subverse sub = _db.Subverses.Find(subverse);
+            if (sub != null)
+            {
+                if (action == SubscriptionAction.Subscribe)
+                {
+                    sub.SubscriberCount++;
+                }
+                else
+                {
+                    sub.SubscriberCount--;
+                }
+            }
+            await _db.SaveChangesAsync();
+        }
         public async Task<CommandResponse<bool?>> BanUserFromSubverse(string userName, string subverse, string reason, bool? force = null)
         {
             bool? status = null;
