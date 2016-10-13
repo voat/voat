@@ -16,6 +16,7 @@ using Voat.Utilities.Components;
 using Voat.Domain.Command;
 using System.Text.RegularExpressions;
 using Voat.Domain;
+using System.Data.Entity;
 
 namespace Voat.Data
 {
@@ -1243,7 +1244,7 @@ namespace Voat.Data
             {
                 if (comment.UserName != User.Identity.Name)
                 {
-                    return CommandResponse.Denied<Data.Models.Comment>(null, "User doesn't have permissions to perform requested action");
+                    return CommandResponse.FromStatus((Data.Models.Comment)null, Status.Denied, "User doesn't have permissions to perform requested action");
                 }
 
                 //evaluate rule
@@ -1690,9 +1691,49 @@ namespace Voat.Data
             }
             _db.SaveChanges();
         }
+        [Authorize]
+        public async Task<CommandResponse<Domain.Models.Message>> SendMessageReply(int id, string messageContent)
+        {
+            DemandAuthentication();
+
+            var userName = User.Identity.Name;
+
+            var m = (from x in _db.Messages
+                     where x.ID == id
+                     select x).FirstOrDefault();
+
+            if (m == null)
+            {
+                return new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Couldn't find message in which to reply");
+            }
+            else if (!userName.IsEqual(m.Recipient))
+            {
+                return new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
+            }
+            else
+            {
+                //checks are good, let's send
+                var message = new Domain.Models.Message();
+
+                message.ParentID = m.ID;
+                message.CorrelationID = m.CorrelationID;
+                message.Title = m.Title;
+
+                message.Recipient = m.Sender;
+                message.RecipientType = (MessageIdentityType)m.SenderType;
+
+                message.Sender = m.Recipient;
+                message.SenderType = (MessageIdentityType)m.SenderType;
+
+                message.Content = messageContent;
+                message.FormattedContent = Formatting.FormatMessage(messageContent);
+
+                return await SendMessage(message);
+            }
+        }
 
         [Authorize]
-        public CommandResponse SendMessageReply(int id, string value)
+        public CommandResponse SendMessageReply_OLD(int id, string value)
         {
             DemandAuthentication();
 
@@ -1726,35 +1767,113 @@ namespace Voat.Data
             return new CommandResponse(Status.NotProcessed, "Couldn't find message in which to reply");
         }
 
+
+
         [Authorize]
-        public CommandResponse SendMessage(SendMessage message, bool forceSend = false)
+        public async Task<IEnumerable<CommandResponse<Domain.Models.Message>>> SendMessages(params Domain.Models.Message[] messages)
+        {
+            return await SendMessages(messages.AsEnumerable());
+        }
+
+        [Authorize]
+        public async Task<IEnumerable<CommandResponse<Domain.Models.Message>>> SendMessages(IEnumerable<Domain.Models.Message> messages)
+        {
+
+            var tasks = messages.Select(x => Task.Run(async () => { return await SendMessage(x).ConfigureAwait(false); }));
+
+            var result = await Task.WhenAll(tasks);
+
+            return result;
+        }
+
+        [Authorize]
+        public async Task<CommandResponse<Domain.Models.Message>> SendMessage(Domain.Models.Message message)
         {
             DemandAuthentication();
 
+            using (var db = new voatEntities())
+            {
+                try
+                {
+                    List<Domain.Models.Message> messages = new List<Domain.Models.Message>();
+                    //substring - db column is nvarchar(50) and any longer breaks EF
+                    if (MesssagingUtility.IsSenderBlocked(message.Sender, message.Recipient))
+                    {
+                        message.Recipient = '\u200B' + message.Recipient;
+                    }
+
+                    //increased subject line
+                    int max = 500;
+                    message.Title = message.Title.SubstringMax(max);
+                    message.CreationDate = CurrentDate;
+                    message.FormattedContent = Formatting.FormatMessage(message.Content);
+                    messages.Add(message);
+
+                    if (message.Type == MessageType.Private)
+                    {
+                        //add sent copy
+                        var sentCopy = message.Clone();
+                        sentCopy.Direction = MessageDirection.OutBound;
+                        sentCopy.Type = MessageType.Sent;
+                        sentCopy.ReadDate = CurrentDate;
+                        messages.Add(sentCopy);
+                    }
+
+                    var mappedDataMessages = messages.Map();
+
+                    var addedMessages = db.Messages.AddRange(mappedDataMessages);
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+
+                    return CommandResponse.Successful(addedMessages.First().Map());
+
+                    //send notices async
+                    Task.Run(() => EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.Inbox, null, null, message.Content));
+
+                }
+                catch (Exception ex)
+                {
+                    //TODO Log this
+                    return CommandResponse.Error<CommandResponse<Domain.Models.Message>>(ex);
+                }
+            }
+        }
+
+        [Authorize]
+        public async Task<CommandResponse<Domain.Models.Message>> SendMessage(SendMessage message, bool forceSend = false)
+        {
+            DemandAuthentication();
+
+            var sender = Tuple.Create(MessageIdentityType.User, message.Sender);
+            Domain.Models.Message responseMessage = null;
+
             //If sender isn't a subverse (automated messages) run sender checks
-            if (!Regex.IsMatch(message.Sender, @"^v/\w*"))
+            Match subverseSenderMatch = Regex.Match(message.Sender, CONSTANTS.SUBVERSE_LINK_REGEX_SHORT, RegexOptions.IgnoreCase);
+            if (subverseSenderMatch.Success)
+            {
+                sender = Tuple.Create(MessageIdentityType.Subverse, subverseSenderMatch.Groups["sub"].Value);
+            }
+            else
             {
                 if (Voat.Utilities.BanningUtility.ContentContainsBannedDomain(null, message.Message))
                 {
-                    return CommandResponse.Ignored("Message contains banned domain");
+                    return CommandResponse.FromStatus(responseMessage, Status.Ignored, "Message contains banned domain");
                 }
                 if (Voat.Utilities.UserHelper.IsUserGloballyBanned(message.Sender))
                 {
-                    return CommandResponse.Ignored("User is banned");
+                    return CommandResponse.FromStatus(responseMessage, Status.Ignored, "User is banned");
                 }
-
                 //add exception for system messages from sender
                 if (!forceSend && !CONSTANTS.SYSTEM_USER_NAME.Equals(message.Sender, StringComparison.OrdinalIgnoreCase) && Karma.CommentKarma(message.Sender) < 10)
                 {
-                    return CommandResponse.Ignored("Comment points too low to send messages", "Comment points too low to send messages. Need at least 10 CCP.");
+                    return CommandResponse.FromStatus(responseMessage, Status.Ignored, "Comment points too low to send messages. Need at least 10 CCP.");
                 }
             }
 
-            List<PrivateMessage> messages = new List<PrivateMessage>();
+            List<Domain.Models.Message> messages = new List<Domain.Models.Message>();
             MatchCollection col = Regex.Matches(message.Recipient, @"((?'prefix'@|u/|/u/|v/|/v/)?(?'recipient'[\w-.]+))", RegexOptions.IgnoreCase);
             if (col.Count <= 0)
             {
-                return new CommandResponse(Status.NotProcessed, "No recipient specified");
+                return CommandResponse.FromStatus(responseMessage, Status.NotProcessed, "No recipient specified");
             }
 
             //Have to filter distinct because of spamming. If you copy a user name
@@ -1777,37 +1896,18 @@ namespace Voat.Data
                     //don't allow banned users to send to subverses
                     if (!UserHelper.IsUserBannedFromSubverse(message.Sender, recipient))
                     {
-                        //send to subverse mods
-                        using (var db = new voatEntities())
+                        messages.Add(new Domain.Models.Message
                         {
-                            //designed to limit abuse by taking the level 1 mod and the next four oldest
-                            var mods = (from mod in db.SubverseModerators
-                                        where
-                                            mod.Subverse.Equals(recipient, StringComparison.OrdinalIgnoreCase)
-                                            && mod.UserName != "system"
-                                            && mod.UserName != "youcanclaimthissub"
-                                            && mod.Power <= 3 //Don't send PM's to designers (Power 4)
-                                        orderby mod.Power ascending, mod.CreationDate descending
-                                        select mod);
-
-                            foreach (var moderator in mods)
-                            {
-                                //skip mods sending to sub they mod
-                                if (!moderator.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    messages.Add(new PrivateMessage
-                                    {
-                                        Sender = message.Sender,
-                                        Recipient = moderator.UserName,
-                                        CreationDate = Repository.CurrentDate,
-                                        Subject = String.Format("[v/{0}] {1}", recipient, message.Subject),
-                                        Body = message.Message,
-                                        IsUnread = true,
-                                        MarkedAsUnread = false
-                                    });
-                                }
-                            }
-                        }
+                            CorrelationID = Domain.Models.Message.NewCorrelationID(), 
+                            Sender = sender.Item2,
+                            SenderType = sender.Item1,
+                            Recipient = recipient,
+                            RecipientType = MessageIdentityType.Subverse,
+                            Title = message.Subject,
+                            Content = message.Message,
+                            ReadDate = null,
+                            CreationDate = Repository.CurrentDate,
+                        });
                     }
                 }
                 else
@@ -1817,154 +1917,116 @@ namespace Voat.Data
 
                     if (!String.IsNullOrEmpty(recipient))
                     {
-                        messages.Add(new PrivateMessage
+                        messages.Add(new Domain.Models.Message
                         {
-                            Sender = message.Sender,
+                            CorrelationID = Domain.Models.Message.NewCorrelationID(),
+                            Sender = sender.Item2,
+                            SenderType = sender.Item1,
                             Recipient = recipient,
+                            RecipientType = MessageIdentityType.User,
+                            Title = message.Subject,
+                            Content = message.Message,
+                            ReadDate = null,
                             CreationDate = Repository.CurrentDate,
-                            Subject = message.Subject,
-                            Body = message.Message,
-                            IsUnread = true,
-                            MarkedAsUnread = false
                         });
                     }
                 }
             }
 
-            if (messages.Count > 0)
+            var savedMessages = await SendMessages(messages);
+            var firstSent = savedMessages.First();
+            return firstSent;
+        }
+
+        private IQueryable<Data.Models.Message> GetMessageQueryBase(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state)
+        {
+            var q = (from m in _db.Messages
+                         //join s in _db.Submissions on m.SubmissionID equals s.ID into ns
+                         //from s in ns.DefaultIfEmpty()
+                         //join c in _db.Comments on m.CommentID equals c.ID into cs
+                         //from c in cs.DefaultIfEmpty()
+                     where
+                     (
+                        //Restrict access here
+                        (m.Recipient.Equals(ownerName, StringComparison.OrdinalIgnoreCase) && m.RecipientType == (int)ownerType && ((type & MessageTypeFlag.Sent) <= 0))
+                        ||
+                        (m.Sender.Equals(ownerName, StringComparison.OrdinalIgnoreCase) && m.SenderType == (int)ownerType && ((type & MessageTypeFlag.Sent) > 0))
+                     )
+                     select m);
+
+            switch (state)
             {
-                using (var db = new voatEntities())
+                case MessageState.Read:
+                    q = q.Where(x => x.ReadDate != null);
+                    break;
+                case MessageState.Unread:
+                    q = q.Where(x => x.ReadDate == null);
+                    break;
+            }
+            //filter Message Type
+            if (type != MessageTypeFlag.All)
+            {
+                List<int> messageTypes = new List<int>();
+
+                var flags = Enum.GetValues(typeof(MessageTypeFlag));
+                foreach (var flag in flags)
                 {
-                    try
+                    var mTFlag = (MessageTypeFlag)flag;
+                    if (mTFlag != MessageTypeFlag.All && ((type & mTFlag) > 0))
                     {
-                        //substring - db column is nvarchar(50) and any longer breaks EF
-                        messages.ForEach(x =>
+                        switch (mTFlag)
                         {
-                            if (MesssagingUtility.IsSenderBlocked(x.Sender, x.Recipient))
-                            {
-                                x.Recipient = '\u200B' + x.Recipient;
-                            }
-
-                            //increased subject line
-                            int max = 500;
-                            x.Subject = x.Subject.SubstringMax(max);
-                        });
-
-                        db.PrivateMessages.AddRange(messages);
-                        db.SaveChanges();
-                    }
-                    catch (Exception ex)
-                    {
-                        //TODO Log this
-                        return CommandResponse.Error<CommandResponse>(ex);
+                            case MessageTypeFlag.Sent:
+                                messageTypes.Add((int)MessageType.Sent);
+                                break;
+                            case MessageTypeFlag.Inbox:
+                                messageTypes.Add((int)MessageType.Private);
+                                break;
+                            case MessageTypeFlag.Comment:
+                                messageTypes.Add((int)MessageType.Comment);
+                                break;
+                            case MessageTypeFlag.Mention:
+                                messageTypes.Add((int)MessageType.Mention);
+                                break;
+                        }
                     }
                 }
-
-                //send notices async
-                Task.Run(() => messages.ForEach(x => EventNotification.Instance.SendMessageNotice(x.Recipient, x.Sender, Domain.Models.MessageType.Inbox, null, null, x.Body)));
+                q = q.Where(x => messageTypes.Contains(x.Type));
             }
-            return CommandResponse.Successful();
+
+            return q;
+
         }
 
         [Authorize]
-        public IEnumerable<UserMessage> GetUserMessages(MessageType type, MessageState state, bool markAsRead = true)
+        public async Task<IEnumerable<MessageCount>> GetMessageCounts(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
         {
-            //This ENTIRE routine will need to be refactored once the message tables are merged. THIS SHOULD BE HIGH PRIORITY AS THIS IS HACKY HACKSTERISTIC
-            List<UserMessage> messages = new List<UserMessage>();
+            var q = GetMessageQueryBase(ownerName, ownerType, type, state);
 
-            if ((type & MessageType.Inbox) > 0 || (type & MessageType.Sent) > 0)
+            var counts = await q.GroupBy(x => x.Type).Select(x => new { x.Key, Count = x.Count() }).ToListAsync();
+            var result = new List<MessageCount>();
+            foreach (var count in counts)
             {
-                var msgs = (from x in _db.PrivateMessages
-                            where (
-                                ((x.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && (type & MessageType.Inbox) > 0) ||
-                                (x.Sender.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && (type & MessageType.Sent) > 0)) &&
-                                (x.IsUnread == ((state & MessageState.Unread) > 0) || state == MessageState.All))
-                            select new UserMessage()
-                            {
-                                ID = x.ID,
-                                CommentID = null,
-                                SubmissionID = null,
-                                Subverse = null,
-                                Recipient = x.Recipient,
-                                Sender = x.Sender,
-                                Subject = x.Subject,
-                                Content = x.Body,
-                                IsRead = !x.IsUnread,
-                                Type = (x.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) ? MessageType.Inbox : MessageType.Sent),
-                                SentDate = x.CreationDate
-                            });
-                messages.AddRange(msgs.ToList());
+                result.Add(new MessageCount() { Type = (MessageType)count.Key, Count = count.Count });
             }
+            return result;
+        }
+        [Authorize]
+        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true)
+        {
+            return await GetMessages(User.Identity.Name, MessageIdentityType.User, type, state, markAsRead);
+        }
+        [Authorize]
+        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
+        {
 
-            //Comment Replies, Mention Replies
-            if ((type & MessageType.Comment) > 0 || (type & MessageType.Mention) > 0)
-            {
-                var msgs = (from x in _db.CommentReplyNotifications
-                            join s in _db.Submissions on x.SubmissionID equals s.ID
-                            join c in _db.Comments on x.CommentID equals c.ID into commentJoin
-                            from comment in commentJoin.DefaultIfEmpty()
-                            where (
-                                x.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                                && x.IsUnread == (state == MessageState.Unread)
-                                )
-                            select new UserMessage()
-                            {
-                                ID = x.ID,
-                                CommentID = (x.CommentID > 0 ? x.CommentID : (int?)null),
-                                SubmissionID = x.SubmissionID,
-                                Subverse = x.Subverse,
-                                Recipient = x.Recipient,
-                                Sender = x.Sender,
-                                Subject = s.Title,
-                                Content = (comment == null ? s.Content : comment.Content),
-                                IsRead = !x.IsUnread,
-                                Type = (s.Content.Contains(User.Identity.Name) ? MessageType.Mention : MessageType.Comment), //TODO: Need to determine if comment reply or mention
-                                SentDate = x.CreationDate
-                            });
+            DemandAuthentication();
 
-                if ((type & MessageType.Comment) > 0 && (type & MessageType.Mention) > 0)
-                {
-                    //this is both
-                    messages.AddRange(msgs.ToList());
-                }
-                else if ((type & MessageType.Mention) > 0)
-                {
-                    messages.AddRange(msgs.ToList().FindAll(x => x.Type == MessageType.Mention));
-                }
-                else
-                {
-                    messages.AddRange(msgs.ToList().FindAll(x => x.Type == MessageType.Comment));
-                }
-            }
-
-            //Post Replies
-            if ((type & MessageType.Submission) > 0)
-            {
-                var msgs = (from x in _db.SubmissionReplyNotifications
-                            join c in _db.Comments on x.CommentID equals c.ID
-                            join s in _db.Submissions on c.SubmissionID equals s.ID
-                            where (
-                                x.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) &&
-                                x.IsUnread == (state == MessageState.Unread))
-                            select new UserMessage()
-                            {
-                                ID = x.ID,
-                                CommentID = x.CommentID,
-                                SubmissionID = x.SubmissionID,
-                                Subverse = x.Subverse,
-                                Recipient = x.Recipient,
-                                Sender = x.Sender,
-                                Subject = s.Title,
-                                Content = c.Content,
-                                IsRead = !x.IsUnread,
-                                Type = MessageType.Submission,
-                                SentDate = x.CreationDate
-                            });
-                messages.AddRange(msgs.ToList());
-            }
+            var q = GetMessageQueryBase(ownerName, ownerType, type, state);
+            var messages = (await q.OrderByDescending(x => x.CreationDate).ToListAsync().ConfigureAwait(false)).AsEnumerable();
 
             //mark as read, super hacky until message tables are merged
-            if (markAsRead)
+            if (messages.Any() && markAsRead)
             {
                 new Task(() =>
                 {
@@ -1972,35 +2034,14 @@ namespace Voat.Data
                     {
                         foreach (var msg in messages)
                         {
-                            if (!msg.IsRead)
-                            {
-                                switch (msg.Type)
-                                {
-                                    case MessageType.Comment:
-                                    case MessageType.Mention:
-                                        var m = db.CommentReplyNotifications.First(x => x.ID == msg.ID);
-                                        m.IsUnread = false;
-                                        break;
-
-                                    case MessageType.Inbox:
-                                        var p = db.PrivateMessages.First(x => x.ID == msg.ID);
-                                        p.IsUnread = false;
-
-                                        break;
-
-                                    case MessageType.Submission:
-                                        var s = db.SubmissionReplyNotifications.First(x => x.ID == msg.ID);
-                                        s.IsUnread = false;
-                                        break;
-                                }
-                            }
+                            msg.ReadDate = CurrentDate;
                         }
                         db.SaveChanges();
                     }
                 }).Start();
             }
+            return messages.Map();
 
-            return messages.OrderByDescending(x => x.SentDate);
         }
 
         #endregion UserMessages
@@ -2389,11 +2430,11 @@ namespace Voat.Data
                     var subverse = GetSubverseInfo(subscriptionName);
                     if (subverse == null)
                     {
-                        return CommandResponse.Denied("Subverse does not exist");
+                        return CommandResponse.FromStatus(Status.Denied, "Subverse does not exist");
                     }
                     if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
                     {
-                        return CommandResponse.Denied("Subverse is disabled");
+                        return CommandResponse.FromStatus(Status.Denied, "Subverse is disabled");
                     }
 
                     if (action == SubscriptionAction.Subscribe)
@@ -3245,8 +3286,7 @@ namespace Voat.Data
             switch (outcome.Result)
             {
                 case RuleResult.Denied:
-                    return CommandResponse.Denied<T>(result, outcome.Message);
-
+                    return CommandResponse.FromStatus(result, Status.Denied, outcome.Message);
                 default:
                     return CommandResponse.Successful(result);
             }

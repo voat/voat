@@ -309,7 +309,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HtmlElementsController.cs" />
     <Compile Include="Controllers\ManagementController.cs" />
-    <Compile Include="Controllers\MessagingController.cs" />
+    <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SetsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -630,11 +630,11 @@
     <Content Include="Views\Subverses\Admin\SubverseModerators.cshtml" />
     <Content Include="Views\AjaxViews\_CommentReplyForm.cshtml" />
     <Content Include="Views\AjaxViews\_MessageContent.cshtml" />
-    <Content Include="Views\Messaging\Inbox.cshtml" />
-    <Content Include="Views\Messaging\Compose.cshtml" />
-    <Content Include="Views\Messaging\Sent.cshtml" />
+    <Content Include="Views\Messages\Old\Inbox.cshtml" />
+    <Content Include="Views\Messages\Old\Compose.cshtml" />
+    <Content Include="Views\Messages\Old\Sent.cshtml" />
     <Content Include="Views\Shared\_SubscriptionsHoverMenu.cshtml" />
-    <Content Include="Views\Messaging\InboxCommentReplies.cshtml" />
+    <Content Include="Views\Messages\Old\InboxCommentReplies.cshtml" />
     <Content Include="Views\Account\_LoginModal.cshtml" />
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
@@ -699,7 +699,7 @@
     <Content Include="Views\Shared\Comments\_CommentSegment.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
-    <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
+    <Content Include="Views\Messages\Old\InboxPostReplies.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarChat.cshtml" />
     <Content Include="Views\Subverses\SubmissionRemovalLog.cshtml" />
     <Content Include="Views\Search\Jaje.cshtml" />
@@ -715,7 +715,7 @@
     <Content Include="Views\Account\RegistrationDisabled.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseStylesheetEditor.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonBlockSubverse.cshtml" />
-    <Content Include="Views\Messaging\InboxUnread.cshtml" />
+    <Content Include="Views\Messages\Old\InboxUnread.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Help\Advertize.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
@@ -738,6 +738,8 @@
     <Content Include="Views\Comment\ModeratorDelete.cshtml" />
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonModeratorDelete.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonReport.cshtml" />
+    <Content Include="Views\Messages\Compose.cshtml" />
+    <Content Include="Views\Messages\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

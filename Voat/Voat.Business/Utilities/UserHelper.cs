@@ -325,7 +325,7 @@ namespace Voat.Utilities
                     .ToList();
             }
         }
-
+        [Obsolete("Use QueryMessageCounts", false)]
         // check if given user has unread private messages, not including messages manually marked as unread
         public static bool UserHasNewMessages(string userName)
         {
@@ -338,7 +338,7 @@ namespace Voat.Utilities
                 return unreadPrivateMessagesCount > 0 || unreadCommentRepliesCount > 0 || unreadPostRepliesCount > 0;
             }
         }
-
+        [Obsolete("Use QueryMessageCounts", false)]
         // check if given user has unread comment replies and return the count
         public static int UnreadCommentRepliesCount(string userName)
         {
@@ -349,13 +349,14 @@ namespace Voat.Utilities
                     .OrderBy(s => s.CreationDate)
                     .ThenBy(s => s.Sender);
 
-                if (!commentReplies.Any()) return 0;
+                if (!commentReplies.Any())
+                    return 0;
 
                 var unreadCommentReplies = commentReplies.Where(s => s.IsUnread && s.MarkedAsUnread == false);
                 return unreadCommentReplies.Any() ? unreadCommentReplies.Count() : 0;
             }
         }
-
+        [Obsolete("Use QueryMessageCounts", false)]
         // check if given user has unread post replies and return the count
         public static int UnreadPostRepliesCount(string userName)
         {
@@ -366,12 +367,14 @@ namespace Voat.Utilities
                     .OrderBy(s => s.CreationDate)
                     .ThenBy(s => s.Sender);
 
-                if (!postReplies.Any()) return 0;
+                if (!postReplies.Any())
+                    return 0;
                 var unreadPostReplies = postReplies.Where(s => s.IsUnread && s.MarkedAsUnread == false);
 
                 return unreadPostReplies.Any() ? unreadPostReplies.Count() : 0;
             }
         }
+        [Obsolete("Use QueryMessageCounts", false)]
 
         // check if given user has unread private messages and return the count
         public static int UnreadPrivateMessagesCount(string userName)
@@ -383,12 +386,14 @@ namespace Voat.Utilities
                     .OrderBy(s => s.CreationDate)
                     .ThenBy(s => s.Sender);
 
-                if (!privateMessages.Any()) return 0;
+                if (!privateMessages.Any())
+                    return 0;
                 var unreadPrivateMessages = privateMessages.Where(s => s.IsUnread && s.MarkedAsUnread == false);
 
                 return unreadPrivateMessages.Any() ? unreadPrivateMessages.Count() : 0;
             }
         }
+        [Obsolete("Use QueryMessageCounts", false)]
 
         // get total unread notifications count for a given user
         public static int UnreadTotalNotificationsCount(string userName)
@@ -404,36 +409,39 @@ namespace Voat.Utilities
                 return totalCount;
             }
         }
-
+        [Obsolete("Use QueryMessageCounts", false)]
         // get total number of comment replies for a given user
         public static int CommentRepliesCount(string userName)
         {
             using (var db = new voatEntities())
             {
                 var commentReplies = db.CommentReplyNotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
-                if (!commentReplies.Any()) return 0;
+                if (!commentReplies.Any())
+                    return 0;
                 return commentReplies.Any() ? commentReplies.Count() : 0;
             }
         }
-
+        [Obsolete("Use QueryMessageCounts", false)]
         // get total number of post replies for a given user
         public static int PostRepliesCount(string userName)
         {
             using (var db = new voatEntities())
             {
                 var postReplies = db.SubmissionReplyNotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
-                if (!postReplies.Any()) return 0;
+                if (!postReplies.Any())
+                    return 0;
                 return postReplies.Any() ? postReplies.Count() : 0;
             }
         }
-
+        [Obsolete("Use QueryMessageCounts", false)]
         // get total number of private messages for a given user
         public static int PrivateMessageCount(string userName)
         {
             using (var db = new voatEntities())
             {
                 var privateMessages = db.PrivateMessages.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
-                if (!privateMessages.Any()) return 0;
+                if (!privateMessages.Any())
+                    return 0;
                 return privateMessages.Any() ? privateMessages.Count() : 0;
             }
         }

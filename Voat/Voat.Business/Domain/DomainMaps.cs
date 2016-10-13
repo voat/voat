@@ -31,6 +31,85 @@ namespace Voat.Domain
             var mapped = list.Select(x => x.Map()).ToList();
             return mapped;
         }
+
+        public static IEnumerable<Data.Models.Message> Map(this IEnumerable<Domain.Models.Message> list)
+        {
+            var mapped = list.Select(x => x.Map()).ToList();
+            return mapped;
+        }
+        public static IEnumerable<Domain.Models.Message> Map(this IEnumerable<Data.Models.Message> list, bool protect = true)
+        {
+            var mapped = list.Select(x => x.Map(protect)).ToList();
+            return mapped;
+        }
+        public static Data.Models.Message Map(this Domain.Models.Message message)
+        {
+            return new Data.Models.Message()
+            {
+                ID = message.ID,
+                ParentID = message.ParentID,
+                CorrelationID = message.CorrelationID,
+
+                Content = message.Content,
+                FormattedContent = message.FormattedContent,
+                CommentID = message.CommentID,
+                CreationDate = message.CreationDate,
+                Direction = (int)message.Direction,
+                IsAnonymized = message.IsAnonymized,
+                ReadDate = message.ReadDate,
+                Recipient = message.Recipient,
+                RecipientType = (int)message.RecipientType,
+                Sender = message.Sender,
+                SenderType = (int)message.SenderType,
+                Title = message.Title,
+                SubmissionID = message.SubmissionID,
+                Subverse = message.Subverse,
+                Type = (int)message.Type
+            };
+        }
+
+        public static Domain.Models.Message Map(this Data.Models.Message message, bool protect = true)
+        {
+            var m = new Domain.Models.Message();
+
+            m.ID = message.ID;
+            m.ParentID = message.ParentID;
+            m.CorrelationID = message.CorrelationID;
+
+            m.Content = message.Content;
+            m.FormattedContent = message.FormattedContent;
+            m.CommentID = message.CommentID;
+            m.CreationDate = message.CreationDate;
+            m.Direction = (MessageDirection)message.Direction;
+            m.IsAnonymized = message.IsAnonymized;
+
+            m.ReadDate = message.ReadDate;
+
+            if (message.IsAnonymized && protect)
+            {
+                m.Sender = message.ID.ToString();
+            }
+            else
+            {
+                m.Sender = message.Sender;
+            }
+
+            m.Recipient = message.Recipient;
+            m.RecipientType = (MessageIdentityType)message.RecipientType;
+            m.SenderType = (MessageIdentityType)message.SenderType;
+
+
+
+            m.Title = message.Title;
+            m.SubmissionID = message.SubmissionID;
+            m.Subverse = message.Subverse;
+            m.Type = (MessageType)message.Type;
+
+
+            return m;
+
+        }
+
         public static UserMessage Map(this UserMessage message)
         {
             UserMessage result = message;

@@ -73,6 +73,7 @@
         <AssociationConnector Association="Models.FK_ApiClient_ApiThrottlePolicy" />
         <EntityTypeShape EntityType="Models.Ad" Width="1.5" PointX="16.375" PointY="3.75" />
         <EntityTypeShape EntityType="Models.UserVisit" Width="1.5" PointX="16.375" PointY="7.75" />
+        <EntityTypeShape EntityType="Models.Message" Width="1.5" PointX="5.25" PointY="0.625" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -46,13 +46,13 @@ namespace Voat.Utilities
 
         public void SendMentionNotice(string userName, string sendingUserName, ContentType type, int referenceID, string message)
         {
-            OnMentionReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, MessageType = MessageType.Mention, ReferenceType = type, ReferenceID = referenceID, Message = message });
+            OnMentionReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, MessageType = MessageTypeFlag.Mention, ReferenceType = type, ReferenceID = referenceID, Message = message });
         }
         //public void SendCommentReplyNotice(string userName, MessageType type, int id)
         //{
         //    OnCommentReplyReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, MessageType = type, ReferenceID = id });
         //}
-        public void SendMessageNotice(string userName, string sendingUserName, MessageType type, ContentType? referenceType, int? referenceID, string message = null)
+        public void SendMessageNotice(string userName, string sendingUserName, MessageTypeFlag type, ContentType? referenceType, int? referenceID, string message = null)
         {
             OnMessageReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, SendingUserName = sendingUserName, MessageType = type, ReferenceType = referenceType, ReferenceID = referenceID, Message = message });
         }
@@ -88,7 +88,7 @@ namespace Voat.Utilities
     }
     public class MessageReceivedEventArgs : BasicMessageEventArgs
     {
-        public MessageType MessageType { get; set; }
+        public MessageTypeFlag MessageType { get; set; }
 
     }
     public class VoteReceivedEventArgs : BasicMessageEventArgs

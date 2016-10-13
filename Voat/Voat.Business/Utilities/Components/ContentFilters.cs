@@ -144,7 +144,7 @@ namespace Voat.Utilities.Components
         }
         protected override string ProcessContent(string content, object context)
         {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.SUBVERSE_HOT_LINK_REGEX,
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.SUBVERSE_LINK_REGEX_FULL,
                ProcessLogic
             );
             return replacer.Replace(content, context);

@@ -96,12 +96,12 @@ namespace Voat.Domain.Command
 
         protected CommandResponse Map(RulesEngine.RuleOutcome outcome)
         {
-            return CommandResponse.Denied(outcome.Message, outcome.ToString());
+            return CommandResponse.FromStatus(outcome.Message, Status.Denied, outcome.ToString());
         }
 
         protected CommandResponse<T> Map<T>(RulesEngine.RuleOutcome outcome)
         {
-            return CommandResponse.Denied<T>(default(T), outcome.Message);
+            return CommandResponse.FromStatus(default(T), Status.Denied, outcome.Message);
         }
     }
 

@@ -180,6 +180,7 @@
     <Compile Include="Domain\Models\API\v1\UserMessage.cs" />
     <Compile Include="Domain\Models\Comment\CommentSegment.cs" />
     <Compile Include="Domain\Models\Comment\NestedComment.cs" />
+    <Compile Include="Domain\Models\Message.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\SubverseModerator.cs" />
     <Compile Include="Domain\Models\UserSet.cs" />
@@ -194,6 +195,8 @@
     <Compile Include="Domain\Query\QueryBannedDomains.cs" />
     <Compile Include="Domain\Query\QueryCommentContext.cs" />
     <Compile Include="Domain\Query\QueryDefaultSubverses.cs" />
+    <Compile Include="Domain\Query\QueryMessageCounts.cs" />
+    <Compile Include="Domain\Query\QueryMessages.cs" />
     <Compile Include="Domain\Query\QueryNewestSubverses.cs" />
     <Compile Include="Domain\Query\QueryComments.cs" />
     <Compile Include="Domain\Query\QuerySubmissions.cs" />

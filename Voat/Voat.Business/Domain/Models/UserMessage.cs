@@ -58,7 +58,7 @@ namespace Voat.Domain.Models
         /// <summary>
         /// The type of message
         /// </summary>
-        public MessageType Type { get; set; }
+        public MessageTypeFlag Type { get; set; }
 
         /// <summary>
         /// A flag regarding the read state of message.

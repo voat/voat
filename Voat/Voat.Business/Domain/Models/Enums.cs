@@ -57,12 +57,29 @@ namespace Voat.Domain.Models
         Read = 2,
         All = Unread | Read,
     }
+    public enum MessageIdentityType
+    {
+        User = 1,
+        Subverse = 2
+    }
+    public enum MessageType
+    {
+        Private = 1,
+        Sent = 2,
+        Mention = 3,
+        Comment = 4
+    }
+    public enum MessageDirection
+    {
+        InBound = 1,
+        OutBound = 2
+    }
 
     /// <summary>
-    /// The type of messages to get for a user
+    /// The type of messages to get for a user from API
     /// </summary>
     [Flags]
-    public enum MessageType
+    public enum MessageTypeFlag
     {
         /// <summary>
         /// Private Messages
@@ -79,10 +96,10 @@ namespace Voat.Domain.Models
         /// </summary>
         Comment = 4,
 
-        /// <summary>
-        /// Submission Reply Messages
-        /// </summary>
-        Submission = 8,
+        ///// <summary>
+        ///// Submission Reply Messages
+        ///// </summary>
+        //Submission = 8,
 
         /// <summary>
         /// User Mention Messages
@@ -92,7 +109,7 @@ namespace Voat.Domain.Models
         /// <summary>
         /// All Messages
         /// </summary>
-        All = Inbox | Sent | Comment | Submission | Mention
+        All = Inbox | Sent | Comment | Mention
     }
 
     public enum Origin

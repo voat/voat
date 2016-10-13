@@ -40,30 +40,49 @@ namespace Voat.Domain.Command
             get { return this.Status == Status.Success; }
         }
         #region Static Helpers
-        public static CommandResponse<R> Denied<R>(R response, string description)
+
+
+        public static CommandResponse FromStatus(Status status, string description)
         {
-            return new CommandResponse<R>(response, Status.Denied, description);
+            return new CommandResponse(status, description);
+        }
+        public static CommandResponse<R> FromStatus<R>(R response, Status status, string description)
+        {
+            return new CommandResponse<R>(response, status, description);
         }
 
-        public static CommandResponse Denied(string description)
-        {
-            return new CommandResponse(Status.Denied, description);
-        }
 
-        public static CommandResponse<R> Ignored<R>(R response, string description)
-        {
-            return new CommandResponse<R>(response, Status.Ignored, description);
-        }
 
-        public static CommandResponse Ignored(string description)
-        {
-            return new CommandResponse(Status.Ignored, description);
-        }
+        //public static CommandResponse<R> Denied<R>(R response, string description)
+        //{
+        //    return new CommandResponse<R>(response, Status.Denied, description);
+        //}
+
+        //public static CommandResponse Denied(string description)
+        //{
+        //    return new CommandResponse(Status.Denied, description);
+        //}
+
+        //public static CommandResponse<R> Ignored<R>(R response, string description)
+        //{
+        //    return new CommandResponse<R>(response, Status.Ignored, description);
+        //}
+
+        //public static CommandResponse Ignored(string description)
+        //{
+        //    return new CommandResponse(Status.Ignored, description);
+        //}
 
         public static CommandResponse<R> Successful<R>(R response)
         {
             return new CommandResponse<R>(response, Status.Success, "");
         }
+        public static CommandResponse Successful()
+        {
+            return new CommandResponse(Status.Success, "");
+        }
+
+
         public static T Error<T>(Exception ex) where T : CommandResponse, new()
         {
             var r = new T();
@@ -81,10 +100,6 @@ namespace Voat.Domain.Command
             return r;
         }
         
-        public static CommandResponse Successful()
-        {
-            return new CommandResponse(Status.Success, "");
-        }
         public static CommandResponse<M> Map<T, M>(CommandResponse<T> response, M mapped)
         {
             return new CommandResponse<M>(mapped, response.Status, response.Message);

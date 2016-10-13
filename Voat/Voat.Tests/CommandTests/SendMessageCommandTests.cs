@@ -12,8 +12,6 @@ namespace Voat.Tests.CommandTests
     [TestClass]
     public class SendMessageCommandTests
     {
-
-
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Messaging")]
@@ -40,6 +38,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsFalse(response.Success, "Expecting not success response");
 
         }
+
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Messaging")]
@@ -67,16 +66,103 @@ namespace Voat.Tests.CommandTests
 
             using (var db = new voatEntities())
             {
-                var record = (from x in db.PrivateMessages
+                var record = (from x in db.Messages
                               where 
                                 x.Recipient == recipient 
                                 && x.Sender == sender 
-                                && x.Subject == id
-                                && x.Body == id
+                                && x.Title == id
+                                && x.Content == id
+                                && x.Subverse == null
+                                && x.CommentID == null
+                                && x.SubmissionID == null
+                                && x.Type == (int)Domain.Models.MessageType.Private
+                                && x.Direction == (int)Domain.Models.MessageDirection.OutBound
                                 select x).FirstOrDefault();
-                Assert.IsNotNull(record, "Can not find message in database");
+                Assert.IsNotNull(record, "Can not find outbound in database");
+
+                record = (from x in db.Messages
+                              where
+                                x.Recipient == recipient
+                                && x.Sender == sender
+                                && x.Title == id
+                                && x.Content == id
+                                && x.Subverse == null
+                                && x.CommentID == null
+                                && x.SubmissionID == null
+                                && x.Type == (int)Domain.Models.MessageType.Private
+                                && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                              select x).FirstOrDefault();
+                Assert.IsNotNull(record, "Can not find inbound in database");
             }
         }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Messaging")]
+        [TestCategory("Command.Messaging")]
+        public async Task SendPrivateMessageReply()
+        {
+            var id = Guid.NewGuid().ToString();
+            var sender = "User100CCP";
+            var recipient = "anon";
+
+            TestHelper.SetPrincipal(sender);
+
+            var message = new Domain.Models.SendMessage()
+            {
+                //Sender = User.Identity.Name,
+                Recipient = recipient,
+                Subject = id,
+                Message = id
+            };
+            var cmd = new SendMessageCommand(message);
+            var response = await cmd.Execute();
+            var firstMessage = response.Response;
+
+            Assert.IsNotNull(response, "Response is null");
+            Assert.IsTrue(response.Success, response.Status.ToString());
+
+            //Ensure first msg is in db
+            using (var db = new voatEntities())
+            {
+                var record = (from x in db.Messages
+                              where
+                                x.Recipient == recipient
+                                && x.Sender == sender
+                                && x.Title == id
+                                && x.Content == id
+                                && x.Subverse == null
+                                && x.CommentID == null
+                                && x.SubmissionID == null
+                                && x.Type == (int)Domain.Models.MessageType.Private
+                                && x.Direction == (int)Domain.Models.MessageDirection.OutBound
+                              select x).FirstOrDefault();
+                Assert.IsNotNull(record, "Can not find outbound in database");
+
+                record = (from x in db.Messages
+                          where
+                            x.Recipient == recipient
+                            && x.Sender == sender
+                            && x.Title == id
+                            && x.Content == id
+                            && x.Subverse == null
+                            && x.CommentID == null
+                            && x.SubmissionID == null
+                            && x.Type == (int)Domain.Models.MessageType.Private
+                            && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                          select x).FirstOrDefault();
+            }
+
+            TestHelper.SetPrincipal(recipient);
+
+            var replyCmd = new SendMessageReplyCommand(firstMessage.ID, $"Reply to {firstMessage.ID.ToString()}");
+            var replyResponse = await replyCmd.Execute();
+            var replyMessage = replyResponse.Response;
+
+            Assert.AreEqual(firstMessage.ID, replyMessage.ParentID);
+
+        }
+
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Messaging")]
@@ -124,11 +210,14 @@ namespace Voat.Tests.CommandTests
 
             using (var db = new voatEntities())
             {
-                var record = (from x in db.PrivateMessages
+                var record = (from x in db.Messages
                               where
                                 x.Sender == sender
-                                //&& x.Subject == $"[v/{subverse}] {id}"
-                                && x.Body == id
+                                && x.SenderType == (int)Domain.Models.MessageIdentityType.User
+                                && x.Recipient == subverse
+                                && x.RecipientType == (int)Domain.Models.MessageIdentityType.Subverse
+                                && x.Title == id
+                                && x.Content == id
                               select x).ToList();
                 Assert.IsNotNull(record, "Can not find message in database");
                 Assert.AreEqual(2, record.Count, "Expecting 2 PMs");
@@ -142,14 +231,14 @@ namespace Voat.Tests.CommandTests
         {
             
             var id = Guid.NewGuid().ToString();
-            var sender = "v/unit";
+            var sender = "unit";
             var recipient = "User100CCP";
 
             TestHelper.SetPrincipal("User500CCP");
 
             var message = new Domain.Models.SendMessage()
             {
-                Sender = sender,
+                Sender = $"v/{sender}",
                 Recipient = recipient,
                 Subject = id,
                 Message = id
@@ -162,15 +251,159 @@ namespace Voat.Tests.CommandTests
 
             using (var db = new voatEntities())
             {
-                var record = (from x in db.PrivateMessages
+                var record = (from x in db.Messages
                               where
-                                x.Recipient == recipient
-                                && x.Sender == sender
-                                && x.Subject == id
-                                && x.Body == id
+                                x.Sender == sender
+                                && x.SenderType == (int)Domain.Models.MessageIdentityType.Subverse
+                                && x.Recipient == recipient
+                                && x.RecipientType == (int)Domain.Models.MessageIdentityType.User
+                                && x.Title == id
+                                && x.Content == id
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find message in database");
             }
         }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Messaging")]
+        [TestCategory("Command.Messaging")]
+        public async Task SendCommentNotificationMessage()
+        {
+            await TestCommentNotification("unit", "TestUser1", "TestUser2");
+
+        }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Messaging")]
+        [TestCategory("Command.Messaging")]
+        public async Task SendCommentNotificationMessage_AnonSub()
+        {
+            await TestCommentNotification("anon", "TestUser3", "TestUser4");
+        }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Messaging")]
+        [TestCategory("Command.Messaging")]
+        public async Task SendUserMentionNotificationMessage_Anon()
+        {
+            await TestUserMentionNotification("anon", "UnitTestUser8", "UnitTestUser9", "UnitTestUser11");
+        }
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Messaging")]
+        [TestCategory("Command.Messaging")]
+        public async Task SendUserMentionNotificationMessage()
+        {
+            await TestUserMentionNotification("unit", "UnitTestUser5", "UnitTestUser10", "UnitTestUser7");
+        }
+        
+        #region HelperMethods
+
+
+        public async Task TestCommentNotification(string sub, string user1, string user2)
+        {
+            var id = Guid.NewGuid().ToString();
+
+            //Post submission as TestUser1
+            TestHelper.SetPrincipal(user1);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "Let's be creative!", Content = "No" });
+            var response = await cmd.Execute();
+            Assert.IsTrue(response.Success, "Expected post submission to return true");
+            var submission = response.Response;
+            Assert.IsNotNull(submission, "Expected a non-null submission response");
+
+            //Reply to comment as TestUser2
+            TestHelper.SetPrincipal(user2);
+            var commentCmd = new CreateCommentCommand(submission.ID, null, "Important Comment");
+            var responseComment = await commentCmd.Execute();
+            Assert.IsTrue(responseComment.Success, "Expected post comment to return true");
+            var comment = responseComment.Response;
+            Assert.IsNotNull(comment, "Expected a non-null comment response");
+
+
+            //Check to see if Comment notification exists in messages
+            using (var db = new voatEntities())
+            {
+                var record = (from x in db.Messages
+                              where
+                                x.Recipient == user1
+                                && x.Sender == user2
+                                && x.IsAnonymized == submission.IsAnonymized
+                                && x.IsAnonymized == comment.IsAnonymized
+                                && x.CommentID == comment.ID
+                                && x.SubmissionID == submission.ID
+                                && x.Subverse == submission.Subverse
+                                && x.Type == (int)Domain.Models.MessageType.Comment
+                                && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                              select x).FirstOrDefault();
+                Assert.IsNotNull(record, "Can not find message in database");
+            }
+        }
+
+
+        public async Task TestUserMentionNotification(string sub, string user1, string user2, string user3)
+        {
+            var id = Guid.NewGuid().ToString();
+            //var user1 = "UnitTestUser10";
+            //var user2 = "UnitTestUser20";
+
+
+            //Post submission as TestUser1
+            TestHelper.SetPrincipal(user1);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "I love you more than butter in my coffee", Content = $"Did you hear that @{user2}?" });
+            var response = await cmd.Execute();
+            Assert.IsTrue(response.Success, "Expected post submission to return true");
+            var submission = response.Response;
+            Assert.IsNotNull(submission, "Expected a non-null submission response");
+
+
+            //Reply to comment as TestUser2
+            TestHelper.SetPrincipal(user2);
+            var commentCmd = new CreateCommentCommand(submission.ID, null, $"I bet @{user3} could think of something!");
+            var responseComment = await commentCmd.Execute();
+            Assert.IsTrue(responseComment.Success, "Expected post comment to return true");
+            var comment = responseComment.Response;
+            Assert.IsNotNull(comment, "Expected a non-null comment response");
+
+            //Check to see if Comment notification exists in messages
+            using (var db = new voatEntities())
+            {
+                //test for submission notification
+                var record = (from x in db.Messages
+                              where
+                                x.Recipient == user2
+                                && x.Sender == user1
+                                && x.IsAnonymized == submission.IsAnonymized
+                                //&& x.IsAnonymized == comment.IsAnonymized
+                                && x.CommentID == null
+                                && x.SubmissionID == submission.ID
+                                && x.Subverse == submission.Subverse
+                                && x.Type == (int)Domain.Models.MessageType.Mention
+                                && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                              select x).FirstOrDefault();
+                Assert.IsNotNull(record, "Can not find submission message in database");
+
+                //test for comment notification
+                record = (from x in db.Messages
+                              where
+                                x.Recipient == user3
+                                && x.Sender == user2
+                                && x.IsAnonymized == submission.IsAnonymized
+                                && x.IsAnonymized == comment.IsAnonymized
+                                && x.CommentID == comment.ID
+                                && x.SubmissionID == submission.ID
+                                && x.Subverse == submission.Subverse
+                                && x.Type == (int)Domain.Models.MessageType.Mention
+                                && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                              select x).FirstOrDefault();
+                Assert.IsNotNull(record, "Can not find comment message in database");
+            }
+        }
+
+        #endregion
     }
 }
