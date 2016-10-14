@@ -46,7 +46,7 @@ namespace Voat.Utilities
 
         public void SendMentionNotice(string userName, string sendingUserName, ContentType type, int referenceID, string message)
         {
-            OnMentionReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, MessageType = MessageTypeFlag.Mention, ReferenceType = type, ReferenceID = referenceID, Message = message });
+            OnMentionReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, MessageType = MessageTypeFlag.CommentMention, ReferenceType = type, ReferenceID = referenceID, Message = message });
         }
         //public void SendCommentReplyNotice(string userName, MessageType type, int id)
         //{

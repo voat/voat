@@ -68,7 +68,7 @@
                                     <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Html.Raw(message.Body)</textarea>
                                     <ul class="flat-list buttons">
                                         <li>
-                                            <a id="replyPrivateMessage" href="javascript:void(0)" onclick="return replyprivatemessage(@message.ID, '@message.Sender', '@Html.Encode(@message.Subject)')">reply</a>
+                                            <a id="replyPrivateMessage" href="javascript:void(0)" onclick="return messageReplyForm(@message.ID, '@message.Sender', '@Html.Encode(@message.Subject)')">reply</a>
                                         </li>
                                         <li>
                                             <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this)">source</a>

@@ -64,7 +64,7 @@ namespace Voat.Tests.QueryTests
 
 
         [TestMethod]
-        [TestCategory("Query"), TestCategory("Query.Messages")]
+        [TestCategory("Query"), TestCategory("Messaging"), TestCategory("Query.Messages")]
         public async Task GetUnreadInbox()
         {
 
@@ -74,7 +74,7 @@ namespace Voat.Tests.QueryTests
 
             Assert.IsNotNull(m, "Assert 1");
 
-            var qc = new QueryMessageCounts(MessageTypeFlag.All, MessageState.Unread, false);
+            var qc = new QueryMessageCounts(MessageTypeFlag.All, MessageState.Unread);
             var mc = await qc.ExecuteAsync();
 
             Assert.IsNotNull(mc, "Assert 2");

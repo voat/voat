@@ -15,7 +15,16 @@
 @using PagedList.Mvc;
 
 @{
-    ViewBag.Title = "Inbox";
+    ViewBag.Title = String.IsNullOrEmpty(ViewBag.Title) ? "Inbox" : ViewBag.Title;
+    var qcounts = new Voat.Domain.Query.QueryMessageCounts(Voat.Domain.Models.MessageTypeFlag.All, Voat.Domain.Models.MessageState.Unread);
+    var counts = qcounts.Execute();
+
+    //counts
+    var unreadCommentReplyCount = counts.GetCount(Voat.Domain.Models.MessageType.CommentReply);
+    var unreadCommentMentionCount = counts.GetCount(Voat.Domain.Models.MessageType.CommentMention);
+    var unreadSubmissionReplyCount = counts.GetCount(Voat.Domain.Models.MessageType.SubmissionReply);
+    var unreadSubmissionMentionCount = counts.GetCount(Voat.Domain.Models.MessageType.SubmissionMention);
+    var formatString = " ({0} unread)";
 }
 
 <style>
@@ -28,9 +37,11 @@
 
 <div id="container">
 
-    @*<h1>Private Messages (showing all)</h1>
-    <a href="/messaging/commentreplies/" class="btn-whoaverse-paging">Comment Replies / User Mentions [@ViewBag.UnreadCommentReplies / @ViewBag.CommentRepliesCount]</a>
-    <a href="/messaging/postreplies/" class="btn-whoaverse-paging">Post Replies [@ViewBag.UnreadPostReplies / @ViewBag.PostRepliesCount]</a>*@
+    <h1>@ViewBag.Title</h1>
+    <a href="/messages/replies/comment" class="btn-whoaverse-paging">Comment Replies@(unreadCommentReplyCount > 0 ? String.Format(formatString, unreadCommentReplyCount) : "")</a>
+    <a href="/messages/replies/submission" class="btn-whoaverse-paging">Submission Replies@(unreadSubmissionReplyCount > 0 ? String.Format(formatString, unreadSubmissionReplyCount) : "")</a>
+    <a href="/messages/mentions/comment" class="btn-whoaverse-paging">Comment Mentions@(unreadCommentMentionCount > 0 ? String.Format(formatString, unreadCommentMentionCount) : "")</a>
+    <a href="/messages/mentions/submission" class="btn-whoaverse-paging">Submission Mentions@(unreadSubmissionMentionCount > 0 ? String.Format(formatString, unreadSubmissionMentionCount) : "")</a>
 
     <div id="about-main" class="" role="main">
         <div class="md single-notification">
@@ -39,7 +50,7 @@
                 <p>Displaying newest @Model.Count message(s). Your have @ViewBag.UnreadCount unread messages and a total of @ViewBag.InboxCount message(s).</p>
 
                 <p align="right">
-                    <a id="markAllPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAsRead(this, 'privateMessage', null, true)" class="btn-whoaverse-paging">Mark all as read</a>
+                    <a id="markAllPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAsRead(this, 'private', 'read', '')" class="btn-whoaverse-paging">Mark all as read</a>
                 </p>
                 <hr />
                 <div id="messageContainer">
@@ -52,50 +63,111 @@
                                 <div class="panel panel-heading">
 
                                     @{
-                                        var sender = message.Sender;
-                                        var senderHref = "/u/" + message.Sender;
-                                        if (message.Sender.ToLower().StartsWith("v/"))
+                                        var sender = (message.SenderType == Voat.Domain.Models.MessageIdentityType.User ? "" : "v/") + message.Sender;
+                                        var senderHref = (message.SenderType == Voat.Domain.Models.MessageIdentityType.User ? "/u/" : "/v/") + message.Sender;
+
+                                        var recipient = (message.RecipientType == Voat.Domain.Models.MessageIdentityType.User ? "" : "v/")  + message.Recipient;
+                                        var recipientHref = (message.RecipientType == Voat.Domain.Models.MessageIdentityType.User ? "/u/" : "/v/") + message.Recipient;
+
+                                        if (message.IsAnonymized)
                                         {
+                                            sender = "Anon";
                                             senderHref = "#";
+
+                                            recipient = "Anon";
+                                            recipientHref = "#";
                                         }
                                     }
-                                    Sender: <a href="@senderHref">@sender</a> | Sent: @Age.ToRelative(message.CreationDate) ago on @message.CreationDate
+                                    <a href="@senderHref">@sender</a> > <a href="@recipientHref">@recipient</a> | Sent: @Age.ToRelative(message.CreationDate) ago on @message.CreationDate
                                 </div>
-                                <div class="panel panel-heading-messagetitle">
-                                    <b>@message.Title</b>
-                                </div>
+                                @{
+                                    switch (message.Type)
+                                    {
+                                        case Voat.Domain.Models.MessageType.Private:
+                                        case Voat.Domain.Models.MessageType.Sent:
 
-                                <div class="panel-message-body @readStatusClass">
-                                    @Html.Raw(message.FormattedContent)
-                                    <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Html.Raw(message.Content)</textarea>
-                                    <ul class="flat-list buttons">
-                                        <li>
-                                            <a id="replyPrivateMessage" href="javascript:void(0)" onclick="return replyprivatemessage(@message.ID, '@message.Sender', '@Html.Encode(@message.Content)')">reply</a>
-                                        </li>
-                                        <li>
-                                            <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this)">source</a>
-                                        </li>
-                                        <li>
-                                            <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deletePrivateMessage(this, @message.ID)">delete</a>
-                                        </li>
-                                        @if (!message.IsRead)
-                                        {
-                                            // status: true = unread, false = read
-                                            <li>
-                                                <a id="markPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAsRead(this, 'privateMessage', @message.ID, false)">mark as read</a>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
+                                            <div class="panel panel-heading-messagetitle">
+                                                <b>@message.Title</b>
+                                            </div>
+
+                                            <div class="panel-message-body @readStatusClass">
+                                                @Html.Raw(message.FormattedContent)
+                                                <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Html.Raw(message.Content)</textarea>
+                                                <ul class="flat-list buttons">
+
+                                                    @if (message.Type == Voat.Domain.Models.MessageType.Private)
+                                                    {
+                                                        <li>
+                                                            <a id="replyPrivateMessage" href="javascript:void(0)" onclick="return messageReplyForm(@message.ID);">reply</a>
+                                                        </li>
+                                                    }
+                                                    
+                                                    <li>
+                                                        <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this)">source</a>
+                                                    </li>
+                                                    <li>
+                                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deletePrivateMessage(this, @message.ID)">delete</a>
+                                                    </li>
+                                                    @if (!message.IsRead)
+                                                    {
+                                                        // status: true = unread, false = read
+                                                        <li>
+                                                            <a id="markPrivateMessageAsRead" href="javascript:void(0)" onclick="return markAsRead(this, 'private', 'read', @message.ID)">mark as read</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+
+                                            break;
+
+                                        case Voat.Domain.Models.MessageType.SubmissionMention:
+
+                                            var submission = Voat.Caching.DataCache.Submission.Retrieve(message.SubmissionID);
+
+                                            <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
+                                                <p class="parent"></p>
+                                                @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", 100 } })
+                                                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+
+                                                <div class="child"></div>
+                                                <div class="clearleft">@*IE6fix*@</div>
+                                            </div>
+
+                                            break;
+                                        case Voat.Domain.Models.MessageType.CommentMention:
+                                        case Voat.Domain.Models.MessageType.CommentReply:
+                                        case Voat.Domain.Models.MessageType.SubmissionReply:
+
+                                            var q = new Voat.Domain.Query.QuerySubmission(message.SubmissionID.Value);
+                                            var submission2 = q.Execute();
+
+                                            var qc = new Voat.Domain.Query.QueryComment(message.CommentID.Value);
+                                            var comment = qc.Execute();
+
+                                            <div class="panel panel-heading-messagetitle">
+                                                <a href="@VoatPathHelper.CommentsPagePath(message.Subverse, message.SubmissionID.Value)"><b>@submission2.Title</b></a>
+                                            </div>
+                                            <div class="panel-message-body">
+                                                @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
+                                                    Voat.Domain.DomainMaps.Map(comment),
+                                                    new ViewDataDictionary {
+                                                        { "parentIsHidden", false },
+                                                        { "SortOrder", Voat.Domain.Models.CommentSortAlgorithm.New },
+                                                        { "ShowContextLink", true } }
+                                                    )
+                                            </div>
+                                            break;
+                                    }
+                                }
                             </div>
                         </div>
-                                        }
+                       }
                 </div>
-                                        }
-                                        else
-                                        {
-                                            <p>Your inbox is empty. I may be just a server with limited intelligence, but I am not quite sure how to feel about this.</p>
-                                        }
+        }
+        else
+        {
+            <p>Your inbox is empty. I may be just a server with limited intelligence, but I am not quite sure how to feel about this.</p>
+        }
         </div>
     </div>
     @if (Model.PageCount > 1)

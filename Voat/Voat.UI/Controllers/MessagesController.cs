@@ -22,17 +22,57 @@ using Voat.Domain.Models;
 using Voat.Domain;
 using Voat.Domain.Query;
 using PagedList;
+using Voat.Models.ViewModels;
+using System.Net;
+using System.Linq;
 
 namespace Voat.Controllers
 {
+    [Authorize]
     public class MessagesController : BaseController
     {
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(int? page = null)
+        {
+
+            var unread = new QueryMessageCounts(MessageTypeFlag.All, MessageState.Unread);
+            var counts = await unread.ExecuteAsync();
+
+            if (counts.Total > 0)
+            {
+                if (counts.Counts.Any(x => x.Type == MessageType.Private))
+                {
+                    return await Private(page);
+                }
+                else if (counts.Counts.Any(x => x.Type == MessageType.SubmissionMention))
+                {
+                    return await Mentions(ContentType.Submission, page);
+                }
+                else if (counts.Counts.Any(x => x.Type == MessageType.CommentMention))
+                {
+                    return await Mentions(ContentType.Comment, page);
+                }
+                else if (counts.Counts.Any(x => x.Type == MessageType.SubmissionReply))
+                {
+                    return await Replies(ContentType.Submission, page);
+                }
+                else if (counts.Counts.Any(x => x.Type == MessageType.CommentReply))
+                {
+                    return await Replies(ContentType.Comment, page);
+                }
+            }
+            return await Private(page);
+        }
+
+
+        public async Task<ActionResult> Private(int? page = null)
         {
 
             ViewBag.PmView = "inbox";
+            ViewBag.Title = "Inbox";
 
-            var q = new QueryMessages(MessageTypeFlag.Inbox, MessageState.All, false);
+            var q = new QueryMessages(MessageTypeFlag.Private, MessageState.All, false);
+            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value : 0);
+
             var result = await q.ExecuteAsync();
 
             var pagedList = new PagedList.StaticPagedList<Domain.Models.Message>(result, 1, 25, 100);
@@ -41,12 +81,15 @@ namespace Voat.Controllers
 
         }
 
-        public async Task<ActionResult> Sent()
+        public async Task<ActionResult> Sent(int? page = null)
         {
 
             ViewBag.PmView = "sent";
+            ViewBag.Title = "Sent";
 
-            var q = new QueryMessages(MessageTypeFlag.Sent, MessageState.All, false);
+            var q = new QueryMessages(MessageTypeFlag.Sent, MessageState.All, true);
+            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value : 0);
+
             var result = await q.ExecuteAsync();
 
             var pagedList = new PagedList.StaticPagedList<Domain.Models.Message>(result, 1, 25, 100);
@@ -54,12 +97,55 @@ namespace Voat.Controllers
             return View("Index", pagedList);
 
         }
+        public async Task<ActionResult> Replies(ContentType? type = null, int? page = null)
+        {
 
+            ViewBag.PmView = "inbox";
+            ViewBag.Title = "Replies";
+
+            var contentType = MessageTypeFlag.CommentReply | MessageTypeFlag.SubmissionReply;
+            if (type.HasValue)
+            {
+                contentType = type.Value == ContentType.Comment ? MessageTypeFlag.CommentReply : MessageTypeFlag.SubmissionReply;
+                ViewBag.Title = contentType.ToString() + " Replies";
+            }
+
+            var q = new QueryMessages(contentType, MessageState.All, true);
+            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value : 0);
+            var result = await q.ExecuteAsync();
+
+            var pagedList = new PagedList.StaticPagedList<Domain.Models.Message>(result, 1, 25, 100);
+
+            return View("Index", pagedList);
+
+        }
+        public async Task<ActionResult> Mentions(ContentType? type = null, int? page = null)
+        {
+
+            ViewBag.PmView = "inbox";
+            ViewBag.Title = "Mentions";
+
+            var contentType = MessageTypeFlag.CommentMention | MessageTypeFlag.SubmissionMention;
+            if (type.HasValue)
+            {
+                contentType = type.Value == ContentType.Comment ? MessageTypeFlag.CommentMention : MessageTypeFlag.SubmissionMention;
+                ViewBag.Title = contentType.ToString() + " Mentions";
+            }
+
+            var q = new QueryMessages(contentType, MessageState.All, true);
+            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value : 0);
+
+            var result = await q.ExecuteAsync();
+            var pagedList = new PagedList.StaticPagedList<Domain.Models.Message>(result, 1, 25, 100);
+
+            return View("Index", pagedList);
+        }
         // GET: Compose
         [System.Web.Mvc.Authorize]
         public ActionResult Compose()
         {
             ViewBag.PmView = "compose";
+            ViewBag.Title = "Compose";
 
             var recipient = Request.Params["recipient"];
 
@@ -73,18 +159,17 @@ namespace Voat.Controllers
         }
 
         // POST: Compose
-        [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> Compose(SendMessage sendMessage)
+        public async Task<ActionResult> Compose(NewMessageViewModel message)
         {
             if (!ModelState.IsValid)
             {
                 return View();
             }
 
-            if (sendMessage.Recipient == null || sendMessage.Subject == null || sendMessage.Message == null)
+            if (message.Recipient == null || message.Subject == null || message.Body == null)
             {
                 return RedirectToAction("Sent", "Messages");
             }
@@ -100,7 +185,11 @@ namespace Voat.Controllers
                     return View();
                 }
             }
-
+            var sendMessage = new SendMessage() {
+                Recipient = message.Recipient,
+                Message = message.Body,
+                Subject = message.Subject
+            };
             var cmd = new SendMessageCommand(sendMessage);
             var response = await cmd.Execute();
 
@@ -112,6 +201,79 @@ namespace Voat.Controllers
             {
                 ModelState.AddModelError(string.Empty, response.Message);
                 return View();
+            }
+        }
+        // POST: Compose
+        [Authorize]
+        [HttpGet]
+        public ActionResult ReplyForm(MessageReplyViewModel message)
+        {
+            ModelState.Clear();
+            return PartialView("_MessageReply", message);
+        }
+        // POST: Compose
+        [HttpPost]
+        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> Reply(MessageReplyViewModel message)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            if (message.ID <= 0)
+            {
+                return RedirectToAction("Sent", "Messages");
+            }
+
+            var cmd = new SendMessageReplyCommand(message.ID, message.Body);
+            var response = await cmd.Execute();
+
+            if (response.Success)
+            {
+                if (Request.IsAjaxRequest())
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.OK);
+                }
+                else
+                {
+                    return RedirectToAction("Sent", "Messages");
+                }
+            }
+            else
+            {
+                if (Request.IsAjaxRequest())
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, response.Message);
+                    return View();
+                }
+            }
+        }
+
+        //url: messageRoot + "/mark/{type}/{action}/{id}",
+        [HttpPost]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> Mark(MessageTypeFlag type, MessageState markAction, int? id = null)
+        {
+
+            ViewBag.PmView = "inbox";
+            ViewBag.Title = "Inbox";
+
+            var cmd = new MarkMessagesCommand(type, markAction, id);
+            var response = await cmd.Execute();
+
+            if (response.Success)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
             }
         }
     }

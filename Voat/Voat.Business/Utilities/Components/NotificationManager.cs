@@ -63,7 +63,7 @@ namespace Voat.Utilities.Components
                             message.SubmissionID = submission.ID;
                             message.CommentID = comment.ID;
 
-                            message.Type = Domain.Models.MessageType.Mention;
+                            message.Type = Domain.Models.MessageType.CommentMention;
                             message.Direction = Domain.Models.MessageDirection.InBound;
 
                             message.CreationDate = Repository.CurrentDate;
@@ -137,7 +137,7 @@ namespace Voat.Utilities.Components
                             message.Subverse = subverse.Name;
                             message.SubmissionID = submission.ID;
 
-                            message.Type = Domain.Models.MessageType.Mention;
+                            message.Type = Domain.Models.MessageType.SubmissionMention;
                             message.Direction = Domain.Models.MessageDirection.InBound;
 
                             message.CreationDate = Repository.CurrentDate;
@@ -221,7 +221,7 @@ namespace Voat.Utilities.Components
                                             message.SubmissionID = submission.ID;
                                             message.CommentID = comment.ID;
 
-                                            message.Type = Domain.Models.MessageType.Comment;
+                                            message.Type = Domain.Models.MessageType.CommentReply;
                                             message.Direction = Domain.Models.MessageDirection.InBound;
 
                                             message.CreationDate = Repository.CurrentDate;
@@ -253,7 +253,7 @@ namespace Voat.Utilities.Components
 
                                             await _db.SaveChangesAsync();
 
-                                            EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.Comment, Domain.Models.ContentType.Comment, comment.ID);
+                                            EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.CommentReply, Domain.Models.ContentType.Comment, comment.ID);
 
                                             //OLD CODE
                                             //EventNotification.Instance.SendMessageNotice(commentReplyNotification.Recipient, commentReplyNotification.Sender, Domain.Models.MessageTypeFlag.Comment, Domain.Models.ContentType.Comment, comment.ID);
@@ -304,7 +304,7 @@ namespace Voat.Utilities.Components
                                     message.SubmissionID = submission.ID;
                                     message.CommentID = comment.ID;
 
-                                    message.Type = Domain.Models.MessageType.Comment;
+                                    message.Type = Domain.Models.MessageType.SubmissionReply;
                                     message.Direction = Domain.Models.MessageDirection.InBound;
 
                                     message.CreationDate = Repository.CurrentDate;
@@ -340,7 +340,7 @@ namespace Voat.Utilities.Components
 
                                     await _db.SaveChangesAsync();
 
-                                    EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.Comment, Domain.Models.ContentType.Comment, comment.ID);
+                                    EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.CommentReply, Domain.Models.ContentType.Comment, comment.ID);
                                 }
                             }
                         }

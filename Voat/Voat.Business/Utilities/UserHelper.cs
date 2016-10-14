@@ -325,7 +325,8 @@ namespace Voat.Utilities
                     .ToList();
             }
         }
-        [Obsolete("Use QueryMessageCounts", false)]
+
+        [Obsolete("Use QueryMessageCounts", true)]
         // check if given user has unread private messages, not including messages manually marked as unread
         public static bool UserHasNewMessages(string userName)
         {
@@ -338,7 +339,7 @@ namespace Voat.Utilities
                 return unreadPrivateMessagesCount > 0 || unreadCommentRepliesCount > 0 || unreadPostRepliesCount > 0;
             }
         }
-        [Obsolete("Use QueryMessageCounts", false)]
+        [Obsolete("Use QueryMessageCounts", true)]
         // check if given user has unread comment replies and return the count
         public static int UnreadCommentRepliesCount(string userName)
         {
@@ -356,7 +357,7 @@ namespace Voat.Utilities
                 return unreadCommentReplies.Any() ? unreadCommentReplies.Count() : 0;
             }
         }
-        [Obsolete("Use QueryMessageCounts", false)]
+        [Obsolete("Use QueryMessageCounts", true)]
         // check if given user has unread post replies and return the count
         public static int UnreadPostRepliesCount(string userName)
         {
@@ -374,7 +375,7 @@ namespace Voat.Utilities
                 return unreadPostReplies.Any() ? unreadPostReplies.Count() : 0;
             }
         }
-        [Obsolete("Use QueryMessageCounts", false)]
+        [Obsolete("Use QueryMessageCounts", true)]
 
         // check if given user has unread private messages and return the count
         public static int UnreadPrivateMessagesCount(string userName)
@@ -393,7 +394,7 @@ namespace Voat.Utilities
                 return unreadPrivateMessages.Any() ? unreadPrivateMessages.Count() : 0;
             }
         }
-        [Obsolete("Use QueryMessageCounts", false)]
+        [Obsolete("Use QueryMessageCounts", true)]
 
         // get total unread notifications count for a given user
         public static int UnreadTotalNotificationsCount(string userName)
@@ -409,7 +410,7 @@ namespace Voat.Utilities
                 return totalCount;
             }
         }
-        [Obsolete("Use QueryMessageCounts", false)]
+        [Obsolete("Use QueryMessageCounts", true)]
         // get total number of comment replies for a given user
         public static int CommentRepliesCount(string userName)
         {
@@ -421,7 +422,7 @@ namespace Voat.Utilities
                 return commentReplies.Any() ? commentReplies.Count() : 0;
             }
         }
-        [Obsolete("Use QueryMessageCounts", false)]
+        [Obsolete("Use QueryMessageCounts", true)]
         // get total number of post replies for a given user
         public static int PostRepliesCount(string userName)
         {
@@ -433,7 +434,7 @@ namespace Voat.Utilities
                 return postReplies.Any() ? postReplies.Count() : 0;
             }
         }
-        [Obsolete("Use QueryMessageCounts", false)]
+        [Obsolete("Use QueryMessageCounts", true)]
         // get total number of private messages for a given user
         public static int PrivateMessageCount(string userName)
         {

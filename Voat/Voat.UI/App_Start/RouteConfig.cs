@@ -303,14 +303,15 @@ namespace Voat
                 }
             );
 
-            #endregion Comment Pages
-
             // comments/distinguish/412
             routes.MapRoute(
                 name: "distinguishcomment",
                 url: "comments/distinguish/{commentId}",
                 defaults: new { controller = "Comment", action = "DistinguishComment" }
             );
+            #endregion Comment Pages
+
+
 
             #region User
 
@@ -376,9 +377,25 @@ namespace Voat
             var messageRoot = "messages";
             var messageController = "Messages";
 
+             routes.MapRoute(
+              name: "MessageMark",
+              url: messageRoot + "/mark/{type}/{markAction}/{id}",
+              defaults: new
+              {
+                  controller = messageController,
+                  action = "Mark",
+                  id = UrlParameter.Optional
+              },
+              constraints: new
+              {
+                  markAction = "read|unread",
+                  type = String.Join("|", Enum.GetNames(typeof(MessageTypeFlag))).ToLower()
+              }
+           );
+
             routes.MapRoute(
                 name: "MessageIndex",
-                url: $"{messageRoot}",
+                url: messageRoot + "",
                 defaults: new {
                     controller = messageController,
                     action = "Index"
@@ -387,7 +404,7 @@ namespace Voat
 
             routes.MapRoute(
               name: "MessageInbox",
-              url: $"{messageRoot}/inbox",
+              url: messageRoot + "/inbox",
               defaults: new
               {
                   controller = messageController,
@@ -397,7 +414,7 @@ namespace Voat
 
             routes.MapRoute(
                 name: "MessageCompose",
-                url: $"{messageRoot}/compose",
+                url: messageRoot + "/compose",
                 defaults: new
                 {
                     controller = messageController,
@@ -407,13 +424,65 @@ namespace Voat
 
             routes.MapRoute(
                name: "MessagesSent",
-               url: $"{messageRoot}/sent",
+               url: messageRoot + "/sent",
                defaults: new
                {
                    controller = messageController,
                    action = "Sent"
                }
            );
+
+            routes.MapRoute(
+               name: "MessageReply",
+               url: messageRoot + "/reply",
+               defaults: new
+               {
+                   controller = messageController,
+                   action = "Reply"
+               }
+            );
+            routes.MapRoute(
+              name: "MessageReplyForm",
+              url: messageRoot + "/reply/{id}",
+              defaults: new
+              {
+                  controller = messageController,
+                  action = "ReplyForm"
+              },
+              constraints: new {
+                  id = @"\d+",
+                  httpMethod = new HttpMethodConstraint("GET")
+              }
+            );
+            routes.MapRoute(
+               name: "MessagesMentions",
+               url: messageRoot + "/mentions/{type}",
+               defaults: new
+               {
+                   controller = messageController,
+                   action = "Mentions",
+                   type = UrlParameter.Optional
+               }
+            );
+            routes.MapRoute(
+               name: "MessagesReplies",
+               url: messageRoot + "/replies/{type}",
+               defaults: new
+               {
+                   controller = messageController,
+                   action = "Replies",
+                   type = UrlParameter.Optional
+               }
+            );
+           // routes.MapRoute(
+           //   name: "ModMessages",
+           //   url: "v/{subverse}/" + messageRoot,
+           //   defaults: new
+           //   {
+           //       controller = messageController,
+           //       action = "Sent"
+           //   }
+           //);
             //// inbox/unread
             //routes.MapRoute(
             //    name: "InboxUnread",

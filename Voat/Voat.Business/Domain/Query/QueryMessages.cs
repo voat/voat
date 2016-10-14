@@ -16,6 +16,25 @@ namespace Voat.Domain.Query
         protected MessageState _state;
         protected bool _markAsRead;
         protected MessageTypeFlag _type;
+        private int _pageNumber = 0;
+        protected int _pageCount = 25;
+
+        public int PageNumber
+        {
+            get
+            {
+                return _pageNumber;
+            }
+
+            set
+            {
+                if (value < 0)
+                {
+                    throw new InvalidOperationException("Page number must be 0 or greater");
+                }
+                _pageNumber = value;
+            }
+        }
 
         public QueryMessageBase(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
         {

@@ -155,6 +155,7 @@
     <Compile Include="Configuration\RuntimeState.cs" />
     <Compile Include="Data\AGGREGATE_SUBVERSE.cs" />
     <Compile Include="Data\Selectors.cs" />
+    <Compile Include="Domain\Command\MarkMessageCommand.cs" />
     <Compile Include="Domain\Command\Base\Command.cs" />
     <Compile Include="Domain\Command\Base\CommandResponse.cs" />
     <Compile Include="Domain\Command\BlockCommand.cs" />

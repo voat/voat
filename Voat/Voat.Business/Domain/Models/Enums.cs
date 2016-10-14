@@ -66,8 +66,10 @@ namespace Voat.Domain.Models
     {
         Private = 1,
         Sent = 2,
-        Mention = 3,
-        Comment = 4
+        SubmissionMention = 3,
+        CommentMention = 4,
+        SubmissionReply = 5,
+        CommentReply = 6,
     }
     public enum MessageDirection
     {
@@ -84,7 +86,7 @@ namespace Voat.Domain.Models
         /// <summary>
         /// Private Messages
         /// </summary>
-        Inbox = 1,
+        Private = 1,
 
         /// <summary>
         /// Sent Private Messages
@@ -94,22 +96,27 @@ namespace Voat.Domain.Models
         /// <summary>
         /// Comment Reply Messages
         /// </summary>
-        Comment = 4,
+        CommentReply = 4,
 
         ///// <summary>
         ///// Submission Reply Messages
         ///// </summary>
-        //Submission = 8,
+        SubmissionReply = 8,
 
         /// <summary>
         /// User Mention Messages
         /// </summary>
-        Mention = 16,
+        CommentMention = 16,
+
+        /// <summary>
+        /// User Mention Messages
+        /// </summary>
+        SubmissionMention = 32,
 
         /// <summary>
         /// All Messages
         /// </summary>
-        All = Inbox | Sent | Comment | Mention
+        All = Private | Sent | CommentReply | CommentMention | SubmissionReply | SubmissionMention
     }
 
     public enum Origin

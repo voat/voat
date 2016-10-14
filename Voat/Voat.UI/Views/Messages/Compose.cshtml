@@ -13,7 +13,7 @@
 @using System.Configuration
 @using Voat.Utilities
 
-@model Voat.Domain.Models.SendMessage
+@model Voat.Models.ViewModels.NewMessageViewModel
 
 @{
     ViewBag.Title = "Compose";
@@ -56,8 +56,8 @@
                         <div class="form-group">
                             @Html.Label("Message body", htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-9">
-                                @Html.MarkdownEditorFor(m => m.Message, new { rows="8", cols="1", @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.Message)
+                                @Html.MarkdownEditorFor(m => m.Body, new { rows="8", cols="1", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Body)
                             </div>
                         </div>
 

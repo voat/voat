@@ -52,14 +52,14 @@ namespace Voat.Tests.Utils
 
             //mention
             n.OnMentionReceived += (s, e) => {
-                msgReceived = e.UserName == userName && e.MessageType == MessageTypeFlag.Mention && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34 && e.Message == "Howdy @Puttster";
+                msgReceived = e.UserName == userName && e.MessageType == MessageTypeFlag.CommentMention && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34 && e.Message == "Howdy @Puttster";
             };
             n.SendMentionNotice(userName, "Atko", ContentType.Comment, 34, "Howdy @Puttster");
             Assert.IsTrue(msgReceived, "OnMentionReceived failed");
             msgReceived = false;
 
             n.OnMentionReceived += (s, e) => {
-                msgReceived = e.UserName == userName && e.MessageType == MessageTypeFlag.Mention && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34 && e.Message == null;
+                msgReceived = e.UserName == userName && e.MessageType == MessageTypeFlag.CommentMention && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34 && e.Message == null;
             };
             n.SendMentionNotice(userName, "Atko", ContentType.Comment, 34, null);
             Assert.IsTrue(msgReceived, "OnMentionReceived failed - no message");
@@ -67,9 +67,9 @@ namespace Voat.Tests.Utils
 
             //message
             n.OnMessageReceived += (s, e) => {
-                msgReceived = e.UserName == userName && e.MessageType == MessageTypeFlag.Comment && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34;
+                msgReceived = e.UserName == userName && e.MessageType == MessageTypeFlag.CommentReply && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34;
             };
-            n.SendMessageNotice(userName, "Atko", MessageTypeFlag.Comment, ContentType.Comment, 34);
+            n.SendMessageNotice(userName, "Atko", MessageTypeFlag.CommentReply, ContentType.Comment, 34);
             Assert.IsTrue(msgReceived, "OnMessageReceived failed");
             msgReceived = false;
         }

@@ -518,34 +518,32 @@ function reply(parentcommentid, messageid) {
 
 // append a private message reply form to calling area
 var replyFormPMRequest;
-function replyprivatemessage(parentprivatemessageid, recipient, subject) {
+function messageReplyForm(id) {
     // exit function if the form is already being shown or a request is in progress
-    if ($("#privatemessagereplyform-" + parentprivatemessageid).exists() || replyFormPMRequest) {
+    if ($("#privatemessagereplyform-" + id).exists() || replyFormPMRequest) {
         return;
     }
 
     var token = $("input[name='__RequestVerificationToken']").val();
 
     replyFormPMRequest = $.ajax({
-        url: "/ajaxhelpers/privatemessagereplyform/" + parentprivatemessageid + "?recipient=" + recipient + "&subject=" + subject,
+        url: "/messages/reply/" + id + "?nocache=" + cachePrevention(),
         success: function (data) {
-            $("#messageContainer-" + parentprivatemessageid).append(data);
+            $("#messageContainer-" + id).append(data);
             //Focus the cursor on the private message reply form textarea, to prevent unnecessary use of the tab key
-            $('#privatemessagereplyform-' + parentprivatemessageid).find('#Body').focus();
+            $('#privatemessagereplyform-' + id).find('#Body').focus();
         },
         complete: function () {
             replyFormPMRequest = null;
         }
     });
 
-    var form = $('#privatemessagereplyform-' + parentprivatemessageid)
+    var form = $('#privatemessagereplyform-' + id)
             .removeData("validator") /* added by the raw jquery.validate plugin */
             .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin */
 
     $.validator.unobtrusive.parse(form);
 
-    // TODO
-    // showRecaptcha('recaptchaContainer');
 }
 
 // append a comment reply form to calling area (used in comment reply notification view)
@@ -1673,44 +1671,21 @@ function checkUsernameAvailability(obj) {
 }
 
 // a function to call mark as read messaging endpoint
-function markAsRead(obj, itemType, itemId, markAll) {
+function markAsRead(obj, itemType, action, id) {
     $(obj).attr("onclick", "");
     // mark single item as read
-    if (itemId != null && markAll === false) {
-        var markAsReadRequest = $.ajax({
-            type: "GET",
-            url: "/messaging/markasread",
-            data: {
-                itemType: itemType,
-                itemId: itemId,
-                markAll: markAll
-            },
-            success: function (data) {
-                // inform the user
-                $(obj).text("marked.");
-            },
-            error: function (data) {
-                $(obj).text("something went wrong.");
-            }
-        });
-    } else {
-        // mark all items as read
-        var markAllAsReadRequest = $.ajax({
-            type: "GET",
-            url: "/messaging/markasread",
-            data: {
-                itemType: itemType,
-                markAll: markAll
-            },
-            success: function (data) {
-                // inform the user
-                $(obj).text("marked.");
-            },
-            error: function (data) {
-                $(obj).text("something went wrong.");
-            }
-        });
-    }
+    var endpoint = "/messages/mark/" + itemType + "/" + action + "/" + id;
+    var markAsReadRequest = $.ajax({
+        type: "POST",
+        url: endpoint,
+        success: function (data) {
+            // inform the user
+            $(obj).text("marked.");
+        },
+        error: function (data) {
+            $(obj).text("something went wrong.");
+        }
+    });
 }
 
 // a function to preview stylesheet called from subverse stylesheet editor

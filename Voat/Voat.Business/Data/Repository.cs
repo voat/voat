@@ -1733,43 +1733,6 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public CommandResponse SendMessageReply_OLD(int id, string value)
-        {
-            DemandAuthentication();
-
-            //THIS WILL BE WAY EASIER TO IMPLEMENT AFTER THE MESSAGE TABLES ARE MERGED.
-            //find message
-            var c = (from x in _db.CommentReplyNotifications
-                     where x.ID == id && x.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                     select x).FirstOrDefault();
-            if (c != null)
-            {
-                PostCommentReply(c.CommentID, value);
-                return new CommandResponse(Status.Success, "Comment reply sent");
-            }
-
-            var sub = (from x in _db.SubmissionReplyNotifications
-                       where x.ID == id && x.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                       select x).FirstOrDefault();
-            if (sub != null)
-            {
-                PostComment(sub.SubmissionID, sub.CommentID, value);
-                return new CommandResponse(Status.Success, "Submission reply sent");
-            }
-            var pm = (from x in _db.PrivateMessages
-                      where x.ID == id && x.Recipient.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                      select x).FirstOrDefault();
-            if (pm != null)
-            {
-                SendMessage(new SendMessage() { Subject = sub.Subject, Message = value, Recipient = sub.Sender });
-                return new CommandResponse(Status.Success, "Message sent");
-            }
-            return new CommandResponse(Status.NotProcessed, "Couldn't find message in which to reply");
-        }
-
-
-
-        [Authorize]
         public async Task<IEnumerable<CommandResponse<Domain.Models.Message>>> SendMessages(params Domain.Models.Message[] messages)
         {
             return await SendMessages(messages.AsEnumerable());
@@ -1827,7 +1790,7 @@ namespace Voat.Data
                     return CommandResponse.Successful(addedMessages.First().Map());
 
                     //send notices async
-                    Task.Run(() => EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.Inbox, null, null, message.Content));
+                    Task.Run(() => EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.Private, null, null, message.Content));
 
                 }
                 catch (Exception ex)
@@ -1937,20 +1900,22 @@ namespace Voat.Data
             var firstSent = savedMessages.First();
             return firstSent;
         }
-
         private IQueryable<Data.Models.Message> GetMessageQueryBase(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
-            var q = (from m in _db.Messages
+            return GetMessageQueryBase(_db, ownerName, ownerType, type, state);
+        }
+        private IQueryable<Data.Models.Message> GetMessageQueryBase(voatEntities context, string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state)
+        {
+            var q = (from m in context.Messages
                          //join s in _db.Submissions on m.SubmissionID equals s.ID into ns
                          //from s in ns.DefaultIfEmpty()
                          //join c in _db.Comments on m.CommentID equals c.ID into cs
                          //from c in cs.DefaultIfEmpty()
-                     where
-                     (
-                        //Restrict access here
-                        (m.Recipient.Equals(ownerName, StringComparison.OrdinalIgnoreCase) && m.RecipientType == (int)ownerType && ((type & MessageTypeFlag.Sent) <= 0))
+                     where (
+                        (m.Recipient.Equals(ownerName, StringComparison.OrdinalIgnoreCase) && m.RecipientType == (int)ownerType && m.Type != (int)MessageType.Sent)
                         ||
-                        (m.Sender.Equals(ownerName, StringComparison.OrdinalIgnoreCase) && m.SenderType == (int)ownerType && ((type & MessageTypeFlag.Sent) > 0))
+                        //Limit sent messages
+                        (m.Sender.Equals(ownerName, StringComparison.OrdinalIgnoreCase) && m.SenderType == (int)ownerType && ((type & MessageTypeFlag.Sent) > 0) && m.Type == (int)MessageType.Sent)
                      )
                      select m);
 
@@ -1971,6 +1936,7 @@ namespace Voat.Data
                 var flags = Enum.GetValues(typeof(MessageTypeFlag));
                 foreach (var flag in flags)
                 {
+                    //This needs to be cleaned up, we have two enums that are serving a similar purpose
                     var mTFlag = (MessageTypeFlag)flag;
                     if (mTFlag != MessageTypeFlag.All && ((type & mTFlag) > 0))
                     {
@@ -1979,14 +1945,20 @@ namespace Voat.Data
                             case MessageTypeFlag.Sent:
                                 messageTypes.Add((int)MessageType.Sent);
                                 break;
-                            case MessageTypeFlag.Inbox:
+                            case MessageTypeFlag.Private:
                                 messageTypes.Add((int)MessageType.Private);
                                 break;
-                            case MessageTypeFlag.Comment:
-                                messageTypes.Add((int)MessageType.Comment);
+                            case MessageTypeFlag.CommentReply:
+                                messageTypes.Add((int)MessageType.CommentReply);
                                 break;
-                            case MessageTypeFlag.Mention:
-                                messageTypes.Add((int)MessageType.Mention);
+                            case MessageTypeFlag.CommentMention:
+                                messageTypes.Add((int)MessageType.CommentMention);
+                                break;
+                            case MessageTypeFlag.SubmissionReply:
+                                messageTypes.Add((int)MessageType.SubmissionReply);
+                                break;
+                            case MessageTypeFlag.SubmissionMention:
+                                messageTypes.Add((int)MessageType.SubmissionMention);
                                 break;
                         }
                     }
@@ -1997,17 +1969,52 @@ namespace Voat.Data
             return q;
 
         }
+        [Authorize]
+        public async Task<CommandResponse> MarkMessages(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, int? id = null)
+        {
+            DemandAuthentication();
+
+            if (state == MessageState.All)
+            {
+                return CommandResponse.FromStatus(Status.Ignored, "MessageState must be either Read or Unread");
+            }
+
+            if (id.HasValue)
+            {
+                var message = _db.Messages.FirstOrDefault(x => 
+                    x.ID == id.Value 
+                    && x.Recipient.Equals(ownerName, StringComparison.OrdinalIgnoreCase) 
+                    && x.RecipientType == (int)ownerType 
+                    && x.Type == (int)type 
+                    && (state == MessageState.Read ? x.ReadDate == null : x.ReadDate != null));
+
+                if (message != null)
+                {
+                    message.ReadDate = (state == MessageState.Read ? CurrentDate : (DateTime?)null);
+                    await _db.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                var stateToFind = (state == MessageState.Read ? MessageState.Unread : MessageState.Read);
+
+                var q = GetMessageQueryBase(ownerName, ownerType, type, stateToFind);
+                await q.ForEachAsync(x => x.ReadDate = (state == MessageState.Read ? CurrentDate : (DateTime?)null));
+                await _db.SaveChangesAsync();
+            }
+            return CommandResponse.FromStatus(Status.Success, "");
+        }
 
         [Authorize]
-        public async Task<IEnumerable<MessageCount>> GetMessageCounts(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
+        public async Task<MessageCounts> GetMessageCounts(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
             var q = GetMessageQueryBase(ownerName, ownerType, type, state);
 
             var counts = await q.GroupBy(x => x.Type).Select(x => new { x.Key, Count = x.Count() }).ToListAsync();
-            var result = new List<MessageCount>();
+            var result = new MessageCounts();
             foreach (var count in counts)
             {
-                result.Add(new MessageCount() { Type = (MessageType)count.Key, Count = count.Count });
+                result.Counts.Add(new MessageCount() { Type = (MessageType)count.Key, Count = count.Count });
             }
             return result;
         }
@@ -2021,27 +2028,19 @@ namespace Voat.Data
         {
 
             DemandAuthentication();
-
-            var q = GetMessageQueryBase(ownerName, ownerType, type, state);
-            var messages = (await q.OrderByDescending(x => x.CreationDate).ToListAsync().ConfigureAwait(false)).AsEnumerable();
-
-            //mark as read, super hacky until message tables are merged
-            if (messages.Any() && markAsRead)
+            using (var db = new voatEntities())
             {
-                new Task(() =>
-                {
-                    using (var db = new voatEntities())
-                    {
-                        foreach (var msg in messages)
-                        {
-                            msg.ReadDate = CurrentDate;
-                        }
-                        db.SaveChanges();
-                    }
-                }).Start();
-            }
-            return messages.Map();
+                var q = GetMessageQueryBase(db, ownerName, ownerType, type, state);
+                var messages = (await q.OrderByDescending(x => x.CreationDate).ToListAsync().ConfigureAwait(false)).AsEnumerable();
 
+                //mark as read, super hacky until message tables are merged
+                if (messages.Any() && markAsRead)
+                {
+                    await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate);
+                    await db.SaveChangesAsync();
+                }
+                return messages.Map();
+            }
         }
 
         #endregion UserMessages

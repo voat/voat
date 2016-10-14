@@ -44,21 +44,12 @@
                 <a id="nightmodetoggle" onclick="toggleNightMode()" title="Toggle Night Mode"></a>
                 <span class="separator">|</span>
                 @{
-                    var count = UserHelper.UnreadTotalNotificationsCount(User.Identity.Name);
-                    if (count > 0)
-                    {
-                        <span class="notification-container">
-                            <a title="you have new messages" href="/messages/" class="havemail" id="mail">messages</a>
-                            <span class="notification-counter" id="mailcounter">@count</span>
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="notification-container">
-                            <a title="no new messages" href="/messaging/inbox" class="nohavemail" id="mail">messages</a>
-                            <span class="notification-counter" id="mailcounter" style="display:none"></span>
-                        </span>
-                    }
+                    var cmd = new Voat.Domain.Query.QueryMessageCounts(User.Identity.Name, Voat.Domain.Models.MessageIdentityType.User, Voat.Domain.Models.MessageTypeFlag.All, Voat.Domain.Models.MessageState.Unread);
+                    var count = cmd.Execute().Total;
+                    <span class="notification-container">
+                        <a title="you have new messages" href="/messages/" class="@(count > 0 ? "havemail" : "nohavemail")" id="mail">messages</a>
+                        <span class="notification-counter" id="mailcounter" style="display:@(count > 0 ? "block" : "none")">@count</span>
+                    </span>
                 }
                 <span class="separator">|</span>
                 <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>

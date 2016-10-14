@@ -11,6 +11,8 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Voat.Configuration;
+using Voat.Domain.Models;
+using Voat.Domain.Query;
 using Voat.Rules;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -61,7 +63,8 @@ namespace Voat
                 if (!Settings.SignalRDisabled)
                 {
                     //get count of unread notifications
-                    int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(e.UserName);
+                    var q = new QueryMessageCounts(MessageTypeFlag.All, MessageState.Unread);
+                    var unreadNotifications = q.Execute().Total;
                     // send SignalR realtime notification to recipient
                     var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
                     hubContext.Clients.User(e.UserName).setNotificationsPending(unreadNotifications);

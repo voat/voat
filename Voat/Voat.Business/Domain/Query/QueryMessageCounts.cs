@@ -14,33 +14,83 @@ namespace Voat.Domain.Query
         public MessageType Type { get; set; }
         public int Count { get; set; }
     }
+    public class MessageCounts
+    {
+        public List<MessageCount> Counts { get; set; } = new List<MessageCount>();
 
-    public class QueryMessageCounts : QueryMessageBase<IEnumerable<MessageCount>>
+        public int GetCount(MessageType type)
+        {
+            return Counts.Where(x => x.Type == type).Sum(x => x.Count);
+        }
+
+        public int Total
+        {
+            get
+            {
+                return Counts.Sum(x => x.Count);
+            }
+        }
+    }
+    public class QueryMessageCounts : QueryMessageBase<MessageCounts>
     {
 
-        public QueryMessageCounts(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
-            :base (ownerName, ownerType, type, state, markAsRead)
+        public QueryMessageCounts(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state)
+            :base (ownerName, ownerType, type, state)
         {
         }
 
-        public QueryMessageCounts(MessageTypeFlag type, MessageState state, bool markAsRead = true)
-            : base(type, state, markAsRead)
+        public QueryMessageCounts(MessageTypeFlag type, MessageState state)
+            : base(type, state)
         {
         }
 
-
-        public override IEnumerable<MessageCount> Execute()
+        private MessageCounts Context
         {
-            Task<IEnumerable< MessageCount >> t = Task.Run(ExecuteAsync);
+            get
+            {
+                MessageCounts counts = null;
+
+                if (System.Web.HttpContext.Current != null && _ownerType == MessageIdentityType.User)
+                {
+                    const string key = "MessageCounts";
+                    counts = (MessageCounts)System.Web.HttpContext.Current.Items[key];
+                }
+                return counts;
+            }
+            set
+            {
+                if (System.Web.HttpContext.Current != null && _ownerType == MessageIdentityType.User)
+                {
+                    const string key = "MessageCounts";
+                    if (value != null)
+                    {
+                        if (System.Web.HttpContext.Current != null)
+                        {
+                            System.Web.HttpContext.Current.Items[key] = value;
+                        }
+                    }
+                }
+            }
+        }
+
+        public override MessageCounts Execute()
+        {
+            Task<MessageCounts> t = Task.Run(ExecuteAsync);
             Task.WaitAll(t);
             return t.Result;
         }
-        public override async Task<IEnumerable<MessageCount>> ExecuteAsync()
+        public override async Task<MessageCounts> ExecuteAsync()
         {
-            using (var repo = new Repository())
+            var counts = Context;
+            if (counts == null)
             {
-                return await repo.GetMessageCounts(_ownerName, _ownerType, _type, _state, _markAsRead);
+                using (var repo = new Repository())
+                {
+                    counts = await repo.GetMessageCounts(_ownerName, _ownerType, _type, _state);
+                    Context = counts;
+                }
             }
+            return counts;
         }
     }
 }

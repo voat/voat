@@ -360,7 +360,7 @@
     <Compile Include="Models\ViewModels\ActiveSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentViewModel.cs" />
     <Compile Include="Models\EditSubmission.cs" />
-    <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
+    <Compile Include="Models\ViewModels\MessageViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentSingleViewModel.cs" />
@@ -740,6 +740,8 @@
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonReport.cshtml" />
     <Content Include="Views\Messages\Compose.cshtml" />
     <Content Include="Views\Messages\Index.cshtml" />
+    <Content Include="Views\Messages\_MessageReply.cshtml" />
+    <Content Include="Views\Shared\Submissions\_FullSubmission.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -75,7 +75,7 @@ namespace Voat.Tests.CommandTests
                                 && x.Subverse == null
                                 && x.CommentID == null
                                 && x.SubmissionID == null
-                                && x.Type == (int)Domain.Models.MessageType.Private
+                                && x.Type == (int)Domain.Models.MessageType.Sent
                                 && x.Direction == (int)Domain.Models.MessageDirection.OutBound
                                 select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find outbound in database");
@@ -134,7 +134,7 @@ namespace Voat.Tests.CommandTests
                                 && x.Subverse == null
                                 && x.CommentID == null
                                 && x.SubmissionID == null
-                                && x.Type == (int)Domain.Models.MessageType.Private
+                                && x.Type == (int)Domain.Models.MessageType.Sent
                                 && x.Direction == (int)Domain.Models.MessageDirection.OutBound
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find outbound in database");
@@ -337,7 +337,7 @@ namespace Voat.Tests.CommandTests
                                 && x.CommentID == comment.ID
                                 && x.SubmissionID == submission.ID
                                 && x.Subverse == submission.Subverse
-                                && x.Type == (int)Domain.Models.MessageType.Comment
+                                && x.Type == (int)Domain.Models.MessageType.SubmissionReply
                                 && x.Direction == (int)Domain.Models.MessageDirection.InBound
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find message in database");
@@ -382,7 +382,7 @@ namespace Voat.Tests.CommandTests
                                 && x.CommentID == null
                                 && x.SubmissionID == submission.ID
                                 && x.Subverse == submission.Subverse
-                                && x.Type == (int)Domain.Models.MessageType.Mention
+                                && x.Type == (int)Domain.Models.MessageType.SubmissionMention
                                 && x.Direction == (int)Domain.Models.MessageDirection.InBound
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find submission message in database");
@@ -397,7 +397,7 @@ namespace Voat.Tests.CommandTests
                                 && x.CommentID == comment.ID
                                 && x.SubmissionID == submission.ID
                                 && x.Subverse == submission.Subverse
-                                && x.Type == (int)Domain.Models.MessageType.Mention
+                                && x.Type == (int)Domain.Models.MessageType.CommentMention
                                 && x.Direction == (int)Domain.Models.MessageDirection.InBound
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find comment message in database");

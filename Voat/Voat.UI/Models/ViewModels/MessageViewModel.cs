@@ -17,10 +17,20 @@ using System.Web.Mvc;
 
 namespace Voat.Models.ViewModels
 {
-    public class PrivateMessageComposeViewModel
+
+    public class MessageReplyViewModel
     {
+        [Required(ErrorMessage = "A message ID must be provided to reply")]
         public int ID { get; set; }
 
+        [Required(ErrorMessage = "Please enter some text")]
+        [StringLength(4000, ErrorMessage = "Body is limited to 4000 characters")]
+        [AllowHtml]
+        public string Body { get; set; }
+    }
+
+    public class NewMessageViewModel
+    {
         //[RegularExpression("^[a-zA-Z0-9-_]+$", ErrorMessage="Please use only alphanumeric characters.")]
         [Required(ErrorMessage = "Please enter a username")]
         //[StringLength(23, ErrorMessage = "Username is limited to 23 characters.")]
