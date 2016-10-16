@@ -47,18 +47,16 @@ namespace Voat.Models.ViewModels
 
     public class DeleteAccountViewModel
     {
-        [Required(ErrorMessage = "Please type the word DELETE in this field.")]        
-        [RegularExpression("DELETE", ErrorMessage = "Please type the word DELETE in this field.")]
-        [Display(Name = "Type DELETE to confirm")]
-        public string FirstWord { get; set; }
+        [Required(ErrorMessage = "Please type your UserName")]        
+        [Display(Name = "UserName")]
+        public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Please type the word DELETE in this field.")]
-        [RegularExpression("DELETE", ErrorMessage = "Please type the word DELETE in this field.")]
-        [Display(Name = "Re-type DELETE to confirm")]
-        [Compare("FirstWord", ErrorMessage = "Please re-type the word DELETE in this field.")]
-        public string SecondWord { get; set; }
+        [Required(ErrorMessage = "Confirm your UserName here")]
+        [Display(Name = "Confirm UserName")]
+        [Compare("UserName", ErrorMessage = "UserName does not match")]
+        public string ConfirmUserName { get; set; }
 
-        [Required(ErrorMessage = "Current password is required.")]
+        [Required(ErrorMessage = "Current password is required")]
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
         public string CurrentPassword { get; set; }

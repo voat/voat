@@ -233,6 +233,7 @@ namespace Voat.Controllers
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : message == ManageMessageId.InvalidFileFormat ? "Please upload a .jpg or .png image."
                 : message == ManageMessageId.UploadedFileToolarge ? "Uploaded file is too large. Current limit is 300 kb."
+                : message == ManageMessageId.UserNameMismatch ? "UserName entered does not match current account"
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
@@ -308,33 +309,43 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public ActionResult DeleteAccount(DeleteAccountViewModel model)
         {
-            // require users to enter their password in order to execute account delete action
-            var user = UserManager.Find(User.Identity.Name, model.CurrentPassword);
-
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                // execute delete action
-                if (UserHelper.DeleteUser(User.Identity.Name))
+                if (!User.Identity.Name.IsEqual(model.UserName))
                 {
-                    // delete email address and set password to something random
-                    UserManager.SetEmail(User.Identity.GetUserId(), null);
-
-                    string randomPassword = "";
-                    using (SHA512 shaM = new SHA512Managed())
-                    {
-                        randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
-                    }
-
-                    UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
-
-                    AuthenticationManager.SignOut();
-                    return View("~/Views/Account/AccountDeleted.cshtml");
+                    return RedirectToAction("Manage", new { message = ManageMessageId.UserNameMismatch });
                 }
+                else
+                {
+                    // require users to enter their password in order to execute account delete action
+                    var user = UserManager.Find(User.Identity.Name, model.CurrentPassword);
 
-                // something went wrong when deleting user account
-                return View("~/Views/Errors/Error.cshtml");
+                    if (user != null)
+                    {
+                        // execute delete action
+                        if (UserHelper.DeleteUser(User.Identity.Name))
+                        {
+                            // delete email address and set password to something random
+                            UserManager.SetEmail(User.Identity.GetUserId(), null);
+
+                            string randomPassword = "";
+                            using (SHA512 shaM = new SHA512Managed())
+                            {
+                                randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
+                            }
+
+                            UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
+
+                            AuthenticationManager.SignOut();
+                            return View("~/Views/Account/AccountDeleted.cshtml");
+                        }
+
+                        // something went wrong when deleting user account
+                        return View("~/Views/Errors/Error.cshtml");
+                    }
+                }
+                
             }
-
             return RedirectToAction("Manage", new { message = ManageMessageId.WrongPassword });
         }
 
@@ -839,7 +850,8 @@ namespace Voat.Controllers
             Error,
             InvalidFileFormat,
             UploadedFileToolarge,
-            WrongPassword
+            WrongPassword,
+            UserNameMismatch
         }
 
         private ActionResult RedirectToLocal(string returnUrl)
