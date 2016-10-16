@@ -158,6 +158,7 @@
     <Compile Include="Utils\AgeTests.cs" />
     <Compile Include="Utils\GenerateThumbnailTests.cs" />
     <Compile Include="Utils\UrlUtilityTests.cs" />
+    <Compile Include="Utils\UserDefintionTests.cs" />
     <Compile Include="Utils\UtilityTests.cs" />
     <Compile Include="Utils\VoatPathHelperTests.cs" />
   </ItemGroup>

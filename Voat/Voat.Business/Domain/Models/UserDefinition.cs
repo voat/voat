@@ -20,21 +20,69 @@ namespace Voat.Domain.Models
 
         public static UserDefinition Parse(string userName)
         {
-            Match subverseSenderMatch = Regex.Match(userName, CONSTANTS.SUBVERSE_LINK_REGEX_SHORT, RegexOptions.IgnoreCase);
-            if (subverseSenderMatch.Success)
+            var matches = Regex.Matches(userName, String.Format(@"((?'prefix'@|u/|/u/|v/|/v/)?(?'name'{0}|{1}))", CONSTANTS.SUBVERSE_REGEX, CONSTANTS.USER_NAME_REGEX), RegexOptions.IgnoreCase);
+            if (matches.Count != 1)
             {
-                var subverse = subverseSenderMatch.Groups["sub"].Value;
-                return new UserDefinition() { Name = subverse, Type = IdentityType.Subverse };
+                return null;
             }
             else
             {
-                return new UserDefinition() { Name = userName, Type = IdentityType.User };
-            }
-        }
+                UserDefinition result = null;
 
-        public static string Format(string userName, IdentityType type)
+                var match = matches[0];
+                var name = match.Groups["name"].Value;
+                var prefix = match.Groups["prefix"].Value;
+                prefix = prefix?.ToLower();
+                switch (prefix) {
+                    case "":
+                    case "@":
+                    case "u/":
+                    case "/u/":
+                        result = new UserDefinition() { Name = name, Type = IdentityType.User};
+                        break;
+                    case "v/":
+                    case "/v/":
+
+                        result = new UserDefinition() { Name = name, Type = IdentityType.Subverse };
+                        break;
+                }
+
+                return result;
+            }
+
+        }
+        public static IEnumerable<UserDefinition> ParseMany(string userNameList, bool distinctOnly = true)
         {
-            return (type == IdentityType.Subverse ? "v/" + userName : userName);
+            List<UserDefinition> users = new List<UserDefinition>();
+            if (!String.IsNullOrEmpty(userNameList))
+            {
+                var userSplit = userNameList.Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                if (userSplit.Any())
+                {
+                    foreach (var userName in userSplit)
+                    {
+                        var userDef = Parse(userName);
+                        if (userDef != null)
+                        {
+                            if (distinctOnly && users.Any(x => x.Name.Equals(userDef.Name, StringComparison.OrdinalIgnoreCase) && x.Type == userDef.Type))
+                            {
+                                continue;
+                            }
+                            users.Add(userDef);
+                        }
+                    }
+                }
+            }
+
+            return users;
+        }
+        public static string Format(string userName, IdentityType type, bool supportMarkdown = false)
+        {
+            return (
+                type == IdentityType.Subverse ? 
+                "v/" + userName 
+                : 
+                (supportMarkdown ? "@" : "") + userName);
         }
     }
 }
