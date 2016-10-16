@@ -236,9 +236,9 @@ namespace Voat.Controllers
                     return View(paginatedSubmissions);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("~/Views/Errors/DbNotResponding.cshtml");
+                throw ex;
             }
         }
 
@@ -343,9 +343,9 @@ namespace Voat.Controllers
 
                 return View("~/Views/Home/IndexV2.cshtml", defaultFrontPageResultModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("~/Views/Errors/DbNotResponding.cshtml");
+                throw ex;
             }
         }
 
@@ -468,9 +468,9 @@ namespace Voat.Controllers
                     return View("Index", paginatedSubmissions);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("~/Views/Errors/DbNotResponding.cshtml");
+                throw ex;
             }
         }
 

@@ -627,9 +627,9 @@ namespace Voat.Controllers
                 paginatedSfwSubmissions = new PaginatedList<Submission>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
                 return View(paginatedSfwSubmissions);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("~/Views/Errors/DbNotResponding.cshtml");
+                throw ex;
             }
         }
 
@@ -697,9 +697,9 @@ namespace Voat.Controllers
 
                 return View(paginatedSubverses);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("~/Views/Errors/DbNotResponding.cshtml");
+                throw ex;
             }
         }
 
@@ -847,9 +847,9 @@ namespace Voat.Controllers
                 string randomSubverse = RandomSubverse(true);
                 return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = randomSubverse });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("~/Views/Errors/DbNotResponding.cshtml");
+                throw ex;
             }
         }
 
@@ -861,9 +861,9 @@ namespace Voat.Controllers
                 string randomSubverse = RandomSubverse(false);
                 return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = randomSubverse });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("~/Views/Errors/DbNotResponding.cshtml");
+                throw ex;
             }
         }
 
