@@ -18,8 +18,6 @@ namespace Voat.Controllers
 {
     public class ErrorController : BaseController
     {
-
-
         public ViewResult NotFound()
         {
             ViewBag.SelectedSubverse = string.Empty;
@@ -40,6 +38,11 @@ namespace Voat.Controllers
         public ActionResult UnAuthorized()
         {
             return View("~/Views/Errors/UnAuthorized.cshtml");
+        }
+
+        public ActionResult Unhandled()
+        {
+            throw new System.InvalidProgramException("This is an unhandled exception");
         }
     }
 }
