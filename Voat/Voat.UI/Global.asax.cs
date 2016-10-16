@@ -97,7 +97,7 @@ namespace Voat
                 }
             };
 
-            //TODO:
+            //TODO: Fuzzy can't wait for this feature!
             EventNotification.Instance.OnHeadButtReceived += (s, e) => { };
             EventNotification.Instance.OnChatMessageReceived += (s, e) => { };
 
@@ -142,37 +142,5 @@ namespace Voat
                 System.Threading.Thread.CurrentThread.CurrentCulture =  new CultureInfo(Request.UserLanguages[0]);
             } catch { }
         }
-
-        // fire each time a new session is created     
-        protected void Session_Start(object sender, EventArgs e)
-        {
-            //if (User.Identity.IsAuthenticated)
-            //{
-            //    // read style preference
-            //    Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
-            //}
-            //else
-            //{
-            //    // set default theme to light
-            //    Session["UserTheme"] = "light";
-            //}            
-        }
-
-        // fire when a session is abandoned or expires
-        protected void Session_End(object sender, EventArgs e)
-        {
-            // experimental
-            try
-            {
-                // session removal is executed in a background, standalone task
-                // SessionTracker.Remove(Session.SessionID);
-            }
-            catch (Exception)
-            {
-                //
-            }
-        }
-        
-
     }
 }
