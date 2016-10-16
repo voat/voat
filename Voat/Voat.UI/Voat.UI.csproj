@@ -322,6 +322,7 @@
     <Compile Include="Models\ViewModels\ApiKeyCreateRequest.cs" />
     <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
     <Compile Include="Models\ViewModels\ChatViewModel.cs" />
+    <Compile Include="Models\ViewModels\MessageContextViewModel.cs" />
     <Compile Include="Models\ViewModels\ModeratorDeleteViewModels.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />

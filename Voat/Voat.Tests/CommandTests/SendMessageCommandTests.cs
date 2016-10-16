@@ -12,6 +12,60 @@ namespace Voat.Tests.CommandTests
     [TestClass]
     public class SendMessageCommandTests
     {
+
+
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Messaging")]
+        [TestCategory("Command.Messaging")]
+        public async Task SendBadRecipientInfo()
+        {
+
+            var id = Guid.NewGuid().ToString();
+            var sender = "User100CCP";
+
+            TestHelper.SetPrincipal(sender);
+            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Recipient = "Do you like chocolate", Message = id, Subject = "All That Matters" }, false, false);
+            var response = await cmd.Execute();
+
+            Assert.IsTrue(response.Success, "Expecting success");
+            Assert.AreEqual(null, response.Response, "Expecting null return payload");
+            using (var db = new voatEntities())
+            {
+                var count = (from x in db.Messages
+                             where
+                               x.Content == id
+                             select x).Count();
+                Assert.AreEqual(0, count, "Expecting no messages to make it through");
+            }
+        }
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Messaging")]
+        [TestCategory("Command.Messaging")]
+        public async Task SendBadRecipientInfo_CheckExists()
+        {
+
+            var id = Guid.NewGuid().ToString();
+            var sender = "User100CCP";
+
+            TestHelper.SetPrincipal(sender);
+            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Recipient = "Do you like chocolate", Message = id, Subject = "All That Matters" }, false, true);
+            var response = await cmd.Execute();
+
+            Assert.IsFalse(response.Success, "Expecting failure");
+            Assert.AreNotEqual("Comment points too low to send messages. Need at least 10 CCP.", response.Message);
+            
+            using (var db = new voatEntities())
+            {
+                var count = (from x in db.Messages
+                              where
+                                x.Content == id
+                              select x).Count();
+                Assert.AreEqual(0, count, "Expecting no messages to make it through");
+            }
+        }
+
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Messaging")]
@@ -213,9 +267,9 @@ namespace Voat.Tests.CommandTests
                 var record = (from x in db.Messages
                               where
                                 x.Sender == sender
-                                && x.SenderType == (int)Domain.Models.MessageIdentityType.User
+                                && x.SenderType == (int)Domain.Models.IdentityType.User
                                 && x.Recipient == subverse
-                                && x.RecipientType == (int)Domain.Models.MessageIdentityType.Subverse
+                                && x.RecipientType == (int)Domain.Models.IdentityType.Subverse
                                 && x.Title == id
                                 && x.Content == id
                               select x).ToList();
@@ -234,7 +288,7 @@ namespace Voat.Tests.CommandTests
             var sender = "unit";
             var recipient = "User100CCP";
 
-            TestHelper.SetPrincipal("User500CCP");
+            TestHelper.SetPrincipal("unit");
 
             var message = new Domain.Models.SendMessage()
             {
@@ -254,9 +308,9 @@ namespace Voat.Tests.CommandTests
                 var record = (from x in db.Messages
                               where
                                 x.Sender == sender
-                                && x.SenderType == (int)Domain.Models.MessageIdentityType.Subverse
+                                && x.SenderType == (int)Domain.Models.IdentityType.Subverse
                                 && x.Recipient == recipient
-                                && x.RecipientType == (int)Domain.Models.MessageIdentityType.User
+                                && x.RecipientType == (int)Domain.Models.IdentityType.User
                                 && x.Title == id
                                 && x.Content == id
                               select x).FirstOrDefault();
@@ -351,6 +405,8 @@ namespace Voat.Tests.CommandTests
             //var user1 = "UnitTestUser10";
             //var user2 = "UnitTestUser20";
 
+            
+
 
             //Post submission as TestUser1
             TestHelper.SetPrincipal(user1);
@@ -372,6 +428,13 @@ namespace Voat.Tests.CommandTests
             //Check to see if Comment notification exists in messages
             using (var db = new voatEntities())
             {
+                var subverse = (from x in db.Subverses
+                                where x.Name.Equals(sub, StringComparison.OrdinalIgnoreCase)
+                                select x).FirstOrDefault();
+
+                Assert.AreEqual(submission.IsAnonymized, subverse.IsAnonymized, "Expecting matching anon settings");
+                Assert.AreEqual(comment.IsAnonymized, subverse.IsAnonymized, "Expecting matching anon settings comment");
+
                 //test for submission notification
                 var record = (from x in db.Messages
                               where

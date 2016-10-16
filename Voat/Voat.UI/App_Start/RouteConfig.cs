@@ -377,7 +377,7 @@ namespace Voat
             var messageRoot = "messages";
             var messageController = "Messages";
 
-             routes.MapRoute(
+            routes.MapRoute(
               name: "MessageMark",
               url: messageRoot + "/mark/{type}/{markAction}/{id}",
               defaults: new
@@ -388,10 +388,28 @@ namespace Voat
               },
               constraints: new
               {
+                  id = @"^$|\d+",
                   markAction = "read|unread",
                   type = String.Join("|", Enum.GetNames(typeof(MessageTypeFlag))).ToLower()
               }
            );
+
+           routes.MapRoute(
+              name: "MessageDelete",
+              url: messageRoot + "/delete/{type}/{id}",
+              defaults: new
+              {
+                  controller = messageController,
+                  action = "Delete"
+                  //,id = UrlParameter.Optional let's make the ID required for now so we don't have a bug that deletes an entire inbox
+              },
+              constraints: new
+              {
+                  id = @"\d+",
+                  type = String.Join("|", Enum.GetNames(typeof(MessageTypeFlag))).ToLower()
+              }
+            );
+
 
             routes.MapRoute(
                 name: "MessageIndex",
@@ -474,15 +492,42 @@ namespace Voat
                    type = UrlParameter.Optional
                }
             );
-           // routes.MapRoute(
-           //   name: "ModMessages",
-           //   url: "v/{subverse}/" + messageRoot,
-           //   defaults: new
-           //   {
-           //       controller = messageController,
-           //       action = "Sent"
-           //   }
-           //);
+            //public async Task<ActionResult> SubverseIndex(string subverse, MessageTypeFlag type, MessageState? status = null)
+            routes.MapRoute(
+             name: "SubverseMail",
+             url: "v/{subverse}/" + messageRoot + "/{type}/{state}",
+             defaults: new
+             {
+                 controller = messageController,
+                 action = "SubverseIndex",
+                 state = MessageState.All,
+                 type = MessageTypeFlag.Private
+             },
+             constraints: new
+             {
+                 state = String.Join("|", Enum.GetNames(typeof(MessageState))).ToLower(),
+                 type = "private|sent"
+             }
+            );
+
+            routes.MapRoute(
+            name: "SubverseMailCompose",
+            url: "v/{subverse}/" + messageRoot + "/compose",
+            defaults: new
+            {
+                controller = messageController,
+                action = "Compose"
+            }
+           );
+            // routes.MapRoute(
+            //   name: "ModMessages",
+            //   url: "v/{subverse}/" + messageRoot,
+            //   defaults: new
+            //   {
+            //       controller = messageController,
+            //       action = "Sent"
+            //   }
+            //);
             //// inbox/unread
             //routes.MapRoute(
             //    name: "InboxUnread",

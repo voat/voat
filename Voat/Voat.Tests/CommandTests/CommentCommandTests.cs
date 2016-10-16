@@ -346,7 +346,7 @@ namespace Voat.Tests.CommandTests
             //check for comment reply entry
             using (var db = new voatEntities())
             {
-                var notice = db.CommentReplyNotifications.FirstOrDefault(x => x.Sender == userName && x.Recipient == "unit" && x.SubmissionID == 1 && x.CommentID == c.Response.ID && x.Body == body);
+                var notice = db.Messages.FirstOrDefault(x => x.Sender == userName && x.Recipient == "unit" && x.SubmissionID == 1 && x.CommentID == c.Response.ID);
                 Assert.IsNotNull(notice, "Did not find a reply notification");
             }
         }
@@ -376,7 +376,7 @@ namespace Voat.Tests.CommandTests
             //check for comment reply entry
             using (var db = new voatEntities())
             {
-                var notice = db.SubmissionReplyNotifications.FirstOrDefault(x => x.Sender == userName && x.Recipient == "anon" && x.SubmissionID == 1 && x.Body == body);
+                var notice = db.Messages.FirstOrDefault(x => x.Sender == userName && x.Recipient == "anon" && x.SubmissionID == 1);
                 Assert.IsNotNull(notice, "Did not find a reply notification");
             }
         }

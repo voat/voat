@@ -39,16 +39,6 @@ namespace Voat.Utilities
         {
             return String.Format("Legacy:Karma:{0}_{1}_{2}", userName, type.ToString(), subverse ?? "none");
         }
-
-        //private static System.Runtime.Caching.MemoryCache Cache
-        //{
-        //    get
-        //    {
-        //        return System.Runtime.Caching.MemoryCache.Default;
-        //    }
-        //}
-
-        // get link contribution points for a user
         public static int LinkKarma(string userName)
         {
 
@@ -86,7 +76,6 @@ namespace Voat.Utilities
             return count;
         }
 
-        // get link contribution points for a user from a given subverse
         public static int LinkKarmaForSubverse(string userName, string subverseName)
         {
 
@@ -124,28 +113,9 @@ namespace Voat.Utilities
                 }
                 long l = (long)cmd.ExecuteScalar();
                 count = (int)l;
-                //Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(cacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
                 CacheHandler.Instance.Replace<int?>(cacheKey, count, TimeSpan.FromSeconds(cacheTimeInSeconds));
-
             }
-
-
             return count;
-
-
-            //using (var db = new voatEntities())
-            //{
-            //    try
-            //    {
-            //        return db.Messages.Where(c => c.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase) && c.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
-            //            .Select(c => c.Likes - c.Dislikes)
-            //            .Sum();
-            //    }
-            //    catch (Exception)
-            //    {
-            //        return 0;
-            //    }
-            //}
         }
 
         // get comment contribution points for a user
@@ -185,23 +155,7 @@ namespace Voat.Utilities
                 CacheHandler.Instance.Replace<int?>(cacheKey, count, TimeSpan.FromSeconds(cacheTimeInSeconds));
 
             }
-
-
             return count;
-
-            //using (var db = new voatEntities())
-            //{
-            //    try
-            //    {
-            //        return db.Comments.Where(c => c.Name.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
-            //            .Select(c => c.Likes - c.Dislikes)
-            //            .Sum();
-            //    }
-            //    catch (Exception)
-            //    {
-            //        return 0;
-            //    }
-            //}
         }
 
         // get comment contribution points for a user from a given subverse
@@ -250,36 +204,13 @@ namespace Voat.Utilities
                 CacheHandler.Instance.Replace<int?>(cacheKey, count, TimeSpan.FromSeconds(cacheTimeInSeconds));
 
             }
-
-
             return count;
-
-            //using (var db = new voatEntities())
-            //{
-            //    try
-            //    {
-            //        return db.Comments.Join(db.Messages, comment => comment.MessageId, message => message.Id, (comment, message) => new {comment, message})
-            //            .Where(
-            //                x =>
-            //                    x.comment.Name != "deleted" && x.comment.Name == userName &&
-            //                    x.message.Subverse == subverseName)
-            //            .Select(x => x.comment.Likes - x.comment.Dislikes)
-            //            .Sum();
-            //    }
-            //    catch (Exception)
-            //    {
-            //        return 0;
-            //    }
-            //}
         }
 
         // get total upvotes given by a user
         public static int UpvotesGiven(string userName)
         {
-
-
             string cacheKey = CacheKey(userName, KarmaCacheType.UpvoteTotal);
-
             object cacheData = CacheHandler.Instance.Retrieve<int?>(cacheKey);
             if (cacheData != null)
             {
@@ -316,21 +247,6 @@ namespace Voat.Utilities
 
 
             return count;
-
-
-            //using (var db = new voatEntities())
-            //{
-            //    try
-            //    {
-            //        var submissionUpvotes = db.Votingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-            //        var commentUpvotes = db.Commentvotingtrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-            //        return submissionUpvotes + commentUpvotes;
-            //    }
-            //    catch (Exception)
-            //    {
-            //        return 0;
-            //    }
-            //}
         }
     }
 

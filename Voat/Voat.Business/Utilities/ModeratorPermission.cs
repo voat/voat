@@ -72,6 +72,8 @@ namespace Voat.Utilities
                         case ModeratorAction.Banning:
                         case ModeratorAction.DistinguishContent:
                         case ModeratorAction.AssignFlair:
+                        case ModeratorAction.ReadMail:
+                        case ModeratorAction.SendMail:
                             result = r.Any(x =>
                                 x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) &&
                                 levelEvaluator(x.Power, new ModeratorLevel[] { ModeratorLevel.Owner, ModeratorLevel.Moderator, ModeratorLevel.Janitor }));
@@ -82,6 +84,7 @@ namespace Voat.Utilities
                                 x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) &&
                                 levelEvaluator(x.Power, new ModeratorLevel[] { ModeratorLevel.Owner, ModeratorLevel.Moderator, ModeratorLevel.Designer }));
                             break;
+                        case ModeratorAction.DeleteMail: //mod mail should not be deleted
                         default:
                             result = false;
                             break;

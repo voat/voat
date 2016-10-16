@@ -20,7 +20,7 @@ namespace Voat.Tests.Utils
             var msgReceived = false;
             //chat
             n.OnChatMessageReceived += (s, e) => {
-                msgReceived = e.UserName == userName && e.SendingUserName == "Atko" && e.Message == "TestMessage" && e.Chatroom == "TestChatRoom";
+                msgReceived = e.TargetUserName == userName && e.SendingUserName == "Atko" && e.Message == "TestMessage" && e.Chatroom == "TestChatRoom";
             };
             n.SendChatMessageNotice(userName, "Atko", "TestChatRoom", "TestMessage");
             Assert.IsTrue(msgReceived, "OnChatMessageReceived failed");
@@ -36,7 +36,7 @@ namespace Voat.Tests.Utils
             
             //headbutts
             n.OnHeadButtReceived += (s, e) => {
-                msgReceived = e.UserName == userName && e.SendingUserName == "Atko" && e.Message == "blah";
+                msgReceived = e.TargetUserName == userName && e.SendingUserName == "Atko" && e.Message == "blah";
             };
             n.SendHeadButtNotice(userName, "Atko", "blah");
             Assert.IsTrue(msgReceived, "OnHeadButtReceived failed");
@@ -44,7 +44,7 @@ namespace Voat.Tests.Utils
 
             //votes
             n.OnVoteReceived += (s, e) => {
-                msgReceived = e.UserName == userName && e.SendingUserName == "Atko" && e.ReferenceType == ContentType.Comment && e.ReferenceID == 123 && e.ChangeValue == -1;
+                msgReceived = e.TargetUserName == userName && e.SendingUserName == "Atko" && e.ReferenceType == ContentType.Comment && e.ReferenceID == 123 && e.ChangeValue == -1;
             };
             n.SendVoteNotice(userName, "Atko", ContentType.Comment, 123, -1);
             Assert.IsTrue(msgReceived, "OnVoteReceived failed");
@@ -52,14 +52,14 @@ namespace Voat.Tests.Utils
 
             //mention
             n.OnMentionReceived += (s, e) => {
-                msgReceived = e.UserName == userName && e.MessageType == MessageTypeFlag.CommentMention && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34 && e.Message == "Howdy @Puttster";
+                msgReceived = e.TargetUserName == userName && e.MessageType == MessageTypeFlag.CommentMention && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34 && e.Message == "Howdy @Puttster";
             };
             n.SendMentionNotice(userName, "Atko", ContentType.Comment, 34, "Howdy @Puttster");
             Assert.IsTrue(msgReceived, "OnMentionReceived failed");
             msgReceived = false;
 
             n.OnMentionReceived += (s, e) => {
-                msgReceived = e.UserName == userName && e.MessageType == MessageTypeFlag.CommentMention && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34 && e.Message == null;
+                msgReceived = e.TargetUserName == userName && e.MessageType == MessageTypeFlag.CommentMention && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34 && e.Message == null;
             };
             n.SendMentionNotice(userName, "Atko", ContentType.Comment, 34, null);
             Assert.IsTrue(msgReceived, "OnMentionReceived failed - no message");
@@ -67,7 +67,7 @@ namespace Voat.Tests.Utils
 
             //message
             n.OnMessageReceived += (s, e) => {
-                msgReceived = e.UserName == userName && e.MessageType == MessageTypeFlag.CommentReply && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34;
+                msgReceived = e.TargetUserName == userName && e.MessageType == MessageTypeFlag.CommentReply && e.ReferenceType == ContentType.Comment && e.ReferenceID == 34;
             };
             n.SendMessageNotice(userName, "Atko", MessageTypeFlag.CommentReply, ContentType.Comment, 34);
             Assert.IsTrue(msgReceived, "OnMessageReceived failed");

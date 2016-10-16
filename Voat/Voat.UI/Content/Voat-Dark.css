@@ -5,8 +5,22 @@
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
-.unreadInboxItem {
-    background: #2E2E2E;
+.unread {
+    border: 1px dashed #A23E3E !important;
+    background: #4F3333;
+}
+.unread .panel-message-body{
+    background: #4F3333;
+}
+
+.unread .panel-heading, 
+.unread .panel {
+    background: #432626 !important;
+    border-color: #432626 !important;
+}
+
+.unread .panel-heading-messagetitle {
+    background: #492D2D !important;
 }
 
 .removedCommentContainer {

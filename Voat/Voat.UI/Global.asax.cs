@@ -62,12 +62,18 @@ namespace Voat
             {
                 if (!Settings.SignalRDisabled)
                 {
-                    //get count of unread notifications
-                    var q = new QueryMessageCounts(MessageTypeFlag.All, MessageState.Unread);
-                    var unreadNotifications = q.Execute().Total;
-                    // send SignalR realtime notification to recipient
-                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                    hubContext.Clients.User(e.UserName).setNotificationsPending(unreadNotifications);
+
+                    var userDef = UserDefinition.Parse(e.TargetUserName);
+                    if (userDef.Type == IdentityType.User)
+                    {
+                        //get count of unread notifications
+                        var q = new QueryMessageCounts(userDef.Name, userDef.Type, MessageTypeFlag.All, MessageState.Unread);
+                        var unreadNotifications = q.Execute().Total;
+                        // send SignalR realtime notification to recipient
+                        var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                        hubContext.Clients.User(e.TargetUserName).setNotificationsPending(unreadNotifications);
+                    }
+
                 }
             };
             EventNotification.Instance.OnMessageReceived += updateNotificationCount;
@@ -82,10 +88,10 @@ namespace Voat
                     switch (e.ReferenceType)
                     {
                         case Domain.Models.ContentType.Submission:
-                            hubContext.Clients.User(e.UserName).voteChange(1, e.ChangeValue);
+                            hubContext.Clients.User(e.TargetUserName).voteChange(1, e.ChangeValue);
                             break;
                         case Domain.Models.ContentType.Comment:
-                            hubContext.Clients.User(e.UserName).voteChange(2, e.ChangeValue);
+                            hubContext.Clients.User(e.TargetUserName).voteChange(2, e.ChangeValue);
                             break;
                     }
                 }

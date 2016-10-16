@@ -51,6 +51,9 @@
 
     <div class="spacer">
         <div class="titlebox">
+            
+            @Html.Partial("Sidebars/_SidebarModToolbox")
+
             <h1 class="hover whoaversename">
                 <a href="/v/@Model.Name" class="hover">@Model.Name</a>
                 <a href="/rss/@Model.Name" class="rss-icon"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
@@ -170,5 +173,5 @@
                     </div>
                 </div>
             </div>
-            @Html.Partial("Sidebars/_SidebarModToolbox")
+            
         </div>

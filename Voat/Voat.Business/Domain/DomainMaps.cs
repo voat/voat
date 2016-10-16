@@ -53,6 +53,7 @@ namespace Voat.Domain
                 Content = message.Content,
                 FormattedContent = message.FormattedContent,
                 CommentID = message.CommentID,
+                CreatedBy = message.CreatedBy,
                 CreationDate = message.CreationDate,
                 Direction = (int)message.Direction,
                 IsAnonymized = message.IsAnonymized,
@@ -79,6 +80,7 @@ namespace Voat.Domain
             m.Content = message.Content;
             m.FormattedContent = message.FormattedContent;
             m.CommentID = message.CommentID;
+            m.CreatedBy = message.CreatedBy;
             m.CreationDate = message.CreationDate;
             m.Direction = (MessageDirection)message.Direction;
             m.IsAnonymized = message.IsAnonymized;
@@ -95,8 +97,8 @@ namespace Voat.Domain
             }
 
             m.Recipient = message.Recipient;
-            m.RecipientType = (MessageIdentityType)message.RecipientType;
-            m.SenderType = (MessageIdentityType)message.SenderType;
+            m.RecipientType = (IdentityType)message.RecipientType;
+            m.SenderType = (IdentityType)message.SenderType;
 
 
 

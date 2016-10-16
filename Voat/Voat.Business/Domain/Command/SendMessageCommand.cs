@@ -12,18 +12,20 @@ namespace Voat.Domain.Command
     {
         private SendMessage _message;
         private bool _forceSend;
+        private bool _ensureUserExists;
 
-        public SendMessageCommand(SendMessage message, bool forceSend = false)
+        public SendMessageCommand(SendMessage message, bool forceSend = false, bool ensureUserExists = false)
         {
             this._message = message;
             this._forceSend = forceSend;
+            this._ensureUserExists = ensureUserExists;
         }
 
         protected override async Task<CommandResponse<Message>> ProtectedExecute()
         {
             using (var repo = new Repository())
             {
-                return await Task.Run(() => repo.SendMessage(_message, _forceSend));
+                return await Task.Run(() => repo.SendMessage(_message, _forceSend, _ensureUserExists));
             }
         }
     }

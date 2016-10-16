@@ -13,9 +13,9 @@ namespace Voat.Domain.Command
         private MessageState _action;
         private int? _id = null;
         protected string _ownerName;
-        protected MessageIdentityType _ownerType;
+        protected IdentityType _ownerType;
 
-        public MarkMessagesCommand(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState action, int? id = null)
+        public MarkMessagesCommand(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState action, int? id = null)
         {
             this._ownerName = ownerName;
             this._ownerType = ownerType;
@@ -26,10 +26,10 @@ namespace Voat.Domain.Command
 
 
         public MarkMessagesCommand(MessageTypeFlag type, MessageState action, int? id = null)
-            : this(null, MessageIdentityType.User, type, action, id)
+            : this(null, IdentityType.User, type, action, id)
         {
             this._ownerName = UserName;
-            this._ownerType = MessageIdentityType.User;                        
+            this._ownerType = IdentityType.User;                        
         }
 
         protected override async Task<CommandResponse> ProtectedExecute()
@@ -37,6 +37,37 @@ namespace Voat.Domain.Command
             using (var repo = new Repository())
             {
                 return await Task.Run(() => repo.MarkMessages(_ownerName, _ownerType, _type, _action, _id));
+            }
+        }
+    }
+    public class DeleteMessagesCommand : Command<CommandResponse>
+    {
+        private MessageTypeFlag _type;
+        private int? _id = null;
+        protected string _ownerName;
+        protected IdentityType _ownerType;
+
+        public DeleteMessagesCommand(string ownerName, IdentityType ownerType, MessageTypeFlag type, int? id = null)
+        {
+            this._ownerName = ownerName;
+            this._ownerType = ownerType;
+            this._type = type;
+            this._id = id;
+        }
+
+
+        public DeleteMessagesCommand(MessageTypeFlag type, int? id = null)
+            : this(null, IdentityType.User, type, id)
+        {
+            this._ownerName = UserName;
+            this._ownerType = IdentityType.User;
+        }
+
+        protected override async Task<CommandResponse> ProtectedExecute()
+        {
+            using (var repo = new Repository())
+            {
+                return await Task.Run(() => repo.DeleteMessages(_ownerName, _ownerType, _type, _id));
             }
         }
     }

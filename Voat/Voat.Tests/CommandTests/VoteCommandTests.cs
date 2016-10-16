@@ -43,7 +43,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("User500CCP");
             bool voteEventReceived = false;
             EventNotification.Instance.OnVoteReceived += (s, e) => {
-              voteEventReceived = e.UserName == "unit" && e.SendingUserName == "User500CCP" && e.ChangeValue == -1 && e.ReferenceType == Domain.Models.ContentType.Comment && e.ReferenceID == 1;
+              voteEventReceived = e.TargetUserName == "unit" && e.SendingUserName == "User500CCP" && e.ChangeValue == -1 && e.ReferenceType == Domain.Models.ContentType.Comment && e.ReferenceID == 1;
             };
             var cmd = new CommentVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
 
@@ -152,7 +152,7 @@ namespace Voat.Tests.CommandTests
 
             EventNotification.Instance.OnVoteReceived += (s, e) => {
                 voteEventReceived = 
-                    e.UserName == "anon" 
+                    e.TargetUserName == "anon" 
                     && e.SendingUserName == "User500CCP" 
                     && e.ChangeValue == -1 
                     && e.ReferenceType == Domain.Models.ContentType.Submission 
@@ -186,7 +186,7 @@ namespace Voat.Tests.CommandTests
 
             EventNotification.Instance.OnVoteReceived += (s, e) => {
                 voteEventReceived =
-                    e.UserName == "anon"
+                    e.TargetUserName == "anon"
                     && e.SendingUserName == "User50CCP"
                     && e.ChangeValue == 1
                     && e.ReferenceType == Domain.Models.ContentType.Submission

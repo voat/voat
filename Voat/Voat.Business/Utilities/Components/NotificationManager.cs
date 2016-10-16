@@ -54,10 +54,10 @@ namespace Voat.Utilities.Components
                             message.IsAnonymized = comment.IsAnonymized;
 
                             message.Recipient = recipient;
-                            message.RecipientType = Domain.Models.MessageIdentityType.User;
+                            message.RecipientType = Domain.Models.IdentityType.User;
 
                             message.Sender = comment.UserName;
-                            message.SenderType = Domain.Models.MessageIdentityType.User;
+                            message.SenderType = Domain.Models.IdentityType.User;
 
                             message.Subverse = subverse.Name;
                             message.SubmissionID = submission.ID;
@@ -129,10 +129,10 @@ namespace Voat.Utilities.Components
                             message.IsAnonymized = submission.IsAnonymized;
 
                             message.Recipient = recipient;
-                            message.RecipientType = Domain.Models.MessageIdentityType.User;
+                            message.RecipientType = Domain.Models.IdentityType.User;
 
                             message.Sender = submission.UserName;
-                            message.SenderType = Domain.Models.MessageIdentityType.User;
+                            message.SenderType = Domain.Models.IdentityType.User;
 
                             message.Subverse = subverse.Name;
                             message.SubmissionID = submission.ID;
@@ -212,10 +212,10 @@ namespace Voat.Utilities.Components
                                             message.IsAnonymized = submission.IsAnonymized;
 
                                             message.Recipient = parentComment.UserName;
-                                            message.RecipientType = Domain.Models.MessageIdentityType.User;
+                                            message.RecipientType = Domain.Models.IdentityType.User;
 
-                                            message.Sender = submission.UserName;
-                                            message.SenderType = Domain.Models.MessageIdentityType.User;
+                                            message.Sender = comment.UserName;
+                                            message.SenderType = Domain.Models.IdentityType.User;
 
                                             message.Subverse = subverse.Name;
                                             message.SubmissionID = submission.ID;
@@ -295,10 +295,10 @@ namespace Voat.Utilities.Components
                                     message.IsAnonymized = submission.IsAnonymized;
 
                                     message.Recipient = submission.UserName;
-                                    message.RecipientType = Domain.Models.MessageIdentityType.User;
+                                    message.RecipientType = Domain.Models.IdentityType.User;
 
                                     message.Sender = comment.UserName;
-                                    message.SenderType = Domain.Models.MessageIdentityType.User;
+                                    message.SenderType = Domain.Models.IdentityType.User;
 
                                     message.Subverse = submission.Subverse;
                                     message.SubmissionID = submission.ID;

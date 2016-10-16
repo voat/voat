@@ -12,12 +12,12 @@ namespace Voat.Domain.Query
     public abstract class QueryMessageBase<T> : Query<T>
     {
         protected string _ownerName;
-        protected MessageIdentityType _ownerType;
+        protected IdentityType _ownerType;
         protected MessageState _state;
         protected bool _markAsRead;
         protected MessageTypeFlag _type;
         private int _pageNumber = 0;
-        protected int _pageCount = 25;
+        private int _pageCount = 25;
 
         public int PageNumber
         {
@@ -36,7 +36,24 @@ namespace Voat.Domain.Query
             }
         }
 
-        public QueryMessageBase(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
+        public int PageCount
+        {
+            get
+            {
+                return _pageCount;
+            }
+
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new InvalidOperationException("Page count must be 0 or greater");
+                }
+                _pageCount = value;
+            }
+        }
+
+        public QueryMessageBase(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
         {
             this._ownerName = ownerName;
             this._ownerType = ownerType;
@@ -45,17 +62,17 @@ namespace Voat.Domain.Query
             this._type = type;
         }
         public QueryMessageBase(MessageTypeFlag type, MessageState state, bool markAsRead = true)
-            : this("", MessageIdentityType.User, type, state, markAsRead)
+            : this("", IdentityType.User, type, state, markAsRead)
         {
             this._ownerName = UserName;
-            this._ownerType = MessageIdentityType.User;
+            this._ownerType = IdentityType.User;
         }
     }
 
     public class QueryMessages : QueryMessageBase<IEnumerable<Domain.Models.Message>>
     {
        
-        public QueryMessages(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
+        public QueryMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
             : base (ownerName, ownerType, type, state, markAsRead)
         {
         }
@@ -69,7 +86,7 @@ namespace Voat.Domain.Query
         {
             using (var repo = new Repository())
             {
-                return await repo.GetMessages(_ownerName, _ownerType, _type, _state, _markAsRead);
+                return await repo.GetMessages(_ownerName, _ownerType, _type, _state, _markAsRead, PageNumber, PageCount);
             }
         }
 

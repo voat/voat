@@ -1629,10 +1629,6 @@ namespace Voat.Data
                 _db.UserPreferences.Add(p);
             }
 
-            //if (!String.IsNullOrEmpty(preferences.Avatar))
-            //{
-            //    p.Avatar = preferences.Avatar;
-            //}
             if (!String.IsNullOrEmpty(preferences.Bio))
             {
                 p.Bio = preferences.Bio;
@@ -1706,25 +1702,36 @@ namespace Voat.Data
             {
                 return new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Couldn't find message in which to reply");
             }
-            else if (!userName.IsEqual(m.Recipient))
-            {
-                return new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
-            }
             else
             {
-                //checks are good, let's send
                 var message = new Domain.Models.Message();
+
+                if (m.RecipientType == (int)IdentityType.Subverse)
+                {
+                    if (!ModeratorPermission.HasPermission(User.Identity.Name, m.Recipient, ModeratorAction.SendMail))
+                    {
+                        return new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
+                    }
+
+                    message.Recipient = m.Sender;
+                    message.RecipientType = (IdentityType)m.SenderType;
+
+                    message.Sender = m.Recipient;
+                    message.SenderType = (IdentityType)m.RecipientType;
+
+                }
+                else
+                {
+                    message.Recipient = m.Sender;
+                    message.RecipientType = (IdentityType)m.SenderType;
+
+                    message.Sender = m.Recipient;
+                    message.SenderType = (IdentityType)m.RecipientType;
+                }
 
                 message.ParentID = m.ID;
                 message.CorrelationID = m.CorrelationID;
                 message.Title = m.Title;
-
-                message.Recipient = m.Sender;
-                message.RecipientType = (MessageIdentityType)m.SenderType;
-
-                message.Sender = m.Recipient;
-                message.SenderType = (MessageIdentityType)m.SenderType;
-
                 message.Content = messageContent;
                 message.FormattedContent = Formatting.FormatMessage(messageContent);
 
@@ -1759,18 +1766,18 @@ namespace Voat.Data
                 try
                 {
                     List<Domain.Models.Message> messages = new List<Domain.Models.Message>();
-                    //substring - db column is nvarchar(50) and any longer breaks EF
-                    if (MesssagingUtility.IsSenderBlocked(message.Sender, message.Recipient))
-                    {
-                        message.Recipient = '\u200B' + message.Recipient;
-                    }
 
                     //increased subject line
                     int max = 500;
+                    message.CreatedBy = User.Identity.Name;
                     message.Title = message.Title.SubstringMax(max);
                     message.CreationDate = CurrentDate;
                     message.FormattedContent = Formatting.FormatMessage(message.Content);
-                    messages.Add(message);
+                    
+                    if (!MesssagingUtility.IsSenderBlocked(message.Sender, message.Recipient))
+                    {
+                        messages.Add(message);
+                    }
 
                     if (message.Type == MessageType.Private)
                     {
@@ -1783,14 +1790,19 @@ namespace Voat.Data
                     }
 
                     var mappedDataMessages = messages.Map();
-
                     var addedMessages = db.Messages.AddRange(mappedDataMessages);
                     await db.SaveChangesAsync().ConfigureAwait(false);
 
-                    return CommandResponse.Successful(addedMessages.First().Map());
-
                     //send notices async
-                    Task.Run(() => EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.Private, null, null, message.Content));
+                    Task.Run(() => EventNotification.Instance.SendMessageNotice(
+                        UserDefinition.Format(message.Recipient, message.RecipientType),
+                        UserDefinition.Format(message.Sender, message.SenderType), 
+                        Domain.Models.MessageTypeFlag.Private, 
+                        null, 
+                        null, 
+                        message.Content));
+
+                    return CommandResponse.Successful(addedMessages.First().Map());
 
                 }
                 catch (Exception ex)
@@ -1802,21 +1814,27 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public async Task<CommandResponse<Domain.Models.Message>> SendMessage(SendMessage message, bool forceSend = false)
+        public async Task<CommandResponse<Domain.Models.Message>> SendMessage(SendMessage message, bool forceSend = false, bool ensureUserExists = true)
         {
             DemandAuthentication();
 
-            var sender = Tuple.Create(MessageIdentityType.User, message.Sender);
             Domain.Models.Message responseMessage = null;
 
+            var sender = UserDefinition.Parse(message.Sender);
             //If sender isn't a subverse (automated messages) run sender checks
-            Match subverseSenderMatch = Regex.Match(message.Sender, CONSTANTS.SUBVERSE_LINK_REGEX_SHORT, RegexOptions.IgnoreCase);
-            if (subverseSenderMatch.Success)
+            if (sender.Type == IdentityType.Subverse)
             {
-                sender = Tuple.Create(MessageIdentityType.Subverse, subverseSenderMatch.Groups["sub"].Value);
+                var subverse = sender.Name;
+                if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.SendMail))
+                {
+                    return CommandResponse.FromStatus(responseMessage, Status.Denied, "User not allowed to send mail from subverse"); 
+                }
             }
             else
             {
+                //Sender can be passed in from the UI , ensure it is replaced here
+                message.Sender = User.Identity.Name;
+
                 if (Voat.Utilities.BanningUtility.ContentContainsBannedDomain(null, message.Message))
                 {
                     return CommandResponse.FromStatus(responseMessage, Status.Ignored, "Message contains banned domain");
@@ -1833,60 +1851,50 @@ namespace Voat.Data
             }
 
             List<Domain.Models.Message> messages = new List<Domain.Models.Message>();
-            MatchCollection col = Regex.Matches(message.Recipient, @"((?'prefix'@|u/|/u/|v/|/v/)?(?'recipient'[\w-.]+))", RegexOptions.IgnoreCase);
-            if (col.Count <= 0)
+
+            var userDefinitions = UserDefinition.ParseMany(message.Recipient);
+            if (userDefinitions.Count() <= 0)
             {
                 return CommandResponse.FromStatus(responseMessage, Status.NotProcessed, "No recipient specified");
             }
 
-            //Have to filter distinct because of spamming. If you copy a user name
-            //1,000 times into the recipient list the previous
-            //logic would send that user 1,000 messages. These guys find everything.
-            var filtered = (from x in col.Cast<Match>()
-                            select new
-                            {
-                                recipient = x.Groups["recipient"].Value,
-                                prefix = (x.Groups["prefix"].Value.ToLower().Contains("v") ? "v" : "") //stop users from sending multiple messages using diff prefixes @user, /u/user, and u/user
-                            }).Distinct();
-
-            foreach (var m in filtered)
+            foreach (var def in userDefinitions)
             {
-                var recipient = m.recipient;
-                var prefix = m.prefix;
-
-                if (!String.IsNullOrEmpty(prefix) && prefix.ToLower().Contains("v"))
+                if (def.Type == IdentityType.Subverse)
                 {
-                    //don't allow banned users to send to subverses
-                    if (!UserHelper.IsUserBannedFromSubverse(message.Sender, recipient))
+                    messages.Add(new Domain.Models.Message
                     {
-                        messages.Add(new Domain.Models.Message
-                        {
-                            CorrelationID = Domain.Models.Message.NewCorrelationID(), 
-                            Sender = sender.Item2,
-                            SenderType = sender.Item1,
-                            Recipient = recipient,
-                            RecipientType = MessageIdentityType.Subverse,
-                            Title = message.Subject,
-                            Content = message.Message,
-                            ReadDate = null,
-                            CreationDate = Repository.CurrentDate,
-                        });
-                    }
+                        CorrelationID = Domain.Models.Message.NewCorrelationID(),
+                        Sender = sender.Name,
+                        SenderType = sender.Type,
+                        Recipient = def.Name,
+                        RecipientType = IdentityType.Subverse,
+                        Title = message.Subject,
+                        Content = message.Message,
+                        ReadDate = null,
+                        CreationDate = Repository.CurrentDate,
+                    });
                 }
                 else
                 {
                     //ensure proper cased, will return null if doesn't exist
-                    recipient = UserHelper.OriginalUsername(recipient);
-
-                    if (!String.IsNullOrEmpty(recipient))
+                    var recipient = UserHelper.OriginalUsername(def.Name);
+                    if (String.IsNullOrEmpty(recipient))
+                    {
+                        if (ensureUserExists)
+                        {
+                            return CommandResponse.FromStatus<Domain.Models.Message>(null, Status.Error, $"User {recipient} does not exist.");
+                        }
+                    }
+                    else 
                     {
                         messages.Add(new Domain.Models.Message
                         {
                             CorrelationID = Domain.Models.Message.NewCorrelationID(),
-                            Sender = sender.Item2,
-                            SenderType = sender.Item1,
+                            Sender = sender.Name,
+                            SenderType = sender.Type,
                             Recipient = recipient,
-                            RecipientType = MessageIdentityType.User,
+                            RecipientType = IdentityType.User,
                             Title = message.Subject,
                             Content = message.Message,
                             ReadDate = null,
@@ -1897,14 +1905,18 @@ namespace Voat.Data
             }
 
             var savedMessages = await SendMessages(messages);
-            var firstSent = savedMessages.First();
+            var firstSent = savedMessages.FirstOrDefault();
+            if (firstSent == null)
+            {
+                firstSent = CommandResponse.FromStatus((Domain.Models.Message)null, Status.Success, "");
+            }
             return firstSent;
         }
-        private IQueryable<Data.Models.Message> GetMessageQueryBase(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state)
+        private IQueryable<Data.Models.Message> GetMessageQueryBase(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
             return GetMessageQueryBase(_db, ownerName, ownerType, type, state);
         }
-        private IQueryable<Data.Models.Message> GetMessageQueryBase(voatEntities context, string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state)
+        private IQueryable<Data.Models.Message> GetMessageQueryBase(voatEntities context, string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
             var q = (from m in context.Messages
                          //join s in _db.Submissions on m.SubmissionID equals s.ID into ns
@@ -1970,43 +1982,95 @@ namespace Voat.Data
 
         }
         [Authorize]
-        public async Task<CommandResponse> MarkMessages(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, int? id = null)
+        public async Task<CommandResponse> DeleteMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, int? id = null)
         {
             DemandAuthentication();
+
+            //verify if this is a sub request
+            if (ownerType == IdentityType.Subverse)
+            {
+                if (!ModeratorPermission.HasPermission(User.Identity.Name, ownerName, ModeratorAction.DeleteMail))
+                {
+                    return CommandResponse.FromStatus(Status.Denied, "User does not have rights to modify mail");
+                }
+            }
+
+            if (id.HasValue)
+            {
+                var q = GetMessageQueryBase(ownerName, ownerType, type, MessageState.All);
+                q = q.Where(x => x.ID == id.Value);
+                var message = q.FirstOrDefault();
+
+                if (message != null)
+                {
+                    _db.Messages.Remove(message);
+                    await _db.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                using (var db = new voatEntities())
+                {
+                    var q = GetMessageQueryBase(db, ownerName, ownerType, type, MessageState.All);
+                    await q.ForEachAsync(x => db.Messages.Remove(x));
+                    await db.SaveChangesAsync();
+                }
+            }
+            return CommandResponse.FromStatus(Status.Success, "");
+        }
+        [Authorize]
+        public async Task<CommandResponse> MarkMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, int? id = null)
+        {
+            DemandAuthentication();
+
+            //verify if this is a sub request
+            if (ownerType == IdentityType.Subverse)
+            {
+                if (!ModeratorPermission.HasPermission(User.Identity.Name, ownerName, ModeratorAction.ReadMail))
+                {
+                    return CommandResponse.FromStatus(Status.Denied, "User does not have rights to modify mail");
+                }
+            }
 
             if (state == MessageState.All)
             {
                 return CommandResponse.FromStatus(Status.Ignored, "MessageState must be either Read or Unread");
             }
 
+            var stateToFind = (state == MessageState.Read ? MessageState.Unread : MessageState.Read);
+            var setReadDate = new Func<Data.Models.Message, DateTime?>((x) => (state == MessageState.Read ? CurrentDate : (DateTime?)null));
+
             if (id.HasValue)
             {
-                var message = _db.Messages.FirstOrDefault(x => 
-                    x.ID == id.Value 
-                    && x.Recipient.Equals(ownerName, StringComparison.OrdinalIgnoreCase) 
-                    && x.RecipientType == (int)ownerType 
-                    && x.Type == (int)type 
-                    && (state == MessageState.Read ? x.ReadDate == null : x.ReadDate != null));
+                var q = GetMessageQueryBase(ownerName, ownerType, type, stateToFind);
+                q = q.Where(x => x.ID == id.Value);
+                var message = q.FirstOrDefault();
 
                 if (message != null)
                 {
-                    message.ReadDate = (state == MessageState.Read ? CurrentDate : (DateTime?)null);
+                    message.ReadDate = setReadDate(message);
                     await _db.SaveChangesAsync();
                 }
             }
             else
             {
-                var stateToFind = (state == MessageState.Read ? MessageState.Unread : MessageState.Read);
-
                 var q = GetMessageQueryBase(ownerName, ownerType, type, stateToFind);
-                await q.ForEachAsync(x => x.ReadDate = (state == MessageState.Read ? CurrentDate : (DateTime?)null));
+                await q.ForEachAsync(x => x.ReadDate = setReadDate(x));
                 await _db.SaveChangesAsync();
             }
+
+            Task.Run(() => EventNotification.Instance.SendMessageNotice(
+                        UserDefinition.Format(ownerName, ownerType),
+                        UserDefinition.Format(ownerName, ownerType),
+                        Domain.Models.MessageTypeFlag.Private,
+                        null,
+                        null));
+            
             return CommandResponse.FromStatus(Status.Success, "");
         }
 
         [Authorize]
-        public async Task<MessageCounts> GetMessageCounts(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state)
+        public async Task<MessageCounts> GetMessageCounts(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
             var q = GetMessageQueryBase(ownerName, ownerType, type, state);
 
@@ -2019,27 +2083,36 @@ namespace Voat.Data
             return result;
         }
         [Authorize]
-        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true)
+        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true, int pageNumber = 0, int pageCount = 25)
         {
-            return await GetMessages(User.Identity.Name, MessageIdentityType.User, type, state, markAsRead);
+            return await GetMessages(User.Identity.Name, IdentityType.User, type, state, markAsRead, pageNumber, pageCount);
         }
         [Authorize]
-        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
+        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true, int pageNumber = 0, int pageCount = 25)
         {
 
             DemandAuthentication();
             using (var db = new voatEntities())
             {
                 var q = GetMessageQueryBase(db, ownerName, ownerType, type, state);
-                var messages = (await q.OrderByDescending(x => x.CreationDate).ToListAsync().ConfigureAwait(false)).AsEnumerable();
+                var messages = (await q
+                                    .OrderByDescending(x => x.CreationDate)
+                                    .Skip(pageNumber * pageCount)
+                                    .Take(pageCount)
+                                    .ToListAsync()
+                                    .ConfigureAwait(false)
+                               ).AsEnumerable();
 
-                //mark as read, super hacky until message tables are merged
+                var mapped = messages.Map();
+
+                //mark as read
                 if (messages.Any() && markAsRead)
                 {
                     await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate);
                     await db.SaveChangesAsync();
                 }
-                return messages.Map();
+
+                return mapped;
             }
         }
 

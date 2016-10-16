@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,9 +23,35 @@ namespace Voat.Domain.Models
         public MessageType Type { get; set; } = MessageType.Private;
 
         public string Sender { get; set; }
-        public MessageIdentityType SenderType { get; set; } = MessageIdentityType.User;
+        public IdentityType SenderType { get; set; } = IdentityType.User;
+        [JsonIgnore]
+        public UserDefinition SenderDefinition
+        {
+            get {
+                return new UserDefinition() { Name = Sender, Type = SenderType };
+            }
+            set {
+                this.Sender = value.Name;
+                this.SenderType = value.Type;
+            }
+        }
+
+
         public string Recipient { get; set; }
-        public MessageIdentityType RecipientType { get; set; } = MessageIdentityType.User;
+        public IdentityType RecipientType { get; set; } = IdentityType.User;
+        [JsonIgnore]
+        public UserDefinition RecipientDefinition
+        {
+            get
+            {
+                return new UserDefinition() { Name = Recipient, Type = RecipientType};
+            }
+            set
+            {
+                this.Recipient = value.Name;
+                this.RecipientType = value.Type;
+            }
+        }
 
         public string Title { get; set; }
         public string Content { get; set; }
@@ -42,11 +69,23 @@ namespace Voat.Domain.Models
         {
             get { return ReadDate != null; }    
         }
+        public string CreatedBy { get; set; }
         public System.DateTime CreationDate { get; set; }
 
         public Message Clone()
         {
             return (Message)this.MemberwiseClone();
         }   
+
+        public bool IsSubverseMail
+        {
+            get
+            {
+                return 
+                    (Type == MessageType.Private && RecipientType == IdentityType.Subverse) ||
+                    (Type == MessageType.Sent && SenderType == IdentityType.Subverse);
+            }
+        }
+
     }
 }

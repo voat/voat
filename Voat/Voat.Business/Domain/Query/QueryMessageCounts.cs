@@ -34,7 +34,7 @@ namespace Voat.Domain.Query
     public class QueryMessageCounts : QueryMessageBase<MessageCounts>
     {
 
-        public QueryMessageCounts(string ownerName, MessageIdentityType ownerType, MessageTypeFlag type, MessageState state)
+        public QueryMessageCounts(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
             :base (ownerName, ownerType, type, state)
         {
         }
@@ -50,7 +50,7 @@ namespace Voat.Domain.Query
             {
                 MessageCounts counts = null;
 
-                if (System.Web.HttpContext.Current != null && _ownerType == MessageIdentityType.User)
+                if (System.Web.HttpContext.Current != null && _ownerType == IdentityType.User)
                 {
                     const string key = "MessageCounts";
                     counts = (MessageCounts)System.Web.HttpContext.Current.Items[key];
@@ -59,7 +59,7 @@ namespace Voat.Domain.Query
             }
             set
             {
-                if (System.Web.HttpContext.Current != null && _ownerType == MessageIdentityType.User)
+                if (System.Web.HttpContext.Current != null && _ownerType == IdentityType.User)
                 {
                     const string key = "MessageCounts";
                     if (value != null)

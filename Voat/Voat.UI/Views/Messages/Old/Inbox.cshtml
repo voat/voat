@@ -74,7 +74,7 @@
                                             <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this)">source</a>
                                         </li>
                                         <li>
-                                            <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deletePrivateMessage(this, @message.ID)">delete</a>
+                                            <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deleteMessage(this, @message.ID)">delete</a>
                                         </li>
                                         @if (message.IsUnread)
                                         {

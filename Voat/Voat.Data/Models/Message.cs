@@ -32,5 +32,6 @@ namespace Voat.Data.Models
         public string Title { get; set; }
         public string Content { get; set; }
         public string FormattedContent { get; set; }
+        public string CreatedBy { get; set; }
     }
 }

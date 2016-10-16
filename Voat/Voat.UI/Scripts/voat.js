@@ -576,10 +576,10 @@ function replyToCommentNotification(commentId, submissionId) {
 }
 
 //attempting to clean up client side error handling
-function getErrorMessage(error)
+function getErrorMessage(error, defaultMessage)
 {
     //default message
-    var msg = "You are doing that too fast. Please wait 30 seconds before trying again.";
+    var msg = defaultMessage ? defaultMessage : "You are doing that too fast. Please wait 30 seconds before trying again.";
 
     if (error.length > 0 && (
         error != 'Bad Request' 
@@ -1139,47 +1139,49 @@ function loadVideoPlayer(obj, messageId) {
 }
 
 // function to post delete private message request to messaging controller and remove deleted message DOM
-function deletePrivateMessage(obj, privateMessageId) {
-    var privateMessageObject = { "privateMessageId": privateMessageId };
-
+function deleteMessage(obj, type, id, context) {
     $(obj).html("please wait...");
-
+    var endpoint = "/messages/delete/" + type + "/" + ($.isNumeric(id) ? id : '') + (context ? "?subverse=" + context : "");
     $.ajax({
         type: "POST",
         contentType: 'application/json; charset=utf-8',
-        data: JSON.stringify(privateMessageObject),
+        url: endpoint,
         success: function () {
             //remove message DOM
-            $("#messageContainer-" + privateMessageId).remove();
+            $("#messageContainer-" + id).remove();
         },
-        url: "/messaging/delete",
+        error: function (xhr, status, error) {
+            var msg = getErrorMessage(error, "Oops a problem happened");
+            $(obj).html(msg);
+        },
         datatype: "json"
     });
-
     return false;
 }
 
-// function to post delete sent private message request to messaging controller and remove deleted message DOM
-function deletePrivateMessageFromSent(obj, privateMessageId) {
-    var privateMessageObject = { "privateMessageId": privateMessageId };
-
-    $(obj).html("please wait...");
-
-    $.ajax({
+// a function to call mark as read messaging endpoint
+function markAsRead(obj, type, action, id, context) {
+    $(obj).attr("onclick", "");
+    // mark single item as read
+    var endpoint = "/messages/mark/" + type + "/" + action + "/" + ($.isNumeric(id) ? id : '') + (context ? "?subverse=" + context : "");
+    var markAsReadRequest = $.ajax({
         type: "POST",
-        contentType: 'application/json; charset=utf-8',
-        data: JSON.stringify(privateMessageObject),
-        success: function () {
-            //remove message DOM
-            $("#messageContainer-" + privateMessageId).remove();
+        url: endpoint,
+        success: function (data) {
+            // inform the user
+            $(obj).text("marked");
+            if (id) {
+                $("#messageContainer-" + id + " > .panel").toggleClass("unread");
+            } else {
+                $(".markAsReadLink").remove();
+                $(".unread").removeClass("unread");
+            }
         },
-        url: "/messaging/deletesent",
-        datatype: "json"
+        error: function (data) {
+            $(obj).text("something went wrong");
+        }
     });
-
-    return false;
 }
-
 // function to load select link flair modal dialog for given subverse and given submission
 function selectflair(messageId, subverseName) {
     var flairSelectDialog = $.get(
@@ -1668,24 +1670,6 @@ function checkUsernameAvailability(obj) {
             });
         }
     }
-}
-
-// a function to call mark as read messaging endpoint
-function markAsRead(obj, itemType, action, id) {
-    $(obj).attr("onclick", "");
-    // mark single item as read
-    var endpoint = "/messages/mark/" + itemType + "/" + action + "/" + id;
-    var markAsReadRequest = $.ajax({
-        type: "POST",
-        url: endpoint,
-        success: function (data) {
-            // inform the user
-            $(obj).text("marked.");
-        },
-        error: function (data) {
-            $(obj).text("something went wrong.");
-        }
-    });
 }
 
 // a function to preview stylesheet called from subverse stylesheet editor

@@ -2054,14 +2054,6 @@ namespace Voat.Controllers
             if (User.Identity.Name.Equals(subverseAdmin.UserName, StringComparison.OrdinalIgnoreCase))
             {
                 return sendFailureResult("Can not add yourself as a moderator");
-
-                //ModelState.AddModelError(string.Empty, "Can not add yourself as a moderator");
-                // return View("~/Views/Subverses/Admin/AddModerator.cshtml",
-                // new SubverseModeratorViewModel
-                // {
-                //     UserName = subverseAdmin.UserName,
-                //     Power = subverseAdmin.Power
-                // });
             }
 
             string originalRecipientUserName = UserHelper.OriginalUsername(subverseAdmin.UserName);
@@ -2069,14 +2061,6 @@ namespace Voat.Controllers
             if (String.IsNullOrEmpty(originalRecipientUserName))
             {
                 return sendFailureResult("User can not be found");
-
-                //ModelState.AddModelError(string.Empty, "User can not be found");
-                //return View("~/Views/Subverses/Admin/AddModerator.cshtml",
-                //new SubverseModeratorViewModel
-                //{
-                //    UserName = subverseAdmin.UserName,
-                //    Power = subverseAdmin.Power
-                //});
             }
 
             // get model for selected subverse
@@ -2145,7 +2129,7 @@ namespace Voat.Controllers
 
                     var cmd = new SendMessageCommand(new Domain.Models.SendMessage()
                     {
-                        Sender = CONSTANTS.SYSTEM_USER_NAME,
+                        Sender = $"v/{subverseAdmin.Subverse}",
                         Recipient = originalRecipientUserName,
                         Subject = $"v/{subverseAdmin.Subverse} moderator invitation",
                         Message = invitationBody.ToString()
@@ -2157,35 +2141,11 @@ namespace Voat.Controllers
                 else
                 {
                     return sendFailureResult("Sorry, the user is already moderating this subverse");
-
-                    //ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating this subverse");
-                    //tmpModel = new SubverseModeratorViewModel
-                    //{
-                    //    UserName = subverseAdmin.UserName,
-                    //    Power = subverseAdmin.Power
-                    //};
-
-                    //ViewBag.SubverseModel = subverseModel;
-                    //ViewBag.SubverseName = subverseAdmin.Subverse;
-                    //ViewBag.SelectedSubverse = string.Empty;
-                    //return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);
                 }
             }
             else
             {
                 return sendFailureResult("Sorry, the user is already moderating a maximum of " + maximumOwnedSubs + " subverses");
-
-                //ModelState.AddModelError(string.Empty, "Sorry, the user is already moderating a maximum of " + maximumOwnedSubs + " subverses");
-                //tmpModel = new SubverseModeratorViewModel
-                //{
-                //    UserName = subverseAdmin.UserName,
-                //    Power = subverseAdmin.Power
-                //};
-
-                //ViewBag.SubverseModel = subverseModel;
-                //ViewBag.SubverseName = subverseAdmin.Subverse;
-                //ViewBag.SelectedSubverse = string.Empty;
-                //return View("~/Views/Subverses/Admin/AddModerator.cshtml", tmpModel);            }
             }
         }
         // GET: show remove moderators view for selected subverse

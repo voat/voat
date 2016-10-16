@@ -44,7 +44,7 @@
                 <a id="nightmodetoggle" onclick="toggleNightMode()" title="Toggle Night Mode"></a>
                 <span class="separator">|</span>
                 @{
-                    var cmd = new Voat.Domain.Query.QueryMessageCounts(User.Identity.Name, Voat.Domain.Models.MessageIdentityType.User, Voat.Domain.Models.MessageTypeFlag.All, Voat.Domain.Models.MessageState.Unread);
+                    var cmd = new Voat.Domain.Query.QueryMessageCounts(User.Identity.Name, Voat.Domain.Models.IdentityType.User, Voat.Domain.Models.MessageTypeFlag.All, Voat.Domain.Models.MessageState.Unread);
                     var count = cmd.Execute().Total;
                     <span class="notification-container">
                         <a title="you have new messages" href="/messages/" class="@(count > 0 ? "havemail" : "nohavemail")" id="mail">messages</a>

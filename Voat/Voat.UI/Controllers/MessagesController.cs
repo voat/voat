@@ -25,12 +25,41 @@ using PagedList;
 using Voat.Models.ViewModels;
 using System.Net;
 using System.Linq;
+using System.Collections.Generic;
+using System;
+using System.Web.Routing;
 
 namespace Voat.Controllers
 {
+   
     [Authorize]
     public class MessagesController : BaseController
     {
+        
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            ViewBag.Context = new MessageContextViewModel() { ViewerContext = UserDefinition.Parse(User.Identity.Name) };
+            base.OnActionExecuting(filterContext);
+        }
+
+        private PagedList.StaticPagedList<T> FakePaging<T>(IEnumerable<T> result, int page, int pageSize)
+        {
+            
+            int currentCount = result.Count();
+            int fakeTotal = currentCount;
+            if (currentCount < pageSize)
+            {
+                //no future pages
+                fakeTotal = Math.Max((page),0) * pageSize + currentCount;
+            }
+            else
+            {
+                fakeTotal = (page + 1) * pageSize + 1;
+            }
+            return new StaticPagedList<T>(result, page + 1, pageSize, fakeTotal);
+
+        }
+
         public async Task<ActionResult> Index(int? page = null)
         {
 
@@ -71,11 +100,11 @@ namespace Voat.Controllers
             ViewBag.Title = "Inbox";
 
             var q = new QueryMessages(MessageTypeFlag.Private, MessageState.All, false);
-            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value : 0);
+            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value - 1 : 0);
 
             var result = await q.ExecuteAsync();
 
-            var pagedList = new PagedList.StaticPagedList<Domain.Models.Message>(result, 1, 25, 100);
+            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
 
             return View("Index", pagedList);
 
@@ -88,11 +117,11 @@ namespace Voat.Controllers
             ViewBag.Title = "Sent";
 
             var q = new QueryMessages(MessageTypeFlag.Sent, MessageState.All, true);
-            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value : 0);
-
+            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value - 1 : 0);
+            q.PageCount = 5;
             var result = await q.ExecuteAsync();
 
-            var pagedList = new PagedList.StaticPagedList<Domain.Models.Message>(result, 1, 25, 100);
+            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
 
             return View("Index", pagedList);
 
@@ -107,14 +136,14 @@ namespace Voat.Controllers
             if (type.HasValue)
             {
                 contentType = type.Value == ContentType.Comment ? MessageTypeFlag.CommentReply : MessageTypeFlag.SubmissionReply;
-                ViewBag.Title = contentType.ToString() + " Replies";
+                ViewBag.Title = type.ToString() + " Replies";
             }
 
             var q = new QueryMessages(contentType, MessageState.All, true);
-            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value : 0);
+            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value - 1 : 0);
             var result = await q.ExecuteAsync();
 
-            var pagedList = new PagedList.StaticPagedList<Domain.Models.Message>(result, 1, 25, 100);
+            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
 
             return View("Index", pagedList);
 
@@ -129,14 +158,14 @@ namespace Voat.Controllers
             if (type.HasValue)
             {
                 contentType = type.Value == ContentType.Comment ? MessageTypeFlag.CommentMention : MessageTypeFlag.SubmissionMention;
-                ViewBag.Title = contentType.ToString() + " Mentions";
+                ViewBag.Title = type.ToString() + " Mentions";
             }
 
             var q = new QueryMessages(contentType, MessageState.All, true);
-            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value : 0);
+            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value - 1 : 0);
 
             var result = await q.ExecuteAsync();
-            var pagedList = new PagedList.StaticPagedList<Domain.Models.Message>(result, 1, 25, 100);
+            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
 
             return View("Index", pagedList);
         }
@@ -148,14 +177,21 @@ namespace Voat.Controllers
             ViewBag.Title = "Compose";
 
             var recipient = Request.Params["recipient"];
+            var subverse = (string)RouteData.Values["subverse"];
+            var model = new NewMessageViewModel() { Recipient = recipient };
 
-            if (recipient != null)
+            if (!string.IsNullOrEmpty(subverse))
             {
-                ViewBag.recipient = recipient;
+                if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.SendMail))
+                {
+                    return RedirectToAction("Home", "Index");
+                }
+                ViewBag.PmView = "mod";
+                model.Sender = UserDefinition.Format(subverse, IdentityType.Subverse);
             }
 
             // return compose view
-            return View();
+            return View(model);
         }
 
         // POST: Compose
@@ -166,7 +202,7 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(message);
             }
 
             if (message.Recipient == null || message.Subject == null || message.Body == null)
@@ -182,25 +218,34 @@ namespace Voat.Controllers
                 if (!isCaptchaValid)
                 {
                     ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer.");
-                    return View();
+                    return View(message);
                 }
             }
             var sendMessage = new SendMessage() {
                 Recipient = message.Recipient,
                 Message = message.Body,
-                Subject = message.Subject
+                Subject = message.Subject,
+                Sender = message.Sender
             };
             var cmd = new SendMessageCommand(sendMessage);
             var response = await cmd.Execute();
 
             if (response.Success)
             {
-                return RedirectToAction("Sent", "Messages");
+                var m = response.Response;
+                if (m.SenderType == IdentityType.Subverse)
+                {
+                    return RedirectToAction("SubverseIndex", "Messages", new { subverse = m.Sender, type = MessageTypeFlag.Sent, state = MessageState.All });
+                }
+                else
+                {
+                    return RedirectToAction("Sent", "Messages");
+                }
             }
             else
             {
                 ModelState.AddModelError(string.Empty, response.Message);
-                return View();
+                return View(message);
             }
         }
         // POST: Compose
@@ -258,13 +303,44 @@ namespace Voat.Controllers
         //url: messageRoot + "/mark/{type}/{action}/{id}",
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> Mark(MessageTypeFlag type, MessageState markAction, int? id = null)
+        public async Task<ActionResult> Mark(MessageTypeFlag type, MessageState markAction, int? id = null, string subverse = null)
         {
 
-            ViewBag.PmView = "inbox";
-            ViewBag.Title = "Inbox";
+            var ownerName = User.Identity.Name;
+            var ownerType = IdentityType.User;
+            if (!string.IsNullOrEmpty(subverse))
+            {
+                ownerName = subverse.TrimSafe();
+                ownerType = IdentityType.Subverse;
+            }
+            var cmd = new MarkMessagesCommand(ownerName, ownerType, type, markAction, id);
+            var response = await cmd.Execute();
 
-            var cmd = new MarkMessagesCommand(type, markAction, id);
+            if (response.Success)
+            {
+                
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+            }
+        }
+
+        //url: messageRoot + "/delete/{type}/{id}",
+        [HttpPost]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> Delete(MessageTypeFlag type, int? id = null, string subverse = null)
+        {
+            var ownerName = User.Identity.Name;
+            var ownerType = IdentityType.User;
+            if (!string.IsNullOrEmpty(subverse))
+            {
+                ownerName = subverse.TrimSafe();
+                ownerType = IdentityType.Subverse;
+            }
+
+            var cmd = new DeleteMessagesCommand(ownerName, ownerType, type, id);
             var response = await cmd.Execute();
 
             if (response.Success)
@@ -276,6 +352,37 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
             }
         }
+
+        public async Task<ActionResult> SubverseIndex(string subverse, MessageTypeFlag type, MessageState? state = null)
+        {
+            if (!(type == MessageTypeFlag.Private || type == MessageTypeFlag.Sent))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (string.IsNullOrEmpty(subverse))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.ReadMail))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.Context = new MessageContextViewModel() { ViewerContext = new UserDefinition() { Name = subverse, Type = IdentityType.Subverse }};
+
+            var qSub = new QuerySubverse(subverse);
+            var sub = await qSub.ExecuteAsync();
+
+            ViewBag.PmView = "mod";
+            ViewBag.Title = string.Format("v/{0} {1}", sub.Name, (type == MessageTypeFlag.Sent ? "Sent" : "Inbox"));
+
+            var q = new QueryMessages(sub.Name, IdentityType.Subverse, type, MessageState.All, false);
+            var result = await q.ExecuteAsync();
+
+            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            return View("Index", pagedList);
+        }
+
     }
 
     //public class MessagingController : BaseController

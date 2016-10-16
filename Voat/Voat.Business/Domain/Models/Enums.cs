@@ -57,7 +57,7 @@ namespace Voat.Domain.Models
         Read = 2,
         All = Unread | Read,
     }
-    public enum MessageIdentityType
+    public enum IdentityType
     {
         User = 1,
         Subverse = 2
@@ -303,6 +303,9 @@ namespace Voat.Domain.Models
     }
     public enum ModeratorAction
     {
+        ReadMail,
+        SendMail,
+        DeleteMail,
         DeletePosts,
         DeleteComments,
         Banning,

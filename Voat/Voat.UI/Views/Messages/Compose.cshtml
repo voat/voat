@@ -17,7 +17,6 @@
 
 @{
     ViewBag.Title = "Compose";
-    string recipient = Request.Params["recipient"];
 }
 
 <div id="container">
@@ -35,11 +34,21 @@
                     <div class="form-horizontal">
                         <hr />
                         @Html.ValidationSummary(true)
+                        @Html.HiddenFor(m => m.Sender)
+                        @if (!String.IsNullOrEmpty(Model.Sender))
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(x => x.Sender, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    <span class="form-control readonly">@Html.ValueFor(m => m.Sender)</span>
+                                </div>
+                            </div>
+                        }
 
                         <div class="form-group">
                             @Html.Label("Recipient", htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-4">
-                                @Html.TextBoxFor(m => m.Recipient, new { @class = "form-control", @Value = recipient })
+                                @Html.TextBoxFor(m => m.Recipient, new { @class = "form-control", value = Model.Recipient })
                                 @Html.ValidationMessageFor(model => model.Recipient)
                             </div>
                         </div>
