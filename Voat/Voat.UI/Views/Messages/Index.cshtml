@@ -24,11 +24,12 @@
     var counts = qcounts.Execute();
     var context = (Voat.Models.ViewModels.MessageContextViewModel)ViewBag.Context;
     //counts
+    var unreadPrivateCount = counts.GetCount(Voat.Domain.Models.MessageType.Private);
     var unreadCommentReplyCount = counts.GetCount(Voat.Domain.Models.MessageType.CommentReply);
     var unreadCommentMentionCount = counts.GetCount(Voat.Domain.Models.MessageType.CommentMention);
     var unreadSubmissionReplyCount = counts.GetCount(Voat.Domain.Models.MessageType.SubmissionReply);
     var unreadSubmissionMentionCount = counts.GetCount(Voat.Domain.Models.MessageType.SubmissionMention);
-    var formatString = " ({0} unread)";
+    var formatString = " ({0} new)";
     var subContext = (context.ViewerContext.Type == Voat.Domain.Models.IdentityType.Subverse ? context.ViewerContext.Name : "");
 }
 
@@ -45,6 +46,7 @@
     <h1>@ViewBag.Title</h1>
     @if (ViewBag.PmView != "mod")
     {
+        <a href="/messages/private" class="btn-whoaverse-paging">Inbox @(unreadPrivateCount > 0 ? String.Format(formatString, unreadPrivateCount) : "")</a>
         <a href="/messages/replies/comment" class="btn-whoaverse-paging">Comment Replies@(unreadCommentReplyCount > 0 ? String.Format(formatString, unreadCommentReplyCount) : "")</a>
         <a href="/messages/replies/submission" class="btn-whoaverse-paging">Submission Replies@(unreadSubmissionReplyCount > 0 ? String.Format(formatString, unreadSubmissionReplyCount) : "")</a>
         <a href="/messages/mentions/comment" class="btn-whoaverse-paging">Comment Mentions@(unreadCommentMentionCount > 0 ? String.Format(formatString, unreadCommentMentionCount) : "")</a>

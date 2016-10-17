@@ -2077,7 +2077,7 @@ namespace Voat.Data
             Task.Run(() => EventNotification.Instance.SendMessageNotice(
                         UserDefinition.Format(ownerName, ownerType),
                         UserDefinition.Format(ownerName, ownerType),
-                        Domain.Models.MessageTypeFlag.Private,
+                        type,
                         null,
                         null));
 
@@ -2122,12 +2122,19 @@ namespace Voat.Data
                 var mapped = messages.Map();
 
                 //mark as read
-                if (messages.Any() && markAsRead)
+                if (markAsRead && messages.Any(x => x.ReadDate == null))
                 {
                     await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate);
                     await db.SaveChangesAsync();
-                }
 
+                    Task.Run(() => EventNotification.Instance.SendMessageNotice(
+                       UserDefinition.Format(ownerName, ownerType),
+                       UserDefinition.Format(ownerName, ownerType),
+                       type,
+                       null,
+                       null));
+
+                }
                 return mapped;
             }
         }
