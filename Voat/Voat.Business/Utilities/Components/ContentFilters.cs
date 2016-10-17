@@ -10,7 +10,7 @@ namespace Voat.Utilities.Components
         private int _priority = 0;
         private bool _isReadOnly = false;
 
-        public const string ACCEPTABLE_LEADS = @"(?<=\s{1,}|^|\(|\[)";
+        public const string ACCEPTABLE_LEADS = @"(?<=\s{1,}|^|\(|\[|\>)";
 
         public bool IsReadOnly
         {

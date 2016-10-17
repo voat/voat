@@ -415,5 +415,21 @@ namespace Voat.Tests.Utils
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        public void UserTagsNotMatchingInHtml_IToldDanWeShouldNotAllowHtml_ButNooooooHeDidNotListenToMe()
+        {
+            //Bug Found Here: https://voat.co/v/AskVoat/1352378/6588193
+            //And yes, typo left on purpose because Mick needs spell check for user names.
+            string input = "<sub>@Akto, we'll need to have the above poster [hugged] (keep that to yourself, Dear Leader)</sub>";
+            string expected = "<p><sub><a href=\"https://voat.co/user/Akto\">@Akto</a>, we'll need to have the above poster [hugged] (keep that to yourself, Dear Leader)</sub></p>";
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
+
     }
 }
