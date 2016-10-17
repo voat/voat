@@ -1018,7 +1018,7 @@ namespace Voat
                 defaults: new {
                     controller = "Domains",
                     action = "Index",
-                    sortingmode = "new"
+                    sortingmode = "hot"
                 }
             );
             
