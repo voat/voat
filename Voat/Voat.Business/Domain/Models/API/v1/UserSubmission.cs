@@ -10,13 +10,19 @@ namespace Voat.Domain.Models
         private string _title = null;
         private string _url = null;
         private string _content = null;
+
         /// <summary>
         /// Optional. A value containing the content/text for a submission. Editable for self-posts only.
         /// </summary>
         [MaxLength(10000)]
         [JsonConverter(typeof(JsonUnprintableCharConverter))]
-        public string Content {
-            get { return _content; }
+        public string Content
+        {
+            get
+            {
+                return _content;
+            }
+
             set
             {
                 //string whitespace
@@ -44,6 +50,7 @@ namespace Voat.Domain.Models
                 return (Type == SubmissionType.Link ? !String.IsNullOrEmpty(Url) : true) && !String.IsNullOrEmpty(Title) && !String.IsNullOrEmpty(Subverse);
             }
         }
+
         [JsonIgnore]
         public SubmissionType Type
         {
@@ -52,7 +59,6 @@ namespace Voat.Domain.Models
                 return String.IsNullOrEmpty(Url) ? SubmissionType.Text : SubmissionType.Link;
             }
         }
-
 
         /// <summary>
         /// Not Implemented. Specifies if the submission is NSFW or not.
@@ -71,9 +77,15 @@ namespace Voat.Domain.Models
         [MinLength(10)]
         [MaxLength(200)]
         [JsonConverter(typeof(JsonUnprintableCharConverter))]
-        public string Title {
-            get { return _title; }
-            set {
+        public string Title
+        {
+            get
+            {
+                return _title;
+            }
+
+            set
+            {
                 //string whitespace
                 _title = String.IsNullOrEmpty(value) ? null : Utilities.Formatting.StripWhiteSpace(value);
             }
@@ -85,7 +97,11 @@ namespace Voat.Domain.Models
         [Url]
         public string Url
         {
-            get { return _url; }
+            get
+            {
+                return _url;
+            }
+
             set
             {
                 //string whitespace

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Voat.Common;
 using Voat.Rules;
 
 namespace Voat.Domain.Command
@@ -22,7 +21,7 @@ namespace Voat.Domain.Command
     {
         Task Update();
     }
-    
+
     /// <summary>
     /// Use this class when the command has all the information necessary to execute UpdateCache method.
     /// </summary>
@@ -37,6 +36,7 @@ namespace Voat.Domain.Command
             {
                 UpdateCache(result);
             }
+
             //Task t = Task.Run(() => UpdateCache()); //don't wait this
             return result;
         }
@@ -61,6 +61,7 @@ namespace Voat.Domain.Command
             {
                 UpdateCache(result.Item2);
             }
+
             //Task t = Task.Run(() => UpdateCache(result.Item2)); //don't wait this
             return result.Item1;
         }

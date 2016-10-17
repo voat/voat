@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Voat.Data;
+﻿using Voat.Data;
 using Voat.Domain.Models;
 using Voat.RulesEngine;
 
 namespace Voat.Rules.Voting
 {
     [RuleDiscovery("Approved if vote hasn't been registered from same device.", "approved = (hasVoted(Comment, AddressHash) == false)")]
-
     public class VoteCommentAddressCheckRule : VoatRule
     {
-        public VoteCommentAddressCheckRule() 
+        public VoteCommentAddressCheckRule()
             : base("Comment Vote Identity", "2.8", RulesEngine.RuleScope.VoteComment, 10)
         {
         }

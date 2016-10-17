@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 
@@ -18,8 +14,6 @@ namespace Voat.Domain.Command
             this._subversModeratorRecordID = subverseModeratorRecordID;
             this._allowSelfExecution = allowSelfExecution;
         }
-
-
 
         protected override async Task<CommandResponse<RemoveModeratorResponse>> CacheExecute()
         {

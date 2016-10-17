@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 using Voat.Caching;
 
@@ -23,6 +22,7 @@ namespace Voat.Domain.Query
             {
                 return _cacheHit;
             }
+
             private set
             {
                 _cacheHit = value;

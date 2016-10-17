@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data.Models;
 
@@ -19,11 +15,13 @@ namespace Voat.Domain.Query
         {
             _userToRetrieve = userName;
         }
+
         public QueryUserRecord(string userName, CachePolicy policy)
             : this(policy)
         {
             _userToRetrieve = userName;
         }
+
         public QueryUserRecord(CachePolicy policy)
             : base(policy)
         {
@@ -37,6 +35,7 @@ namespace Voat.Domain.Query
                 return CachingKey.UserRecord(_userToRetrieve);
             }
         }
+
         public override string CacheKey
         {
             get

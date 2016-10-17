@@ -6,7 +6,7 @@ namespace Voat.Data.Models
     //Stub out for ReadOnly db connections
     public partial class voatEntities : DbContext
     {
-
+       
         public voatEntities(string connectionName)
             : base(String.Format("name={0}", connectionName))
         {

@@ -1,8 +1,5 @@
-﻿
-using System;
-using System.Linq;
+﻿using System;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -25,6 +22,7 @@ namespace Voat.Domain.Query
                 return _subverse;
             }
         }
+
         protected override string FullCacheKey
         {
             get
@@ -32,6 +30,7 @@ namespace Voat.Domain.Query
                 return CachingKey.SubverseStylesheet(_subverse);
             }
         }
+
         protected override Stylesheet GetData()
         {
             using (var db = new Repository())
@@ -40,6 +39,7 @@ namespace Voat.Domain.Query
                 return new Stylesheet() { Raw = css, Minimized = Minify(css) };
             }
         }
+
         protected string Minify(string css)
         {
             if (!String.IsNullOrEmpty(css))
@@ -51,6 +51,7 @@ namespace Voat.Domain.Query
                 css = Regex.Replace(css, @"\s?([:,;{}])\s?", "$1");
                 css = css.Replace(";}", "}");
                 css = Regex.Replace(css, @"([\s:]0)(px|pt|%|em)", "$1");
+
                 // Remove comments from CSS
                 css = Regex.Replace(css, @"/\*[\d\D]*?\*/", string.Empty);
             }

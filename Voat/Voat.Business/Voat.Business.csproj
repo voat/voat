@@ -181,7 +181,9 @@
     <Compile Include="Domain\Models\API\v1\UserMessage.cs" />
     <Compile Include="Domain\Models\Comment\CommentSegment.cs" />
     <Compile Include="Domain\Models\Comment\NestedComment.cs" />
+    <Compile Include="Domain\Models\FriendlyEnumNames.cs" />
     <Compile Include="Domain\Models\Message.cs" />
+    <Compile Include="Domain\Models\MessageCounts.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\SubverseModerator.cs" />
     <Compile Include="Domain\Models\UserDefinition.cs" />

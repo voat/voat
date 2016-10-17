@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.RulesEngine;
 
 namespace Voat.Rules.Posting
 {
-    
     [RuleDiscovery("Approves a submission if the url hasn't been recently submitted", "approved = (submission.Exists(duration: 15 days) == false)")]
     public class PostSubmissionRecentlySubmittedRule : VoatRule
     {
@@ -31,10 +26,12 @@ namespace Voat.Rules.Posting
                     }
                     if (recentlySubmitted != null)
                     {
-                        return CreateOutcome(RuleResult.Denied, $"Sorry, this link has already been submitted recently. https://voat.co/v/{recentlySubmitted.Subverse}/comments/{recentlySubmitted.ID}"  );
+                        return CreateOutcome(RuleResult.Denied, $"Sorry, this link has already been submitted recently. https://voat.co/v/{recentlySubmitted.Subverse}/comments/{recentlySubmitted.ID}");
                     }
                     break;
+
                 case SubmissionType.Text:
+
                     //containsBannedDomain = BanningUtility.ContentContainsBannedDomain(context.Subverse.Name, submission.Content);
                     break;
             }

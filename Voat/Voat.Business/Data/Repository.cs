@@ -421,7 +421,7 @@ namespace Voat.Data
                                 case 0: //revoke
                                 case -1: //revote which means revoke if we are here
 
-                                         // delete existing downvote
+                                    // delete existing downvote
 
                                     if (existingVoteTracker != null)
                                     {
@@ -486,7 +486,7 @@ namespace Voat.Data
                                 SubscriberCount = x.SubscriberCount.HasValue ? x.SubscriberCount.Value : 0,
                                 CreationDate = x.CreationDate,
                                 Description = x.Description,
-                                RatedAdult = x.IsAdult,
+                                IsAdult = x.IsAdult,
                                 Title = x.Title,
                                 Type = x.Type,
                                 Sidebar = x.SideBar
@@ -504,7 +504,7 @@ namespace Voat.Data
                             SubscriberCount = x.SubscriberCount.HasValue ? x.SubscriberCount.Value : 0,
                             CreationDate = x.CreationDate,
                             Description = x.Description,
-                            RatedAdult = x.IsAdult,
+                            IsAdult = x.IsAdult,
                             Title = x.Title,
                             Type = x.Type,
                             Sidebar = x.SideBar
@@ -522,7 +522,7 @@ namespace Voat.Data
                             SubscriberCount = x.SubscriberCount.HasValue ? x.SubscriberCount.Value : 0,
                             CreationDate = x.CreationDate,
                             Description = x.Description,
-                            RatedAdult = x.IsAdult,
+                            IsAdult = x.IsAdult,
                             Title = x.Title,
                             Type = x.Type,
                             Sidebar = x.SideBar
@@ -542,7 +542,7 @@ namespace Voat.Data
                             SubscriberCount = x.SubscriberCount.HasValue ? x.SubscriberCount.Value : 0,
                             CreationDate = x.CreationDate,
                             Description = x.Description,
-                            RatedAdult = x.IsAdult,
+                            IsAdult = x.IsAdult,
                             Title = x.Title,
                             Type = x.Type,
                             Sidebar = x.SideBar
@@ -882,7 +882,7 @@ namespace Voat.Data
             //This sends notifications by parsing content
             if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
             {
-                ContentProcessor.Instance.Process(m.Content, ProcessingStage.InboundPostSave, m);
+                ContentProcessor.Instance.Process(String.Concat(m.Title, " ", m.Content), ProcessingStage.InboundPostSave, m);
             }
 
             return CommandResponse.Successful(Selectors.SecureSubmission(m));
@@ -1687,6 +1687,7 @@ namespace Voat.Data
             }
             _db.SaveChanges();
         }
+
         [Authorize]
         public async Task<CommandResponse<Domain.Models.Message>> SendMessageReply(int id, string messageContent)
         {
@@ -1718,7 +1719,6 @@ namespace Voat.Data
 
                     message.Sender = m.Recipient;
                     message.SenderType = (IdentityType)m.RecipientType;
-
                 }
                 else
                 {
@@ -1748,7 +1748,6 @@ namespace Voat.Data
         [Authorize]
         public async Task<IEnumerable<CommandResponse<Domain.Models.Message>>> SendMessages(IEnumerable<Domain.Models.Message> messages)
         {
-
             var tasks = messages.Select(x => Task.Run(async () => { return await SendMessage(x).ConfigureAwait(false); }));
 
             var result = await Task.WhenAll(tasks);
@@ -1756,6 +1755,12 @@ namespace Voat.Data
             return result;
         }
 
+
+        /// <summary>
+        /// Main SendMessage routine.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         [Authorize]
         public async Task<CommandResponse<Domain.Models.Message>> SendMessage(Domain.Models.Message message)
         {
@@ -1773,7 +1778,7 @@ namespace Voat.Data
                     message.Title = message.Title.SubstringMax(max);
                     message.CreationDate = CurrentDate;
                     message.FormattedContent = Formatting.FormatMessage(message.Content);
-                    
+
                     if (!MesssagingUtility.IsSenderBlocked(message.Sender, message.Recipient))
                     {
                         messages.Add(message);
@@ -1783,7 +1788,6 @@ namespace Voat.Data
                     {
                         //add sent copy
                         var sentCopy = message.Clone();
-                        sentCopy.Direction = MessageDirection.OutBound;
                         sentCopy.Type = MessageType.Sent;
                         sentCopy.ReadDate = CurrentDate;
                         messages.Add(sentCopy);
@@ -1796,14 +1800,13 @@ namespace Voat.Data
                     //send notices async
                     Task.Run(() => EventNotification.Instance.SendMessageNotice(
                         UserDefinition.Format(message.Recipient, message.RecipientType),
-                        UserDefinition.Format(message.Sender, message.SenderType), 
-                        Domain.Models.MessageTypeFlag.Private, 
-                        null, 
-                        null, 
+                        UserDefinition.Format(message.Sender, message.SenderType),
+                        Domain.Models.MessageTypeFlag.Private,
+                        null,
+                        null,
                         message.Content));
 
                     return CommandResponse.Successful(addedMessages.First().Map());
-
                 }
                 catch (Exception ex)
                 {
@@ -1821,13 +1824,14 @@ namespace Voat.Data
             Domain.Models.Message responseMessage = null;
 
             var sender = UserDefinition.Parse(message.Sender);
+
             //If sender isn't a subverse (automated messages) run sender checks
             if (sender.Type == IdentityType.Subverse)
             {
                 var subverse = sender.Name;
                 if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.SendMail))
                 {
-                    return CommandResponse.FromStatus(responseMessage, Status.Denied, "User not allowed to send mail from subverse"); 
+                    return CommandResponse.FromStatus(responseMessage, Status.Denied, "User not allowed to send mail from subverse");
                 }
             }
             else
@@ -1843,6 +1847,7 @@ namespace Voat.Data
                 {
                     return CommandResponse.FromStatus(responseMessage, Status.Ignored, "User is banned");
                 }
+
                 //add exception for system messages from sender
                 if (!forceSend && !CONSTANTS.SYSTEM_USER_NAME.Equals(message.Sender, StringComparison.OrdinalIgnoreCase) && Karma.CommentKarma(message.Sender) < 10)
                 {
@@ -1886,7 +1891,7 @@ namespace Voat.Data
                             return CommandResponse.FromStatus<Domain.Models.Message>(null, Status.Error, $"User {recipient} does not exist.");
                         }
                     }
-                    else 
+                    else
                     {
                         messages.Add(new Domain.Models.Message
                         {
@@ -1912,10 +1917,12 @@ namespace Voat.Data
             }
             return firstSent;
         }
+
         private IQueryable<Data.Models.Message> GetMessageQueryBase(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
             return GetMessageQueryBase(_db, ownerName, ownerType, type, state);
         }
+
         private IQueryable<Data.Models.Message> GetMessageQueryBase(voatEntities context, string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
             var q = (from m in context.Messages
@@ -1936,10 +1943,12 @@ namespace Voat.Data
                 case MessageState.Read:
                     q = q.Where(x => x.ReadDate != null);
                     break;
+
                 case MessageState.Unread:
                     q = q.Where(x => x.ReadDate == null);
                     break;
             }
+
             //filter Message Type
             if (type != MessageTypeFlag.All)
             {
@@ -1957,18 +1966,23 @@ namespace Voat.Data
                             case MessageTypeFlag.Sent:
                                 messageTypes.Add((int)MessageType.Sent);
                                 break;
+
                             case MessageTypeFlag.Private:
                                 messageTypes.Add((int)MessageType.Private);
                                 break;
+
                             case MessageTypeFlag.CommentReply:
                                 messageTypes.Add((int)MessageType.CommentReply);
                                 break;
+
                             case MessageTypeFlag.CommentMention:
                                 messageTypes.Add((int)MessageType.CommentMention);
                                 break;
+
                             case MessageTypeFlag.SubmissionReply:
                                 messageTypes.Add((int)MessageType.SubmissionReply);
                                 break;
+
                             case MessageTypeFlag.SubmissionMention:
                                 messageTypes.Add((int)MessageType.SubmissionMention);
                                 break;
@@ -1979,8 +1993,8 @@ namespace Voat.Data
             }
 
             return q;
-
         }
+
         [Authorize]
         public async Task<CommandResponse> DeleteMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, int? id = null)
         {
@@ -2018,6 +2032,7 @@ namespace Voat.Data
             }
             return CommandResponse.FromStatus(Status.Success, "");
         }
+
         [Authorize]
         public async Task<CommandResponse> MarkMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, int? id = null)
         {
@@ -2065,7 +2080,7 @@ namespace Voat.Data
                         Domain.Models.MessageTypeFlag.Private,
                         null,
                         null));
-            
+
             return CommandResponse.FromStatus(Status.Success, "");
         }
 
@@ -2075,22 +2090,23 @@ namespace Voat.Data
             var q = GetMessageQueryBase(ownerName, ownerType, type, state);
 
             var counts = await q.GroupBy(x => x.Type).Select(x => new { x.Key, Count = x.Count() }).ToListAsync();
-            var result = new MessageCounts();
+            var result = new MessageCounts(UserDefinition.Create(ownerName, ownerType));
             foreach (var count in counts)
             {
                 result.Counts.Add(new MessageCount() { Type = (MessageType)count.Key, Count = count.Count });
             }
             return result;
         }
+
         [Authorize]
         public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true, int pageNumber = 0, int pageCount = 25)
         {
             return await GetMessages(User.Identity.Name, IdentityType.User, type, state, markAsRead, pageNumber, pageCount);
         }
+
         [Authorize]
         public async Task<IEnumerable<Domain.Models.Message>> GetMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true, int pageNumber = 0, int pageCount = 25)
         {
-
             DemandAuthentication();
             using (var db = new voatEntities())
             {
@@ -2181,7 +2197,6 @@ namespace Voat.Data
 
         public UserInformation GetUserInfo(string userName)
         {
-
             if (String.IsNullOrWhiteSpace(userName) || userName.TrimSafe().IsEqual("deleted"))
             {
                 return null;
@@ -2189,7 +2204,7 @@ namespace Voat.Data
 
             var q = new QueryUserRecord(userName);
             var userRecord = q.Execute();
-            
+
             if (userRecord == null)
             {
                 //not a valid user
@@ -2283,7 +2298,7 @@ namespace Voat.Data
 
             return vb;
         }
-        
+
         private Score GetUserVotingBehavior(string userName, ContentType type, TimeSpan? span = null)
         {
             var score = new Score();
@@ -2525,7 +2540,7 @@ namespace Voat.Data
                             _db.SubverseSubscriptions.Remove(sub);
                         }
                     }
-                   
+
                     await _db.SaveChangesAsync();
 
                     await UpdateSubverseSubscriberCount(subscriptionName, action);
@@ -2538,6 +2553,7 @@ namespace Voat.Data
             }
             return CommandResponse.Successful();
         }
+
         private async Task UpdateSubverseSubscriberCount(string subverse, SubscriptionAction action)
         {
             // record new subscription in subverse table subscribers field
@@ -2555,9 +2571,11 @@ namespace Voat.Data
             }
             await _db.SaveChangesAsync();
         }
+
         public async Task<CommandResponse<bool?>> BanUserFromSubverse(string userName, string subverse, string reason, bool? force = null)
         {
             bool? status = null;
+
             //check perms
             if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.Banning))
             {
@@ -2566,18 +2584,12 @@ namespace Voat.Data
 
             userName = userName.TrimSafe();
 
-            // prevent bans of the current user
-            if (User.Identity.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
-            {
-                return new CommandResponse<bool?>(status, Status.Denied, "Can not ban yourself or a blackhole appears");
-            }
-
             string originalUserName = UserHelper.OriginalUsername(userName);
+
             // prevent bans if user doesn't exist
             if (String.IsNullOrEmpty(originalUserName))
             {
                 return new CommandResponse<bool?>(status, Status.Denied, "User can not be found? Are you at the right site?");
-
             }
 
             // get model for selected subverse
@@ -2600,20 +2612,24 @@ namespace Voat.Data
             //True = ennsure ban
             //False = ensure remove ban
             //Null = toggle ban
-            bool? addBan = (force.HasValue ? 
-                                (force.Value ? 
-                                    (existingBan == null ? true : (bool?)null) : 
-                                    (existingBan == null ? (bool?)null : false)) 
+            bool? addBan = (force.HasValue ?
+                                (force.Value ?
+                                    (existingBan == null ? true : (bool?)null) :
+                                    (existingBan == null ? (bool?)null : false))
                             : !(existingBan == null));
 
             if (addBan.HasValue)
             {
                 if (addBan.Value)
                 {
-
                     if (String.IsNullOrWhiteSpace(reason))
                     {
                         return new CommandResponse<bool?>(status, Status.Denied, "Banning a user requires a reason to be given");
+                    }
+                    // prevent bans of the current user
+                    if (User.Identity.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return new CommandResponse<bool?>(status, Status.Denied, "Can not ban yourself or a blackhole appears");
                     }
                     //check if user is mod for "The benning"
                     if (ModeratorPermission.IsModerator(originalUserName, subverseModel.Name))
@@ -2638,13 +2654,12 @@ namespace Voat.Data
                 }
             }
 
-
             if (status.HasValue)
             {
                 var msg = new SendMessage();
                 msg.Sender = $"v/{subverseModel.Name}";
                 msg.Recipient = originalUserName;
-                
+
                 if (status.Value)
                 {
                     //send ban msg
@@ -2661,16 +2676,17 @@ namespace Voat.Data
             }
             return new CommandResponse<bool?>(status, Status.Success, "");
         }
+
         #endregion User Related Functions
 
         #region Moderator Functions
+
         public async Task<CommandResponse<RemoveModeratorResponse>> RemoveModerator(int subverseModeratorRecordID, bool allowSelfRemovals)
         {
             DemandAuthentication();
 
             var response = new RemoveModeratorResponse();
             var originUserName = User.Identity.Name;
-            
 
             // get moderator name for selected subverse
             var subModerator = await _db.SubverseModerators.FindAsync(subverseModeratorRecordID);
@@ -2678,6 +2694,7 @@ namespace Voat.Data
             {
                 return new CommandResponse<RemoveModeratorResponse>(response, Status.Invalid, "Can not find record");
             }
+
             //Set response data
             response.SubverseModerator = subModerator;
             response.OriginUserName = originUserName;
@@ -2721,7 +2738,6 @@ namespace Voat.Data
                     case ModeratorLevel.Owner:
                         if (targetModLevel == ModeratorLevel.Owner)
                         {
-
                             var isTargetOriginalMod = (String.IsNullOrEmpty(subModerator.CreatedBy) && !subModerator.CreationDate.HasValue); //Currently original mods have these fields nulled
                             if (isTargetOriginalMod)
                             {
@@ -2755,13 +2771,13 @@ namespace Voat.Data
                             allowRemoval = true;
                         }
                         break;
+
                     default:
                         allowRemoval = (targetModLevel > currentModLevel);
                         errorMessage = "Only moderators at a lower level can be removed";
                         break;
                 }
             }
-            
 
             //ensure mods can only remove mods that are a lower level than themselves
             if (allowRemoval)
@@ -2781,7 +2797,7 @@ namespace Voat.Data
             }
         }
 
-        #endregion
+        #endregion Moderator Functions
 
         #region Admin Functions
 
@@ -2968,16 +2984,16 @@ namespace Voat.Data
             if ((contentType & ContentType.Comment) > 0)
             {
                 var count = (from x in _db.CommentVoteTrackers
-                                    join c in _db.Comments on x.CommentID equals c.ID
-                                    where
-                                        x.UserName.Equals(sourceUser, StringComparison.OrdinalIgnoreCase)
-                                        &&
-                                        c.UserName.Equals(destinationUser, StringComparison.OrdinalIgnoreCase)
-                                        &&
-                                        x.CreationDate > startDate
-                                        &&
-                                        (voteType == Vote.None || x.VoteStatus == (int)voteType)
-                                    select x).Count();
+                             join c in _db.Comments on x.CommentID equals c.ID
+                             where
+                                 x.UserName.Equals(sourceUser, StringComparison.OrdinalIgnoreCase)
+                                 &&
+                                 c.UserName.Equals(destinationUser, StringComparison.OrdinalIgnoreCase)
+                                 &&
+                                 x.CreationDate > startDate
+                                 &&
+                                 (voteType == Vote.None || x.VoteStatus == (int)voteType)
+                             select x).Count();
                 sum += count;
             }
             if ((contentType & ContentType.Submission) > 0)
@@ -3359,6 +3375,7 @@ namespace Voat.Data
             {
                 case RuleResult.Denied:
                     return CommandResponse.FromStatus(result, Status.Denied, outcome.Message);
+
                 default:
                     return CommandResponse.Successful(result);
             }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voat.Configuration;
 using Voat.RulesEngine;
 
@@ -20,6 +16,7 @@ namespace Voat.Rules.Voting
         {
             int dailyVotingQuota = Settings.DailyVotingQuota;
             var userCCP = context.UserData.Information.CommentPoints.Sum;
+
             //if user has 20+ use scaled quota, else use 10
             var scaledDailyVotingQuota = (userCCP >= 20 ? Math.Max(dailyVotingQuota, userCCP / 2) : 10);
             var totalVotesUsedInPast24Hours = context.UserData.TotalVotesUsedIn24Hours;

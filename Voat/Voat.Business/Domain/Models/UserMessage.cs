@@ -1,5 +1,4 @@
 ﻿using System;
-using Voat.Domain.Models;
 
 namespace Voat.Domain.Models
 {

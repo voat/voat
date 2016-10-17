@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Voat.Caching
@@ -62,7 +60,6 @@ namespace Voat.Caching
         /// <param name="replaceAlg"></param>
         void Replace<T>(string cacheKey, T replacementValue, TimeSpan? cacheTime = null);
 
-
         /// <summary>
         /// Returns object in cache with specified key
         /// </summary>
@@ -101,7 +98,6 @@ namespace Voat.Caching
         /// <param name="replaceAlg"></param>
         void Replace<T>(string cacheKey, object dictionaryKey, Func<T, T> replaceAlg);
 
-
         /// <summary>
         /// Retrieves dictionary item in cached dictionary at specified key
         /// </summary>
@@ -119,7 +115,6 @@ namespace Voat.Caching
         /// <returns></returns>
         bool Exists(string cacheKey, object dictionaryKey);
 
-        #endregion
-
+        #endregion DictionaryBased
     }
 }

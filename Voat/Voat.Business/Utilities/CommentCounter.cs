@@ -4,7 +4,6 @@ using Voat.Data.Models;
 
 namespace Voat.Utilities
 {
-
     //THIS IS A TEMPORARY DEADLOCK WORKAROUND (AND NOW CACHEABLE CONTENT)
     public static class CommentCounter
     {
@@ -17,7 +16,6 @@ namespace Voat.Utilities
             var data = CacheHandler.Instance.Retrieve<int?>(cacheKey);
             if (data == null)
             {
-
                 data = CacheHandler.Instance.Register(cacheKey, new Func<int?>(() =>
                 {
                     using (voatEntities db = new voatEntities())
@@ -36,17 +34,15 @@ namespace Voat.Utilities
                         }
                         return (int)cmd.ExecuteScalar();
                     }
-
                 }), TimeSpan.FromMinutes(2), 1);
 
                 count = (int)data;
             }
-            else {
+            else
+            {
                 count = (int)data;
             }
             return count;
         }
     }
-
-
 }

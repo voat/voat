@@ -31,8 +31,10 @@ namespace Voat.Utilities.Components
                 {
                     userName = Thread.CurrentPrincipal.Identity.Name;
                 }
+
                 //Execute this without blocking
-                Task t = Task.Factory.StartNew(() => {
+                Task t = Task.Factory.StartNew(() =>
+                {
                     try
                     {
                         using (var repo = new Repository())
@@ -73,6 +75,7 @@ namespace Voat.Utilities.Components
                         //the real question of a lifetime is:
                         //what do you do when you catch an exception in the exception logger?
 #if DEBUG
+
                         //I've decided to live dangerously: (at least while in dev)
                         throw ex;
 #endif

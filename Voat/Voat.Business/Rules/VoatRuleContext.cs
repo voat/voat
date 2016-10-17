@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Voat.Common;
 using Voat.Domain;
-using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.RulesEngine;
-using Voat.Utilities;
 
 namespace Voat.Rules
 {
@@ -40,6 +36,7 @@ namespace Voat.Rules
             {
                 return PropertyBag.CommentID;
             }
+
             set
             {
                 PropertyBag.CommentID = value;
@@ -52,6 +49,7 @@ namespace Voat.Rules
             {
                 return PropertyBag.SubmissionID;
             }
+
             set
             {
                 PropertyBag.SubmissionID = value;
@@ -64,6 +62,7 @@ namespace Voat.Rules
             {
                 return PropertyBag.Subverse;
             }
+
             set
             {
                 PropertyBag.Subverse = value;

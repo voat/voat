@@ -24,6 +24,7 @@ namespace Voat.Common
             }
             return _lockObjects[keyLookup];
         }
+
         public void Purge()
         {
             //clear out all old lockables
@@ -32,6 +33,5 @@ namespace Voat.Common
                 _lockObjects = new Dictionary<string, object>();
             }
         }
-
     }
 }

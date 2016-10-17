@@ -13,10 +13,8 @@ All Rights Reserved.
 */
 
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Voat.Data;
 
 namespace Voat.Domain.Models
 {
@@ -30,19 +28,23 @@ namespace Voat.Domain.Models
         public CommentSegment()
         {
         }
+
         public CommentSegment(NestedComment comment)
         {
             Comments = new List<NestedComment>() { comment };
         }
+
         //for backwards compatibility with EF models
         public CommentSegment(Data.Models.Comment comment, string subverse)
         {
             Comments = new List<NestedComment>() { DomainMaps.MapToNestedComment(comment, subverse) };
         }
+
         public CommentSegment(Comment comment)
         {
             Comments = new List<NestedComment>() { DomainMaps.Map(comment) };
         }
+
         public CommentSegment(IList<NestedComment> comments)
         {
             Comments = comments;
@@ -62,11 +64,13 @@ namespace Voat.Domain.Models
                 }
                 return _comments;
             }
+
             set
             {
                 _comments = value;
             }
         }
+
         /// <summary>
         /// The ending index of this comment segment (zero is lowest bound of index)
         /// </summary>
@@ -98,7 +102,6 @@ namespace Voat.Domain.Models
         /// The sort order of the comment segment
         /// </summary>
         public CommentSortAlgorithm Sort { get; set; }
-
 
         /// <summary>
         /// Represents the total count of comments at this level (root or children of a parent comment).

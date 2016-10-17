@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -15,9 +15,9 @@ All Rights Reserved.
 using System;
 using System.Data.Entity;
 using System.Linq;
-using Voat.Caching;
 using Voat.Common;
 using Voat.Data;
+
 //using Microsoft.AspNet.SignalR;
 using Voat.Data.Models;
 
@@ -40,6 +40,7 @@ namespace Voat.Utilities
                 return intCheckResult;
             }
         }
+
         //// returns -1:downvoted, 1:upvoted, 0:not voted
         //public static SubmissionVoteTracker GetVote(voatEntities db, string userToCheck, int submissionID)
         //{
@@ -55,12 +56,15 @@ namespace Voat.Utilities
             {
                 var votingTracker = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userWhichVoted);
 
-                if (votingTracker == null) return;
+                if (votingTracker == null)
+                    return;
+
                 //delete vote history
                 db.SubmissionVoteTrackers.Remove(votingTracker);
                 db.SaveChanges();
             }
         }
+
         // submit submission upvote
         public static void UpvoteSubmission(int submissionID, string userName, string clientIp)
         {
@@ -272,6 +276,5 @@ namespace Voat.Utilities
                 }
             }
         }
-
     }
 }

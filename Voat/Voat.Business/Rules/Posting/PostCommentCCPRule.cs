@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.RulesEngine;
@@ -13,20 +9,16 @@ namespace Voat.Rules.Posting
     [RuleDiscovery("Approves a comment post if user CCP passes all checks.", "approved = (user.CCPThrottleExceeded() == false)")]
     public class PostCommentCCPRule : VoatRule
     {
-
         public PostCommentCCPRule()
             : base("Comment CCP Rule", "7.0", RuleScope.PostComment)
         {
-
         }
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
-
             var result = base.EvaluateRule(context);
             if (result.IsAllowed)
             {
-
                 var subverse = context.Subverse;
                 var userCcp = context.UserData.Information.CommentPoints.Sum;
                 var userMembershipTimeSpan = Repository.CurrentDate.Subtract(context.UserData.Information.RegistrationDate);
@@ -62,6 +54,7 @@ namespace Voat.Rules.Posting
                         return CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", Settings.DailyCommentPostingQuota.ToString()));
                     }
                 }
+
                 //if (userCcp <= 0)
                 //{
                 //    var userMembershipTimeSpam = Repository.CurrentDate - context.UserData.Information.RegistrationDate;
@@ -76,6 +69,7 @@ namespace Voat.Rules.Posting
             return result;
 
             #region Original Logic
+
             //// flag the comment as anonymized if it was submitted to a sub which has active anonymized_mode
             //var submission = DataCache.Submission.Retrieve(commentModel.SubmissionID.Value);
             //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
@@ -128,20 +122,19 @@ namespace Voat.Rules.Posting
             //// check if author is banned, don't save the comment or send notifications if true
             //if (!UserHelper.IsUserGloballyBanned(User.Identity.Name) && !UserHelper.IsUserBannedFromSubverse(User.Identity.Name, submission.Subverse))
             //{
-                  //PORTED
+            //PORTED
             //    bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(subverse.Name, commentModel.Content);
             //    if (containsBannedDomain)
             //    {
             //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
             //    }
 
-
             //    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
             //    {
             //        commentModel.Content = ContentProcessor.Instance.Process(commentModel.Content, ProcessingStage.InboundPreSave, commentModel);
             //    }
 
-            //    //save fully formatted content 
+            //    //save fully formatted content
             //    var formattedComment = Voat.Utilities.Formatting.FormatMessage(commentModel.Content);
             //    commentModel.FormattedContent = formattedComment;
 
@@ -182,8 +175,7 @@ namespace Voat.Rules.Posting
             //    return Redirect(url);
             //}
 
-            #endregion
+            #endregion Original Logic
         }
-
     }
 }

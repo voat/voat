@@ -230,7 +230,6 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CorrelationID" Type="nvarchar" MaxLength="36" Nullable="false" />
           <Property Name="ParentID" Type="int" />
-          <Property Name="Direction" Type="int" Nullable="false" />
           <Property Name="Type" Type="int" Nullable="false" />
           <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SenderType" Type="int" Nullable="false" />
@@ -2114,7 +2113,6 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CorrelationID" Type="String" MaxLength="36" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="ParentID" Type="Int32" />
-          <Property Name="Direction" Type="Int32" Nullable="false" />
           <Property Name="Type" Type="Int32" Nullable="false" />
           <Property Name="Sender" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="SenderType" Type="Int32" Nullable="false" />
@@ -2759,7 +2757,6 @@
                 <ScalarProperty Name="SenderType" ColumnName="SenderType" />
                 <ScalarProperty Name="Sender" ColumnName="Sender" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Direction" ColumnName="Direction" />
                 <ScalarProperty Name="ParentID" ColumnName="ParentID" />
                 <ScalarProperty Name="CorrelationID" ColumnName="CorrelationID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />

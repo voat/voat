@@ -24,7 +24,11 @@ namespace Voat.Domain.Command
             this.Status = status;
             this.Message = message;
         }
-        public CommandResponse() { }
+
+        public CommandResponse()
+        {
+        }
+
         /// <summary>
         /// The friendly description to be used if information is displayed on the UI or to the user.
         /// </summary>
@@ -39,19 +43,18 @@ namespace Voat.Domain.Command
         {
             get { return this.Status == Status.Success; }
         }
-        #region Static Helpers
 
+        #region Static Helpers
 
         public static CommandResponse FromStatus(Status status, string description)
         {
             return new CommandResponse(status, description);
         }
+
         public static CommandResponse<R> FromStatus<R>(R response, Status status, string description)
         {
             return new CommandResponse<R>(response, status, description);
         }
-
-
 
         //public static CommandResponse<R> Denied<R>(R response, string description)
         //{
@@ -77,11 +80,11 @@ namespace Voat.Domain.Command
         {
             return new CommandResponse<R>(response, Status.Success, "");
         }
+
         public static CommandResponse Successful()
         {
             return new CommandResponse(Status.Success, "");
         }
-
 
         public static T Error<T>(Exception ex) where T : CommandResponse, new()
         {
@@ -99,13 +102,13 @@ namespace Voat.Domain.Command
             }
             return r;
         }
-        
+
         public static CommandResponse<M> Map<T, M>(CommandResponse<T> response, M mapped)
         {
             return new CommandResponse<M>(mapped, response.Status, response.Message);
         }
-        #endregion
 
+        #endregion Static Helpers
     }
 
     public class CommandResponse<R> : CommandResponse
@@ -114,7 +117,10 @@ namespace Voat.Domain.Command
         {
             this.Response = response;
         }
-        public CommandResponse() { }
+
+        public CommandResponse()
+        {
+        }
 
         public R Response { get; set; }
     }

@@ -14,7 +14,9 @@ namespace Voat.Domain.Models
         /// </summary>
         public DomainType Type { get; set; }
     }
-    public class BlockedItem : DomainReference {
+
+    public class BlockedItem : DomainReference
+    {
         public DateTime? CreationDate { get; set; }
     }
 

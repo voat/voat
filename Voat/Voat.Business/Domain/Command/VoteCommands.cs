@@ -8,7 +8,7 @@ namespace Voat.Domain.Command
 {
     public class CommentVoteCommand : VoteCommand
     {
-        public CommentVoteCommand(int commentID, int voteValue, string addressHash, bool revokeOnRevote = true) 
+        public CommentVoteCommand(int commentID, int voteValue, string addressHash, bool revokeOnRevote = true)
             : base(voteValue, addressHash)
         {
             CommentID = commentID;
@@ -22,6 +22,7 @@ namespace Voat.Domain.Command
             using (var db = new Repository())
             {
                 var outcome = await Task.Run(() => db.VoteComment(CommentID, VoteValue, AddressHash, RevokeOnRevote));
+
                 //Raise event
                 if (outcome.Success)
                 {
@@ -42,7 +43,7 @@ namespace Voat.Domain.Command
 
     public class SubmissionVoteCommand : VoteCommand
     {
-        public SubmissionVoteCommand(int submissionID, int voteValue, string addressHash, bool revokeOnRevote = true) 
+        public SubmissionVoteCommand(int submissionID, int voteValue, string addressHash, bool revokeOnRevote = true)
             : base(voteValue, addressHash)
         {
             SubmissionID = submissionID;
@@ -56,6 +57,7 @@ namespace Voat.Domain.Command
             using (var gateway = new Repository())
             {
                 var outcome = await Task.Run(() => gateway.VoteSubmission(SubmissionID, VoteValue, AddressHash, RevokeOnRevote));
+
                 //Raise event
                 if (outcome.Success)
                 {
@@ -88,8 +90,9 @@ namespace Voat.Domain.Command
         }
 
         public bool RevokeOnRevote { get; protected set; }
-        public int VoteValue { get; private set; }
-        public string AddressHash { get; private set; }
 
+        public int VoteValue { get; private set; }
+
+        public string AddressHash { get; private set; }
     }
 }

@@ -335,6 +335,7 @@ namespace Voat
             //   constraints: new {  }
             //);
 
+         
             routes.MapRoute(
                 name: "UserComments",
                 url: "{pathPrefix}/{userName}/comments",
@@ -439,7 +440,15 @@ namespace Voat
                     action = "Compose"
                 }
             );
-
+            routes.MapRoute(
+              name: "MessageNotifications",
+              url: messageRoot + "/notifications",
+              defaults: new
+              {
+                  controller = messageController,
+                  action = "Notifications"
+              }
+          );
             routes.MapRoute(
                name: "MessagesSent",
                url: messageRoot + "/sent",
@@ -1005,17 +1014,14 @@ namespace Voat
             // domains/domainname.com
             routes.MapRoute(
                 name: "DomainIndex",
-                url: "domains/{domainname}.{ext}",
-                defaults: new { controller = "Domains", action = "Index" }
+                url: "domains/{domainname}/{sortingmode}",
+                defaults: new {
+                    controller = "Domains",
+                    action = "Index",
+                    sortingmode = "new"
+                }
             );
-
-            // domains/domainname.com/new
-            routes.MapRoute(
-                name: "DomainIndexSorted",
-                url: "domains/{domainname}.{ext}/{sortingmode}",
-                defaults: new { controller = "Domains", action = "New", sortingmode = UrlParameter.Optional }
-            );
-
+            
             #endregion Domains
 
             //// ajaxhelpers/singlesubmissioncomment

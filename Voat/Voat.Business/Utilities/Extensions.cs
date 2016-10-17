@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Voat
 {
     public static class Extensions
     {
-
         /// <summary>
         /// Runs case insensitive compare
         /// </summary>
@@ -19,6 +14,7 @@ namespace Voat
         {
             return String.Equals(string1, string2, StringComparison.OrdinalIgnoreCase);
         }
+
         public static string TrimSafe(this string text)
         {
             if (!String.IsNullOrEmpty(text))
@@ -27,9 +23,9 @@ namespace Voat
             }
             return null;
         }
+
         public static string SubstringMax(this string text, int count)
         {
-            
             if (!String.IsNullOrEmpty(text))
             {
                 if (text.Length > count)
@@ -39,6 +35,5 @@ namespace Voat
             }
             return text;
         }
-
     }
 }

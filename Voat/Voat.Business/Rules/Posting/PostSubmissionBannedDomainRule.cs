@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Voat.Domain.Models;
+﻿using Voat.Domain.Models;
 using Voat.RulesEngine;
 using Voat.Utilities;
 
@@ -20,6 +15,7 @@ namespace Voat.Rules.Posting
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
             UserSubmission submission = context.PropertyBag.UserSubmission;
+
             //Check banned domains in submission content
             var containsBannedDomain = false;
             switch (submission.Type)
@@ -27,6 +23,7 @@ namespace Voat.Rules.Posting
                 case SubmissionType.Link:
                     containsBannedDomain = BanningUtility.ContentContainsBannedDomain(context.Subverse.Name, submission.Url);
                     break;
+
                 case SubmissionType.Text:
                     containsBannedDomain = BanningUtility.ContentContainsBannedDomain(context.Subverse.Name, submission.Content);
                     break;
@@ -39,5 +36,4 @@ namespace Voat.Rules.Posting
             return Allowed;
         }
     }
-
 }

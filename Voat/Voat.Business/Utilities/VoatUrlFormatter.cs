@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voat.Configuration;
 
 namespace Voat.Utilities
@@ -11,6 +7,7 @@ namespace Voat.Utilities
     {
         //TODO: port this value to the config settings file
         private static string _defaultDomain = "voat.co";
+
         private static string _defaultProtocol = "https";
         private static string _domain = null;
 
@@ -25,7 +22,8 @@ namespace Voat.Utilities
                     _domain = Settings.SiteDomain;
                 }
             }
-            catch {
+            catch
+            {
                 /*no-op*/
             }
         }
@@ -38,6 +36,7 @@ namespace Voat.Utilities
             }
             return "#";
         }
+
         public static string Subverse(string subverse, string protocol = null)
         {
             if (!String.IsNullOrEmpty(subverse))
@@ -46,6 +45,7 @@ namespace Voat.Utilities
             }
             return "#";
         }
+
         private static string GetProtocol(string protocol)
         {
             if (protocol == null)
@@ -54,7 +54,7 @@ namespace Voat.Utilities
             }
             else if (protocol.Length == 0)
             {
-                return ""; 
+                return "";
             }
             else
             {

@@ -18,8 +18,11 @@ namespace Voat.Utilities
 
         public const string SUBVERSE_LINK_REGEX_SHORT = @"(/?v/)(?'sub'[a-zA-Z0-9]+)";
         public const string SUBVERSE_LINK_REGEX_FULL = @"((/?v/)(?'sub'[a-zA-Z0-9]+((/(new|top(\?time=(day|week|month|year|all))?|comments/\d+(/\d+(?:/\d+(?:\d+)?)?)?)))?)(?'anchor'#(?:\d+|submissionTop))?)";
-        public static string USER_HOT_LINK_REGEX {
-            get {
+
+        public static string USER_HOT_LINK_REGEX
+        {
+            get
+            {
                 return String.Format(@"((?'notify'-)?(?'prefix'@|/u/)(?'user'{0}))", CONSTANTS.USER_NAME_REGEX);
             }
         }

@@ -4,9 +4,6 @@ using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Runtime.Caching;
-using System.Linq;
-using Voat.Data.Models;
-using System.Collections;
 using Voat.Utilities.Components;
 using Voat.Common;
 using Voat.Data;
@@ -19,9 +16,9 @@ namespace Voat.Caching
         private static ICacheHandler _instance = null;
         private static object _lockInstance = new object();
         private LockStore _lockStore = new LockStore();
+
         //holds meta data about the cache item such as the Func, expiration, recacheLimit, and current recaches
         private ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
-       
 
         public static ICacheHandler Instance
         {
@@ -58,44 +55,61 @@ namespace Voat.Caching
                 }
                 return _instance;
             }
+
             set
             {
                 _instance = value;
             }
         }
+
         protected abstract object GetItem(string cacheKey);
+
         protected abstract void SetItem(string cacheKey, object item, TimeSpan? cacheTime = null);
+
         protected abstract void DeleteItem(string cacheKey);
+
         protected abstract bool ItemExists(string cacheKey);
+
         protected abstract object GetItem(string cacheKey, object dictionaryKey);
+
         protected abstract void SetItem(string cacheKey, object dictionaryKey, object item);
+
         protected abstract void DeleteItem(string cacheKey, object dictionaryKey);
+
         protected abstract bool ItemExists(string cacheKey, object dictionaryKey);
+
         private bool cacheEnabled = true;
-        public bool CacheEnabled 
+
+        public bool CacheEnabled
         {
-            get {
+            get
+            {
                 return cacheEnabled;
             }
-            set {
+
+            set
+            {
                 cacheEnabled = value;
             }
         }
+
         private string StandardizeCacheKey(string cacheKey)
         {
-            if (String.IsNullOrEmpty(cacheKey)) {
+            if (String.IsNullOrEmpty(cacheKey))
+            {
                 throw new ArgumentException("CacheKey can not be null or empty.", cacheKey);
             }
             return cacheKey.ToLower();
         }
 
-        public void Replace<T>(string cacheKey, Func<T,T> replaceAlg, TimeSpan? cacheTime = null)
+        public void Replace<T>(string cacheKey, Func<T, T> replaceAlg, TimeSpan? cacheTime = null)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
             lock (_lockStore.GetLockObject(cacheKey))
             {
                 SetItem(cacheKey, replaceAlg(Retrieve<T>(cacheKey)), cacheTime);
+
                 //_cache[key] = replaceAlg(Retrieve<T>(key));
             }
         }
@@ -108,6 +122,7 @@ namespace Voat.Caching
             {
                 T item = (T)GetItem(cacheKey, dictionaryKey);
                 SetItem(cacheKey, dictionaryKey, replaceAlg(item));
+
                 //_cache[key] = replaceAlg(Retrieve<T>(key));
             }
         }
@@ -119,10 +134,12 @@ namespace Voat.Caching
             lock (_lockStore.GetLockObject(cacheKey))
             {
                 SetItem(cacheKey, replacementValue, cacheTime);
+
                 //_cache[key] = replaceAlg(Retrieve<T>(key));
             }
         }
-        public object Retrieve(string cacheKey) 
+
+        public object Retrieve(string cacheKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
             if (Exists(cacheKey))
@@ -131,6 +148,7 @@ namespace Voat.Caching
             }
             return null;
         }
+
         public void Remove(string cacheKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
@@ -142,9 +160,8 @@ namespace Voat.Caching
                 Tuple<Func<object>, TimeSpan, int, int> y;
                 _meta.TryRemove(cacheKey, out y);
             }
-            
         }
-        
+
         /// <summary>
         /// Registers a function for cache. Locks by key and generates data for return from function
         /// </summary>
@@ -153,12 +170,13 @@ namespace Voat.Caching
         /// <param name="cacheTime">The timespan in which to update or remove item from cache</param>
         /// <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
         /// <returns></returns>
-        public object Register(string cacheKey, Func<object> getData, TimeSpan cacheTime, int recacheLimit = -1) 
+        public object Register(string cacheKey, Func<object> getData, TimeSpan cacheTime, int recacheLimit = -1)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
             //allow devs to turn off local cache for testing
-            if (!CacheEnabled) {
+            if (!CacheEnabled)
+            {
                 return getData();
             }
 
@@ -184,7 +202,7 @@ namespace Voat.Caching
                                     var cache = System.Runtime.Caching.MemoryCache.Default;
                                     var policy = new CacheItemPolicy()
                                     {
-                                        //SlidingExpiration = TimeSpan.Zero, 
+                                        //SlidingExpiration = TimeSpan.Zero,
                                         AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime),
                                         UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
                                     };
@@ -210,13 +228,14 @@ namespace Voat.Caching
             }
             var cacheItem = GetItem(cacheKey);
             return cacheItem;
-  
         }
-        public Task Refresh(string cacheKey) {
 
+        public Task Refresh(string cacheKey)
+        {
             cacheKey = StandardizeCacheKey(cacheKey);
 
-            var task = new Task(() => {
+            var task = new Task(() =>
+            {
                 if (Exists(cacheKey))
                 {
                     object o = _lockStore.GetLockObject(cacheKey);
@@ -230,8 +249,8 @@ namespace Voat.Caching
             });
             task.Start();
             return task;
-
         }
+
         private void RefetchItem(CacheEntryUpdateArguments args)
         {
             var cacheKey = args.Key;
@@ -246,10 +265,12 @@ namespace Voat.Caching
 
                 args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
 
-                args.UpdatedCacheItemPolicy = new CacheItemPolicy() { 
-                                        //SlidingExpiration = TimeSpan.Zero, 
-                                        AbsoluteExpiration = Repository.CurrentDate.Add(meta.Item2), 
-                                        UpdateCallback = new CacheEntryUpdateCallback(RefetchItem) };
+                args.UpdatedCacheItemPolicy = new CacheItemPolicy()
+                {
+                    //SlidingExpiration = TimeSpan.Zero,
+                    AbsoluteExpiration = Repository.CurrentDate.Add(meta.Item2),
+                    UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                };
 
                 try
                 {
@@ -267,6 +288,7 @@ namespace Voat.Caching
                 Remove(cacheKey);
             }
         }
+
         private void ExpireItem(CacheEntryRemovedArguments args)
         {
             try
@@ -283,9 +305,9 @@ namespace Voat.Caching
                 Debug.Print(ex.ToString());
             }
         }
-       
+
         #region Generic Interfaces
-        
+
         /// <summary>
         /// Registers a function for cache. Locks by key and generates data for return from function
         /// </summary>
@@ -299,6 +321,7 @@ namespace Voat.Caching
             var val = Register(cacheKey, new Func<object>(() => { return getData(); }), cacheTime, recacheLimit);
             return (T)Convert<T>(val);
         }
+
         private T Convert<T>(object val)
         {
             if (val == null)
@@ -329,6 +352,7 @@ namespace Voat.Caching
                         {
                             object key = null;
                             Type keyType = genericArgs[0];
+
                             //Enum based keys broke Redis Cache - trap and parse them
                             if (keyType.IsEnum)
                             {
@@ -372,46 +396,56 @@ namespace Voat.Caching
                             return (T)System.Convert.ChangeType(val, castType);
                         }
                     }
+
                     //default direct cast
                     return (T)val;
                 }
             }
         }
+
         public T Retrieve<T>(string cacheKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
             var val = Retrieve(cacheKey);
+
             //if (val is IConvertible) {
             //    return (T)((IConvertible)val).ToType(typeof(T), FormatProvider );
             //}
             return (T)Convert<T>(val);
         }
+
         public bool Exists(string cacheKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
             return ItemExists(cacheKey);
         }
+
         public void Remove(string cacheKey, object dictionaryKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
             DeleteItem(cacheKey, dictionaryKey);
         }
+
         public void Replace<T>(string cacheKey, object dictionaryKey, T newObject)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
             SetItem(cacheKey, dictionaryKey, newObject);
         }
+
         public T Retrieve<T>(string cacheKey, object dictionaryKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
             return (T)GetItem(cacheKey, dictionaryKey);
         }
+
         public bool Exists(string cacheKey, object dictionaryKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
             return ItemExists(cacheKey, dictionaryKey);
         }
+
         protected abstract void ProtectedPurge();
+
         public void Purge()
         {
             //TODO: Do we need to purge state here?
@@ -419,7 +453,6 @@ namespace Voat.Caching
             ProtectedPurge();
         }
 
-
-        #endregion
+        #endregion Generic Interfaces
     }
 }

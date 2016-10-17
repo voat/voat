@@ -11,6 +11,7 @@ namespace Voat.Data.Models
     public class VoatUser : IdentityUser
     {
         public DateTime RegistrationDateTime { get; set; }
+
         public DateTime LastLoginDateTime { get; set; }
 
         [StringLength(50)]
@@ -19,7 +20,7 @@ namespace Voat.Data.Models
         // user registered as partner: original content creator - in form of submissions or comments
         public bool Partner { get; set; }
 
-        //For WebApi OAuth2 
+        //For WebApi OAuth2
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<VoatUser> manager, string authenticationType)
         {
             var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
@@ -29,9 +30,10 @@ namespace Voat.Data.Models
 
     public class ApplicationDbContext : IdentityDbContext<VoatUser>
     {
-        public ApplicationDbContext() : base("voatUsers") { }
+        public ApplicationDbContext() : base("voatUsers")
+        {
+        }
 
         public DbSet<PartnerInformation> PartnerInformation { get; set; }
-
     }
 }

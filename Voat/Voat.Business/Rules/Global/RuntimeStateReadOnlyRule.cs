@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Voat.RulesEngine;
+﻿using Voat.RulesEngine;
 
 namespace Voat.Rules.Global
 {
@@ -12,8 +7,8 @@ namespace Voat.Rules.Global
     {
         public RuntimeStateReadOnlyRule() : base("ReadOnly Rule", "1.0", RuleScope.Global, 0)
         {
-
         }
+
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
             if ((RuntimeState.Current & RuntimeStateSetting.Write) < 0)

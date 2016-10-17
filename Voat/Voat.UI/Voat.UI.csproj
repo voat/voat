@@ -743,6 +743,7 @@
     <Content Include="Views\Messages\Index.cshtml" />
     <Content Include="Views\Messages\_MessageReply.cshtml" />
     <Content Include="Views\Shared\Submissions\_FullSubmission.cshtml" />
+    <Content Include="Views\Messages\Notifications.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

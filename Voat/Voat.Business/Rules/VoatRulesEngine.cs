@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Voat.RulesEngine;
 
 namespace Voat.Rules
@@ -30,6 +29,7 @@ namespace Voat.Rules
                 }
                 return _engine;
             }
+
             set
             {
                 _engine = value;
@@ -52,6 +52,7 @@ namespace Voat.Rules
         {
             return EvaluateRuleSet(context, new RuleScope[] { scope }, includeGlobalScope, scopeEvaluator);
         }
+
         public RuleOutcome EvaluateRuleSet(VoatRuleContext context, params RuleScope[] scopes)
         {
             return EvaluateRuleSet(context, scopes, true, null);

@@ -17,7 +17,6 @@ namespace Voat.Data.Models
         public int ID { get; set; }
         public string CorrelationID { get; set; }
         public Nullable<int> ParentID { get; set; }
-        public int Direction { get; set; }
         public int Type { get; set; }
         public string Sender { get; set; }
         public int SenderType { get; set; }

@@ -36,6 +36,7 @@ namespace Voat.Domain.Query
         {
             return await Task.Run(() => Execute());
         }
+
         public abstract T Execute();
     }
 }

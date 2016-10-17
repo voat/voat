@@ -21,6 +21,7 @@
             <li class="@(Request.Url.AbsoluteUri.EndsWith("messages") ? "selected" : "disabled")"><a href="~/v/@subverse/messages">Inbox</a></li>
             <li class="@(Request.Url.AbsoluteUri.Contains("sent") ? "selected" : "disabled")"><a href="~/v/@subverse/messages/sent">Sent</a></li>
             <li class="@(Request.Url.AbsoluteUri.Contains("compose") ? "selected" : "disabled")"><a href="~/v/@subverse/messages/compose">Compose</a></li>
+            <li class="@(Request.Url.AbsoluteUri.Contains("notifications") ? "selected" : "disabled")"><a href="~/messages/notifications">Summary</a></li>
         </ul>
     }
     else
@@ -29,6 +30,7 @@
             <li class="@(selectedView.Equals("inbox") || selectedView.Equals("unread") ? "selected" : "disabled")"><a href="~/messages">Inbox</a></li>
             <li class="@(selectedView.Equals("sent") ? "selected" : "disabled")"><a href="~/messages/sent">Sent</a></li>
             <li class="@(selectedView.Equals("compose") ? "selected" : "disabled")"><a href="~/messages/compose">Compose</a></li>
+            <li class="@(selectedView.Equals("notifications") ? "selected" : "disabled")"><a href="~/messages/notifications">Summary</a></li>
         </ul>
     }
 }

@@ -118,7 +118,6 @@ namespace Voat.Controllers
 
             var q = new QueryMessages(MessageTypeFlag.Sent, MessageState.All, true);
             q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value - 1 : 0);
-            q.PageCount = 5;
             var result = await q.ExecuteAsync();
 
             var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
@@ -169,6 +168,20 @@ namespace Voat.Controllers
 
             return View("Index", pagedList);
         }
+
+
+        [Authorize]
+        public async Task<ActionResult> Notifications()
+        {
+            ViewBag.PmView = "notifications";
+            ViewBag.selectedView = "notifications";
+            ViewBag.Title = "All Unread Notifications";
+            ViewBag.SelectedSubverse = "";
+            var q = new QueryAllMessageCounts(Domain.Models.MessageTypeFlag.All, Domain.Models.MessageState.Unread);
+            var model = await q.ExecuteAsync();
+            return View(model);
+        }
+
         // GET: Compose
         [System.Web.Mvc.Authorize]
         public ActionResult Compose()
@@ -177,8 +190,9 @@ namespace Voat.Controllers
             ViewBag.Title = "Compose";
 
             var recipient = Request.Params["recipient"];
+            var subject = Request.Params["subject"];
             var subverse = (string)RouteData.Values["subverse"];
-            var model = new NewMessageViewModel() { Recipient = recipient };
+            var model = new NewMessageViewModel() { Recipient = recipient, Subject = subject };
 
             if (!string.IsNullOrEmpty(subverse))
             {
@@ -200,6 +214,10 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Compose(NewMessageViewModel message)
         {
+
+            ViewBag.PmView = "compose";
+            ViewBag.Title = "Compose";
+
             if (!ModelState.IsValid)
             {
                 return View(message);
@@ -318,7 +336,6 @@ namespace Voat.Controllers
 
             if (response.Success)
             {
-                
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }
             else

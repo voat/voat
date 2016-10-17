@@ -35,6 +35,7 @@ namespace Voat.Domain.Query
                     return JsonConvert.DeserializeObject<ApiPermissionSet>(dbPolicy.Policy);
                 }
             }
+
             //return default policy
             //TODO: Change these defaults when moving to production
             //return new ApiPermissionSet() { AllowLogin = false, AllowStream = false, AllowUnrestrictedLogin = false, RequireHmacOnLogin = false };

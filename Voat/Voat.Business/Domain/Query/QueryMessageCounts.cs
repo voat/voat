@@ -1,41 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
 
 namespace Voat.Domain.Query
 {
+   
 
-    public class MessageCount
+    public class QueryAllMessageCounts : QueryMessageBase<IEnumerable<MessageCounts>>
     {
-        public MessageType Type { get; set; }
-        public int Count { get; set; }
-    }
-    public class MessageCounts
-    {
-        public List<MessageCount> Counts { get; set; } = new List<MessageCount>();
-
-        public int GetCount(MessageType type)
+      
+        public QueryAllMessageCounts(MessageTypeFlag type, MessageState state)
+            : base(type, state)
         {
-            return Counts.Where(x => x.Type == type).Sum(x => x.Count);
+
         }
 
-        public int Total
+        public override async Task<IEnumerable<MessageCounts>> ExecuteAsync()
         {
-            get
+            List<MessageCounts> counts = new List<MessageCounts>();
+
+            var userData = new UserData(this._ownerName);
+            List<Task<MessageCounts>> tasks = new List<Task<MessageCounts>>();
+
+            tasks.Add(Task.Factory.StartNew(() => { var q = new QueryMessageCounts(this._ownerName, this._ownerType, this._type, this._state); return q.Execute(); }));
+
+            var modList = userData.Information.Moderates;
+            foreach (var mod in modList)
             {
-                return Counts.Sum(x => x.Count);
+                if (Utilities.ModeratorPermission.HasPermission(mod.Level, ModeratorAction.ReadMail))
+                {
+                    tasks.Add(Task.Factory.StartNew(() => { var q = new QueryMessageCounts(mod.Subverse, IdentityType.Subverse, this._type, this._state); return q.Execute(); }));
+                }
             }
+
+            var taskArray = tasks.ToArray();
+            Task.WaitAll(taskArray);
+
+            foreach (var task in taskArray)
+            {
+                counts.Add(task.Result);
+            }
+
+            return counts;
+        }
+        public override IEnumerable<MessageCounts> Execute()
+        {
+            Task<IEnumerable<MessageCounts>> t = Task.Run(ExecuteAsync);
+            Task.WaitAll(t);
+            return t.Result;
         }
     }
+
     public class QueryMessageCounts : QueryMessageBase<MessageCounts>
     {
-
         public QueryMessageCounts(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
-            :base (ownerName, ownerType, type, state)
+            : base(ownerName, ownerType, type, state)
         {
         }
 
@@ -52,16 +74,17 @@ namespace Voat.Domain.Query
 
                 if (System.Web.HttpContext.Current != null && _ownerType == IdentityType.User)
                 {
-                    const string key = "MessageCounts";
+                    string key = _ownerName;
                     counts = (MessageCounts)System.Web.HttpContext.Current.Items[key];
                 }
                 return counts;
             }
+
             set
             {
                 if (System.Web.HttpContext.Current != null && _ownerType == IdentityType.User)
                 {
-                    const string key = "MessageCounts";
+                    string key = _ownerName;
                     if (value != null)
                     {
                         if (System.Web.HttpContext.Current != null)
@@ -79,6 +102,7 @@ namespace Voat.Domain.Query
             Task.WaitAll(t);
             return t.Result;
         }
+
         public override async Task<MessageCounts> ExecuteAsync()
         {
             var counts = Context;

@@ -142,11 +142,11 @@
                                             }
                                                 @if (!message.IsRead)
                                                 {
-                                                // status: true = unread, false = read
-                                            <li>
-                                                <a id="markPrivateMessageAsRead" class="markAsReadLink" href="javascript:void(0)" onclick="return markAsRead(this, 'private', 'read', @message.ID, '@subContext')">mark as read</a>
-                                            </li>
-                                            }
+                                                    // status: true = unread, false = read
+                                                    <li>
+                                                        <a id="markPrivateMessageAsRead" class="markAsReadLink" href="javascript:void(0)" onclick="return markAsRead(this, '@message.Type', 'read', @message.ID, '@subContext')">mark as read</a>
+                                                    </li>
+                                                }
                                             </ul>
                                         </div>
                                     </div>
@@ -193,7 +193,7 @@
                                         </div>
                                         <div class="panel-message-body">
                                             @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
-                                                Voat.Domain.DomainMaps.Map(comment),
+                                                Voat.Domain.DomainMaps.Map(comment, true),
                                                 new ViewDataDictionary {
                                                     { "parentIsHidden", false },
                                                     { "SortOrder", Voat.Domain.Models.CommentSortAlgorithm.New },
@@ -211,7 +211,7 @@
             }
             else
             {
-                <p>Your inbox is empty.I may be just a server with limited intelligence, but I am not quite sure how to feel about this.</p>
+                <p>This box is empty. I may be just a server with limited intelligence, but I am not quite sure how to feel about this.</p>
             }
         </div>
     </div>

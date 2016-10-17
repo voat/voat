@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -19,7 +19,6 @@ using Voat.Domain.Models;
 
 namespace Voat.Utilities
 {
-
     public static class DateTimeExtensions
     {
         private static JulianCalendar julianCalendar = new JulianCalendar();
@@ -28,50 +27,61 @@ namespace Voat.Utilities
         {
             return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, 0);
         }
+
         public static DateTime ToEndOfDay(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59, 999);
         }
+
         public static DateTime ToStartOfHour(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 0, 0, 0);
         }
+
         public static DateTime ToEndOfHour(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 59, 59, 999);
         }
+
         public static DateTime ToStartOfYear(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, 1, 1, 0, 0, 0, 0);
         }
+
         public static DateTime ToEndOfYear(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, 12, 31, 23, 59, 59, 999);
         }
+
         public static DateTime ToStartOfMonth(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, 1, 0, 0, 0, 0);
         }
+
         public static DateTime ToEndOfMonth(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, julianCalendar.GetDaysInMonth(dateTime.Year, dateTime.Month)).ToEndOfDay();
         }
+
         public static DateTime ToStartOfWeek(this DateTime dateTime)
         {
             var dayOfWeek = julianCalendar.GetDayOfWeek(dateTime);
             var start = dateTime.Subtract(TimeSpan.FromDays((int)dayOfWeek));
             return start.ToStartOfDay();
         }
+
         public static DateTime ToEndOfWeek(this DateTime dateTime)
         {
             var dayOfWeek = julianCalendar.GetDayOfWeek(dateTime);
             var start = dateTime.Add(TimeSpan.FromDays(6 - (int)dayOfWeek));
             return start.ToStartOfDay();
         }
+
         public static Tuple<DateTime, DateTime> ToWeekRange(this DateTime dateTime)
         {
             return new Tuple<DateTime, DateTime>(dateTime.ToStartOfWeek(), dateTime.ToEndOfWeek());
         }
+
         public static Tuple<DateTime, DateTime> ToMonthRange(this DateTime dateTime)
         {
             return new Tuple<DateTime, DateTime>(dateTime.ToStartOfMonth(), dateTime.ToEndOfMonth());
@@ -112,7 +122,8 @@ namespace Voat.Utilities
             }
             return null;
         }
-        //The purpose of this function is to standardize inputs so that we can cache ranged queries. Currently ranges 
+
+        //The purpose of this function is to standardize inputs so that we can cache ranged queries. Currently ranges
         //use the current date which contains diffrent minute, second, and ms with each call. This function converts to common
         //start and end ranges (beginning and ending of days, hours, etc.)
         public static Tuple<DateTime, DateTime> Range(this DateTime dateTime, SortSpan sortSpan)
@@ -125,32 +136,38 @@ namespace Voat.Utilities
                     start = start.ToStartOfHour();
                     end = start.Add(TimeSpan.FromHours(-1));
                     break;
+
                 case SortSpan.Day:
                     start = start.ToStartOfDay();
                     end = start.ToEndOfDay();
                     break;
+
                 case SortSpan.Week:
                     start = start.ToStartOfWeek();
                     end = start.ToEndOfWeek();
                     break;
+
                 case SortSpan.Month:
                     start = start.ToStartOfMonth();
                     end = start.ToEndOfMonth();
                     break;
+
                 case SortSpan.Quarter:
                     var range = start.ToQuarterRange();
                     start = range.Item1;
                     end = range.Item2;
                     break;
+
                 case SortSpan.Year:
                     start = start.ToStartOfYear();
                     end = start.ToEndOfYear();
                     break;
+
                 default:
                 case SortSpan.All:
-                    //Date Range shouldn't be processed for this span 
-                    break;
 
+                    //Date Range shouldn't be processed for this span
+                    break;
             }
 
             return new Tuple<DateTime, DateTime>(start, end);
@@ -166,18 +183,27 @@ namespace Voat.Utilities
             switch (daterange)
             {
                 case "week":
+
                     // set start date to past 1 week
                     return Repository.CurrentDate.Add(new TimeSpan(-7, 0, 0, 0, 0));
+
                 case "month":
+
                     // set start date to past 30 days
                     return Repository.CurrentDate.Add(new TimeSpan(-30, 0, 0, 0, 0));
+
                 case "year":
+
                     // set start date to past 365 days
                     return Repository.CurrentDate.Add(new TimeSpan(-365, 0, 0, 0, 0));
+
                 case "all":
+
                     // set start date to past 100 years
                     return Repository.CurrentDate.AddYears(-100);
+
                 default:
+
                     // set start date to past 24 hours
                     return Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
             }

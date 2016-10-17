@@ -16,16 +16,19 @@ namespace Voat.Domain
             var mapped = list.Select(x => x.Map()).ToList();
             return mapped;
         }
+
         public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Data.Models.Comment> list, string subverse)
         {
             var mapped = list.Select(x => x.Map(subverse)).ToList();
             return mapped;
         }
+
         public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Domain.Models.Comment> list, bool populateUserState = false)
         {
             var mapped = list.Select(x => { ProcessComment(x); return x; }).ToList();
             return mapped;
         }
+
         public static IEnumerable<UserMessage> Map(this IEnumerable<UserMessage> list)
         {
             var mapped = list.Select(x => x.Map()).ToList();
@@ -37,11 +40,13 @@ namespace Voat.Domain
             var mapped = list.Select(x => x.Map()).ToList();
             return mapped;
         }
+
         public static IEnumerable<Domain.Models.Message> Map(this IEnumerable<Data.Models.Message> list, bool protect = true)
         {
             var mapped = list.Select(x => x.Map(protect)).ToList();
             return mapped;
         }
+
         public static Data.Models.Message Map(this Domain.Models.Message message)
         {
             return new Data.Models.Message()
@@ -55,7 +60,7 @@ namespace Voat.Domain
                 CommentID = message.CommentID,
                 CreatedBy = message.CreatedBy,
                 CreationDate = message.CreationDate,
-                Direction = (int)message.Direction,
+                //Direction = (int)message.Direction,
                 IsAnonymized = message.IsAnonymized,
                 ReadDate = message.ReadDate,
                 Recipient = message.Recipient,
@@ -79,10 +84,16 @@ namespace Voat.Domain
 
             m.Content = message.Content;
             m.FormattedContent = message.FormattedContent;
+            //existing messages do not have formatted content saved - check here
+            if (String.IsNullOrEmpty(m.FormattedContent))
+            {
+                Debug.Print("Formatting PM Content!");
+                m.FormattedContent = Formatting.FormatMessage(m.Content);
+            }
+
             m.CommentID = message.CommentID;
             m.CreatedBy = message.CreatedBy;
             m.CreationDate = message.CreationDate;
-            m.Direction = (MessageDirection)message.Direction;
             m.IsAnonymized = message.IsAnonymized;
 
             m.ReadDate = message.ReadDate;
@@ -100,16 +111,12 @@ namespace Voat.Domain
             m.RecipientType = (IdentityType)message.RecipientType;
             m.SenderType = (IdentityType)message.SenderType;
 
-
-
             m.Title = message.Title;
             m.SubmissionID = message.SubmissionID;
             m.Subverse = message.Subverse;
             m.Type = (MessageType)message.Type;
 
-
             return m;
-
         }
 
         public static UserMessage Map(this UserMessage message)
@@ -124,6 +131,7 @@ namespace Voat.Domain
             }
             return result;
         }
+
         public static Domain.Models.Submission Map(this Data.Models.Submission submission)
         {
             Domain.Models.Submission result = null;
@@ -137,6 +145,7 @@ namespace Voat.Domain
                     Title = submission.Title,
                     Url = submission.Url,
                     Content = (submission.Type == 1 ? submission.Content : (string)null),
+
                     //Support For Backwards compat, if FormattedContent is empty, do it here.
                     FormattedContent = (submission.Type == 1 && String.IsNullOrEmpty(submission.FormattedContent) ? Formatting.FormatMessage(submission.Content, true) : submission.FormattedContent),
 
@@ -180,16 +189,15 @@ namespace Voat.Domain
                     Description = subverse.Description,
                     CreationDate = subverse.CreationDate,
                     SubscriberCount = (subverse.SubscriberCount == null ? 0 : subverse.SubscriberCount.Value),
-                    RatedAdult = subverse.IsAdult,
                     Sidebar = subverse.SideBar,
                     Type = subverse.Type,
                     IsAnonymized = subverse.IsAnonymized,
                     IsAdult = subverse.IsAdult,
+
                     //IsAdminDisabled = (subverse.IsAdminDisabled.HasValue ? subverse.IsAdminDisabled.Value : false),
                     CreatedBy = subverse.CreatedBy
                 };
                 result.FormattedSidebar = Formatting.FormatMessage(subverse.SideBar, true);
-
             }
 
             return result;
@@ -224,6 +232,7 @@ namespace Voat.Domain
             }
             return result;
         }
+
         public static usp_CommentTree_Result MapToTree(this Domain.Models.Comment comment)
         {
             usp_CommentTree_Result result = null;
@@ -253,6 +262,7 @@ namespace Voat.Domain
             }
             return result;
         }
+
         public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<CommentVoteTracker> commentVotes = null, IEnumerable<CommentSaveTracker> commentSaves = null)
         {
             NestedComment result = null;
@@ -275,11 +285,13 @@ namespace Voat.Domain
                 result.SubmissionID = treeComment.SubmissionID;
                 result.Subverse = treeComment.Subverse;
                 result.IsSubmitter = (treeComment.UserName == submissionOwnerName);
+
                 //Set User State and secure comment
                 ProcessComment(result, false, commentVotes, commentSaves);
             }
             return result;
         }
+
         public static NestedComment MapToNestedComment(this Data.Models.Comment comment, string subverse, bool populateUserState = false)
         {
             NestedComment result = null;
@@ -300,6 +312,7 @@ namespace Voat.Domain
                 result.IsDistinguished = comment.IsDistinguished;
                 result.LastEditDate = comment.LastEditDate;
                 result.SubmissionID = comment.SubmissionID;
+
                 //Just a note, the entire Subverse in Data models for comments is a bit hacky as this info is needed in the app but data models don't contain it.
                 if (String.IsNullOrEmpty(subverse))
                 {
@@ -310,12 +323,14 @@ namespace Voat.Domain
                 {
                     result.Subverse = subverse;
                 }
+
                 //Set User State and secure comment
                 ProcessComment(result, populateUserState);
             }
             return result;
         }
-        public static NestedComment Map(this Domain.Models.Comment comment)
+
+        public static NestedComment Map(this Domain.Models.Comment comment, bool populateMissingUserState = false)
         {
             NestedComment result = null;
             if (comment != null)
@@ -336,11 +351,13 @@ namespace Voat.Domain
                 result.LastEditDate = comment.LastEditDate;
                 result.SubmissionID = comment.SubmissionID;
                 result.Subverse = comment.Subverse;
+
                 //Set User State and secure comment
-                ProcessComment(result);
+                ProcessComment(result, populateMissingUserState);
             }
             return result;
         }
+
         public static void ProcessComment(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<CommentVoteTracker> commentVotes = null, IEnumerable<CommentSaveTracker> commentSaves = null)
         {
             string userName = Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : null;
@@ -370,7 +387,6 @@ namespace Voat.Domain
                 {
                     comment.IsSaved = SavingComments.CheckIfSavedComment(userName, comment.ID);
                 }
-
             }
             comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
         }

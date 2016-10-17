@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Voat.Domain.Models;
-using Voat.RulesEngine;
-using Voat.Utilities;
+﻿using Voat.RulesEngine;
 
 namespace Voat.Rules.Posting
 {

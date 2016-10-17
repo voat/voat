@@ -9,10 +9,8 @@ namespace Voat.Utilities
     /// </summary>
     public static class VoatPathHelper
     {
-
         private static string SiteRoot(bool provideProtocol, bool supportsContentDelivery, string forceDomain = null)
         {
-
             //Defaults
             string domain = "voat.co";
             string protocol = "https";
@@ -42,7 +40,6 @@ namespace Voat.Utilities
 
         public static string ThumbnailPath(string thumbnailFile, bool fullyQualified = false, bool provideProtocol = false)
         {
-
             if (String.IsNullOrEmpty(thumbnailFile))
             {
                 return thumbnailFile;
@@ -59,11 +56,12 @@ namespace Voat.Utilities
 
             return String.Format("{0}/thumbs/{1}", (fullyQualified ? SiteRoot(provideProtocol, true) : "~"), thumbnailFile);
         }
+
         public static string BadgePath(string badgeFile, bool fullyQualified = false, bool provideProtocol = false)
         {
             //Badges were rendering http://api-preview.voat.co/path... They need to point to the UI site as a root, so we change.
             var forceDomain = ConfigurationManager.AppSettings["ui.domain"];
-            
+
             if (String.IsNullOrEmpty(badgeFile))
             {
                 return badgeFile;
@@ -71,10 +69,10 @@ namespace Voat.Utilities
 
             return String.Format("{0}/Graphics/Badges/{1}", (fullyQualified ? SiteRoot(provideProtocol, false, forceDomain) : "~"), badgeFile);
         }
+
         //https://cdn.voat.co/avatars/@(userName).jpg
         public static string AvatarPath(string username, bool fullyQualified = false, bool provideProtocol = false, bool forceResolve = false)
         {
-
             //if (Settings.UseContentDeliveryNetwork)
             //{
             //    < img src = "https://cdn.voat.co/avatars/@(userName).jpg" alt = "" class="user-avatar">
@@ -99,9 +97,11 @@ namespace Voat.Utilities
                 return String.Format("{0}/Graphics/thumb-placeholder.png", (fullyQualified ? SiteRoot(provideProtocol, false) : "~"));
             }
         }
+
         public static string CommentsPagePath(string subverse, int submissionID, int? commentID = null)
         {
             var commentPath = commentID.HasValue ? $"/{commentID.Value.ToString()}" : "";
+
             //long
             //return $"/v/{subverse}/comments/{submissionID.ToString()}{commentPath}";
             //short

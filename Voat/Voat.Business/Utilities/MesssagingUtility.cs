@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -13,11 +13,8 @@ All Rights Reserved.
 */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
@@ -26,7 +23,6 @@ namespace Voat.Utilities
 {
     public static class MesssagingUtility
     {
-
         public static bool IsSenderBlocked(string sender, string recipient)
         {
             var q = new QueryUserBlocks(recipient);
@@ -47,14 +43,15 @@ namespace Voat.Utilities
                 try
                 {
                     // mark all items as read
-                    if (markAll != null && (bool) markAll)
+                    if (markAll != null && (bool)markAll)
                     {
                         IQueryable<PrivateMessage> unreadPrivateMessages = db.PrivateMessages
                                                                             .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread)
                                                                             .OrderByDescending(s => s.CreationDate)
                                                                             .ThenBy(s => s.Sender);
 
-                        if (!unreadPrivateMessages.Any()) return false;
+                        if (!unreadPrivateMessages.Any())
+                            return false;
 
                         foreach (var singleMessage in unreadPrivateMessages.ToList())
                         {
@@ -68,7 +65,8 @@ namespace Voat.Utilities
                     if (itemId != null)
                     {
                         var privateMessageToMarkAsread = db.PrivateMessages.FirstOrDefault(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.ID == itemId);
-                        if (privateMessageToMarkAsread == null) return false;
+                        if (privateMessageToMarkAsread == null)
+                            return false;
 
                         var item = db.PrivateMessages.Find(itemId);
                         item.IsUnread = false;
@@ -82,7 +80,6 @@ namespace Voat.Utilities
                     return false;
                 }
             }
-
         }
     }
 }

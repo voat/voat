@@ -19,12 +19,19 @@ namespace Voat.Models.API.Legacy
     public class ApiSubverseInfo
     {
         public DateTime CreationDate { get; set; }
+
         public string Description { get; set; }
+
         public string Name { get; set; }
+
         public Nullable<bool> RatedAdult { get; set; }
+
         public string Sidebar { get; set; }
+
         public int SubscriberCount { get; set; }
+
         public string Title { get; set; }
+
         public string Type { get; set; }
     }
 }

@@ -19,18 +19,31 @@ namespace Voat.Models.API.Legacy
     public class ApiMessage
     {
         public int CommentCount { get; set; }
+
         public DateTime Date { get; set; }
+
         public int Dislikes { get; set; }
+
         public int Id { get; set; }
+
         public Nullable<DateTime> LastEditDate { get; set; }
+
         public int Likes { get; set; }
+
         public string Linkdescription { get; set; }
+
         public string MessageContent { get; set; }
+
         public string Name { get; set; }
+
         public double Rank { get; set; }
+
         public string Subverse { get; set; }
+
         public string Thumbnail { get; set; }
+
         public string Title { get; set; }
+
         public int Type { get; set; }
     }
 }

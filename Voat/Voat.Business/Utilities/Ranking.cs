@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -26,9 +26,11 @@ namespace Voat.Utilities
         {
             return String.Format("legacy:subverse.{0}.highest-rank", subverse).ToLower();
         }
+
         public static double? GetSubverseHighestRanking(string subverse)
         {
-            var highestRank =  CacheHandler.Instance.Register(GetHighestRankingCacheKey(subverse), new Func<double?>(() => {
+            var highestRank = CacheHandler.Instance.Register(GetHighestRankingCacheKey(subverse), new Func<double?>(() =>
+            {
                 using (var db = new voatEntities())
                 {
                     var submission = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == subverse).FirstOrDefault();
@@ -41,8 +43,8 @@ namespace Voat.Utilities
             }), TimeSpan.FromMinutes(30));
 
             return highestRank;
-
         }
+
         public static void UpdateSubverseHighestRanking(string subverse, double newRank)
         {
             var highestRankCacheEntry = GetSubverseHighestRanking(subverse);
@@ -51,7 +53,7 @@ namespace Voat.Utilities
             {
                 if (highestRankCacheEntry < newRank)
                 {
-                    CacheHandler.Instance.Replace<double?>(GetHighestRankingCacheKey(subverse),  highestRankCacheEntry, TimeSpan.FromMinutes(30));
+                    CacheHandler.Instance.Replace<double?>(GetHighestRankingCacheKey(subverse), highestRankCacheEntry, TimeSpan.FromMinutes(30));
                 }
             }
         }
@@ -72,7 +74,7 @@ namespace Voat.Utilities
             var d = rank / (highestRankInSubverse == 0.0 ? 1 : highestRankInSubverse);
             if (d != null)
             {
-                double relativeRank = (double) d;
+                double relativeRank = (double)d;
 
                 return double.IsNaN(relativeRank) ? 0 : Math.Round(relativeRank, 7);
             }

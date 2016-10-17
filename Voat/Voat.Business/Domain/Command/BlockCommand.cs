@@ -30,6 +30,7 @@ namespace Voat.Domain.Command
                 return Tuple.Create(response, response.Response);
             }
         }
+
         protected override void UpdateCache(bool? result)
         {
             if (result.HasValue)
@@ -40,7 +41,8 @@ namespace Voat.Domain.Command
                     if (result.Value)
                     {
                         //Added block
-                        CacheHandler.Instance.Replace<IList<BlockedItem>>(key, new Func<IList<BlockedItem>, IList<BlockedItem>>(x => {
+                        CacheHandler.Instance.Replace<IList<BlockedItem>>(key, new Func<IList<BlockedItem>, IList<BlockedItem>>(x =>
+                        {
                             var entry = x.FirstOrDefault(b => b.Type == _domainType && b.Name.Equals(_name, StringComparison.OrdinalIgnoreCase));
                             if (entry == null)
                             {
@@ -52,7 +54,8 @@ namespace Voat.Domain.Command
                     else
                     {
                         //Removed block
-                        CacheHandler.Instance.Replace<IList<BlockedItem>>(key, new Func<IList<BlockedItem>, IList<BlockedItem>>(x => {
+                        CacheHandler.Instance.Replace<IList<BlockedItem>>(key, new Func<IList<BlockedItem>, IList<BlockedItem>>(x =>
+                        {
                             var entry = x.FirstOrDefault(b => b.Type == _domainType && b.Name.Equals(_name, StringComparison.OrdinalIgnoreCase));
                             if (entry != null)
                             {
@@ -61,11 +64,9 @@ namespace Voat.Domain.Command
                             return x;
                         }), TimeSpan.FromMinutes(10));
                     }
-
                 }
             }
         }
-        
     }
 
     public class UnblockCommand : BlockCommand
@@ -73,6 +74,7 @@ namespace Voat.Domain.Command
         public UnblockCommand(DomainType domainType, string name) : base(domainType, name)
         {
         }
+
         protected override async Task<Tuple<CommandResponse<bool?>, bool?>> CacheExecute()
         {
             using (var db = new Repository())

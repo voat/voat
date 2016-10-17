@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Voat.Caching
 {
@@ -15,28 +12,32 @@ namespace Voat.Caching
         private string _connectionString;
         protected ConnectionMultiplexer conn = null;
         protected IDatabase db = null;
+
         //This ensures that an item eventually gets purged from cache.
         private TimeSpan expirationBuffer = TimeSpan.FromSeconds(30);
 
         private JsonSerializerSettings settings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
-        
+
         public RedisCacheHandler(string connectionString)
         {
             _connectionString = connectionString;
+
             //TODO: Pull endpoint from configuration
             conn = ConnectionMultiplexer.Connect(connectionString);
 
             db = conn.GetDatabase();
-
         }
+
         protected object Deserialize(object value)
         {
             return JsonConvert.DeserializeObject(value.ToString(), settings);
         }
+
         protected string Serialize(object value)
         {
             return Newtonsoft.Json.JsonConvert.SerializeObject(value, Formatting.None, settings);
         }
+
         protected override object GetItem(string cacheKey)
         {
             if (db.KeyExists(cacheKey))

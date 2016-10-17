@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace Voat.Domain.Models
@@ -7,6 +6,7 @@ namespace Voat.Domain.Models
     public class SendMessage
     {
         private string _sender = null;
+
         [Required]
         public string Message { get; set; }
 
@@ -14,7 +14,8 @@ namespace Voat.Domain.Models
         public string Recipient { get; set; }
 
         [JsonIgnore]
-        public string Sender {
+        public string Sender
+        {
             get
             {
                 if (string.IsNullOrEmpty(_sender) && System.Threading.Thread.CurrentPrincipal.Identity.IsAuthenticated)
@@ -23,6 +24,7 @@ namespace Voat.Domain.Models
                 }
                 return _sender;
             }
+
             set
             {
                 _sender = value;

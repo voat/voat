@@ -1,13 +1,5 @@
 ﻿using System;
 using Voat.Caching;
-using Voat.Data;
-using Voat.Domain.Models;
-using Voat.Utilities;
-using System.Linq;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Voat.Data.Models;
-using Voat.Common;
 
 namespace Voat.Domain.Query
 {

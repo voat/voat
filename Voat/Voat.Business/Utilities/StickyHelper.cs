@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data.Models;
 
@@ -13,8 +11,9 @@ namespace Voat.Utilities
         public static Submission GetSticky(string subverse)
         {
             //Heads up: Right now the cache is set to ignore nulls, so we create an empty list to use if a sub has no stickies
-            //will refactor this in the future when we modify the cachehandler to support null caching per call 
-            List<Submission> stickies = CacheHandler.Instance.Register(CachingKey.StickySubmission(subverse), new Func<List<Submission>>(() => {
+            //will refactor this in the future when we modify the cachehandler to support null caching per call
+            List<Submission> stickies = CacheHandler.Instance.Register(CachingKey.StickySubmission(subverse), new Func<List<Submission>>(() =>
+            {
                 using (var db = new voatEntities())
                 {
                     var x = db.StickiedSubmissions.FirstOrDefault(s => s.Subverse == subverse);
@@ -35,6 +34,7 @@ namespace Voat.Utilities
                 return null;
             }
         }
+
         public static void ClearStickyCache(string subverse)
         {
             CacheHandler.Instance.Remove(CachingKey.StickySubmission(subverse));

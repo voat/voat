@@ -36,6 +36,7 @@ using Voat.Configuration;
 using Voat.UI.Utilities;
 using Voat.Data;
 using Voat.Domain;
+using Voat.Caching;
 
 namespace Voat.Controllers
 {
@@ -527,7 +528,10 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
-            if (!ModelState.IsValid) return View("Manage", model);
+            if (!ModelState.IsValid)
+            {
+                return View("Manage", model);
+            }
 
             // save changes
             string newTheme;
@@ -570,6 +574,7 @@ namespace Voat.Controllers
                 }
             }
 
+            CacheHandler.Instance.Remove(CachingKey.UserPreferences(User.Identity.Name));
             UserHelper.SetUserStylePreferenceCookie(newTheme);
             return RedirectToAction("Manage");
         }

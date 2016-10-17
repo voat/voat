@@ -5,20 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Caching;
 using Voat.Caching;
 using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
-using Voat.Utilities;
 
 namespace Voat.Domain
 {
-
     /// <summary>
     /// The purpose of this class is to cache expensive user based queries that are repeatidly accessed.
     /// </summary>
@@ -63,6 +59,7 @@ namespace Voat.Domain
             }
             this._userName = userName;
         }
+
         public int TotalVotesUsedIn24Hours
         {
             get
@@ -73,16 +70,19 @@ namespace Voat.Domain
                     {
                         return repo.UserVotingBehavior(username, ContentType.Comment | ContentType.Submission, TimeSpan.FromDays(1)).Total;
                     }
+
                     //return UserGateway.TotalVotesUsedInPast24Hours(username);
                 }, false);
                 return (val.HasValue ? val.Value : 0);
             }
+
             set
             {
                 _votesInLast24Hours = value;
                 Recache();
             }
         }
+
         public int TotalSubmissionsPostedIn24Hours
         {
             get
@@ -93,16 +93,19 @@ namespace Voat.Domain
                     {
                         return repo.UserSubmissionCount(username, TimeSpan.FromDays(1));
                     }
+
                     //return UserGateway.TotalVotesUsedInPast24Hours(username);
                 }, false);
                 return (val.HasValue ? val.Value : 0);
             }
+
             set
             {
                 _votesInLast24Hours = value;
                 Recache();
             }
         }
+
         public IEnumerable<string> BlockedSubverses
         {
             get
@@ -116,6 +119,7 @@ namespace Voat.Domain
                 return val;
             }
         }
+
         public IEnumerable<string> BlockedUsers
         {
             get
@@ -129,6 +133,7 @@ namespace Voat.Domain
                 return val;
             }
         }
+
         public bool IsSubscriber
         {
             get
@@ -141,29 +146,33 @@ namespace Voat.Domain
                 }
                 return isSubscriber;
             }
-
         }
+
         public Data.Models.UserPreference Preferences
         {
             get
             {
-                return GetOrLoad(ref _prefs, username => {
+                return GetOrLoad(ref _prefs, username =>
+                {
                     var q = new QueryUserPreferences(username);
                     var result = q.Execute();
                     return result;
                 }, false);
             }
+
             set
             {
                 _prefs = value;
                 Recache();
             }
         }
+
         public IEnumerable<string> Subscriptions
         {
             get
             {
-                return GetOrLoad(ref _subverseSubscriptions, username => {
+                return GetOrLoad(ref _subverseSubscriptions, username =>
+                {
                     var q = new QueryUserSubscriptions(username);
                     var result = q.Execute();
                     if (result != null && result.ContainsKey("Subverse"))
@@ -176,17 +185,20 @@ namespace Voat.Domain
                     }
                 }, false);
             }
+
             set
             {
                 _subverseSubscriptions = value;
                 Recache();
             }
         }
+
         public UserInformation Information
         {
             get
             {
-                return GetOrLoad(ref _info, username => {
+                return GetOrLoad(ref _info, username =>
+                {
                     var q = new QueryUserInformation(username);
                     var result = q.Execute();
                     return result;
@@ -207,6 +219,7 @@ namespace Voat.Domain
             }
             return value;
         }
+
         private void Recache()
         {
             Task.Run(() => CacheHandler.Instance.Replace<UserData>(CachingKey.UserData(this._userName), this, TimeSpan.FromMinutes(5)));

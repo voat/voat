@@ -4,13 +4,11 @@ using System.Runtime.Serialization;
 
 namespace Voat.Common
 {
-
     /// <summary>
     /// A generic class to store up/down votes and up/down ccp and scp calculations.
     /// </summary>
     public class Score
     {
-
         private short _roundingDecimals = 2;
         private int _up = 0;
         private int _down = 0;
@@ -38,7 +36,8 @@ namespace Voat.Common
         /// </summary>
         public int UpCount
         {
-            get { return _up; } set { _up = Math.Max(0, value); }
+            get { return _up; }
+            set { _up = Math.Max(0, value); }
         }
 
         /// <summary>
@@ -46,7 +45,8 @@ namespace Voat.Common
         /// </summary>
         public int DownCount
         {
-            get { return _down; } set { _down = Math.Max(0, value); }
+            get { return _down; }
+            set { _down = Math.Max(0, value); }
         }
 
         /// <summary>
@@ -88,13 +88,12 @@ namespace Voat.Common
         {
             if (add != null)
             {
-
                 this.UpCount += add.UpCount;
                 this.DownCount += add.DownCount;
-
             }
             return this;
         }
+
         public static Score operator +(Score s1, Score s2)
         {
             if (s1 != null)
@@ -108,5 +107,4 @@ namespace Voat.Common
             return new Score();
         }
     }
-
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voat.Configuration;
 using Voat.RulesEngine;
 using Voat.Utilities;
@@ -22,6 +18,7 @@ namespace Voat.Rules.Posting
         {
             //bool isModerator = context.UserData.Information.Moderates.Any(x => x.Subverse.Equals(context.Subverse.Name, StringComparison.OrdinalIgnoreCase));
             bool isModerator = ModeratorPermission.IsModerator(context.UserName, context.Subverse.Name, null);
+
             // check posting quotas if user is posting to subs they do not moderate
             if (!isModerator)
             {
@@ -30,16 +27,19 @@ namespace Voat.Rules.Posting
                 {
                     return CreateOutcome(RuleResult.Denied, "You have reached your daily global submission quota");
                 }
+
                 // reject if user has reached global hourly submission quota
                 if (UserHelper.UserHourlyGlobalPostingQuotaUsed(context.UserName))
                 {
                     return CreateOutcome(RuleResult.Denied, "You have reached your hourly global submission quota");
                 }
+
                 // check if user has reached hourly posting quota for target subverse
                 if (UserHelper.UserHourlyPostingQuotaForSubUsed(context.UserName, context.Subverse.Name))
                 {
                     return CreateOutcome(RuleResult.Denied, "You have reached your hourly submission quota for this subverse");
                 }
+
                 // check if user has reached daily posting quota for target subverse
                 if (UserHelper.UserDailyPostingQuotaForSubUsed(context.UserName, context.Subverse.Name))
                 {
@@ -50,7 +50,7 @@ namespace Voat.Rules.Posting
                     return CreateOutcome(RuleResult.Denied, "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization");
                 }
             }
-            
+
             Domain.Models.UserSubmission userSubmission = context.PropertyBag.UserSubmission;
             if (userSubmission.Type == Domain.Models.SubmissionType.Link)
             {
@@ -62,6 +62,7 @@ namespace Voat.Rules.Posting
                         return CreateOutcome(RuleResult.Denied, "You have reached your daily crossposting quota for this Url");
                     }
                 }
+
                 //Old code
                 //if (UserHelper.DailyCrossPostingQuotaUsed(userName, submissionModel.Content))
                 //{
@@ -69,8 +70,6 @@ namespace Voat.Rules.Posting
                 //    return ("You have reached your daily crossposting quota for this URL.");
                 //}
             }
-
-
 
             return Allowed;
         }

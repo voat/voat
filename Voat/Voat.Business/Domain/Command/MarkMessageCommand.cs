@@ -1,8 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using Voat.Caching;
+﻿using System.Threading.Tasks;
 using Voat.Data;
-using Voat.Data.Models;
 using Voat.Domain.Models;
 
 namespace Voat.Domain.Command
@@ -24,12 +21,11 @@ namespace Voat.Domain.Command
             this._id = id;
         }
 
-
         public MarkMessagesCommand(MessageTypeFlag type, MessageState action, int? id = null)
             : this(null, IdentityType.User, type, action, id)
         {
             this._ownerName = UserName;
-            this._ownerType = IdentityType.User;                        
+            this._ownerType = IdentityType.User;
         }
 
         protected override async Task<CommandResponse> ProtectedExecute()
@@ -40,6 +36,7 @@ namespace Voat.Domain.Command
             }
         }
     }
+
     public class DeleteMessagesCommand : Command<CommandResponse>
     {
         private MessageTypeFlag _type;
@@ -54,7 +51,6 @@ namespace Voat.Domain.Command
             this._type = type;
             this._id = id;
         }
-
 
         public DeleteMessagesCommand(MessageTypeFlag type, int? id = null)
             : this(null, IdentityType.User, type, id)

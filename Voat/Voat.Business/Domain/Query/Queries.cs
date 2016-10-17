@@ -54,6 +54,7 @@ namespace Voat.Domain.Query
                 return String.Format("{0}", _submissionID);
             }
         }
+
         protected override string FullCacheKey
         {
             get
@@ -61,17 +62,19 @@ namespace Voat.Domain.Query
                 return CachingKey.Submission(_submissionID);
             }
         }
+
         protected override Domain.Models.Submission GetData()
         {
             using (var db = new Repository())
             {
                 var result = db.GetSubmission(this._submissionID);
+
                 //TODO: This returns submissions from disabled subs
                 return result.Map();
             }
         }
     }
-    
+
     public class QueryUserCommentVotesForSubmission : CachedQuery<IEnumerable<Data.Models.CommentVoteTracker>>
     {
         protected int _submissionID;
@@ -110,6 +113,7 @@ namespace Voat.Domain.Query
             }
         }
     }
+
     public class QueryUserSavedCommentsForSubmission : CachedQuery<IEnumerable<Data.Models.CommentSaveTracker>>
     {
         protected int _submissionID;

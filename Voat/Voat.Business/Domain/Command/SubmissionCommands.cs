@@ -19,7 +19,7 @@ namespace Voat.Domain.Command
         {
             using (var db = new Repository())
             {
-                var result = await  db.PostSubmission(_userSubmission);
+                var result = await db.PostSubmission(_userSubmission);
                 return CommandResponse.Map(result, result.Response.Map());
             }
         }
@@ -51,6 +51,7 @@ namespace Voat.Domain.Command
         protected override void UpdateCache(Data.Models.Submission result)
         {
             CacheHandler.Instance.Remove(CachingKey.Submission(result.ID));
+
             //Legacy item removal
             CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));
         }
@@ -93,6 +94,7 @@ namespace Voat.Domain.Command
                     return x;
                 });
             }
+
             //Legacy item removal
             CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));
         }

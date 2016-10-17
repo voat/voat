@@ -160,5 +160,27 @@ namespace Voat.Tests.Utils
             var d = UserDefinition.ParseMany(" /u /Atko PuttItOut, Fuzzy.Words, @v/test, @Amalek,   u/Mick; /u/moe", false);
             Assert.AreEqual(6, d.Count());
         }
+
+
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("UserDefinition")]
+        public void TestUserDefintionParse_BugFix1()
+        {
+            var name = "API-Words";
+            var input = $"{name}";
+            var d = UserDefinition.Parse(input);
+            Assert.AreEqual(d.Name, name);
+        }
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("UserDefinition")]
+        public void TestUserDefintionParse_BugFix2()
+        {
+            var name = "i-am-me";
+            var input = $"@{name}";
+            var d = UserDefinition.Parse(input);
+            Assert.AreEqual(d.Name, name);
+        }
     }
 }

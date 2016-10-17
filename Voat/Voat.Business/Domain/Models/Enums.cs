@@ -8,6 +8,7 @@ namespace Voat.Domain.Models
         Up = 1,
         Down = -1
     }
+
     public enum CommentSort
     {
         New,
@@ -15,6 +16,7 @@ namespace Voat.Domain.Models
     }
 
     [Flags]
+
     //Don't change these values
     public enum ContentType
     {
@@ -27,6 +29,7 @@ namespace Voat.Domain.Models
         Subscribe = 1,
         Unsubscribe = 2
     }
+
     /// <summary>
     /// Specifies the type of Domain object
     /// </summary>
@@ -57,11 +60,13 @@ namespace Voat.Domain.Models
         Read = 2,
         All = Unread | Read,
     }
+    //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
     public enum IdentityType
     {
         User = 1,
         Subverse = 2
     }
+    //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
     public enum MessageType
     {
         Private = 1,
@@ -70,11 +75,6 @@ namespace Voat.Domain.Models
         CommentMention = 4,
         SubmissionReply = 5,
         CommentReply = 6,
-    }
-    public enum MessageDirection
-    {
-        InBound = 1,
-        OutBound = 2
     }
 
     /// <summary>
@@ -136,6 +136,7 @@ namespace Voat.Domain.Models
         /// </summary>
         AJAX = 2
     }
+
     public enum CommentSortAlgorithm
     {
         /// <summary>
@@ -163,6 +164,7 @@ namespace Voat.Domain.Models
         /// </summary>
         Intensity
     }
+
     /// <summary>
     /// Specifies the sort algorithm to apply to result set.
     /// </summary>
@@ -275,7 +277,7 @@ namespace Voat.Domain.Models
         /// </summary>
         Year
     }
-
+    //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
     public enum SubmissionType
     {
         Text = 1,
@@ -301,6 +303,7 @@ namespace Voat.Domain.Models
         Designer = 4,
         Submitter = 99
     }
+
     public enum ModeratorAction
     {
         ReadMail,

@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -13,16 +13,13 @@ All Rights Reserved.
 */
 
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
-using System.Web;
 using Voat.Caching;
 using Voat.Data;
+
 //using Microsoft.AspNet.SignalR;
 //using Voat.Data.Models;
 using Voat.Data.Models;
-using Voat.Domain;
-using Voat.Utilities;
 
 namespace Voat.Utilities.Components
 {
@@ -43,64 +40,35 @@ namespace Voat.Utilities.Components
                     //BlockedUser Implementation - Comment User Mention
                     if (!MesssagingUtility.IsSenderBlocked(comment.UserName, recipient))
                     {
+                        var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
-                        using (var _db = new voatEntities())
+                        var message = new Domain.Models.Message();
+
+                        message.IsAnonymized = comment.IsAnonymized;
+                        message.Recipient = recipient;
+                        message.RecipientType = Domain.Models.IdentityType.User;
+                        message.Sender = comment.UserName;
+                        message.SenderType = Domain.Models.IdentityType.User;
+                        message.Subverse = subverse.Name;
+                        message.SubmissionID = submission.ID;
+                        message.CommentID = comment.ID;
+                        message.Type = Domain.Models.MessageType.CommentMention;
+                        message.CreationDate = Repository.CurrentDate;
+
+                        using (var repo = new Repository())
                         {
-                            var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
-                            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                            var response = await repo.SendMessage(message);
 
-                            var message = new Domain.Models.Message();
-
-                            message.IsAnonymized = comment.IsAnonymized;
-
-                            message.Recipient = recipient;
-                            message.RecipientType = Domain.Models.IdentityType.User;
-
-                            message.Sender = comment.UserName;
-                            message.SenderType = Domain.Models.IdentityType.User;
-
-                            message.Subverse = subverse.Name;
-                            message.SubmissionID = submission.ID;
-                            message.CommentID = comment.ID;
-
-                            message.Type = Domain.Models.MessageType.CommentMention;
-                            message.Direction = Domain.Models.MessageDirection.InBound;
-
-                            message.CreationDate = Repository.CurrentDate;
-
-                            _db.Messages.Add(message.Map());
-
-                            //OLD code
-                            //var commentReplyNotification = new CommentReplyNotification();
-
-                            //commentReplyNotification.CommentID = comment.ID;
-                            //commentReplyNotification.SubmissionID = comment.SubmissionID.Value;
-                            //commentReplyNotification.Recipient = recipient;
-
-                            //if (submission.IsAnonymized || subverse.IsAnonymized)
-                            //{
-                            //    commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                            //}
-                            //else
-                            //{
-                            //    commentReplyNotification.Sender = comment.UserName;
-                            //}
-                            //commentReplyNotification.Body = comment.Content;
-                            //commentReplyNotification.Subverse = subverse.Name;
-                            //commentReplyNotification.IsUnread = true;
-                            //commentReplyNotification.CreationDate = Repository.CurrentDate;
-
-                            //commentReplyNotification.Subject = String.Format("@{0} mentioned you in a comment", comment.UserName, submission.Title);
-
-                            //_db.CommentReplyNotifications.Add(commentReplyNotification);
-
-                            await _db.SaveChangesAsync();
+                            if (response.Success)
+                            {
+                                EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
+                            }
                         }
-
-                        EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
                     }
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     throw ex;
                 }
             }
@@ -114,61 +82,36 @@ namespace Voat.Utilities.Components
                 {
                     return;
                 }
-                try { 
+                try
+                {
                     string recipient = UserHelper.OriginalUsername(user);
 
                     //BlockedUser Implementation - Submission User Mention
                     if (!MesssagingUtility.IsSenderBlocked(submission.UserName, recipient))
                     {
-                        using (var _db = new voatEntities())
+                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+
+                        var message = new Domain.Models.Message();
+
+                        message.IsAnonymized = submission.IsAnonymized;
+                        message.Recipient = recipient;
+                        message.RecipientType = Domain.Models.IdentityType.User;
+                        message.Sender = submission.UserName;
+                        message.SenderType = Domain.Models.IdentityType.User;
+                        message.Subverse = subverse.Name;
+                        message.SubmissionID = submission.ID;
+                        message.Type = Domain.Models.MessageType.SubmissionMention;
+                        message.CreationDate = Repository.CurrentDate;
+
+                        using (var repo = new Repository())
                         {
-                            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                            var response = await repo.SendMessage(message);
 
-                            var message = new Domain.Models.Message();
-
-                            message.IsAnonymized = submission.IsAnonymized;
-
-                            message.Recipient = recipient;
-                            message.RecipientType = Domain.Models.IdentityType.User;
-
-                            message.Sender = submission.UserName;
-                            message.SenderType = Domain.Models.IdentityType.User;
-
-                            message.Subverse = subverse.Name;
-                            message.SubmissionID = submission.ID;
-
-                            message.Type = Domain.Models.MessageType.SubmissionMention;
-                            message.Direction = Domain.Models.MessageDirection.InBound;
-
-                            message.CreationDate = Repository.CurrentDate;
-
-                            _db.Messages.Add(message.Map());
-
-                            //OLD CODE
-
-                            //var commentReplyNotification = new CommentReplyNotification();
-                            //commentReplyNotification.SubmissionID = submission.ID;
-                            //commentReplyNotification.Recipient = recipient;
-                            //if (submission.IsAnonymized || subverse.IsAnonymized)
-                            //{
-                            //    commentReplyNotification.Sender = (new Random()).Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                            //}
-                            //else
-                            //{
-                            //    commentReplyNotification.Sender = submission.UserName;
-                            //}
-                            //commentReplyNotification.Body = submission.Content;
-                            //commentReplyNotification.Subverse = subverse.Name;
-                            //commentReplyNotification.IsUnread = true;
-                            //commentReplyNotification.CreationDate = Repository.CurrentDate;
-
-                            //commentReplyNotification.Subject = String.Format("@{0} mentioned you in post '{1}'", submission.UserName, submission.Title);
-
-                            //_db.CommentReplyNotifications.Add(commentReplyNotification);
-                            await _db.SaveChangesAsync();
+                            if (response.Success)
+                            {
+                                EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
+                            }
                         }
-
-                        EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
                     }
                 }
                 catch (Exception ex)
@@ -210,54 +153,24 @@ namespace Voat.Utilities.Components
                                             var message = new Domain.Models.Message();
 
                                             message.IsAnonymized = submission.IsAnonymized;
-
                                             message.Recipient = parentComment.UserName;
                                             message.RecipientType = Domain.Models.IdentityType.User;
-
                                             message.Sender = comment.UserName;
                                             message.SenderType = Domain.Models.IdentityType.User;
-
                                             message.Subverse = subverse.Name;
                                             message.SubmissionID = submission.ID;
                                             message.CommentID = comment.ID;
-
                                             message.Type = Domain.Models.MessageType.CommentReply;
-                                            message.Direction = Domain.Models.MessageDirection.InBound;
-
                                             message.CreationDate = Repository.CurrentDate;
 
-                                            _db.Messages.Add(message.Map());
-
-                                            //OLD CODE
-                                            //var commentReplyNotification = new CommentReplyNotification();
-                                            //commentReplyNotification.CommentID = comment.ID;
-                                            //commentReplyNotification.SubmissionID = submission.ID;
-                                            //commentReplyNotification.Recipient = parentComment.UserName;
-                                            //if (submission.IsAnonymized || subverse.IsAnonymized)
-                                            //{
-                                            //    commentReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                                            //}
-                                            //else
-                                            //{
-                                            //    commentReplyNotification.Sender = comment.UserName;
-                                            //}
-                                            //commentReplyNotification.Body = comment.Content.SubstringMax(400);
-                                            //commentReplyNotification.Subverse = subverse.Name;
-                                            //commentReplyNotification.IsUnread = true;
-                                            //commentReplyNotification.CreationDate = Repository.CurrentDate;
-
-                                            //// self = type 1, url = type 2
-                                            //commentReplyNotification.Subject = submission.Title;
-
-                                            //_db.CommentReplyNotifications.Add(commentReplyNotification);
-
-                                            await _db.SaveChangesAsync();
-
-                                            EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.CommentReply, Domain.Models.ContentType.Comment, comment.ID);
-
-                                            //OLD CODE
-                                            //EventNotification.Instance.SendMessageNotice(commentReplyNotification.Recipient, commentReplyNotification.Sender, Domain.Models.MessageTypeFlag.Comment, Domain.Models.ContentType.Comment, comment.ID);
-
+                                            using (var repo = new Repository())
+                                            {
+                                                var response = await repo.SendMessage(message);
+                                                if (response.Success)
+                                                {
+                                                    EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.CommentReply, Domain.Models.ContentType.Comment, comment.ID);
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -271,76 +184,44 @@ namespace Voat.Utilities.Components
                 throw ex;
             }
         }
+
         public static async Task SendSubmissionReplyNotification(Comment comment)
         {
             try
             {
-                using (var _db = new voatEntities())
+                // comment reply is sent to a root comment which has no parent id, trigger post reply notification
+                var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+                if (submission != null)
                 {
-                    // comment reply is sent to a root comment which has no parent id, trigger post reply notification
-                    var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
-                    if (submission != null)
+                    // check if recipient exists
+                    if (UserHelper.UserExists(submission.UserName))
                     {
-                        // check if recipient exists
-                        if (UserHelper.UserExists(submission.UserName))
+                        // do not send notification if author is the same as comment author
+                        if (submission.UserName != comment.UserName)
                         {
-                            // do not send notification if author is the same as comment author
-                            if (submission.UserName != comment.UserName)
+                            //BlockedUser Implementation - Submission Reply
+                            if (!MesssagingUtility.IsSenderBlocked(comment.UserName, submission.UserName))
                             {
-                                //BlockedUser Implementation - Submission Reply
-                                if (!MesssagingUtility.IsSenderBlocked(comment.UserName, submission.UserName))
+                                var message = new Domain.Models.Message();
+
+                                message.IsAnonymized = submission.IsAnonymized;
+                                message.Recipient = submission.UserName;
+                                message.RecipientType = Domain.Models.IdentityType.User;
+                                message.Sender = comment.UserName;
+                                message.SenderType = Domain.Models.IdentityType.User;
+                                message.Subverse = submission.Subverse;
+                                message.SubmissionID = submission.ID;
+                                message.CommentID = comment.ID;
+                                message.Type = Domain.Models.MessageType.SubmissionReply;
+                                message.CreationDate = Repository.CurrentDate;
+
+                                using (var repo = new Repository())
                                 {
-                                    var message = new Domain.Models.Message();
-
-                                    message.IsAnonymized = submission.IsAnonymized;
-
-                                    message.Recipient = submission.UserName;
-                                    message.RecipientType = Domain.Models.IdentityType.User;
-
-                                    message.Sender = comment.UserName;
-                                    message.SenderType = Domain.Models.IdentityType.User;
-
-                                    message.Subverse = submission.Subverse;
-                                    message.SubmissionID = submission.ID;
-                                    message.CommentID = comment.ID;
-
-                                    message.Type = Domain.Models.MessageType.SubmissionReply;
-                                    message.Direction = Domain.Models.MessageDirection.InBound;
-
-                                    message.CreationDate = Repository.CurrentDate;
-
-                                    _db.Messages.Add(message.Map());
-
-                                    //OLD CODE
-                                    //// send the message
-                                    //var postReplyNotification = new SubmissionReplyNotification();
-
-                                    //postReplyNotification.CommentID = comment.ID;
-                                    //postReplyNotification.SubmissionID = submission.ID;
-                                    //postReplyNotification.Recipient = submission.UserName;
-                                    //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-                                    //if (submission.IsAnonymized || subverse.IsAnonymized)
-                                    //{
-                                    //    postReplyNotification.Sender = _rnd.Next(10000, 20000).ToString(CultureInfo.InvariantCulture);
-                                    //}
-                                    //else
-                                    //{
-                                    //    postReplyNotification.Sender = comment.UserName;
-                                    //}
-
-                                    //postReplyNotification.Body = comment.Content.SubstringMax(400);
-                                    //postReplyNotification.Subverse = submission.Subverse;
-                                    //postReplyNotification.IsUnread = true;
-                                    //postReplyNotification.CreationDate = Repository.CurrentDate;
-
-                                    //// self = type 1, url = type 2
-                                    //postReplyNotification.Subject = submission.Title;
-
-                                    //_db.SubmissionReplyNotifications.Add(postReplyNotification);
-
-                                    await _db.SaveChangesAsync();
-
-                                    EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.CommentReply, Domain.Models.ContentType.Comment, comment.ID);
+                                    var response = await repo.SendMessage(message);
+                                    if (response.Success)
+                                    {
+                                        EventNotification.Instance.SendMessageNotice(message.Recipient, message.Sender, Domain.Models.MessageTypeFlag.CommentReply, Domain.Models.ContentType.Comment, comment.ID);
+                                    }
                                 }
                             }
                         }
@@ -353,12 +234,11 @@ namespace Voat.Utilities.Components
             }
         }
 
-
         public static async Task SendCommentNotification(Comment comment)
         {
             if (comment.ParentID != null && comment.Content != null)
             {
-                await SendCommentReplyNotification(comment);         
+                await SendCommentReplyNotification(comment);
             }
             else
             {

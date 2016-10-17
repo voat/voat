@@ -8,7 +8,6 @@ namespace Voat.Domain.Query
 {
     public class QueryApiCorsPolicies : CachedQuery<IEnumerable<ApiCorsPolicy>>
     {
-
         public QueryApiCorsPolicies() : base(new CachePolicy(TimeSpan.FromMinutes(10)))
         {
         }

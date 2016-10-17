@@ -10,9 +10,9 @@ namespace Voat.Utilities
         {
             return objectType == typeof(string);
         }
+
         public static string ProcessChars(string source)
         {
-
             if (String.IsNullOrEmpty(source))
             {
                 return source;
@@ -55,6 +55,7 @@ namespace Voat.Utilities
                     case '\v':
                         /*ignore these*/
                         break;
+
                     //case '\n': //add another so it breaks in Markdown.
                     //    chars.Add('\n');
                     //    chars.Add('\n');
@@ -64,11 +65,11 @@ namespace Voat.Utilities
                         chars.Add(c);
                         break;
                 }
-
             }
 
             return new string(chars.ToArray());
         }
+
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.Value != null)

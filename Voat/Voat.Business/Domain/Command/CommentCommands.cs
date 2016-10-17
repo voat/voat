@@ -21,7 +21,9 @@ namespace Voat.Domain.Command
         }
 
         public string Content { get; set; }
+
         public int? ParentCommentID { get; set; }
+
         public int SubmissionID { get; set; }
 
         protected override async Task<CommandResponse<Domain.Models.Comment>> CacheExecute()
@@ -75,6 +77,7 @@ namespace Voat.Domain.Command
         }
 
         public int CommentID { get; set; }
+
         public string Reason { get; set; }
 
         protected override async Task<CommandResponse<Comment>> CacheExecute()
@@ -91,10 +94,12 @@ namespace Voat.Domain.Command
             if (result != null && result.Success)
             {
                 var key = CachingKey.CommentTree(result.Response.SubmissionID.Value);
+
                 //Prevent key-ed entries if parent isn't in cache with expiration date
                 if (CacheHandler.Instance.Exists(key))
                 {
                     var treeItem = result.Response.MapToTree();
+
                     //CacheHandler.Instance.Replace(key, result.Response.ID, treeItem);
                     CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, result.Response.ID, x =>
                     {
@@ -118,6 +123,7 @@ namespace Voat.Domain.Command
         }
 
         public int CommentID { get; set; }
+
         public string Content { get; set; }
 
         protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, Comment>> CacheExecute()
@@ -134,10 +140,12 @@ namespace Voat.Domain.Command
             if (result != null)
             {
                 var key = CachingKey.CommentTree(result.SubmissionID.Value);
+
                 //Prevent key-ed entries if parent isn't in cache with expiration date
                 if (CacheHandler.Instance.Exists(key))
                 {
                     var treeItem = result.MapToTree();
+
                     //CacheHandler.Instance.Replace(key, result.ID, treeItem);
                     CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, result.ID, x =>
                     {

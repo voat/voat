@@ -17,8 +17,11 @@ namespace Voat.Models.API.Legacy
     public class ApiBadge
     {
         public string BadgeGraphics { get; set; }
+
         public string BadgeId { get; set; }
+
         public string Name { get; set; }
+
         public string Title { get; set; }
     }
 }

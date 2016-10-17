@@ -1,5 +1,4 @@
 ﻿using Voat.RulesEngine;
-using Voat.Utilities;
 
 namespace Voat.Rules
 {
@@ -27,5 +26,4 @@ namespace Voat.Rules
             return Allowed;
         }
     }
-   
 }

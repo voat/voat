@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Voat.Utilities;
 
 namespace Voat.Domain.Models
@@ -11,16 +9,20 @@ namespace Voat.Domain.Models
     public class UserDefinition
     {
         public string Name { get; set; }
+
         public IdentityType Type { get; set; } = IdentityType.User;
 
         public override string ToString()
         {
             return Format(Name, Type);
         }
-
+        public static UserDefinition Create(string name, IdentityType type)
+        {
+            return new UserDefinition() { Name = name, Type = type };
+        }
         public static UserDefinition Parse(string userName)
         {
-            var matches = Regex.Matches(userName, String.Format(@"((?'prefix'@|u/|/u/|v/|/v/)?(?'name'{0}|{1}))", CONSTANTS.SUBVERSE_REGEX, CONSTANTS.USER_NAME_REGEX), RegexOptions.IgnoreCase);
+            var matches = Regex.Matches(userName, String.Format(@"((?'prefix'@|u/|/u/|v/|/v/)?(?'name'{0}|{1}))", CONSTANTS.USER_NAME_REGEX, CONSTANTS.SUBVERSE_REGEX), RegexOptions.IgnoreCase);
             if (matches.Count != 1)
             {
                 return null;
@@ -33,13 +35,15 @@ namespace Voat.Domain.Models
                 var name = match.Groups["name"].Value;
                 var prefix = match.Groups["prefix"].Value;
                 prefix = prefix?.ToLower();
-                switch (prefix) {
+                switch (prefix)
+                {
                     case "":
                     case "@":
                     case "u/":
                     case "/u/":
-                        result = new UserDefinition() { Name = name, Type = IdentityType.User};
+                        result = new UserDefinition() { Name = name, Type = IdentityType.User };
                         break;
+
                     case "v/":
                     case "/v/":
 
@@ -49,8 +53,8 @@ namespace Voat.Domain.Models
 
                 return result;
             }
-
         }
+
         public static IEnumerable<UserDefinition> ParseMany(string userNameList, bool distinctOnly = true)
         {
             List<UserDefinition> users = new List<UserDefinition>();
@@ -76,12 +80,13 @@ namespace Voat.Domain.Models
 
             return users;
         }
+
         public static string Format(string userName, IdentityType type, bool supportMarkdown = false)
         {
             return (
-                type == IdentityType.Subverse ? 
-                "v/" + userName 
-                : 
+                type == IdentityType.Subverse ?
+                "v/" + userName
+                :
                 (supportMarkdown ? "@" : "") + userName);
         }
     }

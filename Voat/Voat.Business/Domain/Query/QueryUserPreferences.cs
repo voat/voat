@@ -12,16 +12,15 @@ namespace Voat.Domain.Query
     {
         private string _userToRetrieve;
 
-        public QueryUserPreferences(string userName) 
+        public QueryUserPreferences(string userName)
             : this()
         {
             _userToRetrieve = userName;
         }
 
-        public QueryUserPreferences() 
+        public QueryUserPreferences()
             : this(new CachePolicy(TimeSpan.FromMinutes(10)))
         {
-           
         }
 
         public QueryUserPreferences(CachePolicy policy) : base(policy)
@@ -56,6 +55,7 @@ namespace Voat.Domain.Query
                     pref = db.GetUserPreferences(_userToRetrieve);
                 }
             }
+
             //User doesn't have prefs or user is is not logged in. Create default pref and return
             if (pref == null)
             {

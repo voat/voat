@@ -5,12 +5,11 @@ using System.Reflection;
 using System.Web;
 using System.Xml;
 using Voat.Caching;
-using Voat.Utilities;
 
 namespace Voat.Configuration
 {
-
-    public static class CONFIGURATION {
+    public static class CONFIGURATION
+    {
         public const string DailyCommentPostingQuotaForNegativeScore = "dailyCommentPostingQuotaForNegativeScore";
         public const string DailyCommentPostingQuota = "dailyCommentPostingQuota";
         public const string HourlyCommentPostingQuota = "hourlyCommentPostingQuota";
@@ -46,8 +45,6 @@ namespace Voat.Configuration
         public const string SiteDomain = "siteDomain";
         public const string LegacyApiEnabled = "legacyApiEnabled";
         public const string ApiKeyCreationEnabled = "apiKeyCreationEnabled";
-            
-
     }
 
     public class LiveConfigurationManager
@@ -58,15 +55,17 @@ namespace Voat.Configuration
         {
             Watcher.EnableRaisingEvents = true;
         }
+
         public static void Stop()
         {
             Watcher.EnableRaisingEvents = false;
         }
 
-        private static FileSystemWatcher Watcher 
+        private static FileSystemWatcher Watcher
         {
-            get {
-                if (_thewatchmen == null) 
+            get
+            {
+                if (_thewatchmen == null)
                 {
                     lock (typeof(LiveConfigurationManager))
                     {
@@ -76,7 +75,7 @@ namespace Voat.Configuration
                             {
                                 _thewatchmen = new FileSystemWatcher(HttpContext.Current.Server.MapPath("~/"), "Web.config.live");
                             }
-                            else 
+                            else
                             {
                                 _thewatchmen = new FileSystemWatcher(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Web.config.live");
                             }
@@ -87,14 +86,14 @@ namespace Voat.Configuration
                             {
                                 Reload(e.FullPath);
                             };
-
                         }
                     }
                 }
                 return _thewatchmen;
             }
         }
-        private static void Reload(string fullFilePath) 
+
+        private static void Reload(string fullFilePath)
         {
             if (File.Exists(fullFilePath))
             {
@@ -109,16 +108,16 @@ namespace Voat.Configuration
                         SetValueIfPresent<bool>(node.Attributes["key"].Value, node.Attributes["value"].Value, true);
                     }
                 }
-                catch (Exception ex) { 
+                catch (Exception ex)
+                {
                     /*no-op*/
-                    
                 }
             }
         }
 
-        public static void Reload(NameValueCollection section) 
+        public static void Reload(NameValueCollection section)
         {
-            if (section != null && section.Count > 0) 
+            if (section != null && section.Count > 0)
             {
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPublicKey, section[CONFIGURATION.RecaptchaPublicKey]);
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPrivateKey, section[CONFIGURATION.RecaptchaPrivateKey]);
@@ -165,7 +164,7 @@ namespace Voat.Configuration
             }
         }
 
-        private static void SetValueIfPresent<T>(string key, string value, bool updateOnly = false) 
+        private static void SetValueIfPresent<T>(string key, string value, bool updateOnly = false)
         {
             if (!String.IsNullOrEmpty(key))
             {
@@ -180,12 +179,13 @@ namespace Voat.Configuration
                     {
                         //seperate logic for bool because we want accuracy for true settings
                         bool conValue = false;
-                        if (!bool.TryParse(value, out conValue)) {
+                        if (!bool.TryParse(value, out conValue))
+                        {
                             conValue = false;
                         }
                         saveValue = conValue;
                     }
-                    else 
+                    else
                     {
                         T conValue = (T)Convert.ChangeType(value, typeof(T));
                         saveValue = conValue;
@@ -195,11 +195,10 @@ namespace Voat.Configuration
                         Settings.configValues[key] = saveValue;
                     }
                 }
-                catch (Exception ex) {
-                    
+                catch (Exception ex)
+                {
                 }
             }
         }
-
     }
 }

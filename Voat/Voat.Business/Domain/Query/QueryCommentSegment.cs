@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Voat.Caching;
-using Voat.Data;
+﻿using System.Linq;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query.Base;
@@ -30,13 +25,16 @@ namespace Voat.Domain.Query
         protected override IQueryable<usp_CommentTree_Result> FilterSegment(IQueryable<usp_CommentTree_Result> commentTree)
         {
             var filtered = commentTree.Where(x => x.ParentID == _parentID && !(x.IsDeleted && x.ChildCount == 0));
+
             //filtered = filtered.Skip(_index.HasValue ? _index.Value : 0).Take(_options.Count);
             return filtered;
         }
+
         protected override IQueryable<usp_CommentTree_Result> TakeSegment(IQueryable<usp_CommentTree_Result> commentTree)
         {
             return commentTree.Skip(_index.HasValue ? _index.Value : 0).Take(_count * 2);
         }
+
         public override CommentSegment Execute()
         {
             var segment = base.GetSegment(true);

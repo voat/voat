@@ -19,8 +19,11 @@ namespace Voat.Domain.Models
     public class UserBadge
     {
         public DateTime CreationDate { get; set; }
+
         public string Graphic { get; set; }
+
         public string Name { get; set; }
+
         public string Title { get; set; }
     }
 }

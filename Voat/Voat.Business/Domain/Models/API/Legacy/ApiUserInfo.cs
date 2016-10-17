@@ -20,9 +20,13 @@ namespace Voat.Models.API.Legacy
     public class ApiUserInfo
     {
         public List<ApiUserBadge> Badges { get; set; }
+
         public int CCP { get; set; }
+
         public int LCP { get; set; }
+
         public string Name { get; set; }
+
         public DateTime RegistrationDate { get; set; }
     }
 }

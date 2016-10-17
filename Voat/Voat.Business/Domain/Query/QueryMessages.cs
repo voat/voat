@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
 
 namespace Voat.Domain.Query
 {
-
     public abstract class QueryMessageBase<T> : Query<T>
     {
         protected string _ownerName;
@@ -61,6 +58,7 @@ namespace Voat.Domain.Query
             this._markAsRead = markAsRead;
             this._type = type;
         }
+
         public QueryMessageBase(MessageTypeFlag type, MessageState state, bool markAsRead = true)
             : this("", IdentityType.User, type, state, markAsRead)
         {
@@ -71,9 +69,8 @@ namespace Voat.Domain.Query
 
     public class QueryMessages : QueryMessageBase<IEnumerable<Domain.Models.Message>>
     {
-       
         public QueryMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true)
-            : base (ownerName, ownerType, type, state, markAsRead)
+            : base(ownerName, ownerType, type, state, markAsRead)
         {
         }
 
@@ -97,5 +94,4 @@ namespace Voat.Domain.Query
             return t.Result;
         }
     }
-
 }

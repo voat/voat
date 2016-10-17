@@ -17,7 +17,9 @@ namespace Voat.Domain.Models
     public class Badge
     {
         public string BadgeGraphics { get; set; }
+
         public string ID { get; set; }
+
         public string Name { get; set; }
 
         public string Title { get; set; }

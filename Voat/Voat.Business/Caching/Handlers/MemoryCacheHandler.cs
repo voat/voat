@@ -2,9 +2,6 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Voat.Caching
 {
@@ -63,7 +60,6 @@ namespace Voat.Caching
                 dict.Add(dictionaryKey, item);
                 _cache[cacheKey] = dict;
             }
-
         }
 
         protected override void DeleteItem(string cacheKey, object dictionaryKey)
@@ -90,6 +86,7 @@ namespace Voat.Caching
             }
             return false;
         }
+
         protected override void ProtectedPurge()
         {
             _cache = new ConcurrentDictionary<string, object>();

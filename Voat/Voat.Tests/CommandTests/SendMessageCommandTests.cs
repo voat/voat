@@ -130,7 +130,7 @@ namespace Voat.Tests.CommandTests
                                 && x.CommentID == null
                                 && x.SubmissionID == null
                                 && x.Type == (int)Domain.Models.MessageType.Sent
-                                && x.Direction == (int)Domain.Models.MessageDirection.OutBound
+                                //&& x.Direction == (int)Domain.Models.MessageDirection.OutBound
                                 select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find outbound in database");
 
@@ -144,7 +144,7 @@ namespace Voat.Tests.CommandTests
                                 && x.CommentID == null
                                 && x.SubmissionID == null
                                 && x.Type == (int)Domain.Models.MessageType.Private
-                                && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                                //&& x.Direction == (int)Domain.Models.MessageDirection.InBound
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find inbound in database");
             }
@@ -189,7 +189,7 @@ namespace Voat.Tests.CommandTests
                                 && x.CommentID == null
                                 && x.SubmissionID == null
                                 && x.Type == (int)Domain.Models.MessageType.Sent
-                                && x.Direction == (int)Domain.Models.MessageDirection.OutBound
+                                //&& x.Direction == (int)Domain.Models.MessageDirection.OutBound
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find outbound in database");
 
@@ -203,7 +203,7 @@ namespace Voat.Tests.CommandTests
                             && x.CommentID == null
                             && x.SubmissionID == null
                             && x.Type == (int)Domain.Models.MessageType.Private
-                            && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                            //&& x.Direction == (int)Domain.Models.MessageDirection.InBound
                           select x).FirstOrDefault();
             }
 
@@ -392,7 +392,7 @@ namespace Voat.Tests.CommandTests
                                 && x.SubmissionID == submission.ID
                                 && x.Subverse == submission.Subverse
                                 && x.Type == (int)Domain.Models.MessageType.SubmissionReply
-                                && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                               // && x.Direction == (int)Domain.Models.MessageDirection.InBound
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find message in database");
             }
@@ -446,7 +446,7 @@ namespace Voat.Tests.CommandTests
                                 && x.SubmissionID == submission.ID
                                 && x.Subverse == submission.Subverse
                                 && x.Type == (int)Domain.Models.MessageType.SubmissionMention
-                                && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                                //&& x.Direction == (int)Domain.Models.MessageDirection.InBound
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find submission message in database");
 
@@ -461,7 +461,7 @@ namespace Voat.Tests.CommandTests
                                 && x.SubmissionID == submission.ID
                                 && x.Subverse == submission.Subverse
                                 && x.Type == (int)Domain.Models.MessageType.CommentMention
-                                && x.Direction == (int)Domain.Models.MessageDirection.InBound
+                                //&& x.Direction == (int)Domain.Models.MessageDirection.InBound
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find comment message in database");
             }

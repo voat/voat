@@ -13,9 +13,6 @@ All Rights Reserved.
 */
 
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Voat.Domain.Models
 {

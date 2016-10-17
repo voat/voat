@@ -64,7 +64,6 @@ namespace Voat.Domain.Models
         /// </summary>
         public string FormattedContent { get; set; }
 
-
         /// <summary>
         /// The number of comments submission current contains.
         /// </summary>
@@ -79,6 +78,7 @@ namespace Voat.Domain.Models
         /// Date submission was edited.
         /// </summary>
         public Nullable<DateTime> LastEditDate { get; set; }
+
         /// <summary>
         /// If submission has a permission set associated with it.
         /// </summary>
@@ -95,7 +95,6 @@ namespace Voat.Domain.Models
         /// </summary>
         public bool IsDeleted { get; set; }
 
-
         /// <summary>
         /// The view count of the submission.
         /// </summary>
@@ -106,6 +105,5 @@ namespace Voat.Domain.Models
 
         [JsonIgnore]
         public double RelativeRank { get; set; }
-
     }
 }

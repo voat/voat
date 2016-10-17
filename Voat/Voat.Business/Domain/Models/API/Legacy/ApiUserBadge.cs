@@ -19,6 +19,7 @@ namespace Voat.Models.API.Legacy
     public class ApiUserBadge
     {
         public DateTime Awarded { get; set; }
+
         public string BadgeName { get; set; }
     }
 }

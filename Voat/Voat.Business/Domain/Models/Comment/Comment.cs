@@ -12,10 +12,7 @@ All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Voat.Domain.Models
 {
@@ -24,7 +21,6 @@ namespace Voat.Domain.Models
     /// </summary>
     public class Comment : VoteableObject
     {
-      
         /// <summary>
         /// The raw content of this item.
         /// </summary>

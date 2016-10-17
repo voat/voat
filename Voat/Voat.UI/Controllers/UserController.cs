@@ -133,9 +133,10 @@ namespace Voat.Controllers
             var paginatedUserSubmissionsAndComments = new PaginatedList<SavedItem>(mergedSubmissionsAndComments, page ?? 0, PAGE_SIZE);
             return View(paginatedUserSubmissionsAndComments);
         }
+
         #region ACCOUNT BASED
         //This code really belongs in an Account controller but didn't want to add it to the existing Account controller
-        
+
 
         [Authorize]
         [HttpPost]

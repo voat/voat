@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace Voat.Caching
 {
-
     [Serializable]
     [XmlRoot("voat.CacheHandler")]
     public class CacheHandlerSection : IConfigurationSectionHandler
@@ -52,7 +48,8 @@ namespace Voat.Caching
 
         public HandlerInfo Handler
         {
-            get {
+            get
+            {
                 if (Handlers != null)
                 {
                     return Handlers.FirstOrDefault(x => x.Enabled);
@@ -60,17 +57,19 @@ namespace Voat.Caching
                 return null;
             }
         }
+
         [XmlElement("handler")]
         public HandlerInfo[] Handlers
         {
             get;
             set;
         }
+
         public object Create(object parent, object configContext, System.Xml.XmlNode section)
         {
             try
             {
-                CacheHandlerSection sectionConfig =null;
+                CacheHandlerSection sectionConfig = null;
                 XmlSerializer serializer = new XmlSerializer(typeof(CacheHandlerSection));
                 using (var reader = new XmlNodeReader(section))
                 {
@@ -84,5 +83,4 @@ namespace Voat.Caching
             }
         }
     }
-
 }

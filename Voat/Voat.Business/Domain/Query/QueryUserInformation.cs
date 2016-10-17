@@ -12,12 +12,12 @@ namespace Voat.Domain.Query
     {
         private string _userToRetrieve;
 
-        public QueryUserInformation(string userToRetrieve) 
+        public QueryUserInformation(string userToRetrieve)
             : this(userToRetrieve, new CachePolicy(TimeSpan.FromMinutes(10)))
         {
         }
 
-        public QueryUserInformation(string userToRetrieve, CachePolicy policy) 
+        public QueryUserInformation(string userToRetrieve, CachePolicy policy)
             : base(policy)
         {
             this._userToRetrieve = userToRetrieve;
@@ -53,15 +53,16 @@ namespace Voat.Domain.Query
                     var moderates = db.GetSubversesUserModerates(_userToRetrieve);
                     if (moderates != null)
                     {
-                        data.Moderates = moderates.Select(x => new SubverseModerator() { Subverse = x.Subverse, Level = (ModeratorLevel)Enum.Parse(typeof(ModeratorLevel), x.Power.ToString())}).ToList();
+                        data.Moderates = moderates.Select(x => new SubverseModerator() { Subverse = x.Subverse, Level = (ModeratorLevel)Enum.Parse(typeof(ModeratorLevel), x.Power.ToString()) }).ToList();
                     }
                 }
+
                 //TODO: Need to ensure this condition doesn't happen often, throwing exception to test.
                 else
                 {
                     throw new VoatNotFoundException(String.Format("Can not find UserInformation for {0}", _userToRetrieve));
                 }
-               
+
                 return data;
             }
         }

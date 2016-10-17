@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Voat.Domain.Command
+﻿namespace Voat.Domain.Command
 {
     public class UserActionResponse
     {
@@ -12,6 +6,7 @@ namespace Voat.Domain.Command
         /// User that initiated the action
         /// </summary>
         public string OriginUserName { get; set; }
+
         /// <summary>
         /// User that was the target or destination of action
         /// </summary>

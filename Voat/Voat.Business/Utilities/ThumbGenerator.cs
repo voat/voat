@@ -7,7 +7,6 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using Voat.Utilities;
 using Voat.Configuration;
 
 namespace Voat.Utilities
@@ -18,8 +17,8 @@ namespace Voat.Utilities
         private static string _destinationPathAvatars = null;
 
         public static string DestinationPathThumbs { get { return _destinationPathThumbs; } }
-        public static string DestinationPathAvatars { get { return _destinationPathAvatars; } }
 
+        public static string DestinationPathAvatars { get { return _destinationPathAvatars; } }
 
         static ThumbGenerator()
         {
@@ -29,6 +28,7 @@ namespace Voat.Utilities
                 _destinationPathThumbs = HttpContext.Current.Server.MapPath("~/Storage/Thumbs");
                 _destinationPathAvatars = HttpContext.Current.Server.MapPath("~/Storage/Avatars");
             }
+
             //For Unit Testing
             else
             {
@@ -48,6 +48,7 @@ namespace Voat.Utilities
 
         // setup default thumb resolution
         private const int MaxHeight = 70;
+
         private const int MaxWidth = 70;
 
         // generate a thumbnail while removing transparency and preserving aspect ratio
@@ -63,6 +64,7 @@ namespace Voat.Utilities
                 var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
                 originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
             }
+
             // call upload to storage method if CDN config is enabled
             if (Settings.UseContentDeliveryNetwork)
             {
@@ -86,13 +88,15 @@ namespace Voat.Utilities
                 // store avatar locally
                 var originalImage = new KalikoImage(inputImage);
                 originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathAvatars + '\\' + userName + ".jpg", 90);
-                if (!Settings.UseContentDeliveryNetwork) return true;
+                if (!Settings.UseContentDeliveryNetwork)
+                    return true;
 
                 // call upload to storage since CDN is enabled in config
                 string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";
 
                 // the avatar file was not found at expected path, abort
-                if (!FileSystemUtility.FileExists(tempAvatarLocation, DestinationPathAvatars)) return false;
+                if (!FileSystemUtility.FileExists(tempAvatarLocation, DestinationPathAvatars))
+                    return false;
 
                 // upload to CDN
                 await CloudStorageUtility.UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
@@ -134,8 +138,6 @@ namespace Voat.Utilities
             return rndFileName;
         }
 
-        
-
         // generate a thumbnail if submission is a direct link to image or video
         public static async Task<string> GenerateThumbFromWebpageUrl(string websiteUrl)
         {
@@ -163,9 +165,10 @@ namespace Voat.Utilities
                 {
                     var graphUri = new Uri(websiteUrl);
                     var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
-                    
+
                     // open graph failed to find og:image element, abort thumbnail generation
-                    if (graph.Image == null) return null;
+                    if (graph.Image == null)
+                        return null;
 
                     var thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString());
                     return thumbFileName;
@@ -185,7 +188,8 @@ namespace Voat.Utilities
                 var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
 
                 // open graph failed to find og:image element, abort thumbnail generation
-                if (graph.Image == null) return null;
+                if (graph.Image == null)
+                    return null;
 
                 var thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString());
                 return thumbFileName;

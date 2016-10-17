@@ -20,22 +20,34 @@ namespace Voat.Models
     public class SubverseStats
     {
         public int Count { get; set; }
+
         public string SubverseName { get; set; }
     }
 
     public class UserStatsModel
     {
         public IEnumerable<Comment> HighestRatedComments { get; set; }
+
         public IEnumerable<Submission> HighestRatedSubmissions { get; set; }
+
         public int LinkSubmissionsSubmitted { get; set; }
+
         public IEnumerable<Comment> LowestRatedComments { get; set; }
+
         public IEnumerable<Submission> LowestRatedSubmissions { get; set; }
+
         public int MessageSubmissionsSubmitted { get; set; }
+
         public IEnumerable<SubverseStats> TopSubversesUserContributedTo { get; set; }
+
         public int TotalCommentsDownvoted { get; set; }
+
         public int TotalCommentsSubmitted { get; set; }
+
         public int TotalCommentsUpvoted { get; set; }
+
         public int TotalSubmissionsDownvoted { get; set; }
+
         public int TotalSubmissionsUpvoted { get; set; }
     }
 }

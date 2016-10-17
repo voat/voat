@@ -91,6 +91,7 @@ namespace Voat
             else
             {
                 RuntimeStateSetting configSetting = RuntimeStateSetting.Disabled;
+
                 //Parse enum value
                 if (Enum.TryParse(setting, true, out configSetting))
                 {
@@ -119,6 +120,4 @@ namespace Voat
             }
         }
     }
-
-   
 }

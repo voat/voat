@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Voat.Domain.Models;
-using Voat.RulesEngine;
-using Voat.Utilities;
+﻿using Voat.RulesEngine;
 
 namespace Voat.Rules.Posting
 {
@@ -29,9 +22,9 @@ namespace Voat.Rules.Posting
             {
                 return base.CreateOutcome(RuleResult.Denied, "User doesn't have permissions to perform requested action");
             }
+
             //rules checkd in base class
             return base.EvaluateRule(context);
         }
     }
-
 }

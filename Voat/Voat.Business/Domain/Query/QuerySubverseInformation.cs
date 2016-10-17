@@ -23,6 +23,7 @@ namespace Voat.Domain.Query
                 return _subverse;
             }
         }
+
         protected override string FullCacheKey
         {
             get
@@ -30,6 +31,7 @@ namespace Voat.Domain.Query
                 return CachingKey.SubverseInformation(_subverse);
             }
         }
+
         protected override SubverseInformation GetData()
         {
             using (var db = new Repository())

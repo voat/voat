@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
 
@@ -29,6 +25,7 @@ namespace Voat.Domain.Command
             }
         }
     }
+
     public class SendMessageReplyCommand : Command<CommandResponse<Message>>
     {
         private string _message;

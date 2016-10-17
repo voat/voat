@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voat.Domain.Models;
 using Voat.RulesEngine;
 using Voat.Utilities;
@@ -38,17 +34,20 @@ namespace Voat.Rules.Posting
                     {
                         return CreateOutcome(RuleResult.Denied, "A link submission must include a url");
                     }
+
                     //Ensure user isn't submitting links as titles
                     if (userSubmission.Title.Equals(userSubmission.Url, StringComparison.InvariantCultureIgnoreCase) || userSubmission.Url.Contains(userSubmission.Title))
                     {
                         return CreateOutcome(RuleResult.Denied, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
                     }
+
                     // make sure the input URI is valid
                     if (!UrlUtility.IsUriValid(userSubmission.Url))
                     {
                         return CreateOutcome(RuleResult.Denied, "The url you are trying to submit is invalid");
                     }
                     break;
+
                 case SubmissionType.Text:
                     break;
             }
@@ -72,6 +71,7 @@ namespace Voat.Rules.Posting
             {
                 return CreateOutcome(RuleResult.Denied, "Subverse does not exist");
             }
+
             //if (context.Subverse.IsAdminDisabled.HasValue && context.Subverse.IsAdminDisabled.Value)
             //{
             //    return CreateOutcome(RuleResult.Denied, "Submissions to disabled subverses are not allowed");
@@ -80,5 +80,4 @@ namespace Voat.Rules.Posting
             return base.EvaluateRule(context);
         }
     }
-   
 }

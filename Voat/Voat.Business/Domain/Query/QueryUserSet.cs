@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Domain.Models;
 
@@ -11,7 +7,8 @@ namespace Voat.Domain.Query
     public class QueryUserSet : CachedQuery<Domain.Models.UserSet>
     {
         private string _setName;
-        public QueryUserSet(string setName, CachePolicy policy = null) 
+
+        public QueryUserSet(string setName, CachePolicy policy = null)
             : base(policy == null ? new CachePolicy(TimeSpan.FromMinutes(10)) : policy)
         {
             _setName = setName;
@@ -19,8 +16,9 @@ namespace Voat.Domain.Query
 
         public override string CacheKey
         {
-            get {throw new NotImplementedException();}
+            get { throw new NotImplementedException(); }
         }
+
         protected override string FullCacheKey
         {
             get
@@ -28,6 +26,7 @@ namespace Voat.Domain.Query
                 return CachingKey.UserSet(_setName);
             }
         }
+
         protected override UserSet GetData()
         {
             throw new NotImplementedException();

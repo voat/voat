@@ -20,17 +20,25 @@ namespace Voat.Models
         {
             this.RecordedValue = voteRecordedValue;
         }
-        public VoteResponse() { }
+
+        public VoteResponse()
+        {
+        }
 
         [JsonIgnore()]
-        public int Difference {
-            get {
+        public int Difference
+        {
+            get
+            {
                 return _difference;
             }
-            set {
+
+            set
+            {
                 _difference = value;
             }
         }
+
         [JsonIgnore()]
         public string OwnerUserName
         {
@@ -38,11 +46,13 @@ namespace Voat.Models
             {
                 return _ownerUserName;
             }
+
             set
             {
                 _ownerUserName = value;
             }
         }
+
         /// <summary>
         /// The users recorded vote value after the operation has completed. Use this value to verify vote operation is recorded correctly. Valid values are: -1 (down voted, 0 (revoked, unvoted), or 1 (up voted)
         /// </summary>
@@ -52,6 +62,7 @@ namespace Voat.Models
             {
                 return _recordedValue;
             }
+
             private set
             {
                 if (value.HasValue && Math.Abs(value.Value) <= 1)
@@ -79,7 +90,7 @@ namespace Voat.Models
             {
                 status = Status.Denied;
             }
-            return new VoteResponse(status, recordedValue, outcome.ToString()); 
+            return new VoteResponse(status, recordedValue, outcome.ToString());
         }
 
         public static VoteResponse Denied()

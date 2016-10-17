@@ -12,6 +12,7 @@ namespace Voat.Domain.Command
         private string _name = null;
         private string _url = null;
         private string _redirectUrl = null;
+
         public CreateApiKeyCommand(string name, string description, string url, string redirectUrl)
         {
             this._name = name;

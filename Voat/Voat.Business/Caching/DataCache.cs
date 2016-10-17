@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Domain.Query;
-using Voat.Models;
 
 namespace Voat.Caching
 {
@@ -18,16 +15,18 @@ namespace Voat.Caching
             {
                 return String.Format("legacy:submission:{0}", submissionID).ToLower();
             }
+
             public static string Search(string subverse, string query)
             {
                 return String.Format("legacy:search:{0}:{1}", subverse, query).ToLower();
             }
+
             public static string Search(string query)
             {
                 return Search("all", query);
             }
-
         }
+
         [Obsolete("Replace Submission logic with class Submission_New logic")]
         public static class Submission
         {
@@ -45,7 +44,8 @@ namespace Voat.Caching
                 if (submissionID.HasValue && submissionID.Value > 0)
                 {
                     string cacheKey = DataCache.Keys.Submission(submissionID.Value);
-                    Voat.Data.Models.Submission submission = CacheHandler.Instance.Register<Voat.Data.Models.Submission>(cacheKey, new Func<Voat.Data.Models.Submission>(() => {
+                    Voat.Data.Models.Submission submission = CacheHandler.Instance.Register<Voat.Data.Models.Submission>(cacheKey, new Func<Voat.Data.Models.Submission>(() =>
+                    {
                         using (voatEntities db = new voatEntities())
                         {
                             db.Configuration.ProxyCreationEnabled = false;
@@ -57,6 +57,7 @@ namespace Voat.Caching
                 return null;
             }
         }
+
         //TODO: Repleace Submission class with this code (Views need to be converted)
         public static class Submission_New
         {
@@ -64,6 +65,7 @@ namespace Voat.Caching
             {
                 CacheHandler.Instance.Remove(CachingKey.Submission(submissionID));
             }
+
             /// <summary>
             /// </summary>
             /// <param name="submissionID">Using Nullable because everything seems to be nullable in this entire project</param>
@@ -80,12 +82,12 @@ namespace Voat.Caching
                 return null;
             }
         }
+
         public static class Subverse
         {
             //Leaving in for backwards compatibility
             public static Voat.Data.Models.Subverse Retrieve(string subverse)
             {
-
                 if (!String.IsNullOrEmpty(subverse))
                 {
                     var q = new QuerySubverse(subverse);
@@ -95,7 +97,6 @@ namespace Voat.Caching
 
                 return null;
             }
-
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -16,11 +16,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
-using Voat.Utilities;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;
@@ -155,7 +153,8 @@ namespace Voat.Utilities
                                     string tempAvatarLocation = Settings.DestinationPathAvatars + '\\' + userName + ".jpg";
 
                                     // the avatar file was not found at expected path, abort
-                                    if (!FileSystemUtility.FileExists(tempAvatarLocation, Settings.DestinationPathAvatars)) return false;
+                                    if (!FileSystemUtility.FileExists(tempAvatarLocation, Settings.DestinationPathAvatars))
+                                        return false;
 
                                     // exec delete
                                     File.Delete(tempAvatarLocation);
@@ -170,14 +169,15 @@ namespace Voat.Utilities
 
                         return true;
                     }
+
                     // user account could not be found
                     return false;
                 }
-
             }
         }
 
         [Obsolete("Use ModeratorPermission.HasPermission instead", true)]
+
         // check if given user is the owner for a given subverse
         public static bool IsUserSubverseAdmin(string userName, string subverse)
         {
@@ -189,6 +189,7 @@ namespace Voat.Utilities
         }
 
         [Obsolete("Use ModeratorPermission.HasPermission instead", true)]
+
         //Check if given user is moderator for a given subverse
         //This method gets called numerous times from views. Refactoring.
         public static bool IsUserSubverseModerator(string userName, string subverse)
@@ -239,7 +240,8 @@ namespace Voat.Utilities
         // subscribe to a subverse
         public static void SubscribeToSubverse(string userName, string subverse)
         {
-            if (IsUserSubverseSubscriber(userName, subverse)) return;
+            if (IsUserSubverseSubscriber(userName, subverse))
+                return;
             using (var db = new voatEntities())
             {
                 // add a new subscription
@@ -267,7 +269,9 @@ namespace Voat.Utilities
                 {
                     var subscription = db.SubverseSubscriptions.FirstOrDefault(b => b.UserName == userName && b.Subverse == subverse);
 
-                    if (subverse == null) return;
+                    if (subverse == null)
+                        return;
+
                     // remove subscription record
                     db.SubverseSubscriptions.Remove(subscription);
 
@@ -296,7 +300,6 @@ namespace Voat.Utilities
         // return a list of subverses user is subscribed to
         public static IEnumerable<string> UserSubscriptions(string userName)
         {
-
             var q = new QueryUserData(userName);
             var r = q.Execute();
             return r.Subscriptions;
@@ -327,6 +330,7 @@ namespace Voat.Utilities
         }
 
         [Obsolete("Use QueryMessageCounts", true)]
+
         // check if given user has unread private messages, not including messages manually marked as unread
         public static bool UserHasNewMessages(string userName)
         {
@@ -339,7 +343,9 @@ namespace Voat.Utilities
                 return unreadPrivateMessagesCount > 0 || unreadCommentRepliesCount > 0 || unreadPostRepliesCount > 0;
             }
         }
+
         [Obsolete("Use QueryMessageCounts", true)]
+
         // check if given user has unread comment replies and return the count
         public static int UnreadCommentRepliesCount(string userName)
         {
@@ -357,7 +363,9 @@ namespace Voat.Utilities
                 return unreadCommentReplies.Any() ? unreadCommentReplies.Count() : 0;
             }
         }
+
         [Obsolete("Use QueryMessageCounts", true)]
+
         // check if given user has unread post replies and return the count
         public static int UnreadPostRepliesCount(string userName)
         {
@@ -375,6 +383,7 @@ namespace Voat.Utilities
                 return unreadPostReplies.Any() ? unreadPostReplies.Count() : 0;
             }
         }
+
         [Obsolete("Use QueryMessageCounts", true)]
 
         // check if given user has unread private messages and return the count
@@ -394,6 +403,7 @@ namespace Voat.Utilities
                 return unreadPrivateMessages.Any() ? unreadPrivateMessages.Count() : 0;
             }
         }
+
         [Obsolete("Use QueryMessageCounts", true)]
 
         // get total unread notifications count for a given user
@@ -410,7 +420,9 @@ namespace Voat.Utilities
                 return totalCount;
             }
         }
+
         [Obsolete("Use QueryMessageCounts", true)]
+
         // get total number of comment replies for a given user
         public static int CommentRepliesCount(string userName)
         {
@@ -422,7 +434,9 @@ namespace Voat.Utilities
                 return commentReplies.Any() ? commentReplies.Count() : 0;
             }
         }
+
         [Obsolete("Use QueryMessageCounts", true)]
+
         // get total number of post replies for a given user
         public static int PostRepliesCount(string userName)
         {
@@ -434,7 +448,9 @@ namespace Voat.Utilities
                 return postReplies.Any() ? postReplies.Count() : 0;
             }
         }
+
         [Obsolete("Use QueryMessageCounts", true)]
+
         // get total number of private messages for a given user
         public static int PrivateMessageCount(string userName)
         {
@@ -496,11 +512,10 @@ namespace Voat.Utilities
         // check if a given user wants to open links in new window
         public static bool LinksInNewWindow(string userName)
         {
-
             UserPreference pref = GetUserPreferences(userName);
             return pref != null && pref.OpenInNewWindow;
-
         }
+
         //preferences get called from views, so this method caches prefs in the context so each call only queries once
         private static UserPreference GetUserPreferences(string userName)
         {
@@ -523,6 +538,7 @@ namespace Voat.Utilities
             //}
             //return pref;
         }
+
         // check how many votes a user has used in the past 24 hours
         // TODO: this is executed 25 times for frontpage, needs to be redesigned as follows:
         // - only call this function if user is attempting to vote
@@ -556,15 +572,15 @@ namespace Voat.Utilities
         // return user statistics for user profile overview
         public static UserStatsModel UserStatsModel(string userName)
         {
-
-            var loadFunc = new Func<UserStatsModel>(() => {
+            var loadFunc = new Func<UserStatsModel>(() =>
+            {
                 var userStatsModel = new UserStatsModel();
 
                 using (var db = new voatEntities())
                 {
                     db.Configuration.ProxyCreationEnabled = false;
                     db.Configuration.LazyLoadingEnabled = false;
-                    
+
                     // 5 subverses user submitted to most
                     var subverses = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                              .GroupBy(a => new { a.UserName, a.Subverse })
@@ -634,19 +650,16 @@ namespace Voat.Utilities
                     userStatsModel.TotalSubmissionsUpvoted = submissionUpvotes;
                     userStatsModel.TotalSubmissionsDownvoted = submissionDownvotes;
 
-
                     //HACK: EF causes JSON to StackOverflow on the highest/lowest comments because of the nested loading EF does with the include option, therefore null the refs here.
                     highestRatedComments.ForEach(x => x.Submission.Comments = null);
                     lowestRatedComments.ForEach(x => x.Submission.Comments = null);
                 }
 
                 return userStatsModel;
-
             });
 
             var cachedData = CacheHandler.Instance.Register(CachingKey.UserOverview(userName), loadFunc, TimeSpan.FromMinutes(30));
             return cachedData;
-
         }
 
         // check if a given user is globally banned
@@ -691,7 +704,6 @@ namespace Voat.Utilities
         {
             UserPreference result = GetUserPreferences(userName);
             return result != null && result.UseSubscriptionsMenu;
-
         }
 
         // get short bio for a given user
@@ -993,7 +1005,8 @@ namespace Voat.Utilities
         public static void SubscribeToSet(string userName, int setId)
         {
             // do nothing if user is already subscribed
-            if (IsUserSetSubscriber(userName, setId)) return;
+            if (IsUserSetSubscriber(userName, setId))
+                return;
 
             using (var db = new voatEntities())
             {
@@ -1017,7 +1030,8 @@ namespace Voat.Utilities
         public static void UnSubscribeFromSet(string userName, int setId)
         {
             // do nothing if user is not subscribed to given set
-            if (!IsUserSetSubscriber(userName, setId)) return;
+            if (!IsUserSetSubscriber(userName, setId))
+                return;
 
             using (var db = new voatEntities())
             {
@@ -1064,7 +1078,6 @@ namespace Voat.Utilities
             }
         }
 
-        
         // block a subverse
         public static void BlockSubverse(string userName, string subverse)
         {
@@ -1074,7 +1087,8 @@ namespace Voat.Utilities
                 if (IsUserBlockingSubverse(userName, subverse))
                 {
                     var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
-                    if (subverseBlock != null) db.UserBlockedSubverses.Remove(subverseBlock);
+                    if (subverseBlock != null)
+                        db.UserBlockedSubverses.Remove(subverseBlock);
                     db.SaveChanges();
                     return;
                 }
@@ -1106,6 +1120,7 @@ namespace Voat.Utilities
                 return previousComment != null;
             }
         }
+
         // get user IP address from httprequestbase
         public static string UserIpAddress(HttpRequestBase request)
         {
@@ -1122,6 +1137,7 @@ namespace Voat.Utilities
             }
             return clientIpAddress;
         }
+
         //this is for the API
         public static string UserIpAddress(HttpRequestMessage request)
         {
