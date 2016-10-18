@@ -22,7 +22,7 @@ namespace Voat.Tests.BugTraps
         private int submissionID = 1;
 
         [TestMethod]
-        [TestCategory("Bug")]
+        [TestCategory("Bug"), TestCategory("Voting")]
         public void Bug_Trap_Spam_Votes()
         {
 
@@ -83,7 +83,7 @@ namespace Voat.Tests.BugTraps
             AssertData(beforesubmission, aftersubmission);
         }
         [TestMethod]
-        [TestCategory("Bug")]
+        [TestCategory("Bug"), TestCategory("Voting")]
         public void Bug_Trap_Spam_Votes_VoteCommand()
         {
 
@@ -136,7 +136,7 @@ namespace Voat.Tests.BugTraps
         }
       
         [TestMethod]
-        [TestCategory("Bug")]
+        [TestCategory("Bug"), TestCategory("Voting")]
         public void Bug_Trap_Spam_Votes_Repository()
         {
             Submission beforesubmission = GetSubmission();

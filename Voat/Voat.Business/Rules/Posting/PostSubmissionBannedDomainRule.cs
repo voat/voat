@@ -1,4 +1,5 @@
-﻿using Voat.Domain.Models;
+﻿using System;
+using Voat.Domain.Models;
 using Voat.RulesEngine;
 using Voat.Utilities;
 
@@ -21,11 +22,11 @@ namespace Voat.Rules.Posting
             switch (submission.Type)
             {
                 case SubmissionType.Link:
-                    containsBannedDomain = BanningUtility.ContentContainsBannedDomain(context.Subverse.Name, submission.Url);
+                    containsBannedDomain = BanningUtility.ContentContainsBannedDomain(context.Subverse.Name, $"{submission.Title} {submission.Url}");
                     break;
 
                 case SubmissionType.Text:
-                    containsBannedDomain = BanningUtility.ContentContainsBannedDomain(context.Subverse.Name, submission.Content);
+                    containsBannedDomain = BanningUtility.ContentContainsBannedDomain(context.Subverse.Name, $"{submission.Title} {submission.Content}");
                     break;
             }
             if (containsBannedDomain)

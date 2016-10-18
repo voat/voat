@@ -155,6 +155,21 @@ namespace Voat.Tests.CommandTests
         }
 
         [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post"), TestCategory("Bug")]
+        public void PreventUrlTitlePosts_BugTrap()
+        {
+            //BUGFIX: https://voat.co/v/FGC/1349484
+            TestHelper.SetPrincipal("TestUser2");
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "http://www.besthealthmarket.org/cianix-male-enhancement/", Content = "Cianix is the best available product in the market. It has long lasting anti-aging effects. It made up of natural products and has no side effects. Therefore it is a highly recommended  product for anti-aging as well as healthy skin. Signs of Healthy Skin We talk a lot about healthy skin and methods of achieving healthy skin. But what healthy skin actually is only a few of us know it. Here are few points that a healthy skin has: Even color:" });
+
+            var r = cmd.Execute().Result;
+            Assert.IsFalse(r.Success);
+            Assert.AreEqual(r.Message, "Submission title is a url? Why would you even think about doing this?! Why?");
+            //Assert.AreNotEqual(0, r.Response.ID);
+        }
+
+        [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventPartialUrlTitlePosts()
         {

@@ -52,6 +52,7 @@ namespace Voat.Rules.Posting
                     break;
             }
 
+           
             if (String.IsNullOrEmpty(userSubmission.Title))
             {
                 return CreateOutcome(RuleResult.Denied, "A text submission must include a title");
@@ -65,7 +66,11 @@ namespace Voat.Rules.Posting
             {
                 return CreateOutcome(RuleResult.Denied, $"A title may not be less than {minTitleLength} characters");
             }
-
+            // make sure the title isn't a url
+            if (UrlUtility.IsUriValid(userSubmission.Title))
+            {
+                return CreateOutcome(RuleResult.Denied, "Submission title is a url? Why would you even think about doing this?! Why?");
+            }
             //if context.Subverse is null this means that it can't be found/doesn't exist
             if (context.Subverse == null || userSubmission.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase)) //<-- the all subverse actually exists? HA! (Putts: leaving this code in because it's rad)
             {
