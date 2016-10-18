@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -35,7 +35,6 @@ using Voat.Utilities;
 using Voat.Configuration;
 using Voat.UI.Utilities;
 using Voat.Data;
-using Voat.Domain;
 using Voat.Caching;
 
 namespace Voat.Controllers
@@ -134,7 +133,8 @@ namespace Voat.Controllers
 
             // sign in and continue
             await SignInAsync(user, model.RememberMe);
-            // read User Theme preference and set value to cookie 
+
+            // read User Theme preference and set value to cookie
             UserHelper.SetUserStylePreferenceCookie(UserHelper.UserStylePreference(user.UserName));
             return RedirectToLocal(returnUrl);
         }
@@ -165,13 +165,13 @@ namespace Voat.Controllers
         [ValidateCaptcha]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-
             if (Settings.RegistrationDisabled)
             {
                 return View("RegistrationDisabled");
             }
 
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
             if (!Utilities.AccountSecurity.IsPasswordComplex(model.Password, model.UserName, false))
             {
@@ -253,7 +253,8 @@ namespace Voat.Controllers
 
             if (hasPassword)
             {
-                if (!ModelState.IsValid) return View(model);
+                if (!ModelState.IsValid)
+                    return View(model);
 
                 var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
                 if (result.Succeeded)
@@ -271,7 +272,8 @@ namespace Voat.Controllers
                     state.Errors.Clear();
                 }
 
-                if (!ModelState.IsValid) return View(model);
+                if (!ModelState.IsValid)
+                    return View(model);
                 var result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
                 if (result.Succeeded)
                 {
@@ -345,7 +347,6 @@ namespace Voat.Controllers
                         return View("~/Views/Errors/Error.cshtml");
                     }
                 }
-                
             }
             return RedirectToAction("Manage", new { message = ManageMessageId.WrongPassword });
         }
@@ -535,19 +536,21 @@ namespace Voat.Controllers
 
             return userPreferences;
         }
+
         private void ClearUserCache(string userName = null)
         {
             userName = String.IsNullOrEmpty(userName) ? User.Identity.Name : userName;
 
             CacheHandler.Instance.Remove(CachingKey.UserPreferences(userName));
             CacheHandler.Instance.Remove(CachingKey.UserInformation(userName));
-
         }
+
         // POST: /Account/ToggleNightMode
         [Authorize]
         public async Task<ActionResult> ToggleNightMode()
         {
             string newTheme = "light";
+
             // save changes
             using (var db = new voatEntities())
             {
@@ -571,7 +574,10 @@ namespace Voat.Controllers
         {
             var existingEmail = UserManager.GetEmail(User.Identity.GetUserId());
 
-            if (existingEmail == null) return PartialView("_ChangeAccountEmail");
+            if (existingEmail == null)
+            {
+                return PartialView("_ChangeAccountEmail");
+            }
 
             var userEmailViewModel = new UserEmailViewModel
             {
@@ -589,7 +595,10 @@ namespace Voat.Controllers
         public async Task<ActionResult> UserAccountEmail([Bind(Include = "EmailAddress")] UserEmailViewModel model)
         {
             ViewBag.userid = User.Identity.Name;
-            if (!ModelState.IsValid) return View("Manage", model);
+            if (!ModelState.IsValid)
+            {
+                return View("Manage", model);
+            }
 
             // make sure no other accounts use this email address
             var existingAccount = await UserManager.FindByEmailAsync(model.EmailAddress);
@@ -646,13 +655,13 @@ namespace Voat.Controllers
             }
         }
 
-
         private class UsernameAvailabilityResponse
         {
             public bool Available { get; set; }
         }
 
         #region password reset
+
         // GET: /Account/ForgotPassword
         [AllowAnonymous]
         public ActionResult ForgotPassword()
@@ -743,9 +752,11 @@ namespace Voat.Controllers
             ViewBag.SelectedSubverse = string.Empty;
             return View();
         }
-        #endregion
+
+        #endregion password reset
 
         #region Helpers
+
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -825,7 +836,9 @@ namespace Voat.Controllers
             }
 
             public string LoginProvider { get; set; }
+
             public string RedirectUri { get; set; }
+
             public string UserId { get; set; }
 
             public override void ExecuteResult(ControllerContext context)
@@ -838,6 +851,7 @@ namespace Voat.Controllers
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }
-        #endregion
+
+        #endregion Helpers
     }
 }
