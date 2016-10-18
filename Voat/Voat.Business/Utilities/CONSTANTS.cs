@@ -27,4 +27,9 @@ namespace Voat.Utilities
             }
         }
     }
+    //this is the start of localization for voat, going to start throwing messages in this class for later conversion
+    public static class STRINGS
+    {
+        public const string DEFAULT_BIO = "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.";
+    }
 }

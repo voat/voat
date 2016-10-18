@@ -1604,7 +1604,7 @@ namespace Voat.Data
             p.DisplaySubscriptions = false;
             p.DisplayVotes = false;
             p.EnableAdultContent = false;
-            p.Bio = "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.";
+            p.Bio = null;
             p.Avatar = null;
             p.CollapseCommentLimit = 4;
             p.DisplayCommentCount = 5;
@@ -2233,7 +2233,7 @@ namespace Voat.Data
 
             var pq = new QueryUserPreferences(userName);
             var userPreferences = pq.Execute();
-            userInfo.Bio = userPreferences.Bio;
+            userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
             userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, true, !String.IsNullOrEmpty(userPreferences.Avatar));
 
             Task.WaitAll(tasks);

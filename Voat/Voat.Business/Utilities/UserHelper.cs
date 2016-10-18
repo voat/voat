@@ -709,16 +709,14 @@ namespace Voat.Utilities
         // get short bio for a given user
         public static string UserShortbio(string userName)
         {
-            const string placeHolderMessage = "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.";
-
             UserPreference result = GetUserPreferences(userName);
             if (result == null)
             {
-                return placeHolderMessage;
+                return STRINGS.DEFAULT_BIO;
             }
             else
             {
-                return result.Bio ?? placeHolderMessage;
+                return result.Bio ?? STRINGS.DEFAULT_BIO;
             }
         }
 

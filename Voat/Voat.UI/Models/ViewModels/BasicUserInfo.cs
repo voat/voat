@@ -12,6 +12,8 @@ All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
+using Voat.Utilities;
+
 namespace Voat.Models.ViewModels
 {
     public class BasicUserInfo
@@ -25,7 +27,7 @@ namespace Voat.Models.ViewModels
         public string Bio {
             get { return _bio; }
             set {
-                if (value != "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.")
+                if (value != STRINGS.DEFAULT_BIO)
                 {
                     _bio = value;
                 }
