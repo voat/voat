@@ -73,29 +73,26 @@ namespace Voat.Utilities
         //https://cdn.voat.co/avatars/@(userName).jpg
         public static string AvatarPath(string username, bool fullyQualified = false, bool provideProtocol = false, bool forceResolve = false)
         {
-            //if (Settings.UseContentDeliveryNetwork)
-            //{
-            //    < img src = "https://cdn.voat.co/avatars/@(userName).jpg" alt = "" class="user-avatar">
-            //}
-            //else
-            //{
-            //    <img src = "~/Storage/Avatars/@(userName).jpg" alt="" class="user-avatar">
-            //}
-
             if (String.IsNullOrEmpty(username))
             {
                 return username;
             }
 
-            if (forceResolve || UserHelper.HasAvatar(username) != null)
+            var avatarUrl = String.Empty;
+            var avatarFileName = UserHelper.GetAvatar(username);
+
+            if (forceResolve || !String.IsNullOrEmpty(avatarFileName))
             {
                 //different paths depending on cdn or not
-                return String.Format("{0}/{2}/{1}.jpg", (fullyQualified ? SiteRoot(provideProtocol, true) : "~"), username, (Settings.UseContentDeliveryNetwork ? "avatars" : "Storage/Avatars"));
+                avatarUrl = $"{(fullyQualified ? SiteRoot(provideProtocol, true) : "~")}/{(Settings.UseContentDeliveryNetwork ? "avatars" : "Storage/Avatars")}/{avatarFileName}";
             }
             else
             {
-                return String.Format("{0}/Graphics/thumb-placeholder.png", (fullyQualified ? SiteRoot(provideProtocol, false) : "~"));
+                avatarUrl = String.Format("{0}/Graphics/thumb-placeholder.png", (fullyQualified ? SiteRoot(provideProtocol, false) : "~"));
             }
+
+            return avatarUrl;
+
         }
 
         public static string CommentsPagePath(string subverse, int submissionID, int? commentID = null)

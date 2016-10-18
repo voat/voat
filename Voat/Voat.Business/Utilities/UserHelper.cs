@@ -723,7 +723,7 @@ namespace Voat.Utilities
         }
 
         // get avatar for a given user
-        public static string HasAvatar(string userName)
+        public static string GetAvatar(string userName)
         {
             UserPreference result = GetUserPreferences(userName);
             return result == null ? null : result.Avatar;

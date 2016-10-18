@@ -395,21 +395,13 @@ namespace Voat.Controllers
             using (var db = new voatEntities())
             {
                 var userPreferences = db.UserPreferences.Find(User.Identity.Name);
-                var tmpModel = new UserPreference();
 
                 if (userPreferences == null)
                 {
-                    // create a new record for this user in userpreferences table
-                    tmpModel.DisableCSS = false;
-                    tmpModel.NightMode = false;
-                    tmpModel.Language = "en";
-                    tmpModel.OpenInNewWindow = false;
-                    tmpModel.EnableAdultContent = false;
-                    tmpModel.DisplayVotes = false;
-                    tmpModel.DisplaySubscriptions = false;
-                    tmpModel.UseSubscriptionsMenu = false;
-                    tmpModel.UserName = User.Identity.Name;
-                    tmpModel.Bio = model.Bio;
+                    userPreferences = new UserPreference();
+                    userPreferences.UserName = User.Identity.Name;
+                    db.UserPreferences.Add(userPreferences);
+                    Repository.SetDefaultUserPreferences(userPreferences);
                 }
 
                 if (model.Avatarfile != null && model.Avatarfile.ContentLength > 0)
@@ -427,14 +419,7 @@ namespace Voat.Controllers
                                     var thumbnailResult = await ThumbGenerator.GenerateAvatar(img, User.Identity.Name, model.Avatarfile.ContentType);
                                     if (thumbnailResult)
                                     {
-                                        if (userPreferences == null)
-                                        {
-                                            tmpModel.Avatar = User.Identity.Name + ".jpg";
-                                        }
-                                        else
-                                        {
-                                            userPreferences.Avatar = User.Identity.Name + ".jpg";
-                                        }
+                                        userPreferences.Avatar = User.Identity.Name + ".jpg";
                                     }
                                     else
                                     {
@@ -466,19 +451,12 @@ namespace Voat.Controllers
                     }
                 }
 
-                if (userPreferences == null)
-                {
-                    db.UserPreferences.Add(tmpModel);
-                    await db.SaveChangesAsync();
-                }
-                else
-                {
-                    userPreferences.Bio = model.Bio;
-                    userPreferences.UserName = User.Identity.Name;
-                    await db.SaveChangesAsync();
-                }
-
+                userPreferences.Bio = model.Bio;
+                await db.SaveChangesAsync();
             }
+
+            CacheHandler.Instance.Remove(CachingKey.UserPreferences(User.Identity.Name));
+            CacheHandler.Instance.Remove(CachingKey.UserInformation(User.Identity.Name));
 
             return RedirectToAction("Manage");
         }
@@ -575,6 +553,7 @@ namespace Voat.Controllers
             }
 
             CacheHandler.Instance.Remove(CachingKey.UserPreferences(User.Identity.Name));
+            CacheHandler.Instance.Remove(CachingKey.UserInformation(User.Identity.Name));
             UserHelper.SetUserStylePreferenceCookie(newTheme);
             return RedirectToAction("Manage");
         }

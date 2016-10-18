@@ -2,12 +2,15 @@
 using Kaliko.ImageLibrary.Scaling;
 using OpenGraph_Net;
 using System;
+
 using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using Voat.Configuration;
+using Voat.Data.Models;
+using Voat.Utilities.Components;
 
 namespace Voat.Utilities
 {
@@ -96,17 +99,22 @@ namespace Voat.Utilities
 
                 // the avatar file was not found at expected path, abort
                 if (!FileSystemUtility.FileExists(tempAvatarLocation, DestinationPathAvatars))
+                {
                     return false;
+                }
+                else if (Settings.UseContentDeliveryNetwork)
+                {
+                    // upload to CDN
+                    await CloudStorageUtility.UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
 
-                // upload to CDN
-                await CloudStorageUtility.UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
-
-                // delete local file after uploading to CDN
-                File.Delete(tempAvatarLocation);
+                    // delete local file after uploading to CDN
+                    File.Delete(tempAvatarLocation);
+                }
                 return true;
             }
             catch (Exception ex)
             {
+                EventLogger.Log(ex);
                 return false;
             }
         }
@@ -173,8 +181,9 @@ namespace Voat.Utilities
                     var thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString());
                     return thumbFileName;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    EventLogger.Log(ex);
                     // thumnail generation failed, skip adding thumbnail
                     return null;
                 }
@@ -194,8 +203,9 @@ namespace Voat.Utilities
                 var thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString());
                 return thumbFileName;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                EventLogger.Log(ex);
                 // thumnail generation failed, skip adding thumbnail
                 return null;
             }

@@ -1605,7 +1605,7 @@ namespace Voat.Data
             p.DisplayVotes = false;
             p.EnableAdultContent = false;
             p.Bio = "Aww snap, this user did not yet write their bio. If they did, it would show up here, you know.";
-            p.Avatar = "default.jpg";
+            p.Avatar = null;
             p.CollapseCommentLimit = 4;
             p.DisplayCommentCount = 5;
             p.HighlightMinutes = 30;
