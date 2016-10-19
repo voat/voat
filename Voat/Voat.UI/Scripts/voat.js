@@ -1689,8 +1689,12 @@ function previewStylesheet(obj, subverseName) {
 
             // remove the old stylesheet from document
             var sheetToRemove = document.getElementById('custom_css');
-            var sheetParent = sheetToRemove.parentNode;
-            sheetParent.removeChild(sheetToRemove);
+            //if null, sneaky user has css disabled
+            if (sheetToRemove)
+            {
+                var sheetParent = sheetToRemove.parentNode;
+                sheetParent.removeChild(sheetToRemove);
+            }
 
             // inject the new stylesheet
             var sheetToAdd = document.createElement('style');

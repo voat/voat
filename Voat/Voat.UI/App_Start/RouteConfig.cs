@@ -199,6 +199,20 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "CommentTree", sort = "top" }
             );
 
+
+            // v/subversetoshow/123456/123456/delete
+            routes.MapRoute(
+                name: "SubverseStylesheet",
+                url: "v/{subverse}/stylesheet",
+                constraints: new
+                {
+                },
+                defaults: new
+                {
+                    controller = "Subverses",
+                    action = "Stylesheet",
+                }
+            );
             // v/subversetoshow/123456/123456/delete
             routes.MapRoute(
                 name: "ModeratorDeleteSubmission",

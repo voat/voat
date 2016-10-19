@@ -125,17 +125,17 @@ namespace Voat.Controllers
             return PartialView("~/Views/Shared/Sidebars/_Sidebar.cshtml", subverse);
         }
 
-        // GET: stylesheet for selected subverse
-        public ActionResult StylesheetForSelectedSubverse(string selectedSubverse)
-        {
-            var q = new QuerySubverseStylesheet(selectedSubverse);
-            var r = q.Execute();
-            return Content(r.Minimized);
+        //// GET: stylesheet for selected subverse
+        //public ActionResult StylesheetForSelectedSubverse(string selectedSubverse)
+        //{
+        //    var q = new QuerySubverseStylesheet(selectedSubverse);
+        //    var r = q.Execute();
+        //    return Content(r.Minimized);
 
-            var subverse = DataCache.Subverse.Retrieve(selectedSubverse);
+        //    var subverse = DataCache.Subverse.Retrieve(selectedSubverse);
 
-            return Content(subverse != null ? subverse.Stylesheet : string.Empty);
-        }
+        //    return Content(subverse != null ? subverse.Stylesheet : string.Empty);
+        //}
 
         // POST: Create a new Subverse
         [HttpPost]
@@ -2208,80 +2208,21 @@ namespace Voat.Controllers
                     return RedirectToAction("SubverseModerators");
                 }
             }
-
-            //// get moderator name for selected subverse
-            //var subModerator = await _db.SubverseModerators.FindAsync(id);
-            //if (subModerator == null)
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            //}
-
-            //var subverse = DataCache.Subverse.Retrieve(subModerator.Subverse);
-            //if (subverse == null)
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            //}
-
-            //// check if caller has clearance to remove a moderator
-            //if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse.Name, Domain.Models.ModeratorAction.RemoveMods))
-            //{
-            //    return RedirectToAction("Index", "Home");
-            //}
-
-
-            ////Determine if removal is allowed:
-            ////Logic:
-            ////L1: Can remove L1's but only if they invited them / or they were added after them
-            //var currentModLevel = ModeratorPermission.Level(User.Identity.Name, subverse.Name).Value; //safe to get value as previous check ensures is mod
-            //var targetModLevel = (ModeratorLevel)subModerator.Power;
-            //var allowRemoval = false;
-
-            //switch (currentModLevel)
-            //{
-            //    case ModeratorLevel.Owner:
-            //        if (targetModLevel == ModeratorLevel.Owner)
-            //        {
-            //            var isTargetOriginalMod = (String.IsNullOrEmpty(subModerator.CreatedBy) && !subModerator.CreationDate.HasValue);
-            //            if (!isTargetOriginalMod)
-            //            {
-
-            //            }
-            //        }
-            //        else
-            //        {
-            //            allowRemoval = true;
-            //        }
-            //        break;
-            //    default:
-            //        allowRemoval = (targetModLevel < currentModLevel);
-            //        break;
-            //}
-
-            ////ensure mods can only remove mods that are a lower level than themselves
-            //if (allowRemoval)
-            //{
-            //    // execute removal
-            //    _db.SubverseModerators.Remove(subModerator);
-            //    await _db.SaveChangesAsync();
-
-            //    //clear mod cache
-            //    CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverse.Name));
-
-            //    if (subModerator.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase))
-            //    {
-            //        return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverse.Name });
-            //    }
-            //    else
-            //    {
-            //        return RedirectToAction("SubverseModerators");
-            //    }
-            //}
-            //else
-            //{
-            //    return RedirectToAction("Index", "Home");
-
-            //}
         }
+
+        public async Task<ContentResult> Stylesheet(string subverse, bool cache = true, bool minimized = true)
+        {
+            var policy = (cache ? new CachePolicy(TimeSpan.FromMinutes(30)) : CachePolicy.None);
+            var q = new QuerySubverseStylesheet(subverse, policy);
+
+            var madStylesYo = await q.ExecuteAsync();
+
+            return new ContentResult() {
+                Content = (minimized ? madStylesYo.Minimized : madStylesYo.Raw),
+                ContentType = "text/css"
+            };
+        }
+
         #endregion ADD/REMOVE MODERATORS LOGIC
 
         #region sfw submissions from all subverses

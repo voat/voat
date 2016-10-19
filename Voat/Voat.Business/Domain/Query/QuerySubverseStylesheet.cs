@@ -10,11 +10,13 @@ namespace Voat.Domain.Query
     {
         private string _subverse;
 
-        public QuerySubverseStylesheet(string subverse) : base(new CachePolicy(TimeSpan.FromMinutes(10)))
+        public QuerySubverseStylesheet(string subverse) : this(subverse, new CachePolicy(TimeSpan.FromMinutes(10)))
+        {
+        }
+        public QuerySubverseStylesheet(string subverse, CachePolicy policy) : base(policy)
         {
             _subverse = subverse;
         }
-
         public override string CacheKey
         {
             get

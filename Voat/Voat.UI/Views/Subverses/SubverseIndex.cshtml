@@ -58,18 +58,10 @@
     {
         @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
     }
-
-    <style type="text/css" id="custom_css">
-         @if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
-        {
-            Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new {selectedSubverse = selectedSubverse});
-        }
-        else if (!User.Identity.IsAuthenticated)
-        {
-            Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new {selectedSubverse = selectedSubverse});
-        }
-    </style>
-
+    @if ((User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name)) || !User.Identity.IsAuthenticated)
+    {
+        <link rel="stylesheet" type="text/css" id="custom_css" href="/v/@selectedSubverse/stylesheet" />
+    }
     <div class="content" role="main">
         @if (sortingMode == "top")
         {

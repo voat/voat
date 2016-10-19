@@ -20,15 +20,10 @@
     string selectedSubverse = ViewBag.selectedSubverse;
 }
 
-<style type="text/css" id="custom_css">
-@if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
+@if ((User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name)) || !User.Identity.IsAuthenticated)
 {
-    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
-} else if (!User.Identity.IsAuthenticated)
-{
-    Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse });
+    <link rel="stylesheet" type="text/css" id="custom_css" href="/v/@selectedSubverse/stylesheet" />
 }
-</style>
 
 <div id="container">
     <div class="well">
