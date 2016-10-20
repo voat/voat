@@ -62,6 +62,8 @@ namespace Voat.UI.Utilities
 
     public class PreventSpamAttribute : ActionFilterAttribute
     {
+        private const string CACHEKEY = "PreventSpamHash";
+
         // This stores the time between Requests (in seconds)
         public int DelayRequest = 10;
         
@@ -82,7 +84,6 @@ namespace Voat.UI.Utilities
             //{
             //    var incomingMessage = (Submission)filterContext.ActionParameters["message"];
             //    var targetSubverse = incomingMessage.Subverse;
-
             //    // check user LCP for target subverse
             //    if (targetSubverse != null)
             //    {
@@ -160,9 +161,25 @@ namespace Voat.UI.Utilities
                 // Adds an empty object to the cache using the hashValue to a key (This sets the expiration that will determine
                 // if the Request is valid or not
                 cache.Add(hashValue, "", null, Repository.CurrentDate.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                request.RequestContext.HttpContext.Items[CACHEKEY] = hashValue;
             }
 
             base.OnActionExecuting(filterContext);
+        }
+        public static void Reset()
+        {
+            var context = System.Web.HttpContext.Current;
+            if (context != null)
+            {
+                if (context.Items.Contains(CACHEKEY))
+                {
+                    var hashValue = context.Items[CACHEKEY].ToString();
+                    if (!String.IsNullOrWhiteSpace(hashValue))
+                    {
+                        context.Cache.Remove(hashValue);
+                    }
+                }
+            }
         }
     }
 

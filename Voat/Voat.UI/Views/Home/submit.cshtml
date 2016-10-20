@@ -10,7 +10,10 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Submission
+@using Voat.Models.ViewModels
+
+@model CreateSubmissionViewModel
+
 
 @{
     ViewBag.Title = "subverse: submit";
@@ -18,6 +21,8 @@
     string linkPost = Request.Params["linkpost"];
 
     string selectedSubverse = ViewBag.selectedSubverse;
+    string loggedinUser = User.Identity.Name;
+    DateTime currentdatetime = Repository.CurrentDate;
 }
 
 @if ((User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name)) || !User.Identity.IsAuthenticated)
@@ -27,13 +32,111 @@
 
 <div id="container">
     <div class="well">
-        @if (linkPost == "true" || ViewBag.linkPost == "true")
+        @using (Html.BeginForm())
         {
-            @Html.Partial("_AddSubmissionLinkpost")
-        }
-        else
-        {
-            @Html.Partial("_AddSubmissionSelfpost")
-        }
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => Model.Type);
+            
+            <div class="alert alert-info">You are submitting a @(Model.Type.ToString().ToLower()) post.</div>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true)
+
+                @if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
+                {
+                    <div class="form-group">
+                        @Html.Label("URL:", new { @class = "control-label col-md-2" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(model => model.Url, new { @class = "form-control", Value = Model.Url })
+                            @Html.ValidationMessageFor(model => model.Url)
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.HiddenFor(model => Model.Url)
+                }
+
+                <div class="form-group">
+                    @Html.Label("Title:", new { @class = "control-label col-md-2" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.Title, new { @class = "form-control", Value = Model.Title })
+                        @Html.ValidationMessageFor(model => model.Title)
+                        @if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
+                        {
+                            <br />
+                            <a href="javascript:void(0)" id="suggest-title" onclick="return suggestTitle()">Enter the URL above, then click here if you want to get a title suggestion</a>
+                            <br />
+                            <p>Unicode will be stripped from the retrieved title</p>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Subverse:", new { @class = "control-label col-md-2" })
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(model => model.Subverse, new { @class = "form-control", value = Model.Subverse, id = "Subverse", @placeholder = "Start typing to get suggestions" })
+                        @Html.ValidationMessageFor(model => model.Subverse)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="control-label col-md-2"></div>
+                    <div class="col-md-9">
+                        A subverse mostly serves as a way of classifying submissions so that other users can easily find what interests them.
+                        <p>
+                            <b>
+                                If you don't want to classify your submission, enter "whatever" in this field.
+                            </b>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="control-label col-md-2"></div>
+                    <div class="col-md-9">
+                        Here are some other popular choices:
+                        <b>
+                            videos,
+                            pics,
+                            programming,
+                            funny,
+                            science,
+                            technology,
+                            news,
+                            music
+                        </b>
+                    </div>
+                </div>
+
+                @if (Model.Type == Voat.Domain.Models.SubmissionType.Text)
+                {
+                    <div class="form-group">
+                        @Html.Label("Message (optional):", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-9">
+                            @Html.MarkdownEditorFor(model => model.Content, new { @class = "form-control", rows = "5", value = Model.Content })
+                            @Html.ValidationMessageFor(model => model.Content)
+                        </div>
+                    </div>
+                }
+
+
+                @if (Karma.CommentKarma(User.Identity.Name) < 25)
+                {
+                    <div class="alert alert-info">Are you a human? Please solve the reCAPTCHA challenge below (sorry, this is to prevent spam):</div>
+
+                    <div class="panel panel-default panel-transparent">
+                        <div class="col-md-offset-2 col-md-10">
+                            @{Html.RenderPartial("_Captcha");}
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Submit" class="btn-whoaverse" />
+                    </div>
+                </div>
+            </div>
+    }
     </div>
 </div>

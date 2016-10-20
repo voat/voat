@@ -426,7 +426,7 @@ namespace Voat.Controllers
                         return new EmptyResult();
                     }
 
-                    if (updatedModel.Stylesheet != null)
+                    if (!String.IsNullOrEmpty(updatedModel.Stylesheet))
                     {
                         if (updatedModel.Stylesheet.Length < 50001)
                         {

@@ -329,6 +329,7 @@
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
+    <Compile Include="Models\ViewModels\CreateSubmissionViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseBanViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseStylesheetViewModel.cs" />
     <Compile Include="Utils\Extensions.cs" />

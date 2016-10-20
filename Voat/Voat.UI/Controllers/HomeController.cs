@@ -38,41 +38,6 @@ namespace Voat.Controllers
         //IAmAGate: Move queries to read-only mirror
         private readonly voatEntities _db = new voatEntities(true);
 
-        // GET: submit
-        [Authorize]
-        public ActionResult Submit(string selectedsubverse)
-        {
-            ViewBag.selectedSubverse = selectedsubverse;
-
-            string linkPost = Request.Params["linkpost"];
-            string linkDescription = Request.Params["title"];
-            string linkUrl = Request.QueryString["url"];
-
-            if (linkPost != null)
-            {
-                if (linkPost == "true")
-                {
-                    ViewBag.action = "link";
-                    ViewBag.linkDescription = linkDescription;
-                    ViewBag.linkUrl = linkUrl;
-                }
-            }
-            else
-            {
-                ViewBag.action = "discussion";
-            }
-
-            if (selectedsubverse == null)
-                return View();
-
-            if (!selectedsubverse.Equals("all", StringComparison.OrdinalIgnoreCase))
-            {
-                ViewBag.selectedSubverse = selectedsubverse;
-            }
-
-            return View("Submit");
-        }
-
         // GET: submitlink
         [Authorize]
         public ActionResult SubmitLinkService(string selectedsubverse)
@@ -94,7 +59,38 @@ namespace Voat.Controllers
 
             return View("~/Views/Home/Submit.cshtml");
         }
+        // GET: submit
+        [Authorize]
+        public ActionResult Submit(string selectedsubverse)
+        {
+            ViewBag.selectedSubverse = selectedsubverse;
 
+            string linkPost = Request.Params["linkpost"];
+            string title = Request.Params["title"];
+            string url = Request.QueryString["url"];
+
+            CreateSubmissionViewModel model = new CreateSubmissionViewModel();
+            model.Title = title;
+
+            if (linkPost != null && linkPost == "true")
+            {
+                model.Type = Domain.Models.SubmissionType.Link;
+                model.Url = url;
+            }
+            else
+            {
+                model.Type = Domain.Models.SubmissionType.Text;
+                model.Url = "https://voat.co"; //dummy for validation (Do not look at me like that)
+            }
+
+            if (!String.IsNullOrWhiteSpace(selectedsubverse))
+            {
+                model.Subverse = selectedsubverse;
+            }
+
+            return View("Submit", model);
+        }
+       
         // POST: submit
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -102,12 +98,12 @@ namespace Voat.Controllers
         [Authorize]
         [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
-        public async Task<ActionResult> Submit([Bind(Include = "ID,Votes,Name,CreationDate,Type,Title,Rank,Url,Content,Subverse")] Data.Models.Submission submission)
+        public async Task<ActionResult> Submit(CreateSubmissionViewModel model)
         {
             // abort if model state is invalid
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(model);
             }
 
             //Check Captcha
@@ -120,17 +116,17 @@ namespace Voat.Controllers
                 var captchaSuccess = await ReCaptchaUtility.Validate(Request);
                 if (!captchaSuccess)
                 {
-                    ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer.");
+                    ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer");
                     return View("Submit");
                 }
             }
 
             //new pipeline
             var userSubmission = new Domain.Models.UserSubmission();
-            userSubmission.Subverse = submission.Subverse;
-            userSubmission.Title = submission.Title;
-            userSubmission.Content = submission.Content;
-            userSubmission.Url = submission.Url;
+            userSubmission.Subverse = model.Subverse;
+            userSubmission.Title = model.Title;
+            userSubmission.Content = (model.Type == Domain.Models.SubmissionType.Text ? model.Content : null);
+            userSubmission.Url = (model.Type == Domain.Models.SubmissionType.Link ? model.Url : null);
 
             var q = new CreateSubmissionCommand(userSubmission);
             var result = await q.Execute();
@@ -149,17 +145,18 @@ namespace Voat.Controllers
             }
             else
             {
-                // save temp values for the view in case submission fails
-                ViewBag.selectedSubverse = submission.Subverse;
-                ViewBag.message = submission.Content;
-                ViewBag.title = submission.Title;
-                ViewBag.linkDescription = submission.Title; //line needs to be removed, but leaving in for now
-                ViewBag.content = submission.Content;
-                ViewBag.linkUrl = submission.Url;
-
-                //show error
-                ModelState.AddModelError(string.Empty, result.Message);
-                return View("Submit");
+                //Help formatting issues with unicode.
+                if (Formatting.ContainsUnicode(model.Title))
+                {
+                    ModelState.AddModelError(string.Empty, "Voat has strip searched your title and removed it's unicode. Please verify you approve of what you see.");
+                    model.Title = Formatting.StripUnicode(model.Title);
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, result.Message);
+                }
+                PreventSpamAttribute.Reset();
+                return View("Submit", model);
             }
         }
 
