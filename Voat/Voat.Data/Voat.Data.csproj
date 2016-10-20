@@ -116,9 +116,6 @@
     <Compile Include="Models\CommentRemovalLog.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CommentReplyNotification.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\CommentSaveTracker.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -143,9 +140,6 @@
     <Compile Include="Models\PartnerInformation.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\PrivateMessage.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\PromotedSubmission.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -159,9 +153,6 @@
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubmissionRemovalLog.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\SubmissionReplyNotification.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubmissionSaveTracker.cs">

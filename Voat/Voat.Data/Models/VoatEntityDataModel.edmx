@@ -156,22 +156,6 @@
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
           <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
         </EntityType>
-        <EntityType Name="CommentReplyNotification">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CommentID" Type="int" Nullable="false" />
-          <Property Name="SubmissionID" Type="int" Nullable="false" />
-          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
-          <Property Name="IsUnread" Type="bit" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="MarkedAsUnread" Type="bit" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-        </EntityType>
         <EntityType Name="CommentSaveTracker">
           <Key>
             <PropertyRef Name="ID" />
@@ -280,19 +264,6 @@
           <Property Name="PartnerStreet" Type="nvarchar(max)" />
           <Property Name="PartnerLastPaymentDate" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="PrivateMessage">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="500" Nullable="false" />
-          <Property Name="Body" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="IsUnread" Type="bit" Nullable="false" />
-          <Property Name="MarkedAsUnread" Type="bit" Nullable="false" />
-        </EntityType>
         <EntityType Name="PromotedSubmission">
           <Key>
             <PropertyRef Name="SubmissionID" />
@@ -353,22 +324,6 @@
           <Property Name="Moderator" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
           <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
-        </EntityType>
-        <EntityType Name="SubmissionReplyNotification">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CommentID" Type="int" Nullable="false" />
-          <Property Name="SubmissionID" Type="int" Nullable="false" />
-          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="Body" Type="nvarchar" MaxLength="4000" Nullable="false" />
-          <Property Name="IsUnread" Type="bit" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="MarkedAsUnread" Type="bit" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="SubmissionSaveTracker">
           <Key>
@@ -896,7 +851,6 @@
           <EntitySet Name="BannedUser" EntityType="Self.BannedUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Comment" EntityType="Self.Comment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommentRemovalLog" EntityType="Self.CommentRemovalLog" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CommentReplyNotification" EntityType="Self.CommentReplyNotification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommentSaveTracker" EntityType="Self.CommentSaveTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommentVoteTracker" EntityType="Self.CommentVoteTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DefaultSubverse" EntityType="Self.DefaultSubverse" Schema="dbo" store:Type="Tables" />
@@ -905,13 +859,11 @@
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ModeratorInvitation" EntityType="Self.ModeratorInvitation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PartnerInformations" EntityType="Self.PartnerInformations" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PrivateMessage" EntityType="Self.PrivateMessage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PromotedSubmission" EntityType="Self.PromotedSubmission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SessionTracker" EntityType="Self.SessionTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StickiedSubmission" EntityType="Self.StickiedSubmission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Submission" EntityType="Self.Submission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubmissionRemovalLog" EntityType="Self.SubmissionRemovalLog" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="SubmissionReplyNotification" EntityType="Self.SubmissionReplyNotification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubmissionSaveTracker" EntityType="Self.SubmissionSaveTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubmissionVoteTracker" EntityType="Self.SubmissionVoteTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subverse" EntityType="Self.Subverse" Schema="dbo" store:Type="Tables" />
@@ -1089,22 +1041,6 @@
           <Property Name="Reason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Comment" Relationship="Self.FK_CommentRemovalLog_Comments" FromRole="CommentRemovalLog" ToRole="Comment" />
         </EntityType>
-        <EntityType Name="CommentReplyNotification">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CommentID" Type="Int32" Nullable="false" />
-          <Property Name="SubmissionID" Type="Int32" Nullable="false" />
-          <Property Name="Recipient" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Sender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Subject" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Body" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IsUnread" Type="Boolean" Nullable="false" />
-          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="MarkedAsUnread" Type="Boolean" Nullable="false" />
-          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-        </EntityType>
         <EntityType Name="CommentSaveTracker">
           <Key>
             <PropertyRef Name="ID" />
@@ -1179,19 +1115,6 @@
           <Property Name="PartnerStreet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="PartnerLastPaymentDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
-        <EntityType Name="PrivateMessage">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Sender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Recipient" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Subject" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IsUnread" Type="Boolean" Nullable="false" />
-          <Property Name="MarkedAsUnread" Type="Boolean" Nullable="false" />
-        </EntityType>
         <EntityType Name="PromotedSubmission">
           <Key>
             <PropertyRef Name="SubmissionID" />
@@ -1262,22 +1185,6 @@
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Reason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Submission" Relationship="Self.FK_SubmissionRemovalLog_Messages" FromRole="SubmissionRemovalLog" ToRole="Submission" />
-        </EntityType>
-        <EntityType Name="SubmissionReplyNotification">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CommentID" Type="Int32" Nullable="false" />
-          <Property Name="SubmissionID" Type="Int32" Nullable="false" />
-          <Property Name="Recipient" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Sender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Subject" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Body" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IsUnread" Type="Boolean" Nullable="false" />
-          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="MarkedAsUnread" Type="Boolean" Nullable="false" />
-          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <EntityType Name="SubmissionSaveTracker">
           <Key>
@@ -1789,20 +1696,17 @@
           <EntitySet Name="BannedUsers" EntityType="Self.BannedUser" />
           <EntitySet Name="Comments" EntityType="Self.Comment" />
           <EntitySet Name="CommentRemovalLogs" EntityType="Self.CommentRemovalLog" />
-          <EntitySet Name="CommentReplyNotifications" EntityType="Self.CommentReplyNotification" />
           <EntitySet Name="CommentSaveTrackers" EntityType="Self.CommentSaveTracker" />
           <EntitySet Name="CommentVoteTrackers" EntityType="Self.CommentVoteTracker" />
           <EntitySet Name="DefaultSubverses" EntityType="Self.DefaultSubverse" />
           <EntitySet Name="FeaturedSubverses" EntityType="Self.FeaturedSubverse" />
           <EntitySet Name="ModeratorInvitations" EntityType="Self.ModeratorInvitation" />
           <EntitySet Name="PartnerInformations" EntityType="Self.PartnerInformation" />
-          <EntitySet Name="PrivateMessages" EntityType="Self.PrivateMessage" />
           <EntitySet Name="PromotedSubmissions" EntityType="Self.PromotedSubmission" />
           <EntitySet Name="SessionTrackers" EntityType="Self.SessionTracker" />
           <EntitySet Name="StickiedSubmissions" EntityType="Self.StickiedSubmission" />
           <EntitySet Name="Submissions" EntityType="Self.Submission" />
           <EntitySet Name="SubmissionRemovalLogs" EntityType="Self.SubmissionRemovalLog" />
-          <EntitySet Name="SubmissionReplyNotifications" EntityType="Self.SubmissionReplyNotification" />
           <EntitySet Name="SubmissionSaveTrackers" EntityType="Self.SubmissionSaveTracker" />
           <EntitySet Name="SubmissionVoteTrackers" EntityType="Self.SubmissionVoteTracker" />
           <EntitySet Name="Subverses" EntityType="Self.Subverse" />
@@ -2197,23 +2101,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="CommentReplyNotifications">
-            <EntityTypeMapping TypeName="Models.CommentReplyNotification">
-              <MappingFragment StoreEntitySet="CommentReplyNotification">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="CommentID" ColumnName="CommentID" />
-                <ScalarProperty Name="SubmissionID" ColumnName="SubmissionID" />
-                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
-                <ScalarProperty Name="Sender" ColumnName="Sender" />
-                <ScalarProperty Name="Subject" ColumnName="Subject" />
-                <ScalarProperty Name="Body" ColumnName="Body" />
-                <ScalarProperty Name="IsUnread" ColumnName="IsUnread" />
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-                <ScalarProperty Name="MarkedAsUnread" ColumnName="MarkedAsUnread" />
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="CommentSaveTrackers">
             <EntityTypeMapping TypeName="Models.CommentSaveTracker">
               <MappingFragment StoreEntitySet="CommentSaveTracker">
@@ -2290,20 +2177,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="PrivateMessages">
-            <EntityTypeMapping TypeName="Models.PrivateMessage">
-              <MappingFragment StoreEntitySet="PrivateMessage">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Sender" ColumnName="Sender" />
-                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-                <ScalarProperty Name="Subject" ColumnName="Subject" />
-                <ScalarProperty Name="Body" ColumnName="Body" />
-                <ScalarProperty Name="IsUnread" ColumnName="IsUnread" />
-                <ScalarProperty Name="MarkedAsUnread" ColumnName="MarkedAsUnread" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="PromotedSubmissions">
             <EntityTypeMapping TypeName="Models.PromotedSubmission">
               <MappingFragment StoreEntitySet="PromotedSubmission">
@@ -2366,23 +2239,6 @@
                 <ScalarProperty Name="Moderator" ColumnName="Moderator" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="Reason" ColumnName="Reason" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SubmissionReplyNotifications">
-            <EntityTypeMapping TypeName="Models.SubmissionReplyNotification">
-              <MappingFragment StoreEntitySet="SubmissionReplyNotification">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="CommentID" ColumnName="CommentID" />
-                <ScalarProperty Name="SubmissionID" ColumnName="SubmissionID" />
-                <ScalarProperty Name="Recipient" ColumnName="Recipient" />
-                <ScalarProperty Name="Sender" ColumnName="Sender" />
-                <ScalarProperty Name="Subject" ColumnName="Subject" />
-                <ScalarProperty Name="Body" ColumnName="Body" />
-                <ScalarProperty Name="IsUnread" ColumnName="IsUnread" />
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-                <ScalarProperty Name="MarkedAsUnread" ColumnName="MarkedAsUnread" />
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

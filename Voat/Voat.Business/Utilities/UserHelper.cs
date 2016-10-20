@@ -122,15 +122,6 @@ namespace Voat.Utilities
                         // resign from all moderating positions
                         db.SubverseModerators.RemoveRange(db.SubverseModerators.Where(m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-                        // delete comment reply notifications
-                        db.CommentReplyNotifications.RemoveRange(db.CommentReplyNotifications.Where(crp => crp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
-
-                        // delete post reply notifications
-                        db.SubmissionReplyNotifications.RemoveRange(db.SubmissionReplyNotifications.Where(prp => prp.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
-
-                        // delete private messages
-                        db.PrivateMessages.RemoveRange(db.PrivateMessages.Where(pm => pm.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase)));
-
                         // delete user preferences
                         var userPrefs = db.UserPreferences.Find(userName);
                         if (userPrefs != null)
@@ -329,140 +320,6 @@ namespace Voat.Utilities
             }
         }
 
-        [Obsolete("Use QueryMessageCounts", true)]
-
-        // check if given user has unread private messages, not including messages manually marked as unread
-        public static bool UserHasNewMessages(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                var unreadPrivateMessagesCount = db.PrivateMessages.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
-                var unreadCommentRepliesCount = db.CommentReplyNotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
-                var unreadPostRepliesCount = db.SubmissionReplyNotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
-
-                return unreadPrivateMessagesCount > 0 || unreadCommentRepliesCount > 0 || unreadPostRepliesCount > 0;
-            }
-        }
-
-        [Obsolete("Use QueryMessageCounts", true)]
-
-        // check if given user has unread comment replies and return the count
-        public static int UnreadCommentRepliesCount(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                var commentReplies = db.CommentReplyNotifications
-                    .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                    .OrderBy(s => s.CreationDate)
-                    .ThenBy(s => s.Sender);
-
-                if (!commentReplies.Any())
-                    return 0;
-
-                var unreadCommentReplies = commentReplies.Where(s => s.IsUnread && s.MarkedAsUnread == false);
-                return unreadCommentReplies.Any() ? unreadCommentReplies.Count() : 0;
-            }
-        }
-
-        [Obsolete("Use QueryMessageCounts", true)]
-
-        // check if given user has unread post replies and return the count
-        public static int UnreadPostRepliesCount(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                var postReplies = db.SubmissionReplyNotifications
-                    .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                    .OrderBy(s => s.CreationDate)
-                    .ThenBy(s => s.Sender);
-
-                if (!postReplies.Any())
-                    return 0;
-                var unreadPostReplies = postReplies.Where(s => s.IsUnread && s.MarkedAsUnread == false);
-
-                return unreadPostReplies.Any() ? unreadPostReplies.Count() : 0;
-            }
-        }
-
-        [Obsolete("Use QueryMessageCounts", true)]
-
-        // check if given user has unread private messages and return the count
-        public static int UnreadPrivateMessagesCount(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                var privateMessages = db.PrivateMessages
-                    .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                    .OrderBy(s => s.CreationDate)
-                    .ThenBy(s => s.Sender);
-
-                if (!privateMessages.Any())
-                    return 0;
-                var unreadPrivateMessages = privateMessages.Where(s => s.IsUnread && s.MarkedAsUnread == false);
-
-                return unreadPrivateMessages.Any() ? unreadPrivateMessages.Count() : 0;
-            }
-        }
-
-        [Obsolete("Use QueryMessageCounts", true)]
-
-        // get total unread notifications count for a given user
-        public static int UnreadTotalNotificationsCount(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                int totalCount = 0;
-                int unreadPrivateMessagesCount = db.PrivateMessages.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
-                int unreadPostRepliesCount = db.SubmissionReplyNotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
-                int unreadCommentRepliesCount = db.CommentReplyNotifications.Count(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.MarkedAsUnread == false);
-
-                totalCount = totalCount + unreadPrivateMessagesCount + unreadPostRepliesCount + unreadCommentRepliesCount;
-                return totalCount;
-            }
-        }
-
-        [Obsolete("Use QueryMessageCounts", true)]
-
-        // get total number of comment replies for a given user
-        public static int CommentRepliesCount(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                var commentReplies = db.CommentReplyNotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
-                if (!commentReplies.Any())
-                    return 0;
-                return commentReplies.Any() ? commentReplies.Count() : 0;
-            }
-        }
-
-        [Obsolete("Use QueryMessageCounts", true)]
-
-        // get total number of post replies for a given user
-        public static int PostRepliesCount(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                var postReplies = db.SubmissionReplyNotifications.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
-                if (!postReplies.Any())
-                    return 0;
-                return postReplies.Any() ? postReplies.Count() : 0;
-            }
-        }
-
-        [Obsolete("Use QueryMessageCounts", true)]
-
-        // get total number of private messages for a given user
-        public static int PrivateMessageCount(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                var privateMessages = db.PrivateMessages.Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase));
-                if (!privateMessages.Any())
-                    return 0;
-                return privateMessages.Any() ? privateMessages.Count() : 0;
-            }
-        }
-
         // check if a given user does not want to see custom CSS styles
         public static bool CustomCssDisabledForUser(string userName)
         {
@@ -522,21 +379,6 @@ namespace Voat.Utilities
             var q = new QueryUserPreferences(userName);
             var d = q.Execute();
             return d;
-
-            //UserPreference pref = (UserPreference)(System.Web.HttpContext.Current != null ? System.Web.HttpContext.Current.Items["UserPreferences"] : null);
-            //if (pref == null)
-            //{
-            //    using (var db = new voatEntities())
-            //    {
-            //        Debug.Print(String.Format("Loading preferences for {0}", userName));
-            //        pref = db.UserPreferences.Find(userName);
-            //        if (System.Web.HttpContext.Current != null)
-            //        {
-            //            System.Web.HttpContext.Current.Items["UserPreferences"] = pref;
-            //        }
-            //    }
-            //}
-            //return pref;
         }
 
         // check how many votes a user has used in the past 24 hours

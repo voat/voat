@@ -34,52 +34,5 @@ namespace Voat.Utilities
             }
             return false;
         }
-
-        // a method to mark single or all private messages as read for a given user
-        public static async Task<bool> MarkPrivateMessagesAsRead(bool? markAll, string userName, int? itemId)
-        {
-            using (var db = new voatEntities())
-            {
-                try
-                {
-                    // mark all items as read
-                    if (markAll != null && (bool)markAll)
-                    {
-                        IQueryable<PrivateMessage> unreadPrivateMessages = db.PrivateMessages
-                                                                            .Where(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread)
-                                                                            .OrderByDescending(s => s.CreationDate)
-                                                                            .ThenBy(s => s.Sender);
-
-                        if (!unreadPrivateMessages.Any())
-                            return false;
-
-                        foreach (var singleMessage in unreadPrivateMessages.ToList())
-                        {
-                            singleMessage.IsUnread = false;
-                        }
-                        await db.SaveChangesAsync();
-                        return true;
-                    }
-
-                    // mark single item as read
-                    if (itemId != null)
-                    {
-                        var privateMessageToMarkAsread = db.PrivateMessages.FirstOrDefault(s => s.Recipient.Equals(userName, StringComparison.OrdinalIgnoreCase) && s.IsUnread && s.ID == itemId);
-                        if (privateMessageToMarkAsread == null)
-                            return false;
-
-                        var item = db.PrivateMessages.Find(itemId);
-                        item.IsUnread = false;
-                        await db.SaveChangesAsync();
-                        return true;
-                    }
-                    return false;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            }
-        }
     }
 }

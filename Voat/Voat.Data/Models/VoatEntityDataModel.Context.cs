@@ -32,20 +32,17 @@ namespace Voat.Data.Models
         public virtual DbSet<BannedUser> BannedUsers { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<CommentRemovalLog> CommentRemovalLogs { get; set; }
-        public virtual DbSet<CommentReplyNotification> CommentReplyNotifications { get; set; }
         public virtual DbSet<CommentSaveTracker> CommentSaveTrackers { get; set; }
         public virtual DbSet<CommentVoteTracker> CommentVoteTrackers { get; set; }
         public virtual DbSet<DefaultSubverse> DefaultSubverses { get; set; }
         public virtual DbSet<FeaturedSubverse> FeaturedSubverses { get; set; }
         public virtual DbSet<ModeratorInvitation> ModeratorInvitations { get; set; }
         public virtual DbSet<PartnerInformation> PartnerInformations { get; set; }
-        public virtual DbSet<PrivateMessage> PrivateMessages { get; set; }
         public virtual DbSet<PromotedSubmission> PromotedSubmissions { get; set; }
         public virtual DbSet<SessionTracker> SessionTrackers { get; set; }
         public virtual DbSet<StickiedSubmission> StickiedSubmissions { get; set; }
         public virtual DbSet<Submission> Submissions { get; set; }
         public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLogs { get; set; }
-        public virtual DbSet<SubmissionReplyNotification> SubmissionReplyNotifications { get; set; }
         public virtual DbSet<SubmissionSaveTracker> SubmissionSaveTrackers { get; set; }
         public virtual DbSet<SubmissionVoteTracker> SubmissionVoteTrackers { get; set; }
         public virtual DbSet<Subverse> Subverses { get; set; }
