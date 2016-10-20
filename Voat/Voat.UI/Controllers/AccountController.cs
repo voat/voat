@@ -344,7 +344,7 @@ namespace Voat.Controllers
                         }
 
                         // something went wrong when deleting user account
-                        return View("~/Views/Errors/Error.cshtml");
+                        return View("~/Views/Error/Error.cshtml");
                     }
                 }
             }

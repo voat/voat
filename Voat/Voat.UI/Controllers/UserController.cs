@@ -31,7 +31,7 @@ namespace Voat.Controllers
             var originalUserName = UserHelper.OriginalUsername(userName);
             if (String.IsNullOrEmpty(originalUserName))
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
             ViewBag.userid = originalUserName;
 
@@ -41,13 +41,13 @@ namespace Voat.Controllers
         {
             if (page.HasValue && page.Value < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             var originalUserName = UserHelper.OriginalUsername(userName);
             if (String.IsNullOrEmpty(originalUserName))
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
             ViewBag.userid = originalUserName;
 
@@ -66,14 +66,14 @@ namespace Voat.Controllers
         {
             if (page.HasValue && page.Value < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
 
             var originalUserName = UserHelper.OriginalUsername(userName);
             if (String.IsNullOrEmpty(originalUserName))
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
             ViewBag.userid = originalUserName;
 
@@ -93,13 +93,13 @@ namespace Voat.Controllers
         {
             if (page.HasValue && page.Value < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             var originalUserName = UserHelper.OriginalUsername(userName);
             if (String.IsNullOrEmpty(originalUserName))
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
             if (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && !User.Identity.Name.Equals(originalUserName, StringComparison.OrdinalIgnoreCase)))
             {
@@ -207,7 +207,7 @@ namespace Voat.Controllers
 
                     if (pageNumber < 0)
                     {
-                        return View("~/Views/Errors/Error_404.cshtml");
+                        return View("~/Views/Error/404.cshtml");
                     }
                     string userName = User.Identity.Name;
                     // get a list of user blocked subverses with details and order by subverse name, ascending

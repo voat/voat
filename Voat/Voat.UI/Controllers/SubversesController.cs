@@ -244,7 +244,7 @@ namespace Voat.Controllers
             if (subverse == null)
             {
                 ViewBag.SelectedSubverse = "404";
-                return View("~/Views/Errors/Subversenotfound.cshtml");
+                return View("~/Views/Error/Subversenotfound.cshtml");
             }
 
             // check that the user requesting to edit subverse settings is subverse owner!
@@ -384,7 +384,7 @@ namespace Voat.Controllers
             if (subverse == null)
             {
                 ViewBag.SelectedSubverse = "404";
-                return View("~/Views/Errors/Subversenotfound.cshtml");
+                return View("~/Views/Error/Subversenotfound.cshtml");
             }
             if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.ModifyCSS))
             {
@@ -474,12 +474,12 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             if (subversetoshow == null)
             {
-                return View("~/Views/Errors/Subversenotfound.cshtml");
+                return View("~/Views/Error/Subversenotfound.cshtml");
             }
 
             // register a new session for this subverse
@@ -511,14 +511,14 @@ namespace Voat.Controllers
                     if (subverse == null)
                     {
                         ViewBag.SelectedSubverse = "404";
-                        return View("~/Views/Errors/Subversenotfound.cshtml");
+                        return View("~/Views/Error/Subversenotfound.cshtml");
                     }
 
                     //HACK: Disable subverse
                     if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
                     {
                         ViewBag.Subverse = subverse.Name;
-                        return View("~/Views/Errors/SubverseDisabled.cshtml");
+                        return View("~/Views/Error/SubverseDisabled.cshtml");
                     }
 
                     ViewBag.SelectedSubverse = subverse.Name;
@@ -647,7 +647,7 @@ namespace Voat.Controllers
             int pageNumber = (page ?? 0);
             if (pageNumber < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             // register a new session for this subverse
@@ -685,7 +685,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             try
@@ -722,7 +722,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             // get a list of subcribed subverses with details and order by subverse names, ascending
@@ -774,7 +774,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             var subverses = _db.Subverses.Where(s => s.Description != null && s.SideBar != null).OrderByDescending(s => s.CreationDate);
@@ -795,7 +795,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             var subverses = _db.Subverses
@@ -810,7 +810,7 @@ namespace Voat.Controllers
         public ActionResult Subversenotfound()
         {
             ViewBag.SelectedSubverse = "404";
-            return View("~/Views/Errors/Subversenotfound.cshtml");
+            return View("~/Views/Error/Subversenotfound.cshtml");
         }
 
         public ActionResult AdultContentFiltered(string destination)
@@ -929,7 +929,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             // get model for selected subverse
@@ -1417,7 +1417,7 @@ namespace Voat.Controllers
                     if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
                     {
                         ViewBag.Subverse = subverse.Name;
-                        return View("~/Views/Errors/SubverseDisabled.cshtml");
+                        return View("~/Views/Error/SubverseDisabled.cshtml");
                     }
                 }
                 var listOfRemovedSubmissions = new PaginatedList<SubmissionRemovalLog>(_db.SubmissionRemovalLogs.Where(rl => rl.Submission.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).OrderByDescending(rl => rl.CreationDate), page ?? 0, 20);
@@ -1445,7 +1445,7 @@ namespace Voat.Controllers
                     if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
                     {
                         ViewBag.Subverse = subverse.Name;
-                        return View("~/Views/Errors/SubverseDisabled.cshtml");
+                        return View("~/Views/Error/SubverseDisabled.cshtml");
                     }
                 }
                 var listOfRemovedComments = new PaginatedList<CommentRemovalLog>(_db.CommentRemovalLogs.Where(rl => rl.Comment.Submission.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).OrderByDescending(rl => rl.CreationDate), page ?? 0, 20);
@@ -1471,7 +1471,7 @@ namespace Voat.Controllers
                     if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
                     {
                         ViewBag.Subverse = subverse.Name;
-                        return View("~/Views/Errors/SubverseDisabled.cshtml");
+                        return View("~/Views/Error/SubverseDisabled.cshtml");
                     }
                 }
                 ViewBag.TotalBannedUsersInSubverse = _db.SubverseBans.Where(rl => rl.Subverse.Equals(subversetoshow, StringComparison.OrdinalIgnoreCase)).Count();
@@ -1509,13 +1509,13 @@ namespace Voat.Controllers
             int pageNumber = (page ?? 0);
             if (pageNumber < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             // check if subverse exists, if not, send to a page not found error
             var subverse = DataCache.Subverse.Retrieve(subversetoshow);
             if (subverse == null)
-                return View("~/Views/Errors/Subversenotfound.cshtml");
+                return View("~/Views/Error/Subversenotfound.cshtml");
 
             ViewBag.Title = subverse.Description;
 
@@ -1523,7 +1523,7 @@ namespace Voat.Controllers
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
-                return View("~/Views/Errors/SubverseDisabled.cshtml");
+                return View("~/Views/Error/SubverseDisabled.cshtml");
             }
 
             // subverse is adult rated, check if user wants to see NSFW content

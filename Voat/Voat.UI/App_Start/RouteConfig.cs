@@ -1209,6 +1209,13 @@ namespace Voat
                 );
             }
 
+            //catch The Others 
+            routes.MapRoute(
+                name: "Others",
+                url: "r/{name}/{*url}",
+                defaults: new { controller = "Error", action = "Others" }
+            );
+
             // default route
             routes.MapRoute(
                 name: "Default",

@@ -563,7 +563,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Errors\Error.cshtml" />
+    <Content Include="Views\Error\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\About\About.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -584,11 +584,11 @@
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
     <Content Include="Views\Help\Privacy.cshtml" />
     <Content Include="Views\Help\Markdown.cshtml" />
-    <Content Include="Views\Errors\Subversenotfound.cshtml" />
+    <Content Include="Views\Error\Subversenotfound.cshtml" />
     <Content Include="Views\Shared\_ListOfDefaultSubverses.cshtml" />
     <Content Include="Views\Shared\_AddComment.cshtml" />
     <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
-    <Content Include="Views\Errors\Error_404.cshtml" />
+    <Content Include="Views\Error\404.cshtml" />
     <Content Include="Views\User\Comments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
     <Content Include="Views\Subverses\SubverseIndex.cshtml" />
@@ -599,7 +599,7 @@
     <Content Include="Views\Shared\Sidebars\_SidebarFrontpage.cshtml" />
     <Content Include="Views\Subverses\CreateSubverse.cshtml" />
     <Content Include="Views\Subverses\_AddNewSubverse.cshtml" />
-    <Content Include="Views\Errors\SubverseExists.cshtml" />
+    <Content Include="Views\Error\SubverseExists.cshtml" />
     <Content Include="Views\Help\UserAgreement.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseSettings.cshtml" />
     <Content Include="Views\Shared\Comments\_CommentTree.cshtml" />
@@ -621,7 +621,7 @@
     <Content Include="Views\Subverses\SubscribedSubverses.cshtml" />
     <Content Include="Views\Subverses\_SubscribedSubverseDetails.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserModerates.cshtml" />
-    <Content Include="Views\Errors\DbNotResponding.cshtml" />
+    <Content Include="Views\Error\DbNotResponding.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarComments.cshtml" />
     <Content Include="Views\Subverses\Admin\AddModerator.cshtml" />
     <Content Include="Views\Subverses\Admin\RemoveModerator.cshtml" />
@@ -682,7 +682,7 @@
     <Content Include="Views\Welcome\_FirstTimeVisitorWelcome.cshtml" />
     <Content Include="Views\Sets\CreateSet.cshtml" />
     <Content Include="Views\Sets\ManageMySets.cshtml" />
-    <Content Include="Views\Errors\UnAuthorized.cshtml" />
+    <Content Include="Views\Error\UnAuthorized.cshtml" />
     <Content Include="Views\AjaxViews\_SubverseInfo.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseBans.cshtml" />
     <Content Include="Views\Subverses\Admin\AddBan.cshtml" />
@@ -701,7 +701,7 @@
     <Content Include="Views\AjaxViews\_BasicUserInfo.cshtml" />
     <Content Include="Views\Shared\_Captcha.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Errors\SubverseDisabled.cshtml" />
+    <Content Include="Views\Error\SubverseDisabled.cshtml" />
     <Content Include="Views\Subverses\CommentRemovalLog.cshtml" />
     <Content Include="Views\Subverses\BannedUsersLog.cshtml" />
     <Content Include="Web.config.live" />
@@ -736,6 +736,7 @@
     <Content Include="Views\Shared\Submissions\_FullSubmission.cshtml" />
     <Content Include="Views\Messages\Notifications.cshtml" />
     <Content Include="Views\Shared\_SubverseStylesheetLink.cshtml" />
+    <Content Include="Views\Error\Others.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

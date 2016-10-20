@@ -97,20 +97,20 @@ namespace Voat.Controllers
 
             if (submissionID == null)
             {
-                return View("~/Views/Errors/Error.cshtml");
+                return View("~/Views/Error/Error.cshtml");
             }
 
             var submission = _db.Submissions.Find(submissionID.Value);
 
             if (submission == null)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             // make sure that the combination of selected subverse and submission subverse are linked
             if (!submission.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             var subverse = DataCache.Subverse.Retrieve(subverseName);
@@ -118,13 +118,13 @@ namespace Voat.Controllers
 
             if (subverse == null)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
-                return View("~/Views/Errors/SubverseDisabled.cshtml");
+                return View("~/Views/Error/SubverseDisabled.cshtml");
             }
 
             #endregion
@@ -223,14 +223,14 @@ namespace Voat.Controllers
 
             if (submissionID <= 0)
             {
-                return View("~/Views/Errors/Error.cshtml");
+                return View("~/Views/Error/Error.cshtml");
             }
 
             var submission = DataCache.Submission.Retrieve(submissionID);
 
             if (submission == null)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
@@ -238,13 +238,13 @@ namespace Voat.Controllers
 
             if (subverse == null)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
-                return View("~/Views/Errors/SubverseDisabled.cshtml");
+                return View("~/Views/Error/SubverseDisabled.cshtml");
             }
 
             #endregion
@@ -274,14 +274,14 @@ namespace Voat.Controllers
 
             if (submissionID <= 0)
             {
-                return View("~/Views/Errors/Error.cshtml");
+                return View("~/Views/Error/Error.cshtml");
             }
 
             var submission = DataCache.Submission.Retrieve(submissionID);
 
             if (submission == null)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
@@ -289,13 +289,13 @@ namespace Voat.Controllers
 
             if (subverse == null)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
-                return View("~/Views/Errors/SubverseDisabled.cshtml");
+                return View("~/Views/Error/SubverseDisabled.cshtml");
             }
 
             #endregion
@@ -321,7 +321,7 @@ namespace Voat.Controllers
         // GET: submitcomment
         public ActionResult SubmitComment()
         {
-            return View("~/Views/Errors/Error_404.cshtml");
+            return View("~/Views/Error/404.cshtml");
         }
 
         // POST: submitcomment, adds a new root comment

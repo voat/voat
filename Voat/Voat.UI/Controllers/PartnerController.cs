@@ -85,7 +85,7 @@ namespace Voat.Controllers
             //}
 
             ViewBag.SelectedSubverse = string.Empty;
-            return View("~/Views/Errors/Error.cshtml");
+            return View("~/Views/Error/Error.cshtml");
         }
     }
 }

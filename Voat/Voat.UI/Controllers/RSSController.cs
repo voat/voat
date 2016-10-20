@@ -37,7 +37,7 @@ namespace Voat.Controllers
                             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
                             {
                                 //ViewBag.Subverse = subverse.Name;
-                                //return View("~/Views/Errors/SubverseDisabled.cshtml");
+                                //return View("~/Views/Error/SubverseDisabled.cshtml");
                                 return result;
                             }
 

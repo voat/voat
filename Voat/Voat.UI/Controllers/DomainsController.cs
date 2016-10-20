@@ -32,7 +32,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0 || String.IsNullOrWhiteSpace(domainname))
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             ViewBag.SelectedSubverse = "domains";
@@ -81,7 +81,7 @@ namespace Voat.Controllers
 
         //    if (pageNumber < 0)
         //    {
-        //        return View("~/Views/Errors/Error_404.cshtml");
+        //        return View("~/Views/Error/404.cshtml");
         //    }
 
         //    //check if at least one submission for given domain was found, if not, send to a page not found error

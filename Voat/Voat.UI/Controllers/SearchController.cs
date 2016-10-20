@@ -60,7 +60,7 @@ namespace Voat.Controllers
 
                 if (pageNumber < 0)
                 {
-                    return View("~/Views/Errors/Error_404.cshtml");
+                    return View("~/Views/Error/404.cshtml");
                 }
                 
                 string cacheKey = DataCache.Keys.Search(sub, q);
@@ -103,7 +103,7 @@ namespace Voat.Controllers
 
                 if (pageNumber < 0)
                 {
-                    return View("~/Views/Errors/Error_404.cshtml");
+                    return View("~/Views/Error/404.cshtml");
                 }
 
                 string cacheKey = DataCache.Keys.Search(q);
@@ -155,7 +155,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Errors/Error_404.cshtml");
+                return View("~/Views/Error/404.cshtml");
             }
 
             // find a subverse by name and/or description, sort search results by number of subscribers
