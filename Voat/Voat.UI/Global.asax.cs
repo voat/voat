@@ -1,17 +1,23 @@
 ﻿using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Voat.Configuration;
+using Voat.Domain.Models;
+using Voat.Domain.Query;
+using Voat.Rules;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 using Voat.Utilities.Components;
+using Voat.Utils;
 
 namespace Voat
 {
@@ -25,6 +31,11 @@ namespace Voat
             LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
             LiveConfigurationManager.Start();
 
+            //forces Rules Engine to load
+            var x = VoatRulesEngine.Instance;
+            //forces thumbgenerator to initialize
+            var p = ThumbGenerator.DestinationPathThumbs;
+
             if (!Settings.SignalRDisabled)
             {
                 Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver.Register(typeof(Microsoft.AspNet.SignalR.Hubs.IJavaScriptMinifier), () => new HubMinifier());
@@ -35,18 +46,62 @@ namespace Voat
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            //register global error handler
+            GlobalConfiguration.Configuration.Services.Add(typeof(IExceptionLogger), new VoatExceptionLogger());
+
             ViewEngines.Engines.Clear();
             ViewEngines.Engines.Add(new RazorViewEngine());
 
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
 
-            ContentProcessor.UserNotificationChanged = new Action<string>(recipient => {
-                //get count of unread notifications
-                int unreadNotifications = UserHelper.UnreadTotalNotificationsCount(recipient);
-                // send SignalR realtime notification to recipient
-                var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-                hubContext.Clients.User(recipient).setNotificationsPending(unreadNotifications);
-            });
+            JsonConvert.DefaultSettings = () => { return JsonSettings.GetSerializationSettings(); };
+
+            #region Hook Events
+
+            EventHandler<MessageReceivedEventArgs> updateNotificationCount = delegate (object s, MessageReceivedEventArgs e)
+            {
+                if (!Settings.SignalRDisabled)
+                {
+
+                    var userDef = UserDefinition.Parse(e.TargetUserName);
+                    if (userDef.Type == IdentityType.User)
+                    {
+                        //get count of unread notifications
+                        var q = new QueryMessageCounts(userDef.Name, userDef.Type, MessageTypeFlag.All, MessageState.Unread);
+                        var unreadNotifications = q.Execute().Total;
+                        // send SignalR realtime notification to recipient
+                        var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                        hubContext.Clients.User(e.TargetUserName).setNotificationsPending(unreadNotifications);
+                    }
+
+                }
+            };
+            EventNotification.Instance.OnMessageReceived += updateNotificationCount;
+            EventNotification.Instance.OnMentionReceived += updateNotificationCount;
+            EventNotification.Instance.OnCommentReplyReceived += updateNotificationCount;
+
+            EventNotification.Instance.OnVoteReceived += (s, e) =>
+            {
+                if (!Settings.SignalRDisabled)
+                {
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
+                    switch (e.ReferenceType)
+                    {
+                        case Domain.Models.ContentType.Submission:
+                            hubContext.Clients.User(e.TargetUserName).voteChange(1, e.ChangeValue);
+                            break;
+                        case Domain.Models.ContentType.Comment:
+                            hubContext.Clients.User(e.TargetUserName).voteChange(2, e.ChangeValue);
+                            break;
+                    }
+                }
+            };
+
+            //TODO: Fuzzy can't wait for this feature!
+            EventNotification.Instance.OnHeadButtReceived += (s, e) => { };
+            EventNotification.Instance.OnChatMessageReceived += (s, e) => { };
+
+            #endregion 
 
             // USE ONLY FOR DEBUG: clear all sessions used for online users count
             // SessionTracker.RemoveAllSessions();
@@ -55,6 +110,7 @@ namespace Voat
         protected void Application_Error(object sender, EventArgs e)
         {
             var ex = Server.GetLastError();
+            EventLogger.Log(ex);
             if (ex is HttpException && ((HttpException)ex).GetHttpCode() == 404)
             {
                 Response.RedirectToRoute(
@@ -86,37 +142,5 @@ namespace Voat
                 System.Threading.Thread.CurrentThread.CurrentCulture =  new CultureInfo(Request.UserLanguages[0]);
             } catch { }
         }
-
-        // fire each time a new session is created     
-        protected void Session_Start(object sender, EventArgs e)
-        {
-            //if (User.Identity.IsAuthenticated)
-            //{
-            //    // read style preference
-            //    Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
-            //}
-            //else
-            //{
-            //    // set default theme to light
-            //    Session["UserTheme"] = "light";
-            //}            
-        }
-
-        // fire when a session is abandoned or expires
-        protected void Session_End(object sender, EventArgs e)
-        {
-            // experimental
-            try
-            {
-                // session removal is executed in a background, standalone task
-                // SessionTracker.Remove(Session.SessionID);
-            }
-            catch (Exception)
-            {
-                //
-            }
-        }
-        
-
     }
 }

@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -34,6 +34,8 @@ using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Configuration;
 using Voat.UI.Utilities;
+using Voat.Data;
+using Voat.Caching;
 
 namespace Voat.Controllers
 {
@@ -79,11 +81,14 @@ namespace Voat.Controllers
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            if (!ModelState.IsValid) return View(model);
-
+            ViewBag.ReturnUrl = returnUrl;
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             var user = await UserManager.FindAsync(model.UserName, model.Password);
             var tmpuser = await UserManager.FindByNameAsync(model.UserName);
 
@@ -123,12 +128,13 @@ namespace Voat.Controllers
 
             // save last login ip and timestamp
             user.LastLoginFromIp = clientIpAddress;
-            user.LastLoginDateTime = DateTime.Now;
+            user.LastLoginDateTime = Repository.CurrentDate;
             await UserManager.UpdateAsync(user);
 
             // sign in and continue
             await SignInAsync(user, model.RememberMe);
-            // read User Theme preference and set value to cookie 
+
+            // read User Theme preference and set value to cookie
             UserHelper.SetUserStylePreferenceCookie(UserHelper.UserStylePreference(user.UserName));
             return RedirectToLocal(returnUrl);
         }
@@ -155,19 +161,19 @@ namespace Voat.Controllers
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [ValidateCaptcha]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-
             if (Settings.RegistrationDisabled)
             {
                 return View("RegistrationDisabled");
             }
 
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
-            if (!Business.Utilities.AccountSecurity.IsPasswordComplex(model.Password, model.UserName))
+            if (!Utilities.AccountSecurity.IsPasswordComplex(model.Password, model.UserName, false))
             {
                 ModelState.AddModelError(string.Empty, "Your password is not secure. You must use at least one uppercase letter, one lowercase letter, one number and one special character such as ?, ! or .");
                 return View(model);
@@ -189,9 +195,9 @@ namespace Voat.Controllers
                 var user = new VoatUser
                 {
                     UserName = model.UserName,
-                    RegistrationDateTime = DateTime.Now,
+                    RegistrationDateTime = Repository.CurrentDate,
                     LastLoginFromIp = clientIpAddress,
-                    LastLoginDateTime = DateTime.Now
+                    LastLoginDateTime = Repository.CurrentDate
                 };
 
                 // try to create new user account
@@ -215,16 +221,6 @@ namespace Voat.Controllers
             return View(model);
         }
 
-        // POST: /Account/Disassociate
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Disassociate(string loginProvider, string providerKey)
-        {
-            var result = await UserManager.RemoveLoginAsync(User.Identity.GetUserId(), new UserLoginInfo(loginProvider, providerKey));
-            ManageMessageId? message = result.Succeeded ? ManageMessageId.RemoveLoginSuccess : ManageMessageId.Error;
-            return RedirectToAction("Manage", new { Message = message });
-        }
-
         // GET: /Account/Manage
         public ActionResult Manage(ManageMessageId? message)
         {
@@ -238,6 +234,7 @@ namespace Voat.Controllers
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : message == ManageMessageId.InvalidFileFormat ? "Please upload a .jpg or .png image."
                 : message == ManageMessageId.UploadedFileToolarge ? "Uploaded file is too large. Current limit is 300 kb."
+                : message == ManageMessageId.UserNameMismatch ? "UserName entered does not match current account"
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
@@ -247,7 +244,7 @@ namespace Voat.Controllers
 
         // POST: /Account/Manage
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
             var hasPassword = HasPassword();
@@ -256,7 +253,8 @@ namespace Voat.Controllers
 
             if (hasPassword)
             {
-                if (!ModelState.IsValid) return View(model);
+                if (!ModelState.IsValid)
+                    return View(model);
 
                 var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
                 if (result.Succeeded)
@@ -274,7 +272,8 @@ namespace Voat.Controllers
                     state.Errors.Clear();
                 }
 
-                if (!ModelState.IsValid) return View(model);
+                if (!ModelState.IsValid)
+                    return View(model);
                 var result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
                 if (result.Succeeded)
                 {
@@ -287,131 +286,13 @@ namespace Voat.Controllers
             return RedirectToAction("Manage", new { Message = ManageMessageId.WrongPassword });
         }
 
-        // POST: /Account/ExternalLogin
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public ActionResult ExternalLogin(string provider, string returnUrl)
-        {
-            // Request a redirect to the external login provider
-            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
-        }
-
-        // GET: /Account/ExternalLoginCallback
-        [AllowAnonymous]
-        public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
-        {
-            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
-            if (loginInfo == null)
-            {
-                return RedirectToAction("Login");
-            }
-
-            // Sign in the user with this external login provider if the user already has a login
-            var user = await UserManager.FindAsync(loginInfo.Login);
-            if (user != null)
-            {
-                await SignInAsync(user, isPersistent: false);
-                return RedirectToLocal(returnUrl);
-            }
-            // If the user does not have an account, then prompt the user to create an account
-            ViewBag.ReturnUrl = returnUrl;
-            ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName });
-        }
-
-        // POST: /Account/LinkLogin
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult LinkLogin(string provider)
-        {
-            // Request a redirect to the external login provider to link a login for the current user
-            return new ChallengeResult(provider, Url.Action("LinkLoginCallback", "Account"), User.Identity.GetUserId());
-        }
-
-        // GET: /Account/LinkLoginCallback
-        public async Task<ActionResult> LinkLoginCallback()
-        {
-            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
-            if (loginInfo == null)
-            {
-                return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
-            }
-            var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("Manage");
-            }
-            return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
-        }
-
-        // POST: /Account/ExternalLoginConfirmation
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Manage");
-            }
-
-            if (ModelState.IsValid)
-            {
-                // Get the information about the user from the external login provider
-                var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-                if (info == null)
-                {
-                    return View("ExternalLoginFailure");
-                }
-                var user = new VoatUser { UserName = model.UserName };
-                var result = await UserManager.CreateAsync(user);
-                if (result.Succeeded)
-                {
-                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                    if (result.Succeeded)
-                    {
-                        await SignInAsync(user, isPersistent: false);
-                        return RedirectToLocal(returnUrl);
-                    }
-                }
-                AddErrors(result);
-            }
-
-            ViewBag.ReturnUrl = returnUrl;
-            return View(model);
-        }
-
         // POST: /Account/LogOff
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
-            //Session["UserTheme"] = "light";
             return RedirectToAction("Index", "Home");
-        }
-
-        // GET: /Account/ExternalLoginFailure
-        [AllowAnonymous]
-        public ActionResult ExternalLoginFailure()
-        {
-            return View();
-        }
-
-        [ChildActionOnly]
-        public ActionResult RemoveAccountList()
-        {
-            try
-            {
-                var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
-                ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
-                return PartialView("_RemoveAccountPartial", linkedAccounts);
-            }
-            catch (Exception)
-            {
-                return new EmptyResult();
-            }
         }
 
         protected override void Dispose(bool disposing)
@@ -428,65 +309,65 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public ActionResult DeleteAccount(DeleteAccountViewModel model)
         {
-            // require users to enter their password in order to execute account delete action
-            var user = UserManager.Find(User.Identity.Name, model.CurrentPassword);
-
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                // execute delete action
-                if (UserHelper.DeleteUser(User.Identity.Name))
+                if (!User.Identity.Name.IsEqual(model.UserName))
                 {
-                    // delete email address and set password to something random
-                    UserManager.SetEmail(User.Identity.GetUserId(), null);
-
-                    string randomPassword = "";
-                    using (SHA512 shaM = new SHA512Managed())
-                    {
-                        randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
-                    }
-
-                    UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
-
-                    AuthenticationManager.SignOut();
-                    return View("~/Views/Account/AccountDeleted.cshtml");
+                    return RedirectToAction("Manage", new { message = ManageMessageId.UserNameMismatch });
                 }
+                else
+                {
+                    // require users to enter their password in order to execute account delete action
+                    var user = UserManager.Find(User.Identity.Name, model.CurrentPassword);
 
-                // something went wrong when deleting user account
-                return View("~/Views/Errors/Error.cshtml");
+                    if (user != null)
+                    {
+                        // execute delete action
+                        if (UserHelper.DeleteUser(User.Identity.Name))
+                        {
+                            // delete email address and set password to something random
+                            UserManager.SetEmail(User.Identity.GetUserId(), null);
+
+                            string randomPassword = "";
+                            using (SHA512 shaM = new SHA512Managed())
+                            {
+                                randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
+                            }
+
+                            UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
+
+                            AuthenticationManager.SignOut();
+                            return View("~/Views/Account/AccountDeleted.cshtml");
+                        }
+
+                        // something went wrong when deleting user account
+                        return View("~/Views/Error/Error.cshtml");
+                    }
+                }
             }
-
             return RedirectToAction("Manage", new { message = ManageMessageId.WrongPassword });
         }
 
         // GET: /Account/UserPreferencesAbout
         [Authorize]
-        public ActionResult UserPreferencesAbout()
+        public ActionResult GetUserPreferencesAbout()
         {
             try
             {
                 using (var db = new voatEntities())
                 {
-                    var userPreferences = db.UserPreferences.Find(User.Identity.Name);
+                    var userPreferences = GetUserPreference(db);
 
-                    if (userPreferences != null)
+                    var tmpModel = new UserAboutViewModel()
                     {
-                        // load existing preferences and return to view engine
-                        var tmpModel = new UserAboutViewModel()
-                        {
-                            Bio = userPreferences.Bio,
-                            Avatar = userPreferences.Avatar
-                        };
+                        Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
+                        Avatar = userPreferences.Avatar
+                    };
 
-                        return PartialView("_UserPreferencesAbout", tmpModel);
-                    }
-                    else
-                    {
-                        var tmpModel = new UserAboutViewModel();
-                        return PartialView("_UserPreferencesAbout", tmpModel);
-                    }
+                    return PartialView("_UserPreferencesAbout", tmpModel);
                 }
             }
             catch (Exception)
@@ -499,29 +380,13 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Bio, Avatarfile")] UserAboutViewModel model)
         {
             // save changes
             using (var db = new voatEntities())
             {
-                var userPreferences = db.UserPreferences.Find(User.Identity.Name);
-                var tmpModel = new UserPreference();
-
-                if (userPreferences == null)
-                {
-                    // create a new record for this user in userpreferences table
-                    tmpModel.DisableCSS = false;
-                    tmpModel.NightMode = false;
-                    tmpModel.Language = "en";
-                    tmpModel.OpenInNewWindow = false;
-                    tmpModel.EnableAdultContent = false;
-                    tmpModel.DisplayVotes = false;
-                    tmpModel.DisplaySubscriptions = false;
-                    tmpModel.UseSubscriptionsMenu = false;
-                    tmpModel.UserName = User.Identity.Name;
-                    tmpModel.Bio = model.Bio;
-                }
+                var userPreferences = GetUserPreference(db);
 
                 if (model.Avatarfile != null && model.Avatarfile.ContentLength > 0)
                 {
@@ -538,14 +403,7 @@ namespace Voat.Controllers
                                     var thumbnailResult = await ThumbGenerator.GenerateAvatar(img, User.Identity.Name, model.Avatarfile.ContentType);
                                     if (thumbnailResult)
                                     {
-                                        if (userPreferences == null)
-                                        {
-                                            tmpModel.Avatar = User.Identity.Name + ".jpg";
-                                        }
-                                        else
-                                        {
-                                            userPreferences.Avatar = User.Identity.Name + ".jpg";
-                                        }
+                                        userPreferences.Avatar = User.Identity.Name + ".jpg";
                                     }
                                     else
                                     {
@@ -577,53 +435,50 @@ namespace Voat.Controllers
                     }
                 }
 
-                if (userPreferences == null)
+                var bio = model.Bio.TrimSafe();
+
+                if (String.IsNullOrEmpty(bio))
                 {
-                    db.UserPreferences.Add(tmpModel);
-                    await db.SaveChangesAsync();
+                    userPreferences.Bio = "I tried to delete my bio but they gave me this instead";
+                }
+                else if (bio == STRINGS.DEFAULT_BIO)
+                {
+                    userPreferences.Bio = null;
                 }
                 else
                 {
-                    userPreferences.Bio = model.Bio;
-                    userPreferences.UserName = User.Identity.Name;
-                    await db.SaveChangesAsync();
+                    userPreferences.Bio = bio;
                 }
-
+                await db.SaveChangesAsync();
             }
+
+            ClearUserCache();
 
             return RedirectToAction("Manage");
         }
 
         // GET: /Account/UserPreferences
         [ChildActionOnly]
-        public ActionResult UserPreferences()
+        public ActionResult GetUserPreferences()
         {
             try
             {
                 using (var db = new voatEntities())
                 {
-                    var userPreferences = db.UserPreferences.Find(User.Identity.Name);
+                    var userPreferences = GetUserPreference(db);
 
-                    if (userPreferences != null)
+                    // load existing preferences and return to view engine
+                    var tmpModel = new UserPreferencesViewModel
                     {
-                        // load existing preferences and return to view engine
-                        var tmpModel = new UserPreferencesViewModel
-                        {
-                            Disable_custom_css = userPreferences.DisableCSS,
-                            Night_mode = userPreferences.NightMode,
-                            OpenLinksInNewTab = userPreferences.OpenInNewWindow,
-                            Enable_adult_content = userPreferences.EnableAdultContent,
-                            Public_subscriptions = userPreferences.DisplaySubscriptions,
-                            Topmenu_from_subscriptions = userPreferences.UseSubscriptionsMenu
-                        };
+                        Disable_custom_css = userPreferences.DisableCSS,
+                        Night_mode = userPreferences.NightMode,
+                        OpenLinksInNewTab = userPreferences.OpenInNewWindow,
+                        Enable_adult_content = userPreferences.EnableAdultContent,
+                        Public_subscriptions = userPreferences.DisplaySubscriptions,
+                        Topmenu_from_subscriptions = userPreferences.UseSubscriptionsMenu
+                    };
 
-                        return PartialView("_UserPreferences", tmpModel);
-                    }
-                    else
-                    {
-                        var tmpModel = new UserPreferencesViewModel();
-                        return PartialView("_UserPreferences", tmpModel);
-                    }
+                    return PartialView("_UserPreferences", tmpModel);
                 }
             }
             catch (Exception)
@@ -636,54 +491,58 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
-            if (!ModelState.IsValid) return View("Manage", model);
+            if (!ModelState.IsValid)
+            {
+                return View("Manage", model);
+            }
 
             // save changes
             string newTheme;
             using (var db = new voatEntities())
             {
-                var userPreferences = db.UserPreferences.Find(User.Identity.Name);
+                var userPreferences = GetUserPreference(db);
 
-                if (userPreferences != null)
-                {
-                    // modify existing preferences
-                    userPreferences.DisableCSS = model.Disable_custom_css;
-                    userPreferences.NightMode = model.Night_mode;
-                    userPreferences.OpenInNewWindow = model.OpenLinksInNewTab;
-                    userPreferences.EnableAdultContent = model.Enable_adult_content;
-                    userPreferences.DisplaySubscriptions = model.Public_subscriptions;
-                    userPreferences.UseSubscriptionsMenu = model.Topmenu_from_subscriptions;
+                // modify existing preferences
+                userPreferences.DisableCSS = model.Disable_custom_css;
+                userPreferences.NightMode = model.Night_mode;
+                userPreferences.OpenInNewWindow = model.OpenLinksInNewTab;
+                userPreferences.EnableAdultContent = model.Enable_adult_content;
+                userPreferences.DisplaySubscriptions = model.Public_subscriptions;
+                userPreferences.UseSubscriptionsMenu = model.Topmenu_from_subscriptions;
 
-                    await db.SaveChangesAsync();
-                    newTheme = userPreferences.NightMode ? "dark" : "light";
-                }
-                else
-                {
-                    // create a new record for this user in userpreferences table
-                    var tmpModel = new UserPreference
-                    {
-                        DisableCSS = model.Disable_custom_css ? true : false,
-                        NightMode = model.Night_mode ? true : false,
-                        Language = "en",
-                        OpenInNewWindow = model.OpenLinksInNewTab ? true : false,
-                        EnableAdultContent = model.Enable_adult_content ? true : false,
-                        DisplayVotes = false,
-                        DisplaySubscriptions = model.Public_subscriptions ? true : false,
-                        UseSubscriptionsMenu = model.Topmenu_from_subscriptions,
-                        UserName = User.Identity.Name
-                    };
-                    db.UserPreferences.Add(tmpModel);
-
-                    await db.SaveChangesAsync();
-                    newTheme = tmpModel.NightMode ? "dark" : "light";
-                }
+                await db.SaveChangesAsync();
+                newTheme = userPreferences.NightMode ? "dark" : "light";
             }
 
+            ClearUserCache();
             UserHelper.SetUserStylePreferenceCookie(newTheme);
             return RedirectToAction("Manage");
+        }
+
+        private UserPreference GetUserPreference(voatEntities context)
+        {
+            var userPreferences = context.UserPreferences.Find(User.Identity.Name);
+
+            if (userPreferences == null)
+            {
+                userPreferences = new UserPreference();
+                userPreferences.UserName = User.Identity.Name;
+                Repository.SetDefaultUserPreferences(userPreferences);
+                context.UserPreferences.Add(userPreferences);
+            }
+
+            return userPreferences;
+        }
+
+        private void ClearUserCache(string userName = null)
+        {
+            userName = String.IsNullOrEmpty(userName) ? User.Identity.Name : userName;
+
+            CacheHandler.Instance.Remove(CachingKey.UserPreferences(userName));
+            CacheHandler.Instance.Remove(CachingKey.UserInformation(userName));
         }
 
         // POST: /Account/ToggleNightMode
@@ -691,41 +550,16 @@ namespace Voat.Controllers
         public async Task<ActionResult> ToggleNightMode()
         {
             string newTheme = "light";
+
             // save changes
             using (var db = new voatEntities())
             {
-                var userPreferences = db.UserPreferences.Find(User.Identity.Name);
+                var userPreferences = GetUserPreference(db);
 
-                if (userPreferences != null)
-                {
-                    // modify existing preferences
-                    userPreferences.NightMode = !userPreferences.NightMode;
-                    await db.SaveChangesAsync();
-                    newTheme = userPreferences.NightMode ? "dark" : "light";
-                    // apply theme change
-                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
-                }
-                else
-                {
-                    // create a new record for this user in userpreferences table
-                    var tmpModel = new UserPreference
-                    {
-                        DisableCSS = false,
-                        //Since if user has no pref, they must have been on the light theme
-                        NightMode = true,
-                        OpenInNewWindow = false,
-                        EnableAdultContent = false,
-                        DisplaySubscriptions = false,
-                        UseSubscriptionsMenu = false,
-                        UserName = User.Identity.Name
-                    };
-                    db.UserPreferences.Add(tmpModel);
+                userPreferences.NightMode = !userPreferences.NightMode;
+                await db.SaveChangesAsync();
 
-                    await db.SaveChangesAsync();
-                    // apply theme change
-                    newTheme = "dark";
-                    //Session["UserTheme"] = UserHelper.UserStylePreference(User.Identity.Name);
-                }
+                newTheme = userPreferences.NightMode ? "dark" : "light";
             }
 
             UserHelper.SetUserStylePreferenceCookie(newTheme);
@@ -736,11 +570,14 @@ namespace Voat.Controllers
         // GET: /Account/UserAccountEmail
         [Authorize]
         [ChildActionOnly]
-        public ActionResult UserAccountEmail()
+        public ActionResult GetUserAccountEmail()
         {
             var existingEmail = UserManager.GetEmail(User.Identity.GetUserId());
 
-            if (existingEmail == null) return PartialView("_ChangeAccountEmail");
+            if (existingEmail == null)
+            {
+                return PartialView("_ChangeAccountEmail");
+            }
 
             var userEmailViewModel = new UserEmailViewModel
             {
@@ -754,10 +591,22 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserAccountEmail([Bind(Include = "EmailAddress")] UserEmailViewModel model)
         {
-            if (!ModelState.IsValid) return View("Manage", model);
+            ViewBag.userid = User.Identity.Name;
+            if (!ModelState.IsValid)
+            {
+                return View("Manage", model);
+            }
+
+            // make sure no other accounts use this email address
+            var existingAccount = await UserManager.FindByEmailAsync(model.EmailAddress);
+            if (existingAccount != null)
+            {
+                ViewBag.StatusMessage = "This email address is already in use.";
+                return View("Manage", model);
+            }
 
             // save changes
             var result = await UserManager.SetEmailAsync(User.Identity.GetUserId(), model.EmailAddress);
@@ -806,13 +655,13 @@ namespace Voat.Controllers
             }
         }
 
-
         private class UsernameAvailabilityResponse
         {
             public bool Available { get; set; }
         }
 
         #region password reset
+
         // GET: /Account/ForgotPassword
         [AllowAnonymous]
         public ActionResult ForgotPassword()
@@ -825,7 +674,7 @@ namespace Voat.Controllers
         // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         [ValidateCaptcha]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
@@ -872,7 +721,7 @@ namespace Voat.Controllers
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
@@ -903,9 +752,11 @@ namespace Voat.Controllers
             ViewBag.SelectedSubverse = string.Empty;
             return View();
         }
-        #endregion
+
+        #endregion password reset
 
         #region Helpers
+
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -953,11 +804,16 @@ namespace Voat.Controllers
             Error,
             InvalidFileFormat,
             UploadedFileToolarge,
-            WrongPassword
+            WrongPassword,
+            UserNameMismatch
         }
 
         private ActionResult RedirectToLocal(string returnUrl)
         {
+            if (String.IsNullOrEmpty(returnUrl) && !String.IsNullOrEmpty(Request.QueryString["ReturnUrl"]))
+            {
+                returnUrl = Request.QueryString["ReturnUrl"];
+            }
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
@@ -980,7 +836,9 @@ namespace Voat.Controllers
             }
 
             public string LoginProvider { get; set; }
+
             public string RedirectUri { get; set; }
+
             public string UserId { get; set; }
 
             public override void ExecuteResult(ControllerContext context)
@@ -993,6 +851,7 @@ namespace Voat.Controllers
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }
-        #endregion
+
+        #endregion Helpers
     }
 }

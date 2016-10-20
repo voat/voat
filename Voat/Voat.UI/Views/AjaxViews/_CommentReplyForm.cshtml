@@ -41,7 +41,7 @@
             </span>
         </div>
 
-        <input type="button" id="submitbutton" value="Submit reply" class="btn-whoaverse-paging" onclick="postCommentReplyAjax(this, @messageId, '@User.Identity.Name', @parentCommentId)">
+        <input type="button" id="submitbutton" value="Submit reply" class="btn-whoaverse-paging" onclick="postCommentAjax(this, @parentCommentId)">
         <input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement).find('#Content'),$(this.parentElement).find('#submission-preview-area'))">
         <button class="btn-whoaverse-paging" onclick="removereplyform(@parentCommentId);" type="button">Cancel</button>
         <br>

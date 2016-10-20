@@ -1,12 +1,28 @@
 ﻿/*  ============================================================================
     Minity CSS stylesheet for Voat (http://voat.co/)
     Designed by Nurdoidz
-    
+
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
-.unreadInboxItem {
-    background: #F6F6F6;
+.unread {
+    border: 1px dashed #4B96C4 !important;
+    background: #E7F7FF;
+}
+
+.unread .panel-message-body{
+    background: #E7F7FF;
+}
+
+.unread .panel,
+.unread .panel-heading 
+{
+    background: #C7EDFF !important;
+    border-color: #C7EDFF !important;
+}
+
+.unread .panel-heading-messagetitle {
+    background: #D8F3FF !important;
 }
 
 .removedCommentContainer {
@@ -124,22 +140,24 @@ label {
     display: inline-block;
     color: inherit;
 }
-.md a[href="#s"]::after {
-    content: attr(title);
-    background: #E77777;
-    color: #E77777;
-    border: 1px solid #B44F4F;
-    padding: 2px;
-    visibility: visible;
-    margin-left: 5px;
-    cursor: default;
-}
-.md a[href="#s"]:hover::after,
-.md a[href="#s"]:focus::after,
-.md a[href="#s"]:active::after {
-    color: #404040;
-    background: #FFE3E3;
-}
+
+    .md a[href="#s"]::after {
+        content: attr(title);
+        background: #E77777;
+        color: #E77777;
+        border: 1px solid #B44F4F;
+        padding: 2px;
+        visibility: visible;
+        margin-left: 5px;
+        cursor: default;
+    }
+
+    .md a[href="#s"]:hover::after,
+    .md a[href="#s"]:focus::after,
+    .md a[href="#s"]:active::after {
+        color: #404040;
+        background: #FFE3E3;
+    }
 
 /* Alerts */
 
@@ -226,22 +244,22 @@ label {
         margin: 0 0 10px;
     }
 
-    a.btn-tour {
-        background: #4AABE7;
-        background: -webkit-linear-gradient( top,#54B5F1,#4AABE7 );
-        background: -moz-linear-gradient( top,#54B5F1,#4AABE7 );
-        background: -ms-linear-gradient( top,#54B5F1,#4AABE7 );
-        background: -o-linear-gradient( top,#54B5F1,#4AABE7 );
-        border: 1px solid #4C9FD2;
-        border-radius: 2px;
-        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
-        color: #FFF;
-        display: inline-block;
-        font-size: 12px;
-        margin-top: 10px;
-        padding: 3px 7px;
-        text-align: center;
-    }
+a.btn-tour {
+    background: #4AABE7;
+    background: -webkit-linear-gradient( top,#54B5F1,#4AABE7 );
+    background: -moz-linear-gradient( top,#54B5F1,#4AABE7 );
+    background: -ms-linear-gradient( top,#54B5F1,#4AABE7 );
+    background: -o-linear-gradient( top,#54B5F1,#4AABE7 );
+    border: 1px solid #4C9FD2;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+    color: #FFF;
+    display: inline-block;
+    font-size: 12px;
+    margin-top: 10px;
+    padding: 3px 7px;
+    text-align: center;
+}
 
 .set-title {
     background: #F6F6F6;
@@ -260,14 +278,14 @@ label {
     white-space: nowrap;
 }
 
-.settitlelabel > a {
-    color: #727272;
-    text-decoration: none;
-}
-
-    .settitlelabel > a:hover {
-        color: #4AABE7;
+    .settitlelabel > a {
+        color: #727272;
+        text-decoration: none;
     }
+
+        .settitlelabel > a:hover {
+            color: #4AABE7;
+        }
 
 .settitlesortinglabel {
     background: #FFF;
@@ -617,11 +635,12 @@ input, button, select, textarea {
 }
 
 .userstats-heading-1 {
+    border-bottom: 1px solid #DDD;
     color: #4AABE7;
     font-size: 13px;
     font-weight: bold;
+    margin: 5px;
     padding-bottom: 3px;
-    border-bottom: 1px solid #DDD;
 }
 
 .userstats-heading-2 {
@@ -641,14 +660,14 @@ input, button, select, textarea {
     .userstats-body > p {
         margin: 0 0 6px;
     }
-    
+
     .userstats-body > .entry {
-    	margin-top: 5px;
-	margin-bottom: 5px;
+        margin-top: 5px;
+        margin-bottom: 5px;
     }
-    
+
     .userstats-body .comment .flat-list.buttons li a {
-    	font-size: 11px;
+        font-size: 11px;
     }
 
 .userstats-submission-title {
@@ -745,24 +764,25 @@ h2.whoaversename {
         box-shadow: none;
     }
 
-/* Promoted */
-.btn-whoaverse.contribute {
-    background: #BBE5FF;
-    background: -webkit-linear-gradient( top,#BBE5FF,#A6DDFF );
-    background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
-    background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
-    background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
-    border-color: #70B7E3;
-    color: #2B4758;
-}
-.btn-whoaverse.contribute:hover {
-    background: #A7DEFF;
-    background: -webkit-linear-gradient( top,#A7DEFF,#91D5FF );
-    background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
-    background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
-    background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
-    border-color: #61AFE0;
-}
+    /* Promoted */
+    .btn-whoaverse.contribute {
+        background: #BBE5FF;
+        background: -webkit-linear-gradient( top,#BBE5FF,#A6DDFF );
+        background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
+        background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
+        background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
+        border-color: #70B7E3;
+        color: #2B4758;
+    }
+
+        .btn-whoaverse.contribute:hover {
+            background: #A7DEFF;
+            background: -webkit-linear-gradient( top,#A7DEFF,#91D5FF );
+            background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
+            background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
+            background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
+            border-color: #61AFE0;
+        }
 
 a.btn-whoaverse {
     color: #4C4C4C;
@@ -779,9 +799,9 @@ a.btn-whoaverse {
     color: #2B4758;
     display: inline-block;
     font-size: 10px;
-    font-weight: bold;
     padding: 2px 6px;
     text-align: center;
+    font-weight: bold;
 }
 
     .btn-whoaverse-paging:hover {
@@ -833,9 +853,9 @@ a.btn-whoaverse {
     cursor: pointer;
     display: inline-block;
     font-size: 12px;
-    font-weight: bold;
     padding: 2px 8px;
     text-align: center;
+    font-weight: bold;
 }
 
     .btn-whoaverse-medium:hover {
@@ -858,15 +878,16 @@ a.btn-whoaverse {
     border: 1px solid #C9C9C9;
     color: #5A5A5A;
 }
-.btn-unsub:hover,.btn-unsub:active,.btn-unsub:focus {
-    background: #C4B7FF;
-    background: -webkit-linear-gradient( top,#C4B7FF,#BDAEFF );
-    background: -moz-linear-gradient( top,#C4B7FF,#BDAEFF );
-    background: -ms-linear-gradient( top,#C4B7FF,#BDAEFF );
-    background: -o-linear-gradient( top,#C4B7FF,#BDAEFF );
-    border-color: #9B85FF;
-    color: #5B46BE;
-}
+
+    .btn-unsub:hover, .btn-unsub:active, .btn-unsub:focus {
+        background: #C4B7FF;
+        background: -webkit-linear-gradient( top,#C4B7FF,#BDAEFF );
+        background: -moz-linear-gradient( top,#C4B7FF,#BDAEFF );
+        background: -ms-linear-gradient( top,#C4B7FF,#BDAEFF );
+        background: -o-linear-gradient( top,#C4B7FF,#BDAEFF );
+        border-color: #9B85FF;
+        color: #5B46BE;
+    }
 
 .btn-unblocksubverse {
     background: #F8F8F8;
@@ -877,15 +898,16 @@ a.btn-whoaverse {
     border: 1px solid #C9C9C9;
     color: #5A5A5A;
 }
-.btn-unblocksubverse:hover,.btn-unblocksubverse:active,.btn-unblocksubverse:focus {
-    background: #C4B7FF;
-    background: -webkit-linear-gradient( top,#C4B7FF,#BDAEFF );
-    background: -moz-linear-gradient( top,#C4B7FF,#BDAEFF );
-    background: -ms-linear-gradient( top,#C4B7FF,#BDAEFF );
-    background: -o-linear-gradient( top,#C4B7FF,#BDAEFF );
-    border-color: #9B85FF;
-    color: #5B46BE;
-}
+
+    .btn-unblocksubverse:hover, .btn-unblocksubverse:active, .btn-unblocksubverse:focus {
+        background: #C4B7FF;
+        background: -webkit-linear-gradient( top,#C4B7FF,#BDAEFF );
+        background: -moz-linear-gradient( top,#C4B7FF,#BDAEFF );
+        background: -ms-linear-gradient( top,#C4B7FF,#BDAEFF );
+        background: -o-linear-gradient( top,#C4B7FF,#BDAEFF );
+        border-color: #9B85FF;
+        color: #5B46BE;
+    }
 
 /* ! Body : Forms
 ------------------------------------------------------------------------------------ */
@@ -947,6 +969,9 @@ a.btn-whoaverse {
 
     .form-control::-webkit-input-placeholder {
         color: #777;
+    }
+    select.form-control { 
+        padding: 0 12px; 
     }
 
 /* ! Body : WVSprites
@@ -1216,8 +1241,8 @@ pre, code {
     border-width: 1px;
     font-size: 12px;
     padding: 15px;
-	display: table;
-	width: 100%;
+    display: table;
+    width: 100%;
 }
 
 .panel-title {
@@ -1278,7 +1303,6 @@ pre, code {
     text-decoration: underline;
 }
 
-
 #sr-header-area .width-clip {
     left: 0;
     position: absolute;
@@ -1299,21 +1323,21 @@ pre, code {
     transition: 500ms margin;
 }
 
-#show-menu-button.show-mobile-sidebar {
-    margin-left: -8px;
-    margin-right: 8px;
-}
+    #show-menu-button.show-mobile-sidebar {
+        margin-left: -8px;
+        margin-right: 8px;
+    }
 
-#show-menu-button::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-top: 12px double #404040;
-    border-bottom: 4px solid #404040;
-}
+    #show-menu-button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-top: 12px double #404040;
+        border-bottom: 4px solid #404040;
+    }
 
 #modal-background {
     z-index: 1;
@@ -1343,7 +1367,6 @@ pre, code {
     color: #444;
 }
 
-
 #sr-header-area .sr-list {
     margin-left: 5px;
     overflow: hidden;
@@ -1360,7 +1383,6 @@ pre, code {
 .sr-bar .separator {
     visibility: hidden;
 }
-
 
 #sr-more-link {
     background: #FFF;
@@ -1405,8 +1427,12 @@ pre, code {
             margin: 0;
             padding: 0;
             position: absolute;
-            visibility: hidden;
+            display: none;
             z-index: 99;
+        }
+
+        .whoaSubscriptionMenu:hover li ul { 
+            display: block; 
         }
 
             .whoaSubscriptionMenu li ul li {
@@ -1562,25 +1588,26 @@ pre, code {
                 color: #4AABE7;
             }
 
-        .tabmenu li.selected a.contribute {
-            background: #BBE5FF;
-            background: -webkit-linear-gradient( top,#BBE5FF,#A6DDFF );
-            background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
-            background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
-            background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
-            border: solid #70B7E3;
-            border-width: 1px 1px 2px;
-            color: #2B4758;
-            font-weight: bold;
-        }
-        .tabmenu li.selected a.contribute:hover {
-            background: #A7DEFF;
-            background: -webkit-linear-gradient( top,#A7DEFF,#91D5FF );
-            background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
-            background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
-            background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
-            border-color: #61AFE0;
-        }
+            .tabmenu li.selected a.contribute {
+                background: #BBE5FF;
+                background: -webkit-linear-gradient( top,#BBE5FF,#A6DDFF );
+                background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
+                background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
+                background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
+                border: solid #70B7E3;
+                border-width: 1px 1px 2px;
+                color: #2B4758;
+                font-weight: bold;
+            }
+
+                .tabmenu li.selected a.contribute:hover {
+                    background: #A7DEFF;
+                    background: -webkit-linear-gradient( top,#A7DEFF,#91D5FF );
+                    background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
+                    background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
+                    background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
+                    border-color: #61AFE0;
+                }
 
         /* ! Header : Banner : Tab menu : Tab : Unselected
         ------------------------------------------------------------------------------------ */
@@ -1600,24 +1627,25 @@ pre, code {
                 color: #444;
             }
 
-        .tabmenu li.disabled a.contribute {
-            background: #BBE5FF;
-            background: -webkit-linear-gradient( top,#BBE5FF,#A6DDFF );
-            background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
-            background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
-            background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
-            border: solid #70B7E3;
-            border-width: 1px 1px 2px;
-            color: #2B4758;
-        }
-        .tabmenu li.disabled a.contribute:hover {
-            background: #A7DEFF;
-            background: -webkit-linear-gradient( top,#A7DEFF,#91D5FF );
-            background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
-            background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
-            background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
-            border-color: #61AFE0;
-        }
+            .tabmenu li.disabled a.contribute {
+                background: #BBE5FF;
+                background: -webkit-linear-gradient( top,#BBE5FF,#A6DDFF );
+                background: -moz-linear-gradient( top,#BBE5FF,#A6DDFF );
+                background: -ms-linear-gradient( top,#BBE5FF,#A6DDFF );
+                background: -o-linear-gradient( top,#BBE5FF,#A6DDFF );
+                border: solid #70B7E3;
+                border-width: 1px 1px 2px;
+                color: #2B4758;
+            }
+
+                .tabmenu li.disabled a.contribute:hover {
+                    background: #A7DEFF;
+                    background: -webkit-linear-gradient( top,#A7DEFF,#91D5FF );
+                    background: -moz-linear-gradient( top,#A7DEFF,#91D5FF );
+                    background: -ms-linear-gradient( top,#A7DEFF,#91D5FF );
+                    background: -o-linear-gradient( top,#A7DEFF,#91D5FF );
+                    border-color: #61AFE0;
+                }
 
 /* ! Header : Banner : Account
 ------------------------------------------------------------------------------------ */
@@ -1653,6 +1681,7 @@ pre, code {
     padding: 2px 6px 5px;
 }
 
+/* logged out */
 .logged-out {
     background: #F6F6F6;
     border: 1px solid #DCDCDC;
@@ -1724,7 +1753,6 @@ pre, code {
 #container {
     background: #FFF;
     border: 1px solid #D1D1D1;
-    border-radius: 3px;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -1750,13 +1778,13 @@ pre, code {
         margin: 3px 0 10px;
     }
 
-    .side .spacer.spacersection {
-        background: #FDFDFD;
-        border: solid #D3D3D3;
-        border-width: 1px 1px 2px;
-        border-radius: 2px;
-        padding: 8px;
-    }
+        .side .spacer.spacersection {
+            background: #FDFDFD;
+            border: solid #D3D3D3;
+            border-width: 1px 1px 2px;
+            border-radius: 2px;
+            padding: 8px;
+        }
 
 .sidebox .spacer {
     background: none;
@@ -1819,9 +1847,10 @@ pre, code {
     .titlebox .bottom {
         border-top: 1px solid #D5D5D5;
     }
-        .minimum-ccp-downvote {
-            margin-top: 6px;
-        }
+
+.minimum-ccp-downvote {
+    margin-top: 6px;
+}
 
 .side .titlebox .bottom .h6 {
     color: #666;
@@ -2195,7 +2224,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     height: 16px;
     margin: 2px 5px 2px 0;
     width: 16px;
-    cursor:pointer;
+    cursor: pointer;
 }
 
     .expando-button.selftext.collapsed {
@@ -2219,12 +2248,12 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         width: 16px;
     }
 
-    .expando-button.selftext.expanded:hover {
-        background: url( /Graphics/Light-SpriteSheet.png );
-        background-position: -16px -60px;
-        height: 16px;
-        width: 16px;
-    }
+        .expando-button.selftext.expanded:hover {
+            background: url( /Graphics/Light-SpriteSheet.png );
+            background-position: -16px -60px;
+            height: 16px;
+            width: 16px;
+        }
 
     .expando-button.selftext.loading {
         background: url( /Graphics/Light-SpriteSheet.png );
@@ -2233,12 +2262,12 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
         width: 16px;
     }
 
-    .expando-button.selftext.loading:hover {
-        background: url( /Graphics/Light-SpriteSheet.png );
-        background-position: -16px -76px;
-        height: 16px;
-        width: 16px;
-    }
+        .expando-button.selftext.loading:hover {
+            background: url( /Graphics/Light-SpriteSheet.png );
+            background-position: -16px -76px;
+            height: 16px;
+            width: 16px;
+        }
 /* ! Sitetable : Link : Tag line
 ------------------------------------------------------------------------------------ */
 
@@ -2290,7 +2319,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     visibility: visible;
 }
 
-/* ! Sitetable : Link : Flat list 
+/* ! Sitetable : Link : Flat list
 ------------------------------------------------------------------------------------ */
 
 .link .flat-list {
@@ -2376,22 +2405,33 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     .comment .comment .comment .comment .comment,
     .comment .comment .comment .comment .comment .comment .comment,
     .comment .comment .comment .comment .comment .comment .comment .comment .comment,
-    .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment { background-color: #FFF; }
+    .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment {
+        background-color: #FFF;
+    }
+
         .comment .comment .comment blockquote,
         .comment .comment .comment .comment .comment blockquote,
         .comment .comment .comment .comment .comment .comment .comment blockquote,
         .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #F5F5F5; }
-    .comment .comment,
-    .comment .comment .comment .comment,
-    .comment .comment .comment .comment .comment .comment,
-    .comment .comment .comment .comment .comment .comment .comment .comment,
-    .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment { background-color: #F8F8F8; }
-        .comment .comment blockquote,
-        .comment .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote { background-color: #FFF; }
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote {
+            background-color: #F5F5F5;
+        }
+
+        .comment .comment,
+        .comment .comment .comment .comment,
+        .comment .comment .comment .comment .comment .comment,
+        .comment .comment .comment .comment .comment .comment .comment .comment,
+        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment {
+            background-color: #F8F8F8;
+        }
+
+            .comment .comment blockquote,
+            .comment .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
+            .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote {
+                background-color: #FFF;
+            }
 
     .comment .midcol {
         margin-top: 5px;
@@ -2465,9 +2505,10 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     .comment .flat-list.buttons li a {
         color: #6A6A6A;
     }
-    .comment .flat-list.buttons li a:hover {
-        text-decoration: underline;
-    }
+
+        .comment .flat-list.buttons li a:hover {
+            text-decoration: underline;
+        }
 
     /* ! Sitetable : Comments : Markdown
     ------------------------------------------------------------------------------------ */
@@ -2797,8 +2838,8 @@ textarea.form-control {
     width: 100%;
 }
 
-.inline-loadcomments-btn { 
-    padding: 5px 0 5px 0;
+.inline-loadcomments-btn {
+    padding: 5px 0 5px 30px;
 }
 
 /* ! 404 Error
@@ -2881,9 +2922,9 @@ textarea.form-control {
         overflow: visible;
     }
 
-    #container.page-userprofile {
-        padding-top: 10px;
-    }
+        #container.page-userprofile {
+            padding-top: 10px;
+        }
 
     .side {
         position: absolute;
@@ -2951,7 +2992,6 @@ textarea.form-control {
 }
 
 @media ( max-width: 750px ) {
-
     .pagename {
         display: none;
     }
@@ -3053,7 +3093,6 @@ textarea.form-control {
     }
 
     .inline-loadcomments-btn {
-
         /*from btn-whoaverse*/
         background: #F8F8F8;
         background: -webkit-linear-gradient( top,#FDFDFD,#F7F7F7 );
@@ -3069,15 +3108,13 @@ textarea.form-control {
         font-weight: bold;
         padding: 5px 12px;
         text-align: center;
-
         /*from btn-block*/
         display: block;
         width: 100%;
-	}
+    }
 }
 
 @media ( max-width: 550px ) {
-
     .alert-title {
         font-size: 12px;
     }
@@ -3089,80 +3126,80 @@ textarea.form-control {
         width: 32px;
     }
 
-    .expando-button.selftext.collapsed {
-        background: url( /Graphics/Light-SpriteSheet.png );
-        background-position: -32px -44px;
-        height: 32px;
-        width: 32px;
-    }
+        .expando-button.selftext.collapsed {
+            background: url( /Graphics/Light-SpriteSheet.png );
+            background-position: -32px -44px;
+            height: 32px;
+            width: 32px;
+        }
 
-    .expando-button.selftext.collapsed:hover {
-        background: url( /Graphics/Light-SpriteSheet.png );
-        background-position: -32px -44px;
-        height: 32px;
-        width: 32px;
-    }
+            .expando-button.selftext.collapsed:hover {
+                background: url( /Graphics/Light-SpriteSheet.png );
+                background-position: -32px -44px;
+                height: 32px;
+                width: 32px;
+            }
 
-    .expando-button.selftext.expanded {
-        background: url( /Graphics/Light-SpriteSheet.png );
-        background-position: -64px -44px;
-        height: 32px;
-        width: 32px;
-    }
+        .expando-button.selftext.expanded {
+            background: url( /Graphics/Light-SpriteSheet.png );
+            background-position: -64px -44px;
+            height: 32px;
+            width: 32px;
+        }
 
-    .expando-button.selftext.expanded:hover {
-        background: url( /Graphics/Light-SpriteSheet.png );
-        background-position: -64px -44px;
-        height: 32px;
-        width: 32px;
-    }
+            .expando-button.selftext.expanded:hover {
+                background: url( /Graphics/Light-SpriteSheet.png );
+                background-position: -64px -44px;
+                height: 32px;
+                width: 32px;
+            }
 
-    .expando-button.selftext.loading,  .expando-button.selftext.loading:hover {
-        background: url( /Graphics/Light-SpriteSheet.png );
-        background-position: -32px -76px;
-        height: 32px;
-        width: 32px;
-    }
+        .expando-button.selftext.loading, .expando-button.selftext.loading:hover {
+            background: url( /Graphics/Light-SpriteSheet.png );
+            background-position: -32px -76px;
+            height: 32px;
+            width: 32px;
+        }
 
     .link {
         padding-bottom: 6px;
     }
 
-    .link .flat-list.buttons {
-        margin: 0;
-        padding: 5px 0;
-    }
+        .link .flat-list.buttons {
+            margin: 0;
+            padding: 5px 0;
+        }
 
-    .link .flat-list.buttons li a {
-        background: #FFF;
-        border: solid #D1D1D1;
-        border-width: 1px 1px 2px;
-        border-radius: 3px;
-        line-height: 30px;
-        padding: 4px 6px;
-    }
+            .link .flat-list.buttons li a {
+                background: #FFF;
+                border: 1px solid #D1D1D1;
+                border-radius: 3px;
+                line-height: 30px;
+                padding: 4px 6px;
+                border-width: 1px 1px 2px;
+            }
 
-    .link .flat-list.buttons li a:hover {
-        text-decoration: none;
-    }
+                .link .flat-list.buttons li a:hover {
+                    text-decoration: none;
+                }
 
     .comment .flat-list.buttons {
         display: inline-block;
         padding: 5px 0;
     }
 
-    .comment .flat-list.buttons li a {
-        background: #FFF;
-        border: 1px solid #DEDEDE;
-        border-radius: 2px;
-        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
-        line-height: 30px;
-        padding: 4px 6px;
-    }
+        .comment .flat-list.buttons li a {
+            background: #FFF;
+            border: 1px solid #DEDEDE;
+            border-radius: 2px;
+            box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+            line-height: 30px;
+            padding: 4px 6px;
+        }
 
-    .comment .flat-list.buttons li a:hover {
-        text-decoration: none;
-    }
+            .comment .flat-list.buttons li a:hover {
+                text-decoration: none;
+            }
 }
 
 @media ( max-width: 480px ) {
@@ -3188,9 +3225,9 @@ textarea.form-control {
         font-size: 12px;
     }
 
-    .modal-body .col-md-4 input.form-control {
-        width: 260px;
-    }
+        .modal-body .col-md-4 input.form-control {
+            width: 260px;
+        }
 }
 
 @media ( max-width: 380px ) {
@@ -3205,6 +3242,19 @@ textarea.form-control {
     color: #404040;
 }
 
-.faqAnchor:visited {
-    color: #404040;
+    .faqAnchor:visited {
+        color: #404040;
+    }
+
+.vote-error {
+    color: #6f64ba;
+}
+
+.bylink {
+    padding-left: 5px;
+}
+
+.sorting-thingy {
+    border-bottom: 1px solid;
+    border-color: #d3d3d3;
 }

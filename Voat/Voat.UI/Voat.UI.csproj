@@ -13,8 +13,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Voat</RootNamespace>
     <AssemblyName>Voat.UI</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-    <MvcBuildViews>false</MvcBuildViews>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -142,8 +142,8 @@
       <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="OpenGraph-Net">
@@ -158,13 +158,21 @@
     <Reference Include="RouteDebugger">
       <HintPath>..\packages\routedebugger.2.1.4.0\lib\net40\RouteDebugger.dll</HintPath>
     </Reference>
+    <Reference Include="SendGrid, Version=8.0.4.0, Culture=neutral, PublicKeyToken=4f047e93159395ca, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sendgrid.8.0.4\lib\SendGrid.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SendGrid.CSharp.HTTP.Client, Version=3.0.0.0, Culture=neutral, PublicKeyToken=79219bf4e5ecaaca, processorArchitecture=MSIL">
+      <HintPath>..\packages\SendGrid.CSharp.HTTP.Client.3.0.0\lib\SendGrid.CSharp.HTTP.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SendGrid.SmtpApi, Version=1.3.1.0, Culture=neutral, PublicKeyToken=2ae73662c35d80e4, processorArchitecture=MSIL">
       <HintPath>..\packages\SendGrid.SmtpApi.1.3.1\lib\net40\SendGrid.SmtpApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SendGridMail, Version=6.1.0.0, Culture=neutral, PublicKeyToken=2ae73662c35d80e4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sendgrid.6.1.0\lib\SendGridMail.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Bin\SendGridMail.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -291,29 +299,39 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdController.cs" />
     <Compile Include="Controllers\AjaxGatewayController.cs" />
+    <Compile Include="Controllers\ApiKeysController.cs" />
+    <Compile Include="Controllers\Base\BaseController.cs" />
+    <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HtmlElementsController.cs" />
     <Compile Include="Controllers\ManagementController.cs" />
-    <Compile Include="Controllers\MessagingController.cs" />
+    <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SetsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
-    <Compile Include="Models\AddSubmissionSelfpost.cs" />
     <Compile Include="Models\SavedItem.cs" />
     <Compile Include="Models\MarkdownPreviewModel.cs" />
+    <Compile Include="Models\ViewModels\AdViewModel.cs" />
+    <Compile Include="Models\ViewModels\ApiKeyCreateRequest.cs" />
     <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
+    <Compile Include="Models\ViewModels\ChatViewModel.cs" />
+    <Compile Include="Models\ViewModels\MessageContextViewModel.cs" />
+    <Compile Include="Models\ViewModels\ModeratorDeleteViewModels.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
+    <Compile Include="Models\ViewModels\CreateSubmissionViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseBanViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseStylesheetViewModel.cs" />
+    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\HubMinifier.cs" />
     <Compile Include="Controllers\PartnerController.cs" />
@@ -337,13 +355,12 @@
     <Compile Include="Models\PartnerIntent.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\AddSubverse.cs" />
-    <Compile Include="Models\AddSubmissionLinkpost.cs" />
     <Compile Include="Models\SubmissionMetaData.cs" />
     <Compile Include="Models\Cla.cs" />
     <Compile Include="Models\ViewModels\ActiveSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentViewModel.cs" />
     <Compile Include="Models\EditSubmission.cs" />
-    <Compile Include="Models\ViewModels\PrivateMessageComposeViewModel.cs" />
+    <Compile Include="Models\ViewModels\MessageViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentSingleViewModel.cs" />
@@ -355,10 +372,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\AntispamUtility.cs" />
+    <Compile Include="Utils\JsonNetResult.cs" />
     <Compile Include="Utils\RSSUtility.cs" />
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />
     <Compile Include="Utils\PagerOptions.cs" />
+    <Compile Include="Utils\VoatExceptionLogger.cs" />
+    <Compile Include="Utils\VoatValidateAntiForgeryTokenAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\VoatLegacyDocumentation.xml" />
@@ -367,29 +387,38 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\markdownEditor.min.css">
-      <DependentUpon>markdownEditor.css</DependentUpon>
-    </Content>
     <Content Include="Content\tooltipster.css" />
-    <Content Include="Content\tooltipster.min.css">
-      <DependentUpon>tooltipster.css</DependentUpon>
-    </Content>
     <Content Include="Content\ui-themes\autocomplete\autocomplete.css" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.min.css" />
     <Content Include="Content\ui-themes\autocomplete\core.css" />
     <Content Include="Content\ui-themes\autocomplete\menu.css" />
     <Content Include="Content\ui-themes\autocomplete\theme.css" />
-    <Content Include="Content\Voat-Dark.min.css">
-      <DependentUpon>Voat-Dark.css</DependentUpon>
-    </Content>
-    <Content Include="Content\Voat.min.css">
-      <DependentUpon>Voat.css</DependentUpon>
-    </Content>
     <Content Include="ddos.min.htm">
       <DependentUpon>ddos.htm</DependentUpon>
     </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="gizmo\index.html" />
+    <Content Include="gizmo\lib\ios-orientationchange-fix.js" />
+    <Content Include="gizmo\lib\jquery-2.1.0.min.js" />
+    <Content Include="gizmo\src\css\bagpakk.min.css" />
+    <Content Include="gizmo\src\css\normalize.css" />
+    <Content Include="gizmo\src\css\style.css" />
+    <Content Include="gizmo\src\css\swipebox.css" />
+    <Content Include="gizmo\src\css\swipebox.min.css" />
+    <Content Include="gizmo\src\img\icons.png" />
+    <Content Include="gizmo\src\img\icons.svg" />
+    <Content Include="gizmo\src\img\loader.gif" />
+    <Content Include="gizmo\src\js\jquery.swipebox.js" />
+    <Content Include="gizmo\src\js\jquery.swipebox.min.js" />
+    <Content Include="gizmo\src\js\voatgallery.js" />
+    <Content Include="Graphics\Badges\badmofo.png" />
+    <Content Include="Graphics\Badges\beta_user.png" />
+    <Content Include="Graphics\Badges\brain.png" />
+    <Content Include="Graphics\Badges\bug_punisher.png" />
+    <Content Include="Graphics\Badges\mb.png" />
+    <Content Include="Graphics\Badges\putts_fav.png" />
+    <Content Include="Graphics\Badges\whoaverse.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-144x144-precomposed.png" />
@@ -408,6 +437,7 @@
     <Content Include="Graphics\markdownEditorSprite.png" />
     <Content Include="Graphics\missing_image.png" />
     <Content Include="Graphics\v2_ad.png" />
+    <Content Include="Graphics\voat-ad-placeholder.png" />
     <Content Include="Graphics\voat-goat.png" />
     <Content Include="Graphics\voat-logo.png" />
     <Content Include="Graphics\voat-32x32.png" />
@@ -457,6 +487,7 @@
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
+    <Content Include="gizmo\src\js\jquery.swipebox.min.js.map" />
     <None Include="Properties\PublishProfiles\local fs.pubxml" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\voatweb03.pubxml" />
@@ -490,14 +521,10 @@
     <Content Include="Scripts\markdownEditor.js" />
     <Content Include="Scripts\libs\npm.js" />
     <None Include="Scripts\_references.js" />
+    <Content Include="sitemap.xml" />
     <Content Include="Storage\Avatars\Placeholder.txt" />
+    <Content Include="Storage\Thumbs\Placeholder.txt" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
-    <Content Include="Content\PagedList.min.css">
-      <DependentUpon>PagedList.css</DependentUpon>
-    </Content>
-    <Content Include="Content\Site.min.css">
-      <DependentUpon>Site.css</DependentUpon>
-    </Content>
     <Content Include="Content\Voat-Dark.css" />
     <Content Include="Content\Voat.css" />
     <Content Include="favicon.ico" />
@@ -529,7 +556,6 @@
     <Content Include="Scripts\libs\respond.min.js" />
     <Content Include="Scripts\voat.js" />
     <Content Include="Scripts\voat.ui.js" />
-    <Content Include="Thumbs\Placeholder.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -537,16 +563,12 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Errors\Error.cshtml" />
+    <Content Include="Views\Error\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\About\About.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ChangeAccountSettings.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
-    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
-    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Manage.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
@@ -557,19 +579,17 @@
     <Content Include="Views\Shared\Submissions\_Submission.cshtml" />
     <Content Include="Views\Shared\Submissions\_MessageSubmissionDetails.cshtml" />
     <Content Include="Views\Shared\Submissions\_LinkSubmissionDetails.cshtml" />
-    <Content Include="Views\Shared\Submissions\_SubmissionComment.cshtml" />
-    <Content Include="Views\Home\UserProfile.cshtml" />
+    <Content Include="Views\Shared\Comments\_SubmissionComment.cshtml" />
+    <Content Include="Views\User\Overview.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
     <Content Include="Views\Help\Privacy.cshtml" />
-    <Content Include="Views\Shared\_AddSubmissionLinkpost.cshtml" />
-    <Content Include="Views\Shared\_AddSubmissionSelfpost.cshtml" />
     <Content Include="Views\Help\Markdown.cshtml" />
-    <Content Include="Views\Errors\Subversenotfound.cshtml" />
+    <Content Include="Views\Error\Subversenotfound.cshtml" />
     <Content Include="Views\Shared\_ListOfDefaultSubverses.cshtml" />
     <Content Include="Views\Shared\_AddComment.cshtml" />
     <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
-    <Content Include="Views\Errors\Error_404.cshtml" />
-    <Content Include="Views\Home\UserComments.cshtml" />
+    <Content Include="Views\Error\404.cshtml" />
+    <Content Include="Views\User\Comments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
     <Content Include="Views\Subverses\SubverseIndex.cshtml" />
     <Content Include="Views\Help\SpeedyGonzales.cshtml" />
@@ -579,10 +599,10 @@
     <Content Include="Views\Shared\Sidebars\_SidebarFrontpage.cshtml" />
     <Content Include="Views\Subverses\CreateSubverse.cshtml" />
     <Content Include="Views\Subverses\_AddNewSubverse.cshtml" />
-    <Content Include="Views\Errors\SubverseExists.cshtml" />
+    <Content Include="Views\Error\SubverseExists.cshtml" />
     <Content Include="Views\Help\UserAgreement.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseSettings.cshtml" />
-    <Content Include="Views\Home\_CommentTree.cshtml" />
+    <Content Include="Views\Shared\Comments\_CommentTree.cshtml" />
     <Content Include="Views\About\Intro.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarSubmissionInfo.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarUserInfo.cshtml" />
@@ -601,23 +621,18 @@
     <Content Include="Views\Subverses\SubscribedSubverses.cshtml" />
     <Content Include="Views\Subverses\_SubscribedSubverseDetails.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserModerates.cshtml" />
-    <Content Include="Views\Errors\DbNotResponding.cshtml" />
+    <Content Include="Views\Error\DbNotResponding.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarComments.cshtml" />
     <Content Include="Views\Subverses\Admin\AddModerator.cshtml" />
     <Content Include="Views\Subverses\Admin\RemoveModerator.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseModerators.cshtml" />
     <Content Include="Views\AjaxViews\_CommentReplyForm.cshtml" />
     <Content Include="Views\AjaxViews\_MessageContent.cshtml" />
-    <Content Include="Views\Messaging\Inbox.cshtml" />
-    <Content Include="Views\Messaging\Compose.cshtml" />
-    <Content Include="Views\Messaging\Sent.cshtml" />
     <Content Include="Views\Shared\_SubscriptionsHoverMenu.cshtml" />
-    <Content Include="Views\Messaging\InboxCommentReplies.cshtml" />
     <Content Include="Views\Account\_LoginModal.cshtml" />
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
-    <Content Include="Views\Home\UserSubmitted.cshtml" />
-    <Content Include="Views\Home\_SingleCommentTree.cshtml" />
+    <Content Include="Views\User\Submissions.cshtml" />
     <Content Include="Views\Account\_UserPreferences.cshtml" />
     <Content Include="Views\Subverses\Admin\Flair\FlairSettings.cshtml" />
     <Content Include="Views\Subverses\Admin\Flair\AddLinkFlair.cshtml" />
@@ -637,7 +652,6 @@
     <Content Include="Views\Shared\_DefaultMessage.cshtml" />
     <Content Include="Views\Subverses\SearchForSubverse.cshtml" />
     <Content Include="Views\Search\FindSubverseSearchResult.cshtml" />
-    <Content Include="Views\AjaxViews\_SingleSubmissionComment.cshtml" />
     <Content Include="Views\Partner\PartnerProgramInformation.cshtml" />
     <Content Include="Views\Partner\PartnerIntentRegistration.cshtml" />
     <Content Include="Views\Partner\PartnerProgramIntentSent.cshtml" />
@@ -666,13 +680,9 @@
     <Content Include="Views\Shared\_MostViewedSubmissions.cshtml" />
     <Content Include="Views\Sets\_SingleSetPage.cshtml" />
     <Content Include="Views\Welcome\_FirstTimeVisitorWelcome.cshtml" />
-    <Content Include="Views\Shared\UserDistinctions\_SubmitterModeratorDistinction.cshtml" />
-    <Content Include="Views\Shared\UserDistinctions\_SubmitterDistinction.cshtml" />
-    <Content Include="Views\Shared\UserDistinctions\_ModeratorDistinction.cshtml" />
-    <Content Include="Views\Shared\UserDistinctions\_UserDistinction.cshtml" />
     <Content Include="Views\Sets\CreateSet.cshtml" />
     <Content Include="Views\Sets\ManageMySets.cshtml" />
-    <Content Include="Views\Errors\UnAuthorized.cshtml" />
+    <Content Include="Views\Error\UnAuthorized.cshtml" />
     <Content Include="Views\AjaxViews\_SubverseInfo.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseBans.cshtml" />
     <Content Include="Views\Subverses\Admin\AddBan.cshtml" />
@@ -680,38 +690,60 @@
     <Content Include="Views\Management\Dashboard.cshtml" />
     <Content Include="Views\Subverses\Admin\_ModeratorInvitations.cshtml" />
     <Content Include="Views\Subverses\Admin\RecallModeratorInvitation.cshtml" />
-    <Content Include="Views\Shared\Comments\_CommentBucket.cshtml" />
+    <Content Include="Views\Shared\Comments\_CommentSegment.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
-    <Content Include="Views\Messaging\InboxPostReplies.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarChat.cshtml" />
     <Content Include="Views\Subverses\SubmissionRemovalLog.cshtml" />
     <Content Include="Views\Search\Jaje.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSave.cshtml" />
-    <Content Include="Views\Home\UserSaved.cshtml" />
+    <Content Include="Views\User\Saved.cshtml" />
     <Content Include="Views\AjaxViews\_BasicUserInfo.cshtml" />
     <Content Include="Views\Shared\_Captcha.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Errors\SubverseDisabled.cshtml" />
+    <Content Include="Views\Error\SubverseDisabled.cshtml" />
     <Content Include="Views\Subverses\CommentRemovalLog.cshtml" />
     <Content Include="Views\Subverses\BannedUsersLog.cshtml" />
     <Content Include="Web.config.live" />
     <Content Include="Views\Account\RegistrationDisabled.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseStylesheetEditor.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonBlockSubverse.cshtml" />
-    <Content Include="Views\Messaging\InboxUnread.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Help\Advertize.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Ad\_AdPlaceholder.cshtml" />
+    <Content Include="Views\Ad\_Ad.cshtml" />
+    <Content Include="Views\ApiKeys\Create.cshtml" />
+    <Content Include="Views\ApiKeys\Index.cshtml" />
+    <Content Include="Views\Home\Rules.cshtml" />
+    <Content Include="Views\Subverses\SubversesBlockedByUser.cshtml" />
+    <Content Include="Views\Chat\Index.cshtml" />
+    <Content Include="Views\Chat\_Layout.cshtml" />
+    <Content Include="Views\User\BlockedSubverses.cshtml" />
+    <Content Include="Views\User\BlockedUsers.cshtml" />
+    <Content Include="Views\User\_BlockedSubverseDetails.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonModeratorDelete.cshtml" />
+    <Content Include="Views\Submissions\ModeratorDelete.cshtml" />
+    <Content Include="Views\Comment\ModeratorDelete.cshtml" />
+    <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonModeratorDelete.cshtml" />
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonReport.cshtml" />
+    <Content Include="Views\Messages\Compose.cshtml" />
+    <Content Include="Views\Messages\Index.cshtml" />
+    <Content Include="Views\Messages\_MessageReply.cshtml" />
+    <Content Include="Views\Shared\Submissions\_FullSubmission.cshtml" />
+    <Content Include="Views\Messages\Notifications.cshtml" />
+    <Content Include="Views\Shared\_SubverseStylesheetLink.cshtml" />
+    <Content Include="Views\Error\Others.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="~Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

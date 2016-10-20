@@ -29,7 +29,6 @@ namespace Voat.Data.Models
         public string UserName { get; set; }
         public System.DateTime CreationDate { get; set; }
         public int Type { get; set; }
-        public string LinkDescription { get; set; }
         public string Title { get; set; }
         public double Rank { get; set; }
         public string Subverse { get; set; }
@@ -44,6 +43,8 @@ namespace Voat.Data.Models
         public bool IsDeleted { get; set; }
         public string Content { get; set; }
         public double RelativeRank { get; set; }
+        public string Url { get; set; }
+        public string FormattedContent { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }

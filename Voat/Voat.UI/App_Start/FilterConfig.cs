@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System.Web.Mvc;
+using Voat.Utils;
 
 namespace Voat
 {
@@ -21,6 +22,7 @@ namespace Voat
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+            filters.Add(new JsonNetActionFilter());
         }
     }
 }

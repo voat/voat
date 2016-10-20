@@ -11,41 +11,26 @@
     All Rights Reserved.*@
 
 @{
-    var selectedView = ViewBag.selectedView;
-    var classInbox = "selected";
-    var classUnread = "disabled";
-    var classSent = "disabled";
-    var classCompose = "disabled";
 
-    if (selectedView != null)
+
+    var selectedView = ViewBag.selectedView ?? "";
+    var subverse = Request.RequestContext.RouteData.Values["subverse"];
+    if (selectedView == "mod")
     {
-        if (selectedView.Equals("unread"))
-        {
-            classSent = "disabled";
-            classInbox = "disabled";
-            classCompose = "disabled";
-            classUnread = "selected";
-        }
-        if (selectedView.Equals("sent"))
-        {
-            classSent = "selected";
-            classInbox = "disabled";
-            classCompose = "disabled";
-            classUnread = "disabled";
-        }
-        else if (selectedView.Equals("compose"))
-        {
-            classInbox = "disabled";
-            classSent = "disabled";
-            classUnread = "disabled";
-            classCompose = "selected";
-        }
+        <ul class="tabmenu ">
+            <li class="@(Request.Url.AbsoluteUri.EndsWith("messages") ? "selected" : "disabled")"><a href="~/v/@subverse/messages">Inbox</a></li>
+            <li class="@(Request.Url.AbsoluteUri.Contains("sent") ? "selected" : "disabled")"><a href="~/v/@subverse/messages/sent">Sent</a></li>
+            <li class="@(Request.Url.AbsoluteUri.Contains("compose") ? "selected" : "disabled")"><a href="~/v/@subverse/messages/compose">Compose</a></li>
+            <li class="@(Request.Url.AbsoluteUri.Contains("notifications") ? "selected" : "disabled")"><a href="~/messages/notifications">Summary</a></li>
+        </ul>
+    }
+    else
+    {
+        <ul class="tabmenu ">
+            <li class="@(selectedView.Equals("inbox") || selectedView.Equals("unread") ? "selected" : "disabled")"><a href="~/messages">Inbox</a></li>
+            <li class="@(selectedView.Equals("sent") ? "selected" : "disabled")"><a href="~/messages/sent">Sent</a></li>
+            <li class="@(selectedView.Equals("compose") ? "selected" : "disabled")"><a href="~/messages/compose">Compose</a></li>
+            <li class="@(selectedView.Equals("notifications") ? "selected" : "disabled")"><a href="~/messages/notifications">Summary</a></li>
+        </ul>
     }
 }
-
-<ul class="tabmenu ">
-    <li class="@classInbox"><a href="~/messaging/inbox">Inbox</a></li>
-    <li class="@classUnread"><a href="~/messaging/inbox/unread">Unread</a></li>
-    <li class="@classSent"><a href="~/messaging/sent">Sent</a></li>
-    <li class="@classCompose"><a href="~/messaging/compose">Compose</a></li>
-</ul>

@@ -12,13 +12,26 @@ All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
+using Voat.Utilities;
+
 namespace Voat.Models.ViewModels
 {
     public class BasicUserInfo
         
     {
+        private string _bio = null;
+
         public string MemberSince { get; set; }
         public int Ccp { get; set; }
         public int Scp { get; set; }
+        public string Bio {
+            get { return _bio; }
+            set {
+                if (value != STRINGS.DEFAULT_BIO)
+                {
+                    _bio = value;
+                }
+            }
+        }
     }
 }

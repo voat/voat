@@ -1,0 +1,72 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model IEnumerable<Voat.Domain.Models.BlockedItem>
+
+@{
+    ViewBag.Title = "Blocked Users";
+    ViewBag.userid = User.Identity.Name;
+   
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div id="container">
+    <div role="main">
+
+        <div class="alert-notice">
+            <p>Showing all users that you have blocked.</p>
+            <p>This is an alpha feature - Please report any issues to <a href="https://voat.co/v/voatdev/">v/voatdev</a>.</p>
+            <p>Blocking a user will only prevent notifications and messages from being received.</p>
+        </div>
+        @using (Html.BeginForm("BlockUser", "User", FormMethod.Post, new { @class = "form-horizontal", role = "form", autocomplete = "off" }))
+        {
+            @Html.ValidationSummary()
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="name">Block User</label>
+                <div class="col-md-3">
+                    @Html.TextBox("name", null, new { @class = "form-control" })
+                </div>
+                <input type="submit" value="Submit" class="btn-whoaverse" />
+            </div>
+        }
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th><b>Username</b></th>
+                        <th><b>Blocked Date</b></th>
+                        <th><b>Remove</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model)
+                {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.CreationDate</td>
+                            <td><button type="button" onclick="return toggleBlockUser(this, '@item.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unblock</button></td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

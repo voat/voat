@@ -1,0 +1,27 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@{
+    int submissionID = Convert.ToInt32(ViewData["submissionId"]);
+}
+
+<li>
+    <form class="toggle report-button active" action="#" method="get">
+        <input class="active" name="executed" value="reported" type="hidden">
+        <span class="option main active">
+            <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(this, @submissionID)">report spam</a>
+        </span>
+        <span class="option error">
+            are you sure?  <a href="javascript:void(0)" class="yes" onclick="reportContent(this, 'submission', @submissionID)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
+        </span>
+    </form>
+</li>

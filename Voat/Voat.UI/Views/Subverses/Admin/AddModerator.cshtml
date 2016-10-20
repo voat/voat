@@ -11,9 +11,16 @@
     All Rights Reserved.*@
 
 @model Voat.Models.ViewModels.SubverseModeratorViewModel
+@using System.Linq
+@using Voat.Domain.Models
 
 @{
     string subverseName = ViewBag.SubverseName;
+
+    var levelsAvailable  = Enum.GetValues(typeof(ModeratorLevel)).OfType<ModeratorLevel>();
+    var currentLevel = ModeratorPermission.Level(User.Identity.Name, subverseName);
+    levelsAvailable = levelsAvailable.Where(x => x > currentLevel || currentLevel == ModeratorLevel.Owner);
+
 }
 
 <div id="container">
@@ -42,7 +49,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Power, htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-4">
-                        @Html.EditorFor(model => model.Power, new {htmlAttributes = new {@class = "form-control", Value = "2"}})
+                        @Html.DropDownListFor(model => model.Power, levelsAvailable.Select(x => new SelectListItem() { Text = x.ToString(), Value = ((int)x).ToString() }), new { @class = "form-control"} )
                         @Html.ValidationMessageFor(model => model.Power, "", new {@class = "text-danger"})
                     </div>
                 </div>
@@ -58,8 +65,11 @@
                         Power levels
                     </p>
                     <hr />
-                    <p><strong>Level 1:</strong> first clearance level. Access to all areas of subverse settings. No restrictions.</p>
-                    <p><strong>Level 2:</strong> second clearance level. Access to most areas of subverse settings. Some restrictions. Unable to add more moderators.</p>
+                    <p><strong>Level 1 / Owner:</strong> Access to all areas of subverse settings. No restrictions.</p>
+                    <p><strong>Level 2 / Moderator:</strong> Access to most areas of subverse settings. Some restrictions.</p>
+                    <p><strong>Level 3 / Janitor:</strong> Access to user banning and post/comment deletions.</p>
+                    <p><strong>Level 4 / Designer:</strong> Access to stylesheet and flair modification areas.</p>
+                    <p><strong>Level 99 / Submitter:</strong> Only allows user to submit content to subverses with 'Authorized Only' turned on.</p>
                 </div>
 
             </div>

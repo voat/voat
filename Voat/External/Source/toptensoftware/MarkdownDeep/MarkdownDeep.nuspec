@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+		<id>MarkdownDeep.NET</id>
+		<title>MarkdownDeep - .NET Only Edition</title>
+		<version>1.5</version>
+		<authors>Topten Software</authors>
+		<owners>Topten Software</owners>
+		<licenseUrl>http://www.toptensoftware.com/markdowndeep/license</licenseUrl>
+		<projectUrl>http://www.toptensoftware.com/markdowndeep/</projectUrl>
+		<iconUrl>http://www.toptensoftware.com/markdowndeep/nuget_icon.png</iconUrl>
+		<requireLicenseAcceptance>true</requireLicenseAcceptance>
+		<description>
+			MarkdownDeep is a high performance .NET Markdown processor.
+		</description>
+		<summary>
+			This package contains MarkdownDeep.NET only - it does not include the JavaScript client edition
+		</summary>
+		<tags>Markdown MarkdownExtra MarkdownDeep</tags>
+	</metadata>
+	<files>
+		<file src="bin\Release\MarkdownDeep.dll" target="lib\.NetFramework 3.5" />
+		<file src="bin\Release\MarkdownDeep.pdb" target="lib\.NetFramework 3.5" />
+	</files>
+</package>

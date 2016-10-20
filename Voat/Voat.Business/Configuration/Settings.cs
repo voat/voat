@@ -4,16 +4,40 @@ namespace Voat.Configuration
 {
     public class Settings
     {
-        #region AppSettings Accessors 
+        #region AppSettings Accessors
 
         internal static Dictionary<string, object> configValues = new Dictionary<string, object>();
 
+        private static T GetValue<T>(string key, T defaultIfMissing)
+        {
+            if (configValues.ContainsKey(key))
+            {
+                return (T)configValues[key];
+            }
+            return defaultIfMissing;
+        }
 
         public static int DailyCommentPostingQuotaForNegativeScore
         {
             get
             {
                 return (int)configValues[CONFIGURATION.DailyCommentPostingQuotaForNegativeScore];
+            }
+        }
+
+        public static int DailyCommentPostingQuota
+        {
+            get
+            {
+                return (int)configValues[CONFIGURATION.DailyCommentPostingQuota];
+            }
+        }
+
+        public static int HourlyCommentPostingQuota
+        {
+            get
+            {
+                return (int)configValues[CONFIGURATION.HourlyCommentPostingQuota];
             }
         }
 
@@ -24,6 +48,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.DailyCrossPostingQuota];
             }
         }
+
         public static int DailyPostingQuotaForNegativeScore
         {
             get
@@ -31,6 +56,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.DailyPostingQuotaForNegativeScore];
             }
         }
+
         public static int DailyPostingQuotaPerSub
         {
             get
@@ -38,6 +64,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.DailyPostingQuotaPerSub];
             }
         }
+
         public static int DailyGlobalPostingQuota
         {
             get
@@ -45,6 +72,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.DailyGlobalPostingQuota];
             }
         }
+
         public static int DailyVotingQuota
         {
             get
@@ -52,6 +80,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.DailyVotingQuota];
             }
         }
+
         public static bool ForceHTTPS
         {
             get
@@ -59,6 +88,7 @@ namespace Voat.Configuration
                 return (bool)configValues[CONFIGURATION.ForceHTTPS];
             }
         }
+
         public static int HourlyPostingQuotaPerSub
         {
             get
@@ -66,6 +96,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.HourlyPostingQuotaPerSub];
             }
         }
+
         public static int HourlyGlobalPostingQuota
         {
             get
@@ -73,6 +104,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.HourlyGlobalPostingQuota];
             }
         }
+
         public static int MaximumOwnedSets
         {
             get
@@ -80,6 +112,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.MaximumOwnedSets];
             }
         }
+
         public static int MaximumOwnedSubs
         {
             get
@@ -87,6 +120,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.MaximumOwnedSubs];
             }
         }
+
         public static int MinimumCcp
         {
             get
@@ -94,6 +128,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.MinimumCcp];
             }
         }
+
         public static int MaxAllowedAccountsFromSingleIP
         {
             get
@@ -101,6 +136,7 @@ namespace Voat.Configuration
                 return (int)configValues[CONFIGURATION.MaxAllowedAccountsFromSingleIP];
             }
         }
+
         public static string RecaptchaPrivateKey
         {
             get
@@ -108,6 +144,7 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.RecaptchaPrivateKey];
             }
         }
+
         public static string RecaptchaPublicKey
         {
             get
@@ -131,6 +168,7 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.SiteDescription];
             }
         }
+
         public static string SiteKeywords
         {
             get
@@ -138,6 +176,7 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.SiteKeywords];
             }
         }
+
         public static string SiteLogo
         {
             get
@@ -145,6 +184,7 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.SiteLogo];
             }
         }
+
         public static string SiteName
         {
             get
@@ -152,6 +192,7 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.SiteName];
             }
         }
+
         public static string SiteSlogan
         {
             get
@@ -159,6 +200,7 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.SiteSlogan];
             }
         }
+
         public static bool SignalRDisabled
         {
             get
@@ -182,6 +224,7 @@ namespace Voat.Configuration
                 return (bool)configValues[CONFIGURATION.SetsDisabled];
             }
         }
+
         public static bool CacheDisabled
         {
             get
@@ -221,6 +264,40 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.DestinationPathAvatars];
             }
         }
-        #endregion 
+
+        public static bool AdsEnabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.AdsEnabled];
+            }
+        }
+
+        public static string SiteDomain
+        {
+            get
+            {
+                return (string)configValues[CONFIGURATION.SiteDomain];
+            }
+        }
+
+        public static bool LegacyApiEnabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.LegacyApiEnabled];
+            }
+        }
+
+        public static bool ApiKeyCreationEnabled
+        {
+            get
+            {
+                return (bool)configValues[CONFIGURATION.ApiKeyCreationEnabled];
+            }
+        }
+
+        #endregion AppSettings Accessors
+
     }
 }

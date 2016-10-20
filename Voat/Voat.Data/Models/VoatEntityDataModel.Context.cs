@@ -27,8 +27,6 @@ namespace Voat.Data.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<AutoModComment> AutoModComments { get; set; }
-        public virtual DbSet<AutoModSubmission> AutoModSubmissions { get; set; }
         public virtual DbSet<Badge> Badges { get; set; }
         public virtual DbSet<BannedDomain> BannedDomains { get; set; }
         public virtual DbSet<BannedUser> BannedUsers { get; set; }
@@ -63,6 +61,17 @@ namespace Voat.Data.Models
         public virtual DbSet<UserSetList> UserSetLists { get; set; }
         public virtual DbSet<UserSetSubscription> UserSetSubscriptions { get; set; }
         public virtual DbSet<ViewStatistic> ViewStatistics { get; set; }
+        public virtual DbSet<AdminLog> AdminLogs { get; set; }
+        public virtual DbSet<ApiClient> ApiClients { get; set; }
+        public virtual DbSet<ApiLog> ApiLogs { get; set; }
+        public virtual DbSet<ApiThrottlePolicy> ApiThrottlePolicies { get; set; }
+        public virtual DbSet<EventLog> EventLogs { get; set; }
+        public virtual DbSet<ApiCorsPolicy> ApiCorsPolicies { get; set; }
+        public virtual DbSet<ApiPermissionPolicy> ApiPermissionPolicies { get; set; }
+        public virtual DbSet<UserBlockedUser> UserBlockedUsers { get; set; }
+        public virtual DbSet<Ad> Ads { get; set; }
+        public virtual DbSet<UserVisit> UserVisits { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
     
         public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {

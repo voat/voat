@@ -43,6 +43,10 @@
     }
 }
 
+@section PageHeader {
+    @Html.Partial("_SubverseStylesheetLink", selectedSubverse, new ViewDataDictionary())
+}
+
 <style type="text/css">
     body > .content .link .rank {
         width: 3.2ex;
@@ -59,21 +63,10 @@
         @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
     }
 
-    <style type="text/css" id="custom_css">
-         @if (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))
-        {
-            Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new {selectedSubverse = selectedSubverse});
-        }
-        else if (!User.Identity.IsAuthenticated)
-        {
-            Html.RenderAction("StylesheetForSelectedSubverse", "Subverses", new {selectedSubverse = selectedSubverse});
-        }
-    </style>
-
     <div class="content" role="main">
         @if (sortingMode == "top")
         {
-            <div id="sortingThingy" class="">
+            <div id="sortingThingy" class="sorting-thingy">
                 @Html.RouteLink("day", urlaction) | 
                 @Html.RouteLink("week", urlaction, new {time = "week"}) | 
                 @Html.RouteLink("month", urlaction, new {time = "month"}) |

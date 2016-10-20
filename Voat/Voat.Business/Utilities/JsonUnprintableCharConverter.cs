@@ -6,14 +6,13 @@ namespace Voat.Utilities
 {
     public class JsonUnprintableCharConverter : JsonConverter
     {
-
         public override bool CanConvert(Type objectType)
         {
-            return true;
+            return objectType == typeof(string);
         }
+
         public static string ProcessChars(string source)
         {
-
             if (String.IsNullOrEmpty(source))
             {
                 return source;
@@ -56,32 +55,34 @@ namespace Voat.Utilities
                     case '\v':
                         /*ignore these*/
                         break;
-                    case '\n': //add another so it breaks in Markdown.
-                        chars.Add('\n');
-                        chars.Add('\n');
-                        break;
+
+                    //case '\n': //add another so it breaks in Markdown.
+                    //    chars.Add('\n');
+                    //    chars.Add('\n');
+                    //    break;
 
                     default:
                         chars.Add(c);
                         break;
                 }
-
             }
 
             return new string(chars.ToArray());
         }
+
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.Value != null)
             {
-                return ProcessChars(reader.Value.ToString());
+                var processed = ProcessChars(reader.Value.ToString());
+                return processed;
             }
             return null;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            serializer.Serialize(writer, value);
+            writer.WriteValue(value);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Voat.Data.Models
     public class CommentMetaData
     {
         [Required(ErrorMessage = "Comment text is required. Please fill this field.")]
-        [StringLength(10000, ErrorMessage = "Comment text is limited to 10.000 characters.")]
+        [StringLength(10000, ErrorMessage = "Comment text is limited to 10000 characters.")]
         [AllowHtml]
         public string Content { get; set; }
     }

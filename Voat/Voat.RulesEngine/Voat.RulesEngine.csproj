@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Voat.RulesEngine</RootNamespace>
     <AssemblyName>Voat.RulesEngine</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,6 +41,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -48,17 +50,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IRuleContextHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestContext.cs" />
     <Compile Include="Rule.cs" />
-    <Compile Include="RuleContext.cs" />
     <Compile Include="RuleDiscoveryProvider.cs" />
     <Compile Include="RuleException.cs" />
-    <Compile Include="RuleLoadableAttribute.cs" />
+    <Compile Include="RuleDiscoveryAttribute.cs" />
     <Compile Include="RuleOutcome.cs" />
     <Compile Include="RuleResult.cs" />
     <Compile Include="RuleScope.cs" />
     <Compile Include="RulesEngine.cs" />
+    <Compile Include="RuleSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

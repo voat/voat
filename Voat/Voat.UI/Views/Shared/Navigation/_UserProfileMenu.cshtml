@@ -16,40 +16,36 @@
     string classSubmissions = "disabled";
     string classSaved = "disabled";
     var selectedUser = ViewBag.selectedUser;
-    var whattodisplay = ViewBag.whattodisplay;
 
-    if (whattodisplay != null)
+    if (Request.Url.AbsolutePath.ToLower().Contains("/comments"))
     {
-        if (whattodisplay == "comments")
-        {
-            classComments = "selected";
-            classOverview = "disabled";
-            classSubmissions = "disabled";
-            classSaved = "disabled";
-        }
-        if (whattodisplay == "overview")
-        {
-            classComments = "disabled";
-            classOverview = "selected";
-            classSubmissions = "disabled";
-            classSaved = "disabled";
+        classComments = "selected";
+        classOverview = "disabled";
+        classSubmissions = "disabled";
+        classSaved = "disabled";
+    }
+    else if (Request.Url.AbsolutePath.ToLower().Contains("/submissions"))
+    {
+        classComments = "disabled";
+        classOverview = "disabled";
+        classSubmissions = "selected";
+        classSaved = "disabled";
 
-        }
-        if (whattodisplay == "submissions")
-        {
-            classComments = "disabled";
-            classOverview = "disabled";
-            classSubmissions = "selected";
-            classSaved = "disabled";
-
-        }
-        if (whattodisplay == "saved")
-        {
-            classComments = "disabled";
-            classOverview = "disabled";
-            classSubmissions = "disabled";
-            classSaved = "selected";
-        }
+    }
+    else if (Request.Url.AbsolutePath.ToLower().Contains("/saved"))
+    {
+        classComments = "disabled";
+        classOverview = "disabled";
+        classSubmissions = "disabled";
+        classSaved = "selected";
+    }
+    else
+    {
+        //overview
+        classComments = "disabled";
+        classOverview = "selected";
+        classSubmissions = "disabled";
+        classSaved = "disabled";
     }
 }
 

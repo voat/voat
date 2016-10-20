@@ -55,7 +55,7 @@
                         @foreach (var logItem in Model)
                         {
                             <tr>
-                                <td>@logItem.UserName</td>
+                                <td><a href="/user/@logItem.UserName">@logItem.UserName</a></td>
                                 <td>@logItem.CreatedBy</td>
                                 <td>@logItem.Reason</td>
                                 <td>@logItem.CreationDate</td>

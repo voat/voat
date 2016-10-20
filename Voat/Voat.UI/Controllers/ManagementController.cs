@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace Voat.Controllers
 {
-    public class ManagementController : Controller
+    public class ManagementController : BaseController
     {
         // GET: Management
         [Authorize]

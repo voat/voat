@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -15,6 +15,9 @@ All Rights Reserved.
 using System;
 using System.Data.Entity;
 using System.Linq;
+using Voat.Common;
+using Voat.Data;
+
 //using Microsoft.AspNet.SignalR;
 using Voat.Data.Models;
 
@@ -22,6 +25,8 @@ namespace Voat.Utilities
 {
     public static class Voting
     {
+        private static LockStore _lockStore = new LockStore();
+
         // returns -1:downvoted, 1:upvoted, 0:not voted
         public static int CheckIfVoted(string userToCheck, int submissionID)
         {
@@ -35,6 +40,7 @@ namespace Voat.Utilities
                 return intCheckResult;
             }
         }
+
         //// returns -1:downvoted, 1:upvoted, 0:not voted
         //public static SubmissionVoteTracker GetVote(voatEntities db, string userToCheck, int submissionID)
         //{
@@ -42,6 +48,7 @@ namespace Voat.Utilities
         //                .AsNoTracking()
         //                .FirstOrDefault();
         //}
+
         // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetMessageVote(string userWhichVoted, int submissionID)
         {
@@ -49,7 +56,9 @@ namespace Voat.Utilities
             {
                 var votingTracker = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userWhichVoted);
 
-                if (votingTracker == null) return;
+                if (votingTracker == null)
+                    return;
+
                 //delete vote history
                 db.SubmissionVoteTrackers.Remove(votingTracker);
                 db.SaveChanges();
@@ -59,265 +68,213 @@ namespace Voat.Utilities
         // submit submission upvote
         public static void UpvoteSubmission(int submissionID, string userName, string clientIp)
         {
-            //// user account voting check
-            //int result = CheckIfVoted(userName, submissionID);
+            // if you unlock this the bug is present
 
-            using (var db = new voatEntities())
+            object lockthis = _lockStore.GetLockObject(submissionID.ToString());
+            lock (lockthis)
             {
-
-                SubmissionVoteTracker previousVote = db.SubmissionVoteTrackers.Where(u => u.UserName == userName && u.SubmissionID == submissionID).FirstOrDefault();
-
-                Submission submission = db.Submissions.Find(submissionID);
-
-                if (submission.IsAnonymized)
+                using (var db = new voatEntities())
                 {
-                    // do not execute voting, subverse is in anonymized mode
-                    return;
-                }
+                    SubmissionVoteTracker previousVote = db.SubmissionVoteTrackers.Where(u => u.UserName == userName && u.SubmissionID == submissionID).FirstOrDefault();
 
-                int result = (previousVote == null ? 0 : previousVote.VoteStatus.Value);
+                    Submission submission = db.Submissions.Find(submissionID);
 
-                switch (result)
-                {
-                    // never voted before
-                    case 0:
+                    //if (submission.IsAnonymized)
+                    //{
+                    //    // do not execute voting, subverse is in anonymized mode
+                    //    return;
+                    //}
 
-                        if (submission.UserName != userName)
-                        {
-                            // check if this IP already voted on the same submission, abort voting if true
-                            var ipVotedAlready = db.SubmissionVoteTrackers.Where(x => x.SubmissionID == submissionID && x.IPAddress == clientIp);
-                            if (ipVotedAlready.Any()) return;
+                    int result = (previousVote == null ? 0 : previousVote.VoteStatus.Value);
 
-                            submission.UpCount++;
+                    switch (result)
+                    {
+                        // never voted before
+                        case 0:
 
-                            //calculate new ranks
-                            Ranking.RerankSubmission(submission);
-
-                            // register upvote
-                            var tmpVotingTracker = new SubmissionVoteTracker
+                            if (submission.UserName != userName)
                             {
-                                SubmissionID = submissionID,
-                                UserName = userName,
-                                VoteStatus = 1,
-                                CreationDate = DateTime.Now,
-                                IPAddress = clientIp
-                            };
+                                // check if this IP already voted on the same submission, abort voting if true
+                                var ipVotedAlready = db.SubmissionVoteTrackers.Where(x => x.SubmissionID == submissionID && x.IPAddress == clientIp);
+                                if (ipVotedAlready.Any())
+                                    return;
 
-                            db.SubmissionVoteTrackers.Add(tmpVotingTracker);
-                            db.SaveChanges();
+                                submission.UpCount++;
 
-                            SendVoteNotification(submission.UserName, "upvote");
-                        }
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
-                        break;
+                                // register upvote
+                                var tmpVotingTracker = new SubmissionVoteTracker
+                                {
+                                    SubmissionID = submissionID,
+                                    UserName = userName,
+                                    VoteStatus = 1,
+                                    CreationDate = Repository.CurrentDate,
+                                    IPAddress = clientIp
+                                };
 
-                    // downvoted before, turn downvote to upvote
-                    case -1:
+                                db.SubmissionVoteTrackers.Add(tmpVotingTracker);
+                                db.SaveChanges();
+                                EventNotification.Instance.SendVoteNotice(submission.UserName, userName, Domain.Models.ContentType.Submission, submission.ID, 1);
+                            }
 
-                        if (submission.UserName != userName)
-                        {
-                            submission.UpCount++;
-                            submission.DownCount--;
+                            break;
 
-                            //calculate new ranks
-                            Ranking.RerankSubmission(submission);
+                        // downvoted before, turn downvote to upvote
+                        case -1:
 
-                            previousVote.VoteStatus = 1;
-                            previousVote.CreationDate = DateTime.Now;
+                            if (submission.UserName != userName)
+                            {
+                                submission.UpCount++;
+                                submission.DownCount--;
 
-                            db.SaveChanges();
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
-                            SendVoteNotification(submission.UserName, "downtoupvote");
-                        }
+                                previousVote.VoteStatus = 1;
+                                previousVote.CreationDate = Repository.CurrentDate;
 
-                        break;
+                                db.SaveChanges();
+                                EventNotification.Instance.SendVoteNotice(submission.UserName, userName, Domain.Models.ContentType.Submission, submission.ID, 2);
+                            }
 
-                    // upvoted before, reset
-                    case 1:
-                        {
-                            submission.UpCount--;
+                            break;
 
-                            //calculate new ranks
-                            Ranking.RerankSubmission(submission);
+                        // upvoted before, reset
+                        case 1:
+                            {
+                                submission.UpCount--;
 
-                            db.SubmissionVoteTrackers.Remove(previousVote);
-                            db.SaveChanges();
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
-                            //ResetMessageVote(userName, submissionID);
+                                db.SubmissionVoteTrackers.Remove(previousVote);
+                                db.SaveChanges();
+                                EventNotification.Instance.SendVoteNotice(submission.UserName, userName, Domain.Models.ContentType.Submission, submission.ID, -1);
+                            }
 
-                            SendVoteNotification(submission.UserName, "downvote");
-                        }
-
-                        break;
+                            break;
+                    }
                 }
             }
-
         }
 
         // submit submission downvote
         public static void DownvoteSubmission(int submissionID, string userName, string clientIp)
         {
-            //int result = CheckIfVoted(userWhichDownvoted, submissionId);
-
-            using (var db = new voatEntities())
+            object lockthis = _lockStore.GetLockObject(submissionID.ToString());
+            lock (lockthis)
             {
-                Submission submission = db.Submissions.Find(submissionID);
-
-                SubmissionVoteTracker previousVote = db.SubmissionVoteTrackers.Where(u => u.UserName == userName && u.SubmissionID == submissionID).FirstOrDefault();
-
-
-                // do not execute downvoting if subverse is in anonymized mode
-                if (submission.IsAnonymized)
+                using (var db = new voatEntities())
                 {
-                    return;
-                }
+                    Submission submission = db.Submissions.Find(submissionID);
 
-                // do not execute downvoting if submission is older than 7 days
-                var submissionPostingDate = submission.CreationDate;
-                TimeSpan timeElapsed = DateTime.Now - submissionPostingDate;
-                if (timeElapsed.TotalDays > 7)
-                {
-                    return;
-                }
+                    SubmissionVoteTracker previousVote = db.SubmissionVoteTrackers.Where(u => u.UserName == userName && u.SubmissionID == submissionID).FirstOrDefault();
 
-                // do not execute downvoting if user has insufficient CCP for target subverse
-                if (Karma.CommentKarmaForSubverse(userName, submission.Subverse) < submission.Subverse1.MinCCPForDownvote)
-                {
-                    return;
-                }
+                    //// do not execute downvoting if subverse is in anonymized mode
+                    //if (submission.IsAnonymized)
+                    //{
+                    //    return;
+                    //}
 
-                int result = (previousVote == null ? 0 : previousVote.VoteStatus.Value);
+                    // do not execute downvoting if submission is older than 7 days
+                    var submissionPostingDate = submission.CreationDate;
+                    TimeSpan timeElapsed = Repository.CurrentDate - submissionPostingDate;
+                    if (timeElapsed.TotalDays > 7)
+                    {
+                        return;
+                    }
 
-                switch (result)
-                {
-                    // never voted before
-                    case 0:
-                        {
-                            // this user is downvoting more than upvoting, don't register the downvote
-                            if (UserHelper.IsUserCommentVotingMeanie(userName))
+                    // do not execute downvoting if user has insufficient CCP for target subverse
+                    if (Karma.CommentKarmaForSubverse(userName, submission.Subverse) < submission.Subverse1.MinCCPForDownvote)
+                    {
+                        return;
+                    }
+
+                    int result = (previousVote == null ? 0 : previousVote.VoteStatus.Value);
+
+                    switch (result)
+                    {
+                        // never voted before
+                        case 0:
                             {
-                                return;
+                                // this user is downvoting more than upvoting, don't register the downvote
+                                if (UserHelper.IsUserCommentVotingMeanie(userName))
+                                {
+                                    return;
+                                }
+
+                                // check if this IP already voted on the same submission, abort voting if true
+                                var ipVotedAlready = db.SubmissionVoteTrackers.Where(x => x.SubmissionID == submissionID && x.IPAddress == clientIp);
+                                if (ipVotedAlready.Any())
+                                    return;
+
+                                submission.DownCount++;
+
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
+
+                                // register downvote
+                                var tmpVotingTracker = new SubmissionVoteTracker
+                                {
+                                    SubmissionID = submissionID,
+                                    UserName = userName,
+                                    VoteStatus = -1,
+                                    CreationDate = Repository.CurrentDate,
+                                    IPAddress = clientIp
+                                };
+                                db.SubmissionVoteTrackers.Add(tmpVotingTracker);
+                                db.SaveChanges();
+
+                                //SendVoteNotification(submission.UserName, "downvote");
+                                EventNotification.Instance.SendVoteNotice(submission.UserName, userName, Domain.Models.ContentType.Submission, submission.ID, -1);
                             }
 
-                            // check if this IP already voted on the same submission, abort voting if true
-                            var ipVotedAlready = db.SubmissionVoteTrackers.Where(x => x.SubmissionID == submissionID && x.IPAddress == clientIp);
-                            if (ipVotedAlready.Any()) return;
+                            break;
 
-                            submission.DownCount++;
-
-                            //calculate new ranks
-                            Ranking.RerankSubmission(submission);
-
-                            // register downvote
-                            var tmpVotingTracker = new SubmissionVoteTracker
+                        // upvoted before, turn upvote to downvote
+                        case 1:
                             {
-                                SubmissionID = submissionID,
-                                UserName = userName,
-                                VoteStatus = -1,
-                                CreationDate = DateTime.Now,
-                                IPAddress = clientIp
-                            };
-                            db.SubmissionVoteTrackers.Add(tmpVotingTracker);
-                            db.SaveChanges();
+                                submission.UpCount--;
+                                submission.DownCount++;
 
-                            SendVoteNotification(submission.UserName, "downvote");
-                        }
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
-                        break;
+                                // register Turn DownVote To UpVote
+                                var votingTracker = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userName);
 
-                    // upvoted before, turn upvote to downvote
-                    case 1:
-                        {
-                            submission.UpCount--;
-                            submission.DownCount++;
+                                previousVote.VoteStatus = -1;
+                                previousVote.CreationDate = Repository.CurrentDate;
 
-                            //calculate new ranks
-                            Ranking.RerankSubmission(submission);
+                                db.SaveChanges();
 
-                            // register Turn DownVote To UpVote
-                            var votingTracker = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userName);
+                                //SendVoteNotification(submission.UserName, "uptodownvote");
+                                EventNotification.Instance.SendVoteNotice(submission.UserName, userName, Domain.Models.ContentType.Submission, submission.ID, -2);
+                            }
+                            break;
 
+                        // downvoted before, reset
+                        case -1:
+                            {
+                                //ResetMessageVote(userName, submissionID);
+                                submission.DownCount--;
 
-                            previousVote.VoteStatus = -1;
-                            previousVote.CreationDate = DateTime.Now;
+                                //calculate new ranks
+                                Ranking.RerankSubmission(submission);
 
-                            db.SaveChanges();
+                                db.SubmissionVoteTrackers.Remove(previousVote);
+                                db.SaveChanges();
 
-                            SendVoteNotification(submission.UserName, "uptodownvote");
-                        }
+                                //SendVoteNotification(submission.UserName, "upvote");
+                                EventNotification.Instance.SendVoteNotice(submission.UserName, userName, Domain.Models.ContentType.Submission, submission.ID, 1);
+                            }
 
-                        break;
-
-                    // downvoted before, reset
-                    case -1:
-                        {
-                            //ResetMessageVote(userName, submissionID);
-                            submission.DownCount--;
-
-                            //calculate new ranks
-                            Ranking.RerankSubmission(submission);
-
-                            db.SubmissionVoteTrackers.Remove(previousVote);
-                            db.SaveChanges();
-
-                            SendVoteNotification(submission.UserName, "upvote");
-                        }
-
-                        break;
+                            break;
+                    }
                 }
             }
         }
-
-        // send SignalR realtime notification of incoming vote to the author
-        public static void SendVoteNotification(string userName, string notificationType)
-        {
-            //MIGRATION HACK: 
-            //var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
-
-            //switch (notificationType)
-            //{
-            //    case "downvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingDownvote(1);
-            //        }
-            //        break;
-            //    case "upvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingUpvote(1);
-            //        }
-            //        break;
-            //    case "downtoupvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingDownToUpvote(1);
-            //        }
-            //        break;
-            //    case "uptodownvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingUpToDownvote(1);
-            //        }
-            //        break;
-            //    case "commentdownvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingDownvote(2);
-            //        }
-            //        break;
-            //    case "commentupvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingUpvote(2);
-            //        }
-            //        break;
-            //    case "commentdowntoupvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingDownToUpvote(2);
-            //        }
-            //        break;
-            //    case "commentuptodownvote":
-            //        {
-            //            hubContext.Clients.User(userName).incomingUpToDownvote(2);
-            //        }
-            //        break;
-            //}
-        }
-                           
     }
 }

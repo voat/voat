@@ -1,0 +1,67 @@
+﻿
+@model Voat.Models.ViewModels.ModeratorDeleteContentViewModel
+
+@{
+    ViewBag.Title = "Moderator Deletion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var submission = (Voat.Data.Models.Submission)ViewBag.Submission;
+}
+
+@if (submission == null)
+{
+    <div id="container">
+        <div id="about-main" class="content about-page" role="main">
+
+            <h1>Moderator Delete Submission Page</h1>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        </div>
+    </div>
+}
+else
+{
+            <div id="container">
+                <div id="about-main" class="content about-page" role="main">
+
+                    <h1>Moderator Delete Submission Page</h1>
+
+                    <div class="alert alert-info">Are you sure you want to delete this post from <b>v/@submission.Subverse</b>?</div>
+
+
+                    <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
+                        <p class="parent"></p>
+                        @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", 1000 } })
+                        @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+                        <div class="child"></div>
+                        <div class="clearleft">@*IE6fix*@</div>
+                    </div>
+                    <hr />
+
+                    <div class="alert alert-info">Delete Post</div>
+
+                    @using (Html.BeginForm("ModeratorDelete", "Submissions"))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-horizontal">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.HiddenFor(x => x.ID)
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Reason, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.EditorFor(model => model.Reason, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" value="Delete" class="btn-whoaverse-medium" />
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+}

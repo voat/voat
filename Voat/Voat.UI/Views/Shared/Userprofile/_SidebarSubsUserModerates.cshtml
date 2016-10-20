@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model IEnumerable<SelectListItem>
+@model IEnumerable<Voat.Domain.Models.SubverseModerator>
 
 @{
     if (Model.Any())
@@ -23,8 +23,17 @@
                 <div class="bottom">
                     @foreach (var item in Model)
                     {
+                        string descriptor = "";
+                        string name = "";
+                        try
+                        {
+                            name = item.Level.ToString();
+                            descriptor = String.Format(" [{0}]", name.First().ToString());
+                        }
+                        catch { }
+
                         <p>
-                            <a href="/v/@item.Value">@item.Value</a>
+                            <a href="/v/@item.Subverse" title="@name">@item.Subverse</a><span class="userattrs" title="@name">@descriptor</span>
                         </p>
                     }
                 </div>

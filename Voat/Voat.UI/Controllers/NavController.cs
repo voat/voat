@@ -16,7 +16,7 @@ using System.Web.Mvc;
 
 namespace Voat.Controllers
 {
-    public class NavController : Controller
+    public class NavController : BaseController
     {
         // GET: TabMenu
         [ChildActionOnly]

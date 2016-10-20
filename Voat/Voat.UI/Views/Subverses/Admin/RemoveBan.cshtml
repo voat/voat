@@ -19,7 +19,7 @@
 
         <br />
         <div class="alert alert-danger">Are you sure you want to remove this ban?</div>
-
+        @Html.ValidationSummary()
         <hr />
         <dl class="dl-horizontal">
             <dt>
@@ -45,11 +45,10 @@
         @using (Html.BeginForm("RemoveBan", "Subverses", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-
             <br />
             <input type="submit" value="Remove ban" class="btn-whoaverse-medium" />
             <br /><br />
-            @Html.ActionLink("Back to ban list", "SubverseBans", new { subversetoshow = Model.Subverse })
+            @Html.ActionLink("Back to ban list", "subverseBans", new { subversetoshow = Model.Subverse })
         }
     </div>
 </div>
