@@ -83,6 +83,7 @@ namespace Voat.Utilities
 
             if (forceResolve || !String.IsNullOrEmpty(avatarFileName))
             {
+                avatarFileName = String.IsNullOrEmpty(avatarFileName) ? $"{username}.jpg" : avatarFileName;
                 //different paths depending on cdn or not
                 avatarUrl = $"{(fullyQualified ? SiteRoot(provideProtocol, true) : "~")}/{(Settings.UseContentDeliveryNetwork ? "avatars" : "Storage/Avatars")}/{avatarFileName}";
             }
