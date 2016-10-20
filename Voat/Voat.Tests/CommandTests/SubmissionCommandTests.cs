@@ -234,6 +234,34 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(r.Message, "Submission contains banned domains");
 
         }
+
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        public void PreventBannedDomainPost_MultiPartDomains()
+        {
+            using (var repo = new voatEntities())
+            {
+                repo.BannedDomains.Add(new BannedDomain() { Domain = "one.two.three.com", Reason = "People hate counting", CreatedBy = "UnitTest", CreationDate = DateTime.UtcNow });
+                repo.SaveChanges();
+            }
+
+            TestHelper.SetPrincipal("TestUser2");
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://www.one.two.three.com/images/feelsgoodman.jpg" });
+            var r = cmd.Execute().Result;
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsFalse(r.Success, r.Message);
+            Assert.AreEqual(r.Message, "Submission contains banned domains");
+
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Content = "Check out this cool image I found using dogpile.com: HTTP://one.TWO.three.com/images/feelsgoodman.jpg" });
+            r = cmd.Execute().Result;
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsFalse(r.Success, r.Message);
+            Assert.AreEqual(r.Message, "Submission contains banned domains");
+
+        }
+
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventShortTitlePosts()

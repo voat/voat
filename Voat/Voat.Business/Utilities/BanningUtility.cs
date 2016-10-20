@@ -39,12 +39,7 @@ namespace Voat.Utilities
                     List<string> domains = new List<string>();
                     foreach (Match match in matches)
                     {
-                        string domain = match.Groups["domain"].Value;
-                        string[] parts = domain.Split('.');
-                        if (parts.Length > 2)
-                        {
-                            domain = String.Format("{0}.{1}", parts[parts.Length - 2], parts[parts.Length - 1]);
-                        }
+                        string domain = match.Groups["domain"].Value.ToLower();
                         domains.Add(domain);
                     }
                     if (domains.Count > 0)
