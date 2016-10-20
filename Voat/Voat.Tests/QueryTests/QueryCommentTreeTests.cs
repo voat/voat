@@ -56,6 +56,22 @@ namespace Voat.Tests.QueryTests
 
 
         }
+        [TestMethod]
+        [TestCategory("Query"), TestCategory("Query.Comment")]
+        public void EnsureParentIDNulledCorrectly()
+        {
+
+            var q = new QueryCommentSegment(100, 0, 101, CommentSortAlgorithm.New);
+            Assert.AreEqual(q.ParentID, null, "Expecting 0 parentID to store as null");
+
+            q = new QueryCommentSegment(100, -1, 101, CommentSortAlgorithm.New);
+            Assert.AreEqual(q.ParentID, null, "Expecting -1 parentID to store as null");
+
+            q = new QueryCommentSegment(100, 1, 101, CommentSortAlgorithm.New);
+            Assert.AreEqual(q.ParentID, 1, "Expecting 1 parentID to store as 1");
+
+
+        }
 
         [TestMethod]
         [TestCategory("Query"), TestCategory("Query.Comment")]

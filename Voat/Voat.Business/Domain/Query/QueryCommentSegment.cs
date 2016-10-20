@@ -17,7 +17,7 @@ namespace Voat.Domain.Query
         public QueryCommentSegment(int submissionID, int? parentID = null, int? index = null, CommentSortAlgorithm? sort = null)
         {
             _submissionID = submissionID;
-            _parentID = parentID;
+            _parentID = parentID.HasValue && parentID.Value > 0 ? parentID : null;
             _index = index;
             _sort = sort.HasValue ? sort.Value : CommentSortAlgorithm.Top;
         }
@@ -40,6 +40,12 @@ namespace Voat.Domain.Query
             var segment = base.GetSegment(true);
             segment.StartingIndex = _index.HasValue ? _index.Value : 0;
             return segment;
+        }
+        public int? ParentID
+        {
+            get {
+                return _parentID;
+            }
         }
     }
 }
