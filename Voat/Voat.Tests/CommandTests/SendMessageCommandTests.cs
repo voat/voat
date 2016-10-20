@@ -324,7 +324,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Messaging")]
         public async Task SendCommentNotificationMessage()
         {
-            await TestCommentNotification("unit", "TestUser1", "TestUser2");
+            await TestCommentNotification("unit", "UnitTestUser18", "UnitTestUser17");
 
         }
 
