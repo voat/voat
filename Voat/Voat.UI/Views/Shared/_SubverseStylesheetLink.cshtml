@@ -1,0 +1,7 @@
+﻿
+@model string
+
+@if (!String.IsNullOrWhiteSpace(Model) && ((User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name)) || !User.Identity.IsAuthenticated))
+{
+    <link rel="stylesheet" type="text/css" id="custom_css" href="/v/@Model/stylesheet" />
+}

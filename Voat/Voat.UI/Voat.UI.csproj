@@ -14,7 +14,7 @@
     <RootNamespace>Voat</RootNamespace>
     <AssemblyName>Voat.UI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <MvcBuildViews>false</MvcBuildViews>
+    <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -315,7 +315,6 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
-    <Compile Include="Models\AddSubmissionSelfpost.cs" />
     <Compile Include="Models\SavedItem.cs" />
     <Compile Include="Models\MarkdownPreviewModel.cs" />
     <Compile Include="Models\ViewModels\AdViewModel.cs" />
@@ -356,7 +355,6 @@
     <Compile Include="Models\PartnerIntent.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\AddSubverse.cs" />
-    <Compile Include="Models\AddSubmissionLinkpost.cs" />
     <Compile Include="Models\SubmissionMetaData.cs" />
     <Compile Include="Models\Cla.cs" />
     <Compile Include="Models\ViewModels\ActiveSubverseViewModel.cs" />
@@ -585,8 +583,6 @@
     <Content Include="Views\User\Overview.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
     <Content Include="Views\Help\Privacy.cshtml" />
-    <Content Include="Views\Shared\_AddSubmissionLinkpost.cshtml" />
-    <Content Include="Views\Shared\_AddSubmissionSelfpost.cshtml" />
     <Content Include="Views\Help\Markdown.cshtml" />
     <Content Include="Views\Errors\Subversenotfound.cshtml" />
     <Content Include="Views\Shared\_ListOfDefaultSubverses.cshtml" />
@@ -632,11 +628,7 @@
     <Content Include="Views\Subverses\Admin\SubverseModerators.cshtml" />
     <Content Include="Views\AjaxViews\_CommentReplyForm.cshtml" />
     <Content Include="Views\AjaxViews\_MessageContent.cshtml" />
-    <Content Include="Views\Messages\Old\Inbox.cshtml" />
-    <Content Include="Views\Messages\Old\Compose.cshtml" />
-    <Content Include="Views\Messages\Old\Sent.cshtml" />
     <Content Include="Views\Shared\_SubscriptionsHoverMenu.cshtml" />
-    <Content Include="Views\Messages\Old\InboxCommentReplies.cshtml" />
     <Content Include="Views\Account\_LoginModal.cshtml" />
     <Content Include="Views\Welcome\Welcome.cshtml" />
     <Content Include="Views\Subverses\AdultContentWarning.cshtml" />
@@ -701,7 +693,6 @@
     <Content Include="Views\Shared\Comments\_CommentSegment.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
-    <Content Include="Views\Messages\Old\InboxPostReplies.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarChat.cshtml" />
     <Content Include="Views\Subverses\SubmissionRemovalLog.cshtml" />
     <Content Include="Views\Search\Jaje.cshtml" />
@@ -717,7 +708,6 @@
     <Content Include="Views\Account\RegistrationDisabled.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseStylesheetEditor.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonBlockSubverse.cshtml" />
-    <Content Include="Views\Messages\Old\InboxUnread.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Help\Advertize.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
@@ -745,6 +735,7 @@
     <Content Include="Views\Messages\_MessageReply.cshtml" />
     <Content Include="Views\Shared\Submissions\_FullSubmission.cshtml" />
     <Content Include="Views\Messages\Notifications.cshtml" />
+    <Content Include="Views\Shared\_SubverseStylesheetLink.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

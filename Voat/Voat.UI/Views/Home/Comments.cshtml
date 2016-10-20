@@ -27,10 +27,10 @@
     }
 </style>
 
-@if ((User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name)) || !User.Identity.IsAuthenticated)
-{
-    <link rel="stylesheet" type="text/css" id="custom_css" href="/v/@submission.Subverse/stylesheet" />
+@section PageHeader {
+    @Html.Partial("_SubverseStylesheetLink", submission.Subverse, new ViewDataDictionary())
 }
+
 
 <div id="container">
     @*

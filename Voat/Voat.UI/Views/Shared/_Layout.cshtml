@@ -119,6 +119,9 @@
     @* 57×57px *@
     <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
 
+    @* render any additional header info like stylesheet paths *@
+    @RenderSection("PageHeader", required: false)
+
 </head>
 <body class="@themeClass">
     <div style="display: none" id="share-a-link-overlay">
@@ -306,7 +309,7 @@
     @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/javascript")
     @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/bootstrap")
 
-    @RenderSection("scripts", required: false)
+    @*@RenderSection("scripts", required: false)*@
 
     @if (!Settings.SignalRDisabled)
     {
@@ -325,6 +328,6 @@
         }
     }
     @* if any partial page runs custom javascript this section will render it after the main scripts load *@
-    @RenderSection("pageScript", required: false)
+    @RenderSection("PageScripts", required: false)
 </body>
 </html>

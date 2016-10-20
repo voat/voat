@@ -43,6 +43,10 @@
     }
 }
 
+@section PageHeader {
+    @Html.Partial("_SubverseStylesheetLink", selectedSubverse, new ViewDataDictionary())
+}
+
 <style type="text/css">
     body > .content .link .rank {
         width: 3.2ex;
@@ -58,10 +62,7 @@
     {
         @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
     }
-    @if ((User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name)) || !User.Identity.IsAuthenticated)
-    {
-        <link rel="stylesheet" type="text/css" id="custom_css" href="/v/@selectedSubverse/stylesheet" />
-    }
+
     <div class="content" role="main">
         @if (sortingMode == "top")
         {
