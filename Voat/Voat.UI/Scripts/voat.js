@@ -1675,7 +1675,7 @@ function checkUsernameAvailability(obj) {
 // a function to preview stylesheet called from subverse stylesheet editor
 function previewStylesheet(obj, subverseName) {
     var sendingButton = $(obj);
-    sendingButton.html("Hold on...");
+    sendingButton.html('Hold on...');
     sendingButton.prop('disabled', true);
 
     $.ajax({
@@ -1698,7 +1698,8 @@ function previewStylesheet(obj, subverseName) {
 
             // inject the new stylesheet
             var sheetToAdd = document.createElement('style');
-            sheetToAdd.innerHTML = $("#Stylesheet").val();
+            sheetToAdd.setAttribute('id', 'custom_css');
+            sheetToAdd.innerHTML = $('#Stylesheet').val();
             document.body.appendChild(sheetToAdd);
         }
     });
