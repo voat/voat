@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Voat.Data</RootNamespace>
     <AssemblyName>Voat.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,10 +80,25 @@
   <ItemGroup>
     <Compile Include="Metadata\CommentMetaData.cs" />
     <Compile Include="Metadata\MessageMetaData.cs" />
-    <Compile Include="Models\AutoModComment.cs">
+    <Compile Include="Models\Ad.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\AutoModSubmission.cs">
+    <Compile Include="Models\AdminLog.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ApiClient.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ApiCorsPolicy.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ApiLog.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ApiPermissionPolicy.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ApiThrottlePolicy.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Badge.cs">
@@ -100,9 +116,6 @@
     <Compile Include="Models\CommentRemovalLog.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CommentReplyNotification.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\CommentSaveTracker.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -112,16 +125,19 @@
     <Compile Include="Models\DefaultSubverse.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\EventLog.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\FeaturedSubverse.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Message.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ModeratorInvitation.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PartnerInformation.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\PrivateMessage.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PromotedSubmission.cs">
@@ -137,9 +153,6 @@
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubmissionRemovalLog.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\SubmissionReplyNotification.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubmissionSaveTracker.cs">
@@ -169,6 +182,9 @@
     <Compile Include="Models\UserBlockedSubverse.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\UserBlockedUser.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\UserPreference.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -182,6 +198,9 @@
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserSetSubscription.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserVisit.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\usp_CommentTree_Result.cs">
@@ -212,13 +231,12 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.Config">
-      <SubType>Designer</SubType>
-    </None>
     <EntityDeploy Include="Models\VoatEntityDataModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>VoatEntityDataModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <None Include="App.Config" />
+    <None Include="~App.Config" />
     <None Include="Models\VoatEntityDataModel.edmx.diagram">
       <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
     </None>

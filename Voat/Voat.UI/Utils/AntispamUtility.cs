@@ -33,6 +33,8 @@ using Newtonsoft.Json;
 using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Configuration;
+using Voat.Data;
+using Voat.Domain;
 
 namespace Voat.UI.Utilities
 {
@@ -60,6 +62,8 @@ namespace Voat.UI.Utilities
 
     public class PreventSpamAttribute : ActionFilterAttribute
     {
+        private const string CACHEKEY = "PreventSpamHash";
+
         // This stores the time between Requests (in seconds)
         public int DelayRequest = 10;
         
@@ -75,55 +79,54 @@ namespace Voat.UI.Utilities
         {
             var loggedInUser = filterContext.HttpContext.User.Identity.Name;
 
-            // user is submitting a message
-            if (filterContext.ActionParameters.ContainsKey("message"))
-            {
-                var incomingMessage = (Submission)filterContext.ActionParameters["message"];
-                var targetSubverse = incomingMessage.Subverse;
+            //// user is submitting a message
+            //if (filterContext.ActionParameters.ContainsKey("message"))
+            //{
+            //    var incomingMessage = (Submission)filterContext.ActionParameters["message"];
+            //    var targetSubverse = incomingMessage.Subverse;
+            //    // check user LCP for target subverse
+            //    if (targetSubverse != null)
+            //    {
+            //        var LCPForSubverse = Karma.LinkKarmaForSubverse(loggedInUser, targetSubverse);
+            //        if (LCPForSubverse >= 40)
+            //        {
+            //            // lower DelayRequest time
+            //            DelayRequest = 10;
+            //        }
+            //        else if (ModeratorPermission.IsModerator(loggedInUser, targetSubverse))
+            //        {
+            //            // lower DelayRequest time
+            //            DelayRequest = 10;
+            //        }
+            //    }
+            //}
+            //// user is submitting a comment
+            //else if (filterContext.ActionParameters.ContainsKey("comment"))
+            //{
+            //    Comment incomingComment = (Comment)filterContext.ActionParameters["comment"];
 
-                // check user LCP for target subverse
-                if (targetSubverse != null)
-                {
-                    var LCPForSubverse = Karma.LinkKarmaForSubverse(loggedInUser, targetSubverse);
-                    if (LCPForSubverse >= 40)
-                    {
-                        // lower DelayRequest time
-                        DelayRequest = 10;
-                    }
-                    else if (UserHelper.IsUserSubverseModerator(loggedInUser, targetSubverse))
-                    {
-                        // lower DelayRequest time
-                        DelayRequest = 10;
-                    }
-                }
-            }
-            // user is submitting a comment
-            else if (filterContext.ActionParameters.ContainsKey("comment"))
-            {
-                Comment incomingComment = (Comment)filterContext.ActionParameters["comment"];
+            //    using (voatEntities db = new voatEntities())
+            //    {
+            //        var relatedMessage = db.Submissions.Find(incomingComment.SubmissionID);
+            //        if (relatedMessage != null)
+            //        {
+            //            var targetSubverseName = relatedMessage.Subverse;
 
-                using (voatEntities db = new voatEntities())
-                {
-                    var relatedMessage = db.Submissions.Find(incomingComment.SubmissionID);
-                    if (relatedMessage != null)
-                    {
-                        var targetSubverseName = relatedMessage.Subverse;
-
-                        // check user CCP for target subverse
-                        int CCPForSubverse = Karma.CommentKarmaForSubverse(loggedInUser, targetSubverseName);
-                        if (CCPForSubverse >= 40)
-                        {
-                            // lower DelayRequest time
-                            DelayRequest = 10;
-                        }
-                        else if (UserHelper.IsUserSubverseModerator(loggedInUser, targetSubverseName))
-                        {
-                            // lower DelayRequest time
-                            DelayRequest = 10;
-                        }
-                    }
-                }
-            }
+            //            // check user CCP for target subverse
+            //            int CCPForSubverse = Karma.CommentKarmaForSubverse(loggedInUser, targetSubverseName);
+            //            if (CCPForSubverse >= 40)
+            //            {
+            //                // lower DelayRequest time
+            //                DelayRequest = 10;
+            //            }
+            //            else if (ModeratorPermission.IsModerator(loggedInUser, targetSubverseName))
+            //            {
+            //                // lower DelayRequest time
+            //                DelayRequest = 10;
+            //            }
+            //        }
+            //    }
+            //}
 
             // Store our HttpContext (for easier reference and code brevity)
             var request = filterContext.HttpContext.Request;
@@ -132,7 +135,7 @@ namespace Voat.UI.Utilities
             var cache = filterContext.HttpContext.Cache;
 
             // Grab the IP Address from the originating Request (very simple implementation for example purposes)
-            var originationInfo = request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? request.UserHostAddress;
+            var originationInfo = UserHelper.UserIpAddress(request);
 
             // Append the User Agent
             originationInfo += request.UserAgent;
@@ -157,10 +160,26 @@ namespace Voat.UI.Utilities
             {
                 // Adds an empty object to the cache using the hashValue to a key (This sets the expiration that will determine
                 // if the Request is valid or not
-                cache.Add(hashValue, "", null, DateTime.Now.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                cache.Add(hashValue, "", null, Repository.CurrentDate.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                request.RequestContext.HttpContext.Items[CACHEKEY] = hashValue;
             }
 
             base.OnActionExecuting(filterContext);
+        }
+        public static void Reset()
+        {
+            var context = System.Web.HttpContext.Current;
+            if (context != null)
+            {
+                if (context.Items.Contains(CACHEKEY))
+                {
+                    var hashValue = context.Items[CACHEKEY].ToString();
+                    if (!String.IsNullOrWhiteSpace(hashValue))
+                    {
+                        context.Cache.Remove(hashValue);
+                    }
+                }
+            }
         }
     }
 

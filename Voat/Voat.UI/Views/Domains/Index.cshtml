@@ -18,16 +18,7 @@
     ViewBag.Title = Settings.SiteSlogan;
 
     string sortingMode = ViewBag.SortingMode;
-    string urlaction;
-
-    if (sortingMode != "new")
-    {
-        urlaction = "DomainIndex";
-    }
-    else
-    {
-        urlaction = "DomainIndexSorted";
-    }
+    string urlaction = "DomainIndex";
 
     int commentContributionPoints = 0;
     if (User.Identity.IsAuthenticated)

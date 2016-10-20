@@ -19,6 +19,8 @@
 
         <br />
         <div class="alert alert-danger">Are you sure you want to remove this moderator?</div>
+        
+        @Html.ValidationSummary()
 
         <hr />
         <dl class="dl-horizontal">
@@ -35,7 +37,7 @@
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.Power)
+                @String.Format("{0} - {1}", Model.Power.ToString() , ((Voat.Domain.Models.ModeratorLevel)Model.Power).ToString())
             </dd>
         </dl>
 

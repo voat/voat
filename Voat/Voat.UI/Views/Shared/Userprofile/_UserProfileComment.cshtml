@@ -21,16 +21,27 @@
         {
             if (!Model.Submission.IsDeleted)
             {
-                <p class="parent">
-                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
-                    <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a> in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
-                </p>
+                if (!Model.Submission.IsAnonymized)
+                {
+                    <p class="parent">
+                        <a href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value)" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                        <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a> 
+                        in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                    </p>
+                }
+                else
+                {
+                    <p class="parent">
+                        <a href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value)" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                        <a href="#" class="author may-blank">@Model.SubmissionID</a> in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                    </p>
+                }
             }
             else
             {
                 <p class="parent">
-                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.LinkDescription</a> by
-                    <span class="userattrs">[deleted]</span>in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                    <a href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value)" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                    <span class="userattrs">[deleted]</span> in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
                 </p>
             }
         }
@@ -38,16 +49,27 @@
         {
             if (!Model.Submission.IsDeleted)
             {
-                <p class="parent">
-                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
-                    <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a>
-                    in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
-                </p>
+                if (!Model.Submission.IsAnonymized)
+                {
+                    <p class="parent">
+                        <a href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value)" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                        <a href="~/user/@Model.Submission.UserName" class="author may-blank">@Model.Submission.UserName</a>
+                        in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                    </p>
+                }
+                else
+                {
+                    <p class="parent">
+                        <a href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value)" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                        <a href="#" class="author may-blank">@Model.SubmissionID</a>
+                        in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
+                    </p>
+                }
             }
             else
             {
                 <p class="parent">
-                    <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="title" rel="nofollow">@Model.Submission.Title</a> by
+                    <a href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value)" class="title" rel="nofollow">@Model.Submission.Title</a> by
                     <span class="userattrs">[deleted]</span>
                     in <a href="~/v/@Model.Submission.Subverse" class="subverse hover">@Model.Submission.Subverse</a>
                 </p>
@@ -57,20 +79,28 @@
 
 
     @{
-        string postAge = Submissions.CalcSubmissionAge(Model.CreationDate);
+        string postAge = Age.ToRelative(Model.CreationDate);
         int commentScore = (int)(Model.UpCount - Model.DownCount);
 
         @*
-        area for voting icons
-        icons removed due to community request http://voat.co/v/ideasforvoat/comments/8212
+            area for voting icons
+            icons removed due to community request http://voat.co/v/ideasforvoat/comments/8212
         *@
 
         <div class="entry unvoted">
             <div class="collapsed" style="display: none">
-                <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.UserName" class="author gray submitter may-blank">@Model.UserName</a>
+                @if (!Model.IsAnonymized)
+                {
+                    <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.UserName" class="author gray submitter may-blank">@Model.UserName</a>
+                }
+                else
+                {
+                    <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.ID" class="author gray submitter may-blank">@Model.ID</a>
+                }
+
                 @if (Model.Submission.UserName == Model.UserName)
                 {
-                    <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID">S</a>]</span>
+                    <span class="userattrs">[<a class="submitter" title="submitter" href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value)">S</a>]</span>
                 }
                 <span class="score dislikes">@Model.DownCount points</span><span class="score unvoted">@commentScore points</span>
                 <span class="score likes">@Model.UpCount points</span>
@@ -78,10 +108,18 @@
             </div>
             <div class="noncollapsed">
                 <p class="tagline">
-                    <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="~/user/@Model.UserName" class="author submitter may-blank">@Model.UserName</a>
+                    @if (!Model.IsAnonymized)
+                    {
+                        <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="~/user/@Model.UserName" class="author submitter may-blank">@Model.UserName</a>
+                    }
+                    else
+                    {
+                        <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="#" class="author submitter may-blank">@Model.ID</a>
+                    }
+
                     @if (Model.Submission.UserName == Model.UserName)
                     {
-                        <span class="userattrs">[<a class="submitter" title="submitter" href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID">S</a>]</span>
+                        <span class="userattrs">[<a class="submitter" title="submitter" href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value)">S</a>]</span>
                     }
                     <span class="score dislikes">@Model.DownCount points</span>
                     <span class="score unvoted">@commentScore points</span>
@@ -109,13 +147,13 @@
                 </form>
                 <ul class="flat-list buttons">
                     <li class="first">
-                        <a href="/v/@Model.Submission.Subverse/comments/@Model.SubmissionID/@Model.ID" class="bylink" rel="nofollow">permalink</a>
+                        <a href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value, Model.ID)" class="bylink" rel="nofollow">permalink</a>
                     </li>
                     <li class="first">
-                        <a href="/v/@Model.Submission.Subverse/comments/@Model.SubmissionID/@Model.ParentID/@Model.ID#@Model.ID" class="bylink" rel="nofollow">context</a>
+                        <a href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value, Model.ID)/10#@Model.ID" class="bylink" rel="nofollow">context</a>
                     </li>
                     <li class="first">
-                        <a href="~/v/@Model.Submission.Subverse/comments/@Model.SubmissionID" class="may-blank">full comments (@Model.Submission.Comments.Count)</a>
+                        <a href="@VoatPathHelper.CommentsPagePath(Model.Submission.Subverse, Model.SubmissionID.Value)" class="may-blank">full comments</a>
                     </li>
                 </ul>
             </div>

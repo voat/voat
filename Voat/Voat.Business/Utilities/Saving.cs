@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -12,8 +12,8 @@ All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
-using System;
 using System.Linq;
+using Voat.Data;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
@@ -23,10 +23,8 @@ namespace Voat.Utilities
         // returns true if saved, false otherwise
         public static bool? CheckIfSaved(string userToCheck, int messageId)
         {
-
             using (voatEntities db = new voatEntities())
             {
-
                 var cmd = db.Database.Connection.CreateCommand();
                 cmd.CommandText = "SELECT COUNT(*) FROM SubmissionSaveTracker WITH (NOLOCK) WHERE UserName = @UserName AND SubmissionID = @SubmissionID";
 
@@ -46,7 +44,7 @@ namespace Voat.Utilities
                 {
                     cmd.Connection.Open();
                 }
-                
+
                 int count = (int)cmd.ExecuteScalar();
 
                 return count > 0;
@@ -77,13 +75,12 @@ namespace Voat.Utilities
                     {
                         SubmissionID = submissionId,
                         UserName = userWhichSaved,
-                        CreationDate = DateTime.Now
+                        CreationDate = Repository.CurrentDate
                     };
                     db.SubmissionSaveTrackers.Add(tmpSavingTracker);
                     db.SaveChanges();
                 }
             }
-
         }
 
         // a user has saved this submission earlier and wishes to unsave it, delete the record
@@ -93,7 +90,9 @@ namespace Voat.Utilities
             {
                 var saveTracker = db.SubmissionSaveTrackers.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userWhichSaved);
 
-                if (saveTracker == null) return;
+                if (saveTracker == null)
+                    return;
+
                 //delete vote history
                 db.SubmissionSaveTrackers.Remove(saveTracker);
                 db.SaveChanges();

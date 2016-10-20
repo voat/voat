@@ -16,6 +16,7 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using Newtonsoft.Json;
 using WebApiThrottle;
+using Voat.Configuration;
 
 namespace Voat
 {
@@ -41,43 +42,48 @@ namespace Voat
 
             //configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
             //configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects; 
+            if (Settings.LegacyApiEnabled)
+            {
+                // configure routes
+                configuration.Routes.MapHttpRoute("API list default subverses", "api/defaultsubverses",
+                    new { controller = "WebApi", action = "DefaultSubverses" });
 
-            // configure routes
-            configuration.Routes.MapHttpRoute("API list default subverses", "api/defaultsubverses",
-                new { controller = "WebApi", action = "DefaultSubverses" });
+                configuration.Routes.MapHttpRoute("API list banned hostnames", "api/bannedhostnames",
+                    new { controller = "WebApi", action = "BannedHostnames" });
 
-            configuration.Routes.MapHttpRoute("API list banned hostnames", "api/bannedhostnames",
-                new { controller = "WebApi", action = "BannedHostnames" });
+                configuration.Routes.MapHttpRoute("API list banned user accounts", "api/bannedusers",
+                    new { controller = "WebApi", action = "BannedUsers" });
 
-            configuration.Routes.MapHttpRoute("API list top 200 subverses", "api/top200subverses",
-                new { controller = "WebApi", action = "Top200Subverses" });
+                configuration.Routes.MapHttpRoute("API list top 200 subverses", "api/top200subverses",
+                    new { controller = "WebApi", action = "Top200Subverses" });
 
-            configuration.Routes.MapHttpRoute("API frontpage", "api/frontpage",
-                new { controller = "WebApi", action = "Frontpage" });
+                configuration.Routes.MapHttpRoute("API frontpage", "api/frontpage",
+                    new { controller = "WebApi", action = "Frontpage" });
 
-            configuration.Routes.MapHttpRoute("API frontpage for given subverse", "api/subversefrontpage",
-                new { controller = "WebApi", action = "SubverseFrontpage" });
+                configuration.Routes.MapHttpRoute("API frontpage for given subverse", "api/subversefrontpage",
+                    new { controller = "WebApi", action = "SubverseFrontpage" });
 
-            configuration.Routes.MapHttpRoute("API details for single submission", "api/singlesubmission",
-                new { controller = "WebApi", action = "SingleSubmission" });
+                configuration.Routes.MapHttpRoute("API details for single submission", "api/singlesubmission",
+                    new { controller = "WebApi", action = "SingleSubmission" });
 
-            configuration.Routes.MapHttpRoute("API details for single comment", "api/singlecomment",
-                new { controller = "WebApi", action = "SingleComment" });
+                configuration.Routes.MapHttpRoute("API details for single comment", "api/singlecomment",
+                    new { controller = "WebApi", action = "SingleComment" });
 
-            configuration.Routes.MapHttpRoute("API details for a subverse", "api/subverseinfo",
-                new { controller = "WebApi", action = "SubverseInfo" });
+                configuration.Routes.MapHttpRoute("API details for a subverse", "api/subverseinfo",
+                    new { controller = "WebApi", action = "SubverseInfo" });
 
-            configuration.Routes.MapHttpRoute("API details for a user", "api/userinfo",
-                new { controller = "WebApi", action = "UserInfo" });
+                configuration.Routes.MapHttpRoute("API details for a user", "api/userinfo",
+                    new { controller = "WebApi", action = "UserInfo" });
 
-            configuration.Routes.MapHttpRoute("API details for a badge", "api/badgeinfo",
-                new { controller = "WebApi", action = "BadgeInfo" });
+                configuration.Routes.MapHttpRoute("API details for a badge", "api/badgeinfo",
+                    new { controller = "WebApi", action = "BadgeInfo" });
 
-            configuration.Routes.MapHttpRoute("API comments for a single submission", "api/submissioncomments",
-                new { controller = "WebApi", action = "SubmissionComments" });
+                configuration.Routes.MapHttpRoute("API comments for a single submission", "api/submissioncomments",
+                    new { controller = "WebApi", action = "SubmissionComments" });
 
-            configuration.Routes.MapHttpRoute("Top 100 images by date", "api/top100imagesbydate",
-                new { controller = "WebApi", action = "Top100ImagesByDate" });
+                configuration.Routes.MapHttpRoute("Top 100 images by date", "api/top100imagesbydate",
+                    new { controller = "WebApi", action = "Top100ImagesByDate" });
+            }
         }
     }
 }

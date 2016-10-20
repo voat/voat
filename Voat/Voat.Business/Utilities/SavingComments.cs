@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -12,22 +12,19 @@ All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
-using System;
 using System.Linq;
+using Voat.Data;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
 {
     public class SavingComments
     {
-
         // returns true if saved, false otherwise
         public static bool? CheckIfSavedComment(string userToCheck, int commentID)
         {
-
             using (voatEntities db = new voatEntities())
             {
-
                 var cmd = db.Database.Connection.CreateCommand();
                 cmd.CommandText = "SELECT COUNT(*) FROM CommentSaveTracker WITH (NOLOCK) WHERE UserName = @UserName AND CommentID = @CommentID";
 
@@ -53,12 +50,10 @@ namespace Voat.Utilities
                 return count > 0;
             }
 
-
             //using (var db = new voatEntities())
             //{
             //    return db.Commentsavingtrackers.Where(b => b.CommentId == commentId && b.UserName == userToCheck).AsNoTracking().Any();
             //}
-
         }
 
         // a user wishes to save a comment, save it
@@ -80,13 +75,12 @@ namespace Voat.Utilities
                     {
                         CommentID = commentId,
                         UserName = userWhichSaved,
-                        CreationDate = DateTime.Now
+                        CreationDate = Repository.CurrentDate
                     };
                     db.CommentSaveTrackers.Add(tmpSavingTracker);
                     db.SaveChanges();
                 }
             }
-
         }
 
         // a user has saved this comment earlier and wishes to unsave it, delete the record
@@ -96,7 +90,9 @@ namespace Voat.Utilities
             {
                 var votingTracker = db.CommentSaveTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichSaved);
 
-                if (votingTracker == null) return;
+                if (votingTracker == null)
+                    return;
+
                 // delete vote history
                 db.CommentSaveTrackers.Remove(votingTracker);
                 db.SaveChanges();

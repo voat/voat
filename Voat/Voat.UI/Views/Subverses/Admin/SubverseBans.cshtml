@@ -24,35 +24,41 @@
             <hr />
             @Html.ActionLink("Add a new ban", "AddBan")
             <hr />
+           
 
             <h1>Currently banned users</h1>
-
-            <table class="table table-striped table-condensed">
-                <thead>
-                    <tr>
-                        <th><b>Username</b></th>
-                        <th><b>Banned by</b></th>
-                        <th><b>Ban reason</b></th>
-                        <th><b>Banned on</b></th>
-                        <th><b>Remove</b></th>
-                    </tr>
-                </thead>
-                <tbody>
-
-                    @foreach (var item in Model)
-                    {
+            @if (Model != null && Model.Any())
+            {
+                <table class="table table-striped table-condensed">
+                    <thead>
                         <tr>
-                            <td>@item.UserName</td>
-                            <td>@item.CreatedBy</td>
-                            <td>@item.Reason</td>
-                            <td>@item.CreationDate</td>
-                            <td>@Html.ActionLink("Remove", "RemoveBan", new { id = item.ID })</td>
+                            <th><b>Username</b></th>
+                            <th><b>Banned by</b></th>
+                            <th><b>Ban reason</b></th>
+                            <th><b>Banned on</b></th>
+                            <th><b>Remove</b></th>
                         </tr>
-                    }
+                    </thead>
+                    <tbody>
 
-                </tbody>
-            </table>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><a href="/user/@item.UserName">@item.UserName</a></td>
+                                <td><a href="/user/@item.CreatedBy">@item.CreatedBy</a></td>
+                                <td>@item.Reason</td>
+                                <td>@item.CreationDate</td>
+                                <td>@Html.ActionLink("Remove", "RemoveBan", new { id = item.ID })</td>
+                            </tr>
+                        }
 
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No banned users found</p>
+            }
         </div>
         <div class="pagination-container">
             <ul>

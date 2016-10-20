@@ -23,7 +23,7 @@
 
     string routeController = (string)ViewContext.RouteData.Values["controller"];
     string routeAction = (string)ViewContext.RouteData.Values["action"];
-    string routeId = (string)ViewContext.RouteData.Values["id"];
+    string submissionID = (string)ViewContext.RouteData.Values["submissionID"];
 
     string sortingMode = ViewBag.SortingMode;
     string selectedUser = ViewBag.userid;
@@ -89,6 +89,10 @@
     }
     else
     {
+        <meta name="theme-color" content="#333" />
+        <meta name="msapplication-navbutton-color" content="#333" />
+        <meta name="apple-mobile-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         @Styles.Render("~/Content/Dark")
     }
 
@@ -115,9 +119,12 @@
     @* 57×57px *@
     <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
 
+    @* render any additional header info like stylesheet paths *@
+    @RenderSection("PageHeader", required: false)
+
 </head>
 <body class="@themeClass">
-    <div style="display:none" id="share-a-link-overlay">
+    <div style="display: none" id="share-a-link-overlay">
         <div>
             <h1>share a link</h1>
         </div>
@@ -199,9 +206,9 @@
                         You can login if you already have an account or register by clicking the button below.
                         Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
                         <div>
-                            @if (routeController == "Comment" && routeAction == "Comments" && routeId != null)
+                            @if (routeController == "Comment" && routeAction == "Comments" && submissionID != null)
                             {
-                                @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "id", routeId } }) } })
+                                @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "submissionID", submissionID } }) } })
                             }
                             else
                             {
@@ -224,6 +231,9 @@
 
     @if (User.Identity.IsAuthenticated)
     {
+        var userCCP = Karma.CommentKarma(User.Identity.Name);
+        var scaledQuota = userCCP >= 20 ? Math.Max(Settings.DailyVotingQuota, (userCCP / 2)) : 10;
+
         @* Not enough comment contribution points Modal *@
         <div class="modal fade" id="notenoughccp" tabindex="-1" role="dialog" aria-labelledby="notenoughccplabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -236,7 +246,7 @@
                         <p>Welcome to @Settings.SiteName!</p>
                         <p>In order to downvote comments or submissions you need to have at least 100 comment contribution points.</p>
                         <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>
-                        <p>You currently have @Karma.CommentKarma(User.Identity.Name) comment contribution points.</p>
+                        <p>You currently have @userCCP comment contribution points.</p>
                         <p>Tip: a good way to earn more contribution points is to take part in discussions or say hi in /v/introductions.</p>
                         <p>This requirement was established as a measure to encourage new members to get involved and participate in discussions.</p>
                     </div>
@@ -256,11 +266,11 @@
                     </div>
                     <div class="modal-body">
                         <p>Welcome to @Settings.SiteName!</p>
-                        <p>In order to be able to upvote comments or submissions without limitations, you need to have at least 20 comment contribution points.</p>
-                        <p>You are currently limited to @Math.Max(10, (Karma.CommentKarma(User.Identity.Name) / 2)) upvotes per 24 hours.</p>
+                        <p>The number of votes you can place is tied to your comment contribution points.</p>
+                        <p>You are currently limited to @scaledQuota votes per 24 hours.</p>
                         <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>
-                        <p>You currently have @Karma.CommentKarma(User.Identity.Name) comment contribution points.</p>
-                        <p>Tip: a good way to earn more contribution points is to take part in discussions or say hi in /v/introductions.</p>
+                        <p>You currently have @userCCP comment contribution points.</p>
+                        <p>Tip: a good way to earn more contribution points is to take part in discussions or say hi in v/introductions.</p>
                         <p>This requirement was established as a measure to encourage new members to get involved and participate in discussions.</p>
                     </div>
                     <div class="modal-footer">
@@ -277,17 +287,17 @@
     @if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
     {
         HttpCookie hc = new HttpCookie("NotFirstTime", "1");
-        hc.Expires = DateTime.Now.AddYears(1);
+        hc.Expires = Repository.CurrentDate.AddYears(1);
         HttpContext.Current.Response.Cookies.Add(hc);
 
         @* First time visitor welcome *@
-        if (!User.Identity.IsAuthenticated)
-        {
-            <script type="text/javascript">
-                window.onload = function () { firstTimeVisitorWelcome(); }
-            </script>
-        }
-        @* End First time visitor welcome *@
+    if (!User.Identity.IsAuthenticated)
+    {
+        <script type="text/javascript">
+            window.onload = function () { firstTimeVisitorWelcome(); }
+        </script>
+    }
+    @* End First time visitor welcome *@
 
         <div class="alert eppnotice alert-dismissible" role="alert">
             <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -299,7 +309,7 @@
     @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/javascript")
     @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/bootstrap")
 
-    @RenderSection("scripts", required: false)
+    @*@RenderSection("scripts", required: false)*@
 
     @if (!Settings.SignalRDisabled)
     {
@@ -307,6 +317,17 @@
         <script src="~/Scripts/libs/jquery.signalR-2.2.0.min.js" defer></script>
         @* Autogenerated SignalR hub script. *@
         <script src="~/signalr/hubs" defer></script>
+        if (User.Identity.IsAuthenticated)
+        {
+            <script language="javascript">
+                $(document)
+                    .ready(function () {
+                        initiateWSConnection();
+                    });
+            </script>
+        }
     }
+    @* if any partial page runs custom javascript this section will render it after the main scripts load *@
+    @RenderSection("PageScripts", required: false)
 </body>
 </html>

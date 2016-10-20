@@ -16,28 +16,38 @@ using System.Web.Mvc;
 
 namespace Voat.Controllers
 {
-    public class ErrorController : Controller
+    public class ErrorController : BaseController
     {
         public ViewResult NotFound()
         {
             ViewBag.SelectedSubverse = string.Empty;
             //Response.StatusCode = 404;
-            return View("~/Views/Errors/Error_404.cshtml");
+            return View("~/Views/Error/404.cshtml");
         }
 
         public ActionResult CriticalError()
         {
-            return View("~/Views/Errors/Error.cshtml");
+            return View("~/Views/Error/Error.cshtml");
         }
 
         public ActionResult HeavyLoad()
         {
-            return View("~/Views/Errors/DbNotResponding.cshtml");
+            return View("~/Views/Error/DbNotResponding.cshtml");
         }
 
         public ActionResult UnAuthorized()
         {
-            return View("~/Views/Errors/UnAuthorized.cshtml");
+            return View("~/Views/Error/UnAuthorized.cshtml");
+        }
+
+        public ActionResult Unhandled()
+        {
+            throw new System.InvalidProgramException("This is an unhandled exception");
+        }
+
+        public ActionResult Others(string name, string url)
+        {
+            return View();
         }
     }
 }

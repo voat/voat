@@ -14,9 +14,16 @@
 
 @if (Request.IsAuthenticated)
 {
-    int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
-    int commentKarma = Karma.CommentKarma(User.Identity.GetUserName());
-    int upvotesGiven = Karma.UpvotesGiven(User.Identity.GetUserName());
+    var q = new Voat.Domain.Query.QueryUserData(User.Identity.Name);
+    var r = q.Execute();
+
+    int linkKarma = r.Information.SubmissionPoints.Sum;
+    int commentKarma = r.Information.CommentPoints.Sum;
+    int upvotesGiven = r.Information.CommentVoting.UpCount + r.Information.SubmissionVoting.UpCount;
+
+    //int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
+    //int commentKarma = Karma.CommentKarma(User.Identity.GetUserName());
+    //int upvotesGiven = Karma.UpvotesGiven(User.Identity.GetUserName());
 
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {
@@ -36,18 +43,12 @@
                 <span class="separator">|</span>
                 <a id="nightmodetoggle" onclick="toggleNightMode()" title="Toggle Night Mode"></a>
                 <span class="separator">|</span>
-                @if (UserHelper.UserHasNewMessages(User.Identity.Name))
-                {
+                @{
+                    var cmd = new Voat.Domain.Query.QueryMessageCounts(User.Identity.Name, Voat.Domain.Models.IdentityType.User, Voat.Domain.Models.MessageTypeFlag.All, Voat.Domain.Models.MessageState.Unread);
+                    var count = cmd.Execute().Total;
                     <span class="notification-container">
-                        <a title="you have new messages" href="/messaging/inbox" class="havemail" id="mail">messages</a>
-                        <span class="notification-counter" id="mailcounter">@UserHelper.UnreadTotalNotificationsCount(User.Identity.Name)</span>
-                    </span>
-                }
-                else
-                {
-                    <span class="notification-container">
-                        <a title="no new messages" href="/messaging/inbox" class="nohavemail" id="mail">messages</a>
-                        <span class="notification-counter" id="mailcounter" style="display:none"></span>
+                        <a title="you have new messages" href="/messages/" class="@(count > 0 ? "havemail" : "nohavemail")" id="mail">messages</a>
+                        <span class="notification-counter" id="mailcounter" style="display:@(count > 0 ? "block" : "none")">@count</span>
                     </span>
                 }
                 <span class="separator">|</span>

@@ -22,7 +22,7 @@ using Voat.Utilities;
 
 namespace Voat.Controllers
 {
-    public class PartnerController : Controller
+    public class PartnerController : BaseController
     {
         // GET: PartnerIntentRegistration
         public ActionResult PartnerProgramInformation()
@@ -42,6 +42,7 @@ namespace Voat.Controllers
         [Authorize]
         [RequireHttps]
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [ValidateCaptcha]
         public ActionResult PartnerIntentRegistration(PartnerIntent partnerModel)
@@ -84,7 +85,7 @@ namespace Voat.Controllers
             //}
 
             ViewBag.SelectedSubverse = string.Empty;
-            return View("~/Views/Errors/Error.cshtml");
+            return View("~/Views/Error/Error.cshtml");
         }
     }
 }

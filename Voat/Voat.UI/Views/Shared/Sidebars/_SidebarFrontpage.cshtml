@@ -27,6 +27,13 @@
         </a>
     </div>
     <div class="spacer">
+        <div class="sidebox">
+            <a href="/v/all/top" class="btn-whoaverse btn-block contribute">
+                Top Submissions
+            </a>
+        </div>
+    </div>
+    <div class="spacer">
         <div class="sidebox create">
             <a href="/subverses/create" class="btn-whoaverse btn-block">
                 Create your own subverse
@@ -42,14 +49,24 @@
                 </a>
             </div>
         </div>
-   }
-    <div class="spacer">
+    }
+    @*<div class="spacer">
         <div class="sidebox">
             <a href="/p/partnerprogram" class="btn-whoaverse btn-block">
                 Become a partner
             </a>
         </div>
-    </div>
+    </div>*@
+    @if (!Settings.SignalRDisabled)
+    {
+        <div class="spacer">
+            <div class="sidebox">
+                <a href="/chat/whatever" class="btn-whoaverse btn-block" target="_blank">
+                    Voat Chat (Alpha)
+                </a>
+            </div>
+        </div>
+    }
     <div class="spacer">
         <div class="sidebox">
             <a href="/subverses" class="btn-whoaverse btn-block">
@@ -97,7 +114,8 @@
                 <h1 class="alert-h1">Unofficial Voat Mobile Apps</h1>
             </div>
             <div class="sidecontentbox content">
-                <p>We love these two, unofficial Android apps for Voat: <a href="https://play.google.com/store/apps/details?id=net.lumigo.vobrowser2">voBrowser</a> and <a href="https://play.google.com/store/apps/details?id=com.SpaceMonkey.Boats">Boats for Voat</a>.
+                <p>
+                    We love these two, unofficial Android apps for Voat: <a href="https://play.google.com/store/apps/details?id=net.lumigo.vobrowser2">voBrowser</a> and <a href="https://play.google.com/store/apps/details?id=com.SpaceMonkey.Boats">Boats for Voat</a>.
                 </p>
                 <p>If you see another Voat apps in the wild, do let us know!</p>
             </div>
@@ -105,13 +123,28 @@
     </div>
     <div class="spacer">
         <div class="sidecontentbox ">
+            @{
+                Html.RenderAction("RenderAd", "Ad");
+            }
+        </div>
+    </div>
+    <div class="spacer">
+        <div class="sidecontentbox ">
             <div class="title">
-                <h1 class="alert-h1">Advertize on Voat</h1>
+                <h1 class="alert-h1">Help us keep Voat alive</h1>
             </div>
             <div class="sidecontentbox content">
+                <img src="https://voat.co/graphics/jumping_goat.png" style="border:0" />
+                <p>Weeee! Voat is flying on our own now. It feels like Freedom.</p>
                 <p>
-                    Your Ad here? Contact us.
+                    If you can, please donate to help us keep Voat running and free. As a thank you, we will display a donor badge on your profile.
                 </p>
+                <p>
+                    You can also <a href="https://www.coinbase.com/voat">donate Bitcoin</a>. On checkout, please mention your Voat username if you want the donor badge.
+                </p>
+                <a href="https://store.voat.co/donations" class="btn-whoaverse btn-block contribute" target="_blank">
+                    Donate
+                </a>
             </div>
         </div>
     </div>

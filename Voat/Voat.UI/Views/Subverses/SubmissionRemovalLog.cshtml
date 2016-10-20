@@ -43,7 +43,8 @@
                     @foreach (var logItem in Model)
                     {
                         <div id="logItem" class="logItem alert-singlethread">
-                            <p>Removed by @logItem.Moderator at: @logItem.CreationDate. Reason given: @logItem.Reason</p>
+                            <p>@logItem.Moderator removed @Age.ToRelative(logItem.CreationDate) ago on @logItem.CreationDate</p>
+                            <p>"@logItem.Reason"</p>
                         </div>
 
                         // type 2 = link, type 1 = message

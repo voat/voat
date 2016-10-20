@@ -19,8 +19,8 @@ namespace Voat.Models
 {
     public class MarkdownPreviewModel
     {
-        [Required(ErrorMessage = "Comment text is required. Please fill this field.")]
-        [StringLength(10000, ErrorMessage = "Comment text is limited to 10.000 characters.")]
+        [Required(ErrorMessage = "Text is required. Please fill this field.")]
+        [StringLength(10000, ErrorMessage = "Text is limited to 10000 characters.")]
         [AllowHtml]
         public string MessageContent { get; set; }
     }

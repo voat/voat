@@ -57,13 +57,13 @@
                 }
 
                 <p class="h6">
-                    Posting time: <time title="@ViewBag.date" datetime="@ViewBag.date">@ViewBag.date</time>
+                    Posting time: @Age.ToRelative(ViewBag.date) ago on <time title="@ViewBag.date" datetime="@ViewBag.date">@ViewBag.date</time>
                 </p>
 
                 @if (@ViewBag.lastEditDate != null)
                 {
                     <p class="h6">
-                        Last edit time: <time title="@ViewBag.lastEditDate" datetime="@ViewBag.lastEditDate">@ViewBag.lastEditDate</time>
+                        Last edit time: @Age.ToRelative(ViewBag.lastEditDate) ago on <time title="@ViewBag.lastEditDate" datetime="@ViewBag.lastEditDate">@ViewBag.lastEditDate</time>
                     </p>
                 }
                 else

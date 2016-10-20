@@ -1,8 +1,8 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+This source file is subject to version 3 of the GPL license,
+that is bundled with this package in the file LICENSE, and is
+available online at http://www.gnu.org/licenses/gpl.txt;
+you may not use this file except in compliance with the License.
 
 Software distributed under the License is distributed on an "AS IS" basis,
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
@@ -12,9 +12,12 @@ All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
+using System;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Voat.Configuration;
+using Voat.Domain.Models;
+using Voat.Utilities;
 
 namespace Voat
 {
@@ -36,7 +39,14 @@ namespace Voat
             routes.MapRoute(
                 name: "rss",
                 url: "rss/{subverseName}",
-                defaults: new { controller = "RSS", action = "RSS", subverseName = UrlParameter.Optional }                
+                defaults: new { controller = "RSS", action = "RSS", subverseName = UrlParameter.Optional }
+            );
+
+            // /advertize
+            routes.MapRoute(
+                name: "advertize",
+                url: "advertize",
+                defaults: new { controller = "Home", action = "Advertize" }
             );
 
             // /random
@@ -72,7 +82,7 @@ namespace Voat
                 name: "EditSet",
                 url: "set/{setId}/edit",
                 defaults: new { controller = "Sets", action = "EditSet" }
-            ); 
+            );
 
             // /set/setId/page
             routes.MapRoute(
@@ -115,7 +125,7 @@ namespace Voat
                 url: "acceptmodinvitation/{invitationId}",
                 defaults: new { controller = "Subverses", action = "AcceptModInvitation" }
             );
-           
+
             // /subverses/search
             routes.MapRoute(
                 name: "SearchSubverseForm",
@@ -135,7 +145,7 @@ namespace Voat
                 name: "ActiveSubverses",
                 url: "subverses/active",
                 defaults: new { controller = "Subverses", action = "ActiveSubverses" }
-            ); 
+            );
 
             // /subverses/adultcontent
             routes.MapRoute(
@@ -161,50 +171,151 @@ namespace Voat
             // comments/4
             routes.MapRoute(
                 name: "comments",
-                url: "comments/{id}",
+                url: "comments/{submissionID}",
                 defaults: new { controller = "Comment", action = "Comments" }
             );
-            
+
+            string commentSortContraint = "(?i)" + String.Join("|", Enum.GetNames(typeof(CommentSortAlgorithm)));
+
             // /comments/submission/startingpos
             //"/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + startIndex + "/" + sort + "/",
             routes.MapRoute(
-                name: "BucketOfComments",
-                url: "comments/{submissionId}/{parentId}/{command}/{startingIndex}/{sort}",
-                defaults: new { controller = "Comment", action = "BucketOfComments" }
+                name: "CommentSegment",
+                url: "comments/{submissionID}/{parentID}/{command}/{startingIndex}/{sort}",
+                constraints: new
+                {
+                    sort = commentSortContraint
+                },
+                defaults: new { controller = "Comment", action = "CommentSegment", sort = "top" }
             );
+
+            routes.MapRoute(
+                name: "CommentTree",
+                url: "comments/{submissionID}/tree/{sort}",
+                constraints: new
+                {
+                    sort = commentSortContraint
+                },
+                defaults: new { controller = "Comment", action = "CommentTree", sort = "top" }
+            );
+
+
+            // v/subversetoshow/123456/123456/delete
+            routes.MapRoute(
+                name: "SubverseStylesheet",
+                url: "v/{subverse}/stylesheet",
+                constraints: new
+                {
+                },
+                defaults: new
+                {
+                    controller = "Subverses",
+                    action = "Stylesheet",
+                }
+            );
+            // v/subversetoshow/123456/123456/delete
+            routes.MapRoute(
+                name: "ModeratorDeleteSubmission",
+                url: "v/{subverse}/{submissionID}/delete",
+                constraints: new
+                {
+                    submissionID = CONSTANTS.SUBMISSION_ID_REGEX
+                },
+                defaults: new
+                {
+                    controller = "Submissions",
+                    action = "ModeratorDelete",
+                }
+            );
+
+            #region Comment Pages
+
+            // v/subversetoshow/123456/123456/delete
+            routes.MapRoute(
+                name: "ModeratorDeleteComment",
+                url: "v/{subverse}/{submissionID}/{commentID}/delete",
+                constraints: new
+                {
+                    submissionID = CONSTANTS.SUBMISSION_ID_REGEX,
+                    commentID = CONSTANTS.COMMENT_ID_REGEX
+                },
+                defaults: new
+                {
+                    controller = "Comment",
+                    action = "ModeratorDelete",
+                }
+            );
+
             // v/subversetoshow/comments/123456/new
             routes.MapRoute(
                 name: "SubverseCommentsWithSort",
-                url: "v/{subversetoshow}/comments/{id}/{sort}",
+                url: "v/{subverseName}/comments/{submissionID}/{sort}",
                 constraints: new
                 {
-                    sort = "new|top"
+                    sort = commentSortContraint
                 },
                 defaults: new
                 {
                     controller = "Comment",
                     action = "Comments",
-                    startingcommentid = UrlParameter.Optional,
-                    commentToHighLight = UrlParameter.Optional
+                    sort = "top",
+                    commentID = UrlParameter.Optional,
+                    contextCount = UrlParameter.Optional
                 }
-            );        
+            );
+
             // v/subversetoshow/comments/123456
             routes.MapRoute(
                 name: "SubverseComments",
-                url: "v/{subversetoshow}/comments/{id}/{startingcommentid}/{commentToHighLight}",
+                url: "v/{subverseName}/comments/{submissionID}/{commentID}/{context}",
                 defaults: new
                 {
                     controller = "Comment",
                     action = "Comments",
-                    startingcommentid = UrlParameter.Optional,
-                    commentToHighLight = UrlParameter.Optional,
+                    commentID = UrlParameter.Optional,
+                    context = UrlParameter.Optional,
                     sort = "top"
                 }
             );
-           
 
-           
+            // v/subversetoshow/comments/123456/new
+            routes.MapRoute(
+                name: "SubverseCommentsWithSort_Short",
+                url: "v/{subverseName}/{submissionID}/{sort}",
+                constraints: new
+                {
+                    sort = commentSortContraint,
+                    submissionID = @"\d+"
+                },
+                defaults: new
+                {
+                    controller = "Comment",
+                    action = "Comments",
+                    sort = "top",
+                    commentID = UrlParameter.Optional,
+                    contextCount = UrlParameter.Optional
+                }
+            );
 
+            // v/subversetoshow/comments/123456
+            routes.MapRoute(
+                name: "SubverseComments_Short",
+                url: "v/{subverseName}/{submissionID}/{commentID}/{context}",
+                constraints:
+                new
+                {
+                    submissionID = @"\d+",
+                    commentID = @"\d+"
+                },
+                defaults: new
+                {
+                    controller = "Comment",
+                    action = "Comments",
+                    commentID = UrlParameter.Optional,
+                    context = UrlParameter.Optional,
+                    sort = "top"
+                }
+            );
 
             // comments/distinguish/412
             routes.MapRoute(
@@ -212,96 +323,372 @@ namespace Voat
                 url: "comments/distinguish/{commentId}",
                 defaults: new { controller = "Comment", action = "DistinguishComment" }
             );
-            // user/someuserhere/thingtoshow
+            #endregion Comment Pages
+
+
+
+            #region User
+
             routes.MapRoute(
-                name: "UserProfile",
-                url: "user/{id}/{whattodisplay}",
-                defaults: new { controller = "Home", action = "UserProfile", whattodisplay = UrlParameter.Optional }
+               name: "UserBlocks",
+               url: "{pathPrefix}/blocked/{blockType}",
+               defaults: new { controller = "User", action = "Blocked" },
+               constraints: new { httpMethod = new HttpMethodConstraint("GET"), pathPrefix = "user|u", blockType = "user|subverse" }
+            );
+            routes.MapRoute(
+              name: "BlockUserPost",
+              url: "{pathPrefix}/blocked/{blockType}",
+              defaults: new { controller = "User", action = "BlockUser" },
+              constraints: new { httpMethod = new HttpMethodConstraint("POST"), pathPrefix = "user|u", blockType = "user|subverse" }
+           );
+
+            //routes.MapRoute(
+            //   name: "BlockUserPost",
+            //   url: "user/blockuser",
+            //   defaults: new { controller = "User", action = "BlockUser" },
+            //   constraints: new {  }
+            //);
+
+         
+            routes.MapRoute(
+                name: "UserComments",
+                url: "{pathPrefix}/{userName}/comments",
+                defaults: new { controller = "User", action = "Comments" },
+                constraints: new { pathPrefix = "user|u" }
             );
 
-            // user/someuserhere
             routes.MapRoute(
-                name: "user",
-                url: "user/{id}",
-                defaults: new { controller = "Home", action = "UserProfile" }
+               name: "UserSubmissions",
+               url: "{pathPrefix}/{userName}/submissions",
+               defaults: new { controller = "User", action = "Submissions" },
+                constraints: new { pathPrefix = "user|u" }
+           );
+
+            routes.MapRoute(
+              name: "UserSaved",
+              url: "{pathPrefix}/{userName}/saved",
+              defaults: new { controller = "User", action = "Saved" },
+              constraints: new { pathPrefix = "user|u" }
             );
 
-            // u/someuserhere
             routes.MapRoute(
-                name: "usershortroute",
-                url: "u/{id}",
-                defaults: new { controller = "Home", action = "UserProfile" }
+              name: "UserProfile",
+              url: "{pathPrefix}/{userName}",
+              defaults: new { controller = "User", action = "Overview" },
+              constraints: new { pathPrefix = "user|u" }
             );
 
-            // inbox
             routes.MapRoute(
-                name: "Inbox",
-                url: "messaging/inbox",
-                defaults: new { controller = "Messaging", action = "Inbox" }
+               name: "Block",
+               url: "block/{blockType}",
+               defaults: new { controller = "User", action = "Block" },
+               constraints: new { blockType = "user|subverse" }
+           );
+
+            #endregion User
+
+            #region Message
+
+            var messageRoot = "messages";
+            var messageController = "Messages";
+
+            routes.MapRoute(
+              name: "MessageMark",
+              url: messageRoot + "/mark/{type}/{markAction}/{id}",
+              defaults: new
+              {
+                  controller = messageController,
+                  action = "Mark",
+                  id = UrlParameter.Optional
+              },
+              constraints: new
+              {
+                  id = @"^$|\d+",
+                  markAction = "read|unread",
+                  type = String.Join("|", Enum.GetNames(typeof(MessageTypeFlag))).ToLower()
+              }
+           );
+
+           routes.MapRoute(
+              name: "MessageDelete",
+              url: messageRoot + "/delete/{type}/{id}",
+              defaults: new
+              {
+                  controller = messageController,
+                  action = "Delete"
+                  //,id = UrlParameter.Optional let's make the ID required for now so we don't have a bug that deletes an entire inbox
+              },
+              constraints: new
+              {
+                  id = @"\d+",
+                  type = String.Join("|", Enum.GetNames(typeof(MessageTypeFlag))).ToLower()
+              }
             );
 
-            // inbox/unread
+
             routes.MapRoute(
-                name: "InboxUnread",
-                url: "messaging/inbox/unread",
-                defaults: new { controller = "Messaging", action = "InboxPrivateMessagesUnread" }
+                name: "MessageIndex",
+                url: messageRoot + "",
+                defaults: new {
+                    controller = messageController,
+                    action = "Index"
+                }
             );
 
-            // compose
             routes.MapRoute(
-                name: "Compose",
-                url: "messaging/compose",
-                defaults: new { controller = "Messaging", action = "Compose" }
+              name: "MessageInbox",
+              url: messageRoot + "/inbox",
+              defaults: new
+              {
+                  controller = messageController,
+                  action = "Index"
+              }
             );
 
-            // send private message
             routes.MapRoute(
-                name: "SendPrivateMessage",
-                url: "messaging/sendprivatemessage",
-                defaults: new { controller = "Messaging", action = "SendPrivateMessage" }
+                name: "MessageCompose",
+                url: messageRoot + "/compose",
+                defaults: new
+                {
+                    controller = messageController,
+                    action = "Compose"
+                }
+            );
+            routes.MapRoute(
+              name: "MessageNotifications",
+              url: messageRoot + "/notifications",
+              defaults: new
+              {
+                  controller = messageController,
+                  action = "Notifications"
+              }
+          );
+            routes.MapRoute(
+               name: "MessagesSent",
+               url: messageRoot + "/sent",
+               defaults: new
+               {
+                   controller = messageController,
+                   action = "Sent"
+               }
+           );
+
+            routes.MapRoute(
+               name: "MessageReply",
+               url: messageRoot + "/reply",
+               defaults: new
+               {
+                   controller = messageController,
+                   action = "Reply"
+               }
+            );
+            routes.MapRoute(
+              name: "MessageReplyForm",
+              url: messageRoot + "/reply/{id}",
+              defaults: new
+              {
+                  controller = messageController,
+                  action = "ReplyForm"
+              },
+              constraints: new {
+                  id = @"\d+",
+                  httpMethod = new HttpMethodConstraint("GET")
+              }
+            );
+            routes.MapRoute(
+               name: "MessagesMentions",
+               url: messageRoot + "/mentions/{type}",
+               defaults: new
+               {
+                   controller = messageController,
+                   action = "Mentions",
+                   type = UrlParameter.Optional
+               }
+            );
+            routes.MapRoute(
+               name: "MessagesReplies",
+               url: messageRoot + "/replies/{type}",
+               defaults: new
+               {
+                   controller = messageController,
+                   action = "Replies",
+                   type = UrlParameter.Optional
+               }
+            );
+            //public async Task<ActionResult> SubverseIndex(string subverse, MessageTypeFlag type, MessageState? status = null)
+            routes.MapRoute(
+             name: "SubverseMail",
+             url: "v/{subverse}/" + messageRoot + "/{type}/{state}",
+             defaults: new
+             {
+                 controller = messageController,
+                 action = "SubverseIndex",
+                 state = MessageState.All,
+                 type = MessageTypeFlag.Private
+             },
+             constraints: new
+             {
+                 state = String.Join("|", Enum.GetNames(typeof(MessageState))).ToLower(),
+                 type = "private|sent"
+             }
             );
 
-            // sent
             routes.MapRoute(
-                name: "Sent",
-                url: "messaging/sent",
-                defaults: new { controller = "Messaging", action = "Sent" }
-            );
+            name: "SubverseMailCompose",
+            url: "v/{subverse}/" + messageRoot + "/compose",
+            defaults: new
+            {
+                controller = messageController,
+                action = "Compose"
+            }
+           );
+            // routes.MapRoute(
+            //   name: "ModMessages",
+            //   url: "v/{subverse}/" + messageRoot,
+            //   defaults: new
+            //   {
+            //       controller = messageController,
+            //       action = "Sent"
+            //   }
+            //);
+            //// inbox/unread
+            //routes.MapRoute(
+            //    name: "InboxUnread",
+            //    url: "messaging/inbox/unread",
+            //    defaults: new { controller = "Messaging", action = "InboxPrivateMessagesUnread" }
+            //);
 
-            // commentreplies
-            routes.MapRoute(
-                name: "CommentReplies",
-                url: "messaging/commentreplies",
-                defaults: new { controller = "Messaging", action = "InboxCommentReplies" }
-            );
+            //// compose
+            //routes.MapRoute(
+            //    name: "Compose",
+            //    url: "messaging/compose",
+            //    defaults: new { controller = "Messaging", action = "Compose" }
+            //);
 
-            // postreplies
-            routes.MapRoute(
-                name: "PostReplies",
-                url: "messaging/postreplies",
-                defaults: new { controller = "Messaging", action = "InboxPostReplies" }
-            );
+            //// send private message
+            //routes.MapRoute(
+            //    name: "SendPrivateMessage",
+            //    url: "messaging/sendprivatemessage",
+            //    defaults: new { controller = "Messaging", action = "SendPrivateMessage" }
+            //);
 
-            // deleteprivatemessage
-            routes.MapRoute(
-                name: "DeletePrivateMessage",
-                url: "messaging/delete",
-                defaults: new { controller = "Messaging", action = "DeletePrivateMessage" }
-            );
+            //// sent
+            //routes.MapRoute(
+            //    name: "Sent",
+            //    url: "messaging/sent",
+            //    defaults: new { controller = "Messaging", action = "Sent" }
+            //);
 
-            // deleteprivatemessagefromsent
-            routes.MapRoute(
-                name: "DeletePrivateMessageFromSent",
-                url: "messaging/deletesent",
-                defaults: new { controller = "Messaging", action = "DeletePrivateMessageFromSent" }
-            );
+            //// commentreplies
+            //routes.MapRoute(
+            //    name: "CommentReplies",
+            //    url: "messaging/commentreplies",
+            //    defaults: new { controller = "Messaging", action = "InboxCommentReplies" }
+            //);
 
-            // markinboxitemasread
-            routes.MapRoute(
-                name: "MarkInboxItemAsRead",
-                url: "messaging/markasread",
-                defaults: new { controller = "Messaging", action = "MarkAsRead" }
-            ); 
+            //// postreplies
+            //routes.MapRoute(
+            //    name: "PostReplies",
+            //    url: "messaging/postreplies",
+            //    defaults: new { controller = "Messaging", action = "InboxPostReplies" }
+            //);
+
+            //// deleteprivatemessage
+            //routes.MapRoute(
+            //    name: "DeletePrivateMessage",
+            //    url: "messaging/delete",
+            //    defaults: new { controller = "Messaging", action = "DeletePrivateMessage" }
+            //);
+
+            //// deleteprivatemessagefromsent
+            //routes.MapRoute(
+            //    name: "DeletePrivateMessageFromSent",
+            //    url: "messaging/deletesent",
+            //    defaults: new { controller = "Messaging", action = "DeletePrivateMessageFromSent" }
+            //);
+
+            //// markinboxitemasread
+            //routes.MapRoute(
+            //    name: "MarkInboxItemAsRead",
+            //    url: "messaging/markasread",
+            //    defaults: new { controller = "Messaging", action = "MarkAsRead" }
+            //);
+
+            #endregion Message
+
+            #region OLD_Messaging
+
+            //// inbox
+            //routes.MapRoute(
+            //    name: "Inbox",
+            //    url: "messaging/inbox",
+            //    defaults: new { controller = "Messaging", action = "Inbox" }
+            //);
+
+            //// inbox/unread
+            //routes.MapRoute(
+            //    name: "InboxUnread",
+            //    url: "messaging/inbox/unread",
+            //    defaults: new { controller = "Messaging", action = "InboxPrivateMessagesUnread" }
+            //);
+
+            //// compose
+            //routes.MapRoute(
+            //    name: "Compose",
+            //    url: "messaging/compose",
+            //    defaults: new { controller = "Messaging", action = "Compose" }
+            //);
+
+            //// send private message
+            //routes.MapRoute(
+            //    name: "SendPrivateMessage",
+            //    url: "messaging/sendprivatemessage",
+            //    defaults: new { controller = "Messaging", action = "SendPrivateMessage" }
+            //);
+
+            //// sent
+            //routes.MapRoute(
+            //    name: "Sent",
+            //    url: "messaging/sent",
+            //    defaults: new { controller = "Messaging", action = "Sent" }
+            //);
+
+            //// commentreplies
+            //routes.MapRoute(
+            //    name: "CommentReplies",
+            //    url: "messaging/commentreplies",
+            //    defaults: new { controller = "Messaging", action = "InboxCommentReplies" }
+            //);
+
+            //// postreplies
+            //routes.MapRoute(
+            //    name: "PostReplies",
+            //    url: "messaging/postreplies",
+            //    defaults: new { controller = "Messaging", action = "InboxPostReplies" }
+            //);
+
+            //// deleteprivatemessage
+            //routes.MapRoute(
+            //    name: "DeletePrivateMessage",
+            //    url: "messaging/delete",
+            //    defaults: new { controller = "Messaging", action = "DeletePrivateMessage" }
+            //);
+
+            //// deleteprivatemessagefromsent
+            //routes.MapRoute(
+            //    name: "DeletePrivateMessageFromSent",
+            //    url: "messaging/deletesent",
+            //    defaults: new { controller = "Messaging", action = "DeletePrivateMessageFromSent" }
+            //);
+
+            //// markinboxitemasread
+            //routes.MapRoute(
+            //    name: "MarkInboxItemAsRead",
+            //    url: "messaging/markasread",
+            //    defaults: new { controller = "Messaging", action = "MarkAsRead" }
+            //);
+
+            #endregion OLD_Messaging
 
             // help/pagetoshow
             routes.MapRoute(
@@ -359,11 +746,10 @@ namespace Voat
                 defaults: new { controller = "Sets", action = "UnSubscribe" }
             );
 
-
             // vote
             routes.MapRoute(
                 name: "vote",
-                url: "vote/{messageId}/{typeOfVote}",
+                url: "vote/{submissionID}/{typeOfVote}",
                 defaults: new { controller = "Submissions", action = "Vote" }
             );
 
@@ -402,11 +788,21 @@ namespace Voat
                   new { controller = "Comment", action = "DeleteComment", id = UrlParameter.Optional }
              );
 
-            // reportcomment
+            // reportContent
             routes.MapRoute(
-                  "reportcomment",
-                  "reportcomment/{id}",
-                  new { controller = "Report", action = "ReportComment", id = UrlParameter.Optional }
+                  "reportContent",
+                  "report/{type}/{id}",
+                  constraints: new
+                  {
+                      type = "comment|submission",
+                      id = @"\d+"
+                  },
+                  defaults: new
+                  {
+                      controller = "Report",
+                      action = "ReportContent",
+                      id = UrlParameter.Optional
+                  }
              );
 
             // editsubmission
@@ -451,7 +847,26 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "SubmitComment" }
             );
 
-           
+            //Map Explicit API Keys Controller
+            routes.MapRoute(
+               name: "apikeys",
+               url: "apikeys/{action}/{id}",
+               defaults: new
+               {
+                   controller = "ApiKeys",
+                   action = "Index",
+                   id = UrlParameter.Optional
+               }
+            );
+
+            if (!Settings.SignalRDisabled)
+            {
+                routes.MapRoute(
+                    name: "JoinChat",
+                    url: "chat/{subverseName}",
+                    defaults: new { controller = "Chat", action = "Index", subverseName = UrlParameter.Optional }
+                );
+            }
 
             // /new
             routes.MapRoute(
@@ -466,6 +881,8 @@ namespace Voat
                 url: "",
                 defaults: new { controller = "Home", action = "Index" }
             );
+
+            #region Mod Logs
 
             // v/subverse/modlog/deleted
             routes.MapRoute(
@@ -487,6 +904,10 @@ namespace Voat
                 url: "v/{subversetoshow}/modlog/bannedusers",
                 defaults: new { controller = "Subverses", action = "BannedUsersLog" }
             );
+
+            #endregion Mod Logs
+
+            #region Sub Moderation
 
             // v/subversetoedit/about/edit
             routes.MapRoute(
@@ -579,27 +1000,14 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "ResignAsModerator" }
             );
 
+            #endregion Sub Moderation
+
             // v/subversetoshow
             routes.MapRoute(
                 name: "SubverseIndex",
                 url: "v/{subversetoshow}",
                 defaults: new { controller = "Subverses", action = "SubverseIndex" }
             );
-
-            // domains/domainname.com
-            routes.MapRoute(
-                name: "DomainIndex",
-                url: "domains/{domainname}.{ext}",
-                defaults: new { controller = "Domains", action = "Index" }
-            );
-
-            // domains/domainname.com/new
-            routes.MapRoute(
-                name: "DomainIndexSorted",
-                url: "domains/{domainname}.{ext}/{sortingmode}",
-                defaults: new { controller = "Domains", action = "New", sortingmode = UrlParameter.Optional }
-            );
-    
 
             // v/subversetoshow/sortingmode
             routes.MapRoute(
@@ -615,6 +1023,21 @@ namespace Voat
                 defaults: new { controller = "HtmlElements", action = "CommentReplyForm" }
             );
 
+            #region Domains
+
+            // domains/domainname.com
+            routes.MapRoute(
+                name: "DomainIndex",
+                url: "domains/{domainname}/{sortingmode}",
+                defaults: new {
+                    controller = "Domains",
+                    action = "Index",
+                    sortingmode = "hot"
+                }
+            );
+            
+            #endregion Domains
+
             //// ajaxhelpers/singlesubmissioncomment
             //routes.MapRoute(
             //    name: "SingleSubmissionComment",
@@ -627,7 +1050,7 @@ namespace Voat
                 name: "PrivateMessageReplyForm",
                 url: "ajaxhelpers/privatemessagereplyform/{parentPrivateMessageId}",
                 defaults: new { controller = "HtmlElements", action = "PrivateMessageReplyForm" }
-            ); 
+            );
 
             // ajaxhelpers/messagecontent
             routes.MapRoute(
@@ -711,7 +1134,7 @@ namespace Voat
                 name: "ToggleSticky",
                 url: "submissions/togglesticky/{submissionId}",
                 defaults: new { controller = "Submissions", action = "ToggleSticky" }
-            );            
+            );
 
             // p/partnerprogram
             routes.MapRoute(
@@ -784,16 +1207,15 @@ namespace Voat
                     url: "mysets/manage",
                     defaults: new { controller = "Sets", action = "ManageUserSets" }
                 );
-
             }
 
-            // p/partnerintent
-            //routes.MapRoute(
-            //    name: "PartnerProgramIntent",
-            //    url: "p/apply",
-            //    defaults: new { controller = "Partner", action = "PartnerIntentRegistration" }
-            //);
-            
+            //catch The Others 
+            routes.MapRoute(
+                name: "Others",
+                url: "r/{name}/{*url}",
+                defaults: new { controller = "Error", action = "Others" }
+            );
+
             // default route
             routes.MapRoute(
                 name: "Default",
@@ -805,7 +1227,6 @@ namespace Voat
                     id = UrlParameter.Optional
                 }
             );
-
         }
     }
 }

@@ -1,0 +1,22 @@
+﻿@model Voat.Models.ViewModels.AdViewModel
+
+@{
+    Layout = null;
+}
+@if (Model != null)
+{
+    <div class="title">
+        <h1 class="alert-h1">Advertisement</h1>
+    </div>
+    <div class="sidecontentbox content">
+        <a href="@Model.DestinationUrl" target="_blank">
+            @if (!String.IsNullOrEmpty(Model.GraphicUrl))
+            {
+                <div style="margin:0 auto;width: 270px;">
+                    <img src="@Model.GraphicUrl" alt="@Model.Name" title="Ad: @Model.Name" width="270" />
+                </div>
+            }
+        </a>
+        <p>@Html.Raw(Voat.Utilities.Formatting.FormatMessage(Model.Description))</p>
+    </div>
+}

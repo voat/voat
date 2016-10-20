@@ -5,27 +5,22 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="d8b0bf2e540f4c9291da5903a39c10f7" Name="Diagram1">
-        <EntityTypeShape EntityType="Models.AutoModComment" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.AutoModSubmission" Width="1.5" PointX="5.75" PointY="5.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.Badge" Width="1.5" PointX="0.75" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.Badge" Width="1.5" PointX="0.75" PointY="1.625" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.BannedDomain" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.BannedUser" Width="1.5" PointX="7.75" PointY="3.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.Comment" Width="1.5" PointX="5.25" PointY="15.5" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.CommentRemovalLog" Width="1.5" PointX="7.5" PointY="13.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.CommentReplyNotification" Width="1.5" PointX="7.75" PointY="6.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.CommentSaveTracker" Width="1.5" PointX="7.5" PointY="16.5" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.CommentVoteTracker" Width="1.5" PointX="7.5" PointY="19.25" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.DefaultSubverse" Width="1.5" PointX="3" PointY="5.875" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.FeaturedSubverse" Width="1.5" PointX="3" PointY="8.125" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.ModeratorInvitation" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.PartnerInformation" Width="1.5" PointX="9.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.PrivateMessage" Width="1.5" PointX="9.75" PointY="9.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.PromotedSubmission" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.SessionTracker" Width="1.5" PointX="0.75" PointY="11.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.StickiedSubmission" Width="1.5" PointX="8.25" PointY="23.5" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.Submission" Width="1.5" PointX="3" PointY="20.125" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.SubmissionRemovalLog" Width="1.5" PointX="5.25" PointY="22.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.SubmissionReplyNotification" Width="1.5" PointX="11.75" PointY="3.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.SubmissionSaveTracker" Width="1.5" PointX="5.25" PointY="25.125" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.SubmissionVoteTracker" Width="1.5" PointX="5.25" PointY="27.875" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.Subverse" Width="1.5" PointX="0.75" PointY="20.5" IsExpanded="true" />
@@ -33,9 +28,9 @@
         <EntityTypeShape EntityType="Models.SubverseFlair" Width="1.5" PointX="3" PointY="36.375" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.SubverseModerator" Width="1.5" PointX="3" PointY="39.125" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.SubverseSubscription" Width="1.5" PointX="3" PointY="42.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.UserBadge" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.UserBadge" Width="1.5" PointX="2.75" PointY="0.5" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.UserBlockedSubverse" Width="1.5" PointX="3" PointY="44.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.UserPreference" Width="1.5" PointX="11.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Models.UserPreference" Width="1.5" PointX="7.5" PointY="6.25" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.UserScore" Width="1.5" PointX="2.75" PointY="11.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.UserSet" Width="1.5" PointX="0.75" PointY="30.25" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.UserSetList" Width="1.5" PointX="3" PointY="27.75" IsExpanded="true" />
@@ -63,6 +58,19 @@
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetdefinitions_Usersets" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Usersetsubscriptions_Usersets" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="Models.AdminLog" Width="1.5" PointX="12.375" PointY="11.75" />
+        <EntityTypeShape EntityType="Models.ApiClient" Width="1.5" PointX="14.375" PointY="0.5" />
+        <EntityTypeShape EntityType="Models.ApiLog" Width="1.5" PointX="14.375" PointY="4.75" />
+        <EntityTypeShape EntityType="Models.ApiThrottlePolicy" Width="1.5" PointX="14.375" PointY="8.75" />
+        <EntityTypeShape EntityType="Models.EventLog" Width="1.5" PointX="14.375" PointY="11.75" />
+        <EntityTypeShape EntityType="Models.ApiCorsPolicy" Width="1.5" PointX="14.375" PointY="15.75" />
+        <EntityTypeShape EntityType="Models.ApiPermissionPolicy" Width="1.5" PointX="12.125" PointY="16.75" />
+        <EntityTypeShape EntityType="Models.UserBlockedUser" Width="1.5" PointX="16.375" PointY="0.75" />
+        <AssociationConnector Association="Models.FK_ApiClient_ApiPermissionPolicy" />
+        <AssociationConnector Association="Models.FK_ApiClient_ApiThrottlePolicy" />
+        <EntityTypeShape EntityType="Models.Ad" Width="1.5" PointX="16.375" PointY="3.75" />
+        <EntityTypeShape EntityType="Models.UserVisit" Width="1.5" PointX="16.375" PointY="7.75" />
+        <EntityTypeShape EntityType="Models.Message" Width="1.5" PointX="5.25" PointY="0.625" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

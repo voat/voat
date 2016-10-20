@@ -1,0 +1,63 @@
+﻿
+@model Voat.Models.ViewModels.ModeratorDeleteContentViewModel
+
+@{
+    ViewBag.Title = "Moderator Deletion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var comment = (Voat.Domain.Models.Comment)ViewBag.Comment;
+}
+
+@if (comment == null)
+{
+    <div id="container">
+        <div id="about-main" class="content about-page" role="main">
+
+            <h1>Moderator Delete Comment Page</h1>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        </div>
+    </div>
+}
+else
+{
+
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+
+        <h1>Moderator Delete Comment Page</h1>
+
+        <div class="alert alert-info">Are you sure you want to delete this comment:</div>
+
+
+        @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", Voat.Domain.DomainMaps.Map(comment))
+        
+        <hr />
+
+        <div class="alert alert-info">Delete Comment</div>
+
+        @using (Html.BeginForm("ModeratorDelete", "Comment"))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(x => x.ID)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Reason, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-4">
+                        @Html.EditorFor(model => model.Reason, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Delete" class="btn-whoaverse-medium" />
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
+}

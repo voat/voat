@@ -18,13 +18,16 @@ namespace Voat.Utilities.Components
             get { return this._replacers; }
             set { this._replacers = value; }
         }
+
         public RegExReplacer(List<IReplacer> Replacers)
         {
             this._replacers = Replacers;
         }
+
         public RegExReplacer()
         {
         }
+
         public string Replace(string content, object state)
         {
             foreach (IReplacer ir in _replacers)
@@ -41,6 +44,7 @@ namespace Voat.Utilities.Components
     public class MatchProcessingReplacer : IReplacer
     {
         #region IReplacer Members
+
         private string _regex = "";
         private Func<Match, string, object, string> _replacementFunc;
         private int _matchThreshold = 0;
@@ -63,11 +67,13 @@ namespace Voat.Utilities.Components
             this.RegEx = RegEx;
             this._replacementFunc = Func;
         }
+
         public string RegEx
         {
             get { return _regex; }
             set { _regex = value; }
         }
+
         public bool IsInMarkDownAnchor(Match m, string content)
         {
             var markdownAnchors = Regex.Matches(content, @"\[.*?\]\(.+?\)");
@@ -80,9 +86,9 @@ namespace Voat.Utilities.Components
             }
             return false;
         }
+
         public bool HasAnyTokens(string content, params string[] blockTokens)
         {
-
             foreach (string blockToken in blockTokens)
             {
                 if (content.Contains(blockToken))
@@ -92,17 +98,15 @@ namespace Voat.Utilities.Components
             }
 
             return false;
-
         }
+
         public bool IsInBlock(Match m, string content, params string[] blockTokens)
         {
-
             foreach (string blockToken in blockTokens)
             {
                 //determine if match is in block
                 if (content.IndexOf(blockToken) >= 0)
                 {
-
                     //we have codeblocks in comment
                     int blockIndex = content.IndexOf(blockToken); //find first block start
                     if (m.Index < blockIndex)
@@ -112,11 +116,9 @@ namespace Voat.Utilities.Components
                     }
                     else
                     {
-
                         int start = blockIndex;
                         while (start >= 0)
                         {
-
                             int end = content.IndexOf(blockToken, start + 1);
                             if (end >= 0)
                             {
@@ -136,12 +138,12 @@ namespace Voat.Utilities.Components
                                 break;
                             }
                         }
-
                     }
                 }
             }
             return false;
         }
+
         public virtual string Replace(string content, object state)
         {
             if (content == null)
@@ -152,49 +154,44 @@ namespace Voat.Utilities.Components
             string result = content;
             string[] escapeBlocks = { "~~~", "`" };
 
-
             int offset = 0;
             List<string> matchvalues = new List<string>();
             int maxIndex = (MatchThreshold > 0) ? Math.Min(MatchThreshold, matches.Count) : matches.Count;
 
-            //flag content as having ignored areas if it has more than 1 match 
+            //flag content as having ignored areas if it has more than 1 match
             bool requiresAdditionalProcecessing = (maxIndex > 0) ? HasAnyTokens(content, escapeBlocks) : false;
 
             for (int i = 0; i < maxIndex; i++)
             {
                 Match m = matches[i];
+
                 //make sure this match isn't in a block
                 if (!requiresAdditionalProcecessing || (requiresAdditionalProcecessing && !IsInBlock(m, content, escapeBlocks)))
                 {
-
                     //make sure this match isn't in an anchor
                     if (!IsInMarkDownAnchor(m, content))
                     {
-
                         if (!IgnoreDuplicateMatches || IgnoreDuplicateMatches && !matchvalues.Contains(m.Value))
                         {
-
-                            //get the replacement value for match 
+                            //get the replacement value for match
                             string substitution = _replacementFunc(m, content, state);
 
                             //Concat method (fractions of milliseconds faster)
                             result = String.Concat(result.Substring(0, m.Index + offset), substitution, result.Substring(m.Index + m.Length + offset, result.Length - (m.Length + m.Index + offset)));
+
                             //Replace method
                             //result = result.Remove(m.Index + offset, m.Length).Insert(m.Index + offset, substitution);
 
                             offset += substitution.Length - m.Length;
 
                             matchvalues.Add(m.Value);
-
                         }
-
                     }
                 }
             }
             return result;
         }
 
-        #endregion
+        #endregion IReplacer Members
     }
-
 }

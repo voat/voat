@@ -27,27 +27,22 @@ namespace Voat.Data.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<AutoModComment> AutoModComments { get; set; }
-        public virtual DbSet<AutoModSubmission> AutoModSubmissions { get; set; }
         public virtual DbSet<Badge> Badges { get; set; }
         public virtual DbSet<BannedDomain> BannedDomains { get; set; }
         public virtual DbSet<BannedUser> BannedUsers { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<CommentRemovalLog> CommentRemovalLogs { get; set; }
-        public virtual DbSet<CommentReplyNotification> CommentReplyNotifications { get; set; }
         public virtual DbSet<CommentSaveTracker> CommentSaveTrackers { get; set; }
         public virtual DbSet<CommentVoteTracker> CommentVoteTrackers { get; set; }
         public virtual DbSet<DefaultSubverse> DefaultSubverses { get; set; }
         public virtual DbSet<FeaturedSubverse> FeaturedSubverses { get; set; }
         public virtual DbSet<ModeratorInvitation> ModeratorInvitations { get; set; }
         public virtual DbSet<PartnerInformation> PartnerInformations { get; set; }
-        public virtual DbSet<PrivateMessage> PrivateMessages { get; set; }
         public virtual DbSet<PromotedSubmission> PromotedSubmissions { get; set; }
         public virtual DbSet<SessionTracker> SessionTrackers { get; set; }
         public virtual DbSet<StickiedSubmission> StickiedSubmissions { get; set; }
         public virtual DbSet<Submission> Submissions { get; set; }
         public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLogs { get; set; }
-        public virtual DbSet<SubmissionReplyNotification> SubmissionReplyNotifications { get; set; }
         public virtual DbSet<SubmissionSaveTracker> SubmissionSaveTrackers { get; set; }
         public virtual DbSet<SubmissionVoteTracker> SubmissionVoteTrackers { get; set; }
         public virtual DbSet<Subverse> Subverses { get; set; }
@@ -63,6 +58,17 @@ namespace Voat.Data.Models
         public virtual DbSet<UserSetList> UserSetLists { get; set; }
         public virtual DbSet<UserSetSubscription> UserSetSubscriptions { get; set; }
         public virtual DbSet<ViewStatistic> ViewStatistics { get; set; }
+        public virtual DbSet<AdminLog> AdminLogs { get; set; }
+        public virtual DbSet<ApiClient> ApiClients { get; set; }
+        public virtual DbSet<ApiLog> ApiLogs { get; set; }
+        public virtual DbSet<ApiThrottlePolicy> ApiThrottlePolicies { get; set; }
+        public virtual DbSet<EventLog> EventLogs { get; set; }
+        public virtual DbSet<ApiCorsPolicy> ApiCorsPolicies { get; set; }
+        public virtual DbSet<ApiPermissionPolicy> ApiPermissionPolicies { get; set; }
+        public virtual DbSet<UserBlockedUser> UserBlockedUsers { get; set; }
+        public virtual DbSet<Ad> Ads { get; set; }
+        public virtual DbSet<UserVisit> UserVisits { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
     
         public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {

@@ -22,9 +22,8 @@ namespace Voat.Models
     {
         public int SubmissionId { get; set; }
         
-        [StringLength(10000, ErrorMessage = "Submission content is limited to 10.000 characters.")]
+        [StringLength(10000, ErrorMessage = "Submission content is limited to 10,000 characters.")]
         [Required(ErrorMessage = "Submission text is required. Please fill this field.")]
-
         public string SubmissionContent { get; set; }
     }
 }

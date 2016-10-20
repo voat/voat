@@ -1,0 +1,121 @@
+﻿@model IEnumerable<Voat.Rules.RuleInformationWithOutcome>
+
+<style type="text/css">
+    h1, h2, h3 { 
+        font-size:1.3em;
+        font-weight:bold;
+
+    }
+    body { font-size: 1.3em;}
+    .outcome { 
+       padding:5px 0px 5px 5px;
+       margin:0px 0px 0px 15px;
+      
+    }
+    .rule { 
+        float:left;
+        width:50%;
+    }
+    .rule > div > h2:hover, .series:hover { 
+        cursor:pointer;
+
+    }
+    .outcome-Allowed { 
+        background-color: rgba(0,254,0,0.15);
+    }
+    .outcome-Denied { 
+        background-color: rgba(251,0,0,0.15);
+    }
+     .outcome-Unevaluated { 
+        background-color: rgba(0,0,0,0.10);
+    }
+    
+    @@media screen and (max-width:600px) {
+       .rule { 
+            float:none;
+            width:100%;
+        }
+    }
+    .desc { 
+        padding-top:5px;
+        
+        min-height:50px;
+
+    }
+</style>
+
+<div id="container">
+    <div class="submission even" style="padding:10px;">
+        <h1>Rules Voat is Running</h1>
+        <p>
+            This page displays the rules that Voat uses when determining a user's permissions for various tasks. If a rule is displayed below it is actively running.
+        </p>    
+    </div>
+ 
+    @{
+        string prev = "";
+        int index = 0;
+    }
+    @foreach (var item in Model) {
+
+
+        string major = item.Info.Rule.Number.Substring(0, item.Info.Rule.Number.IndexOf(".") );
+       
+        if (prev != major || index == 0) {
+            <div style="clear:both;"></div>
+
+            <div class="series" data-series="@major-series">
+                <h1>@(major + ".x") Series Rules</h1>
+                <hr />
+            </div>
+
+            index = 2;
+        }
+        <div class="rule @major-series" style="padding: 10px;">
+
+            <div style="padding:5px;">
+                <h2><strong>Rule @Html.DisplayFor(modelItem => item.Info.Rule.Number)</strong> (@Html.DisplayFor(modelItem => item.Info.Rule.Name))</h2>
+
+                <div style="padding-left:15px;display:none;">
+                    <div class="desc">
+
+                        @Html.DisplayFor(modelItem => item.Info.Description)
+                    </div>
+                    
+                    <span style="margin-top:15px;">Applies To: @item.Info.Rule.Scope.ToString()</span>
+                    <h2>Psuedo Logic</h2>
+<pre>
+<code>
+    @Html.DisplayFor(modelItem => item.Info.PsuedoLogic)
+</code>
+</pre>
+                </div>
+                @if (item.Outcome != null) {
+                    <div class="outcome outcome-@item.Outcome.Result">Outcome: <strong>@item.Outcome.Result</strong></div>
+                }
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+
+        prev = major;
+        index++;
+        if ((index % 2) == 0) {
+            <div style="clear:both;"></div>
+        }
+       
+    }
+    </div>
+
+@section PageScripts {
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".rule > div > h2").click(function (e) {
+            $(this).next().slideToggle();
+        });
+        $(".series").click(function (e) {
+            var series = $(this).data("series");
+            $("." + series + " > div > h2").next().slideToggle();
+        });
+    });
+</script>
+}
