@@ -404,6 +404,7 @@ namespace Voat.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseStylesheetEditor(Subverse updatedModel)
