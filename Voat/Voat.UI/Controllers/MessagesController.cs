@@ -282,7 +282,15 @@ namespace Voat.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                PreventSpamAttribute.Reset();
+                if (Request.IsAjaxRequest())
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ModelState.GetFirstErrorMessage());
+                }
+                else
+                {
+                    return View();
+                }
             }
 
             if (message.ID <= 0)

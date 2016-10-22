@@ -24,7 +24,7 @@ namespace Voat.Models.ViewModels
         public int ID { get; set; }
 
         [Required(ErrorMessage = "Please enter some text")]
-        [StringLength(4000, ErrorMessage = "Body is limited to 4000 characters")]
+        [StringLength(10000, ErrorMessage = "Body is limited to 10000 characters")]
         [AllowHtml]
         public string Body { get; set; }
     }
@@ -44,7 +44,7 @@ namespace Voat.Models.ViewModels
         public string Subject { get; set; }
 
         [Required(ErrorMessage = "Please enter some text")]
-        [StringLength(4000, ErrorMessage = "Body is limited to 4000 characters")]
+        [StringLength(10000, ErrorMessage = "Body is limited to 10000 characters")]
         [AllowHtml]
         public string Body { get; set; }
     }
