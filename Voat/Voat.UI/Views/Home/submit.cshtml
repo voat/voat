@@ -130,11 +130,75 @@
                     </div>
                 }
 
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Submit" class="btn-whoaverse" />
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Submit" class="btn-whoaverse" />
+                            @*Throw in the Preview Button*@
+                            @if (Model.Type == Voat.Domain.Models.SubmissionType.Text)
+                            {
+                                <input type="button" value="Preview" class="btn-whoaverse" onclick="showMessagePreview(this,$(this.parentElement.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement.parentElement).find('#submission-preview-area'))">
+                            }
+                        </div>
                     </div>
-                </div>
+                @* Preview Objects *@ 
+                @if (Model.Type == Voat.Domain.Models.SubmissionType.Text)
+                {
+                    <div class="panel panel-default" id="submission-preview-area" style="display: none">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">Preview</h4>
+                        </div>
+                        <div class="panel-body">
+                            <div class="usertext-body may-blank-within">
+                                <div class="md" id="submission-preview-area-container">
+                                    Loading preview...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-group" id="accordion">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                        Formatting help
+                                    </a>
+                                </h4>
+                            </div>
+
+                            <div id="collapseOne" class="panel-collapse collapse in">
+                                <div class="panel-body">
+                                    Voat uses a slightly-customized version (we disabled embedding of images etc) of <a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a> for formatting. See below for some basics, or check <a href="~/help/markdown">here</a> for more detailed help.<br /><br />
+                                    <div class="well">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr class="info">
+                                                    <th>You type</th>
+                                                    <th>You see</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>*italics*</td>
+                                                    <td><i>italics</i></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>**bold**</td>
+                                                    <td><b>bold</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>[A website](http://example.com)</td>
+                                                    <td><a href="http://example.com">A website</a></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <a href="/help/markdown" target="_blank">Click here to see more samples.</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
     }
     </div>
