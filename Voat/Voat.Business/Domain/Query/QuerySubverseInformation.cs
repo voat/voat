@@ -32,7 +32,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override SubverseInformation GetData()
+        protected override async Task<SubverseInformation> GetData()
         {
             using (var db = new Repository())
             {

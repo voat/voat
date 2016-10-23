@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -25,7 +26,7 @@ namespace Voat.Domain.Query
             get { return CachingKey.ApiPermissionPolicy(_id.HasValue ? _id.Value : 0); }
         }
 
-        protected override ApiPermissionSet GetData()
+        protected override async Task<ApiPermissionSet> GetData()
         {
             if (_id.HasValue && _id.Value > 0)
             {

@@ -263,7 +263,7 @@ namespace Voat.Domain
             return result;
         }
 
-        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<CommentVoteTracker> commentVotes = null, IEnumerable<CommentSaveTracker> commentSaves = null)
+        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<CommentVoteTracker> commentVotes = null)
         {
             NestedComment result = null;
             if (treeComment != null)
@@ -287,7 +287,7 @@ namespace Voat.Domain
                 result.IsSubmitter = (treeComment.UserName == submissionOwnerName);
 
                 //Set User State and secure comment
-                ProcessComment(result, false, commentVotes, commentSaves);
+                ProcessComment(result, false, commentVotes);
             }
             return result;
         }
@@ -358,7 +358,7 @@ namespace Voat.Domain
             return result;
         }
 
-        public static void ProcessComment(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<CommentVoteTracker> commentVotes = null, IEnumerable<CommentSaveTracker> commentSaves = null)
+        public static void ProcessComment(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<CommentVoteTracker> commentVotes = null)
         {
             string userName = Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : null;
             if (!String.IsNullOrEmpty(userName))
@@ -379,14 +379,7 @@ namespace Voat.Domain
                 }
 
                 comment.IsSaved = false;
-                if (commentSaves != null)
-                {
-                    comment.IsSaved = commentSaves.Any(x => x.CommentID == comment.ID);
-                }
-                else if (populateMissingUserState)
-                {
-                    comment.IsSaved = SavingComments.CheckIfSavedComment(userName, comment.ID);
-                }
+                comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
             }
             comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
         }

@@ -24,8 +24,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
+using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Tests.Repository;
 
@@ -198,7 +200,6 @@ namespace Voat.Tests.QueryTests
         [TestMethod]
         [TestCategory("Query")]
         [TestCategory("Subverse")]
-        [TestCategory("Cache")]
         public void QuerySubverseInformation_verify_moderators_works()
         {
             TimeSpan cacheTime = TimeSpan.FromSeconds(5);
@@ -216,13 +217,15 @@ namespace Voat.Tests.QueryTests
         [TestMethod]
         [TestCategory("Query")]
         [TestCategory("Submission")]
-        [TestCategory("Cache")]
-        public void QuerySubmissions_Verify_BlockedSubverses()
+        public async Task QuerySubmissions_Verify_BlockedSubverses()
         {
 
             //Ensure v/unit does not show up in v/all for user BlocksUnit
-
             TestHelper.SetPrincipal("BlocksUnit");
+
+            var cmd = new BlockCommand(Domain.Models.DomainType.Subverse, "unit");
+            var r = await cmd.Execute();
+
             var q = new QuerySubmissions("_all", SearchOptions.Default);
             //q.CachePolicy.Duration = cacheTime; //Cache this request
             var result = q.ExecuteAsync().Result;

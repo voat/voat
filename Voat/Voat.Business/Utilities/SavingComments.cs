@@ -12,14 +12,17 @@ All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
 All Rights Reserved.
 */
 
+using System;
 using System.Linq;
 using Voat.Data;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
 {
+    [Obsolete("This code is obsolete", true)]
     public class SavingComments
     {
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // returns true if saved, false otherwise
         public static bool? CheckIfSavedComment(string userToCheck, int commentID)
         {
@@ -55,7 +58,7 @@ namespace Voat.Utilities
             //    return db.Commentsavingtrackers.Where(b => b.CommentId == commentId && b.UserName == userToCheck).AsNoTracking().Any();
             //}
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // a user wishes to save a comment, save it
         public static void SaveComment(int commentId, string userWhichSaved)
         {
@@ -82,7 +85,7 @@ namespace Voat.Utilities
                 }
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // a user has saved this comment earlier and wishes to unsave it, delete the record
         private static void UnSaveComment(string userWhichSaved, int commentId)
         {

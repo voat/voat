@@ -17,7 +17,7 @@
         string loggedInUserName = User.Identity.Name;
 
         //returns true if user has saved this post
-        var savedOrNot = Saving.CheckIfSaved(loggedInUserName, submissionId);
+        var savedOrNot = UserHelper.IsSaved(Voat.Domain.Models.ContentType.Submission, submissionId);
         var saveString = savedOrNot == true ? "unsave" : "save";
         <span class="option main active">
             <a href="javascript:void(0)" class="togglebutton savelink" onclick="return toggleSaveSubmission(@submissionId)">@saveString</a>

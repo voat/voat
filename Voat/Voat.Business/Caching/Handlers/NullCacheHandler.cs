@@ -29,25 +29,22 @@ namespace Voat.Caching
         {
             return false;
         }
-
-        protected override object GetItem(string cacheKey, object dictionaryKey)
+        protected override V GetItem<K,V>(string cacheKey, K key, CacheType type)
         {
-            return null;
+            return default(V);
         }
-
-        protected override void SetItem(string cacheKey, object dictionaryKey, object item)
+        protected override void SetItem<K,V>(string cacheKey, K key, V item, CacheType type)
         {
+            
         }
-
-        protected override void DeleteItem(string cacheKey, object dictionaryKey)
+        protected override void DeleteItem<K>(string cacheKey, K key, CacheType type)
         {
+            
         }
-
-        protected override bool ItemExists(string cacheKey, object dictionaryKey)
+        protected override bool ItemExists<K>(string cacheKey, K key, CacheType type)
         {
             return false;
         }
-
         protected override void ProtectedPurge()
         {
         }

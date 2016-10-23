@@ -10,6 +10,12 @@ using Voat.Data;
 
 namespace Voat.Caching
 {
+    public enum CacheType
+    {
+        Object = 0,
+        Dictionary = 1,
+        Set = 2
+    }
     public abstract class CacheHandler : ICacheHandler
     {
         private bool _ignoreNulls = true;
@@ -70,13 +76,14 @@ namespace Voat.Caching
 
         protected abstract bool ItemExists(string cacheKey);
 
-        protected abstract object GetItem(string cacheKey, object dictionaryKey);
 
-        protected abstract void SetItem(string cacheKey, object dictionaryKey, object item);
+        protected abstract V GetItem<K, V>(string cacheKey, K key, CacheType type);
 
-        protected abstract void DeleteItem(string cacheKey, object dictionaryKey);
+        protected abstract void SetItem<K,V>(string cacheKey, K key, V item, CacheType type);
+        
+        protected abstract void DeleteItem<K>(string cacheKey, K key, CacheType type);
 
-        protected abstract bool ItemExists(string cacheKey, object dictionaryKey);
+        protected abstract bool ItemExists<K>(string cacheKey, K key, CacheType type);
 
         private bool cacheEnabled = true;
 
@@ -93,7 +100,7 @@ namespace Voat.Caching
             }
         }
 
-        private string StandardizeCacheKey(string cacheKey)
+        protected string StandardizeCacheKey(string cacheKey)
         {
             if (String.IsNullOrEmpty(cacheKey))
             {
@@ -109,23 +116,9 @@ namespace Voat.Caching
             lock (_lockStore.GetLockObject(cacheKey))
             {
                 SetItem(cacheKey, replaceAlg(Retrieve<T>(cacheKey)), cacheTime);
-
-                //_cache[key] = replaceAlg(Retrieve<T>(key));
             }
         }
 
-        public void Replace<T>(string cacheKey, object dictionaryKey, Func<T, T> replaceAlg)
-        {
-            cacheKey = StandardizeCacheKey(cacheKey);
-
-            lock (_lockStore.GetLockObject(cacheKey))
-            {
-                T item = (T)GetItem(cacheKey, dictionaryKey);
-                SetItem(cacheKey, dictionaryKey, replaceAlg(item));
-
-                //_cache[key] = replaceAlg(Retrieve<T>(key));
-            }
-        }
 
         public void Replace<T>(string cacheKey, T replacementValue, TimeSpan? cacheTime = null)
         {
@@ -134,8 +127,6 @@ namespace Voat.Caching
             lock (_lockStore.GetLockObject(cacheKey))
             {
                 SetItem(cacheKey, replacementValue, cacheTime);
-
-                //_cache[key] = replaceAlg(Retrieve<T>(key));
             }
         }
 
@@ -198,20 +189,16 @@ namespace Voat.Caching
                                 _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, recacheLimit, 0);
                                 if (recacheLimit >= 0)
                                 {
-                                    //old code is http context dependent, rewriting to use cache directly
                                     var cache = System.Runtime.Caching.MemoryCache.Default;
                                     var policy = new CacheItemPolicy()
                                     {
-                                        //SlidingExpiration = TimeSpan.Zero,
                                         AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime),
                                         UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
                                     };
-
                                     cache.Set(cacheKey, new object(), policy);
                                 }
                                 else
                                 {
-                                    //old code is http context dependent, rewriting to use cache directly
                                     var cache = System.Runtime.Caching.MemoryCache.Default;
                                     cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
                                 }
@@ -220,8 +207,19 @@ namespace Voat.Caching
                         }
                         catch (Exception ex)
                         {
+                
                             Debug.Print(ex.ToString());
-                            throw ex;
+
+                            //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
+                            var aggEx = ex as AggregateException;
+                            if (aggEx != null && aggEx.InnerExceptions.Count == 1)
+                            {
+                                throw aggEx.InnerException;
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
                         }
                     }
                 }
@@ -306,6 +304,20 @@ namespace Voat.Caching
             }
         }
 
+        public bool Exists(string cacheKey)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            return ItemExists(cacheKey);
+        }
+        protected abstract void ProtectedPurge();
+        public void Purge()
+        {
+            //TODO: Do we need to purge state here?
+            //_meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
+            ProtectedPurge();
+        }
+
+
         #region Generic Interfaces
 
         /// <summary>
@@ -321,7 +333,7 @@ namespace Voat.Caching
             var val = Register(cacheKey, new Func<object>(() => { return getData(); }), cacheTime, recacheLimit);
             return (T)Convert<T>(val);
         }
-
+       
         private T Convert<T>(object val)
         {
             if (val == null)
@@ -414,45 +426,69 @@ namespace Voat.Caching
             return (T)Convert<T>(val);
         }
 
-        public bool Exists(string cacheKey)
-        {
-            cacheKey = StandardizeCacheKey(cacheKey);
-            return ItemExists(cacheKey);
-        }
 
-        public void Remove(string cacheKey, object dictionaryKey)
-        {
-            cacheKey = StandardizeCacheKey(cacheKey);
-            DeleteItem(cacheKey, dictionaryKey);
-        }
-
-        public void Replace<T>(string cacheKey, object dictionaryKey, T newObject)
-        {
-            cacheKey = StandardizeCacheKey(cacheKey);
-            SetItem(cacheKey, dictionaryKey, newObject);
-        }
-
-        public T Retrieve<T>(string cacheKey, object dictionaryKey)
-        {
-            cacheKey = StandardizeCacheKey(cacheKey);
-            return (T)GetItem(cacheKey, dictionaryKey);
-        }
-
-        public bool Exists(string cacheKey, object dictionaryKey)
-        {
-            cacheKey = StandardizeCacheKey(cacheKey);
-            return ItemExists(cacheKey, dictionaryKey);
-        }
-
-        protected abstract void ProtectedPurge();
-
-        public void Purge()
-        {
-            //TODO: Do we need to purge state here?
-            //_meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
-            ProtectedPurge();
-        }
 
         #endregion Generic Interfaces
+
+        #region Dictionary
+
+        public virtual void DictionaryReplace<K,V>(string cacheKey, K key, Func<V, V> replaceAlg)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
+            lock (_lockStore.GetLockObject(cacheKey))
+            {
+                V item = (V)GetItem<K,V>(cacheKey, key, CacheType.Dictionary);
+                SetItem(cacheKey, key, replaceAlg(item), CacheType.Dictionary);
+            }
+        }
+
+        public virtual void DictionaryRemove<K>(string cacheKey, K key)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            DeleteItem(cacheKey, key, CacheType.Dictionary);
+        }
+
+        public virtual void DictionaryReplace<K,V>(string cacheKey, K key, V newObject)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            SetItem(cacheKey, key, newObject, CacheType.Dictionary);
+        }
+
+        public virtual V DictionaryRetrieve<K,V>(string cacheKey, K key)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            return (V)GetItem<K,V>(cacheKey, key, CacheType.Dictionary);
+        }
+
+        public virtual bool DictionaryExists<K>(string cacheKey, K key)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            return ItemExists(cacheKey, key, CacheType.Dictionary);
+        }
+
+        #endregion
+
+        #region Set
+
+        public void SetRemove<K>(string cacheKey, K key)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            DeleteItem(cacheKey, key, CacheType.Set);
+        }
+
+        public void SetAdd<K>(string cacheKey, K key)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            SetItem<K, object>(cacheKey, key, null, CacheType.Set);
+        }
+
+        public bool SetExists<K>(string cacheKey, K key)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            return ItemExists(cacheKey, key, CacheType.Set);
+        }
+        #endregion
+
     }
 }

@@ -191,9 +191,7 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
-                            //Turn off all automatic behavior as we are caching
-                            db.Configuration.ProxyCreationEnabled = false;
-                            db.Configuration.LazyLoadingEnabled = false;
+                            db.EnableCacheableOutput();
 
                             var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
 
@@ -244,9 +242,7 @@ namespace Voat.Controllers
                 {
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                     {
-                        //Turn off all automatic behavior as we are caching
-                        db.Configuration.ProxyCreationEnabled = false;
-                        db.Configuration.LazyLoadingEnabled = false;
+                        db.EnableCacheableOutput();
 
                         // get only submissions from default subverses not older than 24 hours, order by relative rank
                         var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
@@ -384,9 +380,7 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
-                                //Turn off all automatic behavior as we are caching
-                                db.Configuration.ProxyCreationEnabled = false;
-                            db.Configuration.LazyLoadingEnabled = false;
+                            db.EnableCacheableOutput();
 
                             var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
                             IQueryable<Submission> submissions = (from m in db.Submissions
@@ -418,12 +412,10 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                         {
-                                //Turn off all automatic behavior as we are caching
-                                db.Configuration.ProxyCreationEnabled = false;
-                            db.Configuration.LazyLoadingEnabled = false;
+                            db.EnableCacheableOutput();
 
-                                // get only submissions from default subverses, order by rank
-                                IQueryable<Submission> submissions = (from message in db.Submissions
+                            // get only submissions from default subverses, order by rank
+                            IQueryable<Submission> submissions = (from message in db.Submissions
                                                                   where !message.IsArchived && !message.IsDeleted
                                                                   where !(from bu in db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                                   join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse

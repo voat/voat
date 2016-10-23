@@ -1537,6 +1537,21 @@ namespace Voat.Data
 
         #region UserMessages
 
+        public async Task<IEnumerable<int>> GetUserSavedItems(ContentType type, string userName)
+        {
+            List<int> savedIDs = null;
+            switch (type)
+            {
+                case ContentType.Comment:
+                    savedIDs = await _db.CommentSaveTrackers.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.CommentID).ToListAsync();
+                    break;
+                case ContentType.Submission:
+                    savedIDs = await _db.SubmissionSaveTrackers.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.SubmissionID).ToListAsync();
+                    break;
+            }
+            return savedIDs;
+        }
+
         /// <summary>
         /// Save Comments and Submissions toggle.
         /// </summary>
@@ -1544,7 +1559,7 @@ namespace Voat.Data
         /// <param name="ID">The ID of the item in which to save</param>
         /// <param name="forceAction">Forces the Save function to operate as a Save only or Unsave only rather than a toggle. If true, will only save if it hasn't been previously saved, if false, will only remove previous saved entry, if null (default) will function as a toggle.</param>
         /// <returns>The end result if the item is saved or not. True if saved, false if not saved.</returns>
-        public bool Save(ContentType type, int ID, bool? forceAction = null)
+        public async Task<CommandResponse<bool?>> Save(ContentType type, int ID, bool? forceAction = null)
         {
             //TODO: These save trackers should be stored in a single table in SQL. Two tables for such similar information isn't ideal... mmkay. Makes querying nasty.
             //TODO: There is a potential issue with this code. There is no validation that the ID belongs to a comment or a submission. This is nearly impossible to determine anyways but it's still an issue.
@@ -1568,7 +1583,7 @@ namespace Voat.Data
                         _db.CommentSaveTrackers.Remove(c);
                         isSaved = false;
                     }
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
 
                     break;
 
@@ -1586,12 +1601,12 @@ namespace Voat.Data
                         _db.SubmissionSaveTrackers.Remove(s);
                         isSaved = false;
                     }
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
 
                     break;
             }
 
-            return (forceAction.HasValue ? forceAction.Value : isSaved);
+            return CommandResponse.FromStatus<bool?>(forceAction.HasValue ? forceAction.Value : isSaved, Status.Success, "");
         }
 
         public static void SetDefaultUserPreferences(Data.Models.UserPreference p)
@@ -2156,7 +2171,7 @@ namespace Voat.Data
             }
             return vCache;
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         public IEnumerable<CommentSaveTracker> UserCommentSavedBySubmission(int submissionID, string userName)
         {
             List<CommentSaveTracker> vCache = new List<CommentSaveTracker>();

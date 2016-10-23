@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -32,7 +33,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override IList<BlockedItem> GetData()
+        protected override async Task<IList<BlockedItem>> GetData()
         {
             using (var db = new Repository())
             {

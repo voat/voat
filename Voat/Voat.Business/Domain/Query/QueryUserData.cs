@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Voat.Caching;
 
 namespace Voat.Domain.Query
@@ -33,7 +34,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override UserData GetData()
+        protected override async Task<UserData> GetData()
         {
             try
             {

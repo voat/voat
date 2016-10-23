@@ -51,12 +51,12 @@ namespace Voat.Domain.Command
                     //Add new comment
                     var treeItem = c.MapToTree();
                     treeItem.UserName = UserName;
-                    CacheHandler.Instance.Replace(key, c.ID, treeItem);
+                    CacheHandler.Instance.DictionaryReplace(key, c.ID, treeItem);
 
                     if (c.ParentID.HasValue)
                     {
                         //Update parent's ChildCount in cache
-                        CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, c.ParentID, x => { x.ChildCount += 1; return x; });
+                        CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(key, c.ParentID.Value, x => { x.ChildCount += 1; return x; });
                     }
                 }
             }
@@ -101,7 +101,7 @@ namespace Voat.Domain.Command
                     var treeItem = result.Response.MapToTree();
 
                     //CacheHandler.Instance.Replace(key, result.Response.ID, treeItem);
-                    CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, result.Response.ID, x =>
+                    CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(key, result.Response.ID, x =>
                     {
                         x.IsDeleted = result.Response.IsDeleted;
                         x.Content = result.Response.Content;
@@ -147,7 +147,7 @@ namespace Voat.Domain.Command
                     var treeItem = result.MapToTree();
 
                     //CacheHandler.Instance.Replace(key, result.ID, treeItem);
-                    CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, result.ID, x =>
+                    CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(key, result.ID, x =>
                     {
                         x.Content = result.Content;
                         x.FormattedContent = result.FormattedContent;

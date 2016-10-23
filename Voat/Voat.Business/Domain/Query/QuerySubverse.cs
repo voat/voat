@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
@@ -30,7 +31,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override Subverse GetData()
+        protected override async Task<Subverse> GetData()
         {
             using (var db = new Repository())
             {

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 namespace Voat.Caching
 {
-    //Might seperate this interface into object hanlding and dictionary handling.
     public interface ICacheHandler
     {
         bool CacheEnabled { get; set; }
@@ -68,53 +67,65 @@ namespace Voat.Caching
         /// <returns></returns>
         T Retrieve<T>(string cacheKey);
 
-        #region DictionaryBased
-
-        //T RegisterDictonary<T>(string cacheKey, Func<T> getData, TimeSpan cacheTime, int recacheLimit = -1) where T : IDictionary;
-        //IEnumerable<T> RegisterDictionary<T>(string cacheKey, Func<IEnumerable<T>> getData, Func<T, object> getDictionaryKey, TimeSpan cacheTime, int recacheLimit = -1);
+        #region Dictionary Based
 
         /// <summary>
         /// Removes dictionary item in cached dictionary at specified key
         /// </summary>
+        /// <typeparam name="K">Key Type</typeparam>
         /// <param name="cacheKey"></param>
-        /// <param name="dictionaryKey"></param>
-        void Remove(string cacheKey, object dictionaryKey);
+        /// <param name="key"></param>
+        void DictionaryRemove<K>(string cacheKey, K key);
 
         /// <summary>
         /// Method will insert or replace cache object at specified dictionary key.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="K">Key Type</typeparam>
+        /// <typeparam name="V">Value Type</typeparam>
         /// <param name="cacheKey"></param>
-        /// <param name="dictionaryKey"></param>
+        /// <param name="key"></param>
         /// <param name="newObject"></param>
-        void Replace<T>(string cacheKey, object dictionaryKey, T newObject);
+        void DictionaryReplace<K,V>(string cacheKey, K key, V newObject);
 
         /// <summary>
         /// Replaces dictionary item at key after processing via Func
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="K">Key Type</typeparam>
+        /// <typeparam name="V">Value Type</typeparam>
         /// <param name="cacheKey"></param>
-        /// <param name="dictionaryKey"></param>
+        /// <param name="key"></param>
         /// <param name="replaceAlg"></param>
-        void Replace<T>(string cacheKey, object dictionaryKey, Func<T, T> replaceAlg);
+        void DictionaryReplace<K,V>(string cacheKey, K key, Func<V, V> replaceAlg);
 
         /// <summary>
         /// Retrieves dictionary item in cached dictionary at specified key
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="K">Key Type</typeparam>
+        /// <typeparam name="V">Value Type</typeparam>
         /// <param name="cacheKey"></param>
-        /// <param name="dictionaryKey"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        T Retrieve<T>(string cacheKey, object dictionaryKey);
+        V DictionaryRetrieve<K,V>(string cacheKey, K key);
 
         /// <summary>
         /// Checks if a cached dictionary contains specified key
         /// </summary>
+        /// <typeparam name="K">Key Type</typeparam>
         /// <param name="cacheKey"></param>
-        /// <param name="dictionaryKey"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        bool Exists(string cacheKey, object dictionaryKey);
+        bool DictionaryExists<K>(string cacheKey, K key);
 
         #endregion DictionaryBased
+
+        #region Set Based
+
+        void SetRemove<T>(string cacheKey, T key);
+
+        void SetAdd<T>(string cacheKey, T key);
+
+        bool SetExists<T>(string cacheKey, T key);
+
+        #endregion SetBased
     }
 }

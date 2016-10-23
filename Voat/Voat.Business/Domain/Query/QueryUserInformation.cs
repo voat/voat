@@ -5,6 +5,7 @@ using Voat.Domain.Models;
 using Voat.Utilities;
 using System.Linq;
 using Voat.Common;
+using System.Threading.Tasks;
 
 namespace Voat.Domain.Query
 {
@@ -39,7 +40,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override UserInformation GetData()
+        protected override async Task<UserInformation> GetData()
         {
             using (var db = new Repository())
             {

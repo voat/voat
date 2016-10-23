@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data.Models;
 
@@ -44,15 +45,16 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override VoatUser GetData()
+        protected override async Task<VoatUser> GetData()
         {
             using (var db = new ApplicationDbContext())
             {
                 db.Configuration.ProxyCreationEnabled = false;
                 db.Configuration.LazyLoadingEnabled = false;
+
                 using (var context = new UserManager<VoatUser>(new UserStore<VoatUser>(db)))
                 {
-                    var user = context.FindByName(_userToRetrieve);
+                    var user = await context.FindByNameAsync(_userToRetrieve);
                     return user;
                 }
             }

@@ -24,8 +24,8 @@ namespace Voat.Controllers
                 var result = new List<Submission>();
                 using (var _db = new voatEntities())
                 {
-                    _db.Configuration.LazyLoadingEnabled = false;
-                    _db.Configuration.ProxyCreationEnabled = false;
+                    _db.EnableCacheableOutput();
+
                     if (subverseName != null && subverseName != "all")
                     {
                         // return only frontpage submissions from a given subverse

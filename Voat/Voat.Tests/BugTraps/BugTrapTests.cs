@@ -23,67 +23,6 @@ namespace Voat.Tests.BugTraps
 
         [TestMethod]
         [TestCategory("Bug"), TestCategory("Voting")]
-        public void Bug_Trap_Spam_Votes()
-        {
-
-            /*
-                        Sql to verify: no matter how many runs this value should never go down by more than one
-
-                        SELECT
-                            UpCount = s.UpCount,
-                            RealUpCount = (SELECT ISNULL(SUM(t.VoteStatus), 0) FROM SubmissionVoteTracker t WHERE t.SubmissionID = s.ID AND t.VoteStatus = 1),
-                            DownCount = s.DownCount, 
-                            RealDownCount = (SELECT ISNULL(SUM(t.VoteStatus), 0) FROM SubmissionVoteTracker t WHERE t.SubmissionID = s.ID AND t.VoteStatus = -1) 
-                        FROM Submission s
-                        WHERE s.ID = 301210
-
-                        SELECT * FROM SubmissionVoteTracker WHERE SubmissionID = 301210
-
-                        -- EXEC usp_ResetSubmissionVoteCount 301210 --This resets the vote count
-
-            */
-            Submission beforesubmission = GetSubmission();
-
-            int exCount = 0;
-            Func<bool> vote1 = new Func<bool>(() => {
-
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
-
-                Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User500CCP", "127.0.0.1");
-                Interlocked.Increment(ref exCount);
-                return true;
-            });
-            Func<bool> vote2 = new Func<bool>(() => {
-
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
-
-                Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User100CCP", "127.0.0.1");
-                Interlocked.Increment(ref exCount);
-                return true;
-            });
-
-            var tasks = new List<Task>();
-            for (int i = 0; i < count; i++)
-            {
-                if (i % 2 == 0)
-                {
-                    tasks.Add(Task.Run(vote1));
-                }
-                else
-                {
-                    tasks.Add(Task.Run(vote2));
-                }
-            }
-
-            Task.WaitAll(tasks.ToArray());
-            Submission aftersubmission = GetSubmission();
-            Assert.AreEqual(count, exCount, "Execution count is off");
-            AssertData(beforesubmission, aftersubmission);
-        }
-        [TestMethod]
-        [TestCategory("Bug"), TestCategory("Voting")]
         public void Bug_Trap_Spam_Votes_VoteCommand()
         {
 
@@ -184,67 +123,6 @@ namespace Voat.Tests.BugTraps
 
         #region Dups
 
-        [TestMethod]
-        [TestCategory("Bug")]
-        public void Bug_Trap_Spam_Votes_2()
-        {
-
-            /*
-                        Sql to verify: no matter how many runs this value should never go down by more than one
-
-                        SELECT
-                            UpCount = s.UpCount,
-                            RealUpCount = (SELECT ISNULL(SUM(t.VoteStatus), 0) FROM SubmissionVoteTracker t WHERE t.SubmissionID = s.ID AND t.VoteStatus = 1),
-                            DownCount = s.DownCount, 
-                            RealDownCount = (SELECT ISNULL(SUM(t.VoteStatus), 0) FROM SubmissionVoteTracker t WHERE t.SubmissionID = s.ID AND t.VoteStatus = -1) 
-                        FROM Submission s
-                        WHERE s.ID = 301210
-
-                        SELECT * FROM SubmissionVoteTracker WHERE SubmissionID = 301210
-
-                        -- EXEC usp_ResetSubmissionVoteCount 301210 --This resets the vote count
-
-            */
-            Submission beforesubmission = GetSubmission();
-
-            int exCount = 0;
-            Func<bool> vote1 = new Func<bool>(() => {
-
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
-
-                Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User500CCP", "127.0.0.1");
-                Interlocked.Increment(ref exCount);
-                return true;
-            });
-            Func<bool> vote2 = new Func<bool>(() => {
-
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
-
-                Voat.Utilities.Voting.UpvoteSubmission(submissionID, "User100CCP", "127.0.0.1");
-                Interlocked.Increment(ref exCount);
-                return true;
-            });
-
-            var tasks = new List<Task>();
-            for (int i = 0; i < count; i++)
-            {
-                if (i % 2 == 0)
-                {
-                    tasks.Add(Task.Run(vote1));
-                }
-                else
-                {
-                    tasks.Add(Task.Run(vote2));
-                }
-            }
-
-            Task.WaitAll(tasks.ToArray());
-            Submission aftersubmission = GetSubmission();
-            Assert.AreEqual(count, exCount, "Execution count is off");
-            AssertData(beforesubmission, aftersubmission);
-        }
         [TestMethod]
         [TestCategory("Bug")]
         public void Bug_Trap_Spam_Votes_VoteCommand_2()

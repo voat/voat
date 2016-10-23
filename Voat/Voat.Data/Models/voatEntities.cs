@@ -6,7 +6,13 @@ namespace Voat.Data.Models
     //Stub out for ReadOnly db connections
     public partial class voatEntities : DbContext
     {
-       
+
+        public void EnableCacheableOutput()
+        {
+            this.Configuration.LazyLoadingEnabled = false;
+            this.Configuration.ProxyCreationEnabled = false;
+        }
+
         public voatEntities(string connectionName)
             : base(String.Format("name={0}", connectionName))
         {

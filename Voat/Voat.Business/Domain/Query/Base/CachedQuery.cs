@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using Voat.Caching;
 
 namespace Voat.Domain.Query
@@ -65,32 +65,37 @@ namespace Voat.Domain.Query
                 return full;
             }
         }
-
-        public override T Execute()
+        public override async Task<T> ExecuteAsync()
         {
             if (CachingPolicy != null && CachingPolicy.IsValid)
             {
                 //I think this will keep data in memory. Need to have method that just inserts data.
                 CacheHit = true;
-                return CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), GetFreshData, CachingPolicy.Duration, CachingPolicy.RecacheLimit);
+                Func<T> func = new Func<T>(() => {
+                    var task = Task.Run(GetFreshData);
+                    Task.WaitAny(task);
+                    return task.Result;
+                });
+
+                return CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RecacheLimit);
             }
             else
             {
                 CacheHit = true;
-                return GetFreshData();
+                return await GetFreshData();
             }
         }
-
+        
         /// <summary>
         /// Retreives fresh data - this should be the only place new data is retreived in derived classes
         /// </summary>
         /// <returns></returns>
-        protected abstract T GetData();
+        protected abstract Task<T> GetData();
 
-        private T GetFreshData()
+        private async Task<T> GetFreshData()
         {
             CacheHit = false;
-            T data = GetData();
+            T data = await GetData();
             return data;
         }
     }

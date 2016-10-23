@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
@@ -29,7 +30,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override IList<SubverseBan> GetData()
+        protected override async Task<IList<SubverseBan>> GetData()
         {
             using (var repo = new Repository())
             {

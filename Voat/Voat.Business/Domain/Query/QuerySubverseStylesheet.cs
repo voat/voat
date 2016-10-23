@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -33,7 +34,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override Stylesheet GetData()
+        protected override async Task<Stylesheet> GetData()
         {
             using (var db = new Repository())
             {

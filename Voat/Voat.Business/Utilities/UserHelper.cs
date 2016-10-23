@@ -37,12 +37,6 @@ namespace Voat.Utilities
             var q = new QueryUserRecord(userName);
             var d = q.Execute();
             return d != null;
-
-            //using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-            //{
-            //    var tmpuser = tmpUserManager.FindByName(userName);
-            //    return tmpuser != null;
-            //}
         }
 
         // return original username
@@ -53,12 +47,6 @@ namespace Voat.Utilities
                 var q = new QueryUserRecord(userName);
                 var d = q.Execute();
                 return d != null ? d.UserName : null;
-
-                //using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-                //{
-                //    var tmpuser = tmpUserManager.FindByName(userName);
-                //    return tmpuser != null ? tmpuser.UserName : null;
-                //}
             }
             return null;
         }
@@ -69,12 +57,6 @@ namespace Voat.Utilities
             var q = new QueryUserRecord(userName);
             var d = q.Execute();
             return d != null ? d.RegistrationDateTime : DateTime.MinValue;
-
-            //using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-            //{
-            //    var tmpuser = tmpUserManager.FindByName(userName);
-            //    return tmpuser != null ? tmpuser.RegistrationDateTime : DateTime.MinValue;
-            //}
         }
 
         // delete a user account and all history: comments, posts and votes
@@ -201,21 +183,28 @@ namespace Voat.Utilities
         // check if given user is subscribed to a given subverse
         public static bool IsUserSubverseSubscriber(string userName, string subverse)
         {
-            using (var db = new voatEntities())
-            {
-                var subverseSubscriber = db.SubverseSubscriptions.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
-                return subverseSubscriber != null;
-            }
+            var userData = new Domain.UserData(userName);
+            return userData.Subscriptions.Any(x => x.IsEqual(subverse));
+
+            //using (var db = new voatEntities())
+            //{
+            //    var subverseSubscriber = db.SubverseSubscriptions.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
+            //    return subverseSubscriber != null;
+            //}
         }
 
         // check if given user blocks a given subverse
         public static bool IsUserBlockingSubverse(string userName, string subverse)
         {
-            using (var db = new voatEntities())
-            {
-                var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
-                return subverseBlock != null;
-            }
+            var q = new QueryUserBlocks(userName);
+            var r = q.Execute();
+            return r.Any(x => x.Type == Domain.Models.DomainType.Subverse && x.Name.IsEqual(subverse));
+
+            //using (var db = new voatEntities())
+            //{
+            //    var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
+            //    return subverseBlock != null;
+            //}
         }
 
         // check if given user is subscribed to a given set
@@ -227,7 +216,7 @@ namespace Voat.Utilities
                 return setSubscriber != null;
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // subscribe to a subverse
         public static void SubscribeToSubverse(string userName, string subverse)
         {
@@ -250,7 +239,7 @@ namespace Voat.Utilities
                 db.SaveChanges();
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // unsubscribe from a subverse
         public static void UnSubscribeFromSubverse(string userName, string subverse)
         {
@@ -282,10 +271,13 @@ namespace Voat.Utilities
         // return subscription count for a given user
         public static int SubscriptionCount(string userName)
         {
-            using (var db = new voatEntities())
-            {
-                return db.SubverseSubscriptions.Count(s => s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
-            }
+            var userData = new Domain.UserData(userName);
+            return userData.Subscriptions.Count();
+
+            //using (var db = new voatEntities())
+            //{
+            //    return db.SubverseSubscriptions.Count(s => s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
+            //}
         }
 
         // return a list of subverses user is subscribed to
@@ -294,21 +286,8 @@ namespace Voat.Utilities
             var q = new QueryUserData(userName);
             var r = q.Execute();
             return r.Subscriptions;
-
-            //// get a list of subcribed subverses with details and order by subverse names, ascending
-            //using (var db = new voatEntities())
-            //{
-            //    var subscribedSubverses = from c in db.Subverses
-            //                              join a in db.SubverseSubscriptions
-            //                              on c.Name equals a.Subverse
-            //                              where a.UserName.Equals(userName)
-            //                              orderby a.Subverse ascending
-            //                              select c.Name;
-
-            //    return subscribedSubverses.ToList();
-            //}
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // return a list of user badges
         public static List<UserBadge> UserBadges(string userName)
         {
@@ -420,8 +399,7 @@ namespace Voat.Utilities
 
                 using (var db = new voatEntities())
                 {
-                    db.Configuration.ProxyCreationEnabled = false;
-                    db.Configuration.LazyLoadingEnabled = false;
+                    db.EnableCacheableOutput();
 
                     // 5 subverses user submitted to most
                     var subverses = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
@@ -1004,6 +982,27 @@ namespace Voat.Utilities
             }
 
             return clientIpAddress;
+        }
+
+        public static bool? IsSaved(Domain.Models.ContentType type, int id)
+        {
+            var identity = System.Threading.Thread.CurrentPrincipal.Identity;
+            if (identity.IsAuthenticated)
+            {
+                string userName = identity.Name;
+                string cacheKey = CachingKey.UserSavedItems(type, userName);
+                if (!CacheHandler.Instance.Exists(cacheKey))
+                {
+                    var q = new QueryUserSaves(type);
+                    var d = q.Execute();
+                    return d.Contains(id);
+                }
+                else
+                {
+                    return CacheHandler.Instance.SetExists(cacheKey, id);
+                }
+            }
+            return null;
         }
     }
 }

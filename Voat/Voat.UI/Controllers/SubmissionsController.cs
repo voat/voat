@@ -168,12 +168,20 @@ namespace Voat.Controllers
         // save a submission
         // POST: save/{messageId}
         [Authorize]
-        public JsonResult Save(int messageId)
+        public async Task<ActionResult> Save(int messageId)
         {
-            var loggedInUser = User.Identity.Name;
-            // perform saving or unsaving
-            Saving.SaveSubmission(messageId, loggedInUser);
-            return Json("Saving ok", JsonRequestBehavior.AllowGet);
+            var cmd = new SaveCommand(Domain.Models.ContentType.Submission, messageId);
+            var response = await cmd.Execute();
+            //Saving.SaveSubmission(messageId, loggedInUser);
+
+            if (response.Success)
+            {
+                return Json("Saving ok", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+            }
         }
 
         // POST: editsubmission

@@ -237,56 +237,64 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository")]
-        public void SaveComment()
+        public async Task SaveComment()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var result = db.Save(ContentType.Comment, 1);
-                Assert.IsTrue(result);
+                var result = await db.Save(ContentType.Comment, 1);
+                Assert.AreEqual(Status.Success, result.Status);
+                Assert.AreEqual(true, result.Response.Value);
             }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
-        public void SaveComment_Force()
+        public async Task SaveComment_Force()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var result = db.Save(ContentType.Comment, 3, true);
-                Assert.IsTrue(result);
+                var result =  await db.Save(ContentType.Comment, 3, true);
+                Assert.AreEqual(Status.Success, result.Status);
+                Assert.AreEqual(true, result.Response.Value);
 
                 //Should only save, never toggle because forceAction == true
-                result = db.Save(ContentType.Comment, 3, true);
-                Assert.IsTrue(result);
+                result = await db.Save(ContentType.Comment, 3, true);
+                Assert.AreEqual(Status.Success, result.Status);
+                Assert.AreEqual(true, result.Response.Value);
+
             }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
-        public void SaveComment_ForceUnSave()
+        public async Task SaveComment_ForceUnSave()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var result = db.Save(ContentType.Comment, 4, false);
-                Assert.IsFalse(result);
+                var result = await db.Save(ContentType.Comment, 4, false);
+                Assert.AreEqual(Status.Success, result.Status);
+                Assert.AreEqual(false, result.Response.Value);
 
                 //Should only save, never toggle because forceAction == true
-                result = db.Save(ContentType.Comment, 3, false);
-                Assert.IsFalse(result);
+                result = await db.Save(ContentType.Comment, 3, false);
+                Assert.AreEqual(Status.Success, result.Status);
+                Assert.AreEqual(false, result.Response.Value);
             }
         }
 
         [TestMethod]
         [TestCategory("Repository")]
-        public void SaveComment_Toggle()
+        public async Task SaveComment_Toggle()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var result = db.Save(ContentType.Comment, 2);
-                Assert.IsTrue(result);
+                var result = await db.Save(ContentType.Comment, 2);
+                Assert.AreEqual(Status.Success, result.Status);
+                Assert.AreEqual(true, result.Response.Value);
 
-                result = db.Save(ContentType.Comment, 2);
-                Assert.IsFalse(result);
+                result = await db.Save(ContentType.Comment, 2);
+                Assert.AreEqual(Status.Success, result.Status);
+                Assert.AreEqual(false, result.Response.Value);
             } 
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
@@ -25,7 +26,7 @@ namespace Voat.Domain.Query
             get { return CachingKey.ApiCorsPolicies(); }
         }
 
-        protected override IEnumerable<ApiCorsPolicy> GetData()
+        protected override async Task<IEnumerable<ApiCorsPolicy>> GetData()
         {
             using (var repo = new Repository())
             {

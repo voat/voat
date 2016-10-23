@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
@@ -44,7 +45,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override UserPreference GetData()
+        protected override async Task<UserPreference> GetData()
         {
             UserPreference pref = null;
 

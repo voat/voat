@@ -21,7 +21,7 @@ namespace Voat
             {
                 return text.Trim();
             }
-            return null;
+            return text;
         }
 
         public static string SubstringMax(this string text, int count)
@@ -34,6 +34,32 @@ namespace Voat
                 }
             }
             return text;
+        }
+
+        public static bool HasInterface(this Type type, Type typeToFind)
+        {
+            var result = false;
+            if (type != null && typeToFind != null)
+            {
+                result = typeToFind.IsAssignableFrom(type);
+                if (!result && typeToFind.IsGenericType)
+                {
+                    var genericType = typeToFind.GetGenericTypeDefinition();
+                    var interfaces = type.GetInterfaces();
+                    foreach (var i in interfaces)
+                    {
+                        if (i.IsGenericType)
+                        {
+                            if (i.GetGenericTypeDefinition() == typeToFind)
+                            {
+                                result = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
         }
     }
 }

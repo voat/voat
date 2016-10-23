@@ -47,16 +47,19 @@ namespace Voat.Controllers
         public ActionResult SidebarForSelectedSubverseComments(Submission submission)
         {
             //Can't cache as view is using model to query
-            var subverse = _db.Subverses.Find(submission.Subverse);
+            //var subverse = _db.Subverses.Find(submission.Subverse);
+            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
             //don't return a sidebar since subverse doesn't exist or is a system subverse
             if (subverse == null)
+            {
                 return new EmptyResult();
+            }
 
             // get subscriber count for selected subverse
-            var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
+            //var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
 
-            ViewBag.SubscriberCount = subscriberCount;
+            //ViewBag.SubscriberCount = subscriberCount;
             ViewBag.SelectedSubverse = submission.Subverse;
 
             //if (!showingComments) return new EmptyResult();
@@ -108,9 +111,9 @@ namespace Voat.Controllers
                 return new EmptyResult();
 
             // get subscriber count for selected subverse
-            var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
+            //var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
 
-            ViewBag.SubscriberCount = subscriberCount;
+            //ViewBag.SubscriberCount = subscriberCount;
             ViewBag.SelectedSubverse = selectedSubverse;
 
             try
@@ -206,7 +209,8 @@ namespace Voat.Controllers
                 await _db.SaveChangesAsync();
 
                 // subscribe user to the newly created subverse
-                UserHelper.SubscribeToSubverse(subverseTmpModel.Owner, subverse.Name);
+                var cmd = new SubscriptionCommand(Domain.Models.DomainType.Subverse, Domain.Models.SubscriptionAction.Subscribe, subverse.Name);
+                var response = await cmd.Execute();
 
                 // register user as the owner of the newly created subverse
                 var tmpSubverseAdmin = new SubverseModerator
@@ -535,9 +539,7 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
-                                //Turn off all automatic behavior as we are caching
-                                db.Configuration.ProxyCreationEnabled = false;
-                                db.Configuration.LazyLoadingEnabled = false;
+                                db.EnableCacheableOutput();
 
                                 var x = SubmissionsFromASubverseByRank(subversetoshow, db);
                                 int count = x.Count();
@@ -613,9 +615,7 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
-                            //Turn off all automatic behavior as we are caching
-                            db.Configuration.ProxyCreationEnabled = false;
-                            db.Configuration.LazyLoadingEnabled = false;
+                            db.EnableCacheableOutput();
 
                             var x = SfwSubmissionsFromAllSubversesByRank(db);
                             int count = 50000;
@@ -755,9 +755,9 @@ namespace Voat.Controllers
                 return new EmptyResult();
 
             // get subscriber count for selected subverse
-            var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
+            //var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
 
-            ViewBag.SubscriberCount = subscriberCount;
+            //ViewBag.SubscriberCount = subscriberCount;
             ViewBag.SelectedSubverse = selectedSubverse;
             return PartialView("_SubverseDetails", subverse);
 
@@ -798,12 +798,22 @@ namespace Voat.Controllers
             {
                 return View("~/Views/Error/404.cshtml");
             }
+            var subverses = CacheHandler.Instance.Register("Legacy:ActiveSubverses", new Func<IList<Subverse>>(() => {
+                using (var db = new voatEntities())
+                {
+                    db.EnableCacheableOutput();
 
-            var subverses = _db.Subverses
-                .Where(s => s.Description != null && s.SideBar != null && s.LastSubmissionDate != null)
-                .OrderByDescending(s => s.LastSubmissionDate);
+                    return (from s in db.Subverses
+                            join submission in db.Submissions on s.Name equals submission.Subverse
+                            where s.Description != null && s.SideBar != null
+                            orderby submission.CreationDate descending
+                            select s).Distinct().Take(pageSize).ToList();
 
-            var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
+                }
+            }), TimeSpan.FromHours(1));
+
+            //Turn off paging and only show the top 25 most active
+            var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, 1, 25, 25);
 
             return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
         }
@@ -1386,22 +1396,39 @@ namespace Voat.Controllers
 
         // POST: subscribe to a subverse
         [Authorize]
-        public JsonResult Subscribe(string subverseName)
+        public async Task<JsonResult> Subscribe(string subverseName)
         {
-            var loggedInUser = User.Identity.Name;
-
-            Voat.Utilities.UserHelper.SubscribeToSubverse(loggedInUser, subverseName);
-            return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
+            var cmd = new SubscriptionCommand(Domain.Models.DomainType.Subverse, Domain.Models.SubscriptionAction.Subscribe, subverseName);
+            var r = await cmd.Execute();
+            if (r.Success)
+            {
+                return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(r.Message, JsonRequestBehavior.AllowGet);
+            }
         }
 
         // POST: unsubscribe from a subverse
         [Authorize]
-        public JsonResult UnSubscribe(string subverseName)
+        public async Task<JsonResult> UnSubscribe(string subverseName)
         {
-            var loggedInUser = User.Identity.Name;
+            //var loggedInUser = User.Identity.Name;
 
-            Voat.Utilities.UserHelper.UnSubscribeFromSubverse(loggedInUser, subverseName);
-            return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
+            //Voat.Utilities.UserHelper.UnSubscribeFromSubverse(loggedInUser, subverseName);
+            //return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
+            var cmd = new SubscriptionCommand(Domain.Models.DomainType.Subverse, Domain.Models.SubscriptionAction.Unsubscribe, subverseName);
+            var r = await cmd.Execute();
+            if (r.Success)
+            {
+                return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(r.Message, JsonRequestBehavior.AllowGet);
+            }
+
         }
 
         // GET: show submission removal log
@@ -1593,9 +1620,7 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
-                            //Turn off all automatic behavior as we are caching
-                            db.Configuration.ProxyCreationEnabled = false;
-                            db.Configuration.LazyLoadingEnabled = false;
+                            db.EnableCacheableOutput();
 
                             var x = SubmissionsFromASubverseByDate(subversetoshow, db);
                             int count = x.Count();
@@ -1728,9 +1753,7 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
-                                //Turn off all automatic behavior as we are caching
-                                db.Configuration.ProxyCreationEnabled = false;
-                                db.Configuration.LazyLoadingEnabled = false;
+                                db.EnableCacheableOutput();
 
                                 var x = SfwSubmissionsFromAllSubversesByDate(db);
                                 int count = 50000;
@@ -1756,9 +1779,7 @@ namespace Voat.Controllers
                         {
                             using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                             {
-                                //Turn off all automatic behavior as we are caching
-                                db.Configuration.ProxyCreationEnabled = false;
-                                db.Configuration.LazyLoadingEnabled = false;
+                                db.EnableCacheableOutput();
 
                                 var dataToCache = SfwSubmissionsFromAllSubversesByTop(startDate, db);
                                 int count = 50000;
@@ -1785,9 +1806,7 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
-                            //Turn off all automatic behavior as we are caching
-                            db.Configuration.ProxyCreationEnabled = false;
-                            db.Configuration.LazyLoadingEnabled = false;
+                            db.EnableCacheableOutput();
 
                             var dataToCache = SfwSubmissionsFromAllSubversesByRank(db);
                             int count = 50000;
@@ -1820,9 +1839,7 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
-                            //Turn off all automatic behavior as we are caching
-                            db.Configuration.ProxyCreationEnabled = false;
-                            db.Configuration.LazyLoadingEnabled = false;
+                            db.EnableCacheableOutput();
 
                             var x = SubmissionsFromAllSubversesByDate(db);
                             int count = 50000;
@@ -1849,9 +1866,7 @@ namespace Voat.Controllers
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
-                            //Turn off all automatic behavior as we are caching
-                            db.Configuration.ProxyCreationEnabled = false;
-                            db.Configuration.LazyLoadingEnabled = false;
+                            db.EnableCacheableOutput();
 
                             var dataToCache = SubmissionsFromAllSubversesByTop(startDate, db);
                             int count = 50000;
@@ -1877,9 +1892,7 @@ namespace Voat.Controllers
                 {
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                     {
-                        //Turn off all automatic behavior as we are caching
-                        db.Configuration.ProxyCreationEnabled = false;
-                        db.Configuration.LazyLoadingEnabled = false;
+                        db.EnableCacheableOutput();
 
                         var dataToCache = SubmissionsFromAllSubversesByRank(db);
                         int count = 50000;
@@ -1907,8 +1920,8 @@ namespace Voat.Controllers
             {
                 using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                 {
-                    db.Configuration.ProxyCreationEnabled = false;
-                    db.Configuration.LazyLoadingEnabled = false;
+                    db.EnableCacheableOutput();
+
                     return SfwSubmissionsFromAllSubversesByViews24Hours(db).ToList();
                 }
             }), TimeSpan.FromMinutes(60), 5);

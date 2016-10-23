@@ -48,6 +48,10 @@ namespace Voat.Caching
                     var entries = db.HashGetAll(cacheKey);
                     return entries.ToDictionary<HashEntry, object, object>(new Func<HashEntry, object>(x => x.Name), new Func<HashEntry, object>(x => Deserialize(x.Value)));
                 }
+                else if (type == RedisType.Set || type == RedisType.SortedSet)
+                {
+                    throw new InvalidOperationException("Set based values do not support GetItem");
+                }
                 else
                 {
                     var val = db.StringGet(cacheKey);
@@ -58,6 +62,51 @@ namespace Voat.Caching
                 }
             }
             return null;
+        }
+
+
+        protected override void DeleteItem(string cacheKey)
+        {
+            db.KeyDelete(cacheKey);
+        }
+
+        protected override bool ItemExists(string cacheKey)
+        {
+            return db.KeyExists(cacheKey);
+        }
+        protected override V GetItem<K, V>(string cacheKey, K key, CacheType type)
+        {
+            V returnVal = default(V);
+            switch (type)
+            {
+                case CacheType.Dictionary:
+                    if (db.HashExists(cacheKey, key.ToString()))
+                    {
+                        returnVal = (V)Deserialize(db.HashGet(cacheKey, key.ToString()));
+                    }
+                    break;
+            }
+            return returnVal;
+        }
+
+        protected override void SetItem<K,V>(string cacheKey, K key, V item, CacheType type)
+        {
+            if (db.KeyExists(cacheKey))
+            {
+                switch (type)
+                {
+                    case CacheType.Dictionary:
+                        db.HashSet(cacheKey, new HashEntry[] { new HashEntry(key.ToString(), Serialize(item)) });
+                        break;
+                    case CacheType.Set:
+                        db.SetAdd(cacheKey, Serialize(key));
+                        break;
+                }
+            }
+            //else
+            //{
+            //    db.HashSet(cacheKey, new HashEntry[] { new HashEntry(key.ToString(), Serialize(item)) });
+            //}
         }
 
         protected override void SetItem(string cacheKey, object item, TimeSpan? cacheTime = null)
@@ -73,48 +122,69 @@ namespace Voat.Caching
                 }
                 db.HashSet(cacheKey, hashes.ToArray());
             }
+            else if (item.GetType().HasInterface(typeof(ISet<>)))
+            {
+                var list = (IEnumerable)item;
+                var values = new List<RedisValue>();
+                foreach (object o in list)
+                {
+                    values.Add(Serialize(o));
+                }
+                if (values.Count > 0)
+                {
+                    db.SetAdd(cacheKey, values.ToArray());
+                }
+            }
             else
             {
-                db.StringSet(cacheKey, Serialize(item));
+                if (db.KeyExists(cacheKey))
+                {
+                    var type = db.KeyType(cacheKey);
+                    if (type == RedisType.Hash)
+                    {
+                        throw new InvalidOperationException("SetItem can not add dictionary entry without key");
+                    }
+                    else if (type == RedisType.Set || type == RedisType.SortedSet)
+                    {
+                        db.SetAdd(cacheKey, Serialize(item));
+                    }
+                }
+                else
+                {
+                    db.StringSet(cacheKey, Serialize(item));
+                }
             }
             if (cacheTime.HasValue)
             {
                 db.KeyExpire(cacheKey, cacheTime.Value.Add(expirationBuffer));
             }
         }
-
-        protected override void DeleteItem(string cacheKey)
+        protected override void DeleteItem<T>(string cacheKey, T key, CacheType type)
         {
-            db.KeyDelete(cacheKey);
-        }
-
-        protected override bool ItemExists(string cacheKey)
-        {
-            return db.KeyExists(cacheKey);
-        }
-
-        protected override object GetItem(string cacheKey, object dictionaryKey)
-        {
-            if (db.HashExists(cacheKey, dictionaryKey.ToString()))
+            switch (type)
             {
-                return Deserialize(db.HashGet(cacheKey, dictionaryKey.ToString()));
+                case CacheType.Dictionary:
+                    db.HashDelete(cacheKey, key.ToString());
+                    break;
+                case CacheType.Set:
+                    db.SetRemove(cacheKey, Serialize(key));
+                    break;
             }
-            return null;
         }
 
-        protected override void SetItem(string cacheKey, object dictionaryKey, object item)
+        protected override bool ItemExists<T>(string cacheKey, T key, CacheType type)
         {
-            db.HashSet(cacheKey, new HashEntry[] { new HashEntry(dictionaryKey.ToString(), Serialize(item)) });
-        }
-
-        protected override void DeleteItem(string cacheKey, object dictionaryKey)
-        {
-            db.HashDelete(cacheKey, dictionaryKey.ToString());
-        }
-
-        protected override bool ItemExists(string cacheKey, object dictionaryKey)
-        {
-            return db.HashExists(cacheKey, dictionaryKey.ToString());
+            var found = false;
+            switch (type)
+            {
+                case CacheType.Dictionary:
+                    found = db.HashExists(cacheKey, key.ToString());
+                    break;
+                case CacheType.Set:
+                    found = db.SetContains(cacheKey, Serialize(key));
+                    break;
+            }
+            return found;
         }
 
         protected override void ProtectedPurge()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 
@@ -23,7 +24,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override Domain.Models.Comment GetData()
+        protected override async Task<Domain.Models.Comment> GetData()
         {
             using (var db = new Repository())
             {
@@ -63,7 +64,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override Domain.Models.Submission GetData()
+        protected override async Task<Domain.Models.Submission> GetData()
         {
             using (var db = new Repository())
             {
@@ -104,7 +105,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override IEnumerable<Data.Models.CommentVoteTracker> GetData()
+        protected override async Task<IEnumerable<Data.Models.CommentVoteTracker>> GetData()
         {
             using (var repo = new Repository())
             {
@@ -113,7 +114,7 @@ namespace Voat.Domain.Query
             }
         }
     }
-
+    [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
     public class QueryUserSavedCommentsForSubmission : CachedQuery<IEnumerable<Data.Models.CommentSaveTracker>>
     {
         protected int _submissionID;
@@ -143,7 +144,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override IEnumerable<Data.Models.CommentSaveTracker> GetData()
+        protected override async Task<IEnumerable<Data.Models.CommentSaveTracker>> GetData()
         {
             using (var repo = new Repository())
             {

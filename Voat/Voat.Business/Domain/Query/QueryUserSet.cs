@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Domain.Models;
 
@@ -27,7 +28,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override UserSet GetData()
+        protected override async Task<UserSet> GetData()
         {
             throw new NotImplementedException();
         }

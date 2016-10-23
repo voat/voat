@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 
@@ -23,7 +24,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override IEnumerable<Domain.Models.Comment> GetData()
+        protected override async Task<IEnumerable<Domain.Models.Comment>> GetData()
         {
             using (var db = new Repository())
             {

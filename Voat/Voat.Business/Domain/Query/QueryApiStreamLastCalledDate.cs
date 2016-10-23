@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -42,7 +43,7 @@ namespace Voat.Domain.Query
             return value;
         }
 
-        protected override DateTime GetData()
+        protected override async Task<DateTime> GetData()
         {
             DateTime last = Repository.CurrentDate;
             last = last.AddMinutes(-5); //first time call or removed from cache, give them a margin

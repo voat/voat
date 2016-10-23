@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
@@ -27,7 +28,7 @@ namespace Voat.Domain.Query
             get { return CachingKey.ApiClient(_apikey); }
         }
 
-        protected override ApiClient GetData()
+        protected override async Task<ApiClient> GetData()
         {
             using (var repo = new Repository())
             {

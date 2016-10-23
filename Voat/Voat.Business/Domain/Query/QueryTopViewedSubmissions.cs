@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Voat.Data;
 
 namespace Voat.Domain.Query
@@ -18,7 +19,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override IEnumerable<Domain.Models.Submission> GetData()
+        protected override async Task<IEnumerable<Domain.Models.Submission>> GetData()
         {
             using (var repo = new Repository())
             {

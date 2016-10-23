@@ -32,11 +32,13 @@ namespace Voat.Domain.Query
             }
         }
 
-        public virtual async Task<T> ExecuteAsync()
-        {
-            return await Task.Run(() => Execute());
-        }
+        public abstract Task<T> ExecuteAsync();
 
-        public abstract T Execute();
+        public virtual T Execute()
+        {
+            Task<T> t = Task.Run(ExecuteAsync);
+            Task.WaitAll(t);
+            return t.Result;
+        }
     }
 }

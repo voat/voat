@@ -49,19 +49,22 @@ namespace Voat.Controllers
             var result = await cmd.Execute();
             return Json(result);
         }
-
-        // POST: savecomment/{commentId}
         [Authorize]
-        public JsonResult SaveComment(int commentId)
+        public async Task<ActionResult> SaveComment(int commentId)
         {
-            var loggedInUser = User.Identity.Name;
-            // perform saving or unsaving
-            SavingComments.SaveComment(commentId, loggedInUser);
+            var cmd = new SaveCommand(Domain.Models.ContentType.Comment, commentId);
+            var response = await cmd.Execute();
+            //Saving.SaveSubmission(messageId, loggedInUser);
 
-            Response.StatusCode = 200;
-            return Json("Saving ok", JsonRequestBehavior.AllowGet);
+            if (response.Success)
+            {
+                return Json("Saving ok", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+            }
         }
-
         private List<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID)
         {
             List<CommentVoteTracker> vCache = new List<CommentVoteTracker>();
@@ -158,6 +161,9 @@ namespace Voat.Controllers
                 // register a new session for this subverse
                 SessionHelper.Add(subverse.Name, ipHash);
 
+                //TODO: This needs to be executed in seperate task
+                #region TODO
+                
                 // register a new view for this thread
                 // check if this hash is present for this submission id in viewstatistics table
                 var existingView = _db.ViewStatistics.Find(submission.ID, ipHash);
@@ -171,6 +177,8 @@ namespace Voat.Controllers
                     submission.Views++;
                     await _db.SaveChangesAsync();
                 }
+
+                #endregion
             }
             
             #endregion

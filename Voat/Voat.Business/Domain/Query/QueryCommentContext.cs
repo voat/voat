@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query.Base;
@@ -32,10 +33,10 @@ namespace Voat.Domain.Query
             _collapseThreshold = -10000;
         }
 
-        public override CommentSegment Execute()
+        public override async Task<CommentSegment> ExecuteAsync()
         {
             bool addChildren = !_context.HasValue; //logic here is that if context is negative user is viewing permalink
-            var segment = base.GetSegment(addChildren);
+            var segment = await base.GetSegment(addChildren);
 
             if (_context.HasValue)
             {
@@ -50,7 +51,7 @@ namespace Voat.Domain.Query
                     var childSegment = segment;
                     while (parent != null && (currentContext < _context || _context == 0))
                     {
-                        var parentNestedComment = parent.Map(SubmitterName, _commentVotes, _commentSaves);
+                        var parentNestedComment = parent.Map(SubmitterName, _commentVotes);
                         parentNestedComment.Children = childSegment;
                         childSegment = new CommentSegment(parentNestedComment);
                         childSegment.Sort = _sort;

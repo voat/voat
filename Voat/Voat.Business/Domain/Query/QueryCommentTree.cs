@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
@@ -38,7 +39,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override IDictionary<string, usp_CommentTree_Result> GetData()
+        protected override async Task<IDictionary<string, usp_CommentTree_Result>> GetData()
         {
             using (var db = new Repository())
             {

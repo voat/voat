@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query.Base;
@@ -35,9 +36,9 @@ namespace Voat.Domain.Query
             return commentTree.Skip(_index.HasValue ? _index.Value : 0).Take(_count * 2);
         }
 
-        public override CommentSegment Execute()
+        public override async Task<CommentSegment> ExecuteAsync()
         {
-            var segment = base.GetSegment(true);
+            var segment = await base.GetSegment(true);
             segment.StartingIndex = _index.HasValue ? _index.Value : 0;
             return segment;
         }

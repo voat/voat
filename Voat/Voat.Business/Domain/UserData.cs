@@ -175,9 +175,9 @@ namespace Voat.Domain
                 {
                     var q = new QueryUserSubscriptions(username);
                     var result = q.Execute();
-                    if (result != null && result.ContainsKey("Subverse"))
+                    if (result != null && result.ContainsKey(DomainType.Subverse))
                     {
-                        return result["Subverse"];
+                        return result[DomainType.Subverse];
                     }
                     else
                     {

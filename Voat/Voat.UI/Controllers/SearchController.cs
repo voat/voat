@@ -70,8 +70,8 @@ namespace Voat.Controllers
                     {
                         using (var db = new voatEntities())
                         {
-                            db.Configuration.LazyLoadingEnabled = false;
-                            db.Configuration.ProxyCreationEnabled = false;
+                            db.EnableCacheableOutput();
+
                             var results = (from m in db.Submissions
                                            join s in db.Subverses on m.Subverse equals s.Name
                                            where
@@ -114,8 +114,8 @@ namespace Voat.Controllers
                     {
                         using (var db = new voatEntities())
                         {
-                            db.Configuration.LazyLoadingEnabled = false;
-                            db.Configuration.ProxyCreationEnabled = false;
+                            db.EnableCacheableOutput();
+
                             var results = (from m in db.Submissions
                                            join s in db.Subverses on m.Subverse equals s.Name
                                            where

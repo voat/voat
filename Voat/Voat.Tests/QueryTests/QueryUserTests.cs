@@ -85,5 +85,6 @@ namespace Voat.Tests.QueryTests
 
 
         }
+        
     }
 }

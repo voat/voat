@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
@@ -24,7 +25,7 @@ namespace Voat.Domain.Query
             get { return CachingKey.ApiThrottlePolicy(_apiThrottlePolicyID); }
         }
 
-        protected override ApiThrottlePolicy GetData()
+        protected override async Task<ApiThrottlePolicy> GetData()
         {
             using (var repo = new Repository())
             {

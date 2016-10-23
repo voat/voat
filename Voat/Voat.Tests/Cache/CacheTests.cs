@@ -26,6 +26,7 @@ using StackExchange.Redis;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Voat.Caching;
 using Voat.Domain.Models;
@@ -87,20 +88,21 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_Add()
+        public void Dictionary_Add()
         {
-            string cacheKey = "TestDictionary_Add";
+            string cacheKey = "Dictionary_Add";
             handler.Remove(cacheKey);
 
             List<Item> items = GetNewItems(10);
             handler.Register(cacheKey, new Func<IDictionary<object, Item>>(() => items.ToDictionary(new Func<Item, object>(x => x.ID))), TimeSpan.FromMinutes(30));
+
             //handler.RegisterDictionary(cacheKey, new Func<IList<Item>>(() => items), new Func<Item, object>((x) => x.ID), TimeSpan.FromMinutes(100));
             var r = handler.Retrieve<IDictionary>(cacheKey);
 
             Assert.IsNotNull(r);
             Assert.AreEqual(items.Count, r.Count);
 
-            var item = handler.Retrieve<Item>(cacheKey, 1);
+            var item = handler.DictionaryRetrieve<int, Item>(cacheKey, 1);
             Assert.IsNotNull(item);
             Assert.AreEqual(1, item.ID);
             handler.Remove(cacheKey);
@@ -110,9 +112,9 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_RemoveExisting()
+        public void Dictionary_RemoveExisting()
         {
-            string cacheKey = "TestDictionary_RemoveExisting";
+            string cacheKey = "Dictionary_RemoveExisting";
             handler.Remove(cacheKey);
 
             List<Item> items = GetNewItems(10);
@@ -120,9 +122,9 @@ namespace Voat.Tests.Cache
 
             //replace existing key
             var newItem = new Item() { ID = 1, Count = 400, Name = "New Name" };
-            handler.Remove(cacheKey, 1);
+            handler.DictionaryRemove(cacheKey, 1);
 
-            var cachedItem = handler.Retrieve<Item>(cacheKey, 1);
+            var cachedItem = handler.DictionaryRetrieve<int, Item>(cacheKey, 1);
 
             Assert.IsNull(cachedItem);
 
@@ -133,9 +135,9 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_RemoveNonExisting()
+        public void Dictionary_RemoveNonExisting()
         {
-            string cacheKey = "TestDictionary_RemoveNonExisting";
+            string cacheKey = "Dictionary_RemoveNonExisting";
             handler.Remove(cacheKey);
 
             List<Item> items = GetNewItems(10);
@@ -143,7 +145,7 @@ namespace Voat.Tests.Cache
 
             //replace existing key
             var newItem = new Item() { ID = 1, Count = 400, Name = "New Name" };
-            handler.Remove(cacheKey, 20);
+            handler.DictionaryRemove(cacheKey, 20);
 
             handler.Remove(cacheKey);
         }
@@ -152,9 +154,9 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_ReplaceExisting()
+        public void Dictionary_ReplaceExisting()
         {
-            string cacheKey = "TestDictionary_ReplaceExisting";
+            string cacheKey = "Dictionary_ReplaceExisting";
             handler.Remove(cacheKey);
 
             List<Item> items = GetNewItems(10);
@@ -162,9 +164,9 @@ namespace Voat.Tests.Cache
 
             //replace existing key
             var newItem = new Item() { ID = 1, Count = 400, Name = "New Name" };
-            handler.Replace(cacheKey, 1, newItem);
+            handler.DictionaryReplace(cacheKey, 1, newItem);
 
-            var cachedItem = handler.Retrieve<Item>(cacheKey, 1);
+            var cachedItem = handler.DictionaryRetrieve<int, Item>(cacheKey, 1);
 
             Assert.IsNotNull(cachedItem);
             Assert.AreEqual(newItem.ID, cachedItem.ID);
@@ -178,24 +180,25 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_ReplaceWithoutPrevious()
+        public void Dictionary_ReplaceWithoutPrevious()
         {
-            string cacheKey = "TestDictionary_Add";
+            //we used to add this to cache if it didn't exist, now we don't
+            string cacheKey = "Dictionary_Add";
             handler.Remove(cacheKey);
 
             var newItem = new Item() { ID = 1, Count = 400, Name = "New Name" };
-            handler.Replace<Item>(cacheKey, 1, newItem);
-            Assert.IsTrue(handler.Exists(cacheKey, 1));
+            handler.DictionaryReplace<int, Item>(cacheKey, 1, newItem);
+            Assert.IsFalse(handler.DictionaryExists(cacheKey, 1));
 
             var newItem2 = new Item() { ID = 2, Count = 400, Name = "New Name" };
-            handler.Replace(cacheKey, 2, newItem2);
-            Assert.IsTrue(handler.Exists(cacheKey, 2));
+            handler.DictionaryReplace(cacheKey, 2, newItem2);
+            Assert.IsFalse(handler.DictionaryExists(cacheKey, 2));
 
-            var cacheItem = handler.Retrieve<Item>(cacheKey, 1);
-            Assert.IsNotNull(cacheItem);
-            Assert.AreEqual(newItem.ID, cacheItem.ID);
-            Assert.AreEqual(newItem.Count, cacheItem.Count);
-            Assert.AreEqual(newItem.Name, cacheItem.Name);
+            var cacheItem = handler.DictionaryRetrieve<int, Item>(cacheKey, 1);
+            Assert.IsNull(cacheItem);
+            //Assert.AreEqual(newItem.ID, cacheItem.ID);
+            //Assert.AreEqual(newItem.Count, cacheItem.Count);
+            //Assert.AreEqual(newItem.Name, cacheItem.Name);
 
             handler.Remove(cacheKey);
         }
@@ -204,9 +207,9 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_TypedDictionary_EnumKey_AddItem()
+        public void Dictionary_TypedDictionary_EnumKey_AddItem()
         {
-            string cacheKey = "TestDictionary_TypedDictionary_EnumKey_AddItem";
+            string cacheKey = "Dictionary_TypedDictionary_EnumKey_AddItem";
             handler.Remove(cacheKey);
 
             List<Item> items = GetNewItems(10);
@@ -219,10 +222,10 @@ namespace Voat.Tests.Cache
             var dict = handler.Retrieve<IDictionary<DomainType, IList<Item>>>(cacheKey);
             Assert.IsNotNull(dict);
 
-            handler.Replace(cacheKey, DomainType.User, new List<Item>() { new Item() { ID = 20, Count = 20, Name = "Twenty" } });
+            handler.DictionaryReplace(cacheKey, DomainType.User, new List<Item>() { new Item() { ID = 20, Count = 20, Name = "Twenty" } });
 
             //See if we can get updated dictionary entry by enum key
-            var data = handler.Retrieve<IList<Item>>(cacheKey, DomainType.User);
+            var data = handler.DictionaryRetrieve<DomainType, IList<Item>>(cacheKey, DomainType.User);
             var item = data.First();
             Assert.IsNotNull(item);
             Assert.AreEqual(20, item.ID);
@@ -239,9 +242,9 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_TypedDictionary_IntKey_AddItem()
+        public void Dictionary_TypedDictionary_IntKey_AddItem()
         {
-            string cacheKey = "TestDictionary_TypedDictionary_IntKey_AddItem";
+            string cacheKey = "Dictionary_TypedDictionary_IntKey_AddItem";
             handler.Remove(cacheKey);
 
             List<Item> items = GetNewItems(10);
@@ -250,10 +253,10 @@ namespace Voat.Tests.Cache
             var dict = handler.Retrieve<IDictionary<int, Item>>(cacheKey);
             Assert.IsNotNull(dict);
 
-            handler.Replace(cacheKey, 20, new Item() { ID = 20, Count = 20, Name = "Twenty" });
+            handler.DictionaryReplace(cacheKey, 20, new Item() { ID = 20, Count = 20, Name = "Twenty" });
 
             //See if we can get dictionary entry by int key
-            var item = handler.Retrieve<Item>(cacheKey, 20);
+            var item = handler.DictionaryRetrieve<int, Item>(cacheKey, 20);
             Assert.IsNotNull(item);
             Assert.AreEqual(20, item.ID);
             Assert.AreEqual("Twenty", item.Name);
@@ -269,9 +272,9 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_TypedDictionary_IntKey_Read()
+        public void Dictionary_TypedDictionary_IntKey_Read()
         {
-            string cacheKey = "TestDictionary_TypedDictionary_IntKey_Read";
+            string cacheKey = "Dictionary_TypedDictionary_IntKey_Read";
             handler.Remove(cacheKey);
 
             List<Item> items = GetNewItems(10);
@@ -281,7 +284,7 @@ namespace Voat.Tests.Cache
             Assert.IsNotNull(dict);
 
             //See if we can get dictionary entry by int key
-            var item = handler.Retrieve<Item>(cacheKey, 2);
+            var item = handler.DictionaryRetrieve<int, Item>(cacheKey, 2);
             Assert.IsNotNull(item);
 
             handler.Remove(cacheKey);
@@ -291,9 +294,9 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_TypedDictionary_StringKey_AddItem()
+        public void Dictionary_TypedDictionary_StringKey_AddItem()
         {
-            string cacheKey = "TestDictionary_TypedDictionary_StringKey_AddItem";
+            string cacheKey = "Dictionary_TypedDictionary_StringKey_AddItem";
             handler.Remove(cacheKey);
 
             List<Item> items = GetNewItems(10);
@@ -302,10 +305,10 @@ namespace Voat.Tests.Cache
             var dict = handler.Retrieve<IDictionary<string, Item>>(cacheKey);
             Assert.IsNotNull(dict);
 
-            handler.Replace(cacheKey, "20", new Item() { ID = 20, Count = 20, Name = "Twenty" });
+            handler.DictionaryReplace(cacheKey, "20", new Item() { ID = 20, Count = 20, Name = "Twenty" });
 
             //See if we can get dictionary entry by int key
-            var item = handler.Retrieve<Item>(cacheKey, "20");
+            var item = handler.DictionaryRetrieve<string, Item>(cacheKey, "20");
             Assert.IsNotNull(item);
             Assert.AreEqual(20, item.ID);
             Assert.AreEqual("Twenty", item.Name);
@@ -321,9 +324,9 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void TestDictionary_TypedDictionary_StringKey_Read()
+        public void Dictionary_TypedDictionary_StringKey_Read()
         {
-            string cacheKey = "TestDictionary_TypedDictionary_StringKey_Read";
+            string cacheKey = "Dictionary_TypedDictionary_StringKey_Read";
             handler.Remove(cacheKey);
 
             List<Item> items = GetNewItems(10);
@@ -333,11 +336,115 @@ namespace Voat.Tests.Cache
             Assert.IsNotNull(dict);
 
             //See if we can get dictionary entry by int key
-            var item = handler.Retrieve<Item>(cacheKey, "2");
+            var item = handler.DictionaryRetrieve<string, Item>(cacheKey, "2");
             Assert.IsNotNull(item);
 
             handler.Remove(cacheKey);
         }
+
+        #region Set Operations
+
+        [TestMethod]
+        [TestCategory("Cache")]
+        [TestCategory("Cache.Handler")]
+        [TestCategory("Cache.Handler.List")]
+        public void Set_AddToExisting()
+        {
+            string cacheKey = "Set_AddToExisting";
+            handler.Remove(cacheKey);
+
+            List<int> items = new List<int>() { 1, 2, 3, 4, 5 };
+            HashSet<int> set = new HashSet<int>(items);
+
+            handler.Register(cacheKey, new Func<ISet<int>>(() => set), TimeSpan.FromMinutes(30));
+
+            handler.SetAdd(cacheKey, 6);
+
+            var exists = handler.SetExists(cacheKey, 6);
+
+            Assert.AreEqual(true, exists);
+
+            handler.Remove(cacheKey);
+        }
+
+        [TestMethod]
+        [TestCategory("Cache")]
+        [TestCategory("Cache.Handler")]
+        [TestCategory("Cache.Handler.List")]
+        public void Set_Add_Ints()
+        {
+            string cacheKey = "Set_Add_Ints";
+            handler.Remove(cacheKey);
+
+            List<int> items = new List<int>() { 1, 2, 3, 4, 5 };
+            HashSet<int> set = new HashSet<int>(items);
+
+            handler.Register(cacheKey, new Func<ISet<int>>(() => set), TimeSpan.FromMinutes(30));
+
+            foreach (var item in items)
+            {
+                var exists = handler.SetExists(cacheKey, item);
+                Assert.AreEqual(true, exists);
+            }
+
+            handler.Remove(cacheKey);
+        }
+
+        [TestMethod]
+        [TestCategory("Cache")]
+        [TestCategory("Cache.Handler")]
+        [TestCategory("Cache.Handler.List")]
+        public void Set_Add_Object()
+        {
+            string cacheKey = "Set_Add";
+            handler.Remove(cacheKey);
+
+            List<Item> items = GetNewItems(10);
+            HashSet<Item> set = new HashSet<Item>(items);
+            handler.Register(cacheKey, new Func<ISet<Item>>(() => set), TimeSpan.FromMinutes(30));
+
+            foreach (var item in items)
+            {
+                var exists = handler.SetExists(cacheKey, item);
+                Assert.AreEqual(true, exists);
+            }
+
+            handler.Remove(cacheKey);
+        }
+
+        [TestMethod]
+        [TestCategory("Cache")]
+        [TestCategory("Cache.Handler")]
+        [TestCategory("Cache.Handler.List")]
+        public void Set_Remove()
+        {
+            string cacheKey = "Set_Remove";
+            handler.Remove(cacheKey);
+
+            List<Item> items = GetNewItems(10);
+            HashSet<Item> set = new HashSet<Item>(items);
+            handler.Register(cacheKey, new Func<ISet<Item>>(() => set), TimeSpan.FromMinutes(30));
+
+            foreach (var item in items)
+            {
+                var exists = handler.SetExists(cacheKey, item);
+                Assert.AreEqual(true, exists);
+            }
+
+            foreach (var item in items)
+            {
+                handler.SetRemove(cacheKey, item);
+            }
+
+            foreach (var item in items)
+            {
+                var exists = handler.SetExists(cacheKey, item);
+                Assert.AreEqual(false, exists);
+            }
+            handler.Remove(cacheKey);
+        }
+
+        #endregion Set Operations
 
         private List<Item> GetNewItems(int count)
         {
@@ -353,7 +460,9 @@ namespace Voat.Tests.Cache
     public class Item
     {
         public int Count { get; set; }
+
         public int ID { get; set; }
+
         public string Name { get; set; }
     }
 
@@ -363,7 +472,9 @@ namespace Voat.Tests.Cache
     public class MemoryCacheTests : CacheTests
     {
         public MemoryCacheTests() : base(new MemoryCacheHandler())
-        { }
+        {
+            Debug.Print("Starting MemoryCacheTests");
+        }
     }
 
     [TestClass]
@@ -371,6 +482,8 @@ namespace Voat.Tests.Cache
     {
         public RedisCacheTests() : base(null)
         {
+            Debug.Print("Starting RedisCacheTests");
+
             //Use connection info from CacheHandlerSection
             var handler = CacheHandlerSection.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct();
             base.handler = handler;

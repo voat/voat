@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
@@ -42,7 +43,7 @@ namespace Voat.Domain.Query.Base
             }
         }
 
-        protected CommentSegment GetSegment(bool addChildren)
+        protected async Task<CommentSegment> GetSegment(bool addChildren)
         {
             QueryCommentTree q = new QueryCommentTree(_submissionID);
             if (!String.IsNullOrEmpty(UserName))
@@ -50,7 +51,7 @@ namespace Voat.Domain.Query.Base
                 //var p = new QueryUserData(UserName).Execute();
                 //var preference = p.Preferences;
                 _commentVotes = new QueryUserCommentVotesForSubmission(_submissionID, CachePolicy.None).Execute();
-                _commentSaves = new QueryUserSavedCommentsForSubmission(_submissionID).Execute();
+                //_commentSaves = new QueryUserSavedCommentsForSubmission(_submissionID).Execute();
             }
 
             //TODO: Set with preferences
@@ -59,7 +60,7 @@ namespace Voat.Domain.Query.Base
 
             //TODO: set IsCollapsed flag in output on every comment below this threshold
 
-            fullTree = (q.Execute()).Values;
+            fullTree = (await q.ExecuteAsync()).Values;
             switch (_sort)
             {
                 case CommentSortAlgorithm.Intensity:
@@ -92,7 +93,7 @@ namespace Voat.Domain.Query.Base
             //creating this to keep local vars in scope
             Func<usp_CommentTree_Result, NestedComment> mapToNestedCommentFunc = new Func<usp_CommentTree_Result, NestedComment>(commentTree =>
             {
-                return commentTree.Map(SubmitterName, _commentVotes, _commentSaves);
+                return commentTree.Map(SubmitterName, _commentVotes);
             });
 
             List<NestedComment> comments = new List<NestedComment>();

@@ -41,14 +41,7 @@ namespace Voat.Utilities
             }
         }
 
-        //// returns -1:downvoted, 1:upvoted, 0:not voted
-        //public static SubmissionVoteTracker GetVote(voatEntities db, string userToCheck, int submissionID)
-        //{
-        //        var checkResult = db.SubmissionVoteTrackers.Where(u => u.UserName == userToCheck && u.SubmissionID == submissionID)
-        //                .AsNoTracking()
-        //                .FirstOrDefault();
-        //}
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // a user has either upvoted or downvoted this submission earlier and wishes to reset the vote, delete the record
         public static void ResetMessageVote(string userWhichVoted, int submissionID)
         {
@@ -64,7 +57,7 @@ namespace Voat.Utilities
                 db.SaveChanges();
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // submit submission upvote
         public static void UpvoteSubmission(int submissionID, string userName, string clientIp)
         {
@@ -160,6 +153,7 @@ namespace Voat.Utilities
             }
         }
 
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // submit submission downvote
         public static void DownvoteSubmission(int submissionID, string userName, string clientIp)
         {

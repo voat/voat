@@ -145,6 +145,7 @@
   <ItemGroup>
     <Compile Include="Caching\CacheHandlerSection.cs" />
     <Compile Include="Caching\CachingKey.cs" />
+    <Compile Include="Caching\CachingTimeSpan.cs" />
     <Compile Include="Caching\ICacheHandler.cs" />
     <Compile Include="Caching\Handlers\MemoryCacheHandler.cs" />
     <Compile Include="Caching\Handlers\NullCacheHandler.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Domain\Command\ApiKeyCommands.cs" />
     <Compile Include="Domain\Command\DeleteUserCommand.cs" />
     <Compile Include="Domain\Command\RemoveModeratorCommand.cs" />
+    <Compile Include="Domain\Command\SaveCommand.cs" />
     <Compile Include="Domain\Command\SendMessageCommand.cs" />
     <Compile Include="Domain\Command\SubmissionCommands.cs" />
     <Compile Include="Domain\Command\SubscriptionCommand.cs" />
@@ -220,6 +222,7 @@
     <Compile Include="Domain\Query\QueryUserPreferences.cs" />
     <Compile Include="Domain\Query\QueryUserInformation.cs" />
     <Compile Include="Domain\Query\QueryUserRecord.cs" />
+    <Compile Include="Domain\Query\QueryUserSaves.cs" />
     <Compile Include="Domain\Query\QueryUserSet.cs" />
     <Compile Include="Domain\Query\QueryUserSubscriptions.cs" />
     <Compile Include="Domain\Query\Selectors.cs" />
