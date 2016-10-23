@@ -813,7 +813,7 @@ namespace Voat.Controllers
             }), TimeSpan.FromHours(1));
 
             //Turn off paging and only show the top 25 most active
-            var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, 1, 25, 25);
+            var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, 0, 25, 25);
 
             return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
         }
