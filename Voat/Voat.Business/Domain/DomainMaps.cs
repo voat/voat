@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Utilities;
@@ -375,7 +376,11 @@ namespace Voat.Domain
                 }
                 else if (populateMissingUserState)
                 {
-                    comment.Vote = VotingComments.CheckIfVotedComment(userName, comment.ID);
+                    using (var repo = new Repository())
+                    {
+                        //comment.Vote = VotingComments.CheckIfVotedComment(userName, comment.ID);
+                        comment.Vote = repo.UserVoteStatus(userName, ContentType.Comment, comment.ID);
+                    }
                 }
 
                 comment.IsSaved = false;

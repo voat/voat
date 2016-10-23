@@ -218,6 +218,7 @@
     <Compile Include="Domain\Query\QueryCommentSegment.cs" />
     <Compile Include="Domain\Query\QueryCommentTree.cs" />
     <Compile Include="Domain\Query\QuerySubverseInformation.cs" />
+    <Compile Include="Domain\Query\QueryUserContributionPoints.cs" />
     <Compile Include="Domain\Query\QueryUserData.cs" />
     <Compile Include="Domain\Query\QueryUserPreferences.cs" />
     <Compile Include="Domain\Query\QueryUserInformation.cs" />

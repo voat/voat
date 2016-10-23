@@ -36,6 +36,7 @@ using Voat.Configuration;
 using Voat.UI.Utilities;
 using Voat.Data;
 using Voat.Caching;
+using Voat.Domain;
 
 namespace Voat.Controllers
 {
@@ -90,11 +91,11 @@ namespace Voat.Controllers
                 return View(model);
             }
             var user = await UserManager.FindAsync(model.UserName, model.Password);
-            var tmpuser = await UserManager.FindByNameAsync(model.UserName);
 
             // invalid credentials, increment failed login attempt and lockout account
             if (user == null)
             {
+                var tmpuser = await UserManager.FindByNameAsync(model.UserName);
                 // correct username was entered with wrong credentials
                 if (tmpuser != null)
                 {
@@ -112,31 +113,34 @@ namespace Voat.Controllers
                 ModelState.AddModelError("", "Invalid username or password.");
                 return View(model);
             }
-
-            // if account is locked out, and a correct password has been given, notify the user of lockout and don't allow login
-            if (await UserManager.IsLockedOutAsync(tmpuser.Id))
+            else if (await UserManager.IsLockedOutAsync(user.Id))
             {
                 ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
                 return View(model);
             }
+            else
+            {
+                var userData = new UserData(user.UserName);
+                userData.PreLoad();
 
-            // when token is verified correctly, clear the access failed count used for lockout
-            await UserManager.ResetAccessFailedCountAsync(user.Id);
+                // when token is verified correctly, clear the access failed count used for lockout
+                await UserManager.ResetAccessFailedCountAsync(user.Id);
 
-            // get user IP address
-            string clientIpAddress = UserHelper.UserIpAddress(Request);
+                // get user IP address
+                string clientIpAddress = UserHelper.UserIpAddress(Request);
 
-            // save last login ip and timestamp
-            user.LastLoginFromIp = clientIpAddress;
-            user.LastLoginDateTime = Repository.CurrentDate;
-            await UserManager.UpdateAsync(user);
+                // save last login ip and timestamp
+                user.LastLoginFromIp = clientIpAddress;
+                user.LastLoginDateTime = Repository.CurrentDate;
+                await UserManager.UpdateAsync(user);
 
-            // sign in and continue
-            await SignInAsync(user, model.RememberMe);
+                // sign in and continue
+                await SignInAsync(user, model.RememberMe);
 
-            // read User Theme preference and set value to cookie
-            UserHelper.SetUserStylePreferenceCookie(UserHelper.UserStylePreference(user.UserName));
-            return RedirectToLocal(returnUrl);
+                // read User Theme preference and set value to cookie
+                UserHelper.SetUserStylePreferenceCookie(UserHelper.UserStylePreference(user.UserName));
+                return RedirectToLocal(returnUrl);
+            }
         }
 
         // GET: /Account/Register

@@ -15,7 +15,6 @@
 @{
     DateTime submissionDate = Model.CreationDate;
     string postAge = Age.ToRelative(submissionDate);
-    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
 
     var commentCount = Model.Comments.Count(c => !c.IsDeleted);
     bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
@@ -30,7 +29,7 @@
         <a name="submissionTop"></a>
         <p class="parent"></p>
 
-        @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })
+        @Html.Partial("_VotingIconsSubmission", Model)
 
         <div class="entry unvoted">
             <p class="title">

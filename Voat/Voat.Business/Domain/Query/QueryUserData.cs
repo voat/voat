@@ -4,7 +4,7 @@ using Voat.Caching;
 
 namespace Voat.Domain.Query
 {
-    [Obsolete("No longer going to cache UserData")]
+    [Obsolete("No longer going to cache UserData", true)]
     public class QueryUserData : CachedQuery<UserData>
     {
         private string _userToRetrieve;

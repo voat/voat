@@ -29,7 +29,7 @@ else
 
                     <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
                         <p class="parent"></p>
-                        @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary { { "CCP", 1000 } })
+                        @Html.Partial("_VotingIconsSubmission", submission)
                         @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
                         <div class="child"></div>
                         <div class="clearleft">@*IE6fix*@</div>

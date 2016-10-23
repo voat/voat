@@ -188,8 +188,7 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserBasicInfo(string userName)
         {
-            var q = new QueryUserData(userName);
-            var userData = q.Execute();
+            var userData = new Domain.UserData(userName);
             //var userData = new UserData(User.Identity.Name);
             var info = userData.Information;
 

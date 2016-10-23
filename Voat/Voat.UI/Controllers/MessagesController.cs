@@ -194,6 +194,9 @@ namespace Voat.Controllers
             var subverse = (string)RouteData.Values["subverse"];
             var model = new NewMessageViewModel() { Recipient = recipient, Subject = subject };
 
+            var userData = new UserData(User.Identity.Name);
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 100;
+
             if (!string.IsNullOrEmpty(subverse))
             {
                 if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.SendMail))
@@ -218,6 +221,10 @@ namespace Voat.Controllers
             ViewBag.PmView = "compose";
             ViewBag.Title = "Compose";
 
+            //set this incase invalid submittal 
+            var userData = new UserData(User.Identity.Name);
+            message.RequireCaptcha = userData.Information.CommentPoints.Sum < 100;
+
             if (!ModelState.IsValid)
             {
                 return View(message);
@@ -228,8 +235,7 @@ namespace Voat.Controllers
                 return RedirectToAction("Sent", "Messages");
             }
 
-            var userData = new UserData(User.Identity.Name, false);
-            if (userData.Information.CommentPoints.Sum < 100)
+            if (message.RequireCaptcha)
             {
                 bool isCaptchaValid = await ReCaptchaUtility.Validate(Request);
 

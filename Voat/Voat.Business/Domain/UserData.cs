@@ -32,6 +32,15 @@ namespace Voat.Domain
         protected int? _votesInLast24Hours;
         protected int? _submissionsInLast24Hours;
 
+        public void PreLoad()
+        {
+            //This is to pre-cache user data that takes a long time to calc
+            Task.Run(() => {
+                var p = this.Preferences;
+                var i = this.Information;
+            });
+        }
+
         public string UserName
         {
             get
@@ -42,6 +51,12 @@ namespace Voat.Domain
 
         public UserData(string userName, bool validateUserExists = false)
         {
+            var val = UserDefinition.Parse(userName);
+            if (val == null)
+            {
+                throw new ArgumentException("UserName does not meet expectations");
+            }
+
             if (validateUserExists)
             {
                 VoatUser user = null;

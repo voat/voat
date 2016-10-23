@@ -264,7 +264,7 @@ namespace Voat.Controllers
             //Temp cache user votes for this thread
             ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
             ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
-            ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
+            //ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
 
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
@@ -315,7 +315,7 @@ namespace Voat.Controllers
             //Temp cache user votes for this thread
             ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
             ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
-            ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
+            //ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
 
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;

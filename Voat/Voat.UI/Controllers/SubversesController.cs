@@ -149,13 +149,17 @@ namespace Voat.Controllers
         {
             // abort if model state is invalid
             if (!ModelState.IsValid)
+            {
                 return View();
+            }
 
             int minimumCcp = Settings.MinimumCcp;
             int maximumOwnedSubs = Settings.MaximumOwnedSubs;
 
+            var userData = new Domain.UserData(User.Identity.Name);
+
             // verify recaptcha if user has less than minimum required CCP
-            if (Karma.CommentKarma(User.Identity.Name) < minimumCcp)
+            if (userData.Information.CommentPoints.Sum < minimumCcp)
             {
                 // begin recaptcha check
                 bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);

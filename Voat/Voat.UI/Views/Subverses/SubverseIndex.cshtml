@@ -18,12 +18,6 @@
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
 
-    int commentContributionPoints = 0;
-    if (User.Identity.IsAuthenticated)
-    {
-        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
-    }
-
     switch (sortingMode)
     {
         case "new":
@@ -118,7 +112,7 @@
                 <div class="submission id-@submission.ID @classEvenOrOdd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
                     <p class="parent"></p>
 
-                    @Html.Partial("_votingIconsSubmission", submission, new ViewDataDictionary {{"CCP", commentContributionPoints}})
+                    @Html.Partial("_VotingIconsSubmission", submission)
                     @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                     <div class="child"></div>

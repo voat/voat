@@ -15,8 +15,7 @@
 @{
     string userName = ViewBag.userid;
 
-    var q = new Voat.Domain.Query.QueryUserData(userName);
-    var userData = q.Execute();
+    var userData = new Voat.Domain.UserData(userName);
 
     System.Diagnostics.Debug.Assert(userData.UserName.IsEqual(userName), "Possible mismatched Profile 1");
     System.Diagnostics.Debug.Assert(userData.Information.UserName.IsEqual(userName), "Possible mismatched Profile 2");

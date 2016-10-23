@@ -20,5 +20,7 @@ namespace Voat.Models.ViewModels
         public string Url { get; set; }
 
         public SubmissionType Type { get; set; }
+
+        public bool RequireCaptcha { get; set; }
     }
 }

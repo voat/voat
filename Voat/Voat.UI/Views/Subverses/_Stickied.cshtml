@@ -12,18 +12,10 @@
 
 @model Voat.Data.Models.Submission
 
-@{
-    int commentContributionPoints = 0;
-    if (User.Identity.IsAuthenticated)
-    {
-        commentContributionPoints = Karma.CommentKarma(User.Identity.Name);
-    }  
-}
-
 <div class="submission id-@Model.ID even link stickied" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
     <p class="parent"></p>
 
-    @Html.Partial("_votingIconsSubmission", Model, new ViewDataDictionary { { "CCP", commentContributionPoints } })    
+    @Html.Partial("_VotingIconsSubmission", Model)    
     @Html.Partial("~/Views/Shared/Submissions/_StickiedSubmission.cshtml", Model)
 
     <div class="child"></div>

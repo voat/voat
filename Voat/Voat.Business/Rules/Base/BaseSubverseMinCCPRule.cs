@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Voat.Data.Models;
+using Voat.Domain.Query;
 using Voat.RulesEngine;
 using Voat.Utilities;
 
@@ -29,9 +30,10 @@ namespace Voat.Rules
 
             if (subMinCCP.HasValue && subMinCCP.Value > 0)
             {
-                int subverseUserCCP = Karma.CommentKarmaForSubverse(context.UserName, subverse.Name);
+                var q = new QueryUserContributionPoints(Domain.Models.ContentType.Comment, subverse.Name);
+                var score = q.Execute();
 
-                if (subverseUserCCP < subMinCCP.Value)
+                if (score.Sum < subMinCCP.Value)
                 {
                     return CreateOutcome(RuleResult.Denied, String.Format("Subverse '{0}' requires {1}CCP to downvote", subverse.Name, subMinCCP.Value.ToString()));
                 }

@@ -20,8 +20,6 @@
     string votingStatusClassDownArrow = "arrow-downvote";
     string likesOrDislikesClass = "unvoted";
 
-    int commentContributionPoints = Convert.ToInt32(ViewData["CCP"]);
-
     double likes = Math.Round(((double)Model.UpCount / ((double)Model.UpCount + (double)Model.DownCount)) * 100);
     double dislikes = Math.Round(((double)Model.DownCount / ((double)Model.UpCount + (double)Model.DownCount)) * 100);
 

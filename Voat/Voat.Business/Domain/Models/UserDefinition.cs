@@ -22,6 +22,10 @@ namespace Voat.Domain.Models
         }
         public static UserDefinition Parse(string userName)
         {
+            if (String.IsNullOrEmpty(userName))
+            {
+                return null;
+            }
             var matches = Regex.Matches(userName, String.Format(@"((?'prefix'@|u/|/u/|v/|/v/)?(?'name'{0}|{1}))", CONSTANTS.USER_NAME_REGEX, CONSTANTS.SUBVERSE_REGEX), RegexOptions.IgnoreCase);
             if (matches.Count != 1)
             {

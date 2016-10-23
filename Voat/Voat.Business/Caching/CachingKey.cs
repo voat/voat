@@ -97,6 +97,10 @@ namespace Voat.Caching
         {
             return String.Format("User:Votes:Submissions:{0}", userName);
         }
+        public static string UserContributionPointsForSubverse(string userName, ContentType type, string subverse)
+        {
+            return String.Format("User:ContributionPoints:{0}:{1}:{2}", type.ToString(), userName, subverse);
+        }
 
         public static string UserBlocks(string userName)
         {

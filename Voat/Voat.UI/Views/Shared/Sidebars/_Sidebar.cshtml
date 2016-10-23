@@ -123,7 +123,9 @@
                             Minimum CCP required to downvote in this sub: @Model.MinCCPForDownvote
                             @if (User.Identity.IsAuthenticated)
                             {
-                            <p>Your CCP for this sub: @Karma.CommentKarmaForSubverse(User.Identity.Name, Model.Name)</p>
+                                var q = new Voat.Domain.Query.QueryUserContributionPoints(Voat.Domain.Models.ContentType.Comment, Model.Name);
+                                var r = q.Execute();
+                                <p>Your CCP for this sub: @r.Sum</p>
                             }
                             </p>
                         </div>

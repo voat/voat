@@ -17,7 +17,7 @@
 
 @{
     string highLight = "";
-    int commentContributionPoints = ViewBag.CCP ?? 0;
+
     Voat.Data.Models.Submission submission = ViewBag.Submission;
 }
 
@@ -53,7 +53,7 @@
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
-                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", submission, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", submission, new ViewDataDictionary { { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
 
             //type 2 = link submission
@@ -80,7 +80,7 @@
                     ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
                 }
 
-                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", submission, new ViewDataDictionary { { "CCP", commentContributionPoints }, { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", submission, new ViewDataDictionary { { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
             }
         }
 
@@ -95,7 +95,6 @@
         @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, new ViewDataDictionary {
                     { "SavedCommentCache", ViewBag.SavedCommentCache },
                     { "VoteCache", ViewBag.VoteCache },
-                    { "CCP", ViewBag.CCP },
                     { "SortingMode", ViewBag.SortingMode },
                     { "NestingCount", 0 },
                     { "StartingCommentId", ViewBag.StartingCommentId },

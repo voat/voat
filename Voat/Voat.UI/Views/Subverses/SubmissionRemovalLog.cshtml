@@ -53,7 +53,7 @@
                         <div class="submission id-@logItem.Submission.ID link @submissionClass" data-fullname="@logItem.Submission.ID" data-ups="@logItem.Submission.Votes" data-downs="">
                             <p class="parent"></p>
 
-                            @Html.Partial("_votingIconsSubmission", logItem.Submission, new ViewDataDictionary {{"CCP", 0}})
+                            @Html.Partial("_votingIconsSubmission", logItem.Submission)
                             @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", logItem.Submission)
 
                             <div class="child"></div>

@@ -89,6 +89,9 @@ namespace Voat.Controllers
                 model.Subverse = selectedsubverse;
             }
 
+            var userData = new Domain.UserData(User.Identity.Name);
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25;
+
             return View("Submit", model);
         }
        
@@ -101,6 +104,10 @@ namespace Voat.Controllers
         [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         public async Task<ActionResult> Submit(CreateSubmissionViewModel model)
         {
+            //set this incase invalid submittal 
+            var userData = new Domain.UserData(User.Identity.Name);
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25;
+
             // abort if model state is invalid
             if (!ModelState.IsValid)
             {
@@ -108,11 +115,7 @@ namespace Voat.Controllers
             }
 
             //Check Captcha
-            var userQuery = new QueryUserData(User.Identity.Name);
-            var userData = await userQuery.ExecuteAsync();
-
-            //var userData = new UserData(User.Identity.Name);
-            if (userData.Information.CommentPoints.Sum < 25)
+            if (model.RequireCaptcha)
             {
                 var captchaSuccess = await ReCaptchaUtility.Validate(Request);
                 if (!captchaSuccess)
@@ -531,8 +534,7 @@ namespace Voat.Controllers
         {
             if (userName != null)
             {
-                var q = new QueryUserData(userName);
-                var userData = q.Execute();
+                var userData = new Domain.UserData(userName);
 
                 //var userData = new UserData(User.Identity.Name);
                 return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", userData.Information.Moderates);

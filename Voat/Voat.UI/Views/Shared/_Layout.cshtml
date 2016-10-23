@@ -231,7 +231,8 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-        var userCCP = Karma.CommentKarma(User.Identity.Name);
+        var userData = new Voat.Domain.UserData(User.Identity.Name);
+        var userCCP = userData.Information.CommentPoints.Sum;
         var scaledQuota = userCCP >= 20 ? Math.Max(Settings.DailyVotingQuota, (userCCP / 2)) : 10;
 
         @* Not enough comment contribution points Modal *@

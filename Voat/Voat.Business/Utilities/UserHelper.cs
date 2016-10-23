@@ -283,9 +283,8 @@ namespace Voat.Utilities
         // return a list of subverses user is subscribed to
         public static IEnumerable<string> UserSubscriptions(string userName)
         {
-            var q = new QueryUserData(userName);
-            var r = q.Execute();
-            return r.Subscriptions;
+            var userData = new Domain.UserData(userName);
+            return userData.Subscriptions;
         }
         [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // return a list of user badges
@@ -413,12 +412,12 @@ namespace Voat.Utilities
                     var comments = db.Comments.Count(a => a.UserName == userName && !a.IsDeleted);
 
                     // voting habits
-                    var q = new QueryUserData(userName);
-                    var r = q.Execute();
-                    var commentUpvotes = r.Information.CommentVoting.UpCount;
-                    var commentDownvotes = r.Information.CommentVoting.DownCount;
-                    var submissionUpvotes = r.Information.SubmissionVoting.UpCount;
-                    var submissionDownvotes = r.Information.SubmissionVoting.DownCount;
+                    var userData = new Domain.UserData(userName);
+
+                    var commentUpvotes = userData.Information.CommentVoting.UpCount;
+                    var commentDownvotes = userData.Information.CommentVoting.DownCount;
+                    var submissionUpvotes = userData.Information.SubmissionVoting.UpCount;
+                    var submissionDownvotes = userData.Information.SubmissionVoting.DownCount;
 
                     //var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
                     //var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
@@ -731,13 +730,22 @@ namespace Voat.Utilities
         // check if a given user has used his global hourly posting quota
         public static bool UserHourlyGlobalPostingQuotaUsed(string userName)
         {
+            //DRY: Repeat Block #1
             // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
             int memberInDays = (Repository.CurrentDate - userRegistrationDateTime).Days;
-            int userScp = Karma.LinkKarma(userName);
-            if (memberInDays > 30 || userScp >= 50)
+            if (memberInDays > 30)
             {
                 return false;
+            }
+            else
+            {
+                var userData = new Domain.UserData(userName);
+                int userScp = userData.Information.SubmissionPoints.Sum;
+                if (userScp >= 50)
+                {
+                    return false;
+                }
             }
 
             // set starting date to 1 hours ago from now
@@ -763,13 +771,23 @@ namespace Voat.Utilities
         // check if a given user has used his global daily posting quota
         public static bool UserDailyGlobalPostingQuotaUsed(string userName)
         {
+
+            //DRY: Repeat Block #1
             // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
             DateTime userRegistrationDateTime = GetUserRegistrationDateTime(userName);
             int memberInDays = (Repository.CurrentDate - userRegistrationDateTime).Days;
-            int userScp = Karma.LinkKarma(userName);
-            if (memberInDays > 30 || userScp >= 50)
+            if (memberInDays > 30)
             {
                 return false;
+            }
+            else
+            {
+                var userData = new Domain.UserData(userName);
+                int userScp = userData.Information.SubmissionPoints.Sum;
+                if (userScp >= 50)
+                {
+                    return false;
+                }
             }
 
             // set starting date to 24 hours ago from now

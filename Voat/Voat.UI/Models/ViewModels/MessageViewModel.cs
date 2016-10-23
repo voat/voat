@@ -47,5 +47,7 @@ namespace Voat.Models.ViewModels
         [StringLength(10000, ErrorMessage = "Body is limited to 10000 characters")]
         [AllowHtml]
         public string Body { get; set; }
+
+        public bool RequireCaptcha { get; set; }
     }
 }

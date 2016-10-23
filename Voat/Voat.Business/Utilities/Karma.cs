@@ -36,7 +36,7 @@ namespace Voat.Utilities
         {
             return String.Format("Legacy:Karma:{0}_{1}_{2}", userName, type.ToString(), subverse ?? "none");
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         public static int LinkKarma(string userName)
         {
             string cacheKey = CacheKey(userName, KarmaCacheType.Link);
@@ -69,7 +69,7 @@ namespace Voat.Utilities
 
             return count;
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         public static int LinkKarmaForSubverse(string userName, string subverseName)
         {
             string cacheKey = CacheKey(userName, KarmaCacheType.SubverseLink, subverseName);
@@ -110,7 +110,7 @@ namespace Voat.Utilities
         }
 
         // get comment contribution points for a user
-        [Obsolete("This method contains logical bugs in the implementation, use UserData instead", false)]
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         public static int CommentKarma(string userName)
         {
             string cacheKey = CacheKey(userName, KarmaCacheType.Comment);
@@ -145,7 +145,7 @@ namespace Voat.Utilities
             }
             return count;
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // get comment contribution points for a user from a given subverse
         public static int CommentKarmaForSubverse(string userName, string subverseName)
         {
@@ -189,7 +189,7 @@ namespace Voat.Utilities
             }
             return count;
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // get total upvotes given by a user
         public static int UpvotesGiven(string userName)
         {

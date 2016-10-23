@@ -1862,9 +1862,9 @@ namespace Voat.Data
                 {
                     return CommandResponse.FromStatus(responseMessage, Status.Ignored, "User is banned");
                 }
-
+                var userData = new UserData(message.Sender);
                 //add exception for system messages from sender
-                if (!forceSend && !CONSTANTS.SYSTEM_USER_NAME.Equals(message.Sender, StringComparison.OrdinalIgnoreCase) && Karma.CommentKarma(message.Sender) < 10)
+                if (!forceSend && !CONSTANTS.SYSTEM_USER_NAME.Equals(message.Sender, StringComparison.OrdinalIgnoreCase) && userData.Information.CommentPoints.Sum < 10)
                 {
                     return CommandResponse.FromStatus(responseMessage, Status.Ignored, "Comment points too low to send messages. Need at least 10 CCP.");
                 }
@@ -2045,6 +2045,14 @@ namespace Voat.Data
                     await db.SaveChangesAsync();
                 }
             }
+
+            Task.Run(() => EventNotification.Instance.SendMessageNotice(
+                       UserDefinition.Format(ownerName, ownerType),
+                       UserDefinition.Format(ownerName, ownerType),
+                       type,
+                       null,
+                       null));
+
             return CommandResponse.FromStatus(Status.Success, "");
         }
 
@@ -2375,7 +2383,26 @@ namespace Voat.Data
             }
             return score;
         }
+        public int UserVoteStatus(string userName, ContentType type, int id)
+        {
+            int result = 0;
 
+            using (var db = new voatEntities())
+            {
+                switch (type)
+                {
+                    case ContentType.Comment:
+                        var record = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == id && b.UserName.Equals(userName));
+                        result = record == null ? 0 : record.VoteStatus.Value;
+                        break;
+                    case ContentType.Submission:
+                        var record2 = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == id && b.UserName.Equals(userName));
+                        result = record2 == null ? 0 : record2.VoteStatus.Value;
+                        break;
+                }
+            }
+            return result;
+        }
         public int UserCommentCount(string userName, TimeSpan? span, string subverse = null)
         {
             DateTime? compareDate = null;

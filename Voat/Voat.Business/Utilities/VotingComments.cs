@@ -22,6 +22,7 @@ using Voat.Data.Models;
 
 namespace Voat.Utilities
 {
+    [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
     public class VotingComments
     {
         private static LockStore _lockStore = new LockStore();

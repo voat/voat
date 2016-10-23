@@ -434,8 +434,7 @@ namespace Voat.Controllers
                       var resultModel = new ApiUserInfo();
 
                       //Port to new code
-                      var q = new QueryUserData(userName);
-                      var userData = q.Execute();
+                      var userData = new Domain.UserData(userName);
                       //var userData = new UserData(User.Identity.Name);
                       var info = userData.Information;
 

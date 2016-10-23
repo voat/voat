@@ -23,6 +23,7 @@
     string selectedSubverse = ViewBag.selectedSubverse;
     string loggedinUser = User.Identity.Name;
     DateTime currentdatetime = Repository.CurrentDate;
+
 }
 
 @section PageHeader {
@@ -119,7 +120,7 @@
                 }
 
 
-                @if (Karma.CommentKarma(User.Identity.Name) < 25)
+                @if (Model.RequireCaptcha)
                 {
                     <div class="alert alert-info">Are you a human? Please solve the reCAPTCHA challenge below (sorry, this is to prevent spam):</div>
 
