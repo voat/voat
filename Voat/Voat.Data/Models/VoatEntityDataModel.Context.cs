@@ -37,8 +37,6 @@ namespace Voat.Data.Models
         public virtual DbSet<DefaultSubverse> DefaultSubverses { get; set; }
         public virtual DbSet<FeaturedSubverse> FeaturedSubverses { get; set; }
         public virtual DbSet<ModeratorInvitation> ModeratorInvitations { get; set; }
-        public virtual DbSet<PartnerInformation> PartnerInformations { get; set; }
-        public virtual DbSet<PromotedSubmission> PromotedSubmissions { get; set; }
         public virtual DbSet<SessionTracker> SessionTrackers { get; set; }
         public virtual DbSet<StickiedSubmission> StickiedSubmissions { get; set; }
         public virtual DbSet<Submission> Submissions { get; set; }
@@ -53,12 +51,10 @@ namespace Voat.Data.Models
         public virtual DbSet<UserBadge> UserBadges { get; set; }
         public virtual DbSet<UserBlockedSubverse> UserBlockedSubverses { get; set; }
         public virtual DbSet<UserPreference> UserPreferences { get; set; }
-        public virtual DbSet<UserScore> UserScores { get; set; }
         public virtual DbSet<UserSet> UserSets { get; set; }
         public virtual DbSet<UserSetList> UserSetLists { get; set; }
         public virtual DbSet<UserSetSubscription> UserSetSubscriptions { get; set; }
         public virtual DbSet<ViewStatistic> ViewStatistics { get; set; }
-        public virtual DbSet<AdminLog> AdminLogs { get; set; }
         public virtual DbSet<ApiClient> ApiClients { get; set; }
         public virtual DbSet<ApiLog> ApiLogs { get; set; }
         public virtual DbSet<ApiThrottlePolicy> ApiThrottlePolicies { get; set; }

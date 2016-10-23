@@ -83,9 +83,6 @@
     <Compile Include="Models\Ad.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\AdminLog.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ApiClient.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -137,12 +134,6 @@
     <Compile Include="Models\ModeratorInvitation.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\PartnerInformation.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\PromotedSubmission.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\SessionTracker.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -186,9 +177,6 @@
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserPreference.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\UserScore.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserSet.cs">

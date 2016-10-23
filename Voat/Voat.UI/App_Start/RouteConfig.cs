@@ -1136,13 +1136,6 @@ namespace Voat
                 defaults: new { controller = "Submissions", action = "ToggleSticky" }
             );
 
-            // p/partnerprogram
-            routes.MapRoute(
-                name: "PartnerProgramInformation",
-                url: "p/partnerprogram",
-                defaults: new { controller = "Partner", action = "PartnerProgramInformation" }
-            );
-
             if (!Settings.SetsDisabled)
             {
                 // /sets

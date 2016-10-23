@@ -334,7 +334,6 @@
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\HtmlHelperExtensions.cs" />
     <Compile Include="Utils\HubMinifier.cs" />
-    <Compile Include="Controllers\PartnerController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\RSSController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
@@ -652,9 +651,6 @@
     <Content Include="Views\Shared\_DefaultMessage.cshtml" />
     <Content Include="Views\Subverses\SearchForSubverse.cshtml" />
     <Content Include="Views\Search\FindSubverseSearchResult.cshtml" />
-    <Content Include="Views\Partner\PartnerProgramInformation.cshtml" />
-    <Content Include="Views\Partner\PartnerIntentRegistration.cshtml" />
-    <Content Include="Views\Partner\PartnerProgramIntentSent.cshtml" />
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CommentFlatListButtons.cshtml" />
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonDelete.cshtml" />
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonReport.cshtml" />

@@ -20,23 +20,6 @@
           <Property Name="Subverse" Type="nvarchar" MaxLength="50" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="AdminLog">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="RefUserName" Type="nvarchar" MaxLength="20" />
-          <Property Name="RefSubverse" Type="nvarchar" MaxLength="50" />
-          <Property Name="RefUrl" Type="nvarchar" MaxLength="200" />
-          <Property Name="RefCommentID" Type="int" />
-          <Property Name="RefSubmissionID" Type="int" />
-          <Property Name="Type" Type="nvarchar" MaxLength="100" />
-          <Property Name="Action" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Details" Type="nvarchar" MaxLength="1000" Nullable="false" />
-          <Property Name="InternalDetails" Type="nvarchar(max)" />
-          <Property Name="CreationDate" Type="smalldatetime" Nullable="false" />
-        </EntityType>
         <EntityType Name="ApiClient">
           <Key>
             <PropertyRef Name="ID" />
@@ -241,36 +224,6 @@
           <Property Name="Subverse" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Power" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="PartnerInformations">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="FirstName" Type="nvarchar(max)" />
-          <Property Name="LastName" Type="nvarchar(max)" />
-          <Property Name="PartnerPaymentForm" Type="nvarchar(max)" />
-          <Property Name="PartnerBankAccountNumber" Type="nvarchar(max)" />
-          <Property Name="PartnerNameOfAccountHolder" Type="nvarchar(max)" />
-          <Property Name="PartnerSwiftCode" Type="nvarchar(max)" />
-          <Property Name="PartnerBankName" Type="nvarchar(max)" />
-          <Property Name="PartnerIFSC" Type="nvarchar(max)" />
-          <Property Name="PartnerBIK" Type="nvarchar(max)" />
-          <Property Name="PartnerPaymentCurrency" Type="nvarchar(max)" />
-          <Property Name="PartnerPhoneNumber" Type="nvarchar(max)" />
-          <Property Name="PartnerPayeeName" Type="nvarchar(max)" />
-          <Property Name="PartnerCity" Type="nvarchar(max)" />
-          <Property Name="PartnerCountry" Type="nvarchar(max)" />
-          <Property Name="PartnerZip" Type="nvarchar(max)" />
-          <Property Name="PartnerStreet" Type="nvarchar(max)" />
-          <Property Name="PartnerLastPaymentDate" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="PromotedSubmission">
-          <Key>
-            <PropertyRef Name="SubmissionID" />
-          </Key>
-          <Property Name="SubmissionID" Type="int" Nullable="false" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
         <EntityType Name="SessionTracker">
           <Key>
             <PropertyRef Name="SessionID" />
@@ -465,14 +418,6 @@
           <Property Name="HighlightMinutes" Type="int" />
           <Property Name="VanityTitle" Type="varchar" MaxLength="50" />
           <Property Name="CollapseCommentLimit" Type="int" />
-        </EntityType>
-        <EntityType Name="UserScore">
-          <Key>
-            <PropertyRef Name="UserName" />
-          </Key>
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CCP" Type="int" Nullable="false" />
-          <Property Name="SCP" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="UserSet">
           <Key>
@@ -840,7 +785,6 @@
         </Function>
         <EntityContainer Name="ModelsStoreContainer">
           <EntitySet Name="Ad" EntityType="Self.Ad" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AdminLog" EntityType="Self.AdminLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApiClient" EntityType="Self.ApiClient" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApiCorsPolicy" EntityType="Self.ApiCorsPolicy" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApiLog" EntityType="Self.ApiLog" Schema="dbo" store:Type="Tables" />
@@ -858,8 +802,6 @@
           <EntitySet Name="FeaturedSubverse" EntityType="Self.FeaturedSubverse" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ModeratorInvitation" EntityType="Self.ModeratorInvitation" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PartnerInformations" EntityType="Self.PartnerInformations" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PromotedSubmission" EntityType="Self.PromotedSubmission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SessionTracker" EntityType="Self.SessionTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StickiedSubmission" EntityType="Self.StickiedSubmission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Submission" EntityType="Self.Submission" Schema="dbo" store:Type="Tables" />
@@ -875,7 +817,6 @@
           <EntitySet Name="UserBlockedSubverse" EntityType="Self.UserBlockedSubverse" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserBlockedUser" EntityType="Self.UserBlockedUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserPreference" EntityType="Self.UserPreference" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UserScore" EntityType="Self.UserScore" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSet" EntityType="Self.UserSet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSetList" EntityType="Self.UserSetList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSetSubscription" EntityType="Self.UserSetSubscription" Schema="dbo" store:Type="Tables" />
@@ -1092,36 +1033,6 @@
           <Property Name="Subverse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Power" Type="Int32" Nullable="false" />
         </EntityType>
-        <EntityType Name="PartnerInformation">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FirstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="LastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerPaymentForm" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerBankAccountNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerNameOfAccountHolder" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerSwiftCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerBankName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerIFSC" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerBIK" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerPaymentCurrency" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerPhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerPayeeName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerCity" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerCountry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerZip" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerStreet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PartnerLastPaymentDate" Type="DateTime" Nullable="false" Precision="3" />
-        </EntityType>
-        <EntityType Name="PromotedSubmission">
-          <Key>
-            <PropertyRef Name="SubmissionID" />
-          </Key>
-          <Property Name="SubmissionID" Type="Int32" Nullable="false" />
-          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-        </EntityType>
         <EntityType Name="SessionTracker">
           <Key>
             <PropertyRef Name="SessionID" />
@@ -1335,14 +1246,6 @@
           <Property Name="HighlightMinutes" Type="Int32" />
           <Property Name="VanityTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="CollapseCommentLimit" Type="Int32" />
-        </EntityType>
-        <EntityType Name="UserScore">
-          <Key>
-            <PropertyRef Name="UserName" />
-          </Key>
-          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CCP" Type="Int32" Nullable="false" />
-          <Property Name="SCP" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="UserSet">
           <Key>
@@ -1701,8 +1604,6 @@
           <EntitySet Name="DefaultSubverses" EntityType="Self.DefaultSubverse" />
           <EntitySet Name="FeaturedSubverses" EntityType="Self.FeaturedSubverse" />
           <EntitySet Name="ModeratorInvitations" EntityType="Self.ModeratorInvitation" />
-          <EntitySet Name="PartnerInformations" EntityType="Self.PartnerInformation" />
-          <EntitySet Name="PromotedSubmissions" EntityType="Self.PromotedSubmission" />
           <EntitySet Name="SessionTrackers" EntityType="Self.SessionTracker" />
           <EntitySet Name="StickiedSubmissions" EntityType="Self.StickiedSubmission" />
           <EntitySet Name="Submissions" EntityType="Self.Submission" />
@@ -1717,7 +1618,6 @@
           <EntitySet Name="UserBadges" EntityType="Self.UserBadge" />
           <EntitySet Name="UserBlockedSubverses" EntityType="Self.UserBlockedSubverse" />
           <EntitySet Name="UserPreferences" EntityType="Self.UserPreference" />
-          <EntitySet Name="UserScores" EntityType="Self.UserScore" />
           <EntitySet Name="UserSets" EntityType="Self.UserSet" />
           <EntitySet Name="UserSetLists" EntityType="Self.UserSetList" />
           <EntitySet Name="UserSetSubscriptions" EntityType="Self.UserSetSubscription" />
@@ -1815,7 +1715,6 @@
             <Parameter Name="Depth" Mode="In" Type="Int32" />
             <Parameter Name="ParentID" Mode="In" Type="Int32" />
           </FunctionImport>
-          <EntitySet Name="AdminLogs" EntityType="Models.AdminLog" />
           <EntitySet Name="ApiClients" EntityType="Models.ApiClient" />
           <EntitySet Name="ApiLogs" EntityType="Models.ApiLog" />
           <EntitySet Name="ApiThrottlePolicies" EntityType="Models.ApiThrottlePolicy" />
@@ -1855,23 +1754,6 @@
           <Property Type="String" Name="FormattedContent" Nullable="true" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
         </ComplexType>
-        <EntityType Name="AdminLog">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="RefUserName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="RefSubverse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="RefUrl" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="RefCommentID" Type="Int32" />
-          <Property Name="RefSubmissionID" Type="Int32" />
-          <Property Name="Type" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Action" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Details" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
-          <Property Name="InternalDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="0" />
-        </EntityType>
         <EntityType Name="ApiClient">
           <Key>
             <PropertyRef Name="ID" />
@@ -2153,38 +2035,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="PartnerInformations">
-            <EntityTypeMapping TypeName="Models.PartnerInformation">
-              <MappingFragment StoreEntitySet="PartnerInformations">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="PartnerPaymentForm" ColumnName="PartnerPaymentForm" />
-                <ScalarProperty Name="PartnerBankAccountNumber" ColumnName="PartnerBankAccountNumber" />
-                <ScalarProperty Name="PartnerNameOfAccountHolder" ColumnName="PartnerNameOfAccountHolder" />
-                <ScalarProperty Name="PartnerSwiftCode" ColumnName="PartnerSwiftCode" />
-                <ScalarProperty Name="PartnerBankName" ColumnName="PartnerBankName" />
-                <ScalarProperty Name="PartnerIFSC" ColumnName="PartnerIFSC" />
-                <ScalarProperty Name="PartnerBIK" ColumnName="PartnerBIK" />
-                <ScalarProperty Name="PartnerPaymentCurrency" ColumnName="PartnerPaymentCurrency" />
-                <ScalarProperty Name="PartnerPhoneNumber" ColumnName="PartnerPhoneNumber" />
-                <ScalarProperty Name="PartnerPayeeName" ColumnName="PartnerPayeeName" />
-                <ScalarProperty Name="PartnerCity" ColumnName="PartnerCity" />
-                <ScalarProperty Name="PartnerCountry" ColumnName="PartnerCountry" />
-                <ScalarProperty Name="PartnerZip" ColumnName="PartnerZip" />
-                <ScalarProperty Name="PartnerStreet" ColumnName="PartnerStreet" />
-                <ScalarProperty Name="PartnerLastPaymentDate" ColumnName="PartnerLastPaymentDate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PromotedSubmissions">
-            <EntityTypeMapping TypeName="Models.PromotedSubmission">
-              <MappingFragment StoreEntitySet="PromotedSubmission">
-                <ScalarProperty Name="SubmissionID" ColumnName="SubmissionID" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="SessionTrackers">
             <EntityTypeMapping TypeName="Models.SessionTracker">
               <MappingFragment StoreEntitySet="SessionTracker">
@@ -2384,15 +2234,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="UserScores">
-            <EntityTypeMapping TypeName="Models.UserScore">
-              <MappingFragment StoreEntitySet="UserScore">
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="CCP" ColumnName="CCP" />
-                <ScalarProperty Name="SCP" ColumnName="SCP" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="UserSets">
             <EntityTypeMapping TypeName="Models.UserSet">
               <MappingFragment StoreEntitySet="UserSet">
@@ -2458,24 +2299,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="AdminLogs">
-            <EntityTypeMapping TypeName="Models.AdminLog">
-              <MappingFragment StoreEntitySet="AdminLog">
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-                <ScalarProperty Name="InternalDetails" ColumnName="InternalDetails" />
-                <ScalarProperty Name="Details" ColumnName="Details" />
-                <ScalarProperty Name="Action" ColumnName="Action" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="RefSubmissionID" ColumnName="RefSubmissionID" />
-                <ScalarProperty Name="RefCommentID" ColumnName="RefCommentID" />
-                <ScalarProperty Name="RefUrl" ColumnName="RefUrl" />
-                <ScalarProperty Name="RefSubverse" ColumnName="RefSubverse" />
-                <ScalarProperty Name="RefUserName" ColumnName="RefUserName" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ApiClients">
             <EntityTypeMapping TypeName="Models.ApiClient">
               <MappingFragment StoreEntitySet="ApiClient">

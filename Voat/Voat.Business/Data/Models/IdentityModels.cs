@@ -33,7 +33,5 @@ namespace Voat.Data.Models
         public ApplicationDbContext() : base("voatUsers")
         {
         }
-
-        public DbSet<PartnerInformation> PartnerInformation { get; set; }
     }
 }
