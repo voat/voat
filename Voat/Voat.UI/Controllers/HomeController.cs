@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Voat.Caching;
+using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
@@ -267,6 +268,11 @@ namespace Voat.Controllers
         // GET: /v2
         public ActionResult IndexV2(int? page)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
+
             ViewBag.SelectedSubverse = "frontpage";
             var submissions = new List<SetSubmission>();
 

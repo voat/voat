@@ -39,6 +39,11 @@ namespace Voat.Controllers
         // show single set frontpage
         public ActionResult SingleSet(int setId, int? page)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
+
             const int pageSize = 25;
             int recordsToSkip = (page ?? 0);
             try
@@ -111,6 +116,10 @@ namespace Voat.Controllers
         // fetch x more items from a set
         public ActionResult SingleSetPage(int setId, int page)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
             const int pageSize = 2;
             try
             {
@@ -160,6 +169,11 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult EditSet(int setId)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
+
             var setToEdit = _db.UserSets.FirstOrDefault(s => s.ID == setId);
 
             if (setToEdit != null)
@@ -192,6 +206,10 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public ActionResult ReorderSet(string setName, int direction)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
             // check if user is subscribed to given set
             if (UserHelper.IsUserSubscribedToSet(User.Identity.Name, setName))
             {
@@ -207,6 +225,10 @@ namespace Voat.Controllers
         // GET: /sets
         public ActionResult Sets(int? page)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
             ViewBag.SelectedSubverse = "Popular sets";
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
@@ -234,6 +256,10 @@ namespace Voat.Controllers
         // GET: /sets/recommended
         public ActionResult RecommendedSets(int? page)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
             ViewBag.SelectedSubverse = "recommended sets";
             ViewBag.sortingmode = "recommended";
 
@@ -264,6 +290,10 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult CreateSet()
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
             return View("~/Views/Sets/CreateSet.cshtml");
         }
 
@@ -273,6 +303,10 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> CreateSet([Bind(Include = "Name, Description")] AddSet setTmpModel)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
             if (!User.Identity.IsAuthenticated) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             int maximumOwnedSets = Settings.MaximumOwnedSets;
 
@@ -327,6 +361,10 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult UserSets(int? page)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
 
@@ -347,6 +385,10 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult ManageUserSets(int? page)
         {
+            if (Settings.SetsDisabled)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
 
@@ -367,6 +409,11 @@ namespace Voat.Controllers
         [ChildActionOnly]
         public PartialViewResult PopularSets()
         {
+            if (Settings.SetsDisabled)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return new PartialViewResult();
+            }
             var popularSets = _db.UserSets.Where(s => s.IsPublic).OrderByDescending(s => s.SubscriberCount).Take(40);
 
             return PartialView("~/Views/Sets/_PopularSets.cshtml", popularSets);
@@ -378,6 +425,11 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public JsonResult Subscribe(int setId)
         {
+            if (Settings.SetsDisabled)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+            }
             var loggedInUser = User.Identity.Name;
 
             UserHelper.SubscribeToSet(loggedInUser, setId);
@@ -390,6 +442,11 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public JsonResult UnSubscribe(int setId)
         {
+            if (Settings.SetsDisabled)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+            }
             var loggedInUser = User.Identity.Name;
 
             UserHelper.UnSubscribeFromSet(loggedInUser, setId);
@@ -402,6 +459,11 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public JsonResult AddSubverseToSet(string subverseName, int setId)
         {
+            if (Settings.SetsDisabled)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+            }
             // check if set exists
             var setToModify = _db.UserSets.Find(setId);
             if (setToModify == null)
@@ -451,6 +513,11 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public JsonResult RemoveSubverseFromSet(string subverseName, int setId)
         {
+            if (Settings.SetsDisabled)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+            }
             // check if user is set owner
             if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
             {
@@ -478,6 +545,11 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public JsonResult ChangeSetInfo(int setId, string newSetName)
         {
+            if (Settings.SetsDisabled)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+            }
             // check if user is set owner
             if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
             {
@@ -515,6 +587,11 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public JsonResult DeleteSet(int setId)
         {
+            if (Settings.SetsDisabled)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+            }
             // check if user is set owner
             if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
             {
