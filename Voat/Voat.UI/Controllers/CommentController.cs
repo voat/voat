@@ -585,6 +585,9 @@ namespace Voat.Controllers
 
                         _db.SaveChangesAsync();
 
+                        //Update Cache
+                        CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(CachingKey.CommentTree(commentToDistinguish.SubmissionID.Value), commentToDistinguish.ID, x => { x.IsDistinguished = commentToDistinguish.IsDistinguished; return x; }, true);
+
                         Response.StatusCode = 200;
                         return Json("Distinguish flag changed.", JsonRequestBehavior.AllowGet);
                     }

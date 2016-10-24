@@ -1245,9 +1245,34 @@ function distinguish(commentId, obj) {
         type: "POST",
         url: "/comments/distinguish/" + commentId,
         success: function () {
-            $(obj).html("done");
+            var tagline = $(obj).parent().parent().parent().find(">.tagline");
+            tagline.find(">.author").toggleClass("moderator");
+            var userAttrs = tagline.find(">.userattrs");
+            submitterAttr = userAttrs.find(">.submitter"),
+            moderatorAttr = userAttrs.find(">.moderator");
+            userAttrs.html("");
 
-            // TODO: find the comment and add class "moderator" to give better distinguish feedback
+            if (moderatorAttr.length > 0) {
+                $(obj).html("distinguish");
+                if (submitterAttr.length > 0) {
+                    userAttrs.append(["[", submitterAttr, "]"]);
+                }
+            } else {
+                $(obj).html("undistinguish");
+                var subAndId = $(obj).parent().parent().find(".bylink").attr("href").match(/^\/v\/([a-zA-Z0-9]+)\/(?:comments\/)?(\d+)/i);
+                moderatorAttr = $('<a>M</a>');
+                moderatorAttr.attr("href", "/v/" + subAndId[1] + "/" + subAndId[2]);
+                moderatorAttr.attr("class", "moderator");
+                moderatorAttr.attr("title", "moderator");
+
+                if (submitterAttr.length > 0) {
+                    userAttrs.append(["[", submitterAttr, ", "]);
+                } else {
+                    userAttrs.append("[");
+                }
+
+                userAttrs.append([moderatorAttr, "]"]);
+            }
         },
         error: function () {
             $(obj).html("unable to comply");
