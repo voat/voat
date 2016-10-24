@@ -432,14 +432,17 @@ namespace Voat.Caching
 
         #region Dictionary
 
-        public virtual void DictionaryReplace<K,V>(string cacheKey, K key, Func<V, V> replaceAlg)
+        public virtual void DictionaryReplace<K,V>(string cacheKey, K key, Func<V, V> replaceAlg, bool bypassMissing = true)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
             lock (_lockStore.GetLockObject(cacheKey))
             {
                 V item = (V)GetItem<K,V>(cacheKey, key, CacheType.Dictionary);
-                SetItem(cacheKey, key, replaceAlg(item), CacheType.Dictionary);
+                if (!bypassMissing || (bypassMissing && !item.IsDefault())) 
+                {
+                    SetItem(cacheKey, key, replaceAlg(item), CacheType.Dictionary);
+                }
             }
         }
 

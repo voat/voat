@@ -43,63 +43,52 @@ namespace Voat.Caching
         }
         protected override V GetItem<K,V>(string cacheKey, K key, CacheType type)
         {
-            if (_cache.ContainsKey(cacheKey))
+            if (ItemExists(cacheKey))
             {
                 var value = _cache[cacheKey];
-                if (value is IDictionary)
+                switch (type)
                 {
-                    return (V)((IDictionary)value)[key];
-                }
-                else if (value is IList)
-                {
-                    var list = ((IList)value);
-                    var index = list.IndexOf(key);
-                    return (V)list[index];
-                }
-                else
-                {
-                    throw new ArgumentException(String.Format("Cache item {0} is not a supported type", cacheKey));
+                    case CacheType.Dictionary:
+                        return (V)(value.Convert<IDictionary, object>())[key];
+                        break;
+                    default:
+                        throw new ArgumentException(String.Format("Cache item {0} is not a supported type", cacheKey));
                 }
             }
             return default(V);
         }
         protected override void SetItem<K,V>(string cacheKey, K key, V item, CacheType type)
         {
-            if (_cache.ContainsKey(cacheKey))
+            if (ItemExists(cacheKey))
             {
                 var value = _cache[cacheKey];
-                if (value is IDictionary)
-                {
-                    ((IDictionary)value)[key] = item;
-                    return;
-                }
-                else if (value.GetType().HasInterface(typeof(ISet<>)))
-                {
-                    ((dynamic)value).Add((dynamic)key);
-                    return;
-                }
-                throw new ArgumentException(String.Format("Cache item {0} is not a dictionary", cacheKey));
-            }
-            //else
-            //{
-            //    var dict = (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(object), item.GetType()));
-
-            //    dict.Add(key, item);
-            //    _cache[cacheKey] = dict;
-            //}
-        }
-        protected override void DeleteItem<T>(string cacheKey, T key, CacheType type)
-        {
-            var value = _cache[cacheKey];
-            if (value != null)
-            {
                 switch (type)
                 {
                     case CacheType.Dictionary:
-                        ((IDictionary)value).Remove(key);
+                        value.Convert<IDictionary, object>()[key] = item;
                         break;
                     case CacheType.Set:
-                        ((ISet<T>)value).Remove(key);
+                        var set = value.Convert<ISet<K>, object>();
+                        if (!set.Contains(key))
+                        {
+                            set.Add(key);
+                        }
+                        break;
+                }
+            }
+        }
+        protected override void DeleteItem<T>(string cacheKey, T key, CacheType type)
+        {
+            if (ItemExists(cacheKey))
+            {
+                var value = _cache[cacheKey];
+                switch (type)
+                {
+                    case CacheType.Dictionary:
+                        value.Convert<IDictionary, object>().Remove(key);
+                        break;
+                    case CacheType.Set:
+                        value.Convert<ISet<T>, object>().Remove(key);
                         break;
                     default:
                         throw new ArgumentException(String.Format("Operation on type {0} not supported", type));
@@ -111,31 +100,18 @@ namespace Voat.Caching
         protected override bool ItemExists<T>(string cacheKey, T key, CacheType type)
         {
             var found = false;
-            if (_cache.ContainsKey(cacheKey))
+            if (ItemExists(cacheKey))
             {
                 var value = _cache[cacheKey];
                 switch (type)
                 {
                     case CacheType.Dictionary:
-                        found = ((IDictionary)value).Contains(key);
+                        found = value.Convert<IDictionary, object>().Contains(key);
                         break;
                     case CacheType.Set:
-                        found = ((ISet<T>)value).Contains(key);
+                        found = value.Convert<ISet<T>, object>().Contains(key);
                         break;
                 }
-                //var value = _cache[cacheKey];
-                //if (value is IDictionary)
-                //{
-                //    return ((IDictionary)value).Contains(key);
-                //}
-                //else if (value is IList)
-                //{
-                //    return ((IList)value).Contains(key);
-                //}
-                //else if (value.GetType().HasInterface(typeof(ISet<T>)))
-                //{
-                //    return ((dynamic)value).Contains((dynamic)key);
-                //}
             }
             return found;
         }

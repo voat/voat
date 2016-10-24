@@ -61,5 +61,46 @@ namespace Voat
             }
             return result;
         }
+        public static bool IsDefault<T>(this T type)
+        {
+            var result = false;
+
+            var defaultValue = default(T);
+
+            result = System.Object.Equals(type, defaultValue);
+
+            return result;
+        }
+
+        //Entire purpose of this routine is to provide a proper error message upon an invalid cast
+        public static T Convert<T>(this object type)
+        {
+            try
+            {
+                return (T)(object)type;
+            }
+            catch (Exception ex)
+            {
+
+                string typeName = "How do I get type of variable type?";
+                throw new InvalidCastException($"Can not convert {typeName} to {typeof(T).Name}", ex);
+            }
+        }
+
+        //Entire purpose of this routine is to provide a proper error message upon an invalid cast
+        public static T Convert<T, V>(this V type)
+        {
+            try
+            {
+                return (T)(object)type;
+            }
+            catch (Exception ex)
+            {
+
+                //string typeName = type == null ? "null" : type.GetType().Name;
+                string typeName = typeof(V).Name;
+                throw new InvalidCastException($"Can not convert {typeName} to {typeof(T).Name}", ex);
+            }
+        }
     }
 }

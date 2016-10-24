@@ -103,10 +103,6 @@ namespace Voat.Caching
                         break;
                 }
             }
-            //else
-            //{
-            //    db.HashSet(cacheKey, new HashEntry[] { new HashEntry(key.ToString(), Serialize(item)) });
-            //}
         }
 
         protected override void SetItem(string cacheKey, object item, TimeSpan? cacheTime = null)

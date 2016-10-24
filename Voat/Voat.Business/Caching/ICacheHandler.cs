@@ -95,7 +95,7 @@ namespace Voat.Caching
         /// <param name="cacheKey"></param>
         /// <param name="key"></param>
         /// <param name="replaceAlg"></param>
-        void DictionaryReplace<K,V>(string cacheKey, K key, Func<V, V> replaceAlg);
+        void DictionaryReplace<K,V>(string cacheKey, K key, Func<V, V> replaceAlg, bool bypassMissing = true);
 
         /// <summary>
         /// Retrieves dictionary item in cached dictionary at specified key

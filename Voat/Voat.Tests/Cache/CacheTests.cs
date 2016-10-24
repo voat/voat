@@ -180,7 +180,7 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         [TestCategory("Cache.Handler.Dictionary")]
-        public void Dictionary_ReplaceWithoutPrevious()
+        public void Dictionary_ReplaceWithoutPrevious_1()
         {
             //we used to add this to cache if it didn't exist, now we don't
             string cacheKey = "Dictionary_Add";
@@ -199,6 +199,28 @@ namespace Voat.Tests.Cache
             //Assert.AreEqual(newItem.ID, cacheItem.ID);
             //Assert.AreEqual(newItem.Count, cacheItem.Count);
             //Assert.AreEqual(newItem.Name, cacheItem.Name);
+
+            handler.Remove(cacheKey);
+        }
+
+        [TestMethod]
+        [TestCategory("Cache")]
+        [TestCategory("Cache.Handler")]
+        [TestCategory("Cache.Handler.Dictionary")]
+        public void Dictionary_ReplaceWithoutPrevious_2()
+        {
+            //we used to add this to cache if it didn't exist, now we don't
+            string cacheKey = "Dictionary_Replace_Callback";
+            handler.Remove(cacheKey);
+
+            var newItem = new Item() { ID = 1, Count = 400, Name = "New Name" };
+            handler.Register(cacheKey, () => new Dictionary<int, Item>() { { 1, newItem } }, TimeSpan.Zero);
+
+            handler.DictionaryReplace<int, Item>(cacheKey, 1, (x) => { Assert.IsNotNull(x, "Condition 1"); return x; }, true);
+            handler.DictionaryReplace<int, Item>(cacheKey, 1, (x) => { Assert.IsNotNull(x, "Condition 2"); return x; }, false);
+
+            handler.DictionaryReplace<int, Item>(cacheKey, 2, (x) => { Assert.IsNull(x, "Condition 3"); return x; }, false);
+            handler.DictionaryReplace<int, Item>(cacheKey, 2, (x) => { Assert.Fail("Condition 4"); return x; }, true);
 
             handler.Remove(cacheKey);
         }
