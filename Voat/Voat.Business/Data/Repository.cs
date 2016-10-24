@@ -2609,13 +2609,19 @@ namespace Voat.Data
             Subverse sub = _db.Subverses.Find(subverse);
             if (sub != null)
             {
+                //We have nulls in db, don't ask me how.
+                if (sub.SubscriberCount == null)
+                {
+                    sub.SubscriberCount = 0;
+                }
+
                 if (action == SubscriptionAction.Subscribe)
                 {
-                    sub.SubscriberCount++;
+                    sub.SubscriberCount = Math.Max(0, sub.SubscriberCount.Value + 1);
                 }
                 else
                 {
-                    sub.SubscriberCount--;
+                    sub.SubscriberCount = Math.Max(0, sub.SubscriberCount.Value - 1);
                 }
             }
             await _db.SaveChangesAsync();

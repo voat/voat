@@ -206,7 +206,8 @@ namespace Voat.Controllers
                     IsPrivate = false,
                     MinCCPForDownvote = 0,
                     IsAdminDisabled = false,
-                    CreatedBy = User.Identity.Name
+                    CreatedBy = User.Identity.Name,
+                    SubscriberCount = 0
                 };
 
                 _db.Subverses.Add(subverse);
