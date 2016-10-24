@@ -12,7 +12,7 @@
 @using Voat.Data.Models
 
 @{
-    ViewBag.Title = "Profile overview for " + @ViewBag.userid;
+    ViewBag.Title = "Profile overview for " + @ViewBag.UserName;
 }
 
 <div id="container" class="page-userprofile">
@@ -20,13 +20,13 @@
     @Html.Partial("~/Views/Shared/Sidebars/_SidebarUserInfo.cshtml")
 
     <div class="content" role="main">
-        <div class="alert-title">Profile overview for @ViewBag.userid.</div>
+        <div class="alert-title">Profile overview for @ViewBag.UserName.</div>
         <div class="userstats">
             <div class="userstats-heading-1">Submission statistics</div>
             <div>
                 <div class="userstats-body">
                     @{
-                        var userStatsModel = UserHelper.UserStatsModel(@ViewBag.userid);
+                        var userStatsModel = UserHelper.UserStatsModel(@ViewBag.UserName);
 
                         if (userStatsModel.TopSubversesUserContributedTo.Count > 0)
                         {
@@ -110,7 +110,7 @@
 
                                 <div class="entry unvoted">
                                     <p class="tagline">
-                                        <a href="/user/@ViewBag.userid" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.userid">@ViewBag.userid</a>
+                                        <a href="/user/@ViewBag.UserName" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.UserName">@ViewBag.UserName</a>
                                         <span class="score dislikes">@item.DownCount points</span>
                                         <span class="userstats-submission-score">@score points</span>
                                         <span class="score likes">@item.UpCount points</span>
@@ -163,7 +163,7 @@
 
                                 <div class="entry unvoted">
                                     <p class="tagline">
-                                        <a href="/user/@ViewBag.userid" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.userid">@ViewBag.userid</a>
+                                        <a href="/user/@ViewBag.UserName" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.UserName">@ViewBag.UserName</a>
                                         <span class="score dislikes">@item.DownCount points</span>
                                         <span class="userstats-submission-score">@score points</span>
                                         <span class="score likes">@item.UpCount points</span>

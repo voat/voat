@@ -14,13 +14,13 @@
 @model PaginatedList<SavedItem>
 
 @{
-    ViewBag.Title = "Saved Posts/Comments for " + @ViewBag.userid;
+    ViewBag.Title = "Saved Posts/Comments for " + @ViewBag.UserName;
 }
 
 <div id="container">
     <div class="content-no-margin" role="main">
 
-        <div class="alert-title">Saved Posts/Comments for @ViewBag.userid.</div>
+        <div class="alert-title">Saved Posts/Comments for @ViewBag.UserName.</div>
 
         @foreach (var obj in Model)
         {

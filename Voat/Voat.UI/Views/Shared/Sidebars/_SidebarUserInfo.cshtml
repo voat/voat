@@ -13,7 +13,7 @@
 *@
 
 @{
-    string userName = ViewBag.userid;
+    string userName = ViewBag.UserName ?? User.Identity.Name;
 
     var userData = new Voat.Domain.UserData(userName);
 

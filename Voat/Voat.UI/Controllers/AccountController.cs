@@ -229,7 +229,7 @@ namespace Voat.Controllers
         public ActionResult Manage(ManageMessageId? message)
         {
             ViewBag.SelectedSubverse = string.Empty;
-            ViewBag.userid = User.Identity.Name;
+            ViewBag.UserName = User.Identity.Name;
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
@@ -242,7 +242,6 @@ namespace Voat.Controllers
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
-            ViewBag.userid = User.Identity.Name;
             return View();
         }
 
@@ -251,6 +250,8 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
+            ViewBag.UserName = User.Identity.Name;
+
             var hasPassword = HasPassword();
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
@@ -277,7 +278,9 @@ namespace Voat.Controllers
                 }
 
                 if (!ModelState.IsValid)
+                {
                     return View(model);
+                }
                 var result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
                 if (result.Succeeded)
                 {
@@ -387,6 +390,7 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Bio, Avatarfile")] UserAboutViewModel model)
         {
+            ViewBag.UserName = User.Identity.Name;
             // save changes
             using (var db = new voatEntities())
             {
@@ -498,6 +502,8 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
         {
+            ViewBag.UserName = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
                 return View("Manage", model);
@@ -598,7 +604,8 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserAccountEmail([Bind(Include = "EmailAddress")] UserEmailViewModel model)
         {
-            ViewBag.userid = User.Identity.Name;
+            ViewBag.UserName = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
                 return View("Manage", model);

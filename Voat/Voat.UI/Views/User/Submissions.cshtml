@@ -13,13 +13,13 @@
 @model PaginatedList<Voat.Data.Models.Submission>
 
 @{
-    ViewBag.Title = "Submission history for " + @ViewBag.userid;
+    ViewBag.Title = "Submission history for " + @ViewBag.UserName;
 }
 
 <div id="container">
     <div class="content-no-margin" role="main">
 
-        <div class="alert-title">Submission history for @ViewBag.userid.</div>
+        <div class="alert-title">Submission history for @ViewBag.UserName.</div>
 
         @foreach (var submission in Model)
         {

@@ -33,7 +33,7 @@ namespace Voat.Controllers
             {
                 return View("~/Views/Error/404.cshtml");
             }
-            ViewBag.userid = originalUserName;
+            ViewBag.UserName = originalUserName;
 
             return View();
         }
@@ -49,7 +49,7 @@ namespace Voat.Controllers
             {
                 return View("~/Views/Error/404.cshtml");
             }
-            ViewBag.userid = originalUserName;
+            ViewBag.UserName = originalUserName;
 
             var userComments = from c in _db.Comments.OrderByDescending(c => c.CreationDate)
                                 where c.UserName.Equals(originalUserName)
@@ -75,7 +75,7 @@ namespace Voat.Controllers
             {
                 return View("~/Views/Error/404.cshtml");
             }
-            ViewBag.userid = originalUserName;
+            ViewBag.UserName = originalUserName;
 
             var userSubmissions = from s in _db.Submissions.OrderByDescending(s => s.CreationDate)
                                     where s.UserName.Equals(originalUserName)
@@ -105,7 +105,7 @@ namespace Voat.Controllers
             {
                 return RedirectToAction("Overview");
             }
-            ViewBag.userid = originalUserName;
+            ViewBag.UserName = originalUserName;
 
             IQueryable<SavedItem> savedSubmissions = (from m in _db.Submissions
                                                         join s in _db.SubmissionSaveTrackers on m.ID equals s.SubmissionID

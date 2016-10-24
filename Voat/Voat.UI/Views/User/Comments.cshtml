@@ -13,12 +13,12 @@
 @model PaginatedList<Voat.Data.Models.Comment>
 
 @{
-    ViewBag.Title = "Comment history for " + @ViewBag.userid;
+    ViewBag.Title = "Comment history for " + @ViewBag.UserName;
 }
 
 <div id="container">
     <div class="content-no-margin" role="main">
-        <div class="alert-title">Comment history for @ViewBag.userid.</div>
+        <div class="alert-title">Comment history for @ViewBag.UserName.</div>
         @foreach (var submission in Model)
         {
             @Html.Partial("Userprofile/_UserProfileComment", submission)
