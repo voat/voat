@@ -959,7 +959,10 @@ $.fn.exists = function () {
 
 // subscribe to subverse
 function subscribe(obj, subverseName) {
-    $(obj).attr("onclick", "unsubscribe(this)");
+    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
+    //$(obj).attr("onclick", "unsubscribe(this)");
+    $(obj).attr("onclick", "unsubscribe(this, '" + subverseName + "')");
+
     $(obj).html("unsubscribe");
     $(obj).toggleClass("btn-sub btn-unsub");
 
@@ -980,7 +983,9 @@ function subscribe(obj, subverseName) {
 
 // unsubscribe from subverse
 function unsubscribe(obj, subverseName) {
-    $(obj).attr("onclick", "subscribe(this)");
+    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
+    //$(obj).attr("onclick", "subscribe(this)");
+    $(obj).attr("onclick", "subscribe(this, '" + subverseName + "')");
     $(obj).html("subscribe");
     $(obj).toggleClass("btn-sub btn-unsub");
 
