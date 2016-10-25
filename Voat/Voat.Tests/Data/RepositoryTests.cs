@@ -61,6 +61,7 @@ namespace Voat.Tests.Repository
         [ExpectedException(typeof(VoatSecurityException))]
         public void Block_Subverse_NoAuthentication()
         {
+            TestHelper.SetPrincipal(null);
             using (var db = new Voat.Data.Repository())
             {
                 db.Block(DomainType.Subverse, "test");

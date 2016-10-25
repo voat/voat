@@ -19,8 +19,15 @@ namespace Voat.Tests
         /// <param name="roles"></param>
         public static void SetPrincipal(string name, string[] roles = null)
         {
-            GenericPrincipal p = new GenericPrincipal(new GenericIdentity(name), roles);
-            System.Threading.Thread.CurrentPrincipal = p;
+            if (string.IsNullOrEmpty(name))
+            {
+                System.Threading.Thread.CurrentPrincipal = null;
+            }
+            else
+            {
+                GenericPrincipal p = new GenericPrincipal(new GenericIdentity(name), roles);
+                System.Threading.Thread.CurrentPrincipal = p;
+            }
         }
        
     }
