@@ -20,7 +20,7 @@ namespace Voat.Domain.Query
         }
 
         public QueryUserPreferences()
-            : this(new CachePolicy(TimeSpan.FromMinutes(10)))
+            : this(new CachePolicy(TimeSpan.FromMinutes(30)))
         {
         }
 
@@ -53,7 +53,7 @@ namespace Voat.Domain.Query
             {
                 using (var db = new Repository())
                 {
-                    pref = db.GetUserPreferences(_userToRetrieve);
+                    pref = await db.GetUserPreferences(_userToRetrieve);
                 }
             }
 

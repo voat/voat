@@ -108,6 +108,7 @@ namespace Voat.Domain.Query.Base
 
                 //having small issue with comments load links for deleted children, see if this clears up
                 n.ChildCount = fullTree.Count(x => x.ParentID == n.ID && !(x.IsDeleted && x.ChildCount == 0));
+                n.Children.TotalCount = n.ChildCount;
                 comments.Add(n);
             }
 

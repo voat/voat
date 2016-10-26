@@ -52,7 +52,7 @@ namespace Voat.Tests.Data
     public class SearchOptions_Tests
     {
         [TestMethod]
-        [TestCategory("Search.Formatting")]
+        [TestCategory("Search.Formatting"), TestCategory("Search.Parse")]
         public void SearchOptions_Count()
         {
             SearchOptions options = SearchOptions.Default;
@@ -61,7 +61,7 @@ namespace Voat.Tests.Data
         }
 
         [TestMethod]
-        [TestCategory("Search.Formatting")]
+        [TestCategory("Search.Formatting"), TestCategory("Search.Parse")]
         public void SearchOptions_Default()
         {
             SearchOptions options = SearchOptions.Default;
@@ -70,15 +70,15 @@ namespace Voat.Tests.Data
         }
 
         [TestMethod]
-        [TestCategory("Search.Formatting")]
+        [TestCategory("Search.Formatting"), TestCategory("Search.Parse")]
         public void SearchOptions_ExtendedObject()
         {
             CustomSearchOptions options = new CustomSearchOptions("help=true&count=50&index=2&mydata=some value");
 
             Assert.IsTrue(options.CustomData.ContainsKey("help"));
             Assert.IsTrue(options.CustomData.ContainsKey("mydata"));
-            Assert.IsFalse(options.CustomData.ContainsKey("count"));
-            Assert.IsFalse(options.CustomData.ContainsKey("index"));
+            Assert.IsFalse(options.CustomData.ContainsKey("count")); //we now don't parse this value
+            Assert.IsFalse(options.CustomData.ContainsKey("index")); //we now don't parse this value
         }
 
         [TestMethod]
@@ -89,26 +89,27 @@ namespace Voat.Tests.Data
 
             ////Removed index based setup
             //Assert.AreEqual("count=50&index=2&help=true&mydata=some value", options.ToString());
-            Assert.AreEqual("count=50&help=true&mydata=some value", options.ToString());
+            //Assert.AreEqual("count=50&help=true&index=2&mydata=some value", options.ToString());
+            Assert.AreEqual("help=true&mydata=some value", options.ToString());
         }
 
         [TestMethod]
-        [TestCategory("Search.Formatting")]
+        [TestCategory("Search.Formatting"), TestCategory("Search.Parse")]
         public void SearchOptions_Page2()
         {
             SearchOptions options = SearchOptions.Default;
             options.Page = 2;
             options.Count = 50;
-            Assert.AreEqual(String.Format("count={0}&index={1}&page={2}", 50, 51, 2), options.ToString());
+            Assert.AreEqual(String.Format("count={0}&page={2}", 50, 101, 2), options.ToString());
         }
 
         [TestMethod]
-        [TestCategory("Search.Formatting")]
+        [TestCategory("Search.Formatting"), TestCategory("Search.Parse")]
         public void SearchOptions_Parsing()
         {
             SearchOptions options = SearchOptions.Default;
             options.Page = 2;
-            options.Count = 50;
+            //options.Count = 50;
             options.Phrase = "hello";
             options.Sort = SortAlgorithm.Active;
             options.SortDirection = SortDirection.Reverse;
@@ -120,14 +121,14 @@ namespace Voat.Tests.Data
         }
 
         [TestMethod]
-        [TestCategory("Search.Formatting")]
+        [TestCategory("Search.Formatting"), TestCategory("Search.Parse")]
         public void SearchOptions_Search()
         {
             SearchOptions options = SearchOptions.Default;
             options.Page = 2;
             options.Count = 50;
             options.Phrase = "hello";
-            Assert.AreEqual(String.Format("count={0}&index={1}&page={2}&phrase={3}", 50, 51, 2, "hello"), options.ToString());
+            Assert.AreEqual(String.Format("count={0}&page={1}&phrase={2}", 50, 2, "hello"), options.ToString());
         }
     }
 }

@@ -68,9 +68,14 @@
                             <p>Please solve the reCAPTCHA challenge below:</p>
                         </div>
                     </div>
-                    <div class="panel panel-default">
-                        @{Html.RenderPartial("_Captcha");}
-                    </div>
+
+                    if (!Settings.CaptchaDisabled)
+                    {
+                        <div class="panel panel-default">
+                            @{Html.RenderPartial("_Captcha");}
+                        </div>
+                    }
+
                     <div class="form-group">
                         <input type="submit" class="btn-whoaverse" value="Register" />
                     </div>

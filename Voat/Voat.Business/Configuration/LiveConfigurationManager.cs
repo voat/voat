@@ -45,6 +45,7 @@ namespace Voat.Configuration
         public const string SiteDomain = "siteDomain";
         public const string LegacyApiEnabled = "legacyApiEnabled";
         public const string ApiKeyCreationEnabled = "apiKeyCreationEnabled";
+        public const string CaptchaDisabled = "captchaDisabled";
     }
 
     public class LiveConfigurationManager
@@ -158,6 +159,7 @@ namespace Voat.Configuration
                 SetValueIfPresent<bool>(CONFIGURATION.LegacyApiEnabled, section[CONFIGURATION.LegacyApiEnabled]);
 
                 SetValueIfPresent<bool>(CONFIGURATION.ApiKeyCreationEnabled, section[CONFIGURATION.ApiKeyCreationEnabled]);
+                SetValueIfPresent<bool>(CONFIGURATION.CaptchaDisabled, section[CONFIGURATION.CaptchaDisabled]);
 
                 //HACK ATTACK
                 CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;

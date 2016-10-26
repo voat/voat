@@ -185,12 +185,6 @@ namespace Voat.Utilities
         {
             var userData = new Domain.UserData(userName);
             return userData.Subscriptions.Any(x => x.IsEqual(subverse));
-
-            //using (var db = new voatEntities())
-            //{
-            //    var subverseSubscriber = db.SubverseSubscriptions.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
-            //    return subverseSubscriber != null;
-            //}
         }
 
         // check if given user blocks a given subverse
@@ -199,12 +193,6 @@ namespace Voat.Utilities
             var q = new QueryUserBlocks(userName);
             var r = q.Execute();
             return r.Any(x => x.Type == Domain.Models.DomainType.Subverse && x.Name.IsEqual(subverse));
-
-            //using (var db = new voatEntities())
-            //{
-            //    var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == subverse.ToLower() && n.UserName == userName);
-            //    return subverseBlock != null;
-            //}
         }
 
         // check if given user is subscribed to a given set
@@ -273,11 +261,6 @@ namespace Voat.Utilities
         {
             var userData = new Domain.UserData(userName);
             return userData.Subscriptions.Count();
-
-            //using (var db = new voatEntities())
-            //{
-            //    return db.SubverseSubscriptions.Count(s => s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
-            //}
         }
 
         // return a list of subverses user is subscribed to

@@ -108,12 +108,10 @@ namespace Voat.Controllers
 
             // don't return a sidebar since subverse doesn't exist or is a system subverse
             if (subverse == null)
+            {
                 return new EmptyResult();
-
-            // get subscriber count for selected subverse
-            //var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
-
-            //ViewBag.SubscriberCount = subscriberCount;
+            }
+            
             ViewBag.SelectedSubverse = selectedSubverse;
 
             try
@@ -159,7 +157,7 @@ namespace Voat.Controllers
             var userData = new Domain.UserData(User.Identity.Name);
 
             // verify recaptcha if user has less than minimum required CCP
-            if (userData.Information.CommentPoints.Sum < minimumCcp)
+            if (!Settings.CaptchaDisabled && userData.Information.CommentPoints.Sum < minimumCcp)
             {
                 // begin recaptcha check
                 bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);
@@ -2138,7 +2136,7 @@ namespace Voat.Controllers
                     var invitationBody = new StringBuilder();
                     invitationBody.Append("Hello,");
                     invitationBody.Append(Environment.NewLine);
-                    invitationBody.Append($"@{User.Identity.Name} invited to moderate v/" + subverseAdmin.Subverse + ".");
+                    invitationBody.Append($"@{User.Identity.Name} invited you to moderate v/" + subverseAdmin.Subverse + ".");
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append("Please visit the following link if you want to accept this invitation: " + "https://" + Request.ServerVariables["HTTP_HOST"] + "/acceptmodinvitation/" + invitationId);

@@ -207,13 +207,13 @@
         </div>
     </div>
 
-@if (Model.ChildCount > 0)
+@if (Model.Children.TotalCount > 0)
 {
     parentIsHidden = (Model.IsCollapsed);
     var remaining = 0;
     var startingIndex = 0;
 
-    if (Model.Children != null)
+    if (Model.Children != null && Model.Children.SegmentCount > 0)
     {
         foreach (var childComment in Model.Children.Comments)
         {
@@ -228,10 +228,12 @@
         })
         }
         remaining = Model.Children.TotalCount - Model.Children.SegmentCount;
+        System.Diagnostics.Debug.Assert(remaining == Model.Children.RemainingCount, "Remaining Count invalid");
         startingIndex = Model.Children.EndingIndex + 1;
     }
     else
     {
+        System.Diagnostics.Debug.Assert(Model.ChildCount == Model.Children.TotalCount, "ChildCount does not match TotalCount");
         remaining = Model.ChildCount;
     }
 

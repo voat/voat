@@ -37,7 +37,7 @@ namespace Voat.Domain.Query
             }
 
             var taskArray = tasks.ToArray();
-            Task.WaitAll(taskArray);
+            await Task.WhenAll(taskArray);
 
             foreach (var task in taskArray)
             {
@@ -49,7 +49,7 @@ namespace Voat.Domain.Query
         public override IEnumerable<MessageCounts> Execute()
         {
             Task<IEnumerable<MessageCounts>> t = Task.Run(ExecuteAsync);
-            Task.WaitAll(t);
+            Task.WaitAny(t);
             return t.Result;
         }
     }

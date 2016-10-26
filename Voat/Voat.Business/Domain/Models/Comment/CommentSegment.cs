@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,6 +25,7 @@ namespace Voat.Domain.Models
     public class CommentSegment
     {
         private IList<NestedComment> _comments;
+        private int? _startingIndex = null;
 
         public CommentSegment()
         {
@@ -96,7 +98,23 @@ namespace Voat.Domain.Models
         /// <summary>
         /// The starting index of this comment segment (zero is lowest bound of index)
         /// </summary>
-        public int StartingIndex { get; set; }
+        public int StartingIndex {
+            get
+            {
+                if (_startingIndex.HasValue)
+                {
+                    return _startingIndex.Value;
+                }
+                else
+                {
+                    return _comments == null || _comments.Count == 0 ? -1 : 0;
+                }
+            }
+            set
+            {
+                _startingIndex = value;
+            }
+        } 
 
         /// <summary>
         /// The sort order of the comment segment
@@ -104,9 +122,31 @@ namespace Voat.Domain.Models
         public CommentSortAlgorithm Sort { get; set; }
 
         /// <summary>
-        /// Represents the total count of comments at this level (root or children of a parent comment).
+        /// Represents the total count of comments at this level (root or children of a parent comment)
         /// </summary>
         [JsonProperty(Order = 1)]
         public int TotalCount { get; set; }
+
+        /// <summary>
+        /// Returns true if this segment has more records than what this segment includes
+        /// </summary>
+        public bool HasMore
+        {
+            get
+            {
+                return RemainingCount > 0;
+            }
+        }
+
+        /// <summary>
+        /// Returns the remaining record count in this segment
+        /// </summary>
+        public int RemainingCount
+        {
+            get
+            {
+                return Math.Max(0, (TotalCount - (EndingIndex + 1)));
+            }
+        }
     }
 }

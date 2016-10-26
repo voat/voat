@@ -152,7 +152,13 @@ namespace Voat.Configuration
                 return (string)configValues[CONFIGURATION.RecaptchaPublicKey];
             }
         }
-
+        public static bool CaptchaDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.CaptchaDisabled, false);
+            }
+        }
         public static string EmailServiceKey
         {
             get

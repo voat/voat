@@ -26,7 +26,7 @@ namespace Voat.Tests.QueryTests
         }
 
         [TestMethod]
-        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon")]
+        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon"), TestCategory("Comment"), TestCategory("Comment.Segment")]
         public void CommentSegment_Anon()
         {
             TestHelper.SetPrincipal("TestUser1");
@@ -35,10 +35,11 @@ namespace Voat.Tests.QueryTests
             Assert.IsNotNull(r, "Query returned null");
 
             VerifyCommentSegmentIsAnonProtected(r);
-
         }
+
+
         [TestMethod]
-        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon")]
+        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon"), TestCategory("Comment"), TestCategory("Comment.Segment")]
         public void CommentContext_Anon()
         {
             int commentID = 0;

@@ -180,11 +180,11 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository")]
-        public void GetUserPrefernces()
+        public async Task GetUserPrefernces()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var p = db.GetUserPreferences("unit");
+                var p = await db.GetUserPreferences("unit");
                 Assert.IsTrue(p != null);
                 Assert.IsTrue(p.UserName == "unit");
                 Assert.IsTrue(p.Bio == "User unit's short bio");

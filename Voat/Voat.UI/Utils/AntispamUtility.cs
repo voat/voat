@@ -44,13 +44,16 @@ namespace Voat.UI.Utilities
         {
             try
             {
-                var request = filterContext.RequestContext.HttpContext.Request;
-                var captchaValid = ReCaptchaUtility.Validate(request).Result;
-
-                if (!captchaValid)
+                if (!Settings.CaptchaDisabled)
                 {
-                    // Add a model error if the captcha was not valid
-                    filterContext.Controller.ViewData.ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer.");
+                    var request = filterContext.RequestContext.HttpContext.Request;
+                    var captchaValid = ReCaptchaUtility.Validate(request).Result;
+
+                    if (!captchaValid)
+                    {
+                        // Add a model error if the captcha was not valid
+                        filterContext.Controller.ViewData.ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer.");
+                    }
                 }
             }
             catch (Exception ex)

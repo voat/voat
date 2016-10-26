@@ -90,7 +90,7 @@ namespace Voat.Controllers
             }
 
             var userData = new Domain.UserData(User.Identity.Name);
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25 && !Settings.CaptchaDisabled;
 
             return View("Submit", model);
         }
@@ -106,7 +106,7 @@ namespace Voat.Controllers
         {
             //set this incase invalid submittal 
             var userData = new Domain.UserData(User.Identity.Name);
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25 && !Settings.CaptchaDisabled;
 
             // abort if model state is invalid
             if (!ModelState.IsValid)

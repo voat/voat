@@ -120,8 +120,8 @@ namespace Voat.Controllers
             }
             else
             {
-                var userData = new UserData(user.UserName);
-                userData.PreLoad();
+                //var userData = new UserData(user.UserName);
+                //userData.PreLoad();
 
                 // when token is verified correctly, clear the access failed count used for lockout
                 await UserManager.ResetAccessFailedCountAsync(user.Id);

@@ -37,7 +37,7 @@ namespace Voat.Controllers
 
             return View();
         }
-        public ActionResult Comments(string userName, int? page = null)
+        public async  Task<ActionResult> Comments(string userName, int? page = null)
         {
             if (page.HasValue && page.Value < 0)
             {
@@ -51,14 +51,17 @@ namespace Voat.Controllers
             }
             ViewBag.UserName = originalUserName;
 
-            var userComments = from c in _db.Comments.OrderByDescending(c => c.CreationDate)
-                                where c.UserName.Equals(originalUserName)
-                                && !c.IsAnonymized
-                                && !c.IsDeleted
-                                //&& !c.Submission.Subverse1.IsAnonymized //Don't think we need this condition
-                                select c;
+            var q = new QueryUserComments(userName, new Data.SearchOptions() { Page = page ?? 0, Sort = Domain.Models.SortAlgorithm.New});
+            var comments = await q.ExecuteAsync();
 
-            PaginatedList<Comment> paginatedUserComments = new PaginatedList<Comment>(userComments, page ?? 0, PAGE_SIZE);
+            //var userComments = from c in _db.Comments.OrderByDescending(c => c.CreationDate)
+            //                    where c.UserName.Equals(originalUserName)
+            //                    && !c.IsAnonymized
+            //                    && !c.IsDeleted
+            //                    //&& !c.Submission.Subverse1.IsAnonymized //Don't think we need this condition
+            //                    select c;
+
+            PaginatedList<Domain.Models.SubmissionComment> paginatedUserComments = new PaginatedList<Domain.Models.SubmissionComment>(comments, page ?? 0, PAGE_SIZE, -1);
 
             return View(paginatedUserComments);
         }

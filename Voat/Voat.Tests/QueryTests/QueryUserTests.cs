@@ -15,8 +15,6 @@ namespace Voat.Tests.QueryTests
     public class QueryUserTests 
     {
         
-      
-
         [TestMethod, TestCategory("UserData"), ExpectedException(typeof(ArgumentException))]
         public void UserData_ValidateUser_Constructor_1()
         {
@@ -71,12 +69,35 @@ namespace Voat.Tests.QueryTests
             var x = await cmd.Execute();
 
             userData = new Domain.UserData(subUserName);
-            //userData = new Domain.UserData(subUserName);
+
             Assert.AreEqual(1, userData.Subscriptions.Count());
             Assert.AreEqual("unit", userData.Subscriptions.First());
 
-
         }
-        
+        [TestMethod]
+        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Comment"), TestCategory("UserData")]
+        public void QueryUserComments()
+        {
+            Assert.Inconclusive("TODO");
+        }
+        [TestMethod]
+        [TestCategory("Query"), TestCategory("Query.Submission"), TestCategory("Submission"), TestCategory("UserData")]
+        public void QueryUserSubmissions()
+        {
+            Assert.Inconclusive("TODO");
+        }
+
+        [TestMethod]
+        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon"), TestCategory("Comment"), TestCategory("Comment.Segment")]
+        public void QueryUserComments_Anon()
+        {
+            Assert.Inconclusive();
+        }
+        [TestMethod]
+        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon"), TestCategory("Comment"), TestCategory("Comment.Segment")]
+        public void QueryUserSubmissions_Anon()
+        {
+            Assert.Inconclusive();
+        }
     }
 }

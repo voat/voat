@@ -24,7 +24,7 @@ namespace Voat.Tests.QueryTests
             _unitSubmissionID = VoatDataInitializer.BuildCommentTree("unit", "Build Comment Tree", _rootCount, _nestedCount, _recurseCount);
         }
         [TestMethod]
-        [TestCategory("Query"), TestCategory("Query.Comment")]
+        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Comment"), TestCategory("Comment.Segment")]
         public void GetCommentSegmentWithContext()
         {
 
@@ -50,14 +50,14 @@ namespace Voat.Tests.QueryTests
             {
                 Assert.IsNotNull(comment, "looping comment was null");
                 Assert.IsTrue(comment.Content.EndsWith(expectedPath), $"Expected path to end with {expectedPath}, but got {comment.Content}");
-                comment = comment.Children != null ? comment.Children.Comments.First() : null;
+                comment = comment.Children != null ? comment.Children.Comments.FirstOrDefault() : null;
                 expectedPath += ":1";
             }
 
 
         }
         [TestMethod]
-        [TestCategory("Query"), TestCategory("Query.Comment")]
+        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Comment"), TestCategory("Comment.Segment")]
         public void EnsureParentIDNulledCorrectly()
         {
 
@@ -74,7 +74,7 @@ namespace Voat.Tests.QueryTests
         }
 
         [TestMethod]
-        [TestCategory("Query"), TestCategory("Query.Comment")]
+        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Comment"), TestCategory("Comment.Segment")]
         public async Task Test_CommentTreeLoading()
         {
             TestHelper.SetPrincipal("TestUser1");
@@ -103,7 +103,7 @@ namespace Voat.Tests.QueryTests
                     {
                         Assert.IsNotNull(child, "Comment Null");
                         Assert.AreEqual(_unitSubmissionID, c.SubmissionID, "Submission of Comment doesn't match tree");
-                        if (child.Children != null)
+                        if (child.Children != null && child.Children.TotalCount > 0)
                         {
                             testSegment(child.Children, expectedCount);
                         }

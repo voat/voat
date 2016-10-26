@@ -30,7 +30,7 @@ namespace Voat.Domain.Models
         /// Contains the child comments for this comment.
         /// </summary>
         [JsonProperty(Order = 500)]//put on bottom of output
-        public CommentSegment Children { get; set; }
+        public CommentSegment Children { get; set; } = new CommentSegment();
 
         public void AddChildComment(NestedComment comment)
         {

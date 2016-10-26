@@ -14,7 +14,7 @@ namespace Voat.Domain.Query
         private string _userToRetrieve;
 
         public QueryUserInformation(string userToRetrieve)
-            : this(userToRetrieve, new CachePolicy(TimeSpan.FromMinutes(10)))
+            : this(userToRetrieve, new CachePolicy(TimeSpan.FromMinutes(15)))
         {
         }
 
@@ -44,7 +44,7 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var data = db.GetUserInfo(_userToRetrieve);
+                var data = await db.GetUserInfo(_userToRetrieve);
                 if (data != null)
                 {
                     if (data.Badges != null)

@@ -82,7 +82,7 @@ namespace Voat.Domain.Query
             else
             {
                 CacheHit = true;
-                return await GetFreshData();
+                return await GetFreshData().ConfigureAwait(false);
             }
         }
         
@@ -95,7 +95,7 @@ namespace Voat.Domain.Query
         private async Task<T> GetFreshData()
         {
             CacheHit = false;
-            T data = await GetData();
+            T data = await GetData().ConfigureAwait(false);
             return data;
         }
     }

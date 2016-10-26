@@ -36,9 +36,10 @@
                 { "CommentToHighlight", ViewBag.CommentToHighLight }
             })
         }
-        if (Model.TotalCount > Model.EndingIndex + 1)
+        if (Model.HasMore)
         {
             int remaining = Model.TotalCount - (Model.EndingIndex + 1);
+            System.Diagnostics.Debug.Assert(remaining == Model.RemainingCount, "Comment Segment Remaining Count invalid");
             if (remaining > 0)
             {
                 <div>

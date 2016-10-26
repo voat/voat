@@ -35,13 +35,15 @@ using Voat.Utilities;
 
 namespace Voat.Data
 {
-    //TODO: This needs to be abstracted into Submission search and Comment search
     /// <summary>
-    /// Provide any of these Query string key/value pairs at any endpoint that supports the SearchOptions parsing to manipulate search query. WARNING: These features are not fully supported yet.
+    /// Provide these Query string key/value pairs at endpoints that support the SearchOptions parsing to manipulate search query. 
     /// </summary>
     public class SearchOptions
     {
         public const int MAX_COUNT = 50;
+        public const int DEFAULT_COUNT = 25;
+        //Implementing this to combat abuse via API, like page=5837 and other cool things
+        public const int MAX_PAGECOUNT = 20; // 20 pages
 
         private SortAlgorithm _sort = SortAlgorithm.Rank;
         private SortDirection _sortDirection = SortDirection.Default;
@@ -49,7 +51,7 @@ namespace Voat.Data
 
         private DateTime? _startDate = null;
         private DateTime? _endDate = null;
-        private int _count = 25;
+        private int _count = DEFAULT_COUNT;
         private int _currentIndex = 0;
         private int _page = 0;
         private string _phrase = null;
@@ -160,24 +162,27 @@ namespace Voat.Data
                         }
                         break;
 
-                    //No longer supported
-                    //case "enddate":
-                    //case "dateend":
-                    //    DateTime endDate;
-                    //    if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out endDate)) {
-                    //        this._endDate = endDate;
-                    //    }
-                    //    break;
+                        //No longer supported
+                        //case "enddate":
+                        //case "dateend":
+                        //    DateTime endDate;
+                        //    if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out endDate)) {
+                        //        this._endDate = endDate;
+                        //    }
+                        //    break;
+
+                        //No longer supported
                     case "count":
-                        int count = 0;
-                        if (Int32.TryParse(value, out count))
-                        {
-                            this.Count = count;
-                        }
+                        //int count = 0;
+                        //if (Int32.TryParse(value, out count))
+                        //{
+                        //    this.Count = count;
+                        //}
                         break;
 
+                    //No longer supported
                     case "index":
-                    case "currentindex":
+                    //case "currentindex":
                         ////UNDONE: Don't think we want consumers controlling indexing, forceing all paging through the page querystring
                         //    int index = 0;
                         //    if (Int32.TryParse(value, out index))
@@ -384,9 +389,13 @@ namespace Voat.Data
 
             set
             {
-                if (value <= 0)
+                if (value < 0)
                 {
                     throw new VoatValidationException("Page must be greater than zero. Paging starts on page 1, not page 0.");
+                }
+                else if (value >= MAX_PAGECOUNT)
+                {
+                    throw new VoatValidationException($"Page is limited to max count of {MAX_PAGECOUNT - 1}");
                 }
                 else
                 {
@@ -436,7 +445,7 @@ namespace Voat.Data
             if (Page > 0)
             {
                 //adjust friendly page count to zero based
-                _currentIndex = (Count * (Page - 1)) + (Page - 1);
+                _currentIndex = (Count * (Page)) + (Page);
             }
         }
 
@@ -463,15 +472,15 @@ namespace Voat.Data
             {
                 keyValues.Add("page", Page.ToString());
             }
-            if (Index != 0)
-            {
-                keyValues.Add("index", Index.ToString());
-            }
+            //if (Index != 0)
+            //{
+            //    keyValues.Add("index", Index.ToString());
+            //}
             if (Sort != SortAlgorithm.Rank)
             {
                 keyValues.Add("sort", Sort.ToString());
             }
-            if (Count != 25)
+            if (Count != DEFAULT_COUNT)
             {
                 keyValues.Add("count", Count.ToString());
             }
@@ -480,7 +489,8 @@ namespace Voat.Data
                 keyValues.Add("phrase", Phrase);
             }
 
-            return keyValues.OrderBy(x => x.Key).Concat(_unknownPairs.OrderBy(x => x.Key)).Aggregate("", (x, y) => String.Join(String.IsNullOrEmpty(x) ? "" : "&", x, String.Format("{0}={1}", y.Key, y.Value)));
+            var value = keyValues.OrderBy(x => x.Key).Concat(_unknownPairs.OrderBy(x => x.Key)).Aggregate("", (x, y) => String.Join(String.IsNullOrEmpty(x) ? "" : "&", x, String.Format("{0}={1}", y.Key, y.Value)));
+            return value;
         }
     }
 }

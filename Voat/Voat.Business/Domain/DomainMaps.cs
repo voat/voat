@@ -273,6 +273,7 @@ namespace Voat.Domain
                 result.ID = treeComment.ID;
                 result.ParentID = treeComment.ParentID;
                 result.ChildCount = treeComment.ChildCount.Value;
+                result.Children.TotalCount = result.ChildCount;
                 result.Content = treeComment.Content;
                 result.FormattedContent = treeComment.FormattedContent;
                 result.UserName = treeComment.UserName;

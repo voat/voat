@@ -1044,7 +1044,7 @@ namespace Voat.Data
 
         #region Comments
 
-        public IEnumerable<Domain.Models.Comment> GetUserComments(string userName, SearchOptions options)
+        public IEnumerable<Domain.Models.SubmissionComment> GetUserComments(string userName, SearchOptions options)
         {
             if (String.IsNullOrEmpty(userName))
             {
@@ -1061,8 +1061,14 @@ namespace Voat.Data
                             !comment.IsAnonymized
                             && !comment.IsDeleted
                             && (comment.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
-                         select new Domain.Models.Comment()
+                         select new Domain.Models.SubmissionComment()
                          {
+                             Submission = new SubmissionSummary() {
+                                 Title = submission.Title,
+                                 IsDeleted = submission.IsDeleted,
+                                 IsAnonymized = submission.IsAnonymized,
+                                 UserName = (submission.IsAnonymized || submission.IsDeleted ? "" : submission.UserName)
+                             },
                              ID = comment.ID,
                              ParentID = comment.ParentID,
                              Content = comment.Content,
@@ -1085,15 +1091,22 @@ namespace Voat.Data
             return results;
         }
 
-        public IEnumerable<Domain.Models.Comment> GetComments(string subverse, SearchOptions options)
+        public IEnumerable<Domain.Models.SubmissionComment> GetComments(string subverse, SearchOptions options)
         {
             var query = (from comment in _db.Comments
                          join submission in _db.Submissions on comment.SubmissionID equals submission.ID
                          where
                          !comment.IsDeleted
                          && (submission.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || String.IsNullOrEmpty(subverse))
-                         select new Domain.Models.Comment()
+                         select new Domain.Models.SubmissionComment()
                          {
+                             Submission = new SubmissionSummary()
+                             {
+                                 Title = submission.Title,
+                                 IsDeleted = submission.IsDeleted,
+                                 IsAnonymized = submission.IsAnonymized,
+                                 UserName = (submission.IsAnonymized || submission.IsDeleted ? "" : submission.UserName)
+                             },
                              ID = comment.ID,
                              ParentID = comment.ParentID,
                              Content = comment.Content,
@@ -2225,7 +2238,7 @@ namespace Voat.Data
             return blocked;
         }
 
-        public UserInformation GetUserInfo(string userName)
+        public async Task<UserInformation> GetUserInfo(string userName)
         {
             if (String.IsNullOrWhiteSpace(userName) || userName.TrimSafe().IsEqual("deleted"))
             {
@@ -2254,12 +2267,16 @@ namespace Voat.Data
                                     Task<Score>.Factory.StartNew(() => UserVotingBehavior(userName, ContentType.Comment)),
             };
 
-            var pq = new QueryUserPreferences(userName);
-            var userPreferences = pq.Execute();
+
+            //var pq = new QueryUserPreferences(userName);
+            //var userPreferences = await pq.ExecuteAsync();
+            var userPreferences = await GetUserPreferences(userName);
+
             userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
             userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, true, !String.IsNullOrEmpty(userPreferences.Avatar));
 
-            Task.WaitAll(tasks);
+            //Task.WaitAll(tasks);
+            await Task.WhenAll(tasks);
 
             userInfo.CommentPoints = tasks[0].Result;
             userInfo.SubmissionPoints = tasks[1].Result;
@@ -2302,11 +2319,11 @@ namespace Voat.Data
             return userInfo;
         }
 
-        public Models.UserPreference GetUserPreferences(string userName)
+        public async Task<Models.UserPreference> GetUserPreferences(string userName)
         {
             var query = _db.UserPreferences.Where(x => (x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-            var results = query.FirstOrDefault();
+            var results = await query.FirstOrDefaultAsync();
 
             return results;
         }
@@ -3223,7 +3240,7 @@ namespace Voat.Data
             return query;
         }
 
-        private static IQueryable<Domain.Models.Comment> ApplyCommentSearch(SearchOptions options, IQueryable<Domain.Models.Comment> query)
+        private static IQueryable<Domain.Models.SubmissionComment> ApplyCommentSearch(SearchOptions options, IQueryable<Domain.Models.SubmissionComment> query)
         {
             if (!String.IsNullOrEmpty(options.Phrase))
             {

@@ -183,6 +183,7 @@
     <Compile Include="Domain\Models\API\v1\UserMessage.cs" />
     <Compile Include="Domain\Models\Comment\CommentSegment.cs" />
     <Compile Include="Domain\Models\Comment\NestedComment.cs" />
+    <Compile Include="Domain\Models\Comment\SubmissionComment.cs" />
     <Compile Include="Domain\Models\FriendlyEnumNames.cs" />
     <Compile Include="Domain\Models\Message.cs" />
     <Compile Include="Domain\Models\MessageCounts.cs" />
@@ -214,6 +215,7 @@
     <Compile Include="Domain\Query\QueryTopSubscribedSubverses.cs" />
     <Compile Include="Domain\Query\QueryTopViewedSubmissions.cs" />
     <Compile Include="Domain\Query\QueryUserApiKeys.cs" />
+    <Compile Include="Domain\Query\QueryUserComments.cs" />
     <Compile Include="Domain\Query\QueryUserBlocks.cs" />
     <Compile Include="Domain\Query\QueryCommentSegment.cs" />
     <Compile Include="Domain\Query\QueryCommentTree.cs" />

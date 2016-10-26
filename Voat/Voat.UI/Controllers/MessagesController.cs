@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using System.Web.Routing;
+using Voat.Configuration;
 
 namespace Voat.Controllers
 {
@@ -195,7 +196,7 @@ namespace Voat.Controllers
             var model = new NewMessageViewModel() { Recipient = recipient, Subject = subject };
 
             var userData = new UserData(User.Identity.Name);
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 100;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 100 && !Settings.CaptchaDisabled;
 
             if (!string.IsNullOrEmpty(subverse))
             {
@@ -223,7 +224,7 @@ namespace Voat.Controllers
 
             //set this incase invalid submittal 
             var userData = new UserData(User.Identity.Name);
-            message.RequireCaptcha = userData.Information.CommentPoints.Sum < 100;
+            message.RequireCaptcha = userData.Information.CommentPoints.Sum < 100 && !Settings.CaptchaDisabled;
 
             if (!ModelState.IsValid)
             {
