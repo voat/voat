@@ -56,7 +56,7 @@ namespace Voat.Domain.Query
         {
             using (var repo = new Repository())
             {
-                var data = repo.GetUserComments(this._userName, this.SearchOptions);
+                var data = await repo.GetUserComments(this._userName, this.SearchOptions);
                 return data;
             }
         }
@@ -91,7 +91,7 @@ namespace Voat.Domain.Query
         {
             using (var repo = new Repository())
             {
-                var data = repo.GetUserSubmissions(null, this._userName, this.SearchOptions);
+                var data = await repo.GetUserSubmissions(null, this._userName, this.SearchOptions);
                 return data.Map();
             }
         }

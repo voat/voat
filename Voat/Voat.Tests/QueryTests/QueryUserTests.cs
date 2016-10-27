@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Data;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Tests.Repository;
@@ -76,26 +77,45 @@ namespace Voat.Tests.QueryTests
         }
         [TestMethod]
         [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Comment"), TestCategory("UserData")]
-        public void QueryUserComments()
+        public async Task QueryUserComments()
         {
-            Assert.Inconclusive("TODO");
+            var userName = "UnitTestUser21";
+            TestHelper.SetPrincipal(userName);
+            var cmd = new CreateCommentCommand(1, null, "My pillow looks like jello");
+            var x = await cmd.Execute();
+            Assert.AreEqual(Status.Success, x.Status);
+
+            var q = new QueryUserComments(userName, SearchOptions.Default);
+            var r = await q.ExecuteAsync();
+            Assert.AreEqual(true, r.Any(w => w.Content == "My pillow looks like jello"));
+
         }
         [TestMethod]
+        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon"), TestCategory("Comment"), TestCategory("Comment.Segment")]
+        public async Task QueryUserComments_Anon()
+        {
+            var userName = "UnitTestUser22";
+            TestHelper.SetPrincipal(userName);
+            var cmd = new CreateCommentCommand(2, null, "You can never know I said this: Bollocks");
+            var x = await cmd.Execute();
+            Assert.AreEqual(Status.Success, x.Status);
+
+            var q = new QueryUserComments(userName, SearchOptions.Default);
+            var r = await q.ExecuteAsync();
+            Assert.AreEqual(false, r.Any(w => w.Content == "You can never know I said this: Bollocks"));
+        }
+
+        [TestMethod]
         [TestCategory("Query"), TestCategory("Query.Submission"), TestCategory("Submission"), TestCategory("UserData")]
-        public void QueryUserSubmissions()
+        public async Task QueryUserSubmissions()
         {
             Assert.Inconclusive("TODO");
         }
 
+
         [TestMethod]
         [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon"), TestCategory("Comment"), TestCategory("Comment.Segment")]
-        public void QueryUserComments_Anon()
-        {
-            Assert.Inconclusive();
-        }
-        [TestMethod]
-        [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon"), TestCategory("Comment"), TestCategory("Comment.Segment")]
-        public void QueryUserSubmissions_Anon()
+        public async Task QueryUserSubmissions_Anon()
         {
             Assert.Inconclusive();
         }

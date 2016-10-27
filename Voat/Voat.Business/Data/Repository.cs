@@ -670,7 +670,7 @@ namespace Voat.Data
             return record;
         }
 
-        public IEnumerable<Models.Submission> GetUserSubmissions(string subverse, string userName, SearchOptions options)
+        public async Task<IEnumerable<Models.Submission>> GetUserSubmissions(string subverse, string userName, SearchOptions options)
         {
             //This is a near copy of GetSubmissions<T>
             if (String.IsNullOrEmpty(userName))
@@ -698,7 +698,7 @@ namespace Voat.Data
             query = ApplySubmissionSearch(options, query);
 
             //execute query
-            var results = query.Select(Selectors.SecureSubmission).ToList();
+            var results = (await query.ToListAsync().ConfigureAwait(false)).Select(Selectors.SecureSubmission);
 
             return results;
         }
@@ -1044,7 +1044,7 @@ namespace Voat.Data
 
         #region Comments
 
-        public IEnumerable<Domain.Models.SubmissionComment> GetUserComments(string userName, SearchOptions options)
+        public async Task<IEnumerable<Domain.Models.SubmissionComment>> GetUserComments(string userName, SearchOptions options)
         {
             if (String.IsNullOrEmpty(userName))
             {
@@ -1086,7 +1086,7 @@ namespace Voat.Data
                          });
 
             query = ApplyCommentSearch(options, query);
-            var results = query.ToList();
+            var results = await query.ToListAsync().ConfigureAwait(false);
 
             return results;
         }
