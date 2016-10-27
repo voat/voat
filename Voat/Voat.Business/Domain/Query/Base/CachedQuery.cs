@@ -52,7 +52,6 @@ namespace Voat.Domain.Query
         /// <summary>
         /// Appends type information to CacheKey. This should not be overriden if possible.
         /// </summary>
-        /// <param name="useHashedKey"></param>
         /// <returns></returns>
         protected virtual string FullCacheKey
         {
