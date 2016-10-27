@@ -109,7 +109,16 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query"), TestCategory("Query.Submission"), TestCategory("Submission"), TestCategory("UserData")]
         public async Task QueryUserSubmissions()
         {
-            Assert.Inconclusive("TODO");
+            var userName = "UnitTestUser23";
+            var content = "@Fuzzy made fun of my if statements. Says my if statements look *off* and that they aren't as good as other peoples if statements. :(";
+            TestHelper.SetPrincipal(userName);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This broke my heart", Content = content });
+            var x = await cmd.Execute();
+            Assert.AreEqual(Status.Success, x.Status);
+
+            var q = new QueryUserSubmissions(userName, SearchOptions.Default);
+            var r = await q.ExecuteAsync();
+            Assert.AreEqual(true, r.Any(w => w.Content == content));
         }
 
 
@@ -117,7 +126,16 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon"), TestCategory("Comment"), TestCategory("Comment.Segment")]
         public async Task QueryUserSubmissions_Anon()
         {
-            Assert.Inconclusive();
+            var userName = "UnitTestUser24";
+            var content = "I have emotional issues whenever I see curly braces";
+            TestHelper.SetPrincipal(userName);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is my biggest secret", Content = content });
+            var x = await cmd.Execute();
+            Assert.AreEqual(Status.Success, x.Status);
+
+            var q = new QueryUserSubmissions(userName, SearchOptions.Default);
+            var r = await q.ExecuteAsync();
+            Assert.AreEqual(false, r.Any(w => w.Content == content));
         }
     }
 }

@@ -1517,12 +1517,21 @@ namespace Voat.Controllers
 
         // POST: block a subverse
         [Authorize]
-        public JsonResult BlockSubverse(string subverseName)
+        public async Task<JsonResult> BlockSubverse(string subverseName)
         {
             var loggedInUser = User.Identity.Name;
+            var cmd = new BlockCommand(Domain.Models.DomainType.Subverse, subverseName);
+            var response = await cmd.Execute();
 
-            Voat.Utilities.UserHelper.BlockSubverse(loggedInUser, subverseName);
-            return Json("Subverse block request was successful.", JsonRequestBehavior.AllowGet);
+            if (response.Success)
+            {
+                return Json("Subverse block request was successful.", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                Response.StatusCode = 400;
+                return Json(response.Message, JsonRequestBehavior.AllowGet);
+            }
         }
 
         [ChildActionOnly]

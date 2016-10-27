@@ -146,6 +146,7 @@
     <Compile Include="Caching\CacheHandlerSection.cs" />
     <Compile Include="Caching\CachingKey.cs" />
     <Compile Include="Caching\CachingTimeSpan.cs" />
+    <Compile Include="Caching\ContextCache.cs" />
     <Compile Include="Caching\ICacheHandler.cs" />
     <Compile Include="Caching\Handlers\MemoryCacheHandler.cs" />
     <Compile Include="Caching\Handlers\NullCacheHandler.cs" />

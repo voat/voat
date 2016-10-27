@@ -37,7 +37,7 @@ namespace Voat.Domain.Query
             }
 
             var taskArray = tasks.ToArray();
-            await Task.WhenAll(taskArray);
+            await Task.WhenAll(taskArray).ConfigureAwait(false);
 
             foreach (var task in taskArray)
             {
@@ -48,7 +48,7 @@ namespace Voat.Domain.Query
         }
         public override IEnumerable<MessageCounts> Execute()
         {
-            Task<IEnumerable<MessageCounts>> t = Task.Run(ExecuteAsync);
+            var t = Task.Run(ExecuteAsync);
             Task.WaitAny(t);
             return t.Result;
         }
@@ -110,7 +110,7 @@ namespace Voat.Domain.Query
             {
                 using (var repo = new Repository())
                 {
-                    counts = await repo.GetMessageCounts(_ownerName, _ownerType, _type, _state);
+                    counts = await repo.GetMessageCounts(_ownerName, _ownerType, _type, _state).ConfigureAwait(false);
                     Context = counts;
                 }
             }

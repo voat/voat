@@ -37,9 +37,10 @@ namespace Voat.Tests.Utils
         public void AvatarPath()
         {
             string username = "username";
+            string avatarFileName = "username.jpg";
             string result = "";
 
-            result = VoatPathHelper.AvatarPath(username, false, true, true);
+            result = VoatPathHelper.AvatarPath(username, avatarFileName, false, true, true);
 
             if (Settings.UseContentDeliveryNetwork)
             {
@@ -50,7 +51,7 @@ namespace Voat.Tests.Utils
                 Assert.AreEqual(String.Format("~/Storage/Avatars/{0}.jpg", username), result, "Condition:1.2");
             }
 
-            result = VoatPathHelper.AvatarPath(username, true, false, true);
+            result = VoatPathHelper.AvatarPath(username, avatarFileName, true, false, true);
             if (Settings.UseContentDeliveryNetwork)
             {
                 Assert.AreEqual(String.Format("//cdn.voat.co/avatars/{0}.jpg", username), result, "Condition:2");
@@ -60,7 +61,7 @@ namespace Voat.Tests.Utils
                 Assert.AreEqual(String.Format("//voat.co/Storage/Avatars/{0}.jpg", username), result, "Condition:2.2");
             }
 
-            result = VoatPathHelper.AvatarPath(username, true, true, true);
+            result = VoatPathHelper.AvatarPath(username, avatarFileName, true, true, true);
             if (Settings.UseContentDeliveryNetwork)
             {
                 Assert.AreEqual(String.Format("https://cdn.voat.co/avatars/{0}.jpg", username), result, "Condition:3");

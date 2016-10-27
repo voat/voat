@@ -179,7 +179,7 @@ namespace Voat.Utilities
             }
             return isMod.Value;
         }
-
+        //[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // check if given user is subscribed to a given subverse
         public static bool IsUserSubverseSubscriber(string userName, string subverse)
         {
@@ -337,15 +337,16 @@ namespace Voat.Utilities
         //preferences get called from views, so this method caches prefs in the context so each call only queries once
         private static UserPreference GetUserPreferences(string userName)
         {
-            var q = new QueryUserPreferences(userName);
-            var d = q.Execute();
-            return d;
+            string key = $"Pref:{userName}".ToLower();
+            var pref = ContextCache.Get<UserPreference>(key);
+            if (pref == null)
+            {
+                var q = new QueryUserPreferences(userName);
+                pref = q.Execute();
+                ContextCache.Set(key, pref);
+            }
+            return pref;
         }
-
-        // check how many votes a user has used in the past 24 hours
-        // TODO: this is executed 25 times for frontpage, needs to be redesigned as follows:
-        // - only call this function if user is attempting to vote
-        // - if voting fails, display modal dialog showing why voting failed (example: too many votes in past 24hrs)
 
         public static int TotalVotesUsedInPast24Hours(string userName)
         {
@@ -896,7 +897,7 @@ namespace Voat.Utilities
                 return submissionDownvotes > submissionUpvotes;
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // block a subverse
         public static void BlockSubverse(string userName, string subverse)
         {
@@ -984,7 +985,6 @@ namespace Voat.Utilities
 
             return clientIpAddress;
         }
-
         public static bool? IsSaved(Domain.Models.ContentType type, int id)
         {
             var identity = System.Threading.Thread.CurrentPrincipal.Identity;

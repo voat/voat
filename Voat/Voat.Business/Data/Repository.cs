@@ -691,7 +691,11 @@ namespace Voat.Data
             subverse = ToCorrectSubverseCasing(subverse);
 
             query = (from x in _db.Submissions
-                     where (x.UserName == userName && !x.IsAnonymized && !x.IsDeleted)
+                     where (
+                        x.UserName == userName 
+                        && !x.IsAnonymized 
+                        && !x.IsDeleted
+                        )
                      && (x.Subverse == subverse || subverse == null)
                      select x);
 
@@ -2273,7 +2277,7 @@ namespace Voat.Data
             //var userPreferences = await GetUserPreferences(userName);
 
             userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
-            userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, true, !String.IsNullOrEmpty(userPreferences.Avatar));
+            userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, userPreferences.Avatar, !String.IsNullOrEmpty(userPreferences.Avatar));
 
             //Task.WaitAll(tasks);
             await Task.WhenAll(tasks);

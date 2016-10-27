@@ -70,8 +70,10 @@ namespace Voat.Utilities
             return String.Format("{0}/Graphics/Badges/{1}", (fullyQualified ? SiteRoot(provideProtocol, false, forceDomain) : "~"), badgeFile);
         }
 
+        //This method is now an abination of everything badly I can think of. It started out like an innocent child but has been so corrupted throughout it's poor
+        //life that what is left serves no purpose. Still, every method has a right to exist.
         //https://cdn.voat.co/avatars/@(userName).jpg
-        public static string AvatarPath(string username, bool fullyQualified = false, bool provideProtocol = false, bool forceResolve = false)
+        public static string AvatarPath(string username, string avatarFileName, bool fullyQualified = false, bool provideProtocol = false, bool forceResolve = false)
         {
             if (String.IsNullOrEmpty(username))
             {
@@ -79,8 +81,7 @@ namespace Voat.Utilities
             }
 
             var avatarUrl = String.Empty;
-            var avatarFileName = UserHelper.GetAvatar(username);
-
+            //var avatarFileName = UserHelper.GetAvatar(username);
             if (forceResolve || !String.IsNullOrEmpty(avatarFileName))
             {
                 avatarFileName = String.IsNullOrEmpty(avatarFileName) ? $"{username}.jpg" : avatarFileName;
