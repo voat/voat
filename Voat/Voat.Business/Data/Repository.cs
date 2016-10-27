@@ -2238,7 +2238,7 @@ namespace Voat.Data
             return blocked;
         }
 
-        public async Task<UserInformation> GetUserInfo(string userName)
+        public async Task<UserInformation> GetUserInformation(string userName)
         {
             if (String.IsNullOrWhiteSpace(userName) || userName.TrimSafe().IsEqual("deleted"))
             {
@@ -2246,7 +2246,7 @@ namespace Voat.Data
             }
 
             var q = new QueryUserRecord(userName);
-            var userRecord = q.Execute();
+            var userRecord = await q.ExecuteAsync();
 
             if (userRecord == null)
             {
@@ -2268,9 +2268,9 @@ namespace Voat.Data
             };
 
 
-            //var pq = new QueryUserPreferences(userName);
-            //var userPreferences = await pq.ExecuteAsync();
-            var userPreferences = await GetUserPreferences(userName);
+            var pq = new QueryUserPreferences(userName);
+            var userPreferences = await pq.ExecuteAsync();
+            //var userPreferences = await GetUserPreferences(userName);
 
             userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
             userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, true, !String.IsNullOrEmpty(userPreferences.Avatar));

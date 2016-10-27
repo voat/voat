@@ -44,7 +44,7 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var data = await db.GetUserInfo(_userToRetrieve);
+                var data = await db.GetUserInformation(_userToRetrieve);
                 if (data != null)
                 {
                     if (data.Badges != null)

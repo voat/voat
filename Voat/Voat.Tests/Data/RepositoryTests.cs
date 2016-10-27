@@ -179,7 +179,7 @@ namespace Voat.Tests.Repository
         }
 
         [TestMethod]
-        [TestCategory("Repository")]
+        [TestCategory("Repository"), TestCategory("User"), TestCategory("User.Preferences")]
         public async Task GetUserPrefernces()
         {
             using (var db = new Voat.Data.Repository())
@@ -193,12 +193,12 @@ namespace Voat.Tests.Repository
         }
 
         [TestMethod]
-        [TestCategory("Repository")]
-        public void GetUserPrefernces_UserNotExists()
+        [TestCategory("Repository"), TestCategory("User"), TestCategory("User.Preferences")]
+        public async Task GetUserPrefernces_UserNotExists()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var p = db.GetUserPreferences("asrtastarstarstarstart343");
+                var p = await db.GetUserPreferences("asrtastarstarstarstart343");
                 Assert.IsTrue(p == null);
             }
         }

@@ -108,12 +108,13 @@ namespace Voat.Tests.QueryTests
                             testSegment(child.Children, expectedCount);
                         }
                     }
-
-                    //Test individual segment and ensure it matches current segment
-                    var q2 = new QueryCommentSegment(_unitSubmissionID, segment.Comments.First().ParentID, null, CommentSortAlgorithm.New); //all children should have same parent
-                    var segment2 = q2.Execute();
-                    CompareSegments(segment, segment2);
-
+                    if (segment.Comments.Count > 0)
+                    {
+                        //Test individual segment and ensure it matches current segment
+                        var q2 = new QueryCommentSegment(_unitSubmissionID, segment.Comments.First().ParentID, null, CommentSortAlgorithm.New); //all children should have same parent
+                        var segment2 = q2.Execute();
+                        CompareSegments(segment, segment2);
+                    }
 
                 });
                 testSegment(c.Children, _nestedCount);
