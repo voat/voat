@@ -93,7 +93,10 @@ namespace Voat.Controllers
             return await Private(page);
         }
 
-
+        private int SetPage(int? page = null)
+        {
+            return (page.HasValue && page.Value >= 0 ? page.Value : 0);
+        }
         public async Task<ActionResult> Private(int? page = null)
         {
 
@@ -101,7 +104,7 @@ namespace Voat.Controllers
             ViewBag.Title = "Inbox";
 
             var q = new QueryMessages(MessageTypeFlag.Private, MessageState.All, false);
-            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value - 1 : 0);
+            q.PageNumber = SetPage(page);
 
             var result = await q.ExecuteAsync();
 
@@ -118,7 +121,7 @@ namespace Voat.Controllers
             ViewBag.Title = "Sent";
 
             var q = new QueryMessages(MessageTypeFlag.Sent, MessageState.All, true);
-            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value - 1 : 0);
+            q.PageNumber = SetPage(page);
             var result = await q.ExecuteAsync();
 
             var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
@@ -140,7 +143,8 @@ namespace Voat.Controllers
             }
 
             var q = new QueryMessages(contentType, MessageState.All, true);
-            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value - 1 : 0);
+            q.PageNumber = SetPage(page);
+
             var result = await q.ExecuteAsync();
 
             var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
@@ -162,7 +166,7 @@ namespace Voat.Controllers
             }
 
             var q = new QueryMessages(contentType, MessageState.All, true);
-            q.PageNumber = (page.HasValue && page.Value >= 0 ? page.Value - 1 : 0);
+            q.PageNumber = SetPage(page);
 
             var result = await q.ExecuteAsync();
             var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
@@ -385,7 +389,7 @@ namespace Voat.Controllers
             }
         }
 
-        public async Task<ActionResult> SubverseIndex(string subverse, MessageTypeFlag type, MessageState? state = null)
+        public async Task<ActionResult> SubverseIndex(string subverse, MessageTypeFlag type, MessageState? state = null, int? page = null)
         {
             if (!(type == MessageTypeFlag.Private || type == MessageTypeFlag.Sent))
             {
@@ -409,6 +413,7 @@ namespace Voat.Controllers
             ViewBag.Title = string.Format("v/{0} {1}", sub.Name, (type == MessageTypeFlag.Sent ? "Sent" : "Inbox"));
 
             var q = new QueryMessages(sub.Name, IdentityType.Subverse, type, MessageState.All, false);
+            q.PageNumber = SetPage(page);
             var result = await q.ExecuteAsync();
 
             var pagedList = FakePaging(result, q.PageNumber, q.PageCount);

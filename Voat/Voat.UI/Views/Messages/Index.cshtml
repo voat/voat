@@ -219,6 +219,6 @@
     </div>
     @if (Model.PageCount > 1)
     {
-        @Html.PagedListPager(Model, page => Url.Action((string)Request.RequestContext.RouteData.Values["action"], new { page }), VoatPagerOptions.PagedListRenderOptions())
+        @Html.PagedListPager(Model, page => Url.Action((string)Request.RequestContext.RouteData.Values["action"], new { page = (page - 1) }), VoatPagerOptions.PagedListRenderOptions())
     }
 </div>
