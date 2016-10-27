@@ -62,7 +62,7 @@ else
     {
         <div id="header-account">
             <div class="logged-out">
-                <span class="user">want to join? <a href="#" onclick="mustLogin();" class="login-required" tabindex="1">login</a> or <a href="/account/register" tabindex="1">register</a> in seconds</span>
+                <span class="user">want to join? <a href="/account/login" onclick="mustLogin(); return false;" class="login-required" tabindex="1">login</a> or <a href="/account/register" tabindex="1">register</a> in seconds</span>
             </div>
         </div>
     }
@@ -70,7 +70,7 @@ else
     {
         <div id="header-account">
             <div class="logged-out">
-                <span class="user" onclick="mustLogin();"><a href="#" class="login-required" tabindex="1">login or register</a></span>
+                <span class="user" onclick="mustLogin(); return false;"><a href="/account/login" class="login-required" tabindex="1">login or register</a></span>
             </div>
         </div>
     }
