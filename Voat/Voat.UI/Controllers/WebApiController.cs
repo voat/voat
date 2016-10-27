@@ -416,12 +416,7 @@ namespace Voat.Controllers
         public ApiUserInfo UserInfo(string userName)
         {
 
-            if (userName != "deleted" && !UserHelper.UserExists(userName))
-            {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
-            }
-
-            if (userName == "deleted")
+            if (String.IsNullOrWhiteSpace(userName) || userName == "deleted" || (userName != "deleted" && !UserHelper.UserExists(userName)))
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
