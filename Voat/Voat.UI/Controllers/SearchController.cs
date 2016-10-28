@@ -33,8 +33,11 @@ namespace Voat.Controllers
         [PreventSpam]
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
-            
-            if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            if (q == null || q.Length < 3)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             //sanitize
             q = q.Trim();

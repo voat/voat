@@ -178,5 +178,9 @@ namespace Voat.Caching
         {
             return $"Reports:{type.ToString()}:{userName}";
         }
+        public static string DomainSearch(string domain, int page, string sort)
+        {
+            return $"Domain:{domain}:{sort}:page{page}";
+        }
     }
 }

@@ -75,6 +75,11 @@ namespace Voat.RulesEngine
         PostSubmission = RuleAction.Create | RuleArea.Submission,
 
         /// <summary>
+        /// Applies to the editing of existing submissions
+        /// </summary>
+        EditSubmission = RuleAction.Edit | RuleArea.Submission,
+
+        /// <summary>
         /// Applies to the posting of new submissions
         /// </summary>
         PostMessage = RuleAction.Create | RuleArea.Message,
