@@ -995,26 +995,31 @@ IFrameEmbedderExpando.prototype.constructor = IFrameEmbedderExpando;
 
 /* YouTube */
 var YouTubeExpando = function (options) {
-    IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11}(?:[?&]t=(?:\d+[hms]){1,3})?)/i, options);
+    IFrameEmbedderExpando.call(this, /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11}(?:[?&]t=(?:(?:\d+[hms]){1,3}|\d+))?)/i, options);
     this.getSrcUrl = function (id, fun) {
-        var match = id.match(/([^?&]+)(?:[?&]t=((?:\d+[hms]){1,3}))?/),
+        var match = id.match(/([^?&]+)(?:[?&]t=((?:(?:\d+[hms]){1,3}|\d+)))?/),
             start = "", time, seconds = 0;
         id = match[1];
         if(typeof match[2] !== "undefined") {
             start = "?start=";
-            time = match[2].match(/(\d+)h/);
+            time = match[2].match(/^(\d+)$/);
             if (time !== null) {
-                seconds += parseInt(time[1], 10) * 60 * 60;
+                start += parseInt(time[1], 10);
+            } else {
+                time = match[2].match(/(\d+)h/);
+                if (time !== null) {
+                    seconds += parseInt(time[1], 10) * 60 * 60;
+                }
+                time = match[2].match(/(\d+)m/);
+                if (time !== null) {
+                    seconds += parseInt(time[1], 10) * 60;
+                }
+                time = match[2].match(/(\d+)s/);
+                if (time !== null) {
+                    seconds += parseInt(time[1], 10);
+                }
+                start += seconds;
             }
-            time = match[2].match(/(\d+)m/);
-            if (time !== null) {
-                seconds += parseInt(time[1], 10) * 60;
-            }
-            time = match[2].match(/(\d+)s/);
-            if (time !== null) {
-                seconds += parseInt(time[1], 10);
-            }
-            start += seconds;
         }
         fun('//www.youtube.com/embed/' + id + start);
     };
