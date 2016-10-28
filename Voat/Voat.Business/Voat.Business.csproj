@@ -268,8 +268,10 @@
     <Compile Include="Rules\Global\DerpyGuyRule.cs" />
     <Compile Include="Rules\Global\GlobalBanRule.cs" />
     <Compile Include="Rules\Global\RuntimeStateReadOnlyRule.cs" />
+    <Compile Include="Rules\Posting\Base\SubmissionBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\EditCommentRule.cs" />
     <Compile Include="Rules\Posting\EditCommentBannedDomainRule.cs" />
+    <Compile Include="Rules\Posting\EditSubmissionBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\PostCommentBannedRule.cs" />
     <Compile Include="Rules\Posting\PostCommentCCPRule.cs" />
     <Compile Include="Rules\Posting\PostCommentRule.cs" />
