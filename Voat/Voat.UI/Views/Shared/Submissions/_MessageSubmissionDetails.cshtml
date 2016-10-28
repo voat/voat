@@ -33,7 +33,14 @@
 
         <div class="entry unvoted">
             <p class="title">
-                <span id="linkflair" class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
+                @if (Model.FlairLabel != null && Model.FlairCss != null)
+                {
+                    <span id="linkflair" class="flair linkflairlabel @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
+                }
+                else
+                {
+                    <span id="linkflair" class="" title=""></span>
+                }
                 <a class="title may-blank " href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID)" tabindex="1" title="@Model.Title">@Model.Title</a>&#32;
                 <span class="domain">(<a href="/v/@Model.Subverse">v/@Model.Subverse</a>)</span>
             </p>

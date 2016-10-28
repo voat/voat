@@ -2155,10 +2155,6 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 /* Flairs */
 
-.flair {
-    display: none;
-}
-
 .linkflairlabel {
     display: inline-block;
     font-size: 10px;
