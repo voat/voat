@@ -27,7 +27,6 @@ namespace Voat.Utilities
         {
             if (!String.IsNullOrEmpty(contentToEvaluate))
             {
-                //TODO: Change this to Query
                 Subverse s = null;
                 if (!String.IsNullOrEmpty(subverse))
                 {
@@ -40,7 +39,10 @@ namespace Voat.Utilities
                     foreach (Match match in matches)
                     {
                         string domain = match.Groups["domain"].Value.ToLower();
-                        domains.Add(domain);
+                        if (!String.IsNullOrWhiteSpace(domain) && !domains.Contains(domain))
+                        {
+                            domains.Add(domain);
+                        }
                     }
                     if (domains.Count > 0)
                     {
@@ -57,13 +59,17 @@ namespace Voat.Utilities
 
         public static bool IsDomainBanned(params string[] domains)
         {
-            foreach (var domain in domains)
+            using (var db = new voatEntities())
             {
-                using (var db = new voatEntities())
+                foreach (var domain in domains)
                 {
-                    if (domain != null)
+                    if (!String.IsNullOrWhiteSpace(domain))
                     {
-                        return db.BannedDomains.Any(r => r.Domain.Equals(domain, StringComparison.OrdinalIgnoreCase));
+                        var found = db.BannedDomains.Any(r => r.Domain.Equals(domain, StringComparison.OrdinalIgnoreCase));
+                        if (found)
+                        {
+                            return true;
+                        }
                     }
                 }
             }

@@ -63,7 +63,7 @@
             </p>
             <div class="expando">
 
-                <form class="usertext" onsubmit="return editmessagesubmit(@Model.ID)" id="messageeditform-@Model.ID" action="#">
+                <form class="usertext" onsubmit="return editSubmission(@Model.ID)" id="messageeditform-@Model.ID" action="#">
                     @Html.AntiForgeryToken()
                     <input id="SubmissionID" name="SubmissionID" value="@Model.ID" type="hidden">
                     <div class="usertext-body original may-blank-within" style="display:@(String.IsNullOrEmpty(Model.Content) ? "none" : "block")">

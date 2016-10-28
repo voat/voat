@@ -70,14 +70,18 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<CommandResponse<Domain.Models.Submission>, Data.Models.Submission>> CacheExecute()
         {
-            var result = await Task.Run(() =>
+            using (var db = new Repository())
             {
-                using (var db = new Repository())
+                var result = await db.EditSubmission(_submissionID, _submission);
+                if (result.Success)
                 {
-                    return db.EditSubmission(_submissionID, _submission);
+                    return Tuple.Create(CommandResponse.FromStatus(result.Response.Map(), Status.Success, ""), result.Response);
                 }
-            });
-            return Tuple.Create(CommandResponse.Successful(result.Map()), result);
+                else
+                {
+                    return Tuple.Create(CommandResponse.FromStatus((Submission)null, result.Status, result.Message), result.Response);
+                }
+            }
         }
 
         protected override void UpdateCache(Data.Models.Submission result)

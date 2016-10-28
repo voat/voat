@@ -719,7 +719,7 @@ function removesubmissioneditform(submissionid) {
 }
 
 // submit edited submission and replace the old one with formatted response received by server
-function editmessagesubmit(submissionid) {
+function editSubmission(submissionid) {
     var submissioncontent = $("#submissionid-" + submissionid).find('.form-control').val();
     var submissionobject = { "SubmissionId": submissionid, "SubmissionContent": submissioncontent };
 
@@ -729,15 +729,26 @@ function editmessagesubmit(submissionid) {
         data: JSON.stringify(submissionobject),
         url: "/editsubmission",
         datatype: "json",
+        error: function (xhr, status, error) {
+
+            var msg = error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.";
+            $("#submissionid-" + submissionid + " span.field-validation-error").html(msg);
+
+        },
         success: function (data) {
+
             var textElement = $("#submissionid-" + submissionid + " .usertext-body");
             textElement.children('div').first().html(data.response); //set new content
             textElement.show();
             window.setTimeout(function () { UI.Notifications.raise('DOM', $("#submissionid-" + submissionid)); });
+            //remove edit form
+            removesubmissioneditform(submissionid);
+            //clear any error msgs
+            $("#submissionid-" + submissionid + " span.field-validation-error").html('');
         }
     });
 
-    removesubmissioneditform(submissionid);
+    
     return false;
 }
 
