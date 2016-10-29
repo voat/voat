@@ -44,7 +44,7 @@
         if (User.Identity.Name == Model.UserName)
         {
             <li>
-                <a class="" href="#submissionTop" onclick="return editsubmission(@Model.ID)">edit</a>
+                <a class="" href="#submissionTop" onclick="return editSubmissionPrepareForm(@Model.ID)">edit</a>
             </li>
             <li>
                 @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })

@@ -233,10 +233,9 @@
     }
     else
     {
-        System.Diagnostics.Debug.Assert(Model.ChildCount == Model.Children.TotalCount, "ChildCount does not match TotalCount");
+        //System.Diagnostics.Debug.Assert(Model.ChildCount == Model.Children.TotalCount, "ChildCount does not match TotalCount");
         remaining = Model.ChildCount;
     }
-
     if (remaining > 0)
     {
         var display = Model.IsCollapsed ? "none" : "block";

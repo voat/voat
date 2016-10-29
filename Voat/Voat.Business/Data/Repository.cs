@@ -17,6 +17,7 @@ using Voat.Domain.Command;
 using System.Text.RegularExpressions;
 using Voat.Domain;
 using System.Data.Entity;
+using Voat.Caching;
 
 namespace Voat.Data
 {
@@ -893,8 +894,10 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public Models.Submission EditSubmission(int submissionID, UserSubmission userSubmission)
+        public async Task<CommandResponse<Models.Submission>> EditSubmission(int submissionID, UserSubmission userSubmission)
         {
+            DemandAuthentication();
+
             if (userSubmission == null || (!userSubmission.HasState && String.IsNullOrEmpty(userSubmission.Content)))
             {
                 throw new VoatValidationException("The submission must not be null or have invalid state");
@@ -921,6 +924,19 @@ namespace Voat.Data
                 throw new VoatSecurityException(String.Format("Submission can not be edited by account"));
             }
 
+            //Evaluate Rules
+            var context = new VoatRuleContext();
+            context.Subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+            context.PropertyBag.UserSubmission = userSubmission;
+            var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.EditSubmission);
+
+            //if rules engine denies bail.
+            if (!outcome.IsAllowed)
+            {
+                return MapRuleOutCome<Models.Submission>(outcome, null);
+            }
+
+
             //only allow edits for self posts
             if (submission.Type == 1)
             {
@@ -941,9 +957,9 @@ namespace Voat.Data
 
             submission.LastEditDate = CurrentDate;
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
-            return Selectors.SecureSubmission(submission);
+            return CommandResponse.FromStatus(Selectors.SecureSubmission(submission), Status.Success, "");
         }
 
         [Authorize]

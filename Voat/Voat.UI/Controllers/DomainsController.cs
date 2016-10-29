@@ -13,8 +13,12 @@ All Rights Reserved.
 */
 
 using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+using Voat.Caching;
 using Voat.Data.Models;
 using Voat.Utilities;
 
@@ -22,83 +26,64 @@ namespace Voat.Controllers
 {
     public class DomainsController : BaseController
     {
-        private readonly voatEntities _db = new voatEntities();
-
-        //TODO: This needs caching
-        public ActionResult Index(int? page, string domainname, string sortingmode)
+       
+        public async Task<ActionResult> Index(int? page, string domainname, string sortingmode)
         {
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
 
-            if (pageNumber < 0 || String.IsNullOrWhiteSpace(domainname))
+            if (pageNumber < 0 || String.IsNullOrWhiteSpace(domainname) || pageNumber > 9)
             {
                 return View("~/Views/Error/404.cshtml");
             }
+            if (domainname.Length < 4)
+            {
+                return RedirectToAction("UnAuthorized", "Error");
+            }
+
+            sortingmode = (sortingmode == "new" ? "new" : "hot");
 
             ViewBag.SelectedSubverse = "domains";
             ViewBag.SelectedDomain = domainname;
-
             domainname = domainname.Trim().ToLower();
 
-            //restrict disabled subs from result list
-            IQueryable<Submission> submissions = (from m in _db.Submissions
-                                                  join s in _db.Subverses on m.Subverse equals s.Name
-                                                  where
-                                                  !s.IsAdminDisabled.Value
-                                                  && !m.IsDeleted
-                                                  && m.Type == 2
-                                                  && m.Url.ToLower().Contains(domainname)
-                                                  select m);
+            var results = CacheHandler.Instance.Register(CachingKey.DomainSearch(domainname, pageNumber, sortingmode), () => {
+                using (var db = new voatEntities())
+                {
+                    db.EnableCacheableOutput();
 
-            if (sortingmode == "new")
-            {
-                ViewBag.SortingMode = sortingmode;
-                submissions = submissions.OrderByDescending(x => x.CreationDate);
-            }
-            else
-            {
-                ViewBag.SortingMode = "hot";
-                submissions = submissions.OrderByDescending(x => x.Rank).ThenByDescending(x => x.CreationDate);
-            }
+                    //restrict disabled subs from result list
+                    IQueryable<Submission> q = (from m in db.Submissions
+                                                          join s in db.Subverses on m.Subverse equals s.Name
+                                                          where
+                                                          !s.IsAdminDisabled.Value
+                                                          && !m.IsDeleted
+                                                          && m.Type == 2
+                                                          && m.Url.ToLower().Contains(domainname)
+                                                          select m);
 
-            var paginatedSubmissions = new PaginatedList<Submission>(submissions, page ?? 0, pageSize);
+                    if (sortingmode == "new")
+                    {
+                        ViewBag.SortingMode = sortingmode;
+                        q = q.OrderByDescending(x => x.CreationDate);
+                    }
+                    else
+                    {
+                        ViewBag.SortingMode = "hot";
+                        q = q.OrderByDescending(x => x.Rank).ThenByDescending(x => x.CreationDate);
+                    }
+
+                    var result = q.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+
+                    return result;
+                }
+            }, TimeSpan.FromMinutes(60));
+
+            var paginatedSubmissions = new PaginatedList<Submission>(results, page ?? 0, pageSize);
 
             ViewBag.Title = "Showing all submissions which link to " + domainname;
             return View("Index", paginatedSubmissions);
         }
-
-        //public ActionResult @New(int? page, string domainname, string sortingmode)
-        //{
-        //    //sortingmode: new, contraversial, hot, etc
-        //    ViewBag.SortingMode = sortingmode;
-
-        //    if (!sortingmode.Equals("new")) return RedirectToAction("Index", "Home");
-        //    ViewBag.SelectedSubverse = "domains";
-        //    ViewBag.SelectedDomain = domainname + "." + ext;
-
-        //    const int pageSize = 25;
-        //    int pageNumber = (page ?? 0);
-
-        //    if (pageNumber < 0)
-        //    {
-        //        return View("~/Views/Error/404.cshtml");
-        //    }
-
-        //    //check if at least one submission for given domain was found, if not, send to a page not found error
-        //    //IQueryable<Message> submissions = _db.Messages
-        //    //    .Where(x => x.Name != "deleted" & x.Type == 2 & x.MessageContent.ToLower().Contains(domainname + "." + ext))
-        //    //    .OrderByDescending(s => s.Date);
-
-        //    IQueryable<Submission> submissions = (from m in _db.Submissions
-        //                                          join s in _db.Subverses on m.Subverse equals s.Name
-        //                                       where !s.IsAdminDisabled.Value && !m.IsDeleted & m.Type == 2 & m.Content.ToLower().Contains(domainname + "." + ext)
-        //                                       orderby m.CreationDate descending
-        //                                       select m);
-
-        //    var paginatedSubmissions = new PaginatedList<Submission>(submissions, page ?? 0, pageSize);
-
-        //    ViewBag.Title = "Showing all newest submissions which link to " + domainname;
-        //    return View("Index", paginatedSubmissions);
-        //}
+        
     }
 }

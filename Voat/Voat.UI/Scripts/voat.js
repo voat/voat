@@ -696,7 +696,7 @@ function edit(parentcommentid, messageid) {
 }
 
 // append a submission edit form to calling area while preventing multiple appends
-function editsubmission(submissionid) {
+function editSubmissionPrepareForm(submissionid) {
 
     //hide original text    
     $("#submissionid-" + submissionid).find('.original').toggle(1);
@@ -712,14 +712,14 @@ function editsubmission(submissionid) {
 }
 
 // remove submission edit form for given submission id and replace it with original content
-function removesubmissioneditform(submissionid) {
+function removeSubmissionEditForm(submissionid) {
     //BUG: This code makes previews after a submission edit not display. Low Priority.
     $("#submissionid-" + submissionid).find('.usertext-body').toggle(1);
     $("#submissionid-" + submissionid).find('.usertext-edit').toggle(1);
 }
 
 // submit edited submission and replace the old one with formatted response received by server
-function editmessagesubmit(submissionid) {
+function editSubmission(submissionid) {
     var submissioncontent = $("#submissionid-" + submissionid).find('.form-control').val();
     var submissionobject = { "SubmissionId": submissionid, "SubmissionContent": submissioncontent };
 
@@ -729,15 +729,29 @@ function editmessagesubmit(submissionid) {
         data: JSON.stringify(submissionobject),
         url: "/editsubmission",
         datatype: "json",
+        error: function (xhr, status, error) {
+
+            var msg = error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.";
+            $("#submissionid-" + submissionid + " span.field-validation-error").html(msg);
+
+        },
         success: function (data) {
+
+            //this has to be called beforehand - to busy to fix it correctly right now
+            removeSubmissionEditForm(submissionid);
+
             var textElement = $("#submissionid-" + submissionid + " .usertext-body");
             textElement.children('div').first().html(data.response); //set new content
             textElement.show();
             window.setTimeout(function () { UI.Notifications.raise('DOM', $("#submissionid-" + submissionid)); });
+            //remove edit form
+           
+            //clear any error msgs
+            $("#submissionid-" + submissionid + " span.field-validation-error").html('');
         }
     });
 
-    removesubmissioneditform(submissionid);
+    
     return false;
 }
 
