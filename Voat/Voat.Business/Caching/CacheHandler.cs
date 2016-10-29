@@ -22,6 +22,7 @@ namespace Voat.Caching
         private static ICacheHandler _instance = null;
         private static object _lockInstance = new object();
         private LockStore _lockStore = new LockStore();
+        private TimeSpan _refreshOffset = TimeSpan.FromSeconds(5);
 
         //holds meta data about the cache item such as the Func, expiration, recacheLimit, and current recaches
         private ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
@@ -192,7 +193,7 @@ namespace Voat.Caching
                                     var cache = System.Runtime.Caching.MemoryCache.Default;
                                     var policy = new CacheItemPolicy()
                                     {
-                                        AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime),
+                                        AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
                                         UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
                                     };
                                     cache.Set(cacheKey, new object(), policy);

@@ -152,6 +152,10 @@ namespace Voat.Caching
                     {
                         GetDatabase(ConnectionType.Write).SetAdd(cacheKey, Serialize(item));
                     }
+                    else
+                    {
+                        GetDatabase(ConnectionType.Write).StringSet(cacheKey, Serialize(item));
+                    }
                 }
                 else
                 {
