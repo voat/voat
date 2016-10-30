@@ -28,12 +28,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Domain.Models;
 
 namespace Voat.Tests.Cache
 {
-    public class CacheTests
+    public abstract class CacheTests
     {
         public ICacheHandler handler = null;
 
@@ -463,6 +464,46 @@ namespace Voat.Tests.Cache
                 var exists = handler.SetExists(cacheKey, item);
                 Assert.AreEqual(false, exists);
             }
+            handler.Remove(cacheKey);
+        }
+
+        [TestMethod]
+        [TestCategory("Cache")]
+        [TestCategory("Cache.Handler")]
+        [TestCategory("Cache.Handler.Refresh")]
+        public async Task Hot_Cache_Refresh()
+        {
+            string cacheKey = "Hot_Cache_Refresh";
+            handler.Remove(cacheKey);
+
+            int? count = 0;
+            int? originalCount = count;
+            handler.Register(cacheKey, () => {
+
+                count = (count + 1);
+                return count;
+
+            }, TimeSpan.FromSeconds(15), 5);
+
+            //Try to bail as quickly as possible once we know the hot cache is functioning
+            var startTime = DateTime.Now;
+            var timeoutTimeSpan = TimeSpan.FromSeconds(60);
+            var hasUpdated = false;
+            while (!hasUpdated && DateTime.Now.Subtract(startTime) < timeoutTimeSpan)
+            {
+                int? checkValue = handler.Retrieve<int?>(cacheKey);
+                hasUpdated = (checkValue.HasValue && checkValue.Value != 0 && checkValue.Value != 1);
+                if (!hasUpdated)
+                {
+                    await Task.Delay(5000);
+                }
+            }
+
+            int? newCount = handler.Retrieve<int?>(cacheKey);
+            Assert.IsNotNull(newCount); //Make sure we still have it
+            Assert.AreNotEqual(0, newCount); //Make sure default value is not inserted
+            Assert.AreNotEqual(1, newCount); //This will be the first value inserted
+            
             handler.Remove(cacheKey);
         }
 

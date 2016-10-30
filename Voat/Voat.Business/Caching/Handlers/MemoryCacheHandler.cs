@@ -24,6 +24,10 @@ namespace Voat.Caching
                 {
                     ((dynamic)value).Add((dynamic)item);
                 }
+                else
+                {
+                    _cache[cacheKey] = item;
+                }
             }
             else
             {
@@ -39,7 +43,7 @@ namespace Voat.Caching
 
         protected override bool ItemExists(string cacheKey)
         {
-            return _cache.ContainsKey(cacheKey);
+           return _cache.ContainsKey(cacheKey);
         }
         protected override V GetItem<K,V>(string cacheKey, K key, CacheType type)
         {
