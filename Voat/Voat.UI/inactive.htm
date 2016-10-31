@@ -18,6 +18,45 @@
     <link rel=StyleSheet href="/Content/site.min.css" type="text/css">
     <link rel=StyleSheet href="/Content/Whoaverse.min.css" type="text/css">
 
+    <style id="nightmodestyle" type="text/css">
+        body, .panel-heading > .panel-title {
+            color: #dfdfdf;
+        }
+
+        body, #header, #header-container {
+            background: #333;
+        }
+
+        #header-container {
+            border-top-color: #555;
+            border-bottom-color: #555;
+        }
+
+        .panel-info, .panel-info > .panel-heading, .panel-heading > .panel-title, .panel-info > .panel-body {
+            background: #222;
+        }
+
+        .panel-info, .panel-info > .panel-heading, .panel-info > .panel-body {
+            border-color: #444;
+        }
+
+        .btn-whoaverse.contribute {
+            background: #B44747;
+            background: -webkit-linear-gradient( top,#B44747,#AB3C3C );
+            background: -moz-linear-gradient( top,#B44747,#AB3C3C );
+            background: -ms-linear-gradient( top,#B44747,#AB3C3C );
+            background: -o-linear-gradient( top,#B44747,#AB3C3C );
+            border-color: #933333;
+            color: #FFF7F7;
+        }
+    </style>
+    <script type="text/javascript">
+        if (document.cookie.indexOf("theme=dark") === -1) {
+            var style = document.getElementById("nightmodestyle");
+            style.parentNode.removeChild(style);
+        }
+    </script>
+
 </head>
 <body>
     <div id="header" role="banner">

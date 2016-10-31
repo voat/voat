@@ -16,6 +16,13 @@
 @{
     ViewBag.Title = "Ouch!";
     Layout = null;
+
+    var theme = "light";
+    var tc = HttpContext.Current.Request.Cookies["theme"];
+    if(tc != null && tc.Value == "dark")
+    {
+        theme = "dark";
+    }
 }
 
 <!DOCTYPE html>
@@ -49,7 +56,18 @@
     <meta property="og:site_name" content="whoaverse" />
     <meta property="og:description" content="@ViewBag.Description" />
 
-    @Styles.Render("~/Content/Light")
+    @if (theme == null || theme == "light")
+    {
+        @Styles.Render("~/Content/Light")
+    }
+    else
+    {
+        <meta name="theme-color" content="#333" />
+        <meta name="msapplication-navbutton-color" content="#333" />
+        <meta name="apple-mobile-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        @Styles.Render("~/Content/Dark")
+    }
     @Scripts.Render("~/bundles/javascript")
 
     <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
