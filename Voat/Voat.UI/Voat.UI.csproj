@@ -487,6 +487,7 @@
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <Content Include="gizmo\src\js\jquery.swipebox.min.js.map" />
+    <None Include="bundleconfig.json" />
     <None Include="Properties\PublishProfiles\local fs.pubxml" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\voatweb03.pubxml" />
