@@ -103,10 +103,7 @@
             <p class="title">
                 @if (Model.FlairLabel != null && Model.FlairCss != null)
                 {
-                    if (routeActiveSubverse != "" && routeActiveSubverse != "all" && routeActiveSubverse != null)
-                    {
-                        <span class="flair @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
-                    }
+                    <span class="flair linkflairlabel @Model.FlairCss" title="@Model.FlairLabel">@Model.FlairLabel</span>
                 }
                 <a class="title may-blank " href="@Model.Url" tabindex="1" title="@Model.Title" target="@ahrefTarget">@Model.Title</a>
                 <span class="domain">(<a href="/domains/@submissionDomain/">@submissionDomain</a>)</span>
