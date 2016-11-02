@@ -649,7 +649,8 @@ namespace Voat.Data
             return _db.Submissions.AsNoTracking().FirstOrDefault(s =>
                 s.Url.Equals(url, StringComparison.OrdinalIgnoreCase)
                 && s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                && s.CreationDate > cutOffDate);
+                && s.CreationDate > cutOffDate
+                && !s.IsDeleted);
         }
 
         public int FindUserLinkSubmissionCount(string userName, string url, TimeSpan cutOffTimeSpan)
