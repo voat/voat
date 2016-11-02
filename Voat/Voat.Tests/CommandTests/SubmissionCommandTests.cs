@@ -278,7 +278,7 @@ namespace Voat.Tests.CommandTests
             r = await cmd.Execute();
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
-            Assert.AreEqual(r.Message, "Sorry, this link has already been submitted recently. https://voat.co/v/unit/comments/" + id);
+            Assert.AreEqual(r.Message, "Sorry, this link has already been submitted recently. https://voat.co/v/unit/" + id);
         }
 
         [TestMethod]
