@@ -543,6 +543,7 @@ namespace Voat.Tests.Cache
     [TestClass]
     public class RedisCacheTests : CacheTests
     {
+        //Stop following me fuzzy
         public RedisCacheTests() : base(null)
         {
             Debug.Print("Starting RedisCacheTests");
@@ -550,6 +551,7 @@ namespace Voat.Tests.Cache
             //Use connection info from CacheHandlerSection
             var handler = CacheHandlerSection.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct();
             base.handler = handler;
+
         }
     }
 }
