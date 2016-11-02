@@ -261,6 +261,48 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(r.Message, "Submission contains banned domains");
 
         }
+        
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        public async Task PreventSubmittingSameLinkTwice()
+        {
+            TestHelper.SetPrincipal("UnitTestUser30");
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "My name is Fuzzy and my fixes are way cooler than puttputts", Url = "http://i.deleted.this.by/accident.jpg" });
+            var r = await cmd.Execute();
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsTrue(r.Success, r.Message);
+            var id = r.Response.ID;
+
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://i.deleted.this.by/accident.jpg" });
+            r = await cmd.Execute();
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsFalse(r.Success, r.Message);
+            Assert.AreEqual(r.Message, "Sorry, this link has already been submitted recently. https://voat.co/v/unit/comments/" + id);
+        }
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        public async Task AllowSubmittingDeletedLink()
+        {
+            TestHelper.SetPrincipal("UnitTestUser31");
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "I need to think of better titles but I don't want to get in trouble", Url = "http://i.deleted.this.on/purpose.jpg" });
+            var r = await cmd.Execute();
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsTrue(r.Success, r.Message);
+            var id = r.Response.ID;
+
+            var cmd2 = new DeleteSubmissionCommand(id);
+            var r2 = await cmd2.Execute();
+
+            Assert.IsTrue(r2.Success, r2.Message);
+
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://i.deleted.this.on/purpose.jpg" });
+            r = await cmd.Execute();
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsTrue(r.Success, r.Message);
+        }
 
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
