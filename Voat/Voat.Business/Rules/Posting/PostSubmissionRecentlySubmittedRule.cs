@@ -26,7 +26,7 @@ namespace Voat.Rules.Posting
                     }
                     if (recentlySubmitted != null)
                     {
-                        return CreateOutcome(RuleResult.Denied, $"Sorry, this link has already been submitted recently. https://voat.co/v/{recentlySubmitted.Subverse}/comments/{recentlySubmitted.ID}");
+                        return CreateOutcome(RuleResult.Denied, $"Sorry, this link has already been submitted recently. https://voat.co/v/{recentlySubmitted.Subverse}/{recentlySubmitted.ID}");
                     }
                     break;
 

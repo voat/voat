@@ -122,7 +122,6 @@ namespace Voat
             }
         }
 
-        // force SSL for every request if enabled in Web.config
         protected void Application_BeginRequest(Object sender, EventArgs e) {
 
             //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
@@ -132,6 +131,7 @@ namespace Voat
                 return;
             }
 
+            // force SSL for every request if enabled in Web.config
             if (Settings.ForceHTTPS) {
                 if (HttpContext.Current.Request.IsSecureConnection.Equals(false) && HttpContext.Current.Request.IsLocal.Equals(false)) {
                     Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + HttpContext.Current.Request.RawUrl);
