@@ -78,15 +78,13 @@ namespace Voat
                 return _setting;
             }
         }
-
-        public static void Refresh()
+        public static RuntimeStateSetting Parse(string setting)
         {
-            var _current = _setting;
+            var value = RuntimeStateSetting.Disabled;
 
-            var setting = System.Configuration.ConfigurationManager.AppSettings[API_CONFIG_KEY_NAME];
             if (String.IsNullOrEmpty(setting))
             {
-                _setting = RuntimeStateSetting.Enabled; //by default keep API turned on
+                value = RuntimeStateSetting.Enabled; //by default keep enabled
             }
             else
             {
@@ -95,7 +93,7 @@ namespace Voat
                 //Parse enum value
                 if (Enum.TryParse(setting, true, out configSetting))
                 {
-                    _setting = configSetting;
+                    value = configSetting;
                 }
                 else
                 {
@@ -103,14 +101,23 @@ namespace Voat
                     bool enabled = false;
                     if (Boolean.TryParse(setting, out enabled))
                     {
-                        _setting = (enabled ? RuntimeStateSetting.Enabled : RuntimeStateSetting.Disabled);
+                        value = (enabled ? RuntimeStateSetting.Enabled : RuntimeStateSetting.Disabled);
                     }
                     else
                     {
-                        _setting = RuntimeStateSetting.Disabled;
+                        value = RuntimeStateSetting.Disabled;
                     }
                 }
             }
+
+            return value;
+        }
+        public static void Refresh(string setting)
+        {
+            var _current = _setting;
+            
+            _setting = Parse(setting);
+
             if (_current != _setting)
             {
                 if (OnStateChanged != null)
@@ -118,6 +125,12 @@ namespace Voat
                     OnStateChanged(typeof(RuntimeState), _setting);
                 }
             }
+
+        }
+        public static void Refresh()
+        {
+            var setting = System.Configuration.ConfigurationManager.AppSettings[API_CONFIG_KEY_NAME];
+            Refresh(setting);
         }
     }
 }

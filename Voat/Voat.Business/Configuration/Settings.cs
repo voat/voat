@@ -8,6 +8,286 @@ namespace Voat.Configuration
 
         internal static Dictionary<string, object> configValues = new Dictionary<string, object>();
 
+        public static bool AdsEnabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.AdsEnabled, false);
+            }
+        }
+
+        public static bool ApiKeyCreationEnabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.ApiKeyCreationEnabled, false);
+            }
+        }
+
+        public static bool CacheDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.CacheDisabled, false);
+            }
+        }
+
+        public static bool CaptchaDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.CaptchaDisabled, false);
+            }
+        }
+
+        public static int DailyCommentPostingQuota
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.DailyCommentPostingQuota, 20);
+            }
+        }
+
+        public static int DailyCommentPostingQuotaForNegativeScore
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.DailyCommentPostingQuotaForNegativeScore, 10);
+            }
+        }
+
+        public static int DailyCrossPostingQuota
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.DailyCrossPostingQuota, 2);
+            }
+        }
+
+        public static int DailyGlobalPostingQuota
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.DailyGlobalPostingQuota, 5);
+            }
+        }
+
+        public static int DailyPostingQuotaForNegativeScore
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.DailyPostingQuotaForNegativeScore, 3);
+            }
+        }
+
+        public static int DailyPostingQuotaPerSub
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.DailyPostingQuotaPerSub, 10);
+            }
+        }
+
+        public static int DailyVotingQuota
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.DailyVotingQuota, 100);
+            }
+        }
+
+        public static string DestinationPathAvatars
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.DestinationPathAvatars, "~/Storage/Avatars");
+            }
+        }
+
+        public static string DestinationPathThumbs
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.DestinationPathThumbs, "~/Storage/Thumbs");
+            }
+        }
+
+        public static string EmailServiceKey
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.EmailServiceKey, "");
+            }
+        }
+
+        public static bool ForceHTTPS
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.ForceHTTPS, true);
+            }
+        }
+
+        public static int HourlyCommentPostingQuota
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.HourlyCommentPostingQuota, 10);
+            }
+        }
+
+        public static int HourlyGlobalPostingQuota
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.HourlyGlobalPostingQuota, 3);
+            }
+        }
+
+        public static int HourlyPostingQuotaPerSub
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.HourlyPostingQuotaPerSub, 3);
+            }
+        }
+
+        public static bool LegacyApiEnabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.LegacyApiEnabled, false);
+            }
+        }
+
+        public static int MaxAllowedAccountsFromSingleIP
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MaxAllowedAccountsFromSingleIP, 100);
+            }
+        }
+
+        public static int MaximumOwnedSets
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MaximumOwnedSets, 10);
+            }
+        }
+
+        public static int MaximumOwnedSubs
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MaximumOwnedSubs, 10);
+            }
+        }
+
+        public static int MinimumCcp
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MinimumCcp, 0);
+            }
+        }
+
+        public static string RecaptchaPrivateKey
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.RecaptchaPrivateKey, "");
+            }
+        }
+
+        public static string RecaptchaPublicKey
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.RecaptchaPublicKey, "");
+            }
+        }
+
+        public static bool RegistrationDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.RegistrationDisabled, false);
+            }
+        }
+
+        public static bool SetsDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SetsDisabled, true);
+            }
+        }
+
+        public static bool SignalRDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SignalRDisabled, true);
+            }
+        }
+
+        public static string SiteDescription
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SiteDescription, "A community platform where you can have your say. No censorship.");
+            }
+        }
+
+        public static string SiteDomain
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SiteDomain, "voat.co");
+            }
+        }
+
+        public static string SiteKeywords
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SiteKeywords, "voat, voat.co, vote, submit, comment");
+            }
+        }
+
+        public static string SiteLogo
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SiteLogo, "/Graphics/voat-logo.png");
+            }
+        }
+
+        public static string SiteName
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SiteName, "Voat");
+            }
+        }
+
+        public static string SiteSlogan
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SiteSlogan, "Voat - have your say");
+            }
+        }
+
+        public static bool UseContentDeliveryNetwork
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.UseContentDeliveryNetwork, false);
+            }
+        }
+
         private static T GetValue<T>(string key, T defaultIfMissing)
         {
             if (configValues.ContainsKey(key))
@@ -16,293 +296,6 @@ namespace Voat.Configuration
             }
             return defaultIfMissing;
         }
-
-        public static int DailyCommentPostingQuotaForNegativeScore
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.DailyCommentPostingQuotaForNegativeScore];
-            }
-        }
-
-        public static int DailyCommentPostingQuota
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.DailyCommentPostingQuota];
-            }
-        }
-
-        public static int HourlyCommentPostingQuota
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.HourlyCommentPostingQuota];
-            }
-        }
-
-        public static int DailyCrossPostingQuota
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.DailyCrossPostingQuota];
-            }
-        }
-
-        public static int DailyPostingQuotaForNegativeScore
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.DailyPostingQuotaForNegativeScore];
-            }
-        }
-
-        public static int DailyPostingQuotaPerSub
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.DailyPostingQuotaPerSub];
-            }
-        }
-
-        public static int DailyGlobalPostingQuota
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.DailyGlobalPostingQuota];
-            }
-        }
-
-        public static int DailyVotingQuota
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.DailyVotingQuota];
-            }
-        }
-
-        public static bool ForceHTTPS
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.ForceHTTPS];
-            }
-        }
-
-        public static int HourlyPostingQuotaPerSub
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.HourlyPostingQuotaPerSub];
-            }
-        }
-
-        public static int HourlyGlobalPostingQuota
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.HourlyGlobalPostingQuota];
-            }
-        }
-
-        public static int MaximumOwnedSets
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.MaximumOwnedSets];
-            }
-        }
-
-        public static int MaximumOwnedSubs
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.MaximumOwnedSubs];
-            }
-        }
-
-        public static int MinimumCcp
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.MinimumCcp];
-            }
-        }
-
-        public static int MaxAllowedAccountsFromSingleIP
-        {
-            get
-            {
-                return (int)configValues[CONFIGURATION.MaxAllowedAccountsFromSingleIP];
-            }
-        }
-
-        public static string RecaptchaPrivateKey
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.RecaptchaPrivateKey];
-            }
-        }
-
-        public static string RecaptchaPublicKey
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.RecaptchaPublicKey];
-            }
-        }
-        public static bool CaptchaDisabled
-        {
-            get
-            {
-                return GetValue(CONFIGURATION.CaptchaDisabled, false);
-            }
-        }
-        public static string EmailServiceKey
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.EmailServiceKey];
-            }
-        }
-
-        public static string SiteDescription
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.SiteDescription];
-            }
-        }
-
-        public static string SiteKeywords
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.SiteKeywords];
-            }
-        }
-
-        public static string SiteLogo
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.SiteLogo];
-            }
-        }
-
-        public static string SiteName
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.SiteName];
-            }
-        }
-
-        public static string SiteSlogan
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.SiteSlogan];
-            }
-        }
-
-        public static bool SignalRDisabled
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.SignalRDisabled];
-            }
-        }
-
-        public static bool SiteDisabled
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.SiteDisabled];
-            }
-        }
-
-        public static bool SetsDisabled
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.SetsDisabled];
-            }
-        }
-
-        public static bool CacheDisabled
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.CacheDisabled];
-            }
-        }
-
-        public static bool RegistrationDisabled
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.RegistrationDisabled];
-            }
-        }
-
-        public static bool UseContentDeliveryNetwork
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.UseContentDeliveryNetwork];
-            }
-        }
-
-        public static string DestinationPathThumbs
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.DestinationPathThumbs];
-            }
-        }
-
-        public static string DestinationPathAvatars
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.DestinationPathAvatars];
-            }
-        }
-
-        public static bool AdsEnabled
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.AdsEnabled];
-            }
-        }
-
-        public static string SiteDomain
-        {
-            get
-            {
-                return (string)configValues[CONFIGURATION.SiteDomain];
-            }
-        }
-
-        public static bool LegacyApiEnabled
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.LegacyApiEnabled];
-            }
-        }
-
-        public static bool ApiKeyCreationEnabled
-        {
-            get
-            {
-                return (bool)configValues[CONFIGURATION.ApiKeyCreationEnabled];
-            }
-        }
-
         #endregion AppSettings Accessors
 
     }
