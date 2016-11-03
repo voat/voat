@@ -22,7 +22,7 @@ namespace Voat.Caching
         //This ensures that an item eventually gets purged from cache.
         private TimeSpan expirationBuffer = TimeSpan.FromSeconds(30);
 
-        private JsonSerializerSettings settings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+        private JsonSerializerSettings settings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
         public IDatabase GetDatabase(ConnectionType type)
         {
             return connections[type].GetDatabase();

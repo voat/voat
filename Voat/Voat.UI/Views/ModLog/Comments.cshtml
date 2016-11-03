@@ -11,28 +11,27 @@
     All Rights Reserved.*@
 
 @using System.Globalization
-@model PaginatedList<Voat.Data.Models.CommentRemovalLog>
+@model PaginatedList<Voat.Domain.Models.CommentRemovalLog>
 
 @{
-    ViewBag.Title = "Moderator comment removal log";
+    ViewBag.Title = "Comment Removal Log";
 }
 
 <div id="container">
     <div class="side">
         <div class="spacersection spacer">
-            <div class="alert-h1">
-                Moderator comment removal log
-            </div>
-            <div>
-                <span>
-                    Total moderator-removed comments in this subverse: @Model.Count
-                </span>
-            </div>
+            @*<div class="alert-h1">
+                @ViewBag.Title
+            </div>*@
+            @Html.Partial("_ModLogSidebarLinks", (string)ViewBag.SelectedSubverse)
         </div>
     </div>
 
     <div class="content" role="main">
         <div class="sitetable linklisting">
+            <div class="alert alert-info">
+                <p>Showing removed comments by moderators for subverse: <a href="/v/@ViewBag.SelectedSubverse">@ViewBag.SelectedSubverse</a></p>
+            </div>
             @if (Model.Count < 1)
             {
                 <span>There are no moderator-removed comments in this subverse.</span>
@@ -43,7 +42,7 @@
                     @foreach (var logItem in Model)
                     {
                         <div id="logItem" class="logItem alert-singlethread">
-                            <p>@logItem.Moderator removed @Age.ToRelative(logItem.CreationDate) ago on @logItem.CreationDate</p>
+                            <p>@logItem.CreatedBy removed @Age.ToRelative(logItem.CreationDate) ago on @logItem.CreationDate</p>
                             <p>"@logItem.Reason"</p>
                         </div>
                         <div class="removedCommentContainer">

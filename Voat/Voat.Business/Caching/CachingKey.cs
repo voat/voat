@@ -182,5 +182,19 @@ namespace Voat.Caching
         {
             return $"Domain:{domain}:{sort}:page{page}";
         }
+        
+        public static string ModLogBannedUsers(string subverse, SearchOptions options)
+        {
+            return $"Subverse:ModLog:{subverse}:Banned{options.ToString(":{0}", "page=0")}";
+        }
+        public static string ModLogSubmissions(string subverse, SearchOptions options)
+        {
+            return $"Subverse:ModLog:{subverse}:Submissions{options.ToString(":{0}", "page=0")}";
+        }
+        public static string ModLogComments(string subverse, SearchOptions options)
+        {
+            return $"Subverse:ModLog:{subverse}:Comments{options.ToString(":{0}", "page=0")}";
+        }
+
     }
 }

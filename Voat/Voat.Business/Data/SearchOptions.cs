@@ -25,6 +25,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -404,6 +405,17 @@ namespace Voat.Data
                 }
             }
         }
+        /// <summary>
+        /// The skip count
+        /// </summary>
+        [JsonIgnore()]
+        public int SkipCount
+        {
+            get
+            {
+                return Page * Count + (Page > 0 ? Count : 0);
+            }
+        }
 
         /// <summary>
         /// The search value to match for submissions or comments.
@@ -448,7 +460,22 @@ namespace Voat.Data
                 _currentIndex = (Count * (Page)) + (Page);
             }
         }
-
+        public string ToString(string format, string formatInputIfEmpty = null)
+        {
+            var x = ToString();
+            if (!String.IsNullOrEmpty(x))
+            {
+                return String.Format(format, ToString());
+            }
+            else if (!String.IsNullOrEmpty(formatInputIfEmpty))
+            {
+                return String.Format(format, formatInputIfEmpty);
+            }
+            else
+            {
+                return x;
+            }
+        }
         public override string ToString()
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();

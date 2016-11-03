@@ -13,26 +13,26 @@
 @model PaginatedList<Voat.Data.Models.SubmissionRemovalLog>
 
 @{
-    ViewBag.Title = "Moderator submission removal log";
+    ViewBag.Title = "Submission Removal Log";
     string submissionClass = "";
 }
 
 <div id="container">
     <div class="side">
         <div class="spacersection spacer">
-            <div class="alert-h1">
-                Moderator submission removal log
-            </div>
-            <div>
-                <span>
-                    Total moderator-removed submissions in this subverse: @Model.Count
-                </span>
-            </div>
+            @*<div class="alert-h1">
+                @ViewBag.Title
+            </div>*@
+           @Html.Partial("_ModLogSidebarLinks", (string)ViewBag.SelectedSubverse)
         </div>
     </div>
 
     <div class="content" role="main">
         <div class="sitetable linklisting">
+            <div class="alert alert-info">
+                <p>Showing removed submissions by moderators for subverse: <a href="/v/@ViewBag.SelectedSubverse">@ViewBag.SelectedSubverse</a></p>
+            </div>
+
             @if (Model.Count < 1)
             {
                 <span>There are no moderator-removed submissions in this subverse.</span>

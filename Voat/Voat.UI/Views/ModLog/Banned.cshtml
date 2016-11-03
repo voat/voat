@@ -10,23 +10,24 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Data.Models.SubverseBan>
+@model PaginatedList<Voat.Domain.Models.SubverseBan>
 
 @{
-    ViewBag.Title = "Moderator user ban log";
+    ViewBag.Title = "Subverse Banned Users";
 }
 
 <div id="container">
     <div class="side">
         <div class="spacersection spacer">
             <div class="alert-h1">
-                Moderator user ban log
+                @ViewBag.Title
             </div>
             <div>
                 <span>
                     Total users banned by moderators in this subverse: @ViewBag.TotalBannedUsersInSubverse
                 </span>
             </div>
+            @Html.Partial("_ModLogSidebarLinks", (string)ViewBag.SelectedSubverse)
         </div>
     </div>
 
@@ -40,27 +41,27 @@
             {
                 <div id="removedCommentsList" class="">
                     <div class="alert alert-info">
-                        <p>Showing users banned by moderators for subverse: @ViewBag.SelectedSubverse.</p>
+                        <p>Showing users banned by moderators for subverse: <a href="/v/@ViewBag.SelectedSubverse">@ViewBag.SelectedSubverse</a></p>
                     </div>
                     <table class="table table-striped">
                         <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Banned by</th>
-                            <th>Ban reason</th>
-                            <th>Timestamp</th>
-                        </tr>
+                            <tr>
+                                <th>Username</th>
+                                <th>Banned by</th>
+                                <th>Ban reason</th>
+                                <th>Timestamp</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        @foreach (var logItem in Model)
-                        {
-                            <tr>
-                                <td><a href="/user/@logItem.UserName">@logItem.UserName</a></td>
-                                <td>@logItem.CreatedBy</td>
-                                <td>@logItem.Reason</td>
-                                <td>@logItem.CreationDate</td>
-                            </tr>
-                        }
+                            @foreach (var logItem in Model)
+                            {
+                                <tr>
+                                    <td><a href="/user/@logItem.UserName">@logItem.UserName</a></td>
+                                    <td>@logItem.CreatedBy</td>
+                                    <td>@logItem.Reason</td>
+                                    <td>@logItem.CreationDate</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>

@@ -573,16 +573,6 @@ namespace Voat.Data
             return String.IsNullOrEmpty(sheet) ? "" : sheet;
         }
 
-        public IEnumerable<SubverseBan> GetSubverseUserBans(string subverse)
-        {
-            var data = (from x in _db.SubverseBans
-                        where x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                        orderby x.CreationDate ascending
-                        select x).ToList();
-
-            return data.AsEnumerable();
-        }
-
         public IEnumerable<Data.Models.SubverseModerator> GetSubverseModerators(string subverse)
         {
             var data = (from x in _db.SubverseModerators
@@ -1249,7 +1239,7 @@ namespace Voat.Data
                         comment.IsDeleted = true;
 
                         // move the comment to removal log
-                        var removalLog = new CommentRemovalLog
+                        var removalLog = new Data.Models.CommentRemovalLog
                         {
                             CommentID = comment.ID,
                             Moderator = User.Identity.Name,
@@ -2736,7 +2726,7 @@ namespace Voat.Data
                         return new CommandResponse<bool?>(status, Status.Denied, "Moderators of subverse can not be banned. Is this a coup attempt?");
                     }
                     status = true; //added ban
-                    var subverseBan = new SubverseBan();
+                    var subverseBan = new Data.Models.SubverseBan();
                     subverseBan.UserName = originalUserName;
                     subverseBan.Subverse = subverseModel.Name;
                     subverseBan.CreatedBy = User.Identity.Name;
@@ -2777,6 +2767,100 @@ namespace Voat.Data
         }
 
         #endregion User Related Functions
+
+        #region ModLog
+
+        public async Task<IEnumerable<Domain.Models.SubverseBan>> GetModLogBannedUsers(string subverse, SearchOptions options)
+        {
+            using (var db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+            {
+                var data = (from b in db.SubverseBans
+                            where b.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                            select new Domain.Models.SubverseBan
+                            {
+                                CreatedBy = b.CreatedBy,
+                                CreationDate = b.CreationDate,
+                                Reason = b.Reason,
+                                Subverse = b.Subverse,
+                                ID = b.ID,
+                                UserName = b.UserName
+                            });
+                data = data.OrderByDescending(x => x.CreationDate).Skip(options.SkipCount).Take(options.Count);
+                var results = await data.ToListAsync();
+                return results;
+            }
+        }
+        public async Task<IEnumerable<Data.Models.SubmissionRemovalLog>> GetModLogRemovedSubmissions(string subverse, SearchOptions options)
+        {
+            using (var db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+            {
+                db.EnableCacheableOutput();
+
+                var data = (from b in db.SubmissionRemovalLogs
+                            join s in db.Submissions on b.SubmissionID equals s.ID
+                            where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                            select b).Include(x => x.Submission);
+
+                data = data.OrderByDescending(x => x.CreationDate).Skip(options.SkipCount).Take(options.Count);
+                var results = await data.ToListAsync();
+                return results;
+            }
+        }
+        public async Task<IEnumerable<Domain.Models.CommentRemovalLog>> GetModLogRemovedComments(string subverse, SearchOptions options)
+        {
+            using (var db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+            {
+                db.EnableCacheableOutput();
+
+                var data = (from b in db.CommentRemovalLogs
+                            join c in db.Comments on b.CommentID equals c.ID
+                            join s in db.Submissions on c.SubmissionID equals s.ID
+                            where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                            select b).Include(x => x.Comment).Include(x => x.Comment.Submission);
+
+                data = data.OrderByDescending(x => x.CreationDate).Skip(options.SkipCount).Take(options.Count);
+                var results = await data.ToListAsync();
+
+                //TODO: Move to DomainMaps
+                var mapToDomain = new Func<Data.Models.CommentRemovalLog, Domain.Models.CommentRemovalLog>(d => 
+                {
+                    var m = new Domain.Models.CommentRemovalLog();
+                    m.CreatedBy = d.Moderator;
+                    m.Reason = d.Reason;
+                    m.CreationDate = d.CreationDate;
+
+                    m.Comment = new SubmissionComment();
+                    m.Comment.UpCount = (int)d.Comment.UpCount;
+                    m.Comment.DownCount = (int)d.Comment.DownCount;
+                    m.Comment.Content = d.Comment.Content;
+                    m.Comment.FormattedContent = d.Comment.FormattedContent;
+                    m.Comment.IsDeleted = d.Comment.IsDeleted;
+                    m.Comment.CreationDate = d.Comment.CreationDate;
+
+                    m.Comment.IsAnonymized = d.Comment.IsAnonymized;
+                    m.Comment.UserName = m.Comment.IsAnonymized ? d.Comment.ID.ToString() : d.Comment.UserName;
+                    m.Comment.LastEditDate = d.Comment.LastEditDate;
+                    m.Comment.ParentID = d.Comment.ParentID;
+                    m.Comment.Subverse = d.Comment.Submission.Subverse;
+                    m.Comment.SubmissionID = d.Comment.SubmissionID;
+
+                    m.Comment.Submission.Title = d.Comment.Submission.Title;
+                    m.Comment.Submission.IsAnonymized = d.Comment.Submission.IsAnonymized;
+                    m.Comment.Submission.UserName = m.Comment.Submission.IsAnonymized ? d.Comment.Submission.ID.ToString() : d.Comment.Submission.UserName;
+                    m.Comment.Submission.IsDeleted = d.Comment.Submission.IsDeleted;
+                    
+                    return m;
+                });
+
+                var mapped = results.Select(mapToDomain).ToList();
+
+                return mapped;
+            }
+        }
+
+        
+
+        #endregion
 
         #region Moderator Functions
 

@@ -310,6 +310,7 @@
     <Compile Include="Controllers\HtmlElementsController.cs" />
     <Compile Include="Controllers\ManagementController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
+    <Compile Include="Controllers\ModLogController.cs" />
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SetsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -691,7 +692,6 @@
     <Content Include="Views\Shared\Sidebars\_SidebarModToolbox.cshtml" />
     <Content Include="Views\Account\_ChangeAccountEmail.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarChat.cshtml" />
-    <Content Include="Views\Subverses\SubmissionRemovalLog.cshtml" />
     <Content Include="Views\Search\Jaje.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSave.cshtml" />
     <Content Include="Views\User\Saved.cshtml" />
@@ -699,8 +699,6 @@
     <Content Include="Views\Shared\_Captcha.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Error\SubverseDisabled.cshtml" />
-    <Content Include="Views\Subverses\CommentRemovalLog.cshtml" />
-    <Content Include="Views\Subverses\BannedUsersLog.cshtml" />
     <Content Include="Web.config.live" />
     <Content Include="Views\Account\RegistrationDisabled.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseStylesheetEditor.cshtml" />
@@ -734,6 +732,10 @@
     <Content Include="Views\Messages\Notifications.cshtml" />
     <Content Include="Views\Shared\_SubverseStylesheetLink.cshtml" />
     <Content Include="Views\Error\Others.cshtml" />
+    <Content Include="Views\ModLog\Submissions.cshtml" />
+    <Content Include="Views\ModLog\Comments.cshtml" />
+    <Content Include="Views\ModLog\Banned.cshtml" />
+    <Content Include="Views\ModLog\_ModLogSidebarLinks.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
