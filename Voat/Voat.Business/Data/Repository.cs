@@ -723,11 +723,17 @@ namespace Voat.Data
 
             IQueryable<Models.Submission> query;
 
+            UserData userData = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                userData = new UserData(User.Identity.Name);
+            }
+
             switch (subverse.ToLower())
             {
                 //for *special* subverses, this is UNDONE
                 case AGGREGATE_SUBVERSE.FRONT:
-                    if (User.Identity.IsAuthenticated && UserHelper.SubscriptionCount(User.Identity.Name) > 0)
+                    if (User.Identity.IsAuthenticated && userData.HasSubscriptions())
                     {
                         query = (from x in _db.Submissions
                                  join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
@@ -763,7 +769,7 @@ namespace Voat.Data
                 case AGGREGATE_SUBVERSE.ALL:
                 case "all":
 
-                    var nsfw = (User.Identity.IsAuthenticated ? UserHelper.AdultContentEnabled(User.Identity.Name) : false);
+                    var nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
 
                     //v/all has certain conditions
                     //1. Only subs that have a MinCCP of zero

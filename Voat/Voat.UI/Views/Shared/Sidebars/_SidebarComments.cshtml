@@ -30,6 +30,7 @@
     {
         subverseOwner = Model.CreatedBy;
     }
+    var userData = Voat.Domain.UserData.GetContextUserData();
 }
 
 <div class="side">
@@ -54,9 +55,9 @@
                 <a href="/v/@Model.Name" class="hover">@Model.Name</a>
                 <a href="/rss/@Model.Name"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
             </h1>
-            @if (User.Identity.IsAuthenticated)
+            @if (userData != null)
             {
-                if (UserHelper.IsUserSubverseSubscriber(User.Identity.Name, Model.Name))
+                if (userData.IsUserSubverseSubscriber(Model.Name))
                 {
                     <button type="button" onclick="return unsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
                 }
@@ -64,7 +65,7 @@
                 {
                     <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="return subscribe(this, '@Model.Name')">subscribe</button>
                 }
-                if (UserHelper.IsUserBlockingSubverse(User.Identity.Name, Model.Name))
+                if (userData.IsUserBlockingSubverse(Model.Name))
                 {
                     <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse" onclick="return toggleBlockSubverse(this, '@Model.Name')">unblock</button>
                 }

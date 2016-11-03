@@ -154,7 +154,7 @@ namespace Voat.Controllers
             int minimumCcp = Settings.MinimumCcp;
             int maximumOwnedSubs = Settings.MaximumOwnedSubs;
 
-            var userData = new Domain.UserData(User.Identity.Name);
+            var userData = UserData;
 
             // verify recaptcha if user has less than minimum required CCP
             if (!Settings.CaptchaDisabled && userData.Information.CommentPoints.Sum < minimumCcp)
@@ -563,7 +563,7 @@ namespace Voat.Controllers
                     // check if user wants to see NSFW content by reading user preference
                     if (User.Identity.IsAuthenticated)
                     {
-                        if (UserHelper.AdultContentEnabled(User.Identity.Name))
+                        if (UserData.Preferences.EnableAdultContent)
                         {
                             return View(paginatedSubmissions);
                         }
@@ -589,7 +589,7 @@ namespace Voat.Controllers
                 // check if user wants to see NSFW content by reading user preference
                 if (User.Identity.IsAuthenticated)
                 {
-                    if (UserHelper.AdultContentEnabled(User.Identity.Name))
+                    if (UserData.Preferences.EnableAdultContent)
                     {
                         var paginatedSubmissionsFromAllSubverses = new PaginatedList<Submission>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
                         return View(paginatedSubmissionsFromAllSubverses);
@@ -1574,7 +1574,7 @@ namespace Voat.Controllers
                 if (User.Identity.IsAuthenticated)
                 {
                     // check if user wants to see NSFW content by reading user preference
-                    if (Voat.Utilities.UserHelper.AdultContentEnabled(User.Identity.Name))
+                    if (UserData.Preferences.EnableAdultContent)
                     {
                         if (sortingmode.Equals("new"))
                         {
@@ -1697,7 +1697,7 @@ namespace Voat.Controllers
                 #region authenticated users NSFW content
 
                 // check if user wants to see NSFW content by reading user preference and exclude submissions from blocked subverses
-                if (Voat.Utilities.UserHelper.AdultContentEnabled(User.Identity.Name))
+                if (UserData.Preferences.EnableAdultContent)
                 {
                     if (sortingmode.Equals("new"))
                     {

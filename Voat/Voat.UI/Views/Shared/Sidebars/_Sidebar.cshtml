@@ -15,6 +15,9 @@
 @using Voat.Models.ViewModels;
 
 @{
+    var userData = Voat.Domain.UserData.GetContextUserData();
+    System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
+
     string subverseAge = Age.ToRelative(Model.CreationDate);
     string subverseOwner = "youcanclaimthissub";
 
@@ -61,7 +64,7 @@
 
             @if (User.Identity.IsAuthenticated)
             {
-                if (UserHelper.IsUserSubverseSubscriber(User.Identity.Name, ViewBag.SelectedSubverse))
+                if (userData.IsUserSubverseSubscriber(ViewBag.SelectedSubverse))
                 {
                     <button type="button" onclick="return unsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
                 }
@@ -70,7 +73,7 @@
                     <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="return subscribe(this, '@Model.Name')">subscribe</button>
                 }
 
-                if (UserHelper.IsUserBlockingSubverse(User.Identity.Name, ViewBag.SelectedSubverse))
+                if (userData.IsUserBlockingSubverse(ViewBag.SelectedSubverse))
                 {
                     <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse" onclick="return toggleBlockSubverse(this, '@Model.Name')">unblock</button>
                 }

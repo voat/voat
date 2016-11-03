@@ -1,7 +1,11 @@
 ﻿
 @model string
 
-@if (!String.IsNullOrWhiteSpace(Model) && (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && !UserHelper.CustomCssDisabledForUser(User.Identity.Name))))
+@{ 
+    var userData = Voat.Domain.UserData.GetContextUserData();
+    System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
+}
+@if (!String.IsNullOrWhiteSpace(Model) && (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && !userData.Preferences.DisableCSS)))
 {
     <link rel="stylesheet" type="text/css" id="custom_css" href="/v/@Model/stylesheet" />
 }

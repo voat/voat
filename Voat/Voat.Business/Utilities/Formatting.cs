@@ -38,13 +38,6 @@ namespace Voat.Utilities
             {
                 newWindow = forceLinksNewWindow.Value;
             }
-            else
-            {
-                if (System.Web.HttpContext.Current != null && System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-                {
-                    newWindow = UserHelper.LinksInNewWindow(System.Web.HttpContext.Current.User.Identity.Name);
-                }
-            }
 
             var m = new Markdown
             {

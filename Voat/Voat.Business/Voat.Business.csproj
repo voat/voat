@@ -20,7 +20,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\Voat.Business.XML</DocumentationFile>
     <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
   </PropertyGroup>
@@ -222,7 +222,6 @@
     <Compile Include="Domain\Query\QueryCommentTree.cs" />
     <Compile Include="Domain\Query\QuerySubverseInformation.cs" />
     <Compile Include="Domain\Query\QueryUserContributionPoints.cs" />
-    <Compile Include="Domain\Query\QueryUserData.cs" />
     <Compile Include="Domain\Query\QueryUserPreferences.cs" />
     <Compile Include="Domain\Query\QueryUserInformation.cs" />
     <Compile Include="Domain\Query\QueryUserRecord.cs" />

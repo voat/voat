@@ -14,12 +14,13 @@
 
 @{
     string subverseAge = Age.ToRelative(Model.Creation_date);
+    var userData = Voat.Domain.UserData.GetContextUserData();
 }
 
 <div class="midcol">
     @if (User.Identity.IsAuthenticated)
     {
-        if (UserHelper.IsUserSubverseSubscriber(User.Identity.Name, Model.Name))
+        if (userData.IsUserSubverseSubscriber(Model.Name))
         {
             <button type="button" onclick="return unsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
         }

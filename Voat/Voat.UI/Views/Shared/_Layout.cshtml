@@ -14,9 +14,11 @@
 @using Voat.Models.ViewModels
 
 @{
+    var userData = Voat.Domain.UserData.GetContextUserData();
+    System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
+
     string selectedSubverse = ViewBag.SelectedSubverse;
     var theme = UserHelper.UserStylePreference(User.Identity.Name);
-    //var theme = Session["UserTheme"];
     var themeClass = theme == null || theme == "light" ? "light" : "dark";
 
     LoginViewModel loginViewModel = new LoginViewModel();
@@ -131,7 +133,7 @@
     </div>
 
     <div id="header" tabindex=0 role="banner">
-        @if (User.Identity.IsAuthenticated && UserHelper.SubscriptionCount(User.Identity.Name) > 0 && UserHelper.Topmenu_From_Subscriptions(User.Identity.Name))
+        @if (User.Identity.IsAuthenticated && userData.HasSubscriptions() && userData.Preferences.UseSubscriptionsMenu)
         {
             @Html.Action("ListOfSubversesUserIsSubscribedTo", "Subverses", new { activeSubverse = selectedSubverse })
         }
@@ -231,7 +233,6 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-        var userData = new Voat.Domain.UserData(User.Identity.Name);
         var userCCP = userData.Information.CommentPoints.Sum;
         var scaledQuota = userCCP >= 20 ? Math.Max(Settings.DailyVotingQuota, (userCCP / 2)) : 10;
 

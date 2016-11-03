@@ -14,7 +14,7 @@
 
 @{
     string userName = ViewBag.UserName ?? User.Identity.Name;
-
+    //This is an acceptable constructor call
     var userData = new Voat.Domain.UserData(userName);
 
     System.Diagnostics.Debug.Assert(userData.UserName.IsEqual(userName), "Possible mismatched Profile 1");
@@ -103,7 +103,7 @@
         </div>
         @Html.Action("SubversesUserModerates", "Home", new { userName = userName })
 
-        @if (UserHelper.PublicSubscriptionsEnabled(userName))
+        @if (userData.Preferences.DisplaySubscriptions)
         {
             @Html.Action("SubversesUserIsSubscribedTo", "Home", new { userName = userName })
         }

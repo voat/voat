@@ -89,7 +89,7 @@ namespace Voat.Controllers
                 model.Subverse = selectedsubverse;
             }
 
-            var userData = new Domain.UserData(User.Identity.Name);
+            var userData = UserData;
             model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25 && !Settings.CaptchaDisabled;
 
             return View("Submit", model);
@@ -105,7 +105,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> Submit(CreateSubmissionViewModel model)
         {
             //set this incase invalid submittal 
-            var userData = new Domain.UserData(User.Identity.Name);
+            var userData = UserData;
             model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25 && !Settings.CaptchaDisabled;
 
             // abort if model state is invalid
@@ -179,7 +179,7 @@ namespace Voat.Controllers
 
             // show only submissions from subverses that user is subscribed to if user is logged in
             // also do a check so that user actually has subscriptions
-            if (User.Identity.IsAuthenticated && UserHelper.SubscriptionCount(User.Identity.Name) > 0 && Request.QueryString["frontpage"] != "guest")
+            if (User.Identity.IsAuthenticated && UserData.HasSubscriptions() && Request.QueryString["frontpage"] != "guest")
             {
                 //IAmAGate: Perf mods for caching
                 int pagesToTake = 2;
@@ -370,10 +370,10 @@ namespace Voat.Controllers
 
                 ViewBag.FirstTimeVisitor = true;
             }
-
+            var userData = Voat.Domain.UserData.GetContextUserData();
             // show only submissions from subverses that user is subscribed to if user is logged in
             // also do a check so that user actually has subscriptions
-            if (User.Identity.IsAuthenticated && UserHelper.SubscriptionCount(User.Identity.Name) > 0)
+            if (User.Identity.IsAuthenticated && userData.HasSubscriptions())
             {
                 //IAmAGate: Perf mods for caching
                 int pagesToTake = 2;
@@ -534,9 +534,8 @@ namespace Voat.Controllers
         {
             if (userName != null)
             {
+                //This is expensive to hydrate the userData.Information for the moderation list
                 var userData = new Domain.UserData(userName);
-
-                //var userData = new UserData(User.Identity.Name);
                 return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", userData.Information.Moderates);
             }
             return new EmptyResult();

@@ -179,14 +179,14 @@ namespace Voat.Utilities
             }
             return isMod.Value;
         }
-        //[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // check if given user is subscribed to a given subverse
         public static bool IsUserSubverseSubscriber(string userName, string subverse)
         {
             var userData = new Domain.UserData(userName);
             return userData.Subscriptions.Any(x => x.IsEqual(subverse));
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // check if given user blocks a given subverse
         public static bool IsUserBlockingSubverse(string userName, string subverse)
         {
@@ -255,14 +255,14 @@ namespace Voat.Utilities
                 }
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // return subscription count for a given user
         public static int SubscriptionCount(string userName)
         {
             var userData = new Domain.UserData(userName);
             return userData.Subscriptions.Count();
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // return a list of subverses user is subscribed to
         public static IEnumerable<string> UserSubscriptions(string userName)
         {
@@ -280,7 +280,7 @@ namespace Voat.Utilities
                     .ToList();
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // check if a given user does not want to see custom CSS styles
         public static bool CustomCssDisabledForUser(string userName)
         {
@@ -319,7 +319,7 @@ namespace Voat.Utilities
             }
             return theme;
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // check if a given user wants to see NSFW (adult) content
         public static bool AdultContentEnabled(string userName)
         {
@@ -334,6 +334,7 @@ namespace Voat.Utilities
             return pref != null && pref.OpenInNewWindow;
         }
 
+        [Obsolete("This method will be removed in future version", false)]
         //preferences get called from views, so this method caches prefs in the context so each call only queries once
         private static UserPreference GetUserPreferences(string userName)
         {
@@ -347,7 +348,7 @@ namespace Voat.Utilities
             }
             return pref;
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         public static int TotalVotesUsedInPast24Hours(string userName)
         {
             int commentVotesUsedInPast24Hrs = 0;
@@ -484,7 +485,7 @@ namespace Voat.Utilities
                 return bannedUser != null;
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // check if a given user is registered as a partner
         public static bool IsUserPartner(string userName)
         {
@@ -494,21 +495,21 @@ namespace Voat.Utilities
                 return (tmpuser != null) && tmpuser.Partner;
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // check if a given user wants to publicly display his subscriptions
         public static bool PublicSubscriptionsEnabled(string userName)
         {
             UserPreference result = GetUserPreferences(userName);
             return result != null && result.DisplaySubscriptions;
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // check if a given user wants to replace default menu bar with subscriptions
         public static bool Topmenu_From_Subscriptions(string userName)
         {
             UserPreference result = GetUserPreferences(userName);
             return result != null && result.UseSubscriptionsMenu;
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // get short bio for a given user
         public static string UserShortbio(string userName)
         {
@@ -522,7 +523,7 @@ namespace Voat.Utilities
                 return result.Bio ?? STRINGS.DEFAULT_BIO;
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // get avatar for a given user
         public static string GetAvatar(string userName)
         {
@@ -539,7 +540,7 @@ namespace Voat.Utilities
                 return result != null;
             }
         }
-
+        //[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // check if a given user is owner of a given set
         public static bool IsUserSetOwner(string userName, int setId)
         {

@@ -14,12 +14,15 @@
 
 @{
     string subverseAge = Age.ToRelative(Model.Creation_date);
+    var userData = Voat.Domain.UserData.GetContextUserData();
+    System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
+
 }
 
 <div class="midcol">
     @if (User.Identity.IsAuthenticated)
     {
-        if (UserHelper.IsUserBlockingSubverse(User.Identity.Name, Model.Name))
+        if (userData.IsUserBlockingSubverse(Model.Name))
         {
             <button type="button" onclick="return toggleBlockSubverse(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unblock</button>
         }

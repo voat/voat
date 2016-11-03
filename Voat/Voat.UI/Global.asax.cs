@@ -132,14 +132,22 @@ namespace Voat
             }
 
             // force SSL for every request if enabled in Web.config
-            if (Settings.ForceHTTPS) {
-                if (HttpContext.Current.Request.IsSecureConnection.Equals(false) && HttpContext.Current.Request.IsLocal.Equals(false)) {
+            if (Settings.ForceHTTPS)
+            {
+                if (HttpContext.Current.Request.IsSecureConnection.Equals(false) && HttpContext.Current.Request.IsLocal.Equals(false))
+                {
                     Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + HttpContext.Current.Request.RawUrl);
                 }
             }
+
             //change formatting culture for .NET
             try {
-                System.Threading.Thread.CurrentThread.CurrentCulture =  new CultureInfo(Request.UserLanguages[0]);
+                var lang = (Request != null && Request.UserLanguages != null && Request.UserLanguages.Length > 0) ? Request.UserLanguages[0] : null;
+
+                if (!String.IsNullOrEmpty(lang))
+                {
+                    System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
+                }
             } catch { }
         }
     }

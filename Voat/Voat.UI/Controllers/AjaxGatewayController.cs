@@ -188,8 +188,8 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserBasicInfo(string userName)
         {
+            //acceptable constructor call
             var userData = new Domain.UserData(userName);
-            //var userData = new UserData(User.Identity.Name);
             var info = userData.Information;
 
             var memberFor = Age.ToRelative(info.RegistrationDate);

@@ -199,7 +199,7 @@ namespace Voat.Controllers
             var subverse = (string)RouteData.Values["subverse"];
             var model = new NewMessageViewModel() { Recipient = recipient, Subject = subject };
 
-            var userData = new UserData(User.Identity.Name);
+            var userData = UserData;
             model.RequireCaptcha = userData.Information.CommentPoints.Sum < 100 && !Settings.CaptchaDisabled;
 
             if (!string.IsNullOrEmpty(subverse))
@@ -227,7 +227,7 @@ namespace Voat.Controllers
             ViewBag.Title = "Compose";
 
             //set this incase invalid submittal 
-            var userData = new UserData(User.Identity.Name);
+            var userData = UserData;
             message.RequireCaptcha = userData.Information.CommentPoints.Sum < 100 && !Settings.CaptchaDisabled;
 
             if (!ModelState.IsValid)

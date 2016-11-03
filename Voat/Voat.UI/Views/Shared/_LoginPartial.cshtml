@@ -14,15 +14,12 @@
 
 @if (Request.IsAuthenticated)
 {
-    var userData = new Voat.Domain.UserData(User.Identity.Name);
+    var userData = Voat.Domain.UserData.GetContextUserData();
+    System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
 
     int linkKarma = userData.Information.SubmissionPoints.Sum;
     int commentKarma = userData.Information.CommentPoints.Sum;
     int upvotesGiven = userData.Information.CommentVoting.UpCount + userData.Information.SubmissionVoting.UpCount;
-
-    //int linkKarma = Karma.LinkKarma(User.Identity.GetUserName());
-    //int commentKarma = Karma.CommentKarma(User.Identity.GetUserName());
-    //int upvotesGiven = Karma.UpvotesGiven(User.Identity.GetUserName());
 
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {

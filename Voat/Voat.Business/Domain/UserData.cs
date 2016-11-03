@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Common;
@@ -15,6 +16,15 @@ using Voat.Domain.Query;
 
 namespace Voat.Domain
 {
+    //[Flags]
+    //public enum UserDataPreLoad
+    //{
+    //    Information = 1,
+    //    Preferences = 2,
+    //    Subscriptions = 4,
+    //    Blocks = 8
+    //}
+
     /// <summary>
     /// The purpose of this class is to cache expensive user based queries that are repeatidly accessed.
     /// </summary>
@@ -32,14 +42,16 @@ namespace Voat.Domain
         protected int? _votesInLast24Hours;
         protected int? _submissionsInLast24Hours;
 
-        public void PreLoad()
-        {
-            //This is to pre-cache user data that takes a long time to calc
-            Task.Run(() => {
-                var p = this.Preferences;
-                var i = this.Information;
-            });
-        }
+        //public async Task PreLoad(UserDataPreLoad preload)
+        //{
+        //    List<Task> tasks = new List<Task>();
+        //    if (preload
+        //    //This is to pre-cache user data that takes a long time to calc
+        //    Task.Run(() => {
+        //        var p = this.Preferences;
+        //        var i = this.Information;
+        //    });
+        //}
 
         public string UserName
         {
@@ -49,8 +61,31 @@ namespace Voat.Domain
             }
         }
 
+        public static UserData GetContextUserData()
+        {
+            UserData userData = null;
+
+            var identity = System.Threading.Thread.CurrentPrincipal.Identity;
+            if (identity != null && identity.IsAuthenticated && !String.IsNullOrEmpty(identity.Name))
+            {
+                var key = $"UserData:{identity.Name}";
+                userData = ContextCache.Get<UserData>(key);
+                if (userData == null)
+                {
+                    identity = System.Threading.Thread.CurrentPrincipal.Identity;
+                    userData = new UserData(identity.Name);
+                    ContextCache.Set(key, userData);
+                }
+            }
+
+            return userData;
+        }
+
         public UserData(string userName, bool validateUserExists = false)
         {
+
+            System.Diagnostics.Debug.Print("UserData({0}, {1})", userName, validateUserExists.ToString());
+
             var val = UserDefinition.Parse(userName);
             if (val == null)
             {
@@ -74,7 +109,7 @@ namespace Voat.Domain
             }
             this._userName = userName;
         }
-
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public int TotalVotesUsedIn24Hours
         {
             get
@@ -97,7 +132,7 @@ namespace Voat.Domain
                 Recache();
             }
         }
-
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public int TotalSubmissionsPostedIn24Hours
         {
             get
@@ -120,7 +155,7 @@ namespace Voat.Domain
                 Recache();
             }
         }
-
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public IEnumerable<string> BlockedSubverses
         {
             get
@@ -134,7 +169,7 @@ namespace Voat.Domain
                 return val;
             }
         }
-
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public IEnumerable<string> BlockedUsers
         {
             get
@@ -148,21 +183,21 @@ namespace Voat.Domain
                 return val;
             }
         }
-
-        public bool IsSubscriber
-        {
-            get
-            {
-                var isSubscriber = false;
-                var subBadge = Information.Badges.FirstOrDefault(x => x.Name == "Subscriber");
-                if (subBadge != null)
-                {
-                    isSubscriber = Repository.CurrentDate.Subtract(subBadge.CreationDate) < TimeSpan.FromDays(180);
-                }
-                return isSubscriber;
-            }
-        }
-
+        //[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        //public bool IsSubscriber
+        //{
+        //    get
+        //    {
+        //        var isSubscriber = false;
+        //        var subBadge = Information.Badges.FirstOrDefault(x => x.Name == "Subscriber");
+        //        if (subBadge != null)
+        //        {
+        //            isSubscriber = Repository.CurrentDate.Subtract(subBadge.CreationDate) < TimeSpan.FromDays(180);
+        //        }
+        //        return isSubscriber;
+        //    }
+        //}
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public Data.Models.UserPreference Preferences
         {
             get
@@ -181,7 +216,7 @@ namespace Voat.Domain
                 Recache();
             }
         }
-
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public IEnumerable<string> Subscriptions
         {
             get
@@ -207,7 +242,7 @@ namespace Voat.Domain
                 Recache();
             }
         }
-
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public UserInformation Information
         {
             get
@@ -225,7 +260,7 @@ namespace Voat.Domain
         {
             if (EqualityComparer<T>.Default.Equals(value, default(T)))
             {
-                Debug.Print("Calling Load Func");
+                Debug.Print("UserData[{0}].GetOrLoad({1}...)", UserName, typeof(T).Name);
                 value = loadFunc(this._userName);
                 if (recacheOnLoad)
                 {
@@ -239,5 +274,20 @@ namespace Voat.Domain
         {
             Task.Run(() => CacheHandler.Instance.Replace<UserData>(CachingKey.UserData(this._userName), this, TimeSpan.FromMinutes(5)));
         }
+        #region 
+
+        public bool IsUserSubverseSubscriber(string subverse)
+        {
+            return Subscriptions.Any(x => x.Equals(subverse, StringComparison.OrdinalIgnoreCase));
+        }
+        public bool IsUserBlockingSubverse(string subverse)
+        {
+            return BlockedSubverses.Any(x => x.Equals(subverse, StringComparison.OrdinalIgnoreCase));
+        }
+        public bool HasSubscriptions()
+        {
+            return Subscriptions.Any();
+        }
+        #endregion
     }
 }
