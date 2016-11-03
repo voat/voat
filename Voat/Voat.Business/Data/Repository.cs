@@ -2290,7 +2290,7 @@ namespace Voat.Data
             //var userPreferences = await GetUserPreferences(userName);
 
             userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
-            userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, userPreferences.Avatar, !String.IsNullOrEmpty(userPreferences.Avatar));
+            userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, userPreferences.Avatar, true, true, !String.IsNullOrEmpty(userPreferences.Avatar));
 
             //Task.WaitAll(tasks);
             await Task.WhenAll(tasks);
