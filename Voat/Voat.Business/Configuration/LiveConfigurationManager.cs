@@ -37,6 +37,7 @@ namespace Voat.Configuration
         public const string MinimumCcp = "minimumCcp";
         public const string RuntimeState = "runtimeState";
         public const string RecaptchaPrivateKey = "recaptchaPrivateKey";
+        public const string RedirectToSiteDomain = "redirectToSiteDomain";
         public const string RecaptchaPublicKey = "recaptchaPublicKey";
         public const string RegistrationDisabled = "registrationDisabled";
         public const string SetsDisabled = "setsDisabled";
@@ -122,6 +123,7 @@ namespace Voat.Configuration
                 SetValueIfPresent<bool>(CONFIGURATION.SetsDisabled, section[CONFIGURATION.SetsDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.CacheDisabled, section[CONFIGURATION.CacheDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.RegistrationDisabled, section[CONFIGURATION.RegistrationDisabled]);
+                SetValueIfPresent<bool>(CONFIGURATION.RedirectToSiteDomain, section[CONFIGURATION.RedirectToSiteDomain]);
                 SetValueIfPresent<bool>(CONFIGURATION.UseContentDeliveryNetwork, section[CONFIGURATION.UseContentDeliveryNetwork]);
 
                 SetValueIfPresent<bool>(CONFIGURATION.AdsEnabled, section[CONFIGURATION.AdsEnabled]);

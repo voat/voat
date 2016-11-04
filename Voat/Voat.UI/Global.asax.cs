@@ -122,21 +122,30 @@ namespace Voat
             }
         }
 
-        protected void Application_BeginRequest(Object sender, EventArgs e) {
-
-            //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
-            if (RuntimeState.Current == RuntimeStateSetting.Disabled && !HttpContext.Current.Request.IsLocal)
+        protected void Application_BeginRequest(Object sender, EventArgs e)
+        {
+            var isLocal = !HttpContext.Current.Request.IsLocal;
+            if (!isLocal)
             {
-                Server.Transfer("~/inactive.min.htm");
-                return;
-            }
-
-            // force SSL for every request if enabled in Web.config
-            if (Settings.ForceHTTPS)
-            {
-                if (HttpContext.Current.Request.IsSecureConnection.Equals(false) && HttpContext.Current.Request.IsLocal.Equals(false))
+                //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
+                if (RuntimeState.Current == RuntimeStateSetting.Disabled)
                 {
-                    Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + HttpContext.Current.Request.RawUrl);
+                    Server.Transfer("~/inactive.min.htm");
+                    return;
+                }
+
+                // force single site domain
+                if (Settings.RedirectToSiteDomain && !Settings.SiteDomain.Equals(Request.ServerVariables["HTTP_HOST"], StringComparison.OrdinalIgnoreCase))
+                {
+                    Response.RedirectPermanent("https://" + Settings.SiteDomain + HttpContext.Current.Request.RawUrl, true);
+                    return;
+                }
+
+                // force SSL for every request if enabled in Web.config
+                if (Settings.ForceHTTPS && !HttpContext.Current.Request.IsSecureConnection)
+                {
+                    Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + HttpContext.Current.Request.RawUrl, true);
+                    return;
                 }
             }
 

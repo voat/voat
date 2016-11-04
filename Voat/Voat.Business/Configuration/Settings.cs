@@ -207,7 +207,17 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.RecaptchaPublicKey, "");
             }
         }
-
+        /// <summary>
+        /// Will redirect incoming requests that don't match the site domain to the value specified in siteDomain
+        /// </summary>
+        public static bool RedirectToSiteDomain
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.RedirectToSiteDomain, true);
+            }
+        }
+        
         public static bool RegistrationDisabled
         {
             get
