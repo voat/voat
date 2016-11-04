@@ -346,36 +346,19 @@ namespace Voat.Data
                 {
                     _count = MAX_COUNT;
                 }
-                RecalculateIndex();
             }
         }
 
-        /// <summary>
-        /// The current index to start from for search results. This value is a paging index.
-        /// </summary>
-        [JsonProperty("index")]
-        [DataMember(Name = "index")]
+
+        [JsonIgnore()]
         public int Index
         {
             get
             {
-                return _currentIndex;
-            }
-
-            set
-            {
-                if (value < 0)
-                {
-                    throw new VoatValidationException("Index can not be a negative value.");
-                }
-                else
-                {
-                    _currentIndex = value;
-                    RecalculateIndex();
-                }
+                return (Page * Count);
             }
         }
-
+        
         /// <summary>
         /// [NEW] The page in which to retrieve. This value simply overriddes 'Index' and calculates it for you. How nice are we? Fairly nice I must say. Paging starts on page 1 not page 0.
         /// </summary>
@@ -392,7 +375,7 @@ namespace Voat.Data
             {
                 if (value < 0)
                 {
-                    throw new VoatValidationException("Page must be greater than zero. Paging starts on page 1, not page 0.");
+                    throw new VoatValidationException("Paging starts at 0 (zero)");
                 }
                 else if (value >= MAX_PAGECOUNT)
                 {
@@ -401,19 +384,7 @@ namespace Voat.Data
                 else
                 {
                     _page = value;
-                    RecalculateIndex();
                 }
-            }
-        }
-        /// <summary>
-        /// The skip count
-        /// </summary>
-        [JsonIgnore()]
-        public int SkipCount
-        {
-            get
-            {
-                return Page * Count + (Page > 0 ? Count : 0);
             }
         }
 
@@ -452,14 +423,6 @@ namespace Voat.Data
             get { return _queryStrings.ToList(); }
         }
 
-        private void RecalculateIndex()
-        {
-            if (Page > 0)
-            {
-                //adjust friendly page count to zero based
-                _currentIndex = (Count * (Page)) + (Page);
-            }
-        }
         public string ToString(string format, string formatInputIfEmpty = null)
         {
             var x = ToString();
@@ -476,6 +439,7 @@ namespace Voat.Data
                 return x;
             }
         }
+
         public override string ToString()
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();

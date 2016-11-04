@@ -2785,7 +2785,7 @@ namespace Voat.Data
                                 ID = b.ID,
                                 UserName = b.UserName
                             });
-                data = data.OrderByDescending(x => x.CreationDate).Skip(options.SkipCount).Take(options.Count);
+                data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
                 var results = await data.ToListAsync();
                 return results;
             }
@@ -2801,7 +2801,7 @@ namespace Voat.Data
                             where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                             select b).Include(x => x.Submission);
 
-                data = data.OrderByDescending(x => x.CreationDate).Skip(options.SkipCount).Take(options.Count);
+                data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
                 var results = await data.ToListAsync();
                 return results;
             }
@@ -2818,7 +2818,7 @@ namespace Voat.Data
                             where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                             select b).Include(x => x.Comment).Include(x => x.Comment.Submission);
 
-                data = data.OrderByDescending(x => x.CreationDate).Skip(options.SkipCount).Take(options.Count);
+                data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
                 var results = await data.ToListAsync();
 
                 //TODO: Move to DomainMaps
