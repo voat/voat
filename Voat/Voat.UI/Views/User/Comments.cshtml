@@ -19,9 +19,9 @@
 <div id="container">
     <div class="content-no-margin" role="main">
         <div class="alert-title">Comment history for @ViewBag.UserName.</div>
-        @foreach (var submission in Model)
+        @foreach (var item in Model)
         {
-            @Html.Partial("Userprofile/_UserProfileComment", submission)
+            @Html.Partial("Userprofile/_UserProfileComment", item)
         }
         <div class="pagination-container">
             <ul>
