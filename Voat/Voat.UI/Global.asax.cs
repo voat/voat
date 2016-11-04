@@ -124,7 +124,7 @@ namespace Voat
 
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {
-            var isLocal = !HttpContext.Current.Request.IsLocal;
+            var isLocal = HttpContext.Current.Request.IsLocal;
             if (!isLocal)
             {
                 //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
@@ -137,14 +137,14 @@ namespace Voat
                 // force single site domain
                 if (Settings.RedirectToSiteDomain && !Settings.SiteDomain.Equals(Request.ServerVariables["HTTP_HOST"], StringComparison.OrdinalIgnoreCase))
                 {
-                    Response.RedirectPermanent("https://" + Settings.SiteDomain + HttpContext.Current.Request.RawUrl, true);
+                    Response.RedirectPermanent(String.Format("http{2}://{0}{1}", Settings.SiteDomain, HttpContext.Current.Request.RawUrl, (Settings.ForceHTTPS ? "s" : "")), true);
                     return;
                 }
 
                 // force SSL for every request if enabled in Web.config
                 if (Settings.ForceHTTPS && !HttpContext.Current.Request.IsSecureConnection)
                 {
-                    Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + HttpContext.Current.Request.RawUrl, true);
+                    Response.Redirect(String.Format("https://{0}{1}", Request.ServerVariables["HTTP_HOST"], HttpContext.Current.Request.RawUrl), true);
                     return;
                 }
             }

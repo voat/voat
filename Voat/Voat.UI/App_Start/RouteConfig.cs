@@ -885,20 +885,40 @@ namespace Voat
             #region Mod Logs
 
             routes.MapRoute(
-                name: "subverseSubmissionRemovalLog",
+                name: "modLogSubmission",
                 url: "v/{subverse}/modlog/submission",
                 defaults: new { controller = "ModLog", action = "Submissions" }
             );
 
             routes.MapRoute(
-                name: "subverseCommentRemovalLog",
+                name: "modLogComment",
                 url: "v/{subverse}/modlog/comment",
                 defaults: new { controller = "ModLog", action = "Comments" }
             );
 
             routes.MapRoute(
-                name: "subverseBannedUsersLog",
+                name: "modLogBanned",
                 url: "v/{subverse}/modlog/banned",
+                defaults: new { controller = "ModLog", action = "Banned" }
+            );
+
+            //Compat routes
+            //https://voat.co/v/test/modlog/deleted
+            routes.MapRoute(
+                name: "modLogSubmission_Old",
+                url: "v/{subverse}/modlog/deleted",
+                defaults: new { controller = "ModLog", action = "Submissions" }
+            );
+            //https://voat.co/v/test/modlog/deletedcomments
+            routes.MapRoute(
+                name: "modLogComment_Old",
+                url: "v/{subverse}/modlog/deletedcomments",
+                defaults: new { controller = "ModLog", action = "Comments" }
+            );
+            //https://voat.co/v/test/modlog/bannedusers
+            routes.MapRoute(
+                name: "modLogBanned_Old",
+                url: "v/{subverse}/modlog/bannedusers",
                 defaults: new { controller = "ModLog", action = "Banned" }
             );
 

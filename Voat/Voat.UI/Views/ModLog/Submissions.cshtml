@@ -68,14 +68,14 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", "subverseSubmissionRemovalLog", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
+                        @Html.RouteLink("‹ prev", "modLogSubmission", new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
                     </li>
                 }
 
                 @if (Model.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", "subverseSubmissionRemovalLog", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
+                        @Html.RouteLink("next ›", "modLogSubmission", new { page = (Model.PageIndex + 1) }, new { rel = "next" })
                     </li>
                 }
             </ul>
