@@ -12,7 +12,7 @@ Disallow: /*.rss
 Disallow: /*.i
 Disallow: /*.embed
 Disallow: /v/*/submit
-Disallow: /messaging/compose*
+Disallow: /messages/compose*
 Disallow: /api
 Disallow: /post
 Disallow: /submit
