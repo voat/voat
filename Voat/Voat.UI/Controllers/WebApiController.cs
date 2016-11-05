@@ -566,7 +566,7 @@ namespace Voat.Controllers
                 {
                     using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
                     {
-                        var query = from pro in db.Submissions.Where(s => s.Type == 2 && (s.Content.EndsWith(".png") || s.Content.EndsWith(".jpg")) && s.UpCount > 10 && !s.Subverse1.IsAdult).OrderByDescending(s => s.CreationDate).Take(100)
+                        var query = from pro in db.Submissions.Where(s => s.Type == 2 && (s.Url.EndsWith(".png") || s.Url.EndsWith(".jpg")) && s.UpCount > 10 && !s.Subverse1.IsAdult).OrderByDescending(s => s.CreationDate).Take(100)
                                     select new ResponseItem
                                     {
                                         SubmissionId = pro.ID,
