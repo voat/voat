@@ -34,7 +34,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0 || String.IsNullOrWhiteSpace(domainname) || pageNumber > 9)
             {
-                return View("~/Views/Error/404.cshtml");
+                return NotFoundErrorView();
             }
             if (domainname.Length < 4)
             {

@@ -174,7 +174,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Error/404.cshtml");
+                return NotFoundErrorView();
             }
 
             // show only submissions from subverses that user is subscribed to if user is logged in
@@ -351,7 +351,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Error/404.cshtml");
+                return NotFoundErrorView();
             }
 
             // setup a cookie to find first time visitors and display welcome banner

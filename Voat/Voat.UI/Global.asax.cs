@@ -110,14 +110,13 @@ namespace Voat
         protected void Application_Error(object sender, EventArgs e)
         {
             var ex = Server.GetLastError();
-            EventLogger.Log(ex);
+            EventLogger.Log(ex, Origin.UI);
             if (ex is HttpException && ((HttpException)ex).GetHttpCode() == 404)
             {
                 Response.RedirectToRoute(
-                    new
-                    {
+                    new {
                         controller = "Error",
-                        action = "NotFound"
+                        action = "Generic"
                     });
             }
         }

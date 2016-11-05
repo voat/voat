@@ -26,7 +26,7 @@ namespace Voat.Controllers
                 if (subverseObject.IsAdminDisabled.HasValue && subverseObject.IsAdminDisabled.Value)
                 {
                     ViewBag.Subverse = subverseObject.Name;
-                    return View("~/Views/Error/SubverseDisabled.cshtml");
+                    return SubverseDisabledErrorView();
                 }
             }
             var options = new SearchOptions(Request.Url.Query);
@@ -50,7 +50,7 @@ namespace Voat.Controllers
                 if (subverseObject.IsAdminDisabled.HasValue && subverseObject.IsAdminDisabled.Value)
                 {
                     ViewBag.Subverse = subverseObject.Name;
-                    return View("~/Views/Error/SubverseDisabled.cshtml");
+                    return SubverseDisabledErrorView();
                 }
             }
 
@@ -73,7 +73,7 @@ namespace Voat.Controllers
                 if (subverseObject.IsAdminDisabled.HasValue && subverseObject.IsAdminDisabled.Value)
                 {
                     ViewBag.Subverse = subverseObject.Name;
-                    return View("~/Views/Error/SubverseDisabled.cshtml");
+                    return SubverseDisabledErrorView();
                 }
             }
             var options = new SearchOptions(Request.Url.Query);

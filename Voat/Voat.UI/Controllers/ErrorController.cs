@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System.Web.Mvc;
+using Voat.Models.ViewModels;
 
 namespace Voat.Controllers
 {
@@ -38,6 +39,14 @@ namespace Voat.Controllers
         public ActionResult UnAuthorized()
         {
             return View("~/Views/Error/UnAuthorized.cshtml");
+        }
+        public ActionResult Generic(ErrorViewModel model = null)
+        {
+            if (model == null)
+            {
+                model = new ErrorViewModel();
+            }
+            return View("~/Views/Error/Generic.cshtml", model);
         }
 
         public ActionResult Unhandled()

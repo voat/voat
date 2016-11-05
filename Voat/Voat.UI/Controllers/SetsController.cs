@@ -235,7 +235,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Error/404.cshtml");
+                return NotFoundErrorView();
             }
 
             try
@@ -268,7 +268,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Error/404.cshtml");
+                return NotFoundErrorView();
             }
 
             try
@@ -370,7 +370,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Error/404.cshtml");
+                return NotFoundErrorView();
             }
 
             // load user sets for logged in user
@@ -394,7 +394,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return View("~/Views/Error/404.cshtml");
+                return NotFoundErrorView();
             }
 
             // load user owned sets for logged in user

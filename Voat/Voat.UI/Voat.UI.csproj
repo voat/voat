@@ -322,6 +322,7 @@
     <Compile Include="Models\ViewModels\ApiKeyCreateRequest.cs" />
     <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
     <Compile Include="Models\ViewModels\ChatViewModel.cs" />
+    <Compile Include="Models\ViewModels\ErrorViewModel.cs" />
     <Compile Include="Models\ViewModels\MessageContextViewModel.cs" />
     <Compile Include="Models\ViewModels\ModeratorDeleteViewModels.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
@@ -736,6 +737,7 @@
     <Content Include="Views\ModLog\Comments.cshtml" />
     <Content Include="Views\ModLog\Banned.cshtml" />
     <Content Include="Views\ModLog\_ModLogSidebarLinks.cshtml" />
+    <Content Include="Views\Error\Generic.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

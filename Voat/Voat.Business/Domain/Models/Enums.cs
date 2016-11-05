@@ -122,19 +122,24 @@ namespace Voat.Domain.Models
     public enum Origin
     {
         /// <summary>
+        /// Unknown
+        /// </summary>
+        Unknown = 0,
+
+        /// <summary>
         /// From the web UI
         /// </summary>
-        UI = 0,
+        UI = 1,
 
         /// <summary>
         /// From the API endpoints
         /// </summary>
-        API = 1,
+        API = 2,
 
         /// <summary>
         /// From client-side JS
         /// </summary>
-        AJAX = 2
+        AJAX = 3
     }
 
     public enum CommentSortAlgorithm

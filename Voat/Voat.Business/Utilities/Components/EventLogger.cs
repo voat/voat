@@ -2,6 +2,7 @@
 using Voat.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using Voat.Domain.Models;
 
 namespace Voat.Utilities.Components
 {
@@ -15,12 +16,12 @@ namespace Voat.Utilities.Components
         /// Log an exception to the database
         /// </summary>
         /// <param name="exception">The System.Exception to log</param>
-        public static void Log(Exception exception)
+        public static void Log(Exception exception, Origin origin = Origin.Unknown)
         {
-            Log(null, exception);
+            Log(null, exception, origin);
         }
 
-        private static void Log(int? parentID, Exception exception)
+        private static void Log(int? parentID, Exception exception, Origin origin = Origin.Unknown)
         {
             if (exception != null)
             {
@@ -48,6 +49,8 @@ namespace Voat.Utilities.Components
                                 }
                                 var result = repo.Log(new Data.Models.EventLog
                                 {
+                                    //TODO: Modify schema to include this param
+                                    //Origin = origin.ToString(),
                                     ParentID = parentID,
                                     Type = exception.GetType().Name,
                                     UserName = userName,
