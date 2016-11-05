@@ -545,7 +545,7 @@ namespace Voat.Controllers
                                 db.EnableCacheableOutput();
 
                                 var x = SubmissionsFromASubverseByRank(subversetoshow, db);
-                                int count = x.Count();
+                                int count = -1;
                                 List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
                                 return new Tuple<IList<Submission>, int>(content, count);
                             }
@@ -558,7 +558,9 @@ namespace Voat.Controllers
 
                     // check if subverse is rated adult, show a NSFW warning page before entering
                     if (!subverse.IsAdult)
+                    {
                         return View(paginatedSubmissions);
+                    }
 
                     // check if user wants to see NSFW content by reading user preference
                     if (User.Identity.IsAuthenticated)
@@ -1554,7 +1556,7 @@ namespace Voat.Controllers
                             db.EnableCacheableOutput();
 
                             var x = SubmissionsFromASubverseByDate(subversetoshow, db);
-                            int count = x.Count();
+                            int count = -1;
                             List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
                             return new Tuple<IList<Submission>, int>(content, count);
                         }
@@ -1563,25 +1565,10 @@ namespace Voat.Controllers
                     cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
                 }
 
-                ////IAmAGate: Perf mods for caching
-                //string cacheKey = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
-                //Tuple<IList<Message>, int> cacheData = (Tuple<IList<Message>, int>)System.Web.HttpContext.Current.Cache[cacheKey];
-
-                //if (cacheData == null)
-                //{
-                //    var x = SubmissionsFromASubverseByDate(subversetoshow);
-                //    int count = x.Count();
-                //    List<Message> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
-                //    cacheData = new Tuple<IList<Message>, int>(content, count);
-                //    System.Web.HttpContext.Current.Cache.Insert(cacheKey, cacheData, null, Repository.CurrentDate.AddSeconds(subverseCacheTimeInSeconds), System.Web.Caching.Cache.NoSlidingExpiration);
-                //}
-
                 PaginatedList<Submission> paginatedSubmissionsByDate = new PaginatedList<Submission>(cacheData.Item1, pageNumber, pageSize, cacheData.Item2);
 
                 return View("SubverseIndex", paginatedSubmissionsByDate);
 
-                //var paginatedSubmissionsByDate = new PaginatedList<Message>(SubmissionsFromASubverseByDate(subversetoshow), page ?? 0, pageSize);
-                //return View("SubverseIndex", paginatedSubmissionsByDate);
             }
 
             if (sortingmode.Equals("top"))
