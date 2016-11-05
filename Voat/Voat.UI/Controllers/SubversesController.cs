@@ -796,7 +796,7 @@ namespace Voat.Controllers
             ViewBag.SelectedSubverse = "subverses";
             ViewBag.SortingMode = "active";
 
-            const int pageSize = 25;
+            const int pageSize = 100;
             int pageNumber = (page ?? 0);
 
             if (pageNumber < 0)
@@ -808,17 +808,17 @@ namespace Voat.Controllers
                 {
                     db.EnableCacheableOutput();
 
-                    return (from s in db.Subverses
-                            join submission in db.Submissions on s.Name equals submission.Subverse
-                            where s.Description != null && s.SideBar != null
+                    //HACK: I'm either completely <censored> or this is a huge pain in EF (sorting on a joined column and using .Distinct()), what you see below is a total hack that 'kinda' works
+                    return (from subverse in db.Subverses
+                            join submission in db.Submissions on subverse.Name equals submission.Subverse
+                            where subverse.Description != null && subverse.SideBar != null
                             orderby submission.CreationDate descending
-                            select s).Distinct().Take(pageSize).ToList();
-
+                            select subverse).Take(pageSize).ToList().Distinct().ToList();
                 }
-            }), TimeSpan.FromHours(1));
+            }), TimeSpan.FromMinutes(15));
 
-            //Turn off paging and only show the top 25 most active
-            var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, 0, 25, 25);
+            //Turn off paging and only show the top ~50 most active
+            var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, 0, pageSize, pageSize);
 
             return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
         }

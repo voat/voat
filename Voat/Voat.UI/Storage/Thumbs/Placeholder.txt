@@ -1,1 +1,3 @@
 ﻿### force asp.net to publish this folder
+
+Voat needs write permission to this folder

@@ -387,7 +387,9 @@
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\bootstrap.min.css">
+      <DependentUpon>bootstrap.css</DependentUpon>
+    </Content>
     <Content Include="Content\tooltipster.css" />
     <Content Include="Content\ui-themes\autocomplete\autocomplete.css" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css" />
@@ -398,7 +400,7 @@
     <Content Include="ddos.min.htm">
       <DependentUpon>ddos.htm</DependentUpon>
     </Content>
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="gizmo\index.html" />
     <Content Include="gizmo\lib\ios-orientationchange-fix.js" />
     <Content Include="gizmo\lib\jquery-2.1.0.min.js" />
@@ -463,10 +465,10 @@
     <Content Include="Graphics\WVSprite.png.scss">
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />
