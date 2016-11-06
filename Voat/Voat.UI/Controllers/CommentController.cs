@@ -42,14 +42,19 @@ namespace Voat.Controllers
         private readonly voatEntities _db = new voatEntities();
 
         // POST: votecomment/{commentId}/{typeOfVote}
+        [HttpPost]
         [Authorize]
+        [VoatValidateAntiForgeryToken]
         public async Task<JsonResult> VoteComment(int commentId, int typeOfVote)
         {
             var cmd = new CommentVoteCommand(commentId, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
             var result = await cmd.Execute();
             return Json(result);
         }
+
+        [HttpPost]
         [Authorize]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SaveComment(int commentId)
         {
             var cmd = new SaveCommand(Domain.Models.ContentType.Comment, commentId);

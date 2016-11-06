@@ -143,6 +143,7 @@ namespace Voat.Controllers
 
         [Authorize]
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Block(Domain.Models.DomainType blockType, string name)
         {
             //Used by voat.js
@@ -160,6 +161,7 @@ namespace Voat.Controllers
         }
         [Authorize]
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> BlockUser(string name)
         {
             var cmd = new BlockCommand(Domain.Models.DomainType.User, name, false);
@@ -183,8 +185,8 @@ namespace Voat.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet]
+        [Authorize]
         public async Task<ViewResult> Blocked(Domain.Models.DomainType blockType, int? page)
         {
 

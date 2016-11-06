@@ -157,7 +157,9 @@ namespace Voat.Controllers
 
         // vote on a submission
         // POST: vote/{messageId}/{typeOfVote}
+        [HttpPost]
         [Authorize]
+        [VoatValidateAntiForgeryToken]
         public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
         {
             var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
@@ -167,7 +169,9 @@ namespace Voat.Controllers
 
         // save a submission
         // POST: save/{messageId}
+        [HttpPost]
         [Authorize]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Save(int messageId)
         {
             var cmd = new SaveCommand(Domain.Models.ContentType.Submission, messageId);
