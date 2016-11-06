@@ -9,7 +9,7 @@ using Voat.Data.Models;
 namespace Voat.Domain.Query
 {
     //This class exposes anon user names as it needs to determine submitter state
-    internal class QueryCommentTree : CachedQuery<IDictionary<string, usp_CommentTree_Result>>
+    internal class QueryCommentTree : CachedQuery<IDictionary<int, usp_CommentTree_Result>>
     {
         protected int _submissionID;
 
@@ -39,11 +39,11 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override async Task<IDictionary<string, usp_CommentTree_Result>> GetData()
+        protected override async Task<IDictionary<int, usp_CommentTree_Result>> GetData()
         {
             using (var db = new Repository())
             {
-                return db.GetCommentTree(this._submissionID, null, null).ToDictionary(x => x.ID.ToString());
+                return db.GetCommentTree(this._submissionID, null, null).ToDictionary(x => x.ID);
             }
         }
     }

@@ -19,7 +19,9 @@
 
     if (User.Identity.IsAuthenticated)
     {
-        if (UserHelper.LinksInNewWindow(User.Identity.Name))
+        var userData = Voat.Domain.UserData.GetContextUserData();
+
+        if (userData.Preferences.OpenInNewWindow)
         {
             ahrefTarget = "_blank";
         }

@@ -298,7 +298,9 @@ namespace Voat.Controllers
             try
             {
                 if (!ModelState.IsValid)
+                {
                     return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                }
                 var existingSubverse = _db.Subverses.Find(updatedModel.Name);
 
                 // check if subverse exists before attempting to edit it
@@ -308,6 +310,18 @@ namespace Voat.Controllers
                     if (!ModeratorPermission.HasPermission(User.Identity.Name, updatedModel.Name, Domain.Models.ModeratorAction.ModifySettings))
                     {
                         return new EmptyResult();
+                    }
+                    //check description for banned domains
+                    if (BanningUtility.ContentContainsBannedDomain(existingSubverse.Name, updatedModel.Description))
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, description text contains banned domains.");
+                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                    }
+                    //check sidebar for banned domains
+                    if (BanningUtility.ContentContainsBannedDomain(existingSubverse.Name, updatedModel.SideBar))
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, sidebar text contains banned domains.");
+                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                     }
 
                     // TODO investigate if EntityState is applicable here and use that instead

@@ -18,7 +18,7 @@
     System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
 
     string selectedSubverse = ViewBag.SelectedSubverse;
-    var theme = UserHelper.UserStylePreference(User.Identity.Name);
+    var theme = UserHelper.UserStylePreference();
     var themeClass = theme == null || theme == "light" ? "light" : "dark";
 
     LoginViewModel loginViewModel = new LoginViewModel();

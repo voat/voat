@@ -28,7 +28,7 @@ namespace Voat.Rules.Posting
                 // throttle comment posting if CCP is low, regardless of account age
                 if (userCcp < 1)
                 {
-                    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(context.UserName);
+                    var quotaUsed = UserDailyCommentPostingQuotaForNegativeScoreUsed(context);
                     if (quotaUsed)
                     {
                         return CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", Settings.DailyCommentPostingQuotaForNegativeScore.ToString()));
@@ -38,7 +38,7 @@ namespace Voat.Rules.Posting
                 // if user account is new, allow max X comments per hour
                 if (userMembershipTimeSpan.TotalDays < 7 && userCcp < 50)
                 {
-                    var quotaUsed = UserHelper.UserHourlyCommentPostingQuotaUsed(context.UserName);
+                    var quotaUsed = UserHourlyCommentPostingQuotaUsed(context);
                     if (quotaUsed)
                     {
                         return CreateOutcome(RuleResult.Denied, String.Format("You have reached your hourly comment quota. Your current quota is {0} comment(s) per hour.", Settings.HourlyCommentPostingQuota.ToString()));
@@ -48,7 +48,7 @@ namespace Voat.Rules.Posting
                 // if user CCP is < 10, allow only X comment submissions per 24 hours
                 if (userMembershipTimeSpan.TotalDays < 7 && userCcp <= 10)
                 {
-                    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaUsed(context.UserName);
+                    var quotaUsed = UserDailyCommentPostingQuotaUsed(context);
                     if (quotaUsed)
                     {
                         return CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", Settings.DailyCommentPostingQuota.ToString()));
@@ -67,6 +67,7 @@ namespace Voat.Rules.Posting
             }
 
             return result;
+
 
             #region Original Logic
 

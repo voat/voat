@@ -554,15 +554,19 @@ namespace Voat.Data
 
         public Subverse GetSubverseInfo(string subverse, bool filterDisabled = false)
         {
-            var query = (from x in _db.Subverses
-                         where x.Name == subverse
-                         select x);
-            if (filterDisabled)
+            using (var db = new voatEntities())
             {
-                query = query.Where(x => x.IsAdminDisabled != true);
+                db.EnableCacheableOutput();
+                var query = (from x in db.Subverses
+                             where x.Name == subverse
+                             select x);
+                if (filterDisabled)
+                {
+                    query = query.Where(x => x.IsAdminDisabled != true);
+                }
+                var submission = query.FirstOrDefault();
+                return submission;
             }
-            var submission = query.FirstOrDefault();
-            return submission;
         }
 
         public string GetSubverseStylesheet(string subverse)

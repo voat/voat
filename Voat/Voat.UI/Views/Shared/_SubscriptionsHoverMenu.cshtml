@@ -22,7 +22,7 @@
         System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
 
         //subscriptionList = UserHelper.UserSubscriptions(User.Identity.Name);
-        subscriptionList = userData.Subscriptions;
+        subscriptionList = userData.SubverseSubscriptions;
     }
 }
 

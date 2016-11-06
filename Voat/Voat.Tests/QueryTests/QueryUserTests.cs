@@ -59,7 +59,7 @@ namespace Voat.Tests.QueryTests
 
             var userData = new Domain.UserData(noSubUserName);
             //var userData = new Domain.UserData(noSubUserName);
-            Assert.AreEqual(0, userData.Subscriptions.Count());
+            Assert.AreEqual(0, userData.SubverseSubscriptions.Count());
 
             //test subscription
             var subUserName = "HasSubs";
@@ -71,8 +71,8 @@ namespace Voat.Tests.QueryTests
 
             userData = new Domain.UserData(subUserName);
 
-            Assert.AreEqual(1, userData.Subscriptions.Count());
-            Assert.AreEqual("unit", userData.Subscriptions.First());
+            Assert.AreEqual(1, userData.SubverseSubscriptions.Count());
+            Assert.AreEqual("unit", userData.SubverseSubscriptions.First());
 
         }
         [TestMethod]

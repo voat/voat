@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Voat.Caching;
 
@@ -94,6 +95,7 @@ namespace Voat.Domain.Query
         private async Task<T> GetFreshData()
         {
             CacheHit = false;
+            Debug.Print("{0}(loading)", this.GetType().Name);
             T data = await GetData().ConfigureAwait(false);
             return data;
         }

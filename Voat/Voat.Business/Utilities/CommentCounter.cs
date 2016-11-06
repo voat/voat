@@ -4,14 +4,12 @@ using Voat.Data.Models;
 
 namespace Voat.Utilities
 {
-    //THIS IS A TEMPORARY DEADLOCK WORKAROUND (AND NOW CACHEABLE CONTENT)
     public static class CommentCounter
     {
         public static int CommentCount(int submissionID)
         {
             int count = 0;
 
-            //string cacheKey = String.Format("comment:count:{0}", submissionID).ToString();
             string cacheKey = CachingKey.CommentCount(submissionID);
             var data = CacheHandler.Instance.Retrieve<int?>(cacheKey);
             if (data == null)
@@ -34,7 +32,7 @@ namespace Voat.Utilities
                         }
                         return (int)cmd.ExecuteScalar();
                     }
-                }), TimeSpan.FromMinutes(2), 1);
+                }), TimeSpan.FromMinutes(4), 1);
 
                 count = (int)data;
             }

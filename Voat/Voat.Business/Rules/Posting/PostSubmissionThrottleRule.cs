@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Voat.Configuration;
+using Voat.Data;
+using Voat.Data.Models;
 using Voat.RulesEngine;
 using Voat.Utilities;
 
@@ -23,25 +26,25 @@ namespace Voat.Rules.Posting
             if (!isModerator)
             {
                 // reject if user has reached global daily submission quota
-                if (UserHelper.UserDailyGlobalPostingQuotaUsed(context.UserName))
+                if (UserDailyGlobalPostingQuotaUsed(context))
                 {
                     return CreateOutcome(RuleResult.Denied, "You have reached your daily global submission quota");
                 }
 
                 // reject if user has reached global hourly submission quota
-                if (UserHelper.UserHourlyGlobalPostingQuotaUsed(context.UserName))
+                if (UserHourlyGlobalPostingQuotaUsed(context))
                 {
                     return CreateOutcome(RuleResult.Denied, "You have reached your hourly global submission quota");
                 }
 
                 // check if user has reached hourly posting quota for target subverse
-                if (UserHelper.UserHourlyPostingQuotaForSubUsed(context.UserName, context.Subverse.Name))
+                if (UserHourlyPostingQuotaForSubUsed(context, context.Subverse.Name))
                 {
                     return CreateOutcome(RuleResult.Denied, "You have reached your hourly submission quota for this subverse");
                 }
 
                 // check if user has reached daily posting quota for target subverse
-                if (UserHelper.UserDailyPostingQuotaForSubUsed(context.UserName, context.Subverse.Name))
+                if (UserDailyPostingQuotaForSubUsed(context, context.Subverse.Name))
                 {
                     return CreateOutcome(RuleResult.Denied, "You have reached your daily submission quota for this subverse");
                 }

@@ -18,7 +18,7 @@
 @using Voat.Models.ViewModels
 
 @{ 
-    var theme = UserHelper.UserStylePreference(User.Identity.Name);
+    var theme = UserHelper.UserStylePreference();
     var themeClass = theme == null || theme == "light" ? "light" : "dark";
 }
 
