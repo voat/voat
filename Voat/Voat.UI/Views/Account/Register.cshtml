@@ -15,7 +15,8 @@
 @model Voat.Models.ViewModels.RegisterViewModel
 
 @{
-    ViewBag.Title = "Voater registration";
+    var siteName = Settings.SiteName;
+    ViewBag.Title = siteName + "er registration";
 }
 
 <div id="container">

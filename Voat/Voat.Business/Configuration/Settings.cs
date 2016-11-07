@@ -8,6 +8,14 @@ namespace Voat.Configuration
 
         internal static Dictionary<string, object> configValues = new Dictionary<string, object>();
 
+        public static bool IsVoatBranded
+        {
+            get
+            {
+                return SiteName.Equals("Voat", System.StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
         public static bool AdsEnabled
         {
             get
@@ -127,7 +135,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.ForceHTTPS, true);
             }
         }
-
+        public static string FooterText
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.FooterText, "");
+            }
+        }
         public static int HourlyCommentPostingQuota
         {
             get

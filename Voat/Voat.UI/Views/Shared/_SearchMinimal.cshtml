@@ -14,11 +14,11 @@
 
 <div class="spacersection spacer">
     <div class="alert-h1">
-        Search Voat
+        Search @Settings.SiteName
     </div>
     @using (Html.BeginForm("SearchResults", "Search", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
     {
-        @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search Voat" })
+        @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search " + Settings.SiteName })
         @Html.ValidationMessage("q")
     }
 </div>

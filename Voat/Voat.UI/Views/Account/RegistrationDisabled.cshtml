@@ -9,38 +9,44 @@
                 <h3 class="panel-title">Too many kids</h3>
             </div>
             <div class="panel-body centered">
-                <p class="h3">Voat is currently Invite-Only :(</p>
-                <p class="h6">New registrations are temporarily disabled, check back in a few hours.</p>
-                <p class="h4">Can't wait? Follow <a href="https://twitter.com/voatco">voatco</a> for updates. Maaaaah. (goat sound)</p>
+                <p class="h3">@Settings.SiteName is currently Invite-Only :(</p>
+                @if (Settings.IsVoatBranded)
+                {
+                    <p class="h6">New registrations are temporarily disabled, check back in a few hours.</p>
+                    <p class="h4">Can't wait? Follow <a href="https://twitter.com/voatco">voatco</a> for updates. Maaaaah. (goat sound)</p>
+                }
                 <p class="text-center">
                     <a href="/"><img src="/Graphics/voat-goat.png" class="img-responsive center-block" alt="Whoopsie Daisy!" style="width: 100%; max-width: 350px;" /></a>
                 </p>
             </div>
         </div>
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">Stay informed</h3>
+        @if (Settings.IsVoatBranded)
+        {
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Stay informed</h3>
+                </div>
+                <div class="panel-body centered">
+                    <p>
+                        If you're into that, you could follow <a href="https://twitter.com/voatco">voat @@ twitter</a> and we'll keep you posted when we are back online.
+                    </p>
+                </div>
             </div>
-            <div class="panel-body centered">
-                <p>
-                    If you're into that, you could follow <a href="https://twitter.com/voatco">voat @@ twitter</a> and we'll keep you posted when we are back online.
-                </p>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Contact us</h3>
+                </div>
+                <div class="panel-body centered">
+                    <p>For general enquiries, email hello@voat.co. We currently have a huge backlog and we may not reply right away. Thank you for your understanding.</p>
+                </div>
             </div>
-        </div>
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">Contact us</h3>
-            </div>
-            <div class="panel-body centered">
-                <p>For general enquiries, email hello@voat.co. We currently have a huge backlog and we may not reply right away. Thank you for your understanding.</p>
-            </div>
-        </div>
+        }
     </div>
 </div>
 <div class="footer-container">
     <div class="footer">
         <p class="bottommenu">
-            &copy; 2015 Voat.co. All rights reserved. Voat and the Voat Mascot are trademarks of Voat.co.
+            @Html.Raw(Settings.FooterText)
         </p>
     </div>
 </div>

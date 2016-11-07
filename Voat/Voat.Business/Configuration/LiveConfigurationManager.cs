@@ -27,6 +27,7 @@ namespace Voat.Configuration
         public const string DestinationPathThumbs = "destinationPathThumbs";
         public const string EmailServiceKey = "emailServiceKey";
         public const string ForceHTTPS = "forceHTTPS";
+        public const string FooterText = "footerText";
         public const string HourlyCommentPostingQuota = "hourlyCommentPostingQuota";
         public const string HourlyGlobalPostingQuota = "hourlyGlobalPostingQuota";
         public const string HourlyPostingQuotaPerSub = "hourlyPostingQuotaPerSub";
@@ -102,7 +103,8 @@ namespace Voat.Configuration
                 SetValueIfPresent<string>(CONFIGURATION.SiteLogo, section[CONFIGURATION.SiteLogo]);
                 SetValueIfPresent<string>(CONFIGURATION.DestinationPathAvatars, section[CONFIGURATION.DestinationPathAvatars]);
                 SetValueIfPresent<string>(CONFIGURATION.DestinationPathThumbs, section[CONFIGURATION.DestinationPathThumbs]);
-
+                SetValueIfPresent<string>(CONFIGURATION.FooterText, section[CONFIGURATION.FooterText]);
+                
                 SetValueIfPresent<int>(CONFIGURATION.MinimumCcp, section[CONFIGURATION.MinimumCcp]);
                 SetValueIfPresent<int>(CONFIGURATION.MaximumOwnedSubs, section[CONFIGURATION.MaximumOwnedSubs]);
                 SetValueIfPresent<int>(CONFIGURATION.MaximumOwnedSets, section[CONFIGURATION.MaximumOwnedSets]);

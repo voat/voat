@@ -45,12 +45,12 @@ namespace Voat.Controllers
 
         private AdViewModel GetAdModel(string subverse, bool useExisting = false)
         {
-            var linkToAdPurchase = String.Format("[Want to advertize on Voat?]({0})", Url.Action("Advertize", "Home"));
+            var linkToAdPurchase = String.Format("[Want to advertize on {1}?]({0})", Url.Action("Advertize", "Home"), Settings.SiteName);
 
             //Default add
             var adToDisplay = new AdViewModel
             {
-                Name = "Advertize on Voat",
+                Name = $"Advertize on {Settings.SiteName}",
                 DestinationUrl = Url.Action("Advertize", "Home"),
                 Description = linkToAdPurchase,
                 GraphicUrl = Url.Content("~/Graphics/voat-ad-placeholder.png")

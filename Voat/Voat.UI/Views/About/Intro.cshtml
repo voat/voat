@@ -11,7 +11,9 @@
     All Rights Reserved.*@
 
 @{
-    ViewBag.Title = "A quick introduction to Voat";
+    var siteName = Settings.SiteName;
+    ViewBag.Title = "A quick introduction to " + siteName;
+    ;
 }
 
 <style>
@@ -22,9 +24,9 @@
 
 <div id="container">
     <div id="about-main" class="content about-page" role="main">
-        <h1>A quick introduction to Voat</h1>
+        <h1>A quick introduction to @siteName</h1>
         <p class="intro-text">
-            So, what is Voat? Voat is a website that aggregates stories and links submitted by its users.<br />
+            So, what is @siteName? @siteName is a website that aggregates stories and links submitted by its users.<br />
             Stories and links are organized in communities called subverses. Here are a few examples of existing subverses: news, images, videos, jokes, programming, gaming etc.<br />
             Users can also create their own communities for a school, a charity, a gaming clan, a book club, a cause, anything goes, and decide what kind of content they want to receive from other users.<br />
             Users can submit links to other websites (news, articles, videos, images etc.) and other users can vote to decide if the links are worthy of sharing with other users.<br />
@@ -32,7 +34,7 @@
         </p>
         <h1>Do I have to register?</h1>
         <p class="intro-text">
-            You can use Voat without registering, just jump right in and start exploring.<br />
+            You can use @siteName without registering, just jump right in and start exploring.<br />
             You can start browsing <a href="/subverses">existing subverses</a> right away.<br />
             However, as unregistered guest, you will not be able to vote, comment or submit new links and stories. This is solely in order to prevent spam.
         </p>
@@ -60,9 +62,9 @@
         </div>
         <h1>Does it cost anything?</h1>
         <p class="intro-text">
-            Voat is free (although we gladly take donations).<br />
+            @siteName is free (although we gladly take donations).<br />
         </p>
-        <h1>What makes Voat different from other similar communities?</h1>
+        <h1>What makes @siteName different from other similar communities?</h1>
         <p class="intro-text">
             We go out of our way to give back to the users and safeguard their privacy.<br />
             Users have control over their data and they can leave at any time and delete their data.<br />
