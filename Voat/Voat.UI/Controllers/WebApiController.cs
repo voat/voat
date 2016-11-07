@@ -580,7 +580,7 @@ namespace Voat.Controllers
                                     };
                         return query.ToList();
                     }
-                }, TimeSpan.FromMinutes(90), 0);
+                }, TimeSpan.FromMinutes(30), 0);
 
             var bucket = new ImageBucket();
             var itemList = top100ImagesByDate.ToList();
