@@ -126,11 +126,11 @@ namespace Voat
         {
             var request = HttpContext.Current.Request;
             var isLocal = request.IsLocal;
-            var isSignalR = request.Path.ToLower().StartsWith("/signalr/");
 
-            if (!isSignalR)
+            if (!isLocal)
             {
-                if (!isLocal)
+                var isSignalR = request.Path.ToLower().StartsWith("/signalr/");
+                if (!isSignalR)
                 {
                     //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
                     if (RuntimeState.Current == RuntimeStateSetting.Disabled)
@@ -143,6 +143,7 @@ namespace Voat
                                 //js calls
                                 var response = HttpContext.Current.Response;
                                 response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                response.StatusDescription = "Website currently Disabled";
                                 response.End();
                                 return;
                             }

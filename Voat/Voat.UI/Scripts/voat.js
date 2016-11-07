@@ -730,8 +730,7 @@ function editSubmission(submissionid) {
         url: "/editsubmission",
         datatype: "json",
         error: function (xhr, status, error) {
-
-            var msg = error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.";
+            var msg = getErrorMessage(error, "Oops, a problem happened");
             $("#submissionid-" + submissionid + " span.field-validation-error").html(msg);
 
         },
@@ -826,7 +825,7 @@ function editcommentsubmit(commentid) {
         datatype: "json",
         url: "/editcomment",
         error: function (xhr, status, error) {
-            var msg = error.length > 0 && (error != 'Bad Request' && error != 'Internal Server Error') ? error : "You are doing that too fast. Please wait 30 seconds before trying again.";
+            var msg = getErrorMessage(error, "Oops, a problem happened");
             $('#commenteditform-' + commentid + " span.field-validation-error").html(msg);
         },
         success: function (data) {
@@ -1170,7 +1169,7 @@ function deleteMessage(obj, type, id, context) {
             $("#messageContainer-" + id).remove();
         },
         error: function (xhr, status, error) {
-            var msg = getErrorMessage(error, "Oops a problem happened");
+            var msg = getErrorMessage(error, "Oops, a problem happened");
             $(obj).html(msg);
         },
         datatype: "json"
