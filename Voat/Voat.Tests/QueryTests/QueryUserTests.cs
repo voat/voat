@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Command;
+using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Tests.Repository;
 
@@ -60,6 +61,8 @@ namespace Voat.Tests.QueryTests
             var userData = new Domain.UserData(noSubUserName);
             //var userData = new Domain.UserData(noSubUserName);
             Assert.AreEqual(0, userData.SubverseSubscriptions.Count());
+            Assert.AreEqual(false, userData.HasSubscriptions());
+            Assert.AreEqual(false, userData.HasSubscriptions(DomainType.Subverse));
 
             //test subscription
             var subUserName = "HasSubs";
@@ -73,6 +76,9 @@ namespace Voat.Tests.QueryTests
 
             Assert.AreEqual(1, userData.SubverseSubscriptions.Count());
             Assert.AreEqual("unit", userData.SubverseSubscriptions.First());
+            Assert.AreEqual(true, userData.HasSubscriptions());
+            Assert.AreEqual(true, userData.HasSubscriptions(DomainType.Subverse));
+            Assert.AreEqual(true, userData.IsUserSubverseSubscriber("unit"));
 
         }
         [TestMethod]

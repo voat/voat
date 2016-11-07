@@ -281,23 +281,29 @@ namespace Voat.Domain
         }
         public bool IsSubscriber(DomainType type, string name)
         {
+            var subs = GetSubscriptions(type);
+            return subs.Any(x => x.IsEqual(name));
+        }
+        private IEnumerable<string> GetSubscriptions(DomainType type)
+        {
             var subs = Subscriptions;
-            if (subs.ContainsKey(type))
+            if (subs.ContainsKey(type) && subs[type].Any())
             {
-                return subs[type].Any(x => x.Equals(name, StringComparison.OrdinalIgnoreCase));
+                return subs[type];
             }
             else
             {
-                return false;
+                return new List<string>();
             }
         }
         public bool IsUserBlockingSubverse(string subverse)
         {
             return BlockedSubverses.Any(x => x.Equals(subverse, StringComparison.OrdinalIgnoreCase));
         }
-        public bool HasSubscriptions()
+        public bool HasSubscriptions(DomainType type = DomainType.Subverse)
         {
-            return Subscriptions.Any();
+            var subs = GetSubscriptions(type);
+            return subs.Any();
         }
         #endregion
     }
