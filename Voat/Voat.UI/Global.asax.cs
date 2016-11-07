@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
+using System.Net;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
@@ -123,40 +124,70 @@ namespace Voat
 
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {
-            var isLocal = HttpContext.Current.Request.IsLocal;
-            if (!isLocal)
+            var request = HttpContext.Current.Request;
+            var isLocal = request.IsLocal;
+            var isSignalR = request.Path.ToLower().StartsWith("/signalr/");
+
+            if (!isSignalR)
             {
-                //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
-                if (RuntimeState.Current == RuntimeStateSetting.Disabled)
+                if (!isLocal)
                 {
-                    Server.Transfer("~/inactive.min.htm");
-                    return;
+                    //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
+                    if (RuntimeState.Current == RuntimeStateSetting.Disabled)
+                    {
+                        try
+                        {
+                            var isAjax = request.RequestContext.HttpContext.Request.IsAjaxRequest();
+                            if (isAjax)
+                            {
+                                //js calls
+                                var response = HttpContext.Current.Response;
+                                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                response.End();
+                                return;
+                            }
+                            else
+                            {
+                                //page requests
+                                Server.Transfer("~/inactive.min.htm");
+                                return;
+                            }
+                        }
+                        catch
+                        {
+                            //bail with static
+                            Server.Transfer("~/inactive.min.htm");
+                            return;
+                        }
+                    }
+
+                    // force single site domain
+                    if (Settings.RedirectToSiteDomain && !Settings.SiteDomain.Equals(request.ServerVariables["HTTP_HOST"], StringComparison.OrdinalIgnoreCase))
+                    {
+                        Response.RedirectPermanent(String.Format("http{2}://{0}{1}", Settings.SiteDomain, request.RawUrl, (Settings.ForceHTTPS ? "s" : "")), true);
+                        return;
+                    }
+
+                    // force SSL for every request if enabled in Web.config
+                    if (Settings.ForceHTTPS && !request.IsSecureConnection)
+                    {
+                        Response.Redirect(String.Format("https://{0}{1}", request.ServerVariables["HTTP_HOST"], request.RawUrl), true);
+                        return;
+                    }
                 }
 
-                // force single site domain
-                if (Settings.RedirectToSiteDomain && !Settings.SiteDomain.Equals(Request.ServerVariables["HTTP_HOST"], StringComparison.OrdinalIgnoreCase))
+                //change formatting culture for .NET
+                try
                 {
-                    Response.RedirectPermanent(String.Format("http{2}://{0}{1}", Settings.SiteDomain, HttpContext.Current.Request.RawUrl, (Settings.ForceHTTPS ? "s" : "")), true);
-                    return;
-                }
+                    var lang = (request != null && request.UserLanguages != null && request.UserLanguages.Length > 0) ? request.UserLanguages[0] : null;
 
-                // force SSL for every request if enabled in Web.config
-                if (Settings.ForceHTTPS && !HttpContext.Current.Request.IsSecureConnection)
-                {
-                    Response.Redirect(String.Format("https://{0}{1}", Request.ServerVariables["HTTP_HOST"], HttpContext.Current.Request.RawUrl), true);
-                    return;
+                    if (!String.IsNullOrEmpty(lang))
+                    {
+                        System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
+                    }
                 }
+                catch { }
             }
-
-            //change formatting culture for .NET
-            try {
-                var lang = (Request != null && Request.UserLanguages != null && Request.UserLanguages.Length > 0) ? Request.UserLanguages[0] : null;
-
-                if (!String.IsNullOrEmpty(lang))
-                {
-                    System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
-                }
-            } catch { }
         }
     }
 }
