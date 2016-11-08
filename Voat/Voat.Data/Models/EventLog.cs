@@ -24,5 +24,6 @@ namespace Voat.Data.Models
         public string CallStack { get; set; }
         public string Data { get; set; }
         public System.DateTime CreationDate { get; set; }
+        public string Origin { get; set; }
     }
 }

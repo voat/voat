@@ -50,7 +50,7 @@ namespace Voat.Utilities.Components
                                 var result = repo.Log(new Data.Models.EventLog
                                 {
                                     //TODO: Modify schema to include this param
-                                    //Origin = origin.ToString(),
+                                    Origin = origin.ToString(),
                                     ParentID = parentID,
                                     Type = exception.GetType().Name,
                                     UserName = userName,

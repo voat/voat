@@ -173,6 +173,7 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ParentID" Type="int" />
           <Property Name="UserName" Type="nvarchar" MaxLength="100" />
+          <Property Name="Origin" Type="varchar" MaxLength="20" />
           <Property Name="Type" Type="varchar" MaxLength="300" Nullable="false" />
           <Property Name="Message" Type="varchar" MaxLength="1500" Nullable="false" />
           <Property Name="Source" Type="varchar" MaxLength="1000" Nullable="false" />
@@ -1809,6 +1810,7 @@
           <Property Name="CallStack" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Data" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Origin" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="ApiCorsPolicy">
           <Key>
@@ -2343,6 +2345,7 @@
           <EntitySetMapping Name="EventLogs">
             <EntityTypeMapping TypeName="Models.EventLog">
               <MappingFragment StoreEntitySet="EventLog">
+                <ScalarProperty Name="Origin" ColumnName="Origin" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="Data" ColumnName="Data" />
                 <ScalarProperty Name="CallStack" ColumnName="CallStack" />
