@@ -5,6 +5,7 @@ namespace Voat.Common
     public class LockStore
     {
         private Dictionary<string, object> _lockObjects = new Dictionary<string, object>();
+        private readonly object _lock = new object();
 
         public object GetLockObject(string key)
         {
@@ -12,7 +13,7 @@ namespace Voat.Common
 
             if (!_lockObjects.ContainsKey(keyLookup))
             {
-                lock (this)
+                lock (_lock)
                 {
                     object o = (_lockObjects.ContainsKey(keyLookup) ? _lockObjects[keyLookup] : null);
                     if (o == null)
