@@ -169,6 +169,7 @@ namespace Voat.Utilities
                 {
                     theme = userData.Preferences.NightMode ? "dark" : "light";
                 }
+                SetUserStylePreferenceCookie(theme);
             }
             return theme;
         }

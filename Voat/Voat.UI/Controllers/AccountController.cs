@@ -137,8 +137,12 @@ namespace Voat.Controllers
                 // sign in and continue
                 await SignInAsync(user, model.RememberMe);
 
-                // read User Theme preference and set value to cookie
-                UserHelper.SetUserStylePreferenceCookie(UserHelper.UserStylePreference());
+                // remove the theme cookie, it will be set to the user preference after the page reloads
+                var cookie = HttpContext.Request.Cookies["theme"];
+                if(cookie != null && !String.IsNullOrEmpty(cookie.Value))
+                {
+                    HttpContext.Response.Cookies["theme"].Expires = DateTime.Now.AddDays(-1);
+                }
                 return RedirectToLocal(returnUrl);
             }
         }
