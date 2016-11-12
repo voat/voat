@@ -2222,8 +2222,8 @@ namespace Voat.Data
             using (var db = new voatEntities())
             {
                 var q = new DapperQuery();
-                q.SelectClause = "SELECT [Type], Count = COUNT(*) FROM [Message] WITH (NOLOCK)";
-                q.WhereClause =
+                q.Select = "SELECT [Type], Count = COUNT(*) FROM [Message] WITH (NOLOCK)";
+                q.Where =
                     @"(
                         (Recipient = @UserName AND RecipientType = @OwnerType AND [Type] <> @SentType)
                         OR
@@ -2233,16 +2233,16 @@ namespace Voat.Data
                 //Filter
                 if (state != MessageState.All)
                 {
-                    q.WhereClause += String.Format(" AND ReadDate IS {0} NULL", state == MessageState.Unread ? "" : "NOT");
+                    q.Where += String.Format(" AND ReadDate IS {0} NULL", state == MessageState.Unread ? "" : "NOT");
                 }
 
                 var types = ConvertMessageTypeFlag(type);
                 if (types != null)
                 {
-                    q.WhereClause += String.Format(" AND [Type] IN @MessageTypes");
+                    q.Where += String.Format(" AND [Type] IN @MessageTypes");
                 }
 
-                q.GroupByClause = "[Type]";
+                q.GroupBy = "[Type]";
                 q.Parameters = new {
                     UserName = ownerName,
                     OwnerType = (int)ownerType,
@@ -2296,7 +2296,7 @@ namespace Voat.Data
                                     .Skip(options.Index)
                                     .Take(options.Count)
                                     .ToListAsync()
-                                    .ConfigureAwait(false)
+                                    //.ConfigureAwait(false)
                                ).AsEnumerable();
 
                 var mapped = messages.Map();
@@ -2562,22 +2562,37 @@ namespace Voat.Data
         }
         public int UserVoteStatus(string userName, ContentType type, int id)
         {
-            int result = 0;
+            var result = UserVoteStatus(userName, type, new int[] { id });
+            if (result.Any())
+            {
+                return result.First().Value;
+            }
+            return 0;
+        }
+        public IEnumerable<VoteValue> UserVoteStatus(string userName, ContentType type, int[] id)
+        {
+            IEnumerable<VoteValue> result = null;
+            var q = new DapperQuery();
+
+            switch (type)
+            {
+                case ContentType.Comment:
+                    q.Select = "SELECT [ID] = CommentID, [Value] = IsNull(VoteStatus, 0) FROM CommentVoteTracker WITH (NOLOCK)";
+                    q.Where = "UserName = @UserName AND CommentID IN @ID";
+                    break;
+                case ContentType.Submission:
+                    q.Select = "SELECT [ID] = SubmissionID, [Value] = IsNull(VoteStatus, 0) FROM SubmissionVoteTracker WITH (NOLOCK)";
+                    q.Where = "UserName = @UserName AND SubmissionID IN @ID";
+                    break;
+            }
+
+            
 
             using (var db = new voatEntities())
             {
-                switch (type)
-                {
-                    case ContentType.Comment:
-                        var record = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == id && b.UserName.Equals(userName));
-                        result = record == null ? 0 : record.VoteStatus.Value;
-                        break;
-                    case ContentType.Submission:
-                        var record2 = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == id && b.UserName.Equals(userName));
-                        result = record2 == null ? 0 : record2.VoteStatus.Value;
-                        break;
-                }
+                result = db.Database.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = id });
             }
+
             return result;
         }
         public int UserCommentCount(string userName, TimeSpan? span, string subverse = null)
@@ -3692,5 +3707,11 @@ namespace Voat.Data
         }
 
         #endregion Misc
+
+        #region Search 
+        
+        
+        
+        #endregion
     }
 }

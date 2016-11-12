@@ -10,14 +10,17 @@ namespace Voat.Data
     {
         public object Parameters { get; set; }
 
-        public string SelectClause { get; set; }
+        public string Select { get; set; }
 
-        public string WhereClause { get; set; }
+        public string Where { get; set; }
 
-        public string GroupByClause { get; set; }
+        public string GroupBy { get; set; }
 
-        public string OrderByClause { get; set; }
+        public string OrderBy { get; set; }
 
+        //public int? SkipCount { get; set; }
+
+        //public int? TakeCount { get; set; }
 
         private string EnsureStartsWith(string content, string prefix)
         {
@@ -30,7 +33,7 @@ namespace Voat.Data
 
         public override string ToString()
         {
-            return $"{EnsureStartsWith(SelectClause, "SELECT ")} {EnsureStartsWith(WhereClause, "WHERE ")} {EnsureStartsWith(GroupByClause, "GROUP BY ")} {EnsureStartsWith(OrderByClause, "ORDER BY ")}";
+            return $"{EnsureStartsWith(Select, "SELECT ")} {EnsureStartsWith(Where, "WHERE ")} {EnsureStartsWith(GroupBy, "GROUP BY ")} {EnsureStartsWith(OrderBy, "ORDER BY ")}";
         }
     }
 }

@@ -65,7 +65,7 @@ namespace Voat.Controllers
                 {
                     return NotFoundErrorView();
                 }
-                
+                //TODO: This needs to moved to Query/Repository
                 string cacheKey = DataCache.Keys.Search(sub, q);
                 IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
                 if (cacheData == null) {
@@ -87,7 +87,6 @@ namespace Voat.Controllers
                             return results;
                         }
                     }), TimeSpan.FromMinutes(10));
-
                 }
 
                 ViewBag.Title = "search results";
@@ -108,7 +107,7 @@ namespace Voat.Controllers
                 {
                     return NotFoundErrorView();
                 }
-
+                //TODO: This needs to moved to Query/Repository
                 string cacheKey = DataCache.Keys.Search(q);
                 IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
                 if (cacheData == null)

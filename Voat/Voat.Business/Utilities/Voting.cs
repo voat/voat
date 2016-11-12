@@ -29,15 +29,19 @@ namespace Voat.Utilities
         // returns -1:downvoted, 1:upvoted, 0:not voted
         public static int CheckIfVoted(string userToCheck, int submissionID)
         {
-            using (var db = new voatEntities())
+            using (var repo = new Repository())
             {
-                var checkResult = db.SubmissionVoteTrackers.Where(u => u.UserName == userToCheck && u.SubmissionID == submissionID)
-                        .AsNoTracking()
-                        .FirstOrDefault();
-
-                int intCheckResult = checkResult != null ? checkResult.VoteStatus.Value : 0;
-                return intCheckResult;
+                return repo.UserVoteStatus(userToCheck, Domain.Models.ContentType.Submission, submissionID);
             }
+            //using (var db = new voatEntities())
+            //{
+            //    var checkResult = db.SubmissionVoteTrackers.Where(u => u.UserName == userToCheck && u.SubmissionID == submissionID)
+            //            .AsNoTracking()
+            //            .FirstOrDefault();
+
+            //    int intCheckResult = checkResult != null ? checkResult.VoteStatus.Value : 0;
+            //    return intCheckResult;
+            //}
         }
     }
 }

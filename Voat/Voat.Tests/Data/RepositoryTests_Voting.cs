@@ -23,6 +23,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
+using System.Linq;
 using Voat.Domain.Command;
 using Voat.Utilities;
 
@@ -49,8 +50,8 @@ namespace Voat.Tests.Repository
                 var x = db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
-
-                TestHelper.SetPrincipal("User500CCP", null); //This user has one comment with 101 likes
+                string userName = "User500CCP";
+                TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
 
                 var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
                 Assert.IsTrue(response.Success, "Vote was not successfull");
@@ -61,6 +62,8 @@ namespace Voat.Tests.Repository
 
                 Assert.AreEqual(ups, x.UpCount);
                 Assert.AreEqual((downs + 1), x.DownCount);
+
+                TestDirectVoteAccess(userName, Domain.Models.ContentType.Comment, context.CommentID, -1);
             }
         }
 
@@ -154,8 +157,8 @@ namespace Voat.Tests.Repository
                 var x = db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
-
-                TestHelper.SetPrincipal("User50CCP", null);
+                string userName = "User50CCP";
+                TestHelper.SetPrincipal(userName, null);
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
                 
@@ -166,6 +169,29 @@ namespace Voat.Tests.Repository
                 Assert.AreEqual(1, response.RecordedValue, "Vote value incorrect");
                 Assert.AreEqual((ups + 1), x.UpCount, "UpCount Off");
                 Assert.AreEqual(downs, x.DownCount, "DownCount Off");
+
+                TestDirectVoteAccess(userName, Domain.Models.ContentType.Comment, context.CommentID, 1);
+
+            }
+        }
+
+        private void TestDirectVoteAccess(string userName, Domain.Models.ContentType type, int id, int expectedValue)
+        {
+            using (var repo = new Voat.Data.Repository())
+            {
+                //Test direct vote access logic
+                var result = repo.UserVoteStatus(userName, type, id);
+                Assert.AreEqual(expectedValue, result, "Vote value incorrect direct pull");
+
+                var voteResults = repo.UserVoteStatus(userName, type, new int[] { id });
+                Assert.IsNotNull(voteResults, "Vote Results should not be null");
+                Assert.IsTrue(voteResults.Any(), "Enumerable should have contents");
+
+                var record = voteResults.FirstOrDefault(e => e.ID == id);
+                Assert.IsNotNull(record, "Enumerable should have record matching ID");
+                Assert.AreEqual(id, record.ID, "Record should match ID");
+                Assert.AreEqual(expectedValue, record.Value, "Record should match vote value");
+
             }
         }
 
@@ -201,7 +227,8 @@ namespace Voat.Tests.Repository
                 var ups = x.UpCount;
                 var downs = x.DownCount;
 
-                TestHelper.SetPrincipal("User500CCP", null); //This user has one comment with 101 likes
+                string userName = "User500CCP";
+                TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
 
                 var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 
@@ -218,6 +245,7 @@ namespace Voat.Tests.Repository
                 Assert.AreEqual(expectedUpCount, x.UpCount, "Database UpCount is off");
                 Assert.AreEqual(expectedDownCount, x.DownCount, "Database DownCount is off");
 
+                TestDirectVoteAccess(userName, Domain.Models.ContentType.Submission, context.SubmissionID, -1);
             }
         }
 
@@ -311,7 +339,8 @@ namespace Voat.Tests.Repository
                 var ups = x.UpCount;
                 var downs = x.DownCount;
 
-                TestHelper.SetPrincipal("User50CCP", null);
+                string userName = "User50CCP";
+                TestHelper.SetPrincipal(userName, null);
 
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
@@ -323,6 +352,8 @@ namespace Voat.Tests.Repository
                 x = db.GetSubmission(context.SubmissionID);
                 Assert.AreEqual(expectedUpCount, x.UpCount, "Database UpCount is off");
                 Assert.AreEqual(expectedDownCount, x.DownCount, "Database DownCount is off");
+
+                TestDirectVoteAccess(userName, Domain.Models.ContentType.Submission, context.SubmissionID, 1);
             }
         }
 
