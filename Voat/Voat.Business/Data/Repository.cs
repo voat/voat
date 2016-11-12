@@ -2275,22 +2275,26 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true, int pageNumber = 0, int pageCount = 25)
+        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true, SearchOptions options = null)
         {
-            return await GetMessages(User.Identity.Name, IdentityType.User, type, state, markAsRead, pageNumber, pageCount);
+            return await GetMessages(User.Identity.Name, IdentityType.User, type, state, markAsRead, options);
         }
 
         [Authorize]
-        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true, int pageNumber = 0, int pageCount = 25)
+        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true, SearchOptions options = null)
         {
             DemandAuthentication();
+            if (options == null)
+            {
+                options = SearchOptions.Default;
+            }
             using (var db = new voatEntities())
             {
                 var q = GetMessageQueryBase(db, ownerName, ownerType, type, state);
                 var messages = (await q
                                     .OrderByDescending(x => x.CreationDate)
-                                    .Skip(pageNumber * pageCount)
-                                    .Take(pageCount)
+                                    .Skip(options.Index)
+                                    .Take(options.Count)
                                     .ToListAsync()
                                     .ConfigureAwait(false)
                                ).AsEnumerable();
