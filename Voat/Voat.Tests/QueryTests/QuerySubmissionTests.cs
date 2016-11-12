@@ -113,15 +113,15 @@ namespace Voat.Tests.QueryTests
         [TestMethod]
         [TestCategory("Query")]
         [TestCategory("User.Preferences")]
-        public void Query_UserPreferences_Default()
+        public async Task Query_UserPreferences_Default()
         {
             var q = new QueryUserPreferences();
-            var result = q.ExecuteAsync().Result;
+            var result = await q.ExecuteAsync();
             Assert.IsNotNull(result);
             Assert.AreEqual("en", result.Language);
 
             q = new QueryUserPreferences();
-            result = q.ExecuteAsync().Result;
+            result = await q.ExecuteAsync();
             Assert.IsNotNull(result, this.GetType().Name);
             Assert.AreEqual("en", result.Language, this.GetType().Name);
         }
@@ -163,13 +163,13 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query")]
         [TestCategory("Submission")]
         [TestCategory("Cache")]
-        public void Query_v_All_Guest_Cached_Expired_Correctly()
+        public async Task Query_v_All_Guest_Cached_Expired_Correctly()
         {
             TimeSpan cacheTime = TimeSpan.FromSeconds(2);
 
             var q = new QuerySubmissions("_all", new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
             //q.CachePolicy.Duration = cacheTime; //Cache this request
-            var result = q.ExecuteAsync().Result;
+            var result = await q.ExecuteAsync();
 
             Assert.IsNotNull(result);
             Assert.AreEqual(false, q.CacheHit);
@@ -190,7 +190,7 @@ namespace Voat.Tests.QueryTests
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(waitTime));
 
             q = new QuerySubmissions("_all", new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
-            result = q.ExecuteAsync().Result;
+            result = await q.ExecuteAsync();
             //ensure we had to retreive new data
             Assert.AreEqual(false, q.CacheHit, this.GetType().Name);
             Assert.IsNotNull(result, this.GetType().Name);

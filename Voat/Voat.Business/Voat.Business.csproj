@@ -34,6 +34,10 @@
     <DocumentationFile>bin\Release\Voat.Business.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.2\lib\net451\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -143,19 +147,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\CacheHandler.cs" />
     <Compile Include="Caching\CacheHandlerSection.cs" />
+    <Compile Include="Caching\CachePolicy.cs" />
     <Compile Include="Caching\CachingKey.cs" />
     <Compile Include="Caching\CachingTimeSpan.cs" />
     <Compile Include="Caching\ContextCache.cs" />
-    <Compile Include="Caching\ICacheHandler.cs" />
     <Compile Include="Caching\Handlers\MemoryCacheHandler.cs" />
     <Compile Include="Caching\Handlers\NullCacheHandler.cs" />
     <Compile Include="Caching\Handlers\RedisCacheHandler.cs" />
-    <Compile Include="Caching\CachePolicy.cs" />
+    <Compile Include="Caching\ICacheHandler.cs" />
     <Compile Include="Common\LockStore.cs" />
     <Compile Include="Configuration\JsonSettings.cs" />
     <Compile Include="Configuration\RuntimeState.cs" />
     <Compile Include="Data\AGGREGATE_SUBVERSE.cs" />
+    <Compile Include="Data\DapperQuery.cs" />
     <Compile Include="Data\Selectors.cs" />
     <Compile Include="Domain\Command\MarkMessageCommand.cs" />
     <Compile Include="Domain\Command\Base\Command.cs" />
@@ -304,7 +310,6 @@
     <Compile Include="Rules\Voting\VoteThrottleRule.cs" />
     <Compile Include="Utilities\AccountSecurity.cs" />
     <Compile Include="Utilities\BanningUtility.cs" />
-    <Compile Include="Caching\CacheHandler.cs" />
     <Compile Include="Utilities\CloudStorageUtility.cs" />
     <Compile Include="Utilities\CommentCounter.cs" />
     <Compile Include="Utilities\Components\ContentFilters.cs" />
@@ -337,7 +342,6 @@
     <Compile Include="Utilities\VoatPathHelper.cs" />
     <Compile Include="Utilities\VoatUrlFormatter.cs" />
     <Compile Include="Utilities\Voting.cs" />
-    <Compile Include="Utilities\VotingComments.cs" />
     <Compile Include="Domain\Models\UserStatsModel.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -37,7 +37,7 @@ namespace Voat.Domain.Query
         public virtual T Execute()
         {
             Task<T> t = Task.Run(ExecuteAsync);
-            Task.WaitAll(t);
+            Task.WaitAny(t);
             return t.Result;
         }
     }

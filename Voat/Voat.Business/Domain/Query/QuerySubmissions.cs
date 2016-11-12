@@ -29,7 +29,7 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var result = db.GetSubmissions(this._subverse, this._options);
+                var result = await db.GetSubmissions(this._subverse, this._options);
                 return result.Map();
             }
         }

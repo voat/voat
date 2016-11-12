@@ -41,10 +41,6 @@ namespace Voat.Domain.Query
             private set; //force policy via constructor
         }
 
-        //{
-        //    get { throw new InvalidOperationException("Derived classes must override either CacheKey or FullCacheKey properties"); }
-        //}
-
         protected virtual string CacheContainer
         {
             get { return this.GetType().Name; }
@@ -67,23 +63,48 @@ namespace Voat.Domain.Query
         }
         public override async Task<T> ExecuteAsync()
         {
+            T result = default(T);
+
             if (CachingPolicy != null && CachingPolicy.IsValid)
             {
                 //I think this will keep data in memory. Need to have method that just inserts data.
                 CacheHit = true;
-                Func<T> func = new Func<T>(() => {
+                var func = new Func<T>(() => {
                     var task = Task.Run(GetFreshData);
                     Task.WaitAny(task);
                     return task.Result;
                 });
 
-                return CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RecacheLimit);
+                result = CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RecacheLimit);
             }
             else
             {
                 CacheHit = true;
-                return await GetFreshData().ConfigureAwait(false);
+                result = await GetFreshData().ConfigureAwait(false);
             }
+            return result;
+
+
+            //if (CachingPolicy != null && CachingPolicy.IsValid)
+            //{
+            //    //I think this will keep data in memory. Need to have method that just inserts data.
+            //    CacheHit = true;
+            //    var func = new Task<T>(async () =>
+            //    {
+            //        return await GetFreshData();
+            //        //var task = Task.Run(GetFreshData);
+            //        //Task.WaitAny(task);
+            //        //return task.Result;
+            //    });
+
+            //    result = await CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), GetFreshData(), CachingPolicy.Duration, CachingPolicy.RecacheLimit);
+            //}
+            //else
+            //{
+            //    CacheHit = true;
+            //    result = await GetFreshData().ConfigureAwait(false);
+            //}
+            //return result;
         }
         
         /// <summary>

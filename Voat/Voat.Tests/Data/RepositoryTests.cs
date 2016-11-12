@@ -153,11 +153,11 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository")]
-        public void GetSubmission()
+        public async Task GetSubmission()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var s = db.GetSubmissions("unit", new SearchOptions());
+                var s = await db.GetSubmissions("unit", new SearchOptions());
                 Assert.IsTrue(s.Any());
             }
         }
@@ -165,11 +165,11 @@ namespace Voat.Tests.Repository
         [TestMethod]
         [TestCategory("Repository")]
         [TestCategory("Anon")]
-        public void GetSubmissionsFilterAnonymous()
+        public async Task GetSubmissionsFilterAnonymous()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var anon_sub = db.GetSubmissions("anon", SearchOptions.Default);
+                var anon_sub = await db.GetSubmissions("anon", SearchOptions.Default);
                 var first = anon_sub.OrderBy(x => x.CreationDate).First();
                 Assert.IsNotNull(first, "no anon submissions found");
                 Assert.AreEqual("First Anon Post", first.Title);
@@ -199,7 +199,7 @@ namespace Voat.Tests.Repository
             using (var db = new Voat.Data.Repository())
             {
                 var p = await db.GetUserPreferences("asrtastarstarstarstart343");
-                Assert.IsTrue(p == null);
+                Assert.AreNotEqual(null, p);
             }
         }
 

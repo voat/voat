@@ -34,6 +34,8 @@ namespace Voat.Caching
             connections.Add(ConnectionType.Read, ConnectionMultiplexer.Connect(connectionString));
             connections.Add(ConnectionType.Write, ConnectionMultiplexer.Connect(connectionString));
             connections.Add(ConnectionType.Exists, ConnectionMultiplexer.Connect(connectionString));
+            base.RequiresExpirationRemoval = false;
+            base.Initialize();
         }
 
         protected object Deserialize(object value)

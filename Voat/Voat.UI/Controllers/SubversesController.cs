@@ -547,7 +547,7 @@ namespace Voat.Controllers
                     ViewBag.Title = subverse.Description;
 
                     //IAmAGate: Perf mods for caching
-                    string cacheKey = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
+                    string cacheKey = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
                     Tuple<IList<Submission>, int> cacheData = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKey);
 
                     if (cacheData == null)
@@ -625,7 +625,7 @@ namespace Voat.Controllers
 
                 //NEW LOGIC
                 //IAmAGate: Perf mods for caching
-                string cacheKeyAll = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "rank").ToLower();
+                string cacheKeyAll = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}.sfw", "all", pageNumber, "rank").ToLower();
                 Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
                 if (cacheDataAll == null)
@@ -1558,7 +1558,7 @@ namespace Voat.Controllers
             if (sortingmode.Equals("new"))
             {
                 //IAmAGate: Perf mods for caching
-                string cacheKey = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
+                string cacheKey = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}", subversetoshow, pageNumber, sortingmode).ToLower();
                 Tuple<IList<Submission>, int> cacheData = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKey);
 
                 if (cacheData == null)
@@ -1676,7 +1676,7 @@ namespace Voat.Controllers
                 {
                     //IAmAGate: Perf mods for caching
                     int size = pageSize;
-                    string cacheKeyAll = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}.sfw", "all", pageNumber, "new").ToLower();
+                    string cacheKeyAll = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}.sfw", "all", pageNumber, "new").ToLower();
                     Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
                     if (cacheDataAll == null)
@@ -1762,7 +1762,7 @@ namespace Voat.Controllers
             if (sortingmode.Equals("new"))
             {
                 //IAmAGate: Perf mods for caching
-                string cacheKeyAll = String.Format("legacy:subverse.{0}.page.{1}.sort.{2}.nsfw", "all", pageNumber, "new").ToLower();
+                string cacheKeyAll = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}.nsfw", "all", pageNumber, "new").ToLower();
                 Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
 
                 if (cacheDataAll == null)

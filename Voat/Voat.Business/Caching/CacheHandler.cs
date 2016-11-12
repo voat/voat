@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using System.Runtime.Caching;
-using Voat.Utilities.Components;
+using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
+using Voat.Utilities.Components;
 
 namespace Voat.Caching
 {
@@ -16,91 +16,67 @@ namespace Voat.Caching
         Dictionary = 1,
         Set = 2
     }
+
+    #region Prototyping
+    //public abstract class RefreshEntry
+    //{
+    //    public TimeSpan CacheTime { get; set; }
+    //    public int CurrentCount { get; set; }
+    //    public int MaxCount { get; set; }
+
+    //    public T GetData<T>()
+    //    {
+    //        return (T)ProtectedGetData();
+    //    }
+
+    //    protected abstract object ProtectedGetData();
+    //}
+    //public class TaskRefreshEntry<T> : RefreshEntry
+    //{
+    //    private Task<T> _task;
+
+    //    public TaskRefreshEntry(Task<T> task)
+    //    {
+    //        this._task = task;
+    //    }
+
+    //    public new async Task<T> GetData()
+    //    {
+    //        return await _task;
+    //    }
+    //    protected override object ProtectedGetData()
+    //    {
+    //        return (object)Task.Run(() => _task);
+    //    }
+    //}
+    #endregion
+
     public abstract class CacheHandler : ICacheHandler
     {
         private bool _ignoreNulls = true;
         private static ICacheHandler _instance = null;
         private static object _lockInstance = new object();
-        private LockStore _lockStore = new LockStore();
+        private LockStore _lockStore = new LockStore(true);
         private TimeSpan _refreshOffset = TimeSpan.FromSeconds(5);
+        private bool _requiresExpirationRemoval = false;
+        private bool _cacheEnabled = true;
+        //BLOCK: Should be set to true, testing for blocking
+        private bool _refetchEnabled = false;
 
         //holds meta data about the cache item such as the Func, expiration, recacheLimit, and current recaches
         private ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
-
-        public static ICacheHandler Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (_lockInstance)
-                    {
-                        if (_instance == null)
-                        {
-                            try
-                            {
-                                var handlerInfo = CacheHandlerSection.Instance.Handler;
-                                if (handlerInfo != null)
-                                {
-                                    _instance = handlerInfo.Construct();
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                EventLogger.Log(ex);
-                            }
-                            finally
-                            {
-                                if (_instance == null)
-                                {
-                                    //Can't load type, default to no caching.
-                                    _instance = new NullCacheHandler();
-                                }
-                            }
-                        }
-                    }
-                }
-                return _instance;
-            }
-
-            set
-            {
-                _instance = value;
-            }
-        }
-
-        protected abstract object GetItem(string cacheKey);
-
-        protected abstract void SetItem(string cacheKey, object item, TimeSpan? cacheTime = null);
-
-        protected abstract void DeleteItem(string cacheKey);
-
-        protected abstract bool ItemExists(string cacheKey);
-
-
-        protected abstract V GetItem<K, V>(string cacheKey, K key, CacheType type);
-
-        protected abstract void SetItem<K,V>(string cacheKey, K key, V item, CacheType type);
         
-        protected abstract void DeleteItem<K>(string cacheKey, K key, CacheType type);
-
-        protected abstract bool ItemExists<K>(string cacheKey, K key, CacheType type);
-
-        private bool cacheEnabled = true;
-
-        public bool CacheEnabled
+        protected void Initialize()
         {
-            get
-            {
-                return cacheEnabled;
-            }
-
-            set
-            {
-                cacheEnabled = value;
-            }
+            //Test lock store for blocking
+            //This clears out the LockStore on an interval but I don't see this as the problem. Leaving but commenting out
+            //Register("system::lockStore_purge", () =>
+            //{
+            //    _lockStore.Purge();
+            //    return new Object();
+            //}, TimeSpan.FromMinutes(30), 0);
         }
-
+       
         protected string StandardizeCacheKey(string cacheKey)
         {
             if (String.IsNullOrEmpty(cacheKey))
@@ -119,7 +95,6 @@ namespace Voat.Caching
                 SetItem(cacheKey, replaceAlg(Retrieve<T>(cacheKey)), cacheTime);
             }
         }
-
 
         public void Replace<T>(string cacheKey, T replacementValue, TimeSpan? cacheTime = null)
         {
@@ -141,17 +116,30 @@ namespace Voat.Caching
             return null;
         }
 
-        public void Remove(string cacheKey)
+        protected void Remove(string cacheKey, bool isExpiration)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
             object o = _lockStore.GetLockObject(cacheKey);
             lock (o)
             {
-                DeleteItem(cacheKey);
+                if (isExpiration && RequiresExpirationRemoval)
+                {
+                    DeleteItem(cacheKey);
+                }
+                else if (!isExpiration)
+                {
+                    DeleteItem(cacheKey);
+                }
+
+                //Attempt removal of metaCache
                 Tuple<Func<object>, TimeSpan, int, int> y;
                 _meta.TryRemove(cacheKey, out y);
             }
+        }
+        public void Remove(string cacheKey)
+        {
+            Remove(cacheKey, false);
         }
 
         /// <summary>
@@ -160,9 +148,9 @@ namespace Voat.Caching
         /// <param name="cacheKey">Unique Cache Keys</param>
         /// <param name="getData">Function that returns data to be placed in cache</param>
         /// <param name="cacheTime">The timespan in which to update or remove item from cache</param>
-        /// <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+        /// <param name="refetchLimit">Value indicating refetch behavior. -1: Do not refetch, 0: Unlimited refetch (use with caution), x > 0: Number of times to refetch cached data</param>
         /// <returns></returns>
-        public object Register(string cacheKey, Func<object> getData, TimeSpan cacheTime, int recacheLimit = -1)
+        public object Register(string cacheKey, Func<object> getData, TimeSpan cacheTime, int refetchLimit = -1)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
@@ -172,9 +160,22 @@ namespace Voat.Caching
                 return getData();
             }
 
-            cacheKey = cacheKey.ToLower();
+            
             if (!Exists(cacheKey))
             {
+                ////BLOCK: Temp work around for blocking exploration
+                ////Not thread safe
+                //bool isRefetchRequest = (RefetchEnabled && cacheTime > TimeSpan.Zero && refetchLimit >= 0);
+                //if (!isRefetchRequest)
+                //{
+                //    var data = getData();
+                //    if (data != null || data == null && !_ignoreNulls)
+                //    {
+                //        SetItem(cacheKey, data, cacheTime);
+                //    }
+                //    return data;
+                //}
+
                 object o = _lockStore.GetLockObject(cacheKey);
                 lock (o)
                 {
@@ -187,9 +188,11 @@ namespace Voat.Caching
                             {
                                 Debug.Print("Inserting Cache: " + cacheKey);
                                 SetItem(cacheKey, data, cacheTime);
-                                _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, recacheLimit, 0);
-                                if (recacheLimit >= 0)
+
+                                //Refetch Logic
+                                if (RefetchEnabled && refetchLimit >= 0)
                                 {
+                                    _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
                                     var cache = System.Runtime.Caching.MemoryCache.Default;
                                     var policy = new CacheItemPolicy()
                                     {
@@ -198,7 +201,7 @@ namespace Voat.Caching
                                     };
                                     cache.Set(cacheKey, new object(), policy);
                                 }
-                                else
+                                else if (RequiresExpirationRemoval)
                                 {
                                     var cache = System.Runtime.Caching.MemoryCache.Default;
                                     cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
@@ -208,9 +211,7 @@ namespace Voat.Caching
                         }
                         catch (Exception ex)
                         {
-                
                             Debug.Print(ex.ToString());
-
                             //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
                             var aggEx = ex as AggregateException;
                             if (aggEx != null && aggEx.InnerExceptions.Count == 1)
@@ -266,7 +267,6 @@ namespace Voat.Caching
 
                 args.UpdatedCacheItemPolicy = new CacheItemPolicy()
                 {
-                    //SlidingExpiration = TimeSpan.Zero,
                     AbsoluteExpiration = Repository.CurrentDate.Add(meta.Item2),
                     UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
                 };
@@ -278,13 +278,13 @@ namespace Voat.Caching
                 }
                 catch (Exception ex)
                 {
-                    Debug.Print(ex.ToString());
+                    EventLogger.Log(ex, Domain.Models.Origin.Unknown);
                 }
             }
             else
             {
                 Debug.Print(String.Format("Expiring cache: {0} - #{1}", cacheKey, refreshCount));
-                Remove(cacheKey);
+                Remove(cacheKey, true);
             }
         }
 
@@ -310,7 +310,7 @@ namespace Voat.Caching
             cacheKey = StandardizeCacheKey(cacheKey);
             return ItemExists(cacheKey);
         }
-        protected abstract void ProtectedPurge();
+
         public void Purge()
         {
             //TODO: Do we need to purge state here?
@@ -318,6 +318,110 @@ namespace Voat.Caching
             ProtectedPurge();
         }
 
+        #region Properties
+        public static ICacheHandler Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_lockInstance)
+                    {
+                        if (_instance == null)
+                        {
+                            try
+                            {
+                                var handlerInfo = CacheHandlerSection.Instance.Handler;
+                                if (handlerInfo != null)
+                                {
+                                    Debug.Print("CacheHandler.Instance.Contruct({0})", handlerInfo.Type);
+                                    _instance = handlerInfo.Construct();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                EventLogger.Log(ex);
+                            }
+                            finally
+                            {
+                                if (_instance == null)
+                                {
+                                    //Can't load type, default to no caching.
+                                    _instance = new NullCacheHandler();
+                                }
+                            }
+                        }
+                    }
+                }
+                return _instance;
+            }
+
+            set
+            {
+                _instance = value;
+            }
+        }
+        public bool CacheEnabled
+        {
+            get
+            {
+                return _cacheEnabled;
+            }
+
+            set
+            {
+                _cacheEnabled = value;
+            }
+        }
+
+        protected bool RequiresExpirationRemoval
+        {
+            get
+            {
+                return _requiresExpirationRemoval;
+            }
+
+            set
+            {
+                _requiresExpirationRemoval = value;
+            }
+        }
+
+        public bool RefetchEnabled
+        {
+            get
+            {
+                return _refetchEnabled;
+            }
+
+            set
+            {
+                _refetchEnabled = value;
+            }
+        }
+
+        #endregion
+
+        #region Abstract Methods
+
+        protected abstract object GetItem(string cacheKey);
+
+        protected abstract void SetItem(string cacheKey, object item, TimeSpan? cacheTime = null);
+
+        protected abstract void DeleteItem(string cacheKey);
+
+        protected abstract bool ItemExists(string cacheKey);
+
+        protected abstract V GetItem<K, V>(string cacheKey, K key, CacheType type);
+
+        protected abstract void SetItem<K, V>(string cacheKey, K key, V item, CacheType type);
+
+        protected abstract void DeleteItem<K>(string cacheKey, K key, CacheType type);
+
+        protected abstract bool ItemExists<K>(string cacheKey, K key, CacheType type);
+
+        protected abstract void ProtectedPurge();
+        #endregion
 
         #region Generic Interfaces
 
@@ -332,9 +436,13 @@ namespace Voat.Caching
         public T Register<T>(string cacheKey, Func<T> getData, TimeSpan cacheTime, int recacheLimit = -1)
         {
             var val = Register(cacheKey, new Func<object>(() => { return getData(); }), cacheTime, recacheLimit);
-            return (T)Convert<T>(val);
+            return Convert<T>(val);
         }
-       
+        //public Task<T> Register<T>(string cacheKey, Task<T> getData, TimeSpan cacheTime, int recacheLimit = -1)
+        //{
+        //    var val = Register(cacheKey, new Func<object>(() => { return null; }), cacheTime, recacheLimit);
+        //    return Convert<T>(val);
+        //}
         private T Convert<T>(object val)
         {
             if (val == null)
@@ -420,14 +528,8 @@ namespace Voat.Caching
         {
             cacheKey = StandardizeCacheKey(cacheKey);
             var val = Retrieve(cacheKey);
-
-            //if (val is IConvertible) {
-            //    return (T)((IConvertible)val).ToType(typeof(T), FormatProvider );
-            //}
             return (T)Convert<T>(val);
         }
-
-
 
         #endregion Generic Interfaces
 

@@ -37,7 +37,6 @@ namespace Voat.Domain.Command
                 UpdateCache(result);
             }
 
-            //Task t = Task.Run(() => UpdateCache()); //don't wait this
             return result;
         }
 
@@ -92,8 +91,6 @@ namespace Voat.Domain.Command
             get { return _userName; }
             set { _userName = value; }
         }
-
-        //public bool IsAthenticationRequired { get; protected set; }
 
         protected CommandResponse Map(RulesEngine.RuleOutcome outcome)
         {

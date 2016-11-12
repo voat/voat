@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using Voat.Domain;
 using System.Data.Entity;
 using Voat.Caching;
+using Dapper;
 
 namespace Voat.Data
 {
@@ -600,6 +601,26 @@ namespace Voat.Data
 
         #region Submissions
 
+        public int GetCommentCount(int submissionID)
+        {
+            using (voatEntities db = new voatEntities())
+            {
+                var cmd = db.Database.Connection.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM Comment WITH (NOLOCK) WHERE SubmissionID = @SubmissionID AND IsDeleted != 1";
+                var param = cmd.CreateParameter();
+                param.ParameterName = "SubmissionID";
+                param.DbType = System.Data.DbType.Int32;
+                param.Value = submissionID;
+                cmd.Parameters.Add(param);
+
+                if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                {
+                    cmd.Connection.Open();
+                }
+                return (int)cmd.ExecuteScalar();
+            }
+        }
+
         public IEnumerable<Data.Models.Submission> GetTopViewedSubmissions()
         {
             var startDate = CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
@@ -703,7 +724,7 @@ namespace Voat.Data
             return results;
         }
 
-        public IEnumerable<Models.Submission> GetSubmissions(string subverse, SearchOptions options)
+        public async Task<IEnumerable<Models.Submission>> GetSubmissions(string subverse, SearchOptions options)
         {
             if (String.IsNullOrEmpty(subverse))
             {
@@ -817,9 +838,11 @@ namespace Voat.Data
             query = ApplySubmissionSearch(options, query);
 
             //execute query
-            var results = query.Select(Selectors.SecureSubmission).ToList();
+            var data = await query.ToListAsync();
 
-            return results.AsEnumerable();
+            var results = data.Select(Selectors.SecureSubmission).ToList();
+
+            return results;
         }
 
         [Authorize]
@@ -828,8 +851,8 @@ namespace Voat.Data
             DemandAuthentication();
 
             //Load Subverse Object
-            var cmdSubverse = new QuerySubverse(userSubmission.Subverse);
-            var subverseObject = cmdSubverse.Execute();
+            //var cmdSubverse = new QuerySubverse(userSubmission.Subverse);
+            var subverseObject = _db.Subverses.Where(x => x.Name.Equals(userSubmission.Subverse, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
             //Evaluate Rules
             var context = new VoatRuleContext();
@@ -2044,6 +2067,56 @@ namespace Voat.Data
             return q;
         }
 
+        private List<int> ConvertMessageTypeFlag(MessageTypeFlag type)
+        {
+            //filter Message Type
+            if (type != MessageTypeFlag.All)
+            {
+                List<int> messageTypes = new List<int>();
+
+                var flags = Enum.GetValues(typeof(MessageTypeFlag));
+                foreach (var flag in flags)
+                {
+                    //This needs to be cleaned up, we have two enums that are serving a similar purpose
+                    var mTFlag = (MessageTypeFlag)flag;
+                    if (mTFlag != MessageTypeFlag.All && ((type & mTFlag) > 0))
+                    {
+                        switch (mTFlag)
+                        {
+                            case MessageTypeFlag.Sent:
+                                messageTypes.Add((int)MessageType.Sent);
+                                break;
+
+                            case MessageTypeFlag.Private:
+                                messageTypes.Add((int)MessageType.Private);
+                                break;
+
+                            case MessageTypeFlag.CommentReply:
+                                messageTypes.Add((int)MessageType.CommentReply);
+                                break;
+
+                            case MessageTypeFlag.CommentMention:
+                                messageTypes.Add((int)MessageType.CommentMention);
+                                break;
+
+                            case MessageTypeFlag.SubmissionReply:
+                                messageTypes.Add((int)MessageType.SubmissionReply);
+                                break;
+
+                            case MessageTypeFlag.SubmissionMention:
+                                messageTypes.Add((int)MessageType.SubmissionMention);
+                                break;
+                        }
+                    }
+                }
+                return messageTypes;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         [Authorize]
         public async Task<CommandResponse> DeleteMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, int? id = null)
         {
@@ -2144,15 +2217,61 @@ namespace Voat.Data
         [Authorize]
         public async Task<MessageCounts> GetMessageCounts(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
-            var q = GetMessageQueryBase(ownerName, ownerType, type, state);
+            #region Dapper
 
-            var counts = await q.GroupBy(x => x.Type).Select(x => new { x.Key, Count = x.Count() }).ToListAsync();
-            var result = new MessageCounts(UserDefinition.Create(ownerName, ownerType));
-            foreach (var count in counts)
+            using (var db = new voatEntities())
             {
-                result.Counts.Add(new MessageCount() { Type = (MessageType)count.Key, Count = count.Count });
+                var q = new DapperQuery();
+                q.SelectClause = "SELECT [Type], Count = COUNT(*) FROM [Message] WITH (NOLOCK)";
+                q.WhereClause =
+                    @"(
+                        (Recipient = @UserName AND RecipientType = @OwnerType AND [Type] <> @SentType)
+                        OR
+                        (Sender = @UserName AND SenderType = @OwnerType AND [Type] = @SentType)
+                    )";
+
+                //Filter
+                if (state != MessageState.All)
+                {
+                    q.WhereClause += String.Format(" AND ReadDate IS {0} NULL", state == MessageState.Unread ? "" : "NOT");
+                }
+
+                var types = ConvertMessageTypeFlag(type);
+                if (types != null)
+                {
+                    q.WhereClause += String.Format(" AND [Type] IN @MessageTypes");
+                }
+
+                q.GroupByClause = "[Type]";
+                q.Parameters = new {
+                    UserName = ownerName,
+                    OwnerType = (int)ownerType,
+                    SentType = (int)MessageType.Sent,
+                    MessageTypes = (types != null ? types.ToArray() : (int[])null)
+                };
+
+                var results = await db.Database.Connection.QueryAsync<MessageCount>(q.ToString(), q.Parameters);
+
+                var result = new MessageCounts(UserDefinition.Create(ownerName, ownerType));
+                result.Counts = results.ToList();
+                return result;
             }
-            return result;
+
+            #endregion
+
+            #region EF
+            //var q = GetMessageQueryBase(ownerName, ownerType, type, state);
+            //var counts = await q.GroupBy(x => x.Type).Select(x => new { x.Key, Count = x.Count() }).ToListAsync();
+
+            //var result = new MessageCounts(UserDefinition.Create(ownerName, ownerType));
+            //foreach (var count in counts)
+            //{
+            //    result.Counts.Add(new MessageCount() { Type = (MessageType)count.Key, Count = count.Count });
+            //}
+            //return result;
+            #endregion
+
+           
         }
 
         [Authorize]
@@ -2255,7 +2374,11 @@ namespace Voat.Data
         {
             var blocked = (from x in _db.UserBlockedSubverses
                            where x.UserName == userName
-                           select new BlockedItem() { Name = x.Subverse, Type = DomainType.Subverse, CreationDate = x.CreationDate }).ToList();
+                           select new BlockedItem() {
+                               Name = x.Subverse,
+                               Type = DomainType.Subverse,
+                               CreationDate = x.CreationDate
+                           }).ToList();
             return blocked;
         }
 
@@ -2265,8 +2388,8 @@ namespace Voat.Data
             {
                 return null;
             }
-
-            var q = new QueryUserRecord(userName);
+            //THIS COULD BE A SOURCE OF BLOCKING
+            var q = new QueryUserRecord(userName, CachePolicy.None); //Turn off cache retrieval for this
             var userRecord = await q.ExecuteAsync();
 
             if (userRecord == null)
@@ -2288,9 +2411,10 @@ namespace Voat.Data
                                     Task<Score>.Factory.StartNew(() => UserVotingBehavior(userName, ContentType.Comment)),
             };
 
-
-            var pq = new QueryUserPreferences(userName);
-            var userPreferences = await pq.ExecuteAsync();
+            var userPreferences = await GetUserPreferences(userName);
+            
+            //var pq = new QueryUserPreferences(userName);
+            //var userPreferences = await pq.ExecuteAsync();
             //var userPreferences = await GetUserPreferences(userName);
 
             userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
@@ -2311,7 +2435,7 @@ namespace Voat.Data
             //userInfo.CommentVoting = UserVotingBehavior(userName, ContentType.Comment);
 
             //Badges
-            var userBadges = (from b in _db.Badges
+            var userBadges = await (from b in _db.Badges
                               join ub in _db.UserBadges on b.ID equals ub.BadgeID into ubn
                               from uball in ubn.DefaultIfEmpty()
                               where
@@ -2333,7 +2457,7 @@ namespace Voat.Data
                                   Title = b.Title,
                                   Graphic = b.Graphic,
                               }
-                              ).ToList();
+                              ).ToListAsync();
 
             userInfo.Badges = userBadges;
 
@@ -2342,11 +2466,22 @@ namespace Voat.Data
 
         public async Task<Models.UserPreference> GetUserPreferences(string userName)
         {
-            var query = _db.UserPreferences.Where(x => (x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
+            Models.UserPreference result = null;
+            if (!String.IsNullOrEmpty(userName))
+            {
+                var query = _db.UserPreferences.Where(x => (x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-            var results = await query.FirstOrDefaultAsync();
+                result = await query.FirstOrDefaultAsync();
+            }
 
-            return results;
+            if (result == null)
+            {
+                result = new Data.Models.UserPreference();
+                Repository.SetDefaultUserPreferences(result);
+                result.UserName = userName;
+            }
+
+            return result;
         }
 
         public Score UserVotingBehavior(string userName, ContentType type = ContentType.Comment | ContentType.Submission, TimeSpan? span = null)
@@ -3446,22 +3581,6 @@ namespace Voat.Data
             return (from x in _db.BannedDomains
                     orderby x.CreationDate descending
                     select x).ToList();
-        }
-
-        public bool IsUserModerator(string subverse, string userName = null, int? power = null)
-        {
-            DemandAuthentication();
-            userName = (userName == null ? User.Identity.Name : userName);
-
-            //if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
-            var m = new QuerySubverseModerators(subverse);
-            var mods = Task.Run(() => m.ExecuteAsync()).Result;
-            return mods.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && (power == null ? true : (x.Power <= power)));
-        }
-
-        public bool IsSystemSubverse(string subverse)
-        {
-            return IsUserModerator(subverse, "System", 1);
         }
 
         public string SubverseForComment(int commentID)

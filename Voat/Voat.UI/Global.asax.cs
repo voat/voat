@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Net;
+using System.Threading;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
@@ -12,6 +13,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Voat.Configuration;
+using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Rules;
@@ -24,6 +26,7 @@ namespace Voat
 {
     public class MvcApplication : HttpApplication
     {
+        Timer timer;
         protected void Application_Start()
         {
             var formatters = GlobalConfiguration.Configuration.Formatters;
@@ -104,6 +107,48 @@ namespace Voat
 
             #endregion 
 
+
+            //Temp Log ThreadPool Stats
+            timer = new Timer(new TimerCallback(o => {
+                using (var repo = new Repository())
+                {
+                    int workerThreads;
+                    int completionPortThreads;
+                    int maxWorkerThreads;
+                    int maxCompletionPortThreads;
+
+                    ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
+                    ThreadPool.GetMaxThreads(out maxWorkerThreads, out maxCompletionPortThreads);
+
+                    var data = new
+                    {
+                        InUse = maxWorkerThreads - workerThreads,
+                        InUseIO = maxCompletionPortThreads - completionPortThreads,
+                        AvailableWorkerThreads = workerThreads,
+                        AvailableIOThreads = completionPortThreads,
+                        MaxWorkerThreads = maxWorkerThreads,
+                        MaxIOThreads = maxCompletionPortThreads
+                    };
+
+                    var result = repo.Log(new Data.Models.EventLog
+                    {
+                        //TODO: Modify schema to include this param
+                        Origin = Origin.UI.ToString(),
+                        ParentID = null,
+                        Type = "Info",
+                        UserName = null,
+                        Message = "ThreadPool Stats",
+                        Source = "",
+                        CallStack = "",
+                        IsBase = true,
+                        CreationDate = Repository.CurrentDate,
+                        Data = JsonConvert.SerializeObject(data)
+                    });
+                }
+
+            }), null, TimeSpan.Zero, TimeSpan.FromSeconds(15));
+            
+
             // USE ONLY FOR DEBUG: clear all sessions used for online users count
             // SessionTracker.RemoveAllSessions();
         }
@@ -143,7 +188,7 @@ namespace Voat
                                 //js calls
                                 var response = HttpContext.Current.Response;
                                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                response.StatusDescription = "Website currently Disabled";
+                                response.StatusDescription = "Website is disabled :( Try again in a moment.";
                                 response.End();
                                 return;
                             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Voat.Caching;
+using Voat.Data;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
@@ -8,39 +9,16 @@ namespace Voat.Utilities
     {
         public static int CommentCount(int submissionID)
         {
-            int count = 0;
-
             string cacheKey = CachingKey.CommentCount(submissionID);
-            var data = CacheHandler.Instance.Retrieve<int?>(cacheKey);
-            if (data == null)
+            var data = CacheHandler.Instance.Register(cacheKey, new Func<int?>(() =>
             {
-                data = CacheHandler.Instance.Register(cacheKey, new Func<int?>(() =>
+                using (var repo = new Repository())
                 {
-                    using (voatEntities db = new voatEntities())
-                    {
-                        var cmd = db.Database.Connection.CreateCommand();
-                        cmd.CommandText = "SELECT COUNT(*) FROM Comment WITH (NOLOCK) WHERE SubmissionID = @SubmissionID AND IsDeleted != 1";
-                        var param = cmd.CreateParameter();
-                        param.ParameterName = "SubmissionID";
-                        param.DbType = System.Data.DbType.Int32;
-                        param.Value = submissionID;
-                        cmd.Parameters.Add(param);
+                    return repo.GetCommentCount(submissionID);
+                }
+            }), TimeSpan.FromMinutes(4), 1);
 
-                        if (cmd.Connection.State != System.Data.ConnectionState.Open)
-                        {
-                            cmd.Connection.Open();
-                        }
-                        return (int)cmd.ExecuteScalar();
-                    }
-                }), TimeSpan.FromMinutes(4), 1);
-
-                count = (int)data;
-            }
-            else
-            {
-                count = (int)data;
-            }
-            return count;
+            return data.Value;
         }
     }
 }

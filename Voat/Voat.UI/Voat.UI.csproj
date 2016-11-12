@@ -790,9 +790,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>54242</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:54113/</IISUrl>
-          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
-          <IISAppRootUrl>http://localhost:54113/v/news/comments/247736</IISAppRootUrl>
+          <IISUrl>http://localhost:54111/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

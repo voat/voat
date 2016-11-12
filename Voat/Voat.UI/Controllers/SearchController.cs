@@ -33,15 +33,15 @@ namespace Voat.Controllers
         [PreventSpam]
         public ActionResult SearchResults(int? page, string q, string l, string sub)
         {
-
-            if (q == null || q.Length < 3)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
             //sanitize
-            q = q.Trim();
+            q = q.TrimSafe();
 
+            if (String.IsNullOrWhiteSpace(q) || q.Length < 3)
+            {
+                return View("~/Views/Search/Index.cshtml", new PaginatedList<Submission>(new List<Submission>(), 0, 25, 24));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            
             if (q == "rick roll")
             {
                 return new RedirectResult("https://www.youtube.com/watch?v=dQw4w9WgXcQ");

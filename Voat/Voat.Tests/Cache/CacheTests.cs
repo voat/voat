@@ -511,35 +511,45 @@ namespace Voat.Tests.Cache
 
             int? count = 0;
             int? originalCount = count;
-            handler.Register(cacheKey, () => {
 
-                count = (count + 1);
-                return count;
-
-            }, TimeSpan.FromSeconds(15), 5);
-
-            if (handler.CacheEnabled)
+            if (handler.RefetchEnabled)
             {
-                //Try to bail as quickly as possible once we know the hot cache is functioning
-                var startTime = DateTime.Now;
-                var timeoutTimeSpan = TimeSpan.FromSeconds(60);
-                var hasUpdated = false;
-                while (!hasUpdated && DateTime.Now.Subtract(startTime) < timeoutTimeSpan)
-                {
-                    int? checkValue = handler.Retrieve<int?>(cacheKey);
-                    hasUpdated = (checkValue.HasValue && checkValue.Value != 0 && checkValue.Value != 1);
-                    if (!hasUpdated)
-                    {
-                        await Task.Delay(5000);
-                    }
-                }
+                handler.Register(cacheKey, () => {
 
-                int? newCount = handler.Retrieve<int?>(cacheKey);
-                Assert.IsNotNull(newCount); //Make sure we still have it
-                Assert.AreNotEqual(0, newCount); //Make sure default value is not inserted
-                Assert.AreNotEqual(1, newCount); //This will be the first value inserted
+                    count = (count + 1);
+                    return count;
+
+                }, TimeSpan.FromSeconds(15), 5);
+
+
+
+                if (handler.CacheEnabled)
+                {
+                    //Try to bail as quickly as possible once we know the hot cache is functioning
+                    var startTime = DateTime.Now;
+                    var timeoutTimeSpan = TimeSpan.FromSeconds(60);
+                    var hasUpdated = false;
+                    while (!hasUpdated && DateTime.Now.Subtract(startTime) < timeoutTimeSpan)
+                    {
+                        int? checkValue = handler.Retrieve<int?>(cacheKey);
+                        hasUpdated = (checkValue.HasValue && checkValue.Value != 0 && checkValue.Value != 1);
+                        if (!hasUpdated)
+                        {
+                            await Task.Delay(5000);
+                        }
+                    }
+
+                    int? newCount = handler.Retrieve<int?>(cacheKey);
+                    Assert.IsNotNull(newCount); //Make sure we still have it
+                    Assert.AreNotEqual(0, newCount); //Make sure default value is not inserted
+                    Assert.AreNotEqual(1, newCount); //This will be the first value inserted
+                }
+                handler.Remove(cacheKey);
             }
-            handler.Remove(cacheKey);
+            else
+            {
+                Assert.Inconclusive("Cache Refetch not enabled");
+            }
         }
 
         #endregion Set Operations

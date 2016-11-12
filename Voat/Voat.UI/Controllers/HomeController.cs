@@ -184,27 +184,27 @@ namespace Voat.Controllers
                 //IAmAGate: Perf mods for caching
                 int pagesToTake = 2;
                 int subset = pageNumber / pagesToTake;
-                string cacheKey = String.Format("legacy:front.{0}.block.{1}.sort.rank", User.Identity.Name, subset);
+                string cacheKey = String.Format("legacy:front:{0}:block.{1}.sort.rank", User.Identity.Name, subset);
                 object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
                 if (cacheData == null)
                 {
                     int recordsToTake = pageSize * pagesToTake; //4 pages worth
-
+                    var userName = User.Identity.Name;
                     var getDataFunc = new Func<object>(() =>
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
                             db.EnableCacheableOutput();
 
-                            var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
+                            var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(userName)).Select(x => x.Subverse);
 
                             // TODO: check if user wants to exclude downvoted submissions from frontpage
-                            var downvotedSubmissionIds = db.SubmissionVoteTrackers.AsNoTracking().Where(vt => vt.UserName.Equals(User.Identity.Name) && vt.VoteStatus == -1).Select(s => s.SubmissionID);
+                            var downvotedSubmissionIds = db.SubmissionVoteTrackers.AsNoTracking().Where(vt => vt.UserName.Equals(userName) && vt.VoteStatus == -1).Select(s => s.SubmissionID);
 
                             IQueryable<Submission> submissions = (from m in db.Submissions.Include("Subverse").AsNoTracking()
                                                                   join s in db.SubverseSubscriptions on m.Subverse equals s.Subverse
-                                                                  where !m.IsArchived && !m.IsDeleted && s.UserName == User.Identity.Name
+                                                                  where !m.IsArchived && !m.IsDeleted && s.UserName == userName
                                                                   where !(from bu in db.BannedUsers select bu.UserName).Contains(m.UserName)
                                                                   select m).OrderByDescending(s => s.Rank);
 
@@ -238,7 +238,7 @@ namespace Voat.Controllers
         public static IList<Submission> GetGuestFrontPage(int pageSize, int pageNumber)
         {
             //IAmAGate: Perf mods for caching
-            string cacheKey = String.Format("legacy:front.guest.page.{0}.sort.rank", pageNumber);
+            string cacheKey = String.Format("legacy:front:guest:page.{0}.sort.rank", pageNumber);
             IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
             if (cacheData == null)
             {
@@ -378,23 +378,23 @@ namespace Voat.Controllers
                 //IAmAGate: Perf mods for caching
                 int pagesToTake = 2;
                 int subset = pageNumber / pagesToTake;
-                string cacheKey = String.Format("legacy:front.{0}.block.{1}.sort.new", User.Identity.Name, subset);
+                string cacheKey = String.Format("legacy:front:{0}:block.{1}.sort.new", User.Identity.Name, subset);
                 object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
                 if (cacheData == null)
                 {
                     int recordsToTake = 25 * pagesToTake; //pages worth
-
+                    var userName = User.Identity.Name;
                     var getDataFunc = new Func<object>(() =>
                     {
                         using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
                         {
                             db.EnableCacheableOutput();
 
-                            var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
+                            var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(userName)).Select(x => x.Subverse);
                             IQueryable<Submission> submissions = (from m in db.Submissions
                                                                   join s in db.SubverseSubscriptions on m.Subverse equals s.Subverse
-                                                                  where !m.IsArchived && !m.IsDeleted && s.UserName == User.Identity.Name
+                                                                  where !m.IsArchived && !m.IsDeleted && s.UserName == userName
                                                                   where !(from bu in db.BannedUsers select bu.UserName).Contains(m.UserName)
                                                                   select m).OrderByDescending(s => s.CreationDate);
                             return submissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
@@ -412,7 +412,7 @@ namespace Voat.Controllers
             else
             {
                 //IAmAGate: Perf mods for caching
-                string cacheKey = String.Format("legacy:front.guest.page.{0}.sort.new", pageNumber);
+                string cacheKey = String.Format("legacy:front:guest:page.{0}.sort.new", pageNumber);
                 object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
 
                 if (cacheData == null)
