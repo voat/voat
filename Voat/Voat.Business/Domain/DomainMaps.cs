@@ -227,8 +227,7 @@ namespace Voat.Domain
                     IsDistinguished = comment.IsDistinguished,
                     IsDeleted = comment.IsDeleted,
                     IsAnonymized = comment.IsAnonymized,
-                    UserName = comment.UserName,
-                    Votes = comment.Votes
+                    UserName = comment.UserName
                 };
             }
             return result;
@@ -257,8 +256,7 @@ namespace Voat.Domain
                     IsDistinguished = comment.IsDistinguished,
                     IsDeleted = comment.IsDeleted,
                     IsAnonymized = comment.IsAnonymized,
-                    UserName = comment.UserName,
-                    Votes = 0 //don't think we use this
+                    UserName = comment.UserName
                 };
             }
             return result;

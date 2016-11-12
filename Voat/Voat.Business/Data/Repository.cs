@@ -1380,7 +1380,6 @@ namespace Voat.Data
                 c.UserName = User.Identity.Name;
                 c.ParentID = (parentCommentID > 0 ? parentCommentID : (int?)null);
                 c.SubmissionID = submissionID;
-                c.Votes = 0;
                 c.UpCount = 0;
 
                 //TODO: Ensure this is acceptable

@@ -116,7 +116,6 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Votes" Type="int" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Content" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
@@ -249,7 +248,6 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="IsArchived" Type="bit" Nullable="false" />
-          <Property Name="Votes" Type="int" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Content" Type="nvarchar(max)" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
@@ -955,7 +953,6 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Votes" Type="Int32" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Content" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
@@ -1060,7 +1057,6 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="IsArchived" Type="Boolean" Nullable="false" />
-          <Property Name="Votes" Type="Int32" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Type" Type="Int32" Nullable="false" />
@@ -1741,7 +1737,6 @@
           <Property Type="String" Name="Path" Nullable="true" />
           <Property Type="String" Name="Subverse" Nullable="true" MaxLength="20" />
           <Property Type="Int32" Name="ID" Nullable="false" />
-          <Property Type="Int32" Name="Votes" Nullable="true" />
           <Property Type="String" Name="UserName" Nullable="false" MaxLength="50" />
           <Property Type="String" Name="Content" Nullable="false" />
           <Property Type="DateTime" Name="CreationDate" Nullable="false" Precision="23" />
@@ -1959,7 +1954,6 @@
             <EntityTypeMapping TypeName="Models.Comment">
               <MappingFragment StoreEntitySet="Comment">
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Votes" ColumnName="Votes" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Content" ColumnName="Content" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
@@ -2065,7 +2059,6 @@
                 <ScalarProperty Name="Content" ColumnName="Content" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="IsArchived" ColumnName="IsArchived" />
-                <ScalarProperty Name="Votes" ColumnName="Votes" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
@@ -2285,7 +2278,6 @@
                 <ScalarProperty Name="Path" ColumnName="Path" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Votes" ColumnName="Votes" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Content" ColumnName="Content" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />

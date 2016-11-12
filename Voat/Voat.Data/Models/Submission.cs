@@ -25,7 +25,6 @@ namespace Voat.Data.Models
     
         public int ID { get; set; }
         public bool IsArchived { get; set; }
-        public Nullable<int> Votes { get; set; }
         public string UserName { get; set; }
         public System.DateTime CreationDate { get; set; }
         public int Type { get; set; }

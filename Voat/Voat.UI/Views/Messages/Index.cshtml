@@ -166,7 +166,7 @@
                                         </div>
 
                                         <div class="panel-message-body">
-                                            <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
+                                            <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
                                                 <p class="parent"></p>
                                                 @Html.Partial("_votingIconsSubmission", submission)
                                                 @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)

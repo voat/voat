@@ -47,7 +47,7 @@
                 classEvenOrOdd = "odd";
             }
 
-            <div class="submission id-@submission.ID @classEvenOrOdd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
+            <div class="submission id-@submission.ID @classEvenOrOdd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
                 <p class="parent"></p>
 
                 @Html.Partial("_VotingIconsSubmission", submission)
