@@ -1431,7 +1431,8 @@ pre, code {
             z-index: 99;
         }
 
-        .whoaSubscriptionMenu:hover li ul { 
+        .whoaSubscriptionMenu:hover li ul,
+        .whoaSubscriptionMenu > li > a[href="#"]:focus ~ ul { 
             display: block; 
         }
 
