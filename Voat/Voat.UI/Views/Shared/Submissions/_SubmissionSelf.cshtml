@@ -16,7 +16,6 @@
     //var commentCount = Model.Comments.Count(c => c.Name != "deleted");
     var commentCount = CommentCounter.CommentCount(Model.ID);
 
-    bool anonymizedSubverse = false;
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
     string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
@@ -24,9 +23,11 @@
     DateTime submissionDate = Model.CreationDate;
     string postAge = Age.ToRelative(submissionDate);
 
+    //BLOCK: Lots of threads are waiting on this, commenting out to test
+    bool anonymizedSubverse = Model.IsAnonymized;
     //if (Model.Subverses != null)
     //{
-    anonymizedSubverse = Voat.Caching.DataCache.Subverse.Retrieve(Model.Subverse).IsAnonymized;
+    //anonymizedSubverse = Voat.Caching.DataCache.Subverse.Retrieve(Model.Subverse).IsAnonymized;
     //}
 
     //type 1 = message

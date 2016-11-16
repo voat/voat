@@ -69,13 +69,14 @@ namespace Voat.Domain.Query
             {
                 //I think this will keep data in memory. Need to have method that just inserts data.
                 CacheHit = true;
+
                 var func = new Func<T>(() => {
                     var task = Task.Run(GetFreshData);
                     Task.WaitAny(task);
                     return task.Result;
                 });
 
-                result = CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RecacheLimit);
+                result = CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RefetchLimit);
             }
             else
             {
@@ -83,28 +84,6 @@ namespace Voat.Domain.Query
                 result = await GetFreshData().ConfigureAwait(false);
             }
             return result;
-
-
-            //if (CachingPolicy != null && CachingPolicy.IsValid)
-            //{
-            //    //I think this will keep data in memory. Need to have method that just inserts data.
-            //    CacheHit = true;
-            //    var func = new Task<T>(async () =>
-            //    {
-            //        return await GetFreshData();
-            //        //var task = Task.Run(GetFreshData);
-            //        //Task.WaitAny(task);
-            //        //return task.Result;
-            //    });
-
-            //    result = await CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), GetFreshData(), CachingPolicy.Duration, CachingPolicy.RecacheLimit);
-            //}
-            //else
-            //{
-            //    CacheHit = true;
-            //    result = await GetFreshData().ConfigureAwait(false);
-            //}
-            //return result;
         }
         
         /// <summary>

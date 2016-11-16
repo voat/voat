@@ -180,10 +180,10 @@
                             case Voat.Domain.Models.MessageType.SubmissionReply:
 
                                 var q = new Voat.Domain.Query.QuerySubmission(message.SubmissionID.Value);
-                                        var submission2 = q.Execute();
+                                var submission2 = q.Execute();
 
-                                        var qc = new Voat.Domain.Query.QueryComment(message.CommentID.Value);
-                                        var comment = qc.Execute();
+                                var qc = new Voat.Domain.Query.QueryComment(message.CommentID.Value);
+                                var comment = qc.Execute();
 
                                 <div id="messageContainer-@comment.ID" class="entry">
                                     <div class="panel panel-default @(unreadCssClass)">

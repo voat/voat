@@ -148,91 +148,22 @@ namespace Voat.Controllers
             // abort if model state is invalid
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(subverseTmpModel);
             }
 
-            int minimumCcp = Settings.MinimumCcp;
-            int maximumOwnedSubs = Settings.MaximumOwnedSubs;
-
-            var userData = UserData;
-
-            // verify recaptcha if user has less than minimum required CCP
-            if (!Settings.CaptchaDisabled && userData.Information.CommentPoints.Sum < minimumCcp)
+            var title = $"/v/{subverseTmpModel.Title}"; //backwards compatibility, previous code always uses this
+            var cmd = new CreateSubverseCommand(subverseTmpModel.Name, title, subverseTmpModel.Description, subverseTmpModel.Sidebar);
+            var respones = await cmd.Execute();
+            if (respones.Success)
             {
-                // begin recaptcha check
-                bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);
-
-                if (!isCaptchaCodeValid)
-                {
-                    ModelState.AddModelError("", "Incorrect recaptcha answer.");
-
-                    // TODO: SET PREVENT SPAM DELAY TO 0
-                    return View();
-                }
-            }
-
-            // only allow users with less than maximum allowed subverses to create a subverse
-            var amountOfOwnedSubverses = _db.SubverseModerators
-                .Where(s => s.UserName == User.Identity.Name && s.Power == 1)
-                .ToList();
-            if (amountOfOwnedSubverses.Count >= maximumOwnedSubs)
-            {
-                ModelState.AddModelError(string.Empty, "Sorry, you can not own more than " + maximumOwnedSubs + " subverses.");
-                return View();
-            }
-
-            // check if subverse already exists
-            if (DataCache.Subverse.Retrieve(subverseTmpModel.Name) != null)
-            {
-                ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
-                return View();
-            }
-
-            try
-            {
-                // setup default values and create the subverse
-                var subverse = new Subverse
-                {
-                    Name = subverseTmpModel.Name,
-                    Title = "/v/" + subverseTmpModel.Name,
-                    Description = subverseTmpModel.Description,
-                    SideBar = subverseTmpModel.Sidebar,
-                    CreationDate = Repository.CurrentDate,
-                    Type = "link",
-                    IsThumbnailEnabled = true,
-                    IsAdult = false,
-                    IsPrivate = false,
-                    MinCCPForDownvote = 0,
-                    IsAdminDisabled = false,
-                    CreatedBy = User.Identity.Name,
-                    SubscriberCount = 0
-                };
-
-                _db.Subverses.Add(subverse);
-                await _db.SaveChangesAsync();
-
-                // subscribe user to the newly created subverse
-                var cmd = new SubscriptionCommand(Domain.Models.DomainType.Subverse, Domain.Models.SubscriptionAction.Subscribe, subverse.Name);
-                var response = await cmd.Execute();
-
-                // register user as the owner of the newly created subverse
-                var tmpSubverseAdmin = new SubverseModerator
-                {
-                    Subverse = subverseTmpModel.Name,
-                    UserName = User.Identity.Name,
-                    Power = 1
-                };
-                _db.SubverseModerators.Add(tmpSubverseAdmin);
-                await _db.SaveChangesAsync();
-
-                // go to newly created Subverse
                 return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverseTmpModel.Name });
             }
-            catch (Exception)
+            else
             {
-                ModelState.AddModelError(string.Empty, "Something bad happened, please report this to /v/voatdev. Thank you.");
-                return View();
+                ModelState.AddModelError(string.Empty, respones.Message);
+                return View(subverseTmpModel);
             }
+            
         }
 
         // GET: create

@@ -90,7 +90,7 @@ namespace Voat.Controllers
             }
 
             var userData = UserData;
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25 && !Settings.CaptchaDisabled;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < Settings.MinimumCommentPointsForCaptchaSubmission && !Settings.CaptchaDisabled;
 
             return View("Submit", model);
         }
@@ -106,7 +106,7 @@ namespace Voat.Controllers
         {
             //set this incase invalid submittal 
             var userData = UserData;
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25 && !Settings.CaptchaDisabled;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < Settings.MinimumCommentPointsForCaptchaSubmission && !Settings.CaptchaDisabled;
 
             // abort if model state is invalid
             if (!ModelState.IsValid)

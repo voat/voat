@@ -9,8 +9,6 @@ namespace Voat.Domain.Query
 
     public abstract class Query<T> : IQuery<T>
     {
-        //if we wish to pass in a context
-        //private voatEntities _dataContext;
         private string _userName;
 
         public Query()

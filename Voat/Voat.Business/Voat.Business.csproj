@@ -163,6 +163,7 @@
     <Compile Include="Data\AGGREGATE_SUBVERSE.cs" />
     <Compile Include="Data\DapperQuery.cs" />
     <Compile Include="Data\Selectors.cs" />
+    <Compile Include="Domain\Command\CreateSubverseCommand.cs" />
     <Compile Include="Domain\Command\MarkMessageCommand.cs" />
     <Compile Include="Domain\Command\Base\Command.cs" />
     <Compile Include="Domain\Command\Base\CommandResponse.cs" />
@@ -294,6 +295,7 @@
     <Compile Include="Rules\Posting\PostSubmissionRecentlySubmittedRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionValidityRule.cs" />
     <Compile Include="Rules\RuleInformationWithOutcome.cs" />
+    <Compile Include="Rules\Subverse\CreateSubverseRule.cs" />
     <Compile Include="Rules\VoatRuleContext.cs" />
     <Compile Include="Rules\VoatRuleException.cs" />
     <Compile Include="Rules\VoatRulesEngine.cs" />

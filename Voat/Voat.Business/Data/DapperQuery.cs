@@ -18,6 +18,9 @@ namespace Voat.Data
 
         public string OrderBy { get; set; }
 
+        //OFFSET 10 ROWS
+        //FETCH NEXT 10 ROWS ONLY
+
         //public int? SkipCount { get; set; }
 
         //public int? TakeCount { get; set; }

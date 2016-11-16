@@ -27,6 +27,7 @@ namespace Voat.Data
         private static LockStore _lockStore = new LockStore();
         private voatEntities _db;
 
+        #region Class
         public Repository() : this(new voatEntities())
         {
             /*no-op*/
@@ -40,6 +41,28 @@ namespace Voat.Data
             //us during The Fattening, so we throw now -> (╯°□°)╯︵ ┻━┻
             _db.Configuration.ProxyCreationEnabled = false;
         }
+        public void Dispose()
+        {
+            Dispose(false);
+        }
+
+        ~Repository()
+        {
+            Dispose(true);
+        }
+
+        protected void Dispose(bool gcCalling)
+        {
+            if (_db != null)
+            {
+                _db.Dispose();
+            }
+            if (!gcCalling)
+            {
+                System.GC.SuppressFinalize(this);
+            }
+        }
+        #endregion  
 
         #region Vote
 
@@ -595,6 +618,118 @@ namespace Voat.Data
                         select x).ToList();
 
             return data.AsEnumerable();
+        }
+
+        public async Task<CommandResponse> CreateSubverse(string name, string title, string description, string sidebar = null)
+        {
+            DemandAuthentication();
+            //// abort if model state is invalid
+            //if (!ModelState.IsValid)
+            //{
+            //    return View();
+            //}
+
+            //int minimumCcp = Settings.MinimumCcp;
+            //int maximumOwnedSubs = Settings.MaximumOwnedSubs;
+
+            //var userData = UserData;
+
+            //// verify recaptcha if user has less than minimum required CCP
+            //if (!Settings.CaptchaDisabled && userData.Information.CommentPoints.Sum < minimumCcp)
+            //{
+            //    // begin recaptcha check
+            //    bool isCaptchaCodeValid = await ReCaptchaUtility.Validate(Request);
+
+            //    if (!isCaptchaCodeValid)
+            //    {
+            //        ModelState.AddModelError("", "Incorrect recaptcha answer.");
+
+            //        // TODO: SET PREVENT SPAM DELAY TO 0
+            //        return View();
+            //    }
+            //}
+
+            //Evaulate Rules
+            VoatRuleContext context = new VoatRuleContext();
+            context.PropertyBag.SubverseName = name;
+            var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.CreateSubverse);
+            if (!outcome.IsAllowed)
+            {
+                return MapRuleOutCome<object>(outcome, null);
+            }
+
+            ////Rule
+            //// only allow users with less than maximum allowed subverses to create a subverse
+            //var amountOfOwnedSubverses = _db.SubverseModerators
+            //    .Where(s => s.UserName == User.Identity.Name && s.Power == 1)
+            //    .ToList();
+            //if (amountOfOwnedSubverses.Count >= maximumOwnedSubs)
+            //{
+            //    return CommandResponse.FromStatus(Status.Denied, "Sorry, you can not own more than " + maximumOwnedSubs + " subverses.");
+            //    //ModelState.AddModelError(string.Empty, "Sorry, you can not own more than " + maximumOwnedSubs + " subverses.");
+            //    //return View();
+            //}
+
+            //// check if subverse already exists
+            //if (DataCache.Subverse.Retrieve(name) != null)
+            //{
+            //    return CommandResponse.FromStatus(Status.Invalid, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
+            //    //ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest.");
+            //    //return View();
+            //}
+
+            try
+            {
+                // setup default values and create the subverse
+                var subverse = new Subverse
+                {
+                    Name = name,
+                    Title = title,
+                    Description = description,
+                    SideBar = sidebar,
+                    CreationDate = Repository.CurrentDate,
+                    Type = "link",
+                    IsThumbnailEnabled = true,
+                    IsAdult = false,
+                    IsPrivate = false,
+                    MinCCPForDownvote = 0,
+                    IsAdminDisabled = false,
+                    CreatedBy = User.Identity.Name,
+                    SubscriberCount = 0
+                };
+
+                _db.Subverses.Add(subverse);
+                await _db.SaveChangesAsync();
+
+                //// subscribe user to the newly created subverse
+                //var cmd = new SubscriptionCommand(Domain.Models.DomainType.Subverse, Domain.Models.SubscriptionAction.Subscribe, subverse.Name);
+                //var response = await cmd.Execute();
+
+                await SubscribeUser(DomainType.Subverse, SubscriptionAction.Subscribe, subverse.Name);
+
+
+                // register user as the owner of the newly created subverse
+                var tmpSubverseAdmin = new Models.SubverseModerator
+                {
+                    Subverse = name,
+                    UserName = User.Identity.Name,
+                    Power = 1
+                };
+                _db.SubverseModerators.Add(tmpSubverseAdmin);
+                await _db.SaveChangesAsync();
+
+
+                // go to newly created Subverse
+                return CommandResponse.Successful();
+                //return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverseTmpModel.Name });
+            }
+            catch (Exception ex)
+            {
+                return CommandResponse.Error<CommandResponse>(ex);
+                //ModelState.AddModelError(string.Empty, "Something bad happened, please report this to /v/voatdev. Thank you.");
+                //return View();
+            }
+
         }
 
         #endregion Subverse
@@ -3671,27 +3806,7 @@ namespace Voat.Data
             }
         }
 
-        public void Dispose()
-        {
-            Dispose(false);
-        }
-
-        ~Repository()
-        {
-            Dispose(true);
-        }
-
-        protected void Dispose(bool gcCalling)
-        {
-            if (_db != null)
-            {
-                _db.Dispose();
-            }
-            if (!gcCalling)
-            {
-                System.GC.SuppressFinalize(this);
-            }
-        }
+        
 
         protected CommandResponse<T> MapRuleOutCome<T>(RuleOutcome outcome, T result)
         {

@@ -162,6 +162,7 @@
     <Compile Include="Cache\CacheTests.cs" />
     <Compile Include="CommandTests\BaseCommandTest.cs" />
     <Compile Include="CommandTests\CommentCommandTests.cs" />
+    <Compile Include="CommandTests\CreateSubverseTests.cs" />
     <Compile Include="CommandTests\ModeratorCommandTests.cs" />
     <Compile Include="CommandTests\SendMessageCommandTests.cs" />
     <Compile Include="CommandTests\SubmissionCommandTests.cs" />
@@ -173,7 +174,7 @@
     <Compile Include="Data\ContentContex.cs" />
     <Compile Include="Data\RepositoryTests.cs" />
     <Compile Include="Data\RepositoryTests_Voting.cs" />
-    <Compile Include="Data\DataInitializer.cs" />
+    <Compile Include="Data\VoatDataInitializer.cs" />
     <Compile Include="Data\SchemaInitializerApplicationDbContext.cs" />
     <Compile Include="Data\SearchOptions_Tests.cs" />
     <Compile Include="Helpers\TestHelper.cs" />

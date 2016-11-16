@@ -10,7 +10,7 @@ namespace Voat.Domain.Query
     {
         private string _subverse;
 
-        public QuerySubverse(string subverse) : base(new CachePolicy(TimeSpan.FromMinutes(30)))
+        public QuerySubverse(string subverse) : base(new CachePolicy(TimeSpan.FromMinutes(30), 2))
         {
             _subverse = subverse;
         }

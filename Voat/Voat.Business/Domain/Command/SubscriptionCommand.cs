@@ -22,7 +22,7 @@ namespace Voat.Domain.Command
         {
             using (var repo = new Repository())
             {
-                await Task.Run(() => repo.SubscribeUser(_domainType, _action, _name));
+                await repo.SubscribeUser(_domainType, _action, _name);
             }
             return CommandResponse.Successful();
         }

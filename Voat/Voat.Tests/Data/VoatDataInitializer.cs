@@ -337,8 +337,23 @@ namespace Voat.Tests.Repository
             //Users with varying levels of CCP
             CreateUser("User0CCP");
             CreateUser("User50CCP");
-            CreateUser("User100CCP");
-            CreateUser("User500CCP");
+            CreateUser("User100CCP", DateTime.UtcNow.AddDays(-45));
+            CreateUser("User500CCP", DateTime.UtcNow.AddDays(-60));
+
+
+            var s = context.Submissions.Add(new Submission()
+            {
+
+                UserName = "User500CCP",
+                Title = "Test Submission",
+                Type = 1,
+                Subverse = "unit",
+                Content = String.Format("Test Submission w/Upvotes 50"),
+                CreationDate = DateTime.UtcNow,
+                //SubmissionID = unitSubmission.ID,
+                UpCount = 500,
+            });
+            context.SaveChanges();
 
             c = context.Comments.Add(new Comment()
             {
@@ -506,7 +521,7 @@ namespace Voat.Tests.Repository
                 return submission.ID;
             }
         }
-        public static void CreateUser(string userName)
+        public static void CreateUser(string userName, DateTime? registrationDate = null)
         {
             //SchemaInitializerApplicationDbContext.ReferenceEquals(null, new object());
 
@@ -514,7 +529,7 @@ namespace Voat.Tests.Repository
 
             //if (!UserHelper.UserExists(userName))
             //{
-                var user = new Voat.Data.Models.VoatUser() { UserName = userName, RegistrationDateTime = DateTime.UtcNow, LastLoginDateTime = new DateTime(1900, 1, 1, 0, 0, 0, 0), LastLoginFromIp = "0.0.0.0" };
+                var user = new Voat.Data.Models.VoatUser() { UserName = userName, RegistrationDateTime = (registrationDate.HasValue ? registrationDate.Value : DateTime.UtcNow), LastLoginDateTime = new DateTime(1900, 1, 1, 0, 0, 0, 0), LastLoginFromIp = "0.0.0.0" };
 
                 string pwd = userName;
                 while (pwd.Length < 6)
