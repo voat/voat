@@ -1432,7 +1432,7 @@ pre, code {
         }
 
         .whoaSubscriptionMenu:hover li ul,
-        .whoaSubscriptionMenu > li > a[href="#"]:focus ~ ul { 
+        .no-touch .whoaSubscriptionMenu > li > a[href="#"]:focus ~ ul { 
             display: block; 
         }
 
